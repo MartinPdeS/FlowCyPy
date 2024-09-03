@@ -1,7 +1,7 @@
 FlowCytometer Simulation Tool
 =============================
 
-|python|
+|python| |coverage|
 
 Overview
 --------

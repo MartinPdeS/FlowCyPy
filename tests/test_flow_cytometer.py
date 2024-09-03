@@ -9,8 +9,6 @@ def test_flow_cytometer_simulation():
     cytometer = FlowCytometer(n_events=10, time_points=1000, n_bins=100, noise_level=20)
     cytometer.simulate_pulse()
 
-    cytometer.plot()
-
     # Check that the signals are not all zeros (pulses should add non-zero values)
     assert np.any(cytometer.fsc_raw_signal > 0), "FSC signal is all zeros."
     assert np.any(cytometer.ssc_raw_signal > 0), "SSC signal is all zeros."
