@@ -69,6 +69,7 @@ addopts = [
     '-rw',
     '--cov=FlowCytometry',
     '--cov-report=html',
+    # '--cov-report=term'
 ]
 
 [tool.coverage.run]
