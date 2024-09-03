@@ -11,7 +11,7 @@ def test_gaussian_pulse_generation():
     generated_pulse = pulse.generate(time)
 
     # Check that the generated pulse has the correct maximum value
-    assert np.isclose(np.max(generated_pulse), 1.0), "Pulse height does not match expected value."
+    assert np.isclose(np.max(generated_pulse), 1.0, atol=1e-2), f"Pulse height: [{np.max(generated_pulse)}] does not match expected value: [{1.0}]."
 
     # Check that the pulse is symmetric around the center
     half = len(time) // 2

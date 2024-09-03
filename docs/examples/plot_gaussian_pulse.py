@@ -20,7 +20,7 @@ time = np.linspace(-10, 10, 1000)
 pulse = GaussianPulse(center=0, height=1.0, width=1.0)
 
 # Generate and plot the pulse
-pulse.plot(time)
+pulse.plot()
 
 ##############################################################################
 # The above plot shows a Gaussian pulse centered at 0 μs with a peak amplitude

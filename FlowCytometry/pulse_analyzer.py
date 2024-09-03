@@ -1,8 +1,8 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.signal import find_peaks, peak_widths
-
-
-
+from MPSPlots.styles import mps
+from FlowCytometry import Peak
 
 class PulseAnalyzer:
     """
@@ -11,18 +11,14 @@ class PulseAnalyzer:
 
     Attributes
     ----------
+    time : numpy.ndarray
+        The time axis corresponding to the signal.
     signal : numpy.ndarray
         The raw signal to be analyzed (e.g., FSC or SSC signal).
     height_threshold : float
         The minimum height required for a peak to be considered significant.
-    peaks : numpy.ndarray or None
-        The indices of the detected peaks in the signal.
-    heights : numpy.ndarray or None
-        The heights of the detected peaks.
-    widths : numpy.ndarray or None
-        The widths of the detected peaks at half maximum.
-    areas : list or None
-        The areas under the detected peaks.
+    peaks : list of Peak
+        A list of Peak objects representing the detected peaks.
 
     Methods
     -------
@@ -34,55 +30,49 @@ class PulseAnalyzer:
         Calculates the areas under the detected peaks.
     display_features():
         Displays the extracted features such as heights, widths, and areas.
-
-    Equations
-    ---------
-    The pulse height is simply the maximum amplitude of the pulse:
-
-        height = max(signal(t))
-
-    The pulse width is calculated at half maximum using:
-
-        width = t2 - t1
-
-    where t1 and t2 are the times at which the signal amplitude is half of the peak height.
-
-    The pulse area is calculated by integrating the signal over the width of the pulse:
-
-        area = ∫(signal(t) dt) from t1 to t2
+    plot():
+        Plots the signal along with detected peaks, widths, and areas on a time axis.
     """
 
-    def __init__(self, signal, height_threshold):
+    def __init__(self, time, signal, height_threshold):
         """
         Constructs all the necessary attributes for the PulseAnalyzer object.
 
         Parameters
         ----------
+        time : numpy.ndarray
+            The time axis corresponding to the signal.
         signal : numpy.ndarray
             The raw signal to be analyzed (e.g., FSC or SSC signal).
         height_threshold : float
             The minimum height required for a peak to be considered significant.
         """
+        self.time = time
         self.signal = signal
         self.height_threshold = height_threshold
-        self.peaks = None
-        self.heights = None
-        self.widths = None
-        self.areas = None
+        self.peaks = []
 
     def find_peaks(self):
         """
         Detects peaks in the raw signal based on the height threshold.
         """
-        self.peaks, _ = find_peaks(self.signal, height=self.height_threshold)
-        self.heights = self.signal[self.peaks]
+        peak_indices, _ = find_peaks(self.signal, height=self.height_threshold)
+        peak_heights = self.signal[peak_indices]
+
+        for idx, height in zip(peak_indices, peak_heights):
+            self.peaks.append(Peak(time=self.time[idx], height=height, width=None))
 
     def calculate_widths(self):
         """
         Calculates the widths of the detected peaks at half maximum.
         """
-        if self.peaks is not None:
-            self.widths = peak_widths(self.signal, self.peaks, rel_height=0.5)[0]
+        if self.peaks:
+            peak_indices = [np.where(self.time == peak.time)[0][0] for peak in self.peaks]
+            widths = peak_widths(self.signal, peak_indices, rel_height=0.5)[0]
+
+            dt = self.time[1] - self.time[0]
+            for peak, width in zip(self.peaks, widths):
+                peak.width = width * dt
 
     def calculate_areas(self):
         """
@@ -90,16 +80,42 @@ class PulseAnalyzer:
 
         The area is calculated by integrating the signal around each detected peak.
         """
-        if self.peaks is not None and self.widths is not None:
-            self.areas = [
-                np.sum(self.signal[int(peak - width/2):int(peak + width/2)])
-                for peak, width in zip(self.peaks, self.widths)
-            ]
+        for peak in self.peaks:
+            if peak.width is not None:
+                peak.calculate_area(self.signal, self.time)
 
     def display_features(self):
         """
         Displays the extracted features such as heights, widths, and areas.
         """
-        print("Heights:", self.heights[:5])
-        print("Widths:", self.widths[:5])
-        print("Areas:", self.areas[:5])
+        for i, peak in enumerate(self.peaks[:5]):  # Display up to 5 peaks for brevity
+            print(f"Peak {i + 1}:")
+            print(f"  Time: {peak.time}")
+            print(f"  Height: {peak.height}")
+            print(f"  Width: {peak.width}")
+            print(f"  Area: {peak.area}")
+
+    def plot(self) -> None:
+        """
+        Plots the signal along with detected peaks, widths, and areas.
+        """
+        with plt.style.context(mps):
+            plt.figure(figsize=(10, 6))
+            plt.plot(self.time, self.signal, label='Signal')
+
+            for peak in self.peaks:
+                plt.plot(peak.time, peak.height, 'x', label='Peaks')
+                plt.hlines(y=peak.height / 2, xmin=peak.time - peak.width / 2, xmax=peak.time + peak.width / 2, colors='r', label='Width at Half-Max')
+
+            plt.legend()
+            handles, labels = plt.gca().get_legend_handles_labels()
+            by_label = dict(zip(labels, handles))
+            plt.legend(by_label.values(), by_label.keys())
+
+            plt.title('Pulse Analysis')
+            plt.xlabel('Time')
+            plt.ylabel('Signal Amplitude')
+
+            plt.grid(True)
+            plt.show()
+

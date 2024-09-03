@@ -19,7 +19,7 @@ time = np.linspace(0, 10, 1000)
 signal = np.exp(-((time - 3) ** 2) / (2 * 0.1 ** 2)) + np.exp(-((time - 7) ** 2) / (2 * 0.1 ** 2))
 
 # Create a PulseAnalyzer instance
-analyzer = PulseAnalyzer(signal, height_threshold=0.5)
+analyzer = PulseAnalyzer(time=time, signal=signal, height_threshold=0.5)
 
 # Find peaks in the signal
 analyzer.find_peaks()
@@ -31,6 +31,8 @@ analyzer.calculate_areas()
 # Display the extracted features
 analyzer.display_features()
 
+
+analyzer.plot()
 ##############################################################################
 # The above output shows the heights, widths, and areas of the detected pulses.
 #
