@@ -14,13 +14,20 @@ information about the size, complexity, and other properties of the particles.
 from FlowCytometry import FlowCytometer
 
 # Create a FlowCytometer instance
-cytometer = FlowCytometer(n_events=100, time_points=1000, noise_level=0.05, baseline_shift=0.01, saturation_level=1000)
+cytometer = FlowCytometer(
+    n_events=30,
+    time_points=1000,
+    noise_level=30,
+    baseline_shift=0.01,
+    saturation_level=10_000,
+    n_bins=40,
+)
 
 # Simulate the flow cytometer signals
 cytometer.simulate_pulse()
 
 # Plot the generated signals
-cytometer.plot_signals()
+cytometer.plot()
 
 ##############################################################################
 # The above plot shows simulated raw signals for both Forward Scatter (FSC) and
