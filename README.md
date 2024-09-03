@@ -4,12 +4,12 @@
 
 | Name                             |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |--------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
-| FlowCytometry/flow\_cytometer.py |       79 |        8 |       14 |        3 |     88% |135-138, 140-143, 144->152 |
+| FlowCytometry/flow\_cytometer.py |       85 |        0 |       10 |        2 |     98% |240->243, 243->246 |
 | FlowCytometry/gaussian\_pulse.py |       21 |        1 |        2 |        1 |     91% |        82 |
 | FlowCytometry/peak.py            |       13 |        0 |        2 |        0 |    100% |           |
 | FlowCytometry/pulse\_analyzer.py |       50 |        0 |       16 |        2 |     97% |69->exit, 84->83 |
 | FlowCytometry/utils.py           |        7 |        0 |        2 |        0 |    100% |           |
-|                        **TOTAL** |  **170** |    **9** |   **36** |    **6** | **93%** |           |
+|                        **TOTAL** |  **176** |    **1** |   **32** |    **5** | **97%** |           |
 
 
 ## Setup coverage badge
