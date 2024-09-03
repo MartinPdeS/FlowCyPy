@@ -11,7 +11,7 @@
 <header>
     <div class="content">
         <h1>Coverage report:
-            <span class="pc_cov">0%</span>
+            <span class="pc_cov">71%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -27,6 +27,8 @@
                         <kbd>s</kbd>
                         <kbd>m</kbd>
                         <kbd>x</kbd>
+                        <kbd>b</kbd>
+                        <kbd>p</kbd>
                         <kbd>c</kbd>
                         &nbsp; change column sorting
                     </p>
@@ -55,7 +57,7 @@
         </h2>
         <p class="text">
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-03 14:50 +0000
+            created at 2024-09-03 14:54 +0000
         </p>
     </div>
 </header>
@@ -68,6 +70,8 @@
                 <th id="statements" aria-sort="none" data-default-sort-order="descending" data-shortcut="s">statements<span class="arrows"></span></th>
                 <th id="missing" aria-sort="none" data-default-sort-order="descending" data-shortcut="m">missing<span class="arrows"></span></th>
                 <th id="excluded" aria-sort="none" data-default-sort-order="descending" data-shortcut="x">excluded<span class="arrows"></span></th>
+                <th id="branches" aria-sort="none" data-default-sort-order="descending" data-shortcut="b">branches<span class="arrows"></span></th>
+                <th id="partial" aria-sort="none" data-default-sort-order="descending" data-shortcut="p">partial<span class="arrows"></span></th>
                 <th id="coverage" class="right" aria-sort="none" data-shortcut="c">coverage<span class="arrows"></span></th>
             </tr>
         </thead>
@@ -76,33 +80,41 @@
                 <td class="name left"><a href="z_049c8760bcafd8ec_flow_cytometer_py.html#t45">FlowCytometry/flow_cytometer.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_flow_cytometer_py.html#t45"><data value='post_init__'>FlowCytometer.__post_init__</data></a></td>
                 <td>4</td>
-                <td>4</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 4">0%</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="4 4">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_flow_cytometer_py.html#t52">FlowCytometry/flow_cytometer.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_flow_cytometer_py.html#t52"><data value='simulate_pulse'>FlowCytometer.simulate_pulse</data></a></td>
                 <td>16</td>
-                <td>16</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 16">0%</td>
+                <td>0</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="right" data-ratio="18 18">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_flow_cytometer_py.html#t82">FlowCytometry/flow_cytometer.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_flow_cytometer_py.html#t82"><data value='discretize_signal'>FlowCytometer._discretize_signal</data></a></td>
                 <td>3</td>
-                <td>3</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 3">0%</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="3 3">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_flow_cytometer_py.html#t100">FlowCytometry/flow_cytometer.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_flow_cytometer_py.html#t100"><data value='plot_signals'>FlowCytometer.plot_signals</data></a></td>
                 <td>14</td>
-                <td>14</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 14">0%</td>
+                <td>0</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="right" data-ratio="16 16">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_flow_cytometer_py.html#t122">FlowCytometry/flow_cytometer.py</a></td>
@@ -110,95 +122,119 @@
                 <td>21</td>
                 <td>21</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 21">0%</td>
+                <td>8</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 29">0%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_flow_cytometer_py.html">FlowCytometry/flow_cytometer.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_flow_cytometer_py.html"><data value=''><span class='no-noun'>(no function)</span></data></a></td>
                 <td>21</td>
-                <td>21</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 21">0%</td>
+                <td>0</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="right" data-ratio="23 23">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_gaussian_pulse_py.html#t38">FlowCytometry/gaussian_pulse.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_gaussian_pulse_py.html#t38"><data value='init__'>GaussianPulse.__init__</data></a></td>
                 <td>3</td>
-                <td>3</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 3">0%</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="3 3">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_gaussian_pulse_py.html#t55">FlowCytometry/gaussian_pulse.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_gaussian_pulse_py.html#t55"><data value='generate'>GaussianPulse.generate</data></a></td>
                 <td>1</td>
-                <td>1</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 1">0%</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="1 1">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_gaussian_pulse_py.html#t71">FlowCytometry/gaussian_pulse.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_gaussian_pulse_py.html#t71"><data value='plot'>GaussianPulse.plot</data></a></td>
                 <td>11</td>
-                <td>11</td>
+                <td>1</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 11">0%</td>
+                <td>2</td>
+                <td>1</td>
+                <td class="right" data-ratio="11 13">85%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_gaussian_pulse_py.html">FlowCytometry/gaussian_pulse.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_gaussian_pulse_py.html"><data value=''><span class='no-noun'>(no function)</span></data></a></td>
                 <td>6</td>
-                <td>6</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 6">0%</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="6 6">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_peak_py.html#t26">FlowCytometry/peak.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_peak_py.html#t26"><data value='calculate_area'>Peak.calculate_area</data></a></td>
                 <td>4</td>
-                <td>4</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 4">0%</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="4 4">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_peak_py.html">FlowCytometry/peak.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_peak_py.html"><data value=''><span class='no-noun'>(no function)</span></data></a></td>
                 <td>9</td>
-                <td>9</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 9">0%</td>
+                <td>0</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="right" data-ratio="11 11">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_pulse_analyzer_py.html#t37">FlowCytometry/pulse_analyzer.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_pulse_analyzer_py.html#t37"><data value='init__'>PulseAnalyzer.__init__</data></a></td>
                 <td>4</td>
-                <td>4</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 4">0%</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="4 4">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_pulse_analyzer_py.html#t55">FlowCytometry/pulse_analyzer.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_pulse_analyzer_py.html#t55"><data value='find_peaks'>PulseAnalyzer.find_peaks</data></a></td>
                 <td>4</td>
-                <td>4</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 4">0%</td>
+                <td>0</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="right" data-ratio="6 6">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_pulse_analyzer_py.html#t65">FlowCytometry/pulse_analyzer.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_pulse_analyzer_py.html#t65"><data value='calculate_widths'>PulseAnalyzer.calculate_widths</data></a></td>
                 <td>6</td>
-                <td>6</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 6">0%</td>
+                <td>0</td>
+                <td>4</td>
+                <td>1</td>
+                <td class="right" data-ratio="9 10">90%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_pulse_analyzer_py.html#t77">FlowCytometry/pulse_analyzer.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_pulse_analyzer_py.html#t77"><data value='calculate_areas'>PulseAnalyzer.calculate_areas</data></a></td>
                 <td>3</td>
-                <td>3</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 3">0%</td>
+                <td>0</td>
+                <td>4</td>
+                <td>1</td>
+                <td class="right" data-ratio="6 7">86%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_pulse_analyzer_py.html#t87">FlowCytometry/pulse_analyzer.py</a></td>
@@ -206,7 +242,9 @@
                 <td>6</td>
                 <td>6</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 6">0%</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 8">0%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_pulse_analyzer_py.html#t98">FlowCytometry/pulse_analyzer.py</a></td>
@@ -214,31 +252,39 @@
                 <td>15</td>
                 <td>15</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 15">0%</td>
+                <td>4</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 19">0%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_pulse_analyzer_py.html">FlowCytometry/pulse_analyzer.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_pulse_analyzer_py.html"><data value=''><span class='no-noun'>(no function)</span></data></a></td>
                 <td>12</td>
-                <td>12</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 12">0%</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="12 12">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_utils_py.html#t4">FlowCytometry/utils.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_utils_py.html#t4"><data value='generate_gaussian_signal'>generate_gaussian_signal</data></a></td>
                 <td>4</td>
-                <td>4</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 4">0%</td>
+                <td>0</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="right" data-ratio="6 6">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_utils_py.html">FlowCytometry/utils.py</a></td>
                 <td class="name left"><a href="z_049c8760bcafd8ec_utils_py.html"><data value=''><span class='no-noun'>(no function)</span></data></a></td>
                 <td>3</td>
-                <td>3</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 3">0%</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="3 3">100%</td>
             </tr>
         </tbody>
         <tfoot>
@@ -246,9 +292,11 @@
                 <td class="name left">Total</td>
                 <td class="name left">&nbsp;</td>
                 <td>170</td>
-                <td>170</td>
+                <td>43</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 170">0%</td>
+                <td>36</td>
+                <td>3</td>
+                <td class="right" data-ratio="146 206">71%</td>
             </tr>
         </tfoot>
     </table>
@@ -260,7 +308,7 @@
     <div class="content">
         <p>
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-03 14:50 +0000
+            created at 2024-09-03 14:54 +0000
         </p>
     </div>
     <aside class="hidden">

@@ -11,7 +11,7 @@
 <header>
     <div class="content">
         <h1>Coverage report:
-            <span class="pc_cov">0%</span>
+            <span class="pc_cov">71%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -26,6 +26,8 @@
                         <kbd>s</kbd>
                         <kbd>m</kbd>
                         <kbd>x</kbd>
+                        <kbd>b</kbd>
+                        <kbd>p</kbd>
                         <kbd>c</kbd>
                         &nbsp; change column sorting
                     </p>
@@ -54,7 +56,7 @@
         </h2>
         <p class="text">
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-03 14:50 +0000
+            created at 2024-09-03 14:54 +0000
         </p>
     </div>
 </header>
@@ -66,6 +68,8 @@
                 <th id="statements" aria-sort="none" data-default-sort-order="descending" data-shortcut="s">statements<span class="arrows"></span></th>
                 <th id="missing" aria-sort="none" data-default-sort-order="descending" data-shortcut="m">missing<span class="arrows"></span></th>
                 <th id="excluded" aria-sort="none" data-default-sort-order="descending" data-shortcut="x">excluded<span class="arrows"></span></th>
+                <th id="branches" aria-sort="none" data-default-sort-order="descending" data-shortcut="b">branches<span class="arrows"></span></th>
+                <th id="partial" aria-sort="none" data-default-sort-order="descending" data-shortcut="p">partial<span class="arrows"></span></th>
                 <th id="coverage" class="right" aria-sort="none" data-shortcut="c">coverage<span class="arrows"></span></th>
             </tr>
         </thead>
@@ -73,46 +77,58 @@
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_flow_cytometer_py.html">FlowCytometry/flow_cytometer.py</a></td>
                 <td>79</td>
-                <td>79</td>
+                <td>21</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 79">0%</td>
+                <td>14</td>
+                <td>0</td>
+                <td class="right" data-ratio="64 93">69%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_gaussian_pulse_py.html">FlowCytometry/gaussian_pulse.py</a></td>
                 <td>21</td>
-                <td>21</td>
+                <td>1</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 21">0%</td>
+                <td>2</td>
+                <td>1</td>
+                <td class="right" data-ratio="21 23">91%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_peak_py.html">FlowCytometry/peak.py</a></td>
                 <td>13</td>
-                <td>13</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 13">0%</td>
+                <td>0</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="right" data-ratio="15 15">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_pulse_analyzer_py.html">FlowCytometry/pulse_analyzer.py</a></td>
                 <td>50</td>
-                <td>50</td>
+                <td>21</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 50">0%</td>
+                <td>16</td>
+                <td>2</td>
+                <td class="right" data-ratio="37 66">56%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="z_049c8760bcafd8ec_utils_py.html">FlowCytometry/utils.py</a></td>
                 <td>7</td>
-                <td>7</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 7">0%</td>
+                <td>0</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="right" data-ratio="9 9">100%</td>
             </tr>
         </tbody>
         <tfoot>
             <tr class="total">
                 <td class="name left">Total</td>
                 <td>170</td>
-                <td>170</td>
+                <td>43</td>
                 <td>0</td>
-                <td class="right" data-ratio="0 170">0%</td>
+                <td>36</td>
+                <td>3</td>
+                <td class="right" data-ratio="146 206">71%</td>
             </tr>
         </tfoot>
     </table>
@@ -124,7 +140,7 @@
     <div class="content">
         <p>
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-03 14:50 +0000
+            created at 2024-09-03 14:54 +0000
         </p>
     </div>
     <aside class="hidden">
