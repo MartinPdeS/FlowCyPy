@@ -2,14 +2,14 @@
 
 [Full report](https://htmlpreview.github.io/?https://github.com/MartinPdeS/FlowCytometry/blob/python-coverage-comment-action-data/htmlcov/index.html)
 
-| Name                             |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
-|--------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
-| FlowCytometry/flow\_cytometer.py |       85 |        0 |       10 |        2 |     98% |240->243, 243->246 |
-| FlowCytometry/gaussian\_pulse.py |       21 |        1 |        2 |        1 |     91% |        82 |
-| FlowCytometry/peak.py            |       13 |        0 |        2 |        0 |    100% |           |
-| FlowCytometry/pulse\_analyzer.py |       50 |        0 |       16 |        2 |     97% |69->exit, 84->83 |
-| FlowCytometry/utils.py           |        7 |        0 |        2 |        0 |    100% |           |
-|                        **TOTAL** |  **176** |    **1** |   **32** |    **5** | **97%** |           |
+| Name                        |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
+|---------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
+| FlowCyPy/flow\_cytometer.py |       85 |        0 |       10 |        2 |     98% |240->243, 243->246 |
+| FlowCyPy/gaussian\_pulse.py |       21 |        1 |        2 |        1 |     91% |        82 |
+| FlowCyPy/peak.py            |       13 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/pulse\_analyzer.py |       50 |        0 |       16 |        2 |     97% |69->exit, 84->83 |
+| FlowCyPy/utils.py           |        7 |        0 |        2 |        0 |    100% |           |
+|                   **TOTAL** |  **176** |    **1** |   **32** |    **5** | **97%** |           |
 
 
 ## Setup coverage badge
