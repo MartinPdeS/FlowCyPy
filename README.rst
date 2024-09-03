@@ -1,7 +1,7 @@
 FlowCytometer Simulation Tool
 =============================
 
-|python| |example_fcm|
+|python|
 
 Overview
 --------
@@ -60,8 +60,14 @@ Below is a quick guide on how to get started with the `FlowCytometer` simulation
     # Plot the generated signals
     cytometer.plot()
 
+This produce the following figure:
+|example_fcm|
 
 .. |python| image:: https://img.shields.io/pypi/pyversions/pyoptik.svg
    :target: https://www.python.org/
 
 .. |example_fcm| image:: https://github.com/MartinPdeS/FlowCytometry/blob/master/docs/images/example_signal_FCM.png
+
+.. |coverage| image:: https://raw.githubusercontent.com/MartinPdeS/FlowCytometry/python-coverage-comment-action-data/badge.svg
+   :alt: Unittest coverage
+   :target: https://htmlpreview.github.io/?https://github.com/MartinPdeS/FlowCytometry/blob/python-coverage-comment-action-data/htmlcov/index.html
