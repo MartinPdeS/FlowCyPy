@@ -2,14 +2,16 @@
 
 [Full report](https://htmlpreview.github.io/?https://github.com/MartinPdeS/FlowCyPy/blob/python-coverage-comment-action-data/htmlcov/index.html)
 
-| Name                        |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
-|---------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
-| FlowCyPy/flow\_cytometer.py |       85 |        0 |       10 |        2 |     98% |240->243, 243->246 |
-| FlowCyPy/gaussian\_pulse.py |       21 |        1 |        2 |        1 |     91% |        82 |
-| FlowCyPy/peak.py            |       13 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/pulse\_analyzer.py |       50 |        0 |       16 |        2 |     97% |69->exit, 84->83 |
-| FlowCyPy/utils.py           |        7 |        0 |        2 |        0 |    100% |           |
-|                   **TOTAL** |  **176** |    **1** |   **32** |    **5** | **97%** |           |
+| Name                                |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
+|------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
+| FlowCyPy/flow\_cytometer.py         |      103 |       12 |       14 |        3 |     87% |116, 254-258, 264-265, 275-276, 292-294, 315->318, 318->321 |
+| FlowCyPy/gaussian\_pulse.py         |       21 |        1 |        2 |        1 |     91% |        82 |
+| FlowCyPy/peak.py                    |       13 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/pulse\_analyzer.py         |       50 |        0 |       16 |        2 |     97% |69->exit, 84->83 |
+| FlowCyPy/scatterer\_distribution.py |       36 |       16 |       10 |        1 |     50% |50-59, 74-88 |
+| FlowCyPy/signal\_processor.py       |       30 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/utils.py                   |        7 |        0 |        2 |        0 |    100% |           |
+|                           **TOTAL** |  **260** |   **29** |   **48** |    **7** | **86%** |           |
 
 
 ## Setup coverage badge
