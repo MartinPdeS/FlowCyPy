@@ -4,15 +4,15 @@
 
 | Name                                |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
-| FlowCyPy/flow\_cytometer.py         |      105 |       12 |       14 |        3 |     87% |119, 257-261, 267-268, 278-279, 295-297, 333->336, 336->339 |
+| FlowCyPy/flow\_cytometer.py         |      109 |       12 |       14 |        3 |     88% |120, 262-266, 272-273, 283-284, 300-302, 342->345, 345->348 |
 | FlowCyPy/gaussian\_pulse.py         |       21 |        1 |        2 |        1 |     91% |        82 |
 | FlowCyPy/peak.py                    |       13 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/plottings.py               |        9 |        6 |        4 |        0 |     23% |      8-16 |
 | FlowCyPy/pulse\_analyzer.py         |       52 |        2 |       18 |        4 |     91% |71, 86, 89->88, 129->127 |
-| FlowCyPy/scatterer\_distribution.py |       36 |        4 |       10 |        0 |     87% |   101-107 |
+| FlowCyPy/scatterer\_distribution.py |       53 |       10 |       18 |        2 |     75% |81-86, 103, 130-133 |
 | FlowCyPy/signal\_processor.py       |       30 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/utils.py                   |        7 |        0 |        2 |        0 |    100% |           |
-|                           **TOTAL** |  **273** |   **25** |   **54** |    **8** | **88%** |           |
+|                           **TOTAL** |  **294** |   **31** |   **62** |   **10** | **86%** |           |
 
 
 ## Setup coverage badge

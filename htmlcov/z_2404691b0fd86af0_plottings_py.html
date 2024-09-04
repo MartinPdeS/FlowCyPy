@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_2404691b0fd86af0_pulse_analyzer_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-04 13:48 +0000
+            created at 2024-09-04 14:42 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -87,9 +87,9 @@
     <p class="run"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t"><span class="key">import</span> <span class="nam">matplotlib</span><span class="op">.</span><span class="nam">pyplot</span> <span class="key">as</span> <span class="nam">plt</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t"><span class="key">from</span> <span class="nam">MPSPlots</span><span class="op">.</span><span class="nam">styles</span> <span class="key">import</span> <span class="nam">mps</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t"><span class="key">def</span> <span class="nam">plot_system</span><span class="op">(</span><span class="op">*</span><span class="nam">elements</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t"><span class="key">def</span> <span class="nam">plot_system</span><span class="op">(</span><span class="nam">cytometer</span> <span class="op">=</span> <span class="key">None</span><span class="op">,</span> <span class="nam">scatterer_distribution</span> <span class="op">=</span> <span class="key">None</span><span class="op">,</span> <span class="nam">analyzer</span> <span class="op">=</span> <span class="key">None</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t">    <span class="nam">n_figure</span> <span class="op">=</span> <span class="nam">len</span><span class="op">(</span><span class="nam">elements</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t">    <span class="nam">n_figure</span> <span class="op">=</span> <span class="nam">bool</span><span class="op">(</span><span class="nam">cytometer</span><span class="op">)</span> <span class="op">+</span> <span class="nam">bool</span><span class="op">(</span><span class="nam">scatterer_distribution</span><span class="op">)</span> <span class="op">+</span> <span class="nam">bool</span><span class="op">(</span><span class="nam">analyzer</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t">    <span class="key">with</span> <span class="nam">plt</span><span class="op">.</span><span class="nam">style</span><span class="op">.</span><span class="nam">context</span><span class="op">(</span><span class="nam">mps</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t">        <span class="nam">figure</span><span class="op">,</span> <span class="nam">axes</span> <span class="op">=</span> <span class="nam">plt</span><span class="op">.</span><span class="nam">subplots</span><span class="op">(</span><span class="nam">n_figure</span><span class="op">,</span> <span class="num">1</span><span class="op">,</span> <span class="nam">figsize</span><span class="op">=</span><span class="op">(</span><span class="num">10</span><span class="op">,</span> <span class="num">3</span> <span class="op">*</span> <span class="nam">n_figure</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -107,7 +107,7 @@
             <a class="nav" href="z_2404691b0fd86af0_pulse_analyzer_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-04 13:48 +0000
+            created at 2024-09-04 14:42 +0000
         </p>
     </div>
 </footer>
