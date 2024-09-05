@@ -7,12 +7,12 @@
 | FlowCyPy/detector.py                |       42 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/flow\_cytometer.py         |       79 |        1 |       14 |        1 |     98% |        79 |
 | FlowCyPy/gaussian\_pulse.py         |       22 |        1 |        2 |        1 |     92% |        85 |
-| FlowCyPy/peak.py                    |       13 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/peak.py                    |       18 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/plottings.py               |        9 |        6 |        4 |        0 |     23% |      8-16 |
-| FlowCyPy/pulse\_analyzer.py         |       58 |        5 |       18 |        4 |     88% |57-61, 79, 94, 97->96, 138->135 |
+| FlowCyPy/pulse\_analyzer.py         |       58 |        5 |       18 |        4 |     88% |57-61, 87, 102, 105->104, 147->143 |
 | FlowCyPy/scatterer\_distribution.py |       81 |       10 |       28 |        6 |     83% |53, 78, 83-86, 105, 118-119, 136 |
-| FlowCyPy/utils.py                   |        7 |        0 |        2 |        0 |    100% |           |
-|                           **TOTAL** |  **311** |   **23** |   **72** |   **12** | **89%** |           |
+| FlowCyPy/utils.py                   |        8 |        0 |        2 |        0 |    100% |           |
+|                           **TOTAL** |  **317** |   **23** |   **72** |   **12** | **89%** |           |
 
 
 ## Setup coverage badge
