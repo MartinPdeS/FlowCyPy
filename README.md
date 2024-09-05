@@ -4,15 +4,16 @@
 
 | Name                                |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
-| FlowCyPy/flow\_cytometer.py         |       94 |        0 |       14 |        3 |     97% |119->122, 291->294, 294->297 |
-| FlowCyPy/gaussian\_pulse.py         |       21 |        1 |        2 |        1 |     91% |        82 |
+| FlowCyPy/detector.py                |       42 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/flow\_cytometer.py         |       79 |        1 |       14 |        1 |     98% |        79 |
+| FlowCyPy/gaussian\_pulse.py         |       22 |        1 |        2 |        1 |     92% |        85 |
 | FlowCyPy/peak.py                    |       13 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/plottings.py               |        9 |        6 |        4 |        0 |     23% |      8-16 |
-| FlowCyPy/pulse\_analyzer.py         |       52 |        2 |       18 |        4 |     91% |71, 86, 89->88, 129->127 |
-| FlowCyPy/scatterer\_distribution.py |       53 |        6 |       18 |        2 |     83% |81-86, 103 |
-| FlowCyPy/signal\_processor.py       |       30 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/pulse\_analyzer.py         |       58 |        5 |       18 |        4 |     88% |57-61, 79, 94, 97->96, 138->135 |
+| FlowCyPy/scatterer\_distribution.py |       81 |       10 |       28 |        6 |     83% |53, 78, 83-86, 105, 118-119, 136 |
+| FlowCyPy/signal\_processor.py       |       30 |       30 |        2 |        0 |      0% |      1-88 |
 | FlowCyPy/utils.py                   |        7 |        0 |        2 |        0 |    100% |           |
-|                           **TOTAL** |  **279** |   **15** |   **62** |   **10** | **90%** |           |
+|                           **TOTAL** |  **341** |   **53** |   **74** |   **12** | **82%** |           |
 
 
 ## Setup coverage badge
