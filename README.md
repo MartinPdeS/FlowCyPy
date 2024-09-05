@@ -9,10 +9,10 @@
 | FlowCyPy/gaussian\_pulse.py         |       22 |        1 |        2 |        1 |     92% |        85 |
 | FlowCyPy/peak.py                    |       18 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/plottings.py               |        9 |        6 |        4 |        0 |     23% |      8-16 |
-| FlowCyPy/pulse\_analyzer.py         |       58 |        5 |       18 |        4 |     88% |57-61, 87, 102, 105->104, 147->143 |
+| FlowCyPy/pulse\_analyzer.py         |       57 |        5 |       18 |        4 |     88% |56-60, 89, 109, 112->111, 159->150 |
 | FlowCyPy/scatterer\_distribution.py |       81 |       10 |       28 |        6 |     83% |53, 78, 83-86, 105, 118-119, 136 |
-| FlowCyPy/utils.py                   |        8 |        0 |        2 |        0 |    100% |           |
-|                           **TOTAL** |  **317** |   **23** |   **72** |   **12** | **89%** |           |
+| FlowCyPy/utils.py                   |       12 |        0 |        2 |        0 |    100% |           |
+|                           **TOTAL** |  **320** |   **23** |   **72** |   **12** | **90%** |           |
 
 
 ## Setup coverage badge
