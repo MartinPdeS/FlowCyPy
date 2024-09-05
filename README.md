@@ -11,9 +11,8 @@
 | FlowCyPy/plottings.py               |        9 |        6 |        4 |        0 |     23% |      8-16 |
 | FlowCyPy/pulse\_analyzer.py         |       58 |        5 |       18 |        4 |     88% |57-61, 79, 94, 97->96, 138->135 |
 | FlowCyPy/scatterer\_distribution.py |       81 |       10 |       28 |        6 |     83% |53, 78, 83-86, 105, 118-119, 136 |
-| FlowCyPy/signal\_processor.py       |       30 |       30 |        2 |        0 |      0% |      1-88 |
 | FlowCyPy/utils.py                   |        7 |        0 |        2 |        0 |    100% |           |
-|                           **TOTAL** |  **341** |   **53** |   **74** |   **12** | **82%** |           |
+|                           **TOTAL** |  **311** |   **23** |   **72** |   **12** | **89%** |           |
 
 
 ## Setup coverage badge
