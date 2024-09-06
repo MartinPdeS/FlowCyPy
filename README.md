@@ -9,15 +9,15 @@
 | FlowCyPy/coupling\_mechanism/uniform.py  |        4 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/detector.py                     |       54 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/flow.py                         |       40 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/flow\_cytometer.py              |       69 |        3 |       20 |        2 |     94% |65, 123-124 |
+| FlowCyPy/flow\_cytometer.py              |       67 |        3 |       20 |        2 |     94% |64, 121-122 |
 | FlowCyPy/gaussian\_pulse.py              |       23 |        1 |        4 |        1 |     93% |        85 |
-| FlowCyPy/peak.py                         |       18 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/peak.py                         |       17 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/plottings.py                    |        9 |        6 |        4 |        0 |     23% |      8-16 |
-| FlowCyPy/pulse\_analyzer.py              |       57 |        5 |       18 |        4 |     88% |54-58, 87, 107, 110->109, 157->148 |
+| FlowCyPy/pulse\_analyzer.py              |       57 |        5 |       18 |        4 |     88% |58-62, 91, 111, 114->113, 160->151 |
 | FlowCyPy/scatterer\_distribution.py      |       86 |        5 |       26 |        4 |     92% |54, 96, 115-116, 133 |
 | FlowCyPy/source.py                       |       19 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/utils.py                        |       16 |        0 |        2 |        0 |    100% |           |
-|                                **TOTAL** |  **414** |   **20** |   **84** |   **11** | **93%** |           |
+|                                **TOTAL** |  **411** |   **20** |   **84** |   **11** | **93%** |           |
 
 
 ## Setup coverage badge
