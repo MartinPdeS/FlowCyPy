@@ -2,18 +2,21 @@
 
 [Full report](https://htmlpreview.github.io/?https://github.com/MartinPdeS/FlowCyPy/blob/python-coverage-comment-action-data/htmlcov/index.html)
 
-| Name                                |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
-|------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
-| FlowCyPy/detector.py                |       42 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/flow\_cytometer.py         |       78 |        1 |       14 |        1 |     98% |        77 |
-| FlowCyPy/gaussian\_pulse.py         |       22 |        1 |        2 |        1 |     92% |        85 |
-| FlowCyPy/peak.py                    |       18 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/plottings.py               |        9 |        6 |        4 |        0 |     23% |      8-16 |
-| FlowCyPy/pulse\_analyzer.py         |       57 |        5 |       18 |        4 |     88% |54-58, 87, 107, 110->109, 157->148 |
-| FlowCyPy/scatterer\_distribution.py |       91 |       10 |       32 |        6 |     85% |53, 84, 89-92, 111, 130-131, 148 |
-| FlowCyPy/source.py                  |       16 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/utils.py                   |       16 |        0 |        2 |        0 |    100% |           |
-|                           **TOTAL** |  **349** |   **23** |   **78** |   **12** | **90%** |           |
+| Name                                     |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
+|----------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
+| FlowCyPy/coupling\_mechanism/mie.py      |        0 |        0 |        0 |        0 |    100% |           |
+| FlowCyPy/coupling\_mechanism/rayleigh.py |       20 |        0 |        0 |        0 |    100% |           |
+| FlowCyPy/coupling\_mechanism/uniform.py  |        0 |        0 |        0 |        0 |    100% |           |
+| FlowCyPy/detector.py                     |       50 |        0 |        4 |        0 |    100% |           |
+| FlowCyPy/flow\_cytometer.py              |      104 |        8 |       26 |        4 |     89% |78, 153, 159-162, 194, 218 |
+| FlowCyPy/gaussian\_pulse.py              |       23 |        1 |        4 |        1 |     93% |        85 |
+| FlowCyPy/peak.py                         |       18 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/plottings.py                    |        9 |        6 |        4 |        0 |     23% |      8-16 |
+| FlowCyPy/pulse\_analyzer.py              |       57 |        5 |       18 |        4 |     88% |54-58, 87, 107, 110->109, 157->148 |
+| FlowCyPy/scatterer\_distribution.py      |       79 |        5 |       26 |        4 |     91% |56, 95, 114-115, 132 |
+| FlowCyPy/source.py                       |       17 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/utils.py                        |       16 |        0 |        2 |        0 |    100% |           |
+|                                **TOTAL** |  **393** |   **25** |   **88** |   **13** | **91%** |           |
 
 
 ## Setup coverage badge
