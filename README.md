@@ -2,23 +2,24 @@
 
 [Full report](https://htmlpreview.github.io/?https://github.com/MartinPdeS/FlowCyPy/blob/python-coverage-comment-action-data/htmlcov/index.html)
 
-| Name                                     |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
-|----------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
-| FlowCyPy/analyzer.py                     |       64 |        1 |       12 |        1 |     97% |       156 |
-| FlowCyPy/coupling\_mechanism/mie.py      |        0 |        0 |        0 |        0 |    100% |           |
-| FlowCyPy/coupling\_mechanism/rayleigh.py |       21 |        0 |        0 |        0 |    100% |           |
-| FlowCyPy/coupling\_mechanism/uniform.py  |        4 |        0 |        0 |        0 |    100% |           |
-| FlowCyPy/detector.py                     |       55 |        0 |        4 |        0 |    100% |           |
-| FlowCyPy/flow.py                         |       36 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/flow\_cytometer.py              |       67 |        3 |       20 |        2 |     94% |64, 121-122 |
-| FlowCyPy/gaussian\_pulse.py              |       23 |        1 |        4 |        1 |     93% |        85 |
-| FlowCyPy/peak.py                         |       20 |        7 |        2 |        0 |     68% | 33, 41-53 |
-| FlowCyPy/plotter.py                      |       19 |       19 |        0 |        0 |      0% |      3-71 |
-| FlowCyPy/plottings.py                    |        9 |        6 |        4 |        0 |     23% |      8-16 |
-| FlowCyPy/scatterer\_distribution.py      |       86 |        5 |       26 |        4 |     92% |54, 96, 115-116, 133 |
-| FlowCyPy/source.py                       |       19 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/utils.py                        |       18 |        0 |        2 |        0 |    100% |           |
-|                                **TOTAL** |  **441** |   **42** |   **78** |    **8** | **90%** |           |
+| Name                                      |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
+|------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
+| FlowCyPy/analyzer.py                      |       54 |        1 |       14 |        1 |     97% |        46 |
+| FlowCyPy/coupling\_mechanism/empirical.py |       10 |        6 |        0 |        0 |     40% |     38-46 |
+| FlowCyPy/coupling\_mechanism/mie.py       |       14 |        6 |        0 |        0 |     57% |     42-73 |
+| FlowCyPy/coupling\_mechanism/rayleigh.py  |       21 |        0 |        0 |        0 |    100% |           |
+| FlowCyPy/coupling\_mechanism/uniform.py   |        4 |        0 |        0 |        0 |    100% |           |
+| FlowCyPy/dataset.py                       |       32 |        9 |       12 |        1 |     68% |37-38, 54-64, 101-102 |
+| FlowCyPy/detector.py                      |       55 |        0 |        4 |        0 |    100% |           |
+| FlowCyPy/flow.py                          |       36 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/flow\_cytometer.py               |       70 |        7 |       24 |        2 |     86% |64, 120-125 |
+| FlowCyPy/gaussian\_pulse.py               |       23 |        1 |        4 |        1 |     93% |        85 |
+| FlowCyPy/peak.py                          |       20 |        7 |        2 |        0 |     68% | 33, 41-53 |
+| FlowCyPy/plotter.py                       |       23 |       10 |        2 |        0 |     60% |     43-79 |
+| FlowCyPy/scatterer\_distribution.py       |       86 |        5 |       26 |        4 |     92% |54, 96, 115-116, 133 |
+| FlowCyPy/source.py                        |       19 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/utils.py                         |       22 |        0 |        2 |        0 |    100% |           |
+|                                 **TOTAL** |  **489** |   **52** |   **94** |    **9** | **88%** |           |
 
 
 ## Setup coverage badge
