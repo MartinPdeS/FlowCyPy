@@ -91,12 +91,12 @@ def test_generate_longitudinal_positions(default_flow, distribution):
     assert np.all(scatterer_distribution.flow.longitudinal_positions.magnitude >= 0), "Some longitudinal positions are negative."
 
 
-@patch('matplotlib.pyplot.show')
+@patch('matplotlib.pyplot.close')
 @pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__)
 def test_plot_positions(mock_show, default_flow, distribution):
     """Test the plotting of longitudinal positions."""
     scatterer_distribution = ScattererDistribution(
-        refractive_index=[1.5],
+        refractive_index=[NormalDistribution(mean=1e-6, std_dev=1e-7, scale_factor=1.0)],
         flow=default_flow,
         size=[distribution],
     )
