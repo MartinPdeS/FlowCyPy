@@ -1,0 +1,35 @@
+# .readthedocs.yml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# Required
+version: 2
+
+submodules:
+  include: all
+  recursive: true
+
+build:
+  os: ubuntu-22.04
+
+
+  tools:
+    python: "3.10"
+  jobs:
+    pre_install:
+      - Xvfb :99 &
+      - export DISPLAY=:99
+      - cd docs && rm -rf source/gallery
+      - sleep 3
+
+python:
+  install:
+    - method: pip
+      path: .
+      extra_requirements:
+        - documentation
+
+sphinx:
+  builder: html
+  configuration: docs/source/conf.py
+  fail_on_warning: false

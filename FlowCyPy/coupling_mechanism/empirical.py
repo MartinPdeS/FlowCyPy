@@ -1,0 +1,46 @@
+import numpy as np
+from FlowCyPy import ScattererDistribution, Detector, Source
+from FlowCyPy import ureg
+
+def compute_detected_signal(source: Source, detector: Detector, scatterer_distribution: ScattererDistribution, granularity: float = 1.0, A: float = 1.5, n: float = 2.0) -> float:
+    """
+    Empirical model for scattering intensity based on particle size, granularity, and detector angle.
+
+    This function models forward scatter (FSC) as proportional to the particle's size squared and
+    side scatter (SSC) as proportional to the granularity and modulated by angular dependence
+    (sin^n(theta)). Granularity is a dimensionless measure of the particle's internal complexity or
+    surface irregularities:
+
+    - A default value of 1.0 is used for moderate granularity (e.g., typical white blood cells).
+    - Granularity values < 1.0 represent smoother particles with less internal complexity (e.g., bacteria).
+    - Granularity values > 1.0 represent particles with higher internal complexity or surface irregularities (e.g., granulocytes).
+
+    Parameters
+    ----------
+    detector : Detector
+        The detector object containing theta_angle (in radians).
+    particle_size : float
+        The size of the particle (in meters).
+    granularity : float, optional
+        A measure of the particle's internal complexity or surface irregularities (dimensionless).
+        Default is 1.0.
+    A : float, optional
+        Empirical scaling factor for angular dependence. Default is 1.5.
+    n : float, optional
+        Power of sine function for angular dependence. Default is 2.0.
+
+    Returns
+    -------
+    float
+        The detected scattering intensity for the given particle and detector.
+    """
+    # Forward scatter is proportional to size^2
+    fsc_intensity = scatterer_distribution.size_list**2
+    fsc_intensity.magnitude * ureg.volt
+
+    # Side scatter is proportional to granularity and modulated by angular dependence
+    ssc_intensity = granularity * (1 + A * np.sin(np.radians(detector.theta_angle))**n) * np.ones(scatterer_distribution.size_list.size)
+
+    print(fsc_intensity)
+    print(ssc_intensity)
+    return fsc_intensity.magnitude * ureg.volt if detector.theta_angle < np.radians(10) else ssc_intensity * ureg.volt
