@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_6fdab1548ba06262_mie_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-09 07:44 +0000
+            created at 2024-09-09 08:09 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -119,11 +119,11 @@
     <p class="pln"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t"><span class="str">        The detected scattering intensity for the given particle and detector.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">    <span class="com"># Forward scatter is proportional to size^2</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t">    <span class="nam">fsc_intensity</span> <span class="op">=</span> <span class="nam">scatterer_distribution</span><span class="op">.</span><span class="nam">sizes</span><span class="op">**</span><span class="num">2</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t">    <span class="nam">fsc_intensity</span> <span class="op">=</span> <span class="nam">scatterer_distribution</span><span class="op">.</span><span class="nam">size_list</span><span class="op">**</span><span class="num">2</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t">    <span class="nam">fsc_intensity</span><span class="op">.</span><span class="nam">magnitude</span> <span class="op">*</span> <span class="nam">ureg</span><span class="op">.</span><span class="nam">volt</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t">    <span class="com"># Side scatter is proportional to granularity and modulated by angular dependence</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t">    <span class="nam">ssc_intensity</span> <span class="op">=</span> <span class="nam">granularity</span> <span class="op">*</span> <span class="op">(</span><span class="num">1</span> <span class="op">+</span> <span class="nam">A</span> <span class="op">*</span> <span class="nam">np</span><span class="op">.</span><span class="nam">sin</span><span class="op">(</span><span class="nam">np</span><span class="op">.</span><span class="nam">radians</span><span class="op">(</span><span class="nam">detector</span><span class="op">.</span><span class="nam">theta_angle</span><span class="op">)</span><span class="op">)</span><span class="op">**</span><span class="nam">n</span><span class="op">)</span> <span class="op">*</span> <span class="nam">np</span><span class="op">.</span><span class="nam">ones</span><span class="op">(</span><span class="nam">scatterer_distribution</span><span class="op">.</span><span class="nam">sizes</span><span class="op">.</span><span class="nam">size</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t">    <span class="nam">ssc_intensity</span> <span class="op">=</span> <span class="nam">granularity</span> <span class="op">*</span> <span class="op">(</span><span class="num">1</span> <span class="op">+</span> <span class="nam">A</span> <span class="op">*</span> <span class="nam">np</span><span class="op">.</span><span class="nam">sin</span><span class="op">(</span><span class="nam">np</span><span class="op">.</span><span class="nam">radians</span><span class="op">(</span><span class="nam">detector</span><span class="op">.</span><span class="nam">theta_angle</span><span class="op">)</span><span class="op">)</span><span class="op">**</span><span class="nam">n</span><span class="op">)</span> <span class="op">*</span> <span class="nam">np</span><span class="op">.</span><span class="nam">ones</span><span class="op">(</span><span class="nam">scatterer_distribution</span><span class="op">.</span><span class="nam">size_list</span><span class="op">.</span><span class="nam">size</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t44" href="#t44">44</a></span><span class="t">    <span class="nam">print</span><span class="op">(</span><span class="nam">fsc_intensity</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t45" href="#t45">45</a></span><span class="t">    <span class="nam">print</span><span class="op">(</span><span class="nam">ssc_intensity</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -137,7 +137,7 @@
             <a class="nav" href="z_6fdab1548ba06262_mie_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-09 07:44 +0000
+            created at 2024-09-09 08:09 +0000
         </p>
     </div>
 </footer>
