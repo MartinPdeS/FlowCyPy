@@ -11,18 +11,23 @@
 | FlowCyPy/coupling\_mechanism/uniform.py    |        4 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/dataset.py                        |       34 |        9 |       10 |        1 |     68% |37-38, 54-64, 110-111 |
 | FlowCyPy/detector.py                       |       57 |        3 |        6 |        2 |     92% |89-90, 116->exit, 148 |
-| FlowCyPy/distribution.py                   |       52 |        2 |        8 |        0 |     97% |    25, 29 |
+| FlowCyPy/distribution/base\_class.py       |        9 |        2 |        0 |        0 |     78% |    23, 27 |
+| FlowCyPy/distribution/delta.py             |       16 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/distribution/lognormal.py         |       16 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/distribution/normal.py            |       16 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/distribution/uniform.py           |       16 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/distribution/weibull.py           |       16 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/flow.py                           |       38 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/flow\_cytometer.py                |       65 |        6 |       20 |        1 |     87% |   113-118 |
 | FlowCyPy/peak\_detector/base\_class.py     |        8 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/peak\_detector/basic.py           |       17 |        0 |        4 |        0 |    100% |           |
-| FlowCyPy/peak\_detector/moving\_average.py |       24 |        1 |        4 |        1 |     93% |        74 |
+| FlowCyPy/peak\_detector/moving\_average.py |       24 |        1 |        4 |        1 |     93% |        77 |
 | FlowCyPy/peak\_detector/threshold.py       |       19 |       10 |        4 |        0 |     48% |     43-62 |
 | FlowCyPy/plotter.py                        |       25 |        0 |        6 |        1 |     97% |    71->84 |
 | FlowCyPy/scatterer\_distribution.py        |       54 |        2 |       12 |        2 |     94% |   82, 124 |
 | FlowCyPy/source.py                         |       19 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/utils.py                          |       22 |        0 |        2 |        0 |    100% |           |
-|                                  **TOTAL** |  **548** |   **48** |   **98** |   **11** | **89%** |           |
+|                                  **TOTAL** |  **585** |   **48** |  **100** |   **11** | **90%** |           |
 
 
 ## Setup coverage badge
