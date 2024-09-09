@@ -153,7 +153,7 @@ Two-Population Scatter Density Plot
 
 
 Three-Population Scatter Density Plot
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 |example_3|
 
@@ -166,6 +166,7 @@ Contributions
 
 Contact Information
 ************************
+
 As of 2024, the project is still under development. If you want to collaborate, it would be a pleasure! I encourage you to contact me.
 
 PyMieSim was written by `Martin Poinsinet de Sivry-Houle <https://github.com/MartinPdS>`_  .
