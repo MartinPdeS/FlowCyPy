@@ -4,6 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from MPSPlots.styles import mps
+from FlowCyPy.dataset import DataSet
 
 @dataclass
 class Plotter:
@@ -25,8 +26,8 @@ class Plotter:
         Number of bins for the marginal histograms (default is 30).
     """
 
-    dataset_0: object  # Data from detector 0
-    dataset_1: object  # Data from detector 1
+    dataset_0: DataSet  # Data from detector 0
+    dataset_1: DataSet  # Data from detector 1
     gridsize: Optional[int] = None  # Default gridsize for hexbin
     bins: Optional[int] = 30  # Default number of bins for marginal histograms
 

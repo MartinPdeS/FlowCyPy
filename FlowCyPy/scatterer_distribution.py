@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 from dataclasses import dataclass
@@ -7,6 +7,7 @@ import seaborn as sns
 import numpy as np
 from FlowCyPy.distribution import BaseDistribution, DeltaDistribution
 from FlowCyPy import ureg
+from FlowCyPy.flow import Flow
 
 @dataclass
 class ScattererDistribution:
@@ -28,9 +29,9 @@ class ScattererDistribution:
     """
 
 
-    flow: object  # Flow object defining flow properties
-    refractive_index: Union[float, List[BaseDistribution]]  # Refractive index or refractive index distributions
-    size: Union[float, List[BaseDistribution]]  # Particle size or size distributions
+    flow: Flow  # Flow object defining flow properties
+    refractive_index: List[float | BaseDistribution]  # Refractive index or refractive index distributions
+    size: List[float | BaseDistribution]  # Particle size or size distributions
     coupling_factor: Optional[str] = 'mie'  # Coupling factor type ('rayleigh', 'uniform')
 
 

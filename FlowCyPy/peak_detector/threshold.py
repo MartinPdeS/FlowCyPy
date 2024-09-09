@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 import numpy as np
-from FlowCyPy import ureg
 from typing import Optional, Tuple
 from FlowCyPy.peak_detector.base_class import BasePeakDetector
 

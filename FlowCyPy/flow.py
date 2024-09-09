@@ -30,10 +30,10 @@ class Flow:
         The density of the scatterers (particles) in particles per cubic meter (particles/m³).
     """
 
-    flow_speed: float = 80e-6  # Flow speed in meters/second (default: 80 µm/s)
-    flow_area: float = 1e-6  # Cross-sectional area in square meters (default: 1 µm²)
-    total_time: float = 1.0  # Total simulation time in seconds (default: 1 second)
-    scatterer_density: float = 1e12  # Scatterer density in particles per cubic meter (default: 1e12 particles/m³)
+    flow_speed: Optional[float] = 80e-6  # Flow speed in meters/second (default: 80 µm/s)
+    flow_area: Optional[float] = 1e-6  # Cross-sectional area in square meters (default: 1 µm²)
+    total_time: Optional[float] = 1.0  # Total simulation time in seconds (default: 1 second)
+    scatterer_density: Optional[float] = 1e12  # Scatterer density in particles per cubic meter (default: 1e12 particles/m³)
 
     def __post_init__(self):
         """Initialize units for flow parameters."""

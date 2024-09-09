@@ -4,7 +4,7 @@
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import List, Tuple, Optional, Callable
+from typing import List, Tuple, Callable
 from MPSPlots.styles import mps
 from dataclasses import dataclass
 from FlowCyPy.scatterer_distribution import ScattererDistribution

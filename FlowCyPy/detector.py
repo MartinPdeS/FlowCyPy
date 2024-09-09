@@ -45,7 +45,7 @@ class Detector:
     acquisition_frequency: float  # Acquisition frequency in Hertz
     theta_angle: float  # Azimuthal angle (used for the coupling mechanism)
     NA: float
-    responsitivity: float  # Electrical response for the optical power
+    responsitivity: Optional[float] = 1  # Electrical response for the optical power
     noise_level: Optional[float] = 0.0  # Noise level (in volts)
     baseline_shift: Optional[float] = 0.0  # Baseline shift (in volts)
     saturation_level: Optional[float] = np.inf  # Saturation level (in volts)
