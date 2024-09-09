@@ -9,7 +9,7 @@
 | FlowCyPy/coupling\_mechanism/mie.py        |       15 |        7 |        0 |        0 |     53% |     45-77 |
 | FlowCyPy/coupling\_mechanism/rayleigh.py   |       21 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/uniform.py    |        4 |        0 |        0 |        0 |    100% |           |
-| FlowCyPy/dataset.py                        |       34 |        9 |       10 |        1 |     68% |37-38, 54-64, 110-111 |
+| FlowCyPy/dataset.py                        |       25 |        2 |        8 |        1 |     85% |     72-73 |
 | FlowCyPy/detector.py                       |       57 |        3 |        6 |        2 |     92% |89-90, 116->exit, 148 |
 | FlowCyPy/distribution/base\_class.py       |        9 |        2 |        0 |        0 |     78% |    23, 27 |
 | FlowCyPy/distribution/delta.py             |       16 |        0 |        2 |        0 |    100% |           |
@@ -24,10 +24,10 @@
 | FlowCyPy/peak\_detector/moving\_average.py |       24 |        1 |        4 |        1 |     93% |        77 |
 | FlowCyPy/peak\_detector/threshold.py       |       19 |       10 |        4 |        0 |     48% |     43-62 |
 | FlowCyPy/plotter.py                        |       25 |        0 |        6 |        1 |     97% |    71->84 |
-| FlowCyPy/scatterer\_distribution.py        |       76 |        3 |       16 |        3 |     93% |126, 163, 247 |
+| FlowCyPy/scatterer\_distribution.py        |       76 |        3 |       16 |        4 |     92% |126, 163, 218->231, 247 |
 | FlowCyPy/source.py                         |       19 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/utils.py                          |       22 |        0 |        2 |        0 |    100% |           |
-|                                  **TOTAL** |  **607** |   **50** |  **104** |   **12** | **90%** |           |
+|                                  **TOTAL** |  **598** |   **43** |  **102** |   **13** | **91%** |           |
 
 
 ## Setup coverage badge
