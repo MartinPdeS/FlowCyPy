@@ -25,44 +25,6 @@ class DataSet:
     area: np.ndarray = None
     time: np.ndarray = None
 
-    def __iter__(self):
-        """
-        Iterator that yields one peak's features at a time.
-
-        Returns:
-        -------
-        tuple
-            A tuple containing (time, height, width, area) for each peak.
-        """
-        self._index = 0  # Initialize the index for iteration
-        return self
-
-    def __next__(self):
-        """
-        Returns the next peak's features during iteration.
-
-        Raises:
-        -------
-        StopIteration
-            Raised when all peaks have been iterated over.
-
-        Returns:
-        -------
-        tuple
-            A tuple containing (time, height, width, area) for the current peak.
-        """
-        if self._index >= len(self.time):
-            raise StopIteration
-
-        peak_data = (
-            self.time[self._index],
-            self.height[self._index],
-            self.width[self._index],
-            self.area[self._index] if self.area is not None else None
-        )
-        self._index += 1
-        return peak_data
-
     def _add_to_ax(self, ax: plt.Axes, t_time: np.ndarray, signal: np.ndarray) -> None:
         """
         Add the peak information to a matplotlib axis.
