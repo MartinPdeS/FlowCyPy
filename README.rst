@@ -165,7 +165,7 @@ Contributions
 
 
 Contact Information
-*******************
+-------------------
 
 As of 2024, the project is still under development. If you want to collaborate, it would be a pleasure! I encourage you to contact me.
 
