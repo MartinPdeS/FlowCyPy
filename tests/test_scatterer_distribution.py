@@ -68,6 +68,9 @@ def test_generate_distribution_size(distribution, default_flow):
             f"Singular distribution: All sizes should be {singular_value}, but got varying sizes."
         )
 
+    scatterer_distribution.get_size_pdf(100)
+    scatterer_distribution.get_refractive_index_pdf(100)
+
 
 @pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__)
 def test_generate_longitudinal_positions(default_flow, distribution):
