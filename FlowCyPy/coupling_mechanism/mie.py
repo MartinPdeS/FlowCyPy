@@ -59,7 +59,7 @@ def compute_detected_signal(
         pms_scatterer = Sphere(
             diameter=size,
             index=ri,
-            medium_index=1.0,
+            medium_index=medium_ri,
             source=pms_source
         )
 
