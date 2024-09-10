@@ -2,32 +2,34 @@
 
 [Full report](https://htmlpreview.github.io/?https://github.com/MartinPdeS/FlowCyPy/blob/python-coverage-comment-action-data/htmlcov/index.html)
 
-| Name                                       |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
-|------------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
-| FlowCyPy/analyzer.py                       |       65 |        3 |       18 |        3 |     93% |48, 112, 117 |
-| FlowCyPy/coupling\_mechanism/empirical.py  |       10 |        6 |        0 |        0 |     40% |     38-46 |
-| FlowCyPy/coupling\_mechanism/mie.py        |       15 |        7 |        0 |        0 |     53% |     45-77 |
-| FlowCyPy/coupling\_mechanism/rayleigh.py   |       21 |        0 |        0 |        0 |    100% |           |
-| FlowCyPy/coupling\_mechanism/uniform.py    |        4 |        0 |        0 |        0 |    100% |           |
-| FlowCyPy/dataset.py                        |       25 |        2 |        8 |        1 |     85% |     72-73 |
-| FlowCyPy/detector.py                       |       57 |        3 |        6 |        2 |     92% |89-90, 116->exit, 148 |
-| FlowCyPy/distribution/base\_class.py       |        9 |        2 |        0 |        0 |     78% |    23, 27 |
-| FlowCyPy/distribution/delta.py             |       16 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/distribution/lognormal.py         |       16 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/distribution/normal.py            |       16 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/distribution/uniform.py           |       16 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/distribution/weibull.py           |       16 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/flow.py                           |       38 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/flow\_cytometer.py                |       64 |        6 |       20 |        1 |     87% |   113-118 |
-| FlowCyPy/peak\_detector/base\_class.py     |        8 |        0 |        0 |        0 |    100% |           |
-| FlowCyPy/peak\_detector/basic.py           |       17 |        0 |        4 |        0 |    100% |           |
-| FlowCyPy/peak\_detector/moving\_average.py |       24 |        1 |        4 |        1 |     93% |        77 |
-| FlowCyPy/peak\_detector/threshold.py       |       18 |       10 |        4 |        0 |     45% |     42-61 |
-| FlowCyPy/plotter.py                        |       26 |        0 |        6 |        1 |     97% |    72->85 |
-| FlowCyPy/scatterer\_distribution.py        |       77 |        3 |       16 |        3 |     94% |127, 164, 248 |
-| FlowCyPy/source.py                         |       19 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/utils.py                          |       22 |        0 |        2 |        0 |    100% |           |
-|                                  **TOTAL** |  **599** |   **43** |  **102** |   **12** | **91%** |           |
+| Name                                            |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
+|------------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
+| FlowCyPy/analyzer.py                            |       65 |        3 |       18 |        3 |     93% |48, 112, 117 |
+| FlowCyPy/coupling\_mechanism/empirical.py       |        8 |        4 |        0 |        0 |     50% |     38-45 |
+| FlowCyPy/coupling\_mechanism/mie.py             |       17 |       10 |        2 |        0 |     37% |     44-76 |
+| FlowCyPy/coupling\_mechanism/mie\_experiment.py |       15 |       15 |        0 |        0 |      0% |      1-77 |
+| FlowCyPy/coupling\_mechanism/rayleigh.py        |       21 |        0 |        0 |        0 |    100% |           |
+| FlowCyPy/coupling\_mechanism/uniform.py         |        4 |        0 |        0 |        0 |    100% |           |
+| FlowCyPy/dataset.py                             |       25 |        2 |        8 |        1 |     85% |     72-73 |
+| FlowCyPy/detector.py                            |       72 |        9 |       10 |        4 |     84% |83-87, 89, 107-108, 134->exit, 166 |
+| FlowCyPy/distribution/base\_class.py            |        9 |        2 |        0 |        0 |     78% |    23, 27 |
+| FlowCyPy/distribution/delta.py                  |       16 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/distribution/lognormal.py              |       16 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/distribution/normal.py                 |       16 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/distribution/uniform.py                |       16 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/distribution/weibull.py                |       16 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/flow.py                                |       38 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/flow\_cytometer.py                     |       64 |        6 |       20 |        1 |     87% |   113-118 |
+| FlowCyPy/peak\_detector/base\_class.py          |        8 |        0 |        0 |        0 |    100% |           |
+| FlowCyPy/peak\_detector/basic.py                |       17 |        0 |        4 |        0 |    100% |           |
+| FlowCyPy/peak\_detector/moving\_average.py      |       24 |        1 |        4 |        1 |     93% |        77 |
+| FlowCyPy/peak\_detector/threshold.py            |       18 |       10 |        4 |        0 |     45% |     42-61 |
+| FlowCyPy/plotter.py                             |       26 |        0 |        6 |        1 |     97% |    72->85 |
+| FlowCyPy/scatterer\_distribution.py             |       71 |        3 |       14 |        3 |     93% |125, 223, 268->281, 297 |
+| FlowCyPy/source.py                              |       19 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/units.py                               |       15 |        0 |        0 |        0 |    100% |           |
+| FlowCyPy/utils.py                               |       22 |        0 |        2 |        0 |    100% |           |
+|                                       **TOTAL** |  **638** |   **65** |  **106** |   **14** | **88%** |           |
 
 
 ## Setup coverage badge
