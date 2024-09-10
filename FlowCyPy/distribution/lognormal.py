@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 from typing import Tuple, Optional
 from scipy.stats import lognorm
-from FlowCyPy import ureg
+from FlowCyPy.units import Quantity
 
 
 @dataclass
@@ -34,6 +34,13 @@ class LogNormalDistribution(BaseDistribution):
     std_dev: float
     scale_factor: Optional[float] = 1.0
 
+    def __post_init__(self):
+        if isinstance(self.mean, Quantity):
+            self.mean = self.mean.to_base_units().magnitude
+
+        if isinstance(self.std_dev, Quantity):
+            self.std_dev = self.std_dev.to_base_units().magnitude
+
     def generate(self, n_samples: int) -> np.ndarray:
         """
         Generates a log-normal distribution of scatterer sizes.
@@ -54,7 +61,7 @@ class LogNormalDistribution(BaseDistribution):
             mean=self.mean,
             sigma=self.std_dev,
             size=n_samples.magnitude
-        ) * ureg.meter
+        )
 
     def get_pdf(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """

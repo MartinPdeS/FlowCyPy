@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 import numpy as np
 from typing import Tuple
-from FlowCyPy import ureg
+from FlowCyPy.units import Quantity
 from FlowCyPy.distribution.base_class import BaseDistribution
 
 @dataclass
@@ -28,6 +28,13 @@ class WeibullDistribution(BaseDistribution):
     scale: Optional[float] = 1.0  # Default scale parameter
     scale_factor: Optional[float] = 1.0
 
+    def __post_init__(self):
+        if isinstance(self.shape, Quantity):
+            self.shape = self.shape.to_base_units().magnitude
+
+        if isinstance(self.scale, Quantity):
+            self.scale = self.scale.to_base_units().magnitude
+
     def generate(self, n_samples: int) -> np.ndarray:
         """
         Generates a Weibull distribution of scatterer sizes.
@@ -42,7 +49,10 @@ class WeibullDistribution(BaseDistribution):
         np.ndarray
             An array of particle sizes in meters.
         """
-        return np.random.weibull(self.shape, n_samples.magnitude) * self.scale * ureg.meter
+        return np.random.weibull(
+            self.shape,
+            n_samples.magnitude
+        )
 
     def get_pdf(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -59,4 +69,5 @@ class WeibullDistribution(BaseDistribution):
             The input x-values and the corresponding PDF values.
         """
         pdf = (self.shape / self.scale) * (x / self.scale) ** (self.shape - 1) * np.exp(-(x / self.scale) ** self.shape)
+
         return x, self.scale_factor * pdf

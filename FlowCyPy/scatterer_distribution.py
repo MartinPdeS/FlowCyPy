@@ -83,7 +83,12 @@ class ScattererDistribution:
 
         # Concatenate the generated values and sample from the combined distribution
         combined_list = np.concatenate(value_list)
-        sampled_values = np.random.choice(combined_list.magnitude, size=self.flow.n_events.magnitude, replace=True)
+
+        sampled_values = np.random.choice(
+            combined_list,
+            size=self.flow.n_events.magnitude,
+            replace=True
+        )
 
         return Quantity(sampled_values, unit), distributions
 

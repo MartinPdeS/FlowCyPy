@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 from FlowCyPy.distribution import NormalDistribution, LogNormalDistribution, DeltaDistribution, UniformDistribution, WeibullDistribution
 from FlowCyPy import ureg
+from FlowCyPy.units import nanometer, micrometer
 
 # Common test parameters
 @pytest.fixture
@@ -14,7 +15,7 @@ def x_values():
 
 # Parametrize different distributions
 distributions = [
-    NormalDistribution(mean=1e-6, std_dev=1e-7, scale_factor=1.0),
+    NormalDistribution(mean=1.0 * micrometer, std_dev=1.0 * nanometer, scale_factor=1.0),
     LogNormalDistribution(mean=1e-6, std_dev=1e-7, scale_factor=1.0),
     DeltaDistribution(size_value=1e-6, scale_factor=1.0),
     UniformDistribution(lower_bound=5e-7, upper_bound=1.5e-6, scale_factor=1.0),
@@ -73,7 +74,7 @@ def test_normal_properties():
     # Test for NormalDistribution: Check that the mean is approximately correct
     mean_size = np.mean(sizes)
     expected_mean = distribution.mean
-    assert np.isclose(mean_size.magnitude, expected_mean, rtol=0.1), f"NormalDistribution: Mean size {mean_size} deviates from expected mean {expected_mean}"
+    assert np.isclose(mean_size, expected_mean, rtol=0.1), f"NormalDistribution: Mean size {mean_size} deviates from expected mean {expected_mean}"
 
 def test_lognormal_properties():
     """Test specific properties of certain distributions."""
@@ -84,7 +85,7 @@ def test_lognormal_properties():
     std_dev_size = np.std(sizes)
     expected_std = distribution.std_dev
 
-    assert np.isclose(std_dev_size.magnitude, expected_std, rtol=0.2), f"LogNormalDistribution: Standard deviation {std_dev_size} deviates from expected {expected_std}"
+    assert np.isclose(std_dev_size, expected_std, rtol=0.2), f"LogNormalDistribution: Standard deviation {std_dev_size} deviates from expected {expected_std}"
 
 
 

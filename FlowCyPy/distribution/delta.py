@@ -3,7 +3,7 @@ from FlowCyPy.distribution.base_class import BaseDistribution
 from dataclasses import dataclass
 import numpy as np
 from typing import Tuple, Optional
-from FlowCyPy import ureg
+from FlowCyPy.units import Quantity
 
 @dataclass
 class DeltaDistribution(BaseDistribution):
@@ -29,6 +29,10 @@ class DeltaDistribution(BaseDistribution):
     size_value: float
     scale_factor: Optional[float] = 1.0
 
+    def __post_init__(self):
+        if isinstance(self.size_value, Quantity):
+            self.size_value = self.size_value.to_base_units().magnitude
+
     def generate(self, n_samples: int) -> np.ndarray:
         """
         Generates a singular distribution of scatterer sizes.
@@ -45,7 +49,10 @@ class DeltaDistribution(BaseDistribution):
         np.ndarray
             An array of identical scatterer sizes in meters.
         """
-        return np.full(n_samples.magnitude, self.size_value) * ureg.meter
+        return np.full(
+            n_samples.magnitude,
+            self.size_value
+        )
 
     def get_pdf(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
