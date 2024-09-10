@@ -1,13 +1,14 @@
 from typing import List, Optional, Tuple
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
+from collections.abc import Iterable
 from dataclasses import dataclass
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import seaborn as sns
 import numpy as np
 from FlowCyPy.distribution import BaseDistribution, DeltaDistribution
-from FlowCyPy import ureg
-from FlowCyPy.flow import Flow
+from FlowCyPy.units import Quantity, meter, refractive_index_unit
+from FlowCyPy.flow import FlowCell
 
 @dataclass
 class ScattererDistribution:
@@ -28,155 +29,203 @@ class ScattererDistribution:
         The type of coupling factor to use. Options are 'rayleigh' or 'uniform'. Default is 'rayleigh'.
     """
 
-
-    flow: Flow  # Flow object defining flow properties
+    flow: FlowCell  # Flow object defining flow properties
     refractive_index: List[float | BaseDistribution]  # Refractive index or refractive index distributions
     size: List[float | BaseDistribution]  # Particle size or size distributions
     coupling_factor: Optional[str] = 'mie'  # Coupling factor type ('rayleigh', 'uniform')
-
+    medium_refractive_index: List[float | BaseDistribution] = 1.0 # Refractive index or refractive index distributions
 
     def __post_init__(self) -> None:
-        """Initializes particle size and refractive index distributions and generates the samples."""
-        self.size_list = None  # Placeholder for generated sizes
-        self.refractive_index_list = None  # Placeholder for generated refractive indices
-        self.initialize_sizes(n_samples=self.flow.n_events)
-        self.initialize_refractive_indices(n_samples=self.flow.n_events)
+        """Initializes particle size, refractive index, and medium refractive index distributions."""
+        self.size_list, self.size_dist = self._initialize_distribution(
+            distributions=self.size,
+            unit=meter
+        )
 
+        self.refractive_index_list, self.refractive_index_dist = self._initialize_distribution(
+            distributions=self.refractive_index,
+            unit=refractive_index_unit
+        )
 
-    def initialize_sizes(self, n_samples: int) -> None:
+        self.medium_refractive_index_list, self.medium_refractive_index_dist = self._initialize_distribution(
+            distributions=self.medium_refractive_index,
+            unit=refractive_index_unit
+        )
+
+    def _initialize_distribution(self, distributions: List[float | BaseDistribution], unit) -> Quantity:
         """
-        Generates random scatterer sizes based on the provided size distributions.
-
-        If a single size is provided, it will be treated as a delta distribution (constant value).
-        Multiple distributions are combined to generate the final sample list.
+        General method to initialize a distribution (sizes, refractive indices, etc.) based on the provided distributions.
 
         Parameters
         ----------
+        distributions : List[float | BaseDistribution]
+            List of values or distribution objects.
         n_samples : int
-            The number of scatterer sizes to generate.
+            Number of samples to generate.
+        unit : Unit
+            The unit associated with the distribution (e.g., meter, refractive_index_unit).
+
+        Returns
+        -------
+        Quantity
+            The generated samples as a Quantity object with the appropriate unit.
         """
-        # Convert single size value to DeltaDistribution if necessary
-        self.size = [
-            d if isinstance(d, BaseDistribution) else DeltaDistribution(size_value=d) for d in self.size
+        if not isinstance(distributions, Iterable):
+            distributions = [distributions]
+
+        # Convert single value inputs to DeltaDistribution if necessary
+        distributions = [
+            d if isinstance(d, BaseDistribution) else DeltaDistribution(size_value=d) for d in distributions
         ]
 
-        # Generate sizes from each distribution
-        size_list = [d.generate(n_samples) for d in self.size]
+        # Generate values from each distribution
+        value_list = [d.generate(self.flow.n_events) for d in distributions]
 
-        # Concatenate all generated sizes and sample from the combined distribution
-        self.size_list = np.concatenate(size_list)
+        # Concatenate the generated values and sample from the combined distribution
+        combined_list = np.concatenate(value_list)
+        sampled_values = np.random.choice(combined_list.magnitude, size=self.flow.n_events.magnitude, replace=True)
 
-        # Randomly sample the final size list from the combined distribution
-        self.size_list = np.random.choice(
-            self.size_list.magnitude,
-            size=n_samples.magnitude,
-            replace=True
-        ) * ureg.meter
+        return Quantity(sampled_values, unit), distributions
 
-    def initialize_refractive_indices(self, n_samples: int) -> None:
+    def get_pdf(self, value_list: Quantity, distributions: List[BaseDistribution], sampling: Optional[int] = 1000) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Generates random scatterer refractive indices based on the provided refractive index distributions.
+        Combines the PDFs of all provided distributions (e.g., sizes or refractive indices) and returns the combined PDF.
 
-        If a single refractive index is provided, it will be treated as a delta distribution (constant value).
-        Multiple distributions are combined to generate the final sample list.
+        This method generates a combined probability density function (PDF) from a list of distributions (size or refractive index),
+        and calculates it over a given number of sample points. The combined PDF is the sum of the PDFs from the individual distributions.
 
         Parameters
         ----------
-        n_samples : int
-            The number of refractive index samples to generate.
+        value_list : Quantity
+            The list of generated values from the distributions (e.g., size or refractive indices).
+            This is expected to have been initialized and contain the generated values.
+        distributions : List[BaseDistribution]
+            A list of `BaseDistribution` objects, each representing a distribution from which the values were drawn.
+            Each distribution must implement the `get_pdf` method to return its own PDF.
+        sampling : int, optional
+            The number of points to sample for plotting the continuous PDF (default is 1000).
+            This controls the resolution of the PDF graph.
+
+        Returns
+        -------
+        x : np.ndarray
+            The x-values for the PDF. These correspond to the sample points used to evaluate the combined PDF
+            and represent the range of the generated values (e.g., sizes or refractive indices).
+        pdf : np.ndarray
+            The combined PDF values corresponding to the x-values. This array contains the sum of the PDFs from
+            all the individual distributions and provides the overall probability density function.
+
+        Raises
+        ------
+        ValueError
+            If `value_list` has not been initialized (i.e., is `None`), indicating that the necessary values were
+            not generated prior to calling this method.
         """
-        # Convert single refractive index value to DeltaDistribution if necessary
-        self.refractive_index = [
-            d if isinstance(d, BaseDistribution) else DeltaDistribution(size_value=d) for d in self.refractive_index
-        ]
+        if value_list is None:
+            raise ValueError("Values have not been generated. Initialize values first.")
 
-        # Generate refractive indices from each distribution
-        refractive_index_list = [d.generate(n_samples) for d in self.refractive_index]
+        # Generate x-values for the PDF based on min/max of value_list
+        x_min = value_list.min().magnitude
+        x_max = value_list.max().magnitude
+        x = np.linspace(x_min, x_max, sampling)
 
-        # Concatenate all generated refractive indices and sample from the combined distribution
-        self.refractive_index_list = np.concatenate(refractive_index_list)
+        # Initialize the PDF array with zeros
+        pdf = np.zeros_like(x)
 
-        # Randomly sample the final refractive index list from the combined distribution
-        self.refractive_index_list = np.random.choice(
-            self.refractive_index_list.magnitude,
-            size=n_samples.magnitude,
-            replace=True
-        ) * ureg.refractive_index_unit
+        # Combine the PDFs of all distributions
+        for distribution in distributions:
+            _, dist_pdf = distribution.get_pdf(x)  # Get the PDF for each distribution
+            pdf += dist_pdf  # Sum the PDFs from all distributions
 
+        return x, pdf
 
     def get_size_pdf(self, sampling: Optional[int] = 1000) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Combines the PDFs of all size distributions, applying their respective scale factors.
+        Generates the combined PDF for scatterer sizes.
 
-        This method calculates the combined probability density function (PDF) for the particle sizes generated
-        from all size distributions.
+        This method computes the combined probability density function (PDF) for particle sizes using the size distributions
+        that were initialized earlier. The PDF provides insight into the likelihood of different particle sizes based on the
+        defined distributions.
 
         Parameters
         ----------
         sampling : int, optional
             The number of points to sample for plotting the continuous PDF (default is 1000).
+            A higher number provides more precision but takes longer to compute.
 
         Returns
         -------
         x : np.ndarray
-            The x-values (particle sizes) for the combined PDF.
+            The x-values for the size PDF. These correspond to particle sizes and range from the minimum to the maximum
+            of the generated size values.
         pdf : np.ndarray
-            The combined PDF values corresponding to the x-values.
+            The combined PDF values corresponding to the x-values. This array contains the probability density function
+            for the particle sizes, combining all the individual size distributions.
         """
-        if self.size_list is None:
-            raise ValueError("Sizes have not been generated. Use 'initialize_sizes()' first.")
-
-        # Generate x-values for the PDF based on min/max of size_list
-        x_min = self.size_list.min().magnitude
-        x_max = self.size_list.max().magnitude
-        x = np.linspace(x_min, x_max, sampling)
-
-        # Initialize the PDF array with zeros
-        pdf = np.zeros_like(x)
-
-        # Combine the PDFs of all size distributions
-        for distribution in self.size:
-            dist_x, dist_pdf = distribution.get_pdf(x)  # Get the PDF for each distribution
-            pdf += dist_pdf  # Sum the PDFs from all distributions
-
-        return x, pdf
+        return self.get_pdf(
+            value_list=self.size_list,
+            distributions=self.size_dist,
+            sampling=sampling
+        )
 
     def get_refractive_index_pdf(self, sampling: Optional[int] = 1000) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Combines the PDFs of all refractive index distributions, applying their respective scale factors.
+        Generates the combined PDF for scatterer refractive indices.
 
-        This method calculates the combined probability density function (PDF) for the refractive indices generated
-        from all refractive index distributions.
+        This method computes the combined probability density function (PDF) for particle refractive indices based on the
+        initialized refractive index distributions. The PDF shows the likelihood of different refractive indices in the sample
+        of scatterers.
 
         Parameters
         ----------
         sampling : int, optional
             The number of points to sample for plotting the continuous PDF (default is 1000).
+            A higher number provides more precision but takes longer to compute.
 
         Returns
         -------
         x : np.ndarray
-            The x-values (refractive indices) for the combined PDF.
+            The x-values for the refractive index PDF. These correspond to refractive indices and range from the minimum
+            to the maximum of the generated refractive index values.
         pdf : np.ndarray
-            The combined PDF values corresponding to the x-values.
+            The combined PDF values corresponding to the x-values. This array contains the probability density function
+            for the particle refractive indices, combining all the individual refractive index distributions.
         """
-        if self.refractive_index_list is None:
-            raise ValueError("Refractive indices have not been generated. Use 'initialize_refractive_indices()' first.")
+        return self.get_pdf(
+            value_list=self.refractive_index_list,
+            distributions=self.refractive_index_dist,
+            sampling=sampling
+        )
 
-        # Generate x-values for the PDF based on min/max of refractive_index_list
-        x_min = self.refractive_index_list.min().magnitude
-        x_max = self.refractive_index_list.max().magnitude
-        x = np.linspace(x_min, x_max, sampling)
+    def get_medium_refractive_index_pdf(self, sampling: Optional[int] = 1000) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Generates the combined PDF for the medium refractive indices.
 
-        # Initialize the PDF array with zeros
-        pdf = np.zeros_like(x)
+        This method computes the combined probability density function (PDF) for medium refractive indices, using the
+        initialized medium refractive index distributions. The PDF indicates the likelihood of different refractive indices
+        for the medium in which scatterers are located.
 
-        # Combine the PDFs of all refractive index distributions
-        for distribution in self.refractive_index:
-            dist_x, dist_pdf = distribution.get_pdf(x)  # Get the PDF for each distribution
-            pdf += dist_pdf  # Sum the PDFs from all distributions
+        Parameters
+        ----------
+        sampling : int, optional
+            The number of points to sample for plotting the continuous PDF (default is 1000).
+            A higher number provides more precision but takes longer to compute.
 
-        return x, pdf
+        Returns
+        -------
+        x : np.ndarray
+            The x-values for the medium refractive index PDF. These correspond to refractive indices for the medium and range
+            from the minimum to the maximum of the generated medium refractive index values.
+        pdf : np.ndarray
+            The combined PDF values corresponding to the x-values. This array contains the probability density function
+            for the medium refractive indices, combining all the individual medium refractive index distributions.
+        """
+        return self.get_pdf(
+            value_list=self.medium_refractive_index_list,
+            distributions=self.medium_refractive_index_dist,
+            sampling=sampling
+        )
+
 
     def plot(self) -> None:
         """

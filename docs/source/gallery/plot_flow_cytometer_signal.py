@@ -16,11 +16,11 @@ their scattering properties.
 
 # Step 1: Import the necessary libraries
 # --------------------------------------
-from FlowCyPy import FlowCytometer, ScattererDistribution, Detector, Source, Flow
+from FlowCyPy import FlowCytometer, ScattererDistribution, Detector, Source, FlowCell
 from FlowCyPy.distribution import NormalDistribution
 
 # Example usage of the Flow class
-flow = Flow(
+flow = FlowCell(
     flow_speed=80e-6,  # 80 micrometers per second
     flow_area=1e-6,  # 1 square micrometer
     total_time=1.0,  # 1 second of flow
@@ -77,7 +77,7 @@ source = Source(
 detector_fsc = Detector(
     name='FSC',                   # Forward Scatter (FSC) detector
     NA=0.2,                       # Numerical aperture of the detector
-    theta_angle=180,              # Angle relative to the light beam
+    phi_angle=180,              # Angle relative to the light beam
     acquisition_frequency=1e3,    # Acquisition frequency: 1000 Hz
     noise_level=1e-3,             # Noise floor of 0.0001 volt
     saturation_level=10,          # Maximum signal before saturation
@@ -89,7 +89,7 @@ detector_fsc = Detector(
 detector_ssc = Detector(
     name='SSC',                   # Side Scatter (SSC) detector
     NA=0.2,                       # Numerical aperture of the SSC detector
-    theta_angle=90,               # Positioned at 90 degrees to detect side scatter
+    phi_angle=90,               # Positioned at 90 degrees to detect side scatter
     acquisition_frequency=1e3,    # Acquisition frequency: 1000 Hz
     noise_level=1e-3,             # Noise floor of 0.0001 volt
     saturation_level=10,          # Maximum signal before saturation

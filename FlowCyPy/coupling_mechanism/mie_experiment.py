@@ -1,9 +1,10 @@
 import numpy as np
 from FlowCyPy import ScattererDistribution, Detector, Source
 from FlowCyPy import ureg
-from PyMieSim.single.scatterer import Sphere
-from PyMieSim.single.source import Gaussian
-from PyMieSim.single.detector import Photodiode
+from PyMieSim.experiment.scatterer import Sphere
+from PyMieSim.experiment.source import Gaussian
+from PyMieSim.experiment.detector import Photodiode
+from PyMieSim.experiment import measure, Setup
 
 
 def compute_detected_signal(
@@ -15,7 +16,7 @@ def compute_detected_signal(
 
     This function models forward scatter (FSC) as proportional to the particle's size squared and
     side scatter (SSC) as proportional to the granularity and modulated by angular dependence
-    (sin^n(theta)). Granularity is a dimensionless measure of the particle's internal complexity or
+    (sin^n(phi)). Granularity is a dimensionless measure of the particle's internal complexity or
     surface irregularities:
 
     - A default value of 1.0 is used for moderate granularity (e.g., typical white blood cells).
@@ -25,7 +26,7 @@ def compute_detected_signal(
     Parameters
     ----------
     detector : Detector
-        The detector object containing phi_angle (in radians).
+        The detector object containing phitheta_angle (in radians).
     particle_size : float
         The size of the particle (in meters).
     granularity : float, optional
@@ -48,29 +49,29 @@ def compute_detected_signal(
         NA=source.NA
     )
 
-    couplings = np.empty_like(scatterer_distribution.size_list.magnitude)
+    pms_scatterer = Sphere(
+        diameter=scatterer_distribution.size_list.magnitude,
+        index=scatterer_distribution.refractive_index_list.magnitude,
+        medium_index=1.0,
+        source=pms_source
+    )
 
-    sizes = scatterer_distribution.size_list.magnitude
-    ris = scatterer_distribution.refractive_index_list.magnitude
-    medium_ris = scatterer_distribution.medium_refractive_index_list.magnitude
+    pms_detector = Photodiode(
+        NA=detector.NA,
+        gamma_offset=0,
+        phi_offset=detector.theta_angle,
+        polarization_filter=None,
+        sampling=100
+    )
 
-    for index, (size, ri, medium_ri) in enumerate(zip(sizes, ris, medium_ris)):
+    experiment = Setup(
+        source=pms_source,
+        scatterer=pms_scatterer,
+        detector=pms_detector
+    )
 
-        pms_scatterer = Sphere(
-            diameter=size,
-            index=ri,
-            medium_index=1.0,
-            source=pms_source
-        )
+    coupling = experiment.get(measure=measure.coupling, export_as_numpy=True).squeeze()
 
-        pms_detector = Photodiode(
-            NA=detector.NA,
-            gamma_offset=detector.gamma_angle.magnitude,
-            phi_offset=detector.phi_angle.magnitude,
-            polarization_filter=None,
-            sampling=detector.sampling
-        )
+    coupling = np.diagonal(coupling)
 
-        couplings[index] = pms_detector.coupling(pms_scatterer)
-
-    return couplings * detector.responsitivity * ureg.watt
+    return coupling.ravel() * detector.responsitivity * ureg.watt

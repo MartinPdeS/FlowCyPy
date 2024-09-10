@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from typing import Optional
+from typing import Optional, Union
 import matplotlib.pyplot as plt
 from dataclasses import dataclass, field
 from tabulate import tabulate
 from FlowCyPy import ureg
+from FlowCyPy.units import Quantity, hertz, volt, watt, degree
 
 @dataclass
 class Detector:
@@ -29,8 +30,8 @@ class Detector:
         The baseline shift applied to the signal, in volts. Default is 0.01 volts.
     saturation_level : float, optional
         The maximum signal level before saturation occurs, in volts. Default is 1000 volts.
-    n_bins : int, optional
-        The number of bins for signal discretization. Default is 100 bins.
+    n_bins : int or str, optional
+        The number of bins for signal discretization or a string (e.g., '12bit') to compute bins based on bit depth.
 
     Methods
     -------
@@ -43,13 +44,16 @@ class Detector:
     """
     name: str
     acquisition_frequency: float  # Acquisition frequency in Hertz
-    theta_angle: float  # Azimuthal angle (used for the coupling mechanism)
+    phi_angle: float  # Azimuthal angle (used for the coupling mechanism)
     NA: float
+
+    gamma_angle: float = 0  # Longitudinal angle (used for the coupling mechanism)
+    sampling: int = 100  # Number of points that define the detector in the far-field regime
     responsitivity: Optional[float] = 1  # Electrical response for the optical power
     noise_level: Optional[float] = 0.0  # Noise level (in volts)
     baseline_shift: Optional[float] = 0.0  # Baseline shift (in volts)
     saturation_level: Optional[float] = np.inf  # Saturation level (in volts)
-    n_bins: Optional[int] = None  # Number of bins for discretization
+    n_bins: Optional[Union[int, str]] = '12bit'  # Number of bins for discretization or bit-depth string
 
     signal: np.ndarray = field(init=False, default=None)
     raw_signal: np.ndarray = field(init=False, default=None)
@@ -57,6 +61,7 @@ class Detector:
 
     def __post_init__(self) -> None:
         """Automatically adds physical units to the attributes after initialization."""
+        self._process_n_bins()
         self._add_units()
         self.pulses = []
 
@@ -64,11 +69,24 @@ class Detector:
         """
         Assigns the appropriate physical units to the detector's attributes using the pint library.
         """
-        self.acquisition_frequency *= ureg.hertz
-        self.responsitivity *= ureg.volt / ureg.watt
-        self.noise_level *= ureg.volt
-        self.baseline_shift *= ureg.volt
-        self.saturation_level *= ureg.volt
+        self.acquisition_frequency = Quantity(self.acquisition_frequency, hertz)
+        self.responsitivity = Quantity(self.responsitivity, volt / watt)
+        self.noise_level = Quantity(self.noise_level, volt)
+        self.baseline_shift = Quantity(self.baseline_shift, volt)
+        self.saturation_level = Quantity(self.saturation_level, volt)
+        self.phi_angle = Quantity(self.phi_angle, degree)
+        self.gamma_angle = Quantity(self.gamma_angle, degree)
+
+    def _process_n_bins(self) -> None:
+        """Processes the n_bins value, converting a bit-depth string to the corresponding number of bins."""
+        if isinstance(self.n_bins, str):
+            try:
+                bit_depth = int(self.n_bins.rstrip('bit'))
+                self.n_bins = 2 ** bit_depth
+            except (ValueError, TypeError):
+                raise ValueError(f"Invalid n_bins value: '{self.n_bins}'. Expected an integer or a string like '12bit'.")
+        elif not isinstance(self.n_bins, int) or self.n_bins is None:
+            self.n_bins = 100  # Default value
 
     def print_properties(self) -> None:
         """

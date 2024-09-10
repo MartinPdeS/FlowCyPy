@@ -20,12 +20,12 @@ Steps in the Script:
 """
 
 # Import necessary libraries and modules
-from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, Flow, Plotter
+from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, FlowCell, Plotter
 from FlowCyPy.distribution import NormalDistribution
 from FlowCyPy.peak_detector import BasicPeakDetector
 
 # Step 1: Define the Flow Parameters
-flow = Flow(
+flow = FlowCell(
     flow_speed=8e-6,         # 80 micrometers per second
     flow_area=1e-6,          # 1 square micrometer
     total_time=180.0,        # Total simulation time of 40 seconds
@@ -62,7 +62,7 @@ source = Source(
 
 # Step 4: Set up Detectors
 detector_0 = Detector(
-    theta_angle=90,              # Angle of the detector relative to the incident light beam
+    phi_angle=90,              # Angle of the detector relative to the incident light beam
     NA=0.4,                      # Numerical aperture of the detector optics
     name='Side',                  # Name or identifier for this detector
     responsitivity=1,            # Responsitivity of the detector (efficiency)
@@ -74,7 +74,7 @@ detector_0 = Detector(
 )
 
 detector_1 = Detector(
-    theta_angle=0,               # Angle of the detector relative to the incident light beam
+    phi_angle=0,               # Angle of the detector relative to the incident light beam
     NA=0.4,                      # Numerical aperture of the detector optics
     name='Front',                # Name or identifier for this detector
     responsitivity=1,            # Responsitivity of the detector (efficiency)

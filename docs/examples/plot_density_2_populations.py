@@ -20,7 +20,7 @@ Steps in the Script:
 """
 
 # Import necessary libraries and modules
-from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, Flow, Plotter
+from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, FlowCell, Plotter
 from FlowCyPy.distribution import NormalDistribution
 from FlowCyPy.peak_detector import MovingAveragePeakDetector
 import numpy as np
@@ -29,7 +29,7 @@ import numpy as np
 np.random.seed(20)
 
 # Step 1: Define the Flow Parameters
-flow = Flow(
+flow = FlowCell(
     flow_speed=8e-6,           # Flow speed: 8 micrometers per second
     flow_area=1e-6,            # Flow area: 1 square micrometer
     total_time=8.0,            # Total simulation time: 8 seconds
@@ -50,9 +50,15 @@ size_distribution_1 = NormalDistribution(
     std_dev=3e-6               # Standard deviation of particle size: 1 micrometer
 )
 
+ri_distribution_1 = NormalDistribution(
+    scale_factor=1,
+    mean=1.5,                # Mean particle size: 30 micrometers
+    std_dev=0.05               # Standard deviation of particle size: 1 micrometer
+)
+
 scatterer_distribution = ScattererDistribution(
     flow=flow,
-    refractive_index=[1.5, 1.7],      # Refractive index of the particles
+    refractive_index=[ri_distribution_1],      # Refractive index of the particles
     size=[size_distribution_0, size_distribution_1]  # List of distributions for different scatterer populations
 )
 
@@ -68,7 +74,7 @@ source = Source(
 
 # Step 4: Set up Detectors (Two Detectors at Different Angles)
 detector_0 = Detector(
-    theta_angle=90,            # Angle: 90 degrees (Side Scatter)
+    phi_angle=90,            # Angle: 90 degrees (Side Scatter)
     NA=0.1,                    # Numerical aperture of the detector optics
     name='Side',               # Name of the detector
     responsitivity=1,          # Responsitivity of the detector
@@ -80,7 +86,7 @@ detector_0 = Detector(
 )
 
 detector_1 = Detector(
-    theta_angle=180,           # Angle: 180 degrees (Forward Scatter)
+    phi_angle=180,           # Angle: 180 degrees (Forward Scatter)
     NA=0.1,                    # Numerical aperture of the detector optics
     name='Front',              # Name of the detector
     responsitivity=1,          # Responsitivity of the detector
@@ -104,7 +110,7 @@ cytometer.simulate_pulse()
 
 # %%
 # Plot the scattering signals for both detectors
-# cytometer.plot()
+cytometer.plot()
 
 # Step 6: Analyze the Pulse Signals
 analyzer = Analyzer(detector_0, detector_1, algorithm=MovingAveragePeakDetector())

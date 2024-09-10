@@ -11,10 +11,10 @@ Classes and Methods
 
 Below are the primary classes and methods used in the flow cytometer simulation.
 
-Flow Class
-----------
+FlowCell Class
+--------------
 
-.. autoclass:: FlowCyPy.Flow
+.. autoclass:: FlowCyPy.FlowCell
    :members:
    :show-inheritance:
 

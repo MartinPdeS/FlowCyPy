@@ -4,15 +4,11 @@ try:
 except ImportError:
     __version__ = "0.0.0"
 
-from pint import UnitRegistry
-
-# Initialize a unit registry
-ureg = UnitRegistry()
-
+from .units import ureg, watt, meter, second, liter, particle
 from .flow_cytometer import FlowCytometer
 from .analyzer import Analyzer
 from .scatterer_distribution import ScattererDistribution
 from .detector import Detector
-from .flow import Flow
+from .flow import FlowCell
 from .source import Source
 from .plotter import Plotter

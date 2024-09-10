@@ -43,12 +43,12 @@ Steps in the Script:
 
 
     # Import necessary libraries and modules
-    from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, Flow, Plotter
+    from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, FlowCell, Plotter
     from FlowCyPy.distribution import NormalDistribution
     from FlowCyPy.peak_detector import BasicPeakDetector
 
     # Step 1: Define the Flow Parameters
-    flow = Flow(
+    flow = FlowCell(
         flow_speed=8e-6,         # 80 micrometers per second
         flow_area=1e-6,          # 1 square micrometer
         total_time=180.0,        # Total simulation time of 40 seconds
@@ -98,7 +98,7 @@ Step 2: Define the Scatterer Distribution (Normal Distribution of Particle Sizes
 
     # Step 4: Set up Detectors
     detector_0 = Detector(
-        theta_angle=90,              # Angle of the detector relative to the incident light beam
+        phi_angle=90,              # Angle of the detector relative to the incident light beam
         NA=0.4,                      # Numerical aperture of the detector optics
         name='Side',                  # Name or identifier for this detector
         responsitivity=1,            # Responsitivity of the detector (efficiency)
@@ -110,7 +110,7 @@ Step 2: Define the Scatterer Distribution (Normal Distribution of Particle Sizes
     )
 
     detector_1 = Detector(
-        theta_angle=0,               # Angle of the detector relative to the incident light beam
+        phi_angle=0,               # Angle of the detector relative to the incident light beam
         NA=0.4,                      # Numerical aperture of the detector optics
         name='Front',                # Name or identifier for this detector
         responsitivity=1,            # Responsitivity of the detector (efficiency)
@@ -230,7 +230,7 @@ Plot the 2D density plot
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 23.093 seconds)
+   **Total running time of the script:** (0 minutes 11.447 seconds)
 
 
 .. _sphx_glr_download_gallery_plot_density_plot.py:

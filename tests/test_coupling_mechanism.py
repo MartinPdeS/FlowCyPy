@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from FlowCyPy import ScattererDistribution, Detector, Source, Flow
+from FlowCyPy import ScattererDistribution, Detector, Source, FlowCell
 from FlowCyPy.distribution import NormalDistribution
 from FlowCyPy.coupling_mechanism.rayleigh import compute_detected_signal
 from FlowCyPy import ureg
@@ -17,7 +17,7 @@ def normal_distribution():
 
 @pytest.fixture
 def default_flow():
-    return  Flow(
+    return  FlowCell(
         flow_speed=80e-6,
         flow_area=1e-6,
         total_time=1.0,
@@ -27,7 +27,7 @@ def default_flow():
 @pytest.fixture
 def detector():
     return Detector(
-        theta_angle=90,
+        phi_angle=90,
         NA=0.1,
         name='first detector',
         responsitivity=1.0,          # Responsitivity of the detector

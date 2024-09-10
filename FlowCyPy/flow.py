@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 import numpy as np
-from FlowCyPy import ureg
+from FlowCyPy.units import Quantity, meter, second, particle
 from tabulate import tabulate
 import logging
 
@@ -12,7 +12,7 @@ logging.basicConfig(
 )
 
 @dataclass
-class Flow:
+class FlowCell:
     """
     A class to model the flow parameters in a flow cytometer, including flow speed, flow area,
     and particle interactions. This class interacts with ScattererDistribution to simulate
@@ -37,11 +37,10 @@ class Flow:
 
     def __post_init__(self):
         """Initialize units for flow parameters."""
-        self.flow_speed *= ureg.meter / ureg.second
-        self.flow_area *= ureg.meter ** 2
-        self.total_time *= ureg.second
-
-        self.scatterer_density *= ureg.particle / ureg.meter**3
+        self.flow_speed = Quantity(self.flow_speed, meter / second)
+        self.flow_area = Quantity(self.flow_area, meter ** 2)
+        self.total_time = Quantity(self.total_time, second)
+        self.scatterer_density = Quantity(self.scatterer_density, particle / meter**3)
 
         self.n_events = self.calculate_number_of_events()
 
@@ -64,7 +63,7 @@ class Flow:
         # Calculate the total number of particles in this volume
         number_of_particles = self.scatterer_density * volume
 
-        return int(number_of_particles.magnitude) * ureg.particle
+        return int(number_of_particles.magnitude) * particle
 
     def _generate_longitudinal_positions(self, n_samples: int) -> None:
         r"""
@@ -110,20 +109,20 @@ class Flow:
         particle_flux = (self.scatterer_density * self.flow_speed * self.flow_area)
 
         # Step 2: Calculate the expected number of particles over the entire experiment
-        expected_particles = int((particle_flux * self.total_time).magnitude) * ureg.particle
+        expected_particles = int((particle_flux * self.total_time).magnitude) * particle
 
         # Step 3: Generate inter-arrival times (exponentially distributed)
         inter_arrival_times = np.random.exponential(scale=1 / particle_flux.magnitude, size=expected_particles.magnitude)
 
         # Step 4: Compute cumulative arrival times
-        arrival_times = np.cumsum(inter_arrival_times) * ureg.second
+        arrival_times = np.cumsum(inter_arrival_times) * second
 
         # Step 5: Limit the arrival times to the total experiment duration
         arrival_times = arrival_times[arrival_times <= self.total_time]
         self.time_positions = arrival_times
         self.longitudinal_positions = self.time_positions / self.flow_speed
 
-        self.n_events = len(arrival_times) * ureg.particle
+        self.n_events = len(arrival_times) * particle
 
     def print_properties(self) -> None:
         """

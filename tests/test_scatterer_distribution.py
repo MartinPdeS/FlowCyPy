@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 from FlowCyPy.scatterer_distribution import ScattererDistribution
 from FlowCyPy.distribution import NormalDistribution, LogNormalDistribution, DeltaDistribution, UniformDistribution, WeibullDistribution
-from FlowCyPy.flow import Flow
+from FlowCyPy.flow import FlowCell
 
 # Fixtures to set up a default Flow and Distributions
 @pytest.fixture
 def default_flow():
     """Fixture for creating a default Flow object."""
-    return Flow(
+    return FlowCell(
         flow_speed=80e-6,
         flow_area=1e-6,
         total_time=1.0,
@@ -24,7 +24,7 @@ distributions = [
     DeltaDistribution(size_value=1e-6, scale_factor=1.0),
     UniformDistribution(lower_bound=5e-7, upper_bound=1.5e-6, scale_factor=1.0),
     WeibullDistribution(scale=1.0, shape=1.5),
-    [1e-6]
+    1e-6
 ]
 
 @pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__)
@@ -36,8 +36,8 @@ def test_generate_distribution_size(distribution, default_flow):
     # ererDistribution object with the chosen distribution
     scatterer_distribution = ScattererDistribution(
         flow=default_flow,
-        refractive_index=[1.5],
-        size=[distribution],
+        refractive_index=1.5,
+        size=distribution,
     )
 
     # Check that sizes were generated and are positive
@@ -78,7 +78,7 @@ def test_generate_longitudinal_positions(default_flow, distribution):
     scatterer_distribution = ScattererDistribution(
         refractive_index=[1.5],
         flow=default_flow,
-        size=[distribution],
+        size=distribution,
     )
 
     # Assert correct shape of generated longitudinal positions
@@ -91,14 +91,14 @@ def test_generate_longitudinal_positions(default_flow, distribution):
     assert np.all(scatterer_distribution.flow.longitudinal_positions.magnitude >= 0), "Some longitudinal positions are negative."
 
 
-@patch('matplotlib.pyplot.close')
+@patch('matplotlib.pyplot.show')
 @pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__)
 def test_plot_positions(mock_show, default_flow, distribution):
     """Test the plotting of longitudinal positions."""
     scatterer_distribution = ScattererDistribution(
         refractive_index=[NormalDistribution(mean=1e-6, std_dev=1e-7, scale_factor=1.0)],
         flow=default_flow,
-        size=[distribution],
+        size=distribution,
     )
 
     scatterer_distribution.plot()

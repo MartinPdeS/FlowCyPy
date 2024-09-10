@@ -42,7 +42,7 @@ Step 1: Import necessary modules from FlowCyPy
 
 .. code-block:: python3
 
-    from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, Flow
+    from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, FlowCell
     from FlowCyPy.distribution import NormalDistribution
 
 
@@ -60,7 +60,7 @@ Example usage of the Flow class
 
 .. code-block:: python3
 
-    flow = Flow(
+    flow = FlowCell(
         flow_speed=80e-6,       # 80 micrometers per second
         flow_area=1e-6,         # 1 square micrometer
         total_time=1.0,         # 1 second of flow
@@ -126,7 +126,7 @@ This defines the scatterers (particles) that will interact with the laser source
     # A detector is used to measure the scattered light. The detector's numerical aperture and responsitivity
     # affect how much light it collects and converts to an electrical signal.
     detector = Detector(
-        theta_angle=90,              # Angle of the detector relative to the incident light beam
+        phi_angle=90,              # Angle of the detector relative to the incident light beam
         NA=0.4,                      # Numerical aperture of the detector optics
         name='first detector',       # Name or identifier for this detector
         responsitivity=1,            # Responsitivity of the detector (efficiency of detecting scattered light)
@@ -188,12 +188,6 @@ This defines the scatterers (particles) that will interact with the laser source
 
  .. code-block:: none
 
-    [9.996384752877031e-11 1.0028193859273416e-10 9.97943934064306e-11 9.992231137129319e-11 1.0014469319177078e-10 9.985415657100204e-11 9.991162922129816e-11 1.000236436872905e-10 9.989217720512289e-11 9.961414733885986e-11 1.0002873837988378e-10 1.0024153987333596e-10 1.0024153987333596e-10 9.988642031336415e-11 1.0011149196110581e-10 9.975653873680558e-11 9.998594560207451e-11 1.0017558251223371e-10 1.0012921077955887e-10 1.0004807222708649e-10 9.978958586733556e-11 9.98431853824807e-11 1.0033071960945698e-10 9.993065008044163e-11 1.0018584853748485e-10 1.0012921077955887e-10 1.0006130289698486e-10 1.0009034126523e-10 1.0005801685901932e-10 1.0005075444385108e-10 9.998541506513568e-11 1.0016212563006425e-10 1.0003350485426699e-10 1.0024863636049148e-10 1.0024863636049148e-10 9.991150957338168e-11 1.0009937256878314e-10 9.991162922129816e-11 9.989217720512289e-11 1.0016212563006425e-10 1.000399708868318e-10 9.97943934064306e-11 9.998541506513568e-11 9.989217720512289e-11 9.979241578982836e-11 1.000236436872905e-10 9.998654651168933e-11 1.0028193859273416e-10 1.0000087366955276e-10 9.982527493605392e-11 1.0003350485426699e-10 9.998654651168933e-11 9.979241578982836e-11 1.0024153987333596e-10 9.975829450112966e-11 1.0031095651385701e-10 1.0003350485426699e-10 9.998594560207451e-11 1.0006130289698486e-10 1.0017558251223371e-10 9.992589305801945e-11 1.0003149659673833e-10 1.0028193859273416e-10 1.0017558251223371e-10 1.0024153987333596e-10 1.0020461805375374e-10 9.991914336417857e-11 9.991150957338168e-11 1.0005297672022424e-10 9.988642031336415e-11 9.988842220243145e-11 1.0011132353053808e-10 9.996840381303036e-11 1.0014469319177078e-10 9.993622381759549e-11 9.998594560207451e-11 9.982023084636182e-11 9.984530553607641e-11 1.0009863999648977e-10 1.0008671681083138e-10] meter ** 2
-    [2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5
-     2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5
-     2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5
-     2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5
-     2.5 2.5 2.5 2.5 2.5 2.5 2.5 2.5]
     Flow Properties
 
     Flow Properties
@@ -215,7 +209,7 @@ This defines the scatterers (particles) that will interact with the laser source
     +-----------------------+----------------------------+
     | Property              | Value                      |
     +=======================+============================+
-    | Mean Refractive Index | 1.61 refractive_index_unit |
+    | Mean Refractive Index | 1.60 refractive_index_unit |
     +-----------------------+----------------------------+
     | Mean Size             | 1.00×10¹ µm                |
     +-----------------------+----------------------------+
@@ -257,7 +251,7 @@ This defines the scatterers (particles) that will interact with the laser source
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.445 seconds)
+   **Total running time of the script:** (0 minutes 0.856 seconds)
 
 
 .. _sphx_glr_download_gallery_plot_full_workflow.py:

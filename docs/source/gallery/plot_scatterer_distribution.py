@@ -20,7 +20,7 @@ Steps in the Script:
 """
 
 # Import necessary libraries and modules
-from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, Flow, Plotter
+from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, FlowCell, Plotter
 from FlowCyPy.distribution import NormalDistribution
 from FlowCyPy.peak_detector import MovingAveragePeakDetector
 import numpy as np
@@ -29,7 +29,7 @@ import numpy as np
 np.random.seed(20)
 
 # Step 1: Define the Flow Parameters
-flow = Flow(
+flow = FlowCell(
     flow_speed=8e-6,           # Flow speed: 8 micrometers per second
     flow_area=1e-6,            # Flow area: 1 square micrometer
     total_time=8.0,            # Total simulation time: 8 seconds

@@ -41,7 +41,7 @@ def compute_scattering_cross_section(scatterer_distribution: ScattererDistributi
     refractive_index = scatterer_distribution.refractive_index_list
     sizes = scatterer_distribution.size_list
     wavelength = source.wavelength
-    theta = detector.theta_angle  # Angle of observation in radians
+    phi = detector.phi_angle  # Angle of observation in radians
 
     # Rayleigh scattering cross-section formula components
     factor_0 = 8 * np.pi / 3
@@ -53,7 +53,7 @@ def compute_scattering_cross_section(scatterer_distribution: ScattererDistributi
     sigma_0 = factor_0 * factor_1 * factor_2 * sizes ** 6
 
     # Modify by the angular dependency: sin^2(theta)
-    cross_section = sigma_0 * np.sin(theta * np.pi / 180) ** 2
+    cross_section = sigma_0 * np.sin(phi * np.pi / 180) ** 2
 
     return cross_section
 

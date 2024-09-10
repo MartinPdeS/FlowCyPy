@@ -1,6 +1,7 @@
 import numpy as np
 from typing import List
-from FlowCyPy import ureg
+from FlowCyPy.units import second, volt, Quantity
+
 
 
 class ProxyDetector():
@@ -30,12 +31,12 @@ def generate_gaussian_signal(time: np.ndarray, centers: List[float], heights: Li
     numpy.ndarray
         A numpy array representing the generated signal composed of Gaussian pulses.
     """
-    time *= ureg.second
-    centers *= ureg.second
-    heights *= ureg.volt
-    stds *= ureg.second
+    time = Quantity(time, second)
+    centers = Quantity(centers, second)
+    heights = Quantity(heights, volt)
+    stds = Quantity(stds, second)
 
-    signal = np.zeros_like(time) * ureg.volt
+    signal = np.zeros_like(time) * volt
 
     for center, height, sigma in zip(centers, heights, stds):
         signal += height * np.exp(-((time - center) ** 2) / (2 * sigma ** 2))

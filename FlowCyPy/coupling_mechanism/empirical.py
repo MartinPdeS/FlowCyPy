@@ -39,8 +39,7 @@ def compute_detected_signal(source: Source, detector: Detector, scatterer_distri
     fsc_intensity.magnitude * ureg.volt
 
     # Side scatter is proportional to granularity and modulated by angular dependence
-    ssc_intensity = granularity * (1 + A * np.sin(np.radians(detector.theta_angle))**n) * np.ones(scatterer_distribution.size_list.size)
+    ssc_intensity = granularity * (1 + A * np.sin(np.radians(detector.phi_angle))**n) * np.ones(scatterer_distribution.size_list.size)
 
-    print(fsc_intensity)
-    print(ssc_intensity)
-    return fsc_intensity.magnitude * ureg.volt if detector.theta_angle < np.radians(10) else ssc_intensity * ureg.volt
+
+    return fsc_intensity.magnitude * ureg.volt if detector.phi_angle < np.radians(10) else ssc_intensity * ureg.volt

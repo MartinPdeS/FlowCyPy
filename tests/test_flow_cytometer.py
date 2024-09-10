@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from FlowCyPy import FlowCytometer, Detector, ScattererDistribution, Source, Flow
+from FlowCyPy import FlowCytometer, Detector, ScattererDistribution, Source, FlowCell
 import matplotlib.pyplot as plt
 from unittest.mock import patch
 from FlowCyPy.distribution import NormalDistribution
@@ -11,7 +11,7 @@ def default_detector():
     return Detector(
         name='default',
         NA=1,
-        theta_angle=90,
+        phi_angle=90,
         responsitivity=1,
         acquisition_frequency=1e3,
         noise_level=0,
@@ -22,7 +22,7 @@ def default_detector():
 
 @pytest.fixture
 def flow():
-    return  Flow(
+    return  FlowCell(
         flow_speed=80e-6,
         flow_area=1e-6,
         total_time=1.0,

@@ -43,7 +43,7 @@ Steps in the Script:
 
 
     # Import necessary libraries and modules
-    from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, Flow, Plotter
+    from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, FlowCell, Plotter
     from FlowCyPy.distribution import NormalDistribution
     from FlowCyPy.peak_detector import MovingAveragePeakDetector
     import numpy as np
@@ -52,7 +52,7 @@ Steps in the Script:
     np.random.seed(20)
 
     # Step 1: Define the Flow Parameters
-    flow = Flow(
+    flow = FlowCell(
         flow_speed=8e-6,           # Flow speed: 8 micrometers per second
         flow_area=1e-6,            # Flow area: 1 square micrometer
         total_time=8.0,            # Total simulation time: 8 seconds
@@ -70,7 +70,7 @@ Steps in the Script:
 
 Step 2: Define Particle Size Distributions (Two Normal Distributions)
 
-.. GENERATED FROM PYTHON SOURCE LINES 41-105
+.. GENERATED FROM PYTHON SOURCE LINES 41-111
 
 .. code-block:: python3
 
@@ -86,9 +86,15 @@ Step 2: Define Particle Size Distributions (Two Normal Distributions)
         std_dev=3e-6               # Standard deviation of particle size: 1 micrometer
     )
 
+    ri_distribution_1 = NormalDistribution(
+        scale_factor=1,
+        mean=1.5,                # Mean particle size: 30 micrometers
+        std_dev=0.05               # Standard deviation of particle size: 1 micrometer
+    )
+
     scatterer_distribution = ScattererDistribution(
         flow=flow,
-        refractive_index=[1.5, 1.7],      # Refractive index of the particles
+        refractive_index=[ri_distribution_1],      # Refractive index of the particles
         size=[size_distribution_0, size_distribution_1]  # List of distributions for different scatterer populations
     )
 
@@ -104,7 +110,7 @@ Step 2: Define Particle Size Distributions (Two Normal Distributions)
 
     # Step 4: Set up Detectors (Two Detectors at Different Angles)
     detector_0 = Detector(
-        theta_angle=90,            # Angle: 90 degrees (Side Scatter)
+        phi_angle=90,            # Angle: 90 degrees (Side Scatter)
         NA=0.1,                    # Numerical aperture of the detector optics
         name='Side',               # Name of the detector
         responsitivity=1,          # Responsitivity of the detector
@@ -116,7 +122,7 @@ Step 2: Define Particle Size Distributions (Two Normal Distributions)
     )
 
     detector_1 = Detector(
-        theta_angle=180,           # Angle: 180 degrees (Forward Scatter)
+        phi_angle=180,           # Angle: 180 degrees (Forward Scatter)
         NA=0.1,                    # Numerical aperture of the detector optics
         name='Front',              # Name of the detector
         responsitivity=1,          # Responsitivity of the detector
@@ -150,15 +156,15 @@ Step 2: Define Particle Size Distributions (Two Normal Distributions)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-108
+.. GENERATED FROM PYTHON SOURCE LINES 112-113
 
 Plot the scattering signals for both detectors
-cytometer.plot()
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-126
+.. GENERATED FROM PYTHON SOURCE LINES 113-132
 
 .. code-block:: python3
 
+    cytometer.plot()
 
     # Step 6: Analyze the Pulse Signals
     analyzer = Analyzer(detector_0, detector_1, algorithm=MovingAveragePeakDetector())
@@ -180,20 +186,32 @@ cytometer.plot()
 
 
 
-.. image-sg:: /gallery/images/sphx_glr_plot_density_2_populations_002.png
-   :alt: plot density 2 populations
-   :srcset: /gallery/images/sphx_glr_plot_density_2_populations_002.png
-   :class: sphx-glr-single-img
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image-sg:: /gallery/images/sphx_glr_plot_density_2_populations_002.png
+         :alt: Detector: Front
+         :srcset: /gallery/images/sphx_glr_plot_density_2_populations_002.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /gallery/images/sphx_glr_plot_density_2_populations_003.png
+         :alt: plot density 2 populations
+         :srcset: /gallery/images/sphx_glr_plot_density_2_populations_003.png
+         :class: sphx-glr-multi-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-128
+.. GENERATED FROM PYTHON SOURCE LINES 133-134
 
 Plot the 2D density plot
 
-.. GENERATED FROM PYTHON SOURCE LINES 128-129
+.. GENERATED FROM PYTHON SOURCE LINES 134-135
 
 .. code-block:: python3
 
@@ -201,9 +219,9 @@ Plot the 2D density plot
 
 
 
-.. image-sg:: /gallery/images/sphx_glr_plot_density_2_populations_003.png
+.. image-sg:: /gallery/images/sphx_glr_plot_density_2_populations_004.png
    :alt: 2D Density Plot of Scattering Intensities
-   :srcset: /gallery/images/sphx_glr_plot_density_2_populations_003.png
+   :srcset: /gallery/images/sphx_glr_plot_density_2_populations_004.png
    :class: sphx-glr-single-img
 
 
@@ -213,7 +231,7 @@ Plot the 2D density plot
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.691 seconds)
+   **Total running time of the script:** (0 minutes 1.768 seconds)
 
 
 .. _sphx_glr_download_gallery_plot_density_2_populations.py:

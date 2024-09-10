@@ -18,12 +18,12 @@ Steps in this Workflow:
 
 # %%
 # Step 1: Import necessary modules from FlowCyPy
-from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, Flow
+from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, FlowCell
 from FlowCyPy.distribution import NormalDistribution
 
 # %%
 # Example usage of the Flow class
-flow = Flow(
+flow = FlowCell(
     flow_speed=80e-6,       # 80 micrometers per second
     flow_area=1e-6,         # 1 square micrometer
     total_time=1.0,         # 1 second of flow
@@ -76,7 +76,7 @@ source = Source(
 # A detector is used to measure the scattered light. The detector's numerical aperture and responsitivity
 # affect how much light it collects and converts to an electrical signal.
 detector = Detector(
-    theta_angle=90,              # Angle of the detector relative to the incident light beam
+    phi_angle=90,              # Angle of the detector relative to the incident light beam
     NA=0.4,                      # Numerical aperture of the detector optics
     name='first detector',       # Name or identifier for this detector
     responsitivity=1,            # Responsitivity of the detector (efficiency of detecting scattered light)

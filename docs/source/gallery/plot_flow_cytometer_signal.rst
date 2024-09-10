@@ -39,11 +39,11 @@ their scattering properties.
 
     # Step 1: Import the necessary libraries
     # --------------------------------------
-    from FlowCyPy import FlowCytometer, ScattererDistribution, Detector, Source, Flow
+    from FlowCyPy import FlowCytometer, ScattererDistribution, Detector, Source, FlowCell
     from FlowCyPy.distribution import NormalDistribution
 
     # Example usage of the Flow class
-    flow = Flow(
+    flow = FlowCell(
         flow_speed=80e-6,  # 80 micrometers per second
         flow_area=1e-6,  # 1 square micrometer
         total_time=1.0,  # 1 second of flow
@@ -140,7 +140,7 @@ their scattering properties.
     detector_fsc = Detector(
         name='FSC',                   # Forward Scatter (FSC) detector
         NA=0.2,                       # Numerical aperture of the detector
-        theta_angle=180,              # Angle relative to the light beam
+        phi_angle=180,              # Angle relative to the light beam
         acquisition_frequency=1e3,    # Acquisition frequency: 1000 Hz
         noise_level=1e-3,             # Noise floor of 0.0001 volt
         saturation_level=10,          # Maximum signal before saturation
@@ -152,7 +152,7 @@ their scattering properties.
     detector_ssc = Detector(
         name='SSC',                   # Side Scatter (SSC) detector
         NA=0.2,                       # Numerical aperture of the SSC detector
-        theta_angle=90,               # Positioned at 90 degrees to detect side scatter
+        phi_angle=90,               # Positioned at 90 degrees to detect side scatter
         acquisition_frequency=1e3,    # Acquisition frequency: 1000 Hz
         noise_level=1e-3,             # Noise floor of 0.0001 volt
         saturation_level=10,          # Maximum signal before saturation
@@ -224,7 +224,7 @@ their scattering properties.
     +-----------------------+----------------------------+
     | Property              | Value                      |
     +=======================+============================+
-    | Mean Refractive Index | 1.52 refractive_index_unit |
+    | Mean Refractive Index | 1.50 refractive_index_unit |
     +-----------------------+----------------------------+
     | Mean Size             | 1.00×10¹ µm                |
     +-----------------------+----------------------------+
@@ -253,7 +253,7 @@ their scattering properties.
     +-----------------------+----------------------------+
     | Property              | Value                      |
     +=======================+============================+
-    | Mean Refractive Index | 1.52 refractive_index_unit |
+    | Mean Refractive Index | 1.50 refractive_index_unit |
     +-----------------------+----------------------------+
     | Mean Size             | 1.00×10¹ µm                |
     +-----------------------+----------------------------+
@@ -335,7 +335,7 @@ their scattering properties.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.068 seconds)
+   **Total running time of the script:** (0 minutes 0.477 seconds)
 
 
 .. _sphx_glr_download_gallery_plot_flow_cytometer_signal.py:
