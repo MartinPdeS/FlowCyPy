@@ -20,97 +20,117 @@ Steps in the Script:
 """
 
 # Import necessary libraries and modules
+import numpy as np
 from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, FlowCell, Plotter
 from FlowCyPy.distribution import NormalDistribution
 from FlowCyPy.peak_detector import BasicPeakDetector
+from FlowCyPy.units import (
+    microsecond,
+    micrometer,
+    meter,
+    refractive_index_unit,
+    milliliter,
+    millisecond,
+    second,
+    particle,
+    nanometer,
+    milliwatt,
+    degree,
+    volt,
+    watt,
+    megahertz
+)
+
+# Set random seed for reproducibility
+np.random.seed(30)
 
 # Step 1: Define the Flow Parameters
 flow = FlowCell(
-    flow_speed=8e-6,         # 80 micrometers per second
-    flow_area=1e-6,          # 1 square micrometer
-    total_time=180.0,        # Total simulation time of 40 seconds
-    scatterer_density=1e11   # Scatterer density of 1e11 particles per cubic meter
-)
-
-size_distribution = NormalDistribution(
-    mean=10e-6,         # Mean particle size: 10 µm
-    std_dev=0.8e-8,     # Standard deviation of particle size: 0.8 µm
-)
-
-
-refractive_index_distribution = NormalDistribution(
-    mean=1.4,         # Mean particle size: 10 µm
-    std_dev=0.1,     # Standard deviation of particle size: 0.8 µm
+    flow_speed=7.56 * meter / second / 30,                # Flow speed: 8 micrometers per second
+    flow_area=(10 * micrometer) ** 2,                     # Flow area: 1 square micrometer
+    total_time=10 * millisecond,                          # Total simulation time: 8 milliseconds
+    scatterer_density=1.8e+9 * particle / milliliter / 5  # Particle density: 1e12 particles per cubic meter
 )
 
 # %%
-# Step 2: Define the Scatterer Distribution (Normal Distribution of Particle Sizes)
+# Step 2: Define Particle Size Distributions (Two Normal Distributions)
+size_distribution_0 = NormalDistribution(
+    mean=500 * nanometer,      # Mean particle size: 3 micrometers
+    std_dev=100 * nanometer    # Standard deviation of particle size: 0.5 micrometer
+)
+
+ri_distribution_1 = NormalDistribution(
+    mean=1.5 * refractive_index_unit,     # Mean particle size: 30 micrometers
+    std_dev=0.05 * refractive_index_unit  # Standard deviation of particle size: 1 micrometer
+)
+
 scatterer_distribution = ScattererDistribution(
     flow=flow,
-    refractive_index=[refractive_index_distribution],  # Refractive index of the particles
-    size=[size_distribution]   # Normal distribution for particle sizes
+    refractive_index=ri_distribution_1,            # Refractive index of the particles
+    size=size_distribution_0  # List of distributions for different scatterer populations
 )
 
 scatterer_distribution.plot()
 
+# %%
 # Step 3: Set up the Laser Source
 source = Source(
-    NA=0.3,                      # Numerical aperture of the focusing optics
-    wavelength=1550e-9,          # Wavelength of the laser source: 1550 nm
-    optical_power=200e-3,        # Optical power of the laser source: 200 milliwatt
+    NA=1.8,                       # Numerical aperture of the laser optics
+    wavelength=800 * nanometer,   # Laser wavelength: 800 nm
+    optical_power=2 * milliwatt   # Laser optical power: 200 milliwatt
 )
 
-# Step 4: Set up Detectors
+# Step 4: Set up Detectors (Two Detectors at Different Angles)
 detector_0 = Detector(
-    phi_angle=90,              # Angle of the detector relative to the incident light beam
-    NA=0.4,                      # Numerical aperture of the detector optics
-    name='Side',                  # Name or identifier for this detector
-    responsitivity=1,            # Responsitivity of the detector (efficiency)
-    acquisition_frequency=1e4,   # Sampling frequency: 10,000 Hz
-    noise_level=0e-2,            # Signal noise level: 1 millivolt
-    baseline_shift=0.00,         # Baseline shift of the detector output
-    saturation_level=1e30,       # Saturation level of the detector signal
-    n_bins=1024                  # Discretization bins for digitizing the signal
+    phi_angle=90 * degree,                # Angle: 90 degrees (Side Scatter)
+    NA=1.2,                               # Numerical aperture of the detector optics
+    name='Side',                          # Name of the detector
+    responsitivity=1 * volt / watt,       # Responsitivity of the detector
+    acquisition_frequency=10 * megahertz, # Sampling frequency: 10,000 Hz
+    noise_level=0e-2 * volt,              # No noise
+    baseline_shift=0.00 * volt,           # No baseline shift
+    saturation_level=100 * volt,          # No signal saturation
+    n_bins='14bit'                        # Discretization bins
 )
 
 detector_1 = Detector(
-    phi_angle=0,               # Angle of the detector relative to the incident light beam
-    NA=0.4,                      # Numerical aperture of the detector optics
-    name='Front',                # Name or identifier for this detector
-    responsitivity=1,            # Responsitivity of the detector (efficiency)
-    acquisition_frequency=1e4,   # Sampling frequency: 10,000 Hz
-    noise_level=0e-2,            # Signal noise level: 1 millivolt
-    baseline_shift=0.00,         # Baseline shift of the detector output
-    saturation_level=1e30,       # Saturation level of the detector signal
-    n_bins=1024                  # Discretization bins for digitizing the signal
+    phi_angle=180 * degree,               # Angle: 180 degrees (Front Scatter)
+    NA=1.2,                               # Numerical aperture of the detector optics
+    name='Front',                         # Name of the detector
+    responsitivity=1 * volt / watt,       # Responsitivity of the detector
+    acquisition_frequency=10 * megahertz, # Sampling frequency: 10,000 Hz
+    noise_level=0e-2 * volt,              # No noise
+    baseline_shift=0.00 * volt,           # No baseline shift
+    saturation_level=100 * volt,          # No signal saturation
+    n_bins='14bit'                         # Discretization bins
 )
 
 # Step 5: Simulate the Flow Cytometry Experiment
 cytometer = FlowCytometer(
-    coupling_mechanism='mie',                 # Use Mie scattering for particles
-    source=source,                            # Laser source defined above
+    coupling_mechanism='mie',                       # Use Mie scattering for particle simulation
+    source=source,                                  # Laser source
     scatterer_distribution=scatterer_distribution,  # Particle size distribution
-    detectors=[detector_0, detector_1]        # List of detectors
+    detectors=[detector_0, detector_1]              # Two detectors in the setup
 )
-
 
 # Run the simulation to generate the scattering signals
 cytometer.simulate_pulse()
 
+# Plot the scattering signals for both detectors
 cytometer.plot()
 
-# %%
 # Step 6: Analyze the Pulse Signals
 analyzer = Analyzer(detector_0, detector_1, algorithm=BasicPeakDetector())
 
-
 # Analyze and extract data from both detectors
-analyzer.run_analysis(compute_peak_area=False)
-
-datasets = analyzer.get_coincidence_dataset(coincidence_margin=0.1)
+analyzer.run_analysis(
+    compute_peak_area=False,   # Set whether to compute peak area
+)
+analyzer.plot()
 
 # %%
-analyzer.plot()
+# Get coincidence data from the two detectors
+datasets = analyzer.get_coincidence_dataset(coincidence_margin=0.1 * microsecond)
 
 # Step 7: Plot the 2D Density of Scattering Intensities
 plotter = Plotter(

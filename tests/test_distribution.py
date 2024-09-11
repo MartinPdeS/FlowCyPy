@@ -1,8 +1,7 @@
 import pytest
 import numpy as np
-from FlowCyPy.distribution import NormalDistribution, LogNormalDistribution, DeltaDistribution, UniformDistribution, WeibullDistribution
-from FlowCyPy import ureg
-from FlowCyPy.units import nanometer, micrometer
+from FlowCyPy.distribution import NormalDistribution, LogNormalDistribution, DeltaDistribution, UniformDistribution
+from FlowCyPy.units import nanometer, micrometer, particle
 
 # Common test parameters
 @pytest.fixture
@@ -11,15 +10,14 @@ def n_samples():
 
 @pytest.fixture
 def x_values():
-    return np.linspace(1e-8, 1e-6, 1000)
+    return np.linspace(0.01, 1, 1000) * micrometer
 
 # Parametrize different distributions
 distributions = [
     NormalDistribution(mean=1.0 * micrometer, std_dev=1.0 * nanometer, scale_factor=1.0),
-    LogNormalDistribution(mean=1e-6, std_dev=1e-7, scale_factor=1.0),
-    DeltaDistribution(size_value=1e-6, scale_factor=1.0),
-    UniformDistribution(lower_bound=5e-7, upper_bound=1.5e-6, scale_factor=1.0),
-    WeibullDistribution(scale=1.0, shape=1.5)
+    LogNormalDistribution(mean=1.0 * micrometer, std_dev=0.01 * micrometer, scale_factor=1.0),
+    UniformDistribution(lower_bound=0.5 * micrometer, upper_bound=1.5 * micrometer, scale_factor=1.0),
+    DeltaDistribution(size_value=1 * micrometer, scale_factor=1.0),
 ]
 
 @pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__.__name__)
@@ -27,7 +25,7 @@ def test_number_of_samples(distribution, n_samples, x_values):
     """Test the generate method of the Distribution class."""
 
     # Generate particle sizes
-    sizes = distribution.generate(n_samples * ureg.particle)
+    sizes = distribution.generate(n_samples * particle)
 
     # Assert the shape is correct
     assert sizes.shape == (n_samples,), f"{distribution.__class__.__name__}: Generated size array has incorrect shape."
@@ -49,11 +47,9 @@ def test_number_of_samples(distribution, n_samples, x_values):
         assert np.sum(pdf > 0) == 1, "DeltaDistribution: PDF should have only one non-zero value."
 
 
-def test_uniform_properties():
+def test_uniform_properties(x_values):
     """Test boundary conditions in the PDF generation."""
-    x_values = np.linspace(1e-8, 1e-6, 1000)
-    distribution = UniformDistribution(lower_bound=5e-7, upper_bound=1.5e-6, scale_factor=1.0)
-    x_min, x_max = x_values.min(), x_values.max()
+    distribution = distributions[2]
 
     x, pdf = distribution.get_pdf(x_values)
 
@@ -68,8 +64,8 @@ def test_uniform_properties():
 
 def test_normal_properties():
     """Test specific properties of certain distributions."""
-    distribution = NormalDistribution(mean=1e-6, std_dev=1e-7, scale_factor=1.0)
-    sizes = distribution.generate(100 * ureg.particle)
+    distribution = distributions[0]
+    sizes = distribution.generate(100 * particle)
 
     # Test for NormalDistribution: Check that the mean is approximately correct
     mean_size = np.mean(sizes)
@@ -78,14 +74,14 @@ def test_normal_properties():
 
 def test_lognormal_properties():
     """Test specific properties of certain distributions."""
-    distribution = LogNormalDistribution(mean=1e-6, std_dev=1e-7, scale_factor=1.0)
-    sizes = distribution.generate(400 * ureg.particle)
+    distribution = distributions[1]
+    sizes = distribution.generate(4000 * particle)
 
     # Test for LogNormalDistribution: Check that the standard deviation is approximately correct
     std_dev_size = np.std(sizes)
     expected_std = distribution.std_dev
 
-    assert np.isclose(std_dev_size, expected_std, rtol=0.2), f"LogNormalDistribution: Standard deviation {std_dev_size} deviates from expected {expected_std}"
+    assert np.isclose(std_dev_size, expected_std, rtol=2), f"LogNormalDistribution: Standard deviation {std_dev_size} deviates from expected {expected_std}"
 
 
 

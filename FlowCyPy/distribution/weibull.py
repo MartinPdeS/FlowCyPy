@@ -4,8 +4,17 @@ import numpy as np
 from typing import Tuple
 from FlowCyPy.units import Quantity
 from FlowCyPy.distribution.base_class import BaseDistribution
+from pydantic.dataclasses import dataclass
 
-@dataclass
+config_dict = dict(
+    arbitrary_types_allowed=True,
+    kw_only=True,
+    slots=True,
+    extra='forbid'
+)
+
+
+@dataclass(config=config_dict)
 class WeibullDistribution(BaseDistribution):
     r"""
     Represents a Weibull distribution for particle sizes.
@@ -14,26 +23,17 @@ class WeibullDistribution(BaseDistribution):
 
     Attributes
     ----------
-    shape : float
+    shape : Quantity
         The shape parameter (k), controls the skewness of the distribution.
-        Default is 1.5, which gives a moderate skewness.
-    scale : float
+    scale : Quantity
         The scale parameter (λ), controls the spread of the distribution.
-        Default is 1.0, which defines the average size.
     scale_factor : float, optional
         A scaling factor applied to the PDF (not the sizes).
     """
 
-    shape: Optional[float] = 1.5  # Default shape parameter
-    scale: Optional[float] = 1.0  # Default scale parameter
+    shape: Quantity
+    scale: Quantity
     scale_factor: Optional[float] = 1.0
-
-    def __post_init__(self):
-        if isinstance(self.shape, Quantity):
-            self.shape = self.shape.to_base_units().magnitude
-
-        if isinstance(self.scale, Quantity):
-            self.scale = self.scale.to_base_units().magnitude
 
     def generate(self, n_samples: int) -> np.ndarray:
         """
@@ -49,10 +49,12 @@ class WeibullDistribution(BaseDistribution):
         np.ndarray
             An array of particle sizes in meters.
         """
+        common_unit = self.shape.units
+
         return np.random.weibull(
-            self.shape,
-            n_samples.magnitude
-        )
+            self.shape.magnitude,
+            size=n_samples.magnitude
+        ) * common_unit
 
     def get_pdf(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -68,6 +70,9 @@ class WeibullDistribution(BaseDistribution):
         Tuple[np.ndarray, np.ndarray]
             The input x-values and the corresponding PDF values.
         """
-        pdf = (self.shape / self.scale) * (x / self.scale) ** (self.shape - 1) * np.exp(-(x / self.scale) ** self.shape)
+        a = self.shape / self.scale
+        b = (x / self.scale)
+        c =  np.exp(-(x / self.scale) ** self.shape)
+        pdf = a * b ** (self.shape - 1) * c
 
         return x, self.scale_factor * pdf

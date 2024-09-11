@@ -4,6 +4,18 @@ from FlowCyPy import FlowCytometer, Detector, ScattererDistribution, Source, Flo
 import matplotlib.pyplot as plt
 from unittest.mock import patch
 from FlowCyPy.distribution import NormalDistribution
+from FlowCyPy.units import (
+    refractive_index_unit,
+    degree,
+    watt,
+    hertz,
+    volt,
+    meter,
+    second,
+    micrometer,
+    particle,
+    liter
+)
 
 
 @pytest.fixture
@@ -11,37 +23,37 @@ def default_detector():
     return Detector(
         name='default',
         NA=1,
-        phi_angle=90,
-        responsitivity=1,
-        acquisition_frequency=1e3,
-        noise_level=0,
-        saturation_level=1_000,
-        baseline_shift=0.0,
-        n_bins=100,
+        phi_angle=90 * degree,
+        responsitivity=1 * volt / watt,
+        acquisition_frequency=1e5 * hertz,
+        noise_level=0 * volt,
+        saturation_level=1_000 * volt,
+        baseline_shift=0.0 * volt,
+        n_bins='12bit',
     )
 
 @pytest.fixture
 def flow():
     return  FlowCell(
-        flow_speed=80e-6,
-        flow_area=1e-6,
-        total_time=1.0,
-        scatterer_density=1e11
+        flow_speed=0.2 * meter / second,
+        flow_area=1e-6 * meter * meter,
+        total_time=1e-3 * second,
+        scatterer_density=1e12 * particle / liter
     )
 
 
 @pytest.fixture
 def default_distribution():
     return NormalDistribution(
-        mean=1e-6,
-        std_dev=1e-7
+        mean=1.0 * micrometer,
+        std_dev=0.1 * micrometer
     )
 
 @pytest.fixture
 def default_scatterer_distribution(flow, default_distribution):
     return  ScattererDistribution(
         flow=flow,
-        refractive_index=[1.5],
+        refractive_index=[1.5 * refractive_index_unit],
         size=[default_distribution],
     )
 
@@ -50,8 +62,8 @@ def default_scatterer_distribution(flow, default_distribution):
 def default_source():
     return Source(
         NA=1,
-        wavelength=1550e-9,
-        optical_power=1e-3,
+        wavelength=1550e-9 * meter,
+        optical_power=1e-3 * watt,
     )
 
 def test_flow_cytometer_simulation(default_source, default_detector, default_scatterer_distribution):

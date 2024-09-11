@@ -4,6 +4,7 @@ from FlowCyPy import ureg
 from PyMieSim.single.scatterer import Sphere
 from PyMieSim.single.source import Gaussian
 from PyMieSim.single.detector import Photodiode
+from FlowCyPy.units import meter, watt, degree
 
 
 def compute_detected_signal(
@@ -42,17 +43,17 @@ def compute_detected_signal(
         The detected scattering intensity for the given particle and detector.
     """
     pms_source = Gaussian(
-        wavelength=source.wavelength.magnitude,
+        wavelength=source.wavelength.to(meter).magnitude,
         polarization=0,
-        optical_power=source.optical_power.magnitude,
+        optical_power=source.optical_power.to(watt).magnitude,
         NA=source.NA
     )
 
     couplings = np.empty_like(scatterer_distribution.size_list.magnitude)
 
-    sizes = scatterer_distribution.size_list.magnitude
+    sizes = scatterer_distribution.size_list.to(meter).magnitude
     ris = scatterer_distribution.refractive_index_list.magnitude
-    medium_ris = scatterer_distribution.medium_refractive_index_list.magnitude
+    medium_ris = ris * 0 + 1.0 #  scatterer_distribution.medium_refractive_index_list.magnitude
 
     for index, (size, ri, medium_ri) in enumerate(zip(sizes, ris, medium_ris)):
 
@@ -65,8 +66,8 @@ def compute_detected_signal(
 
         pms_detector = Photodiode(
             NA=detector.NA,
-            gamma_offset=detector.gamma_angle.magnitude,
-            phi_offset=detector.phi_angle.magnitude,
+            gamma_offset=detector.gamma_angle.to(degree).magnitude,
+            phi_offset=detector.phi_angle.to(degree).magnitude,
             polarization_filter=None,
             sampling=detector.sampling
         )

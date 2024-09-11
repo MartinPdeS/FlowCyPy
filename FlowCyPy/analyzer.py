@@ -88,7 +88,7 @@ class Analyzer:
         matching_index = find_matching_indices(
             array_0=self.datasets[0].time,
             array_1=self.datasets[1].time,
-            margin=coincidence_margin * ureg.second
+            margin=coincidence_margin
         )
 
         coincidence_datasets = []
@@ -143,15 +143,20 @@ class Analyzer:
 
             for ax, detector, dataset in zip(axes, self.detectors, self.datasets):
                 ax.plot(detector.time.magnitude, detector.signal.magnitude, label='Signal')
+
                 ax.vlines(dataset.time.magnitude, ymin=0, ymax=dataset.height.magnitude, color='r', label='Peaks')
+
                 dataset._add_to_ax(ax, detector.time, detector.signal)
 
                 handles, labels = ax.get_legend_handles_labels()
                 by_label = dict(zip(labels, handles))
                 ax.legend(by_label.values(), by_label.keys())
-                ax.set_ylabel(f'Signal [{detector.name}]')
 
-            axes[-1].set_xlabel('Time [s]')
+                ax.set_ylabel(f'{detector.name} signal [{detector.signal.units}]')
+
+                ax.set_xlabel(f'Time [{detector.time.units}]')
+
+            axes[0].set_xlabel('')
             plt.show()
 
     def to_dataframe(self) -> pd.DataFrame:

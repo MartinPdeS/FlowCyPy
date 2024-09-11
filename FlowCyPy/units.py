@@ -1,16 +1,21 @@
 from pint import UnitRegistry
 
 # Initialize a unit registry
-ureg = UnitRegistry(system='mks')
+ureg = UnitRegistry()
 Quantity = ureg.Quantity
 
 
 
 watt = ureg.watt
+milliwatt = ureg.milliwatt
+microwatt = ureg.microwatt
+
+volt = ureg.volt
+millivolt = ureg.millivolt
+microvolt = ureg.microvolt
 
 particle = ureg.particle
-hertz = ureg.hertz
-volt = ureg.volt
+
 refractive_index_unit = ureg.refractive_index_unit
 degree = ureg.degree
 
@@ -25,3 +30,10 @@ microsecond = ureg.microsecond
 
 liter = ureg.liter
 milliliter = ureg.milliliter
+microliter = ureg.microliter
+
+
+hertz = ureg.hertz
+kilohertz = ureg.kilohertz
+megahertz = ureg.megahertz
+gigahertz = ureg.gigahertz

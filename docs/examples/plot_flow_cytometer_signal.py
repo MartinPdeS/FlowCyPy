@@ -18,6 +18,23 @@ their scattering properties.
 # --------------------------------------
 from FlowCyPy import FlowCytometer, ScattererDistribution, Detector, Source, FlowCell
 from FlowCyPy.distribution import NormalDistribution
+from FlowCyPy.units import (
+    microsecond,
+    micrometer,
+    meter,
+    refractive_index_unit,
+    milliliter,
+    millisecond,
+    second,
+    particle,
+    nanometer,
+    milliwatt,
+    degree,
+    volt,
+    watt,
+    megahertz
+)
+
 
 # Example usage of the Flow class
 flow = FlowCell(

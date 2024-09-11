@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from dataclasses import dataclass, field
 from tabulate import tabulate
 from FlowCyPy import ureg
+from FlowCyPy.utils import array_to_compact
 from FlowCyPy.units import Quantity, hertz, volt, watt, degree
 
 @dataclass
@@ -63,7 +64,6 @@ class Detector:
         """Automatically adds physical units to the attributes after initialization."""
         self._process_n_bins()
         self._add_units()
-        self.pulses = []
 
     def _add_units(self) -> None:
         """
@@ -103,10 +103,6 @@ class Detector:
         print(f"\nDetector [{self.name}] Properties")
         print(tabulate(properties, headers=["Property", "Value"], tablefmt="grid"))
 
-    def add_pulse_to_raw_signal(self, pulse) -> None:
-        self.raw_signal += pulse.generate(self.time)
-        self.pulses.append(pulse)
-
     def capture_signal(self) -> None:
         """
         Captures and processes the raw signal by adding noise, applying baseline shifts, and saturating the signal.
@@ -118,6 +114,8 @@ class Detector:
         raw_signal : np.ndarray
             The raw signal before processing.
         """
+        self.raw_signal = array_to_compact(self.raw_signal)
+
         self.signal = self.raw_signal.copy()
 
         # Add baseline shift
@@ -141,6 +139,7 @@ class Detector:
         time_points = int((self.acquisition_frequency * total_time))
 
         self.time = np.linspace(0, total_time, time_points)
+        self.time =  array_to_compact(self.time)
         self.dt = self.time[1] - self.time[0]
         self.raw_signal = np.zeros(time_points) * ureg.volt
 
@@ -155,20 +154,12 @@ class Detector:
         color : str, optional
             The color of the plot (default is 'C0').
         """
-        ax.plot(
-            self.time.magnitude,
-            self.signal.magnitude,
-            color=color,
-            label=f'{self.name} Signal'
-        )
-
-        for pulse in self.pulses:
-            pulse._add_to_ax(ax=ax)
+        ax.plot(self.time, self.signal, color=color, label=f'{self.name} Signal')
 
         ax.set(
             title=f'Detector: {self.name}',
-            xlabel='Time [seconds]',
-            ylabel='Signal [V]'
+            xlabel=f'Time [{self.time.units}]',
+            ylabel=f'Signal [{self.signal.units}]'
         )
 
         ax.legend()

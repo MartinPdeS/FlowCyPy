@@ -34,13 +34,6 @@ class UniformDistribution(BaseDistribution):
     upper_bound: float
     scale_factor: Optional[float] = 1.0
 
-    def __post_init__(self):
-        if isinstance(self.lower_bound, Quantity):
-            self.lower_bound = self.lower_bound.to_base_units().magnitude
-
-        if isinstance(self.upper_bound, Quantity):
-            self.upper_bound = self.upper_bound.to_base_units().magnitude
-
     def generate(self, n_samples: int) -> np.ndarray:
         """
         Generates a uniform distribution of scatterer sizes.
@@ -57,11 +50,12 @@ class UniformDistribution(BaseDistribution):
         np.ndarray
             An array of scatterer sizes in meters.
         """
+        common_unit = self.lower_bound.units
         return np.random.uniform(
-            self.lower_bound,
-            self.upper_bound,
+            self.lower_bound.magnitude,
+            self.upper_bound.to(common_unit).magnitude,
             n_samples.magnitude
-        )
+        ) * common_unit
 
     def get_pdf(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -79,10 +73,12 @@ class UniformDistribution(BaseDistribution):
         Tuple[np.ndarray, np.ndarray]
             The input x-values and the corresponding scaled PDF values.
         """
+        common_unit = self.lower_bound.units
+
         pdf = uniform.pdf(
-            x,
-            loc=self.lower_bound,
-            scale=self.upper_bound - self.lower_bound
+            x.to(common_unit).magnitude,
+            loc=self.lower_bound.magnitude,
+            scale=self.upper_bound.to(common_unit).magnitude - self.lower_bound.magnitude
         )
 
         return x, self.scale_factor * pdf

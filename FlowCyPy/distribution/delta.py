@@ -1,11 +1,19 @@
 
 from FlowCyPy.distribution.base_class import BaseDistribution
-from dataclasses import dataclass
 import numpy as np
 from typing import Tuple, Optional
 from FlowCyPy.units import Quantity
+from pydantic.dataclasses import dataclass
 
-@dataclass
+config_dict = dict(
+    arbitrary_types_allowed=True,
+    kw_only=True,
+    slots=True,
+    extra='forbid'
+)
+
+
+@dataclass(config=config_dict)
 class DeltaDistribution(BaseDistribution):
     """
     Represents a delta-like distribution for particle sizes.
@@ -20,18 +28,14 @@ class DeltaDistribution(BaseDistribution):
 
     Attributes
     ----------
-    size_value : float
+    size_value : Quantity
         The particle size for the delta distribution in meters.
     scale_factor : float, optional
         A scaling factor applied to the PDF (not the sizes).
     """
 
-    size_value: float
+    size_value: Quantity
     scale_factor: Optional[float] = 1.0
-
-    def __post_init__(self):
-        if isinstance(self.size_value, Quantity):
-            self.size_value = self.size_value.to_base_units().magnitude
 
     def generate(self, n_samples: int) -> np.ndarray:
         """
@@ -49,10 +53,7 @@ class DeltaDistribution(BaseDistribution):
         np.ndarray
             An array of identical scatterer sizes in meters.
         """
-        return np.full(
-            n_samples.magnitude,
-            self.size_value
-        )
+        return np.ones(n_samples.magnitude) * self.size_value
 
     def get_pdf(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -70,7 +71,10 @@ class DeltaDistribution(BaseDistribution):
         Tuple[np.ndarray, np.ndarray]
             The input x-values and the corresponding scaled PDF values.
         """
+        common_units = x.units
+
         pdf = np.zeros_like(x)
-        idx = (np.abs(x - self.size_value)).argmin()  # Delta-like function for singular value
+
+        idx = (np.abs(x.magnitude - self.size_value.to(common_units).magnitude)).argmin()  # Delta-like function for singular value
         pdf[idx] = 1.0
         return x, self.scale_factor * pdf

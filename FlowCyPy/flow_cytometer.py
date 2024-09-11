@@ -128,30 +128,15 @@ class FlowCytometer:
         width : np.ndarray
             The width of the pulse (standard deviation of the Gaussian, in seconds).
         """
-        centers = self.scatterer_distribution.flow.time_positions
+        # centers = self.scatterer_distribution.flow.time_positions
+
+        centers = np.concatenate([
+            p.time_positions for p in self.scatterer_distribution.populations
+        ])
 
         widths = self.source.waist / self.scatterer_distribution.flow.flow_speed * np.ones(centers.size)
+
         return centers, widths
-
-    def _add_to_ax(self, ax: plt.Axes) -> None:
-        """
-        Plots the signal for each detector channel on the given axis.
-
-        Parameters
-        ----------
-        ax : plt.Axes
-            The Matplotlib axis where the signal will be plotted.
-        """
-        ax.set(
-            title='Simulated raw flow-cytometry signal',
-            xlabel='Time [seconds]',
-            ylabel='Signal Intensity [V]'
-        )
-
-        for c, detector in enumerate(self.detectors):
-            detector._add_to_ax(ax=ax, color=f'C{c}')
-
-        ax.legend()
 
     def plot(self) -> None:
         """Plots the signals generated for each detector channel."""
@@ -160,6 +145,22 @@ class FlowCytometer:
         with plt.style.context(mps):
             fig, ax = plt.subplots(1, 1, figsize=(10, 6))
 
-            self._add_to_ax(ax=ax)
+            x_common_unit = self.detectors[0].time.units
+            y_common_unit = self.detectors[0].signal.units
 
+            ax.set(
+                title='Simulated raw flow-cytometry signal',
+                xlabel=f'Time [{x_common_unit}]',
+                ylabel=f'Raw signal [{y_common_unit}]'
+            )
+
+            for c, detector in enumerate(self.detectors):
+                ax.plot(
+                    detector.time.to(x_common_unit).magnitude,
+                    detector.signal.to(y_common_unit).magnitude,
+                    color=f'C{c}',
+                    label=f'{detector.name} Signal'
+                )
+
+            plt.legend()
             plt.show()

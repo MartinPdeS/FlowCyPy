@@ -1,12 +1,19 @@
 from FlowCyPy.distribution.base_class import BaseDistribution
-from dataclasses import dataclass
 import numpy as np
 from typing import Tuple, Optional
 from scipy.stats import norm
 from FlowCyPy.units import Quantity
+from pydantic.dataclasses import dataclass
+
+config_dict = dict(
+    arbitrary_types_allowed=True,
+    kw_only=True,
+    slots=True,
+    extra='forbid'
+)
 
 
-@dataclass
+@dataclass(config=config_dict)
 class NormalDistribution(BaseDistribution):
     r"""
     Represents a normal (Gaussian) distribution for particle sizes.
@@ -23,25 +30,17 @@ class NormalDistribution(BaseDistribution):
 
     Attributes
     ----------
-    mean : float
+    mean : Quantity
         The mean (average) particle size in meters.
-    std_dev : float
+    std_dev : Quantity
         The standard deviation of particle sizes in meters.
     scale_factor : float, optional
         A scaling factor applied to the PDF (not the sizes).
     """
 
-    mean: float
-    std_dev: float
+    mean: Quantity
+    std_dev: Quantity
     scale_factor: Optional[float] = 1.0
-
-    def __post_init__(self):
-        if isinstance(self.mean, Quantity):
-            self.mean = self.mean.to_base_units().magnitude
-
-        if isinstance(self.std_dev, Quantity):
-            self.std_dev = self.std_dev.to_base_units().magnitude
-
 
     def generate(self, n_samples: int) -> np.ndarray:
         """
@@ -59,12 +58,13 @@ class NormalDistribution(BaseDistribution):
         np.ndarray
             An array of scatterer sizes in meters.
         """
+        common_unit = self.mean.units
 
         return np.random.normal(
-            loc=self.mean,
-            scale=self.std_dev,
-            size=n_samples.magnitude
-        )
+            loc=self.mean.to(common_unit).magnitude,
+            scale=self.std_dev.to(common_unit).magnitude,
+            size=int(n_samples.magnitude)
+        ) * common_unit
 
     def get_pdf(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -82,5 +82,6 @@ class NormalDistribution(BaseDistribution):
         Tuple[np.ndarray, np.ndarray]
             The input x-values and the corresponding scaled PDF values.
         """
-        pdf = norm.pdf(x, loc=self.mean, scale=self.std_dev)
+        common_units = x.units
+        pdf = norm.pdf(x.magnitude, loc=self.mean.to(common_units).magnitude, scale=self.std_dev.to(common_units).magnitude)
         return x, self.scale_factor * pdf

@@ -2,13 +2,8 @@ import pytest
 import numpy as np
 from unittest.mock import patch
 import matplotlib.pyplot as plt
-from pint import UnitRegistry
 from FlowCyPy import Plotter
-
-# Assuming Plotter is already imported
-
-# Setup a UnitRegistry for the magnitudes in the test
-ureg = UnitRegistry()
+from FlowCyPy.units import Quantity
 
 class MockDetector:
     def __init__(self):
@@ -17,8 +12,8 @@ class MockDetector:
 # Mock dataset objects with 'time' and 'height' attributes
 class MockDataset:
     def __init__(self, heights):
-        self.time = ureg.Quantity(np.arange(len(heights)), 's')
-        self.height = ureg.Quantity(heights, 'dimensionless')
+        self.time = Quantity(np.arange(len(heights)), 's')
+        self.height = Quantity(heights, 'dimensionless')
 
 @pytest.fixture
 def dataset_0():

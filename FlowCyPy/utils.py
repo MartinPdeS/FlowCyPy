@@ -62,3 +62,8 @@ def find_matching_indices(array_0: np.ndarray, array_1: np.ndarray, margin: floa
     matching_indices = np.argwhere(difference_matrix <= margin)
 
     return matching_indices
+
+
+def array_to_compact(array: np.ndarray):
+    compact_unit = array.mean().to_compact().units
+    return array.to(compact_unit)

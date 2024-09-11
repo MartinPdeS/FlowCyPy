@@ -27,8 +27,8 @@ class Source():
 
     def _add_units_to_parameters(self) -> None:
         """Adds physical units to the core parameters of the Source."""
-        self.optical_power *= watt
-        self.wavelength *= meter
+        self.optical_power = Quantity(self.optical_power, watt)
+        self.wavelength = Quantity(self.wavelength, meter)
 
     def print_properties(self) -> None:
         """Displays the core properties of the flow cytometer and its detectors using the `tabulate` library."""

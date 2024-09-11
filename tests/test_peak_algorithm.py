@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from FlowCyPy.peak_detector import ThresholdPeakDetector, BasicPeakDetector, MovingAveragePeakDetector
-from FlowCyPy import ureg
+from FlowCyPy.units import second, volt, second
 from FlowCyPy.utils import generate_gaussian_signal
 
 
@@ -10,9 +10,9 @@ algorithms = [
     MovingAveragePeakDetector(threshold=0.5, window_size=3)
 ]
 
-EXPECTED_PEAKS = np.asarray([1, 3]) * ureg.second
-EXPECTED_HEIGHTS = np.asarray([3, 8]) * ureg.volt
-EXPECTED_STDS = np.asarray([0.01, 0.01]) * ureg.second
+EXPECTED_PEAKS = np.asarray([1, 3]) * second
+EXPECTED_HEIGHTS = np.asarray([3, 8]) * volt
+EXPECTED_STDS = np.asarray([0.01, 0.01]) * second
 
 # Parametrize the test with both detector fixtures
 @pytest.mark.parametrize("algorithm", algorithms, ids= lambda x: x.__repr__())

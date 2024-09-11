@@ -1,12 +1,19 @@
 from FlowCyPy.distribution.base_class import BaseDistribution
-from dataclasses import dataclass
 import numpy as np
 from typing import Tuple, Optional
 from scipy.stats import lognorm
 from FlowCyPy.units import Quantity
+from pydantic.dataclasses import dataclass
+
+config_dict = dict(
+    arbitrary_types_allowed=True,
+    kw_only=True,
+    slots=True,
+    extra='forbid'
+)
 
 
-@dataclass
+@dataclass(config=config_dict)
 class LogNormalDistribution(BaseDistribution):
     r"""
     Represents a log-normal distribution for particle sizes.
@@ -22,26 +29,19 @@ class LogNormalDistribution(BaseDistribution):
 
     Attributes
     ----------
-    mean : float
+    mean : Quantity
         The mean particle size in meters.
-    std_dev : float
+    std_dev : Quantity
         The standard deviation of the logarithm of particle sizes.
     scale_factor : float, optional
         A scaling factor applied to the PDF (not the sizes).
     """
 
-    mean: float
-    std_dev: float
+    mean: Quantity
+    std_dev: Quantity
     scale_factor: Optional[float] = 1.0
 
-    def __post_init__(self):
-        if isinstance(self.mean, Quantity):
-            self.mean = self.mean.to_base_units().magnitude
-
-        if isinstance(self.std_dev, Quantity):
-            self.std_dev = self.std_dev.to_base_units().magnitude
-
-    def generate(self, n_samples: int) -> np.ndarray:
+    def generate(self, n_samples: int) -> Quantity(np.ndarray):
         """
         Generates a log-normal distribution of scatterer sizes.
 
@@ -57,11 +57,12 @@ class LogNormalDistribution(BaseDistribution):
         np.ndarray
             An array of scatterer sizes in meters.
         """
+        common_unit = self.mean.units
         return np.random.lognormal(
-            mean=self.mean,
-            sigma=self.std_dev,
+            mean=self.mean.magnitude,
+            sigma=self.std_dev.to(common_unit).magnitude,
             size=n_samples.magnitude
-        )
+        ) * common_unit
 
     def get_pdf(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -79,6 +80,12 @@ class LogNormalDistribution(BaseDistribution):
         Tuple[np.ndarray, np.ndarray]
             The input x-values and the corresponding scaled PDF values.
         """
-        pdf = lognorm.pdf(x, s=self.std_dev, scale=self.mean)
+        common_units = x.units
+
+        pdf = lognorm.pdf(
+            x.to(common_units).magnitude,
+            s=self.std_dev.to(common_units).magnitude,
+            scale=self.mean.to(common_units).magnitude
+        )
 
         return x, self.scale_factor * pdf

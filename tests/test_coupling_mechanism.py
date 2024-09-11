@@ -3,14 +3,15 @@ import numpy as np
 from FlowCyPy import ScattererDistribution, Detector, Source, FlowCell
 from FlowCyPy.distribution import NormalDistribution
 from FlowCyPy.coupling_mechanism.rayleigh import compute_detected_signal
-from FlowCyPy import ureg
+from FlowCyPy.units import micrometer, refractive_index_unit
+from FlowCyPy.units import volt, watt, meter, hertz
 
 @pytest.fixture
 def normal_distribution():
     """Fixture for creating a NormalDistribution."""
     return NormalDistribution(
-        mean=1e-6,
-        std_dev=1e-7,
+        mean=1.0 * micrometer,
+        std_dev=0.1 * micrometer,
         scale_factor=1.0
     )
 
@@ -41,7 +42,7 @@ def detector():
 @pytest.fixture
 def scatterer_distribution(default_flow, normal_distribution):
     return ScattererDistribution(
-        refractive_index=[1.5],        # Refractive index of the particles
+        refractive_index=[1.5 * refractive_index_unit],  # Refractive index of the particles
         flow=default_flow,
         size=[normal_distribution]
     )
@@ -82,10 +83,10 @@ def test_detector_properties(detector):
     Test the detector's properties and ensure they are correctly initialized.
     """
     assert detector.NA == 0.1, f"Expected detector numerical aperture to be 0.1, but got {detector.NA}."
-    assert detector.responsitivity == 1.0 * ureg.volt / ureg.watt, f"Expected detector responsitivity to be 1.0, but got {detector.responsitivity}."
-    assert detector.acquisition_frequency == 1e4 * ureg.Hz, f"Expected acquisition frequency to be 10,000 Hz, but got {detector.acquisition_frequency}."
-    assert detector.noise_level == 1e-2 * ureg.volt, f"Expected noise level to be 0.01, but got {detector.noise_level}."
-    assert detector.saturation_level == 1e30 * ureg.volt, f"Expected saturation level to be 1e30, but got {detector.saturation_level}."
+    assert detector.responsitivity == 1.0 * volt / watt, f"Expected detector responsitivity to be 1.0, but got {detector.responsitivity}."
+    assert detector.acquisition_frequency == 1e4 * hertz, f"Expected acquisition frequency to be 10,000 Hz, but got {detector.acquisition_frequency}."
+    assert detector.noise_level == 1e-2 * volt, f"Expected noise level to be 0.01, but got {detector.noise_level}."
+    assert detector.saturation_level == 1e30 * volt, f"Expected saturation level to be 1e30, but got {detector.saturation_level}."
     assert detector.n_bins == 1024, f"Expected 1024 bins, but got {detector.n_bins}."
 
 def test_source_properties(source):
@@ -93,8 +94,8 @@ def test_source_properties(source):
     Test the properties of the light source to ensure they are correctly set.
     """
     assert source.NA == 0.2, f"Expected source numerical aperture to be 0.2, but got {source.NA}."
-    assert source.wavelength == 1550e-9 * ureg.meter, f"Expected source wavelength to be 1550 nm (1.55e-6 m), but got {source.wavelength}."
-    assert source.optical_power == 200e-3 * ureg.watt, f"Expected source optical power to be 200 mW, but got {source.optical_power}."
+    assert source.wavelength == 1550e-9 * meter, f"Expected source wavelength to be 1550 nm (1.55e-6 m), but got {source.wavelength}."
+    assert source.optical_power == 200e-3 * watt, f"Expected source optical power to be 200 mW, but got {source.optical_power}."
 
 if __name__ == '__main__':
     pytest.main([__file__])

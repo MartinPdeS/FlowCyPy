@@ -55,15 +55,14 @@ class Plotter:
                 marginal_kws=dict(fill=True, warn_singular=False),
             )
 
-
             joint_plot.plot_joint(sns.scatterplot, color='blue', alpha=0.5)
 
             joint_plot.figure.set_size_inches((10, 8))
 
             # Set axis labels for the plot
             joint_plot.set_axis_labels(
-                f'Detector [{self.dataset_0.detector.name}] Scattering Intensity',
-                f'Detector [{self.dataset_1.detector.name}] Scattering Intensity'
+                xlabel=f'Detector {self.dataset_0.detector.name} Scattering Intensity [{self.dataset_0.height.units}]',
+                ylabel=f'Detector {self.dataset_1.detector.name} Scattering dsdasdsa Intensity [{self.dataset_1.height.units}]'
             )
 
             # Add a title above the plot
@@ -75,12 +74,14 @@ class Plotter:
                 cax = divider.append_axes("bottom", size="5%", pad=0.5)
 
                 # Add a horizontal colorbar at the bottom
-                plt.colorbar(
+                colorbar = plt.colorbar(
                     joint_plot.ax_joint.collections[0],
                     cax=cax,
                     orientation="horizontal",
-                    label='Density'
+                    label='Density',
                 )
+
+                colorbar.formatter.set_powerlimits((0, 0))
 
             plt.tight_layout()
 
