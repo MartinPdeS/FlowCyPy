@@ -3,7 +3,7 @@ FlowCyPy: Flow Cytometer Simulation Tool
 
 |logo|
 
-|python| |coverage| |PyPi| |PyPi_download| |docs|
+|python| |coverage| |PyPi| |PyPi_download| |docs| |colab|
 
 Overview
 --------
@@ -204,3 +204,6 @@ Email:`martin.poinsinet.de.sivry@gmail.ca <mailto:martin.poinsinet.de.sivry@gmai
 
 .. |docs| image:: https://readthedocs.org/projects/flowcytometry/badge/?version=latest
    :target: https://flowcytometry.readthedocs.io/en/latest/
+
+.. |colab| image:: https://colab.research.google.com/assets/colab-badge.svg
+    :target: https://colab.research.google.com/github/MartinPdeS/FlowCyPy/blob/master/workflow.ipynb
