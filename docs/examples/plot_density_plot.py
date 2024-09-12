@@ -24,6 +24,7 @@ import numpy as np
 from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, FlowCell, Plotter
 from FlowCyPy.distribution import NormalDistribution
 from FlowCyPy.peak_detector import BasicPeakDetector
+from FlowCyPy.population import Population
 from FlowCyPy.units import (
     microsecond,
     micrometer,
@@ -49,25 +50,30 @@ flow = FlowCell(
     flow_speed=7.56 * meter / second / 30,                # Flow speed: 8 micrometers per second
     flow_area=(10 * micrometer) ** 2,                     # Flow area: 1 square micrometer
     total_time=10 * millisecond,                          # Total simulation time: 8 milliseconds
-    scatterer_density=1.8e+9 * particle / milliliter / 5  # Particle density: 1e12 particles per cubic meter
 )
 
 # %%
 # Step 2: Define Particle Size Distributions (Two Normal Distributions)
-size_distribution_0 = NormalDistribution(
-    mean=500 * nanometer,      # Mean particle size: 3 micrometers
-    std_dev=100 * nanometer    # Standard deviation of particle size: 0.5 micrometer
+ev_size = NormalDistribution(
+    mean=200 * nanometer,      # Mean particle size: 3 micrometers
+    std_dev=10 * nanometer     # Standard deviation of particle size: 0.5 micrometer
 )
 
-ri_distribution_1 = NormalDistribution(
-    mean=1.5 * refractive_index_unit,     # Mean particle size: 30 micrometers
-    std_dev=0.05 * refractive_index_unit  # Standard deviation of particle size: 1 micrometer
+ev_ri = NormalDistribution(
+    mean=1.39 * refractive_index_unit,    # Mean particle size: 30 micrometers
+    std_dev=0.01 * refractive_index_unit  # Standard deviation of particle size: 1 micrometer
+)
+
+ev = Population(
+    size=ev_size,
+    refractive_index=ev_ri,
+    concentration=1.8e+9 * particle / milliliter / 3,
+    name='EV'
 )
 
 scatterer_distribution = ScattererDistribution(
     flow=flow,
-    refractive_index=ri_distribution_1,            # Refractive index of the particles
-    size=size_distribution_0  # List of distributions for different scatterer populations
+    populations=[ev]
 )
 
 scatterer_distribution.plot()

@@ -1,15 +1,11 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
-from collections.abc import Iterable
 from dataclasses import dataclass
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-import seaborn as sns
 import numpy as np
-from FlowCyPy.distribution import BaseDistribution, DeltaDistribution
+from FlowCyPy.distribution import BaseDistribution
 from FlowCyPy.units import Quantity, meter, refractive_index_unit
-from FlowCyPy.flow import FlowCell
-from FlowCyPy.utils import array_to_compact
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Population
 from FlowCyPy.joint_plot import JointPlotWithMarginals
 

@@ -9,6 +9,6 @@ from .flow_cytometer import FlowCytometer
 from .analyzer import Analyzer
 from .scatterer_distribution import ScattererDistribution
 from .detector import Detector
-from .flow import FlowCell
+from .flow_cell import FlowCell
 from .source import Source
 from .plotter import Plotter

@@ -57,36 +57,36 @@ flow = FlowCell(
 
 # %%
 # Step 2: Define Particle Size Distributions (Two Normal Distributions)
-size_lp = NormalDistribution(
+lp_size = NormalDistribution(
     mean=200 * nanometer,      # Mean particle size: 3 micrometers
     std_dev=10 * nanometer     # Standard deviation of particle size: 0.5 micrometer
 )
 
-size_ev = NormalDistribution(
+ev_size = NormalDistribution(
     mean=50 * nanometer,      # Mean particle size: 30 micrometers
     std_dev=5.0 * nanometer   # Standard deviation of particle size: 1 micrometer
 )
 
-ri_ev = NormalDistribution(
+ev_ri = NormalDistribution(
     mean=1.39 * refractive_index_unit,    # Mean particle size: 30 micrometers
     std_dev=0.01 * refractive_index_unit  # Standard deviation of particle size: 1 micrometer
 )
 
-ri_lp = NormalDistribution(
+lp_ri = NormalDistribution(
     mean=1.45 * refractive_index_unit,    # Mean particle size: 30 micrometers
     std_dev=0.01 * refractive_index_unit  # Standard deviation of particle size: 1 micrometer
 )
 
 ev = Population(
-    size=size_ev,
-    refractive_index=ri_ev,
+    size=ev_size,
+    refractive_index=ev_ri,
     concentration=1.8e+9 * particle / milliliter / 3,
     name='EV'
 )
 
 lp = Population(
-    size=size_lp,
-    refractive_index=ri_lp,
+    size=lp_size,
+    refractive_index=lp_ri,
     concentration=1.8e+9 * particle / milliliter / 1,
     name='LP'
 )

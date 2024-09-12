@@ -18,8 +18,10 @@ Steps in this Workflow:
 
 # %%
 # Step 1: Import necessary modules from FlowCyPy
-from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, FlowCell
+from FlowCyPy import FlowCytometer, ScattererDistribution, Detector, Source, FlowCell
 from FlowCyPy.distribution import NormalDistribution
+from FlowCyPy.population import Population
+from FlowCyPy.units import nanometer, refractive_index_unit, milliliter, particle
 
 # %%
 # Example usage of the Flow class
@@ -27,7 +29,6 @@ flow = FlowCell(
     flow_speed=80e-6,       # 80 micrometers per second
     flow_area=1e-6,         # 1 square micrometer
     total_time=1.0,         # 1 second of flow
-    scatterer_density=1e12  # 1e12 particles per cubic meter
 )
 
 # %%
@@ -35,28 +36,26 @@ flow = FlowCell(
 # ---------------------------------------------
 # Using a normal size distribution with a mean of 10 µm and a standard deviation of 0.8 µm.
 # This defines the scatterers (particles) that will interact with the laser source.
-size_distribution = NormalDistribution(
-    mean=10e-6,         # Mean particle size: 10 µm
-    std_dev=0.8e-8,     # Standard deviation of particle size: 0.8 µm
+ev_size = NormalDistribution(
+    mean=200 * nanometer,      # Mean particle size: 3 micrometers
+    std_dev=10 * nanometer     # Standard deviation of particle size: 0.5 micrometer
 )
 
-refractive_index_distribution_0 = NormalDistribution(
-    scale_factor=1,
-    mean=1.5,
-    std_dev=0.01
+ev_ri = NormalDistribution(
+    mean=1.39 * refractive_index_unit,    # Mean particle size: 30 micrometers
+    std_dev=0.01 * refractive_index_unit  # Standard deviation of particle size: 1 micrometer
 )
 
-refractive_index_distribution_1 = NormalDistribution(
-    scale_factor=1,
-    mean=1.7,
-    std_dev=0.01
+ev = Population(
+    size=ev_size,
+    refractive_index=ev_ri,
+    concentration=1.8e+6 * particle / milliliter,
+    name='EV'
 )
-
 
 scatterer_distribution = ScattererDistribution(
     flow=flow,
-    refractive_index=[refractive_index_distribution_0, refractive_index_distribution_1],        # Refractive index of the particles
-    size=[size_distribution] # Normal distribution
+    populations=[ev]
 )
 
 scatterer_distribution.plot()

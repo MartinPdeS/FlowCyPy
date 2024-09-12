@@ -20,9 +20,10 @@ Steps in the Script:
 """
 
 # Import necessary libraries and modules
-from FlowCyPy import FlowCytometer, ScattererDistribution, Analyzer, Detector, Source, FlowCell, Plotter
+from FlowCyPy import FlowCytometer, ScattererDistribution, FlowCell
 from FlowCyPy.distribution import NormalDistribution
-from FlowCyPy.peak_detector import MovingAveragePeakDetector
+from FlowCyPy.population import Population
+from FlowCyPy.units import second, nanometer, refractive_index_unit, particle, milliliter, meter, micrometer, millisecond
 import numpy as np
 
 # Set random seed for reproducibility
@@ -30,39 +31,51 @@ np.random.seed(20)
 
 # Step 1: Define the Flow Parameters
 flow = FlowCell(
-    flow_speed=8e-6,           # Flow speed: 8 micrometers per second
-    flow_area=1e-6,            # Flow area: 1 square micrometer
-    total_time=8.0,            # Total simulation time: 8 seconds
-    scatterer_density=1e13     # Particle density: 1e12 particles per cubic meter
+    flow_speed=7.56 * meter / second,       # Flow speed: 8 micrometers per second
+    flow_area=(10 * micrometer) ** 2,       # Flow area: 1 square micrometer
+    total_time=0.1 * millisecond,           # Total simulation time: 8 milliseconds
 )
+
 
 # Step 2: Define Particle Size Distributions (Two Normal Distributions)
-size_distribution_0 = NormalDistribution(
-    scale_factor=10,
-    mean=3e-6,                 # Mean particle size: 3 micrometers
-    std_dev=0.5e-6             # Standard deviation of particle size: 0.5 micrometer
+lp_size = NormalDistribution(
+    mean=200 * nanometer,      # Mean particle size: 3 micrometers
+    std_dev=10 * nanometer     # Standard deviation of particle size: 0.5 micrometer
 )
 
-size_distribution_1 = NormalDistribution(
-    scale_factor=1,
-    mean=30e-6,                # Mean particle size: 30 micrometers
-    std_dev=3e-6               # Standard deviation of particle size: 1 micrometer
+ev_size = NormalDistribution(
+    mean=50 * nanometer,      # Mean particle size: 30 micrometers
+    std_dev=5.0 * nanometer   # Standard deviation of particle size: 1 micrometer
 )
 
-refractive_index_distribution = NormalDistribution(
-    scale_factor=1,
-    mean=1.5,
-    std_dev=0.1
+ev_ri = NormalDistribution(
+    mean=1.39 * refractive_index_unit,    # Mean particle size: 30 micrometers
+    std_dev=0.01 * refractive_index_unit  # Standard deviation of particle size: 1 micrometer
 )
 
-scatterer_distribution = ScattererDistribution(
-    flow=flow,
-    refractive_index=[refractive_index_distribution],      # Refractive index of the particles
-    size=[size_distribution_0, size_distribution_1]  # List of distributions for different scatterer populations
+lp_ri = NormalDistribution(
+    mean=1.45 * refractive_index_unit,    # Mean particle size: 30 micrometers
+    std_dev=0.01 * refractive_index_unit  # Standard deviation of particle size: 1 micrometer
+)
+
+ev = Population(
+    size=ev_size,
+    refractive_index=ev_ri,
+    concentration=1.8e+9 * particle / milliliter / 3,
+    name='EV'
+)
+
+lp = Population(
+    size=lp_size,
+    refractive_index=lp_ri,
+    concentration=1.8e+9 * particle / milliliter / 1,
+    name='LP'
 )
 
 
 # %%
+scatterer_distribution = ScattererDistribution(flow=flow, populations=[ev, lp])
+
 scatterer_distribution.plot()
 
 scatterer_distribution.print_properties()

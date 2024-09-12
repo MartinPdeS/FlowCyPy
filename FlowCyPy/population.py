@@ -4,7 +4,7 @@ from typing import Union
 from FlowCyPy.distribution import BaseDistribution, DeltaDistribution
 from pydantic.dataclasses import dataclass
 from FlowCyPy.units import Quantity, particle, second
-from FlowCyPy.flow import FlowCell
+from FlowCyPy.flow_cell import FlowCell
 import logging
 from tabulate import tabulate
 

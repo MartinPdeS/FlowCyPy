@@ -18,21 +18,12 @@ their scattering properties.
 # --------------------------------------
 from FlowCyPy import FlowCytometer, ScattererDistribution, Detector, Source, FlowCell
 from FlowCyPy.distribution import NormalDistribution
+from FlowCyPy.population import Population
 from FlowCyPy.units import (
-    microsecond,
-    micrometer,
-    meter,
     refractive_index_unit,
     milliliter,
-    millisecond,
-    second,
     particle,
-    nanometer,
-    milliwatt,
-    degree,
-    volt,
-    watt,
-    megahertz
+    nanometer
 )
 
 
@@ -41,7 +32,6 @@ flow = FlowCell(
     flow_speed=80e-6,  # 80 micrometers per second
     flow_area=1e-6,  # 1 square micrometer
     total_time=1.0,  # 1 second of flow
-    scatterer_density=5e11  # 1e12 particles per cubic meter
 )
 
 flow.print_properties()
@@ -52,22 +42,26 @@ flow.print_properties()
 # with a refractive index of 1.5, a mean size of 1 µm, and a standard deviation of 0.1 µm.
 # The total particle density is 4 x 10^10 particles per cubic meter.
 # %%
-size_distribution = NormalDistribution(
-    mean=10e-6,         # Mean particle size: 10 µm
-    std_dev=0.8e-8,     # Standard deviation of particle size: 0.8 µm
+ev_size = NormalDistribution(
+    mean=200 * nanometer,      # Mean particle size: 3 micrometers
+    std_dev=10 * nanometer     # Standard deviation of particle size: 0.5 micrometer
 )
 
-refractive_index_distribution = NormalDistribution(
-    scale_factor=1,
-    mean=1.5,
-    std_dev=0.1
+ev_ri = NormalDistribution(
+    mean=1.39 * refractive_index_unit,    # Mean particle size: 30 micrometers
+    std_dev=0.01 * refractive_index_unit  # Standard deviation of particle size: 1 micrometer
 )
 
+ev = Population(
+    size=ev_size,
+    refractive_index=ev_ri,
+    concentration=1.8e+6 * particle / milliliter,
+    name='EV'
+)
 
 scatterer_distribution = ScattererDistribution(
     flow=flow,
-    refractive_index=[refractive_index_distribution],         # Refractive index of the particles
-    size=[size_distribution]  # Normal distribution of particle sizes
+    populations=[ev]
 )
 
 # %%
@@ -96,7 +90,7 @@ detector_fsc = Detector(
     NA=0.2,                       # Numerical aperture of the detector
     phi_angle=180,              # Angle relative to the light beam
     acquisition_frequency=1e3,    # Acquisition frequency: 1000 Hz
-    noise_level=1e-3,             # Noise floor of 0.0001 volt
+    noise_level=1e-9,             # Noise floor of 0.0001 volt
     saturation_level=10,          # Maximum signal before saturation
     baseline_shift=0.0,           # No baseline shift
     n_bins=512,                   # Number of bins for signal discretization
@@ -108,7 +102,7 @@ detector_ssc = Detector(
     NA=0.2,                       # Numerical aperture of the SSC detector
     phi_angle=90,               # Positioned at 90 degrees to detect side scatter
     acquisition_frequency=1e3,    # Acquisition frequency: 1000 Hz
-    noise_level=1e-3,             # Noise floor of 0.0001 volt
+    noise_level=1e-9,             # Noise floor of 0.0001 volt
     saturation_level=10,          # Maximum signal before saturation
     baseline_shift=0.0,           # No baseline shift
     n_bins=1024,                  # Fewer bins for lower resolution

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from FlowCyPy.scatterer_distribution import ScattererDistribution
 from FlowCyPy.distribution import NormalDistribution, LogNormalDistribution, DeltaDistribution, UniformDistribution, WeibullDistribution
-from FlowCyPy.flow import FlowCell
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.units import micrometer, refractive_index_unit, nanometer, milliliter, particle
 from FlowCyPy.population import Population
 
