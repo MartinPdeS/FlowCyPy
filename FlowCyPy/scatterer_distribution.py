@@ -4,7 +4,6 @@ from MPSPlots.styles import mps
 from dataclasses import dataclass
 import numpy as np
 from FlowCyPy.distribution import BaseDistribution
-from FlowCyPy.units import Quantity, meter, refractive_index_unit
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Population
 from FlowCyPy.joint_plot import JointPlotWithMarginals
@@ -76,7 +75,7 @@ class ScattererDistribution:
                     x=population.size_list.to(size_common_units).magnitude,
                     y=population.refractive_index_list.to(ri_common_units).magnitude,
                     label=population.name,
-                    alpha=0.9,
+                    alpha=0.7,
                 )
 
             joint_plot.show_plot()

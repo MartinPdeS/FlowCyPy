@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from MPSPlots.styles import mps
 from FlowCyPy.dataset import DataSet
+from FlowCyPy.joint_plot import JointPlotWithMarginals
 
 @dataclass
 class Plotter:
@@ -44,46 +45,61 @@ class Plotter:
 
         with plt.style.context(mps):
 
-            # Create the 2D density plot
-            joint_plot = sns.jointplot(
-                x=self.dataset_0.height.magnitude,
-                y=self.dataset_1.height.magnitude,
-                kind='kde',
-                color='steelblue',
-                cmap='Blues',
-                fill=True,
-                marginal_kws=dict(fill=True, warn_singular=False),
-            )
-
-            joint_plot.plot_joint(sns.scatterplot, color='blue', alpha=0.5)
-
-            joint_plot.figure.set_size_inches((10, 8))
-
-            # Set axis labels for the plot
-            joint_plot.set_axis_labels(
+            join_plot = JointPlotWithMarginals(
                 xlabel=f'Detector {self.dataset_0.detector.name} Scattering Intensity [{self.dataset_0.height.units}]',
                 ylabel=f'Detector {self.dataset_1.detector.name} Scattering dsdasdsa Intensity [{self.dataset_1.height.units}]'
             )
 
-            # Add a title above the plot
-            joint_plot.figure.suptitle('2D Density Plot of Scattering Intensities', fontsize=14)
-
-            if len(joint_plot.ax_joint.collections) == 2:
-                # Create a divider for the axis to place the colorbar at the bottom
-                divider = make_axes_locatable(joint_plot.ax_joint)
-                cax = divider.append_axes("bottom", size="5%", pad=0.5)
-
-                # Add a horizontal colorbar at the bottom
-                colorbar = plt.colorbar(
-                    joint_plot.ax_joint.collections[0],
-                    cax=cax,
-                    orientation="horizontal",
-                    label='Density',
+            for dataset in [self.dataset_0, self.dataset_1]:
+                join_plot.add_dataset(
+                    x=self.dataset_0.height.magnitude,
+                    y=self.dataset_1.height.magnitude,
+                    # label=population.name,
+                    alpha=0.9,
                 )
 
-                colorbar.formatter.set_powerlimits((0, 0))
+            join_plot.show_plot()
 
-            plt.tight_layout()
+            # # Create the 2D density plot
+            # joint_plot = sns.jointplot(
+            #     x=self.dataset_0.height.magnitude,
+            #     y=self.dataset_1.height.magnitude,
+            #     kind='kde',
+            #     color='steelblue',
+            #     cmap='Blues',
+            #     fill=True,
+            #     marginal_kws=dict(fill=True, warn_singular=False),
+            # )
 
-            # Display the plot
-            plt.show()
+            # joint_plot.plot_joint(sns.scatterplot, color='blue', alpha=0.5)
+
+            # joint_plot.figure.set_size_inches((10, 8))
+
+            # # Set axis labels for the plot
+            # joint_plot.set_axis_labels(
+            #     xlabel=f'Detector {self.dataset_0.detector.name} Scattering Intensity [{self.dataset_0.height.units}]',
+            #     ylabel=f'Detector {self.dataset_1.detector.name} Scattering dsdasdsa Intensity [{self.dataset_1.height.units}]'
+            # )
+
+            # # Add a title above the plot
+            # joint_plot.figure.suptitle('2D Density Plot of Scattering Intensities', fontsize=14)
+
+            # if len(joint_plot.ax_joint.collections) == 2:
+            #     # Create a divider for the axis to place the colorbar at the bottom
+            #     divider = make_axes_locatable(joint_plot.ax_joint)
+            #     cax = divider.append_axes("bottom", size="5%", pad=0.5)
+
+            #     # Add a horizontal colorbar at the bottom
+            #     colorbar = plt.colorbar(
+            #         joint_plot.ax_joint.collections[0],
+            #         cax=cax,
+            #         orientation="horizontal",
+            #         label='Density',
+            #     )
+
+            #     colorbar.formatter.set_powerlimits((0, 0))
+
+            # plt.tight_layout()
+
+            # # Display the plot
+            # plt.show()

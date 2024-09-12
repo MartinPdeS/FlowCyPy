@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from FlowCyPy.peak_detector import ThresholdPeakDetector, BasicPeakDetector, MovingAveragePeakDetector
+from FlowCyPy.peak_detector import BasicPeakDetector, MovingAveragePeakDetector
 from FlowCyPy.units import second, volt, second
 from FlowCyPy.utils import generate_gaussian_signal
 

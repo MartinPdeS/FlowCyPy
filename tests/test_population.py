@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 from FlowCyPy.distribution import NormalDistribution
 from FlowCyPy.population import Population
-from FlowCyPy.flow import FlowCell
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.units import (
     nanometer, micrometer, meter, particle, milliliter, second, refractive_index_unit, particle
 )

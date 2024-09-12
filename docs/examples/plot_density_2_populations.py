@@ -93,7 +93,7 @@ lp = Population(
 
 scatterer_distribution = ScattererDistribution(flow=flow, populations=[ev, lp])
 
-scatterer_distribution.plot()
+# scatterer_distribution.plot()
 
 
 # %%
@@ -141,7 +141,7 @@ cytometer = FlowCytometer(
 cytometer.simulate_pulse()
 
 # Plot the scattering signals for both detectors
-cytometer.plot()
+# cytometer.plot()
 
 # Step 6: Analyze the Pulse Signals
 analyzer = Analyzer(detector_0, detector_1, algorithm=BasicPeakDetector())
@@ -150,7 +150,7 @@ analyzer = Analyzer(detector_0, detector_1, algorithm=BasicPeakDetector())
 analyzer.run_analysis(
     compute_peak_area=False,   # Set whether to compute peak area
 )
-analyzer.plot()
+# analyzer.plot()
 
 # %%
 # Get coincidence data from the two detectors

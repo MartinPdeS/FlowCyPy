@@ -31,7 +31,7 @@ class JointPlotWithMarginals:
             self,
             x: np.ndarray,
             y: np.ndarray,
-            label: str,
+            label: str = '',
             alpha: float = 0.3,
             color: Optional[str] = None) -> None:
         """
@@ -72,7 +72,7 @@ class JointPlotWithMarginals:
         self._add_kde_plot(x, y, color, label, alpha)
         self._add_scatter_plot(x, y, color, label, alpha)
 
-    def _add_kde_plot(self, data_x: np.ndarray, data_y: np.ndarray, color: str, label: str, alpha: float) -> None:
+    def _add_kde_plot(self, data_x: np.ndarray, data_y: np.ndarray, color: str, label: str = '', alpha: float = 0.9) -> None:
         """
         Adds a KDE plot to the joint plot and marginals.
 
@@ -90,7 +90,7 @@ class JointPlotWithMarginals:
         sns.kdeplot(data_x, ax=self.figure.ax_marg_x, color=color, fill=True, alpha=alpha)
         sns.kdeplot(y=data_y, ax=self.figure.ax_marg_y, color=color, fill=True, alpha=alpha)
 
-    def _add_scatter_plot(self, data_x: np.ndarray, data_y: np.ndarray, color: str, label: str, alpha: float, size: int = 20) -> None:
+    def _add_scatter_plot(self, data_x: np.ndarray, data_y: np.ndarray, color: str, label: str = '', alpha: float = 0.9, size: int = 20) -> None:
         """
         Adds a scatter plot to the joint plot.
 
