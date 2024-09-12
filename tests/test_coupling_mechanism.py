@@ -4,10 +4,11 @@ from FlowCyPy import ScattererDistribution, Detector, Source, FlowCell
 from FlowCyPy.distribution import NormalDistribution
 from FlowCyPy.coupling_mechanism.rayleigh import compute_detected_signal
 from FlowCyPy.units import micrometer, refractive_index_unit
-from FlowCyPy.units import volt, watt, meter, hertz
+from FlowCyPy.units import volt, watt, meter, hertz, particle, milliliter
+from FlowCyPy.population import Population
 
 @pytest.fixture
-def normal_distribution():
+def normal_size_distribution():
     """Fixture for creating a NormalDistribution."""
     return NormalDistribution(
         mean=1.0 * micrometer,
@@ -15,14 +16,31 @@ def normal_distribution():
         scale_factor=1.0
     )
 
+@pytest.fixture
+def normal_ri_distribution():
+    """Fixture for creating a NormalDistribution."""
+    return NormalDistribution(
+        mean=1.5 * refractive_index_unit,
+        std_dev=0.1 * refractive_index_unit,
+        scale_factor=1.0
+    )
 
 @pytest.fixture
-def default_flow():
-    return  FlowCell(
+def normal_population(normal_size_distribution, normal_ri_distribution):
+    """Fixture for creating a Population."""
+    return Population(
+        size=normal_size_distribution,
+        refractive_index=normal_ri_distribution,
+        concentration=1.8e9 * particle / milliliter,
+        name="Default population"
+    )
+
+@pytest.fixture
+def default_flow_cell():
+    return FlowCell(
         flow_speed=80e-6,
         flow_area=1e-6,
         total_time=1.0,
-        scatterer_density=1e15
     )
 
 @pytest.fixture
@@ -40,11 +58,10 @@ def detector():
     )
 
 @pytest.fixture
-def scatterer_distribution(default_flow, normal_distribution):
+def scatterer_distribution(normal_population, default_flow_cell):
     return ScattererDistribution(
-        refractive_index=[1.5 * refractive_index_unit],  # Refractive index of the particles
-        flow=default_flow,
-        size=[normal_distribution]
+        populations=[normal_population],
+        flow=default_flow_cell,
     )
 
 @pytest.fixture

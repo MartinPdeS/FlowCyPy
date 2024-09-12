@@ -4,6 +4,7 @@ from FlowCyPy import FlowCytometer, Detector, ScattererDistribution, Source, Flo
 import matplotlib.pyplot as plt
 from unittest.mock import patch
 from FlowCyPy.distribution import NormalDistribution
+from FlowCyPy.population import Population
 from FlowCyPy.units import (
     refractive_index_unit,
     degree,
@@ -14,7 +15,8 @@ from FlowCyPy.units import (
     second,
     micrometer,
     particle,
-    liter
+    liter,
+    milliliter
 )
 
 
@@ -34,27 +36,42 @@ def default_detector():
 
 @pytest.fixture
 def flow():
-    return  FlowCell(
+    return FlowCell(
         flow_speed=0.2 * meter / second,
         flow_area=1e-6 * meter * meter,
         total_time=1e-3 * second,
-        scatterer_density=1e12 * particle / liter
     )
 
 
 @pytest.fixture
-def default_distribution():
+def default_size_distribution():
     return NormalDistribution(
         mean=1.0 * micrometer,
         std_dev=0.1 * micrometer
     )
 
 @pytest.fixture
-def default_scatterer_distribution(flow, default_distribution):
+def default_ri_distribution():
+    return NormalDistribution(
+        mean=1.0 * refractive_index_unit,
+        std_dev=0.1 * refractive_index_unit
+    )
+
+@pytest.fixture
+def default_population(default_size_distribution, default_ri_distribution):
+    return Population(
+        size=default_size_distribution,
+        refractive_index=default_ri_distribution,
+        concentration=1.8e5 * particle / milliliter,
+        name="Default population"
+    )
+
+
+@pytest.fixture
+def default_scatterer_distribution(flow, default_population):
     return  ScattererDistribution(
         flow=flow,
-        refractive_index=[1.5 * refractive_index_unit],
-        size=[default_distribution],
+        populations=[default_population]
     )
 
 

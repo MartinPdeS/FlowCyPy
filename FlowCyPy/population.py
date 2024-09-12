@@ -1,11 +1,12 @@
 
 import numpy as np
-from FlowCyPy.distribution import BaseDistribution
+from typing import Union
+from FlowCyPy.distribution import BaseDistribution, DeltaDistribution
 from pydantic.dataclasses import dataclass
 from FlowCyPy.units import Quantity, particle, second
-from FlowCyPy.utils import array_to_compact
 from FlowCyPy.flow import FlowCell
 import logging
+from tabulate import tabulate
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -17,12 +18,15 @@ config_dict = dict(
 
 @dataclass(config=config_dict)
 class Population():
-    refractive_index: BaseDistribution   # Refractive index or refractive index distributions
-    size: BaseDistribution  # Particle size or size distributions
+    refractive_index: Union[BaseDistribution, Quantity]   # Refractive index or refractive index distributions
+    size: Union[BaseDistribution, Quantity]  # Particle size or size distributions
     concentration: Quantity = 1  # Scatterer density in particles per cubic meter (default: 1e12 particles/m³)
     name: str = ''  # Name of the population distribution
 
     def initialize(self, flow_cell: FlowCell):
+
+        if isinstance(self.size, Quantity):
+            self.size = DeltaDistribution(size_value=self.size)
 
         self.flow_cell = flow_cell
 
@@ -98,3 +102,28 @@ class Population():
         self.longitudinal_positions = self.time_positions / self.flow_cell.flow_speed
 
         self.n_events = len(arrival_times) * particle
+
+        if self.n_events == 0:
+            raise ValueError("Population has been initialized with 0 events.")
+
+
+    def print_properties(self) -> None:
+        """
+        Print the core properties of the population, including size, refractive index,
+        concentration, and the number of generated events.
+        """
+        # Compute additional properties to display
+        mean_size = np.mean(self.size_list).to_compact()  # Mean particle size in compact form
+        mean_refractive_index = np.mean(self.refractive_index_list)  # Mean refractive index
+        total_particles = self.n_events.to_compact()  # Total number of events (particles)
+
+        population_properties = [
+            ["Population Name", self.name],
+            ["Mean Size", f"{mean_size:.2e~#P}"],
+            ["Mean Refractive Index", f"{mean_refractive_index:.2f}"],
+            ["Concentration", f"{self.concentration:.2e~#P}"],
+            ["Total Number of Events", f"{total_particles:.2e~#P}"],
+        ]
+
+        print("\nPopulation Properties")
+        print(tabulate(population_properties, headers=["Property", "Value"], tablefmt="grid"))

@@ -65,7 +65,7 @@ class JointPlotWithMarginals:
         # Use default color if none is provided
         if color is None:
             color = sns.color_palette("husl", len(self.datasets))[len(self.datasets) - 1]
-            print(self.datasets)
+
             self.datasets[-1][-1] = color
 
         # Add KDE and scatter plots

@@ -66,8 +66,6 @@ class FlowCell:
             ["Flow Speed", f"{self.flow_speed:.2f~#P}"],
             ["Flow Area", f"{self.flow_area:.2f~#P}"],
             ["Total Simulation Time", f"{self.total_time:.2f~#P}"],
-            ["Scatterer Density", f"{self.scatterer_density:.2e~#P}"],
-            ['Number of events', f"{self.n_events:.2e~#P}"]
         ]
 
         print("\nFlow Properties")

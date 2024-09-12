@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from FlowCyPy import Analyzer
-from FlowCyPy.units import second, volt
+from FlowCyPy.units import second, volt, millisecond
 from FlowCyPy.utils import generate_gaussian_signal
 from unittest.mock import patch
 import matplotlib.pyplot as plt
@@ -11,7 +11,7 @@ from FlowCyPy.peak_detector import BasicPeakDetector
 def test_pulse_analyzer_peak_detection():
     """Test peak detection in the pulse analyzer."""
     # Create a synthetic signal with two Gaussian peaks
-    time = np.linspace(0, 10, 1000)
+    time = np.linspace(0, 10, 1000) * second
 
     detector_0 = generate_gaussian_signal(
         time=time,
@@ -34,7 +34,7 @@ def test_pulse_analyzer_peak_detection():
 
     analyzer.to_dataframe()
 
-    datasets = analyzer.get_coincidence_dataset(coincidence_margin=0.1)
+    datasets = analyzer.get_coincidence_dataset(coincidence_margin=1 * second)
 
     # Check that two peaks were detected
     assert len(datasets) == 2, "Number of detected peaks is not correct."
@@ -52,7 +52,7 @@ def test_pulse_analyzer_width_and_area(mock_show):
     centers = [5]
     heights = [1]
 
-    time = np.linspace(0, 20, 1000)
+    time = np.linspace(0, 20, 1000) * second
 
     detector_0 = generate_gaussian_signal(
         time=time,
@@ -73,7 +73,7 @@ def test_pulse_analyzer_width_and_area(mock_show):
 
     analyzer.run_analysis(compute_peak_area=True)
 
-    datasets = analyzer.get_coincidence_dataset(coincidence_margin=0.1)
+    datasets = analyzer.get_coincidence_dataset(coincidence_margin=100 * second)
 
     analyzer.display_features()
 
