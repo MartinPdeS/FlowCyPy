@@ -9,6 +9,7 @@
 | FlowCyPy/coupling\_mechanism/mie.py                   |       18 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/rayleigh.py              |       21 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/uniform.py               |        4 |        0 |        0 |        0 |    100% |           |
+| FlowCyPy/cytometer.py                                 |       64 |        4 |       20 |        1 |     92% |   115-118 |
 | FlowCyPy/dataset.py                                   |       25 |        2 |        8 |        1 |     85% |     72-73 |
 | FlowCyPy/detector.py                                  |      104 |       16 |       28 |       10 |     77% |82->81, 85, 89->88, 92, 96->95, 99, 103->102, 106, 133-134, 136, 160-162, 185->exit, 208-215 |
 | FlowCyPy/distribution/base\_class.py                  |       19 |        2 |        2 |        0 |     90% |    26, 30 |
@@ -19,7 +20,6 @@
 | FlowCyPy/distribution/uniform.py                      |       21 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/distribution/weibull.py                      |       24 |        8 |        2 |        0 |     69% |39, 55-57, 76-81 |
 | FlowCyPy/flow\_cell.py                                |       24 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/flow\_cytometer.py                           |       64 |        4 |       20 |        1 |     92% |   115-118 |
 | FlowCyPy/joint\_plot.py                               |       45 |        4 |       12 |        6 |     82% |51, 57->62, 63, 66->72, 122, 135 |
 | FlowCyPy/peak\_detector/base\_class.py                |        8 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/peak\_detector/basic.py                      |       17 |        0 |        4 |        0 |    100% |           |
@@ -28,7 +28,7 @@
 | FlowCyPy/plotter.py                                   |       21 |        6 |        6 |        0 |     63% |     46-61 |
 | FlowCyPy/population.py                                |       40 |        2 |        6 |        2 |     91% |   29, 107 |
 | FlowCyPy/report.py                                    |       98 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/scatterer\_distribution.py                   |       42 |        1 |       12 |        1 |     96% |       102 |
+| FlowCyPy/scatterer.py                                 |       42 |        1 |       12 |        1 |     96% |       102 |
 | FlowCyPy/source.py                                    |       19 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/units.py                                     |       26 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       29 |        0 |        2 |        0 |    100% |           |
