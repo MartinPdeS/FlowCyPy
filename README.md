@@ -26,12 +26,12 @@
 | FlowCyPy/peak\_detector/moving\_average.py            |       68 |        0 |       12 |        1 |     99% |    96->99 |
 | FlowCyPy/plotter.py                                   |       21 |        6 |        6 |        0 |     63% |     46-61 |
 | FlowCyPy/population.py                                |       40 |        2 |        6 |        2 |     91% |   29, 107 |
-| FlowCyPy/report.py                                    |       98 |        0 |        2 |        0 |    100% |           |
+| FlowCyPy/report.py                                    |      104 |        1 |        4 |        1 |     98% |       169 |
 | FlowCyPy/scatterer.py                                 |       42 |        1 |       12 |        1 |     96% |       102 |
 | FlowCyPy/source.py                                    |       19 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/units.py                                     |       29 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       33 |        3 |        2 |        0 |     91% |     80-85 |
-|                                             **TOTAL** | **1038** |  **159** |  **162** |   **26** | **82%** |           |
+|                                             **TOTAL** | **1044** |  **160** |  **164** |   **27** | **82%** |           |
 
 
 ## Setup coverage badge
