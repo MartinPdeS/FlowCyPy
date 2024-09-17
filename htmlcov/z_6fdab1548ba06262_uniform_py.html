@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_2404691b0fd86af0_cytometer_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-17 16:54 +0000
+            created at 2024-09-17 20:00 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -85,7 +85,7 @@
     <p class="run"><span class="n"><a id="t1" href="#t1">1</a></span><span class="t"><span class="key">import</span> <span class="nam">numpy</span> <span class="key">as</span> <span class="nam">np</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t2" href="#t2">2</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span> <span class="key">import</span> <span class="nam">Scatterer</span><span class="op">,</span> <span class="nam">Detector</span><span class="op">,</span> <span class="nam">Source</span><span class="op">,</span> <span class="nam">ureg</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t"><span class="key">def</span> <span class="nam">compute_detected_signal</span><span class="op">(</span><span class="nam">source</span><span class="op">:</span> <span class="nam">Source</span><span class="op">,</span> <span class="nam">detector</span><span class="op">:</span> <span class="nam">Detector</span><span class="op">,</span> <span class="nam">scatterer</span><span class="op">:</span> <span class="nam">Scatterer</span><span class="op">)</span> <span class="op">-></span> <span class="nam">float</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t"><span class="key">def</span> <span class="nam">compute_detected_signal</span><span class="op">(</span><span class="nam">source</span><span class="op">:</span> <span class="nam">Source</span><span class="op">,</span> <span class="nam">detector</span><span class="op">:</span> <span class="nam">Detector</span><span class="op">,</span> <span class="nam">scatterer</span><span class="op">:</span> <span class="nam">Scatterer</span><span class="op">)</span> <span class="op">-></span> <span class="nam">np</span><span class="op">.</span><span class="nam">ndarray</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t">    <span class="str">r"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t"><span class="str">    Computes the power detected by a detector from a uniform distribution.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -118,7 +118,7 @@
     <p class="pln"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t"><span class="str">    float</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t"><span class="str">        The power detected by the detector (in watts, W).</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">    <span class="key">return</span> <span class="nam">np</span><span class="op">.</span><span class="nam">ones</span><span class="op">(</span><span class="nam">scatterer</span><span class="op">.</span><span class="nam">size_list</span><span class="op">.</span><span class="nam">size</span><span class="op">)</span> <span class="op">*</span> <span class="nam">ureg</span><span class="op">.</span><span class="nam">volt</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">    <span class="key">return</span> <span class="nam">np</span><span class="op">.</span><span class="nam">ones</span><span class="op">(</span><span class="nam">len</span><span class="op">(</span><span class="nam">scatterer</span><span class="op">.</span><span class="nam">dataframe</span><span class="op">)</span><span class="op">)</span> <span class="op">*</span> <span class="nam">ureg</span><span class="op">.</span><span class="nam">volt</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -128,7 +128,7 @@
             <a class="nav" href="z_2404691b0fd86af0_cytometer_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-17 16:54 +0000
+            created at 2024-09-17 20:00 +0000
         </p>
     </div>
 </footer>
