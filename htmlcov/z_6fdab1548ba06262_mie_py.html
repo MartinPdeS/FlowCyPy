@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_6fdab1548ba06262_rayleigh_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-16 22:57 +0000
+            created at 2024-09-17 12:58 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -130,7 +130,7 @@
     <p class="pln"><span class="n"><a id="t46" href="#t46">46</a></span><span class="t">        <span class="nam">wavelength</span><span class="op">=</span><span class="nam">source</span><span class="op">.</span><span class="nam">wavelength</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">meter</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t47" href="#t47">47</a></span><span class="t">        <span class="nam">polarization</span><span class="op">=</span><span class="num">0</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t48" href="#t48">48</a></span><span class="t">        <span class="nam">optical_power</span><span class="op">=</span><span class="nam">source</span><span class="op">.</span><span class="nam">optical_power</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">watt</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t">        <span class="nam">NA</span><span class="op">=</span><span class="nam">source</span><span class="op">.</span><span class="nam">NA</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t">        <span class="nam">NA</span><span class="op">=</span><span class="nam">source</span><span class="op">.</span><span class="nam">numerical_aperture</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t50" href="#t50">50</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t51" href="#t51">51</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t52" href="#t52">52</a></span><span class="t">    <span class="nam">couplings</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">empty_like</span><span class="op">(</span><span class="nam">scatterer_distribution</span><span class="op">.</span><span class="nam">size_list</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -149,7 +149,7 @@
     <p class="pln"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t67" href="#t67">67</a></span><span class="t">        <span class="nam">pms_detector</span> <span class="op">=</span> <span class="nam">PMS_PHOTODIODE</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t">            <span class="nam">NA</span><span class="op">=</span><span class="nam">detector</span><span class="op">.</span><span class="nam">NA</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t">            <span class="nam">NA</span><span class="op">=</span><span class="nam">detector</span><span class="op">.</span><span class="nam">numerical_aperture</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t">            <span class="nam">gamma_offset</span><span class="op">=</span><span class="nam">detector</span><span class="op">.</span><span class="nam">gamma_angle</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">degree</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t">            <span class="nam">phi_offset</span><span class="op">=</span><span class="nam">detector</span><span class="op">.</span><span class="nam">phi_angle</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">degree</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t">            <span class="nam">polarization_filter</span><span class="op">=</span><span class="key">None</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -169,7 +169,7 @@
             <a class="nav" href="z_6fdab1548ba06262_rayleigh_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-16 22:57 +0000
+            created at 2024-09-17 12:58 +0000
         </p>
     </div>
 </footer>
