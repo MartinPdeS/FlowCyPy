@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_6fdab1548ba06262_uniform_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-17 13:06 +0000
+            created at 2024-09-17 16:54 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -86,7 +86,7 @@
     <p class="run"><span class="n"><a id="t2" href="#t2">2</a></span><span class="t"><span class="key">import</span> <span class="nam">numpy</span> <span class="key">as</span> <span class="nam">np</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span> <span class="key">import</span> <span class="nam">Scatterer</span><span class="op">,</span> <span class="nam">Detector</span><span class="op">,</span> <span class="nam">Source</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="key">def</span> <span class="nam">compute_scattering_cross_section</span><span class="op">(</span><span class="nam">scatterer_distribution</span><span class="op">:</span> <span class="nam">Scatterer</span><span class="op">,</span> <span class="nam">source</span><span class="op">:</span> <span class="nam">Source</span><span class="op">,</span> <span class="nam">detector</span><span class="op">:</span> <span class="nam">Detector</span><span class="op">)</span> <span class="op">-></span> <span class="nam">np</span><span class="op">.</span><span class="nam">ndarray</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="key">def</span> <span class="nam">compute_scattering_cross_section</span><span class="op">(</span><span class="nam">scatterer</span><span class="op">:</span> <span class="nam">Scatterer</span><span class="op">,</span> <span class="nam">source</span><span class="op">:</span> <span class="nam">Source</span><span class="op">,</span> <span class="nam">detector</span><span class="op">:</span> <span class="nam">Detector</span><span class="op">)</span> <span class="op">-></span> <span class="nam">np</span><span class="op">.</span><span class="nam">ndarray</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t">    <span class="str">r"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t"><span class="str">    Computes the Rayleigh scattering cross-section for a spherical particle with angle dependency.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -109,7 +109,7 @@
     <p class="pln"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t"><span class="str">    Parameters</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t"><span class="str">    ----------</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t"><span class="str">    scatterer_distribution : Scatterer</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t"><span class="str">    scatterer : Scatterer</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t29" href="#t29">29</a></span><span class="t"><span class="str">        An instance of `Scatterer` containing the scatterer properties such as size and refractive index.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t30" href="#t30">30</a></span><span class="t"><span class="str">    source : Source</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t"><span class="str">        An instance of `Source` containing the laser properties, including the wavelength.</span>&nbsp;</span><span class="r"></span></p>
@@ -122,8 +122,8 @@
     <p class="pln"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t"><span class="str">        The angle-dependent Rayleigh scattering cross-section (in square meters, m&#178;).</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t">    <span class="com"># Extract properties</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t">    <span class="nam">refractive_index</span> <span class="op">=</span> <span class="nam">scatterer_distribution</span><span class="op">.</span><span class="nam">refractive_index_list</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t">    <span class="nam">sizes</span> <span class="op">=</span> <span class="nam">scatterer_distribution</span><span class="op">.</span><span class="nam">size_list</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t">    <span class="nam">refractive_index</span> <span class="op">=</span> <span class="nam">scatterer</span><span class="op">.</span><span class="nam">refractive_index_list</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t">    <span class="nam">sizes</span> <span class="op">=</span> <span class="nam">scatterer</span><span class="op">.</span><span class="nam">size_list</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t">    <span class="nam">wavelength</span> <span class="op">=</span> <span class="nam">source</span><span class="op">.</span><span class="nam">wavelength</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t44" href="#t44">44</a></span><span class="t">    <span class="nam">phi</span> <span class="op">=</span> <span class="nam">detector</span><span class="op">.</span><span class="nam">phi_angle</span>  <span class="com"># Angle of observation in radians</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t45" href="#t45">45</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -143,7 +143,7 @@
     <p class="pln"><span class="n"><a id="t59" href="#t59">59</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t60" href="#t60">60</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t61" href="#t61">61</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t62" href="#t62">62</a></span><span class="t"><span class="key">def</span> <span class="nam">compute_detected_signal</span><span class="op">(</span><span class="nam">source</span><span class="op">:</span> <span class="nam">Source</span><span class="op">,</span> <span class="nam">detector</span><span class="op">:</span> <span class="nam">Detector</span><span class="op">,</span> <span class="nam">scatterer_distribution</span><span class="op">:</span> <span class="nam">Scatterer</span><span class="op">)</span> <span class="op">-></span> <span class="nam">float</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t62" href="#t62">62</a></span><span class="t"><span class="key">def</span> <span class="nam">compute_detected_signal</span><span class="op">(</span><span class="nam">source</span><span class="op">:</span> <span class="nam">Source</span><span class="op">,</span> <span class="nam">detector</span><span class="op">:</span> <span class="nam">Detector</span><span class="op">,</span> <span class="nam">scatterer</span><span class="op">:</span> <span class="nam">Scatterer</span><span class="op">)</span> <span class="op">-></span> <span class="nam">float</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t63" href="#t63">63</a></span><span class="t">    <span class="str">r"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t64" href="#t64">64</a></span><span class="t"><span class="str">    Computes the power detected by a detector from a Rayleigh scattering event.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -178,7 +178,7 @@
     <p class="pln"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t">    <span class="nam">scattering_cross_section</span> <span class="op">=</span> <span class="nam">compute_scattering_cross_section</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t">        <span class="nam">source</span><span class="op">=</span><span class="nam">source</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t">        <span class="nam">scatterer_distribution</span><span class="op">=</span><span class="nam">scatterer_distribution</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t">        <span class="nam">scatterer</span><span class="op">=</span><span class="nam">scatterer</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t">        <span class="nam">detector</span><span class="op">=</span><span class="nam">detector</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t100" href="#t100">100</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -205,7 +205,7 @@
             <a class="nav" href="z_6fdab1548ba06262_uniform_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-17 13:06 +0000
+            created at 2024-09-17 16:54 +0000
         </p>
     </div>
 </footer>
