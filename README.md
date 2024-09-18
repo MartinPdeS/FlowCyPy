@@ -20,16 +20,16 @@
 | FlowCyPy/distribution/uniform.py                      |       21 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/distribution/weibull.py                      |       24 |        8 |        2 |        0 |     69% |39, 55-57, 76-81 |
 | FlowCyPy/flow\_cell.py                                |       24 |        3 |        2 |        0 |     88% | 64-65, 68 |
-| FlowCyPy/peak\_finder/base\_class.py                  |        8 |        4 |        0 |        0 |     50% |     32-40 |
-| FlowCyPy/peak\_finder/basic.py                        |       43 |        8 |       12 |        1 |     69% |83->86, 141-152 |
-| FlowCyPy/peak\_finder/moving\_average.py              |       69 |        1 |       16 |        2 |     96% |95->98, 199 |
+| FlowCyPy/peak\_finder/base\_class.py                  |       30 |        5 |        6 |        1 |     83% | 38-46, 88 |
+| FlowCyPy/peak\_finder/basic.py                        |       32 |        7 |        8 |        2 |     72% |81->exit, 86->85, 100-119 |
+| FlowCyPy/peak\_finder/moving\_average.py              |       55 |        0 |       12 |        2 |     97% |91->94, 137->136 |
 | FlowCyPy/population.py                                |       69 |        5 |       22 |        8 |     86% |51->50, 65, 70->69, 84, 89->88, 103, 111, 210 |
 | FlowCyPy/report.py                                    |      107 |       73 |        4 |        0 |     32% |13, 45-49, 53-58, 62-64, 68-76, 80-93, 97-133, 137-154, 158-162, 166, 179-190, 196-244 |
 | FlowCyPy/scatterer.py                                 |       39 |        5 |       10 |        2 |     86% |98-102, 105->70 |
 | FlowCyPy/source.py                                    |       16 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/units.py                                     |       32 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       48 |        8 |        4 |        0 |     85% |25, 30, 79-84, 88-89, 110 |
-|                                             **TOTAL** |  **980** |  **185** |  **172** |   **31** | **80%** |           |
+|                                             **TOTAL** |  **977** |  **184** |  **170** |   **33** | **80%** |           |
 
 
 ## Setup coverage badge
