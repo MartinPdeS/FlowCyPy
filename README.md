@@ -16,7 +16,7 @@
 | FlowCyPy/distribution/delta.py                        |       20 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/distribution/lognormal.py                    |       20 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/distribution/normal.py                       |       21 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/distribution/particle\_size\_distribution.py |       25 |       11 |        2 |        0 |     59% |48, 64-71, 92-99 |
+| FlowCyPy/distribution/particle\_size\_distribution.py |       25 |        5 |        2 |        0 |     81% |     92-99 |
 | FlowCyPy/distribution/uniform.py                      |       21 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/distribution/weibull.py                      |       24 |        8 |        2 |        0 |     69% |39, 55-57, 76-81 |
 | FlowCyPy/flow\_cell.py                                |       24 |        3 |        2 |        0 |     88% | 64-65, 68 |
@@ -29,7 +29,7 @@
 | FlowCyPy/source.py                                    |       16 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/units.py                                     |       32 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       48 |        8 |        4 |        0 |     85% |25, 30, 79-84, 88-89, 110 |
-|                                             **TOTAL** |  **980** |  **185** |  **172** |   **34** | **80%** |           |
+|                                             **TOTAL** |  **980** |  **179** |  **172** |   **34** | **80%** |           |
 
 
 ## Setup coverage badge
