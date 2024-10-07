@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_2404691b0fd86af0_detector_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-23 10:38 +0000
+            created at 2024-10-07 14:21 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -113,7 +113,7 @@
     <p class="pln"><span class="n"><a id="t29" href="#t29">29</a></span><span class="t"><span class="str">    This class models the particle distribution, flow characteristics, and detector configurations to</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t30" href="#t30">30</a></span><span class="t"><span class="str">    simulate the signal generated as particles pass through the flow cytometer's laser.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t"><span class="str">    Attributes</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t"><span class="str">    Parameters</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t"><span class="str">    ----------</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t"><span class="str">    scatterer : Scatterer</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t"><span class="str">        The distribution of particle sizes which affects scattering signals.</span>&nbsp;</span><span class="r"></span></p>
@@ -296,7 +296,7 @@
     <p class="run"><span class="n"><a id="t212" href="#t212">212</a></span><span class="t">        <span class="nam">logging</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="fst">f"</span><span class="fst">Plotting the signal for the different channels.</span><span class="fst">"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t213" href="#t213">213</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t214" href="#t214">214</a></span><span class="t">        <span class="key">with</span> <span class="nam">plt</span><span class="op">.</span><span class="nam">style</span><span class="op">.</span><span class="nam">context</span><span class="op">(</span><span class="nam">mps</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t215" href="#t215">215</a></span><span class="t">            <span class="nam">fig</span><span class="op">,</span> <span class="nam">axes</span> <span class="op">=</span> <span class="nam">plt</span><span class="op">.</span><span class="nam">subplots</span><span class="op">(</span><span class="num">2</span><span class="op">,</span> <span class="num">1</span><span class="op">,</span> <span class="nam">figsize</span><span class="op">=</span><span class="nam">figure_size</span><span class="op">,</span> <span class="nam">sharex</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t215" href="#t215">215</a></span><span class="t">            <span class="nam">fig</span><span class="op">,</span> <span class="nam">axes</span> <span class="op">=</span> <span class="nam">plt</span><span class="op">.</span><span class="nam">subplots</span><span class="op">(</span><span class="num">2</span><span class="op">,</span> <span class="num">1</span><span class="op">,</span> <span class="nam">figsize</span><span class="op">=</span><span class="nam">figure_size</span><span class="op">,</span> <span class="nam">sharex</span><span class="op">=</span><span class="key">True</span><span class="op">,</span> <span class="nam">sharey</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t216" href="#t216">216</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t217" href="#t217">217</a></span><span class="t">            <span class="key">for</span> <span class="nam">ax</span><span class="op">,</span> <span class="nam">detector</span> <span class="key">in</span> <span class="nam">zip</span><span class="op">(</span><span class="nam">axes</span><span class="op">,</span> <span class="nam">self</span><span class="op">.</span><span class="nam">detectors</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t218" href="#t218">218</a></span><span class="t">                <span class="nam">detector</span><span class="op">.</span><span class="nam">plot</span><span class="op">(</span><span class="nam">ax</span><span class="op">=</span><span class="nam">ax</span><span class="op">,</span> <span class="nam">show</span><span class="op">=</span><span class="key">False</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -340,7 +340,7 @@
             <a class="nav" href="z_2404691b0fd86af0_detector_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.1">coverage.py v7.6.1</a>,
-            created at 2024-09-23 10:38 +0000
+            created at 2024-10-07 14:21 +0000
         </p>
     </div>
 </footer>
