@@ -9,8 +9,8 @@
 | FlowCyPy/coupling\_mechanism/mie.py                   |       30 |        2 |        6 |        2 |     89% |    31, 78 |
 | FlowCyPy/coupling\_mechanism/rayleigh.py              |       21 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/uniform.py               |        4 |        0 |        0 |        0 |    100% |           |
-| FlowCyPy/cytometer.py                                 |      102 |       10 |       24 |        4 |     87% |52->exit, 140-141, 182, 187-190, 243-249 |
-| FlowCyPy/detector.py                                  |      138 |       15 |       42 |       12 |     82% |81->80, 93->92, 111, 115->114, 133, 137->136, 153, 157->156, 175, 183, 189-191, 223-229, 346, 479 |
+| FlowCyPy/cytometer.py                                 |      109 |       10 |       26 |        4 |     88% |51->exit, 139-140, 181, 186-189, 248-254 |
+| FlowCyPy/detector.py                                  |      132 |       10 |       40 |       12 |     85% |81->80, 93->92, 111, 115->114, 133, 137->136, 153, 157->156, 175, 183, 189-191, 320, 453 |
 | FlowCyPy/distribution/base\_class.py                  |       21 |        2 |        2 |        0 |     91% |    26, 30 |
 | FlowCyPy/distribution/delta.py                        |       22 |        1 |        2 |        0 |     96% |        86 |
 | FlowCyPy/distribution/lognormal.py                    |       22 |        1 |        2 |        0 |     96% |        94 |
@@ -28,7 +28,7 @@
 | FlowCyPy/source.py                                    |       26 |        1 |        6 |        2 |     91% |42->41, 60 |
 | FlowCyPy/units.py                                     |       18 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       46 |        9 |        4 |        1 |     80% |25, 30, 79-84, 88-89, 110, 119 |
-|                                             **TOTAL** | **1044** |  **169** |  **204** |   **49** | **82%** |           |
+|                                             **TOTAL** | **1045** |  **164** |  **204** |   **49** | **82%** |           |
 
 
 ## Setup coverage badge
