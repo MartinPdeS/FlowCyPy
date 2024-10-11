@@ -209,30 +209,24 @@ class FlowCytometer:
         """Plots the signals generated for each detector channel."""
         logging.info(f"Plotting the signal for the different channels.")
 
+        n_detectors = len(self.detectors)
+
         with plt.style.context(mps):
-            fig, axes = plt.subplots(2, 1, figsize=figure_size, sharex=True, sharey=True)
+            _, axes = plt.subplots(ncols=1, nrows=n_detectors + 1, figsize=figure_size, sharex=True, sharey=True, gridspec_kw={'height_ratios': [1, 1, 0.3]})
 
-            vlines_color_palette = plt.get_cmap('Set2')  # Different palette for vlines
+        axes[-1].get_yaxis().set_visible(False)
+        self.scatterer.add_to_ax(axes[-1])
 
-            for index, population in enumerate(self.scatterer.populations):
-                vlines_color = vlines_color_palette(index % 8)  # Use a different palette for vlines
+        # Plot the main signals for each detector
+        for ax, detector in zip(axes, self.detectors):
+            detector.plot(ax=ax, show=False)
 
-                x = population.dataframe['Time']
+        # Add legends to each subplot
+        for ax in axes:
+            ax.legend()
 
-                # Plot vlines with a different color
-                axes[0].vlines(x=x, ymin=0, ymax=1, transform=axes[0].get_xaxis_transform(), color=vlines_color, lw=1.5, linestyle='--', label=f"{population.name}")
-                axes[1].vlines(x=x, ymin=0, ymax=1, transform=axes[1].get_xaxis_transform(), color=vlines_color, lw=1.5, linestyle='--', label=f"{population.name}")
-
-            # Plot the main signals for each detector
-            for ax, detector in zip(axes, self.detectors):
-                detector.plot(ax=ax, show=False)
-
-            # Add legends to each subplot
-            axes[0].legend()
-            axes[1].legend()
-
-            # Display the plot
-            plt.show()
+        # Display the plot
+        plt.show()
 
     def print_properties(self) -> None:
         """Displays the core properties of the flow cytometer and its detectors using the `tabulate` library."""

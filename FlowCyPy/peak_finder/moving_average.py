@@ -162,9 +162,9 @@ class MovingAverage(BaseClass):
 
         # Create the plot using pandas plot method for the dataframe
         ax = detector.dataframe.plot(
-            y=['Signal', 'MovingAverage', 'Difference'],
+            y=['Signal', 'Difference'],
             x='Time',
-            style=['-', '--', '--'],
+            style=['-', '--'],
             ax=ax,
             ylabel=f'{detector.name} Signal [{signal_unit}]',
             xlabel=f'Time [{time_unit}]'
@@ -172,7 +172,7 @@ class MovingAverage(BaseClass):
 
         # Plot vertical lines at peak times
         for _, row in detector.peak_properties.iterrows():
-            ax.axvline(row['PeakTimes'].to(time_unit), color='r', linestyle='--', lw=1, label='Peak')
+            ax.axvline(row['PeakTimes'].to(time_unit), color='black', linestyle='-', lw=0.8)
 
         # Plot the signal threshold line
         ax.axhline(y=self.threshold.to(signal_unit).magnitude, color='black', linestyle='--', label='Threshold', lw=1)

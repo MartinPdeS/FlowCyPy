@@ -1,7 +1,8 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
-from dataclasses import dataclass, field
+from dataclasses import field
+from pydantic.dataclasses import dataclass
 import seaborn as sns
 import pandas as pd
 from FlowCyPy.units import Quantity, refractive_index_unit, particle, liter
@@ -9,8 +10,16 @@ from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Population
 from FlowCyPy.utils import PropertiesReport
 from FlowCyPy.distribution import Base as BaseDistribution
+from enum import Enum
 
-@dataclass
+config_dict = dict(arbitrary_types_allowed=True, extra='forbid')
+
+class CouplingModel(Enum):
+    MIE = 'mie'
+    RAYLEIGH = 'rayleigh'
+    UNIFORM = 'uniform'
+
+@dataclass(config=config_dict, slots=True)
 class Scatterer(PropertiesReport):
     """
     Defines and manages the size and refractive index distributions of scatterers (particles)
@@ -19,20 +28,36 @@ class Scatterer(PropertiesReport):
 
     Parameters
     ----------
-    refractive_index : Union[float, List[distribution.Base]]
-        A single refractive index or a list of refractive index distributions.
-    size : Union[float, List[distribution.Base]]
-        A single particle size or a list of size distributions.
-    coupling_factor : str, optional
-        The type of coupling factor to use. Options are 'rayleigh' or 'uniform'. Default is 'rayleigh'.
+    populations : List[Population]
+        A list of Population instances that define different scatterer populations.
+    coupling_factor : Optional[CouplingModel], optional
+        The type of coupling factor to use (CouplingModel.MIE, CouplingModel.RAYLEIGH, CouplingModel.UNIFORM). Default is CouplingModel.MIE.
+    medium_refractive_index : float
+        The refractive index of the medium. Default is 1.0.
     """
 
-    populations: List[Population] = field(default_factory=lambda : [])
-    coupling_factor: Optional[str] = 'mie'  # Coupling factor type ('mie', 'rayleigh', 'uniform')
-    medium_refractive_index: float = 1.0 * refractive_index_unit # Refractive index or refractive index distributions
+    medium_refractive_index: Quantity = 1.0 * refractive_index_unit
+    populations: List[Population] = field(default_factory=lambda: [])
+    coupling_factor: Optional[CouplingModel] = CouplingModel.MIE
+
+    flow_cell: FlowCell = None
+    n_events: int = None
+    dataframe: pd.DataFrame = None
+
 
     def initialize(self, flow_cell: FlowCell) -> None:
-        """Initializes particle size, refractive index, and medium refractive index distributions."""
+        """
+        Initializes particle size, refractive index, and medium refractive index distributions.
+
+        Parameters
+        ----------
+        flow_cell : FlowCell
+            An instance of the FlowCell class that describes the flow cell being used.
+
+        Returns
+        -------
+        None
+        """
         self.flow_cell = flow_cell
 
         for population in self.populations:
@@ -43,29 +68,30 @@ class Scatterer(PropertiesReport):
             axis=0,
             keys=[p.name for p in self.populations],
         )
-
         self.dataframe.index.names = ['Population', 'Index']
 
         self.n_events = len(self.dataframe)
 
-    def plot(self, show: bool = True, figure_size: tuple = (5, 5), log_plot: bool = False) -> None:
+    def plot(self, ax: Optional[plt.Axes] = None, show: bool = True, figure_size: tuple = (5, 5), log_plot: bool = False) -> None:
         """
-        Visualizes the joint distribution of scatterer sizes and refractive indices using a Seaborn `jointplot`.
+        Visualizes the joint distribution of scatterer sizes and refractive indices using a Seaborn jointplot.
 
-        This method plots the relationship between the scatterer sizes and refractive indices, including both
-        their marginal distributions (as Kernel Density Estimates, KDEs) and a scatter plot overlay.
+        Parameters
+        ----------
+        ax : matplotlib.axes.Axes, optional
+            An existing matplotlib axes to plot on. If None, a new figure and axes will be created. Default is None.
+        show : bool, optional
+            Whether to display the plot. Default is True.
+        figure_size : tuple, optional
+            The size of the figure to be displayed. Default is (5, 5).
+        log_plot : bool, optional
+            Whether to use logarithmic scales for the plot axes. Default is False.
 
-        The `jointplot` displays:
-            - **Marginal KDE plots** for scatterer sizes (on the x-axis) and refractive indices (on the y-axis).
-            - **Scatter plot** showing the relationship between the sizes and refractive indices.
-            - **Joint KDE plot** to highlight the density of points in the scatter plot.
-
-        The marginal and joint KDEs are filled to provide better visualization of density.
+        Returns
+        -------
+        None
         """
-        # Reset the index if necessary (to handle MultiIndex)
         df_reset = self.dataframe.reset_index()
-
-        # Extract the units from the pint-pandas columns
         x_unit = df_reset['Size'].pint.units
 
         with plt.style.context(mps):
@@ -74,54 +100,39 @@ class Scatterer(PropertiesReport):
                 x='Size',
                 y='RefractiveIndex',
                 hue='Population',
-                kind='kde',
-                alpha=0.8,
-                fill=True,
-                joint_kws={'alpha': 0.7}
+                kind='scatter',
+                alpha=0.8
             )
 
-            sns.scatterplot(
-                data=df_reset,
-                x='Size',
-                y='RefractiveIndex',
-                hue='Population',
-                ax=g.ax_joint,
-                alpha=0.6,
-                zorder=1
-            )
+        ax = g.ax_joint
+        fig = g.figure
 
-            # Set the x and y labels with units
-            g.ax_joint.set_xlabel(f"Size [{x_unit}]")
+        g.ax_joint.set_xlabel(f"Size [{x_unit}]")
 
-            plt.tight_layout()
+        if log_plot:
+            g.ax_joint.set_xscale('log')
+            g.ax_joint.set_yscale('log')
+            g.ax_marg_x.set_xscale('log')
+            g.ax_marg_y.set_yscale('log')
 
-            if log_plot:
-                ax = g.ax_joint
-                ax.set_xscale('log')
-                ax.set_yscale('log')
-                g.ax_marg_x.set_xscale('log')
-                g.ax_marg_y.set_yscale('log')
+        plt.tight_layout()
 
-
-            if show:
-                plt.show()
+        if show:
+            plt.show()
 
     def print_properties(self) -> None:
         """
         Prints specific properties of the Scatterer instance, such as coupling factor and medium refractive index.
-        This method calls the parent class method to handle the actual property printing logic.
 
-        Overrides:
-            Scatterer.print_properties: Extends the parent method to print the desired properties.
-
-        Returns:
-            None
+        Returns
+        -------
+        None
         """
         min_delta_position = abs(self.dataframe['Time'].diff()).min().to_compact()
         mean_delta_position = self.dataframe['Time'].diff().mean().to_compact()
 
         _dict = {
-            'coupling factor': self.coupling_factor,
+            'coupling factor': self.coupling_factor.value,
             'medium refractive index': self.medium_refractive_index,
             'minimum time between events': min_delta_position,
             'average time between events': mean_delta_position
@@ -132,25 +143,35 @@ class Scatterer(PropertiesReport):
         for population in self.populations:
             population.print_properties()
 
-
-    def add_population(self, name: str, size: BaseDistribution, refractive_index: BaseDistribution, concentration: Quantity) -> Population:
+    def add_population(self, name: str, size: BaseDistribution, refractive_index: BaseDistribution, concentration: Quantity) -> 'Scatterer':
         """
-        Adds a population to the Scatterer instance with the specified attributes: name, size distribution,
-        refractive index distribution, and concentration.
+        Adds a population to the Scatterer instance with the specified attributes.
 
-        Args:
-            name (str): The name of the population.
-            size (BaseDistribution): The size distribution of the population.
-            refractive_index (BaseDistribution): The refractive index distribution of the population.
-            concentration (Quantity): The concentration of the population.
+        Parameters
+        ----------
+        name : str
+            The name of the population.
+        size : BaseDistribution
+            The size distribution of the population.
+        refractive_index : BaseDistribution
+            The refractive index distribution of the population.
+        concentration : Quantity
+            The concentration of the population. Must have the dimensionality of 'particles per liter'.
 
-        Returns:
-            None
+        Returns
+        -------
+        Scatterer
+            The Scatterer instance (to support chaining).
+
+        Raises
+        ------
+        ValueError
+            If the concentration does not have the expected dimensionality.
         """
         if concentration.dimensionality != (particle / liter).dimensionality:
             raise ValueError(
-            f"Invalid concentration dimensionality: {concentration.dimensionality}. Expected dimensionality is 'particles per liter' or similar."
-        )
+                f"Invalid concentration dimensionality: {concentration.dimensionality}. Expected dimensionality is 'particles per liter' or similar."
+            )
 
         population = Population(
             name=name,
@@ -160,5 +181,99 @@ class Scatterer(PropertiesReport):
         )
 
         self.populations.append(population)
+        return self
 
-        return population
+    def remove_population(self, name: str) -> 'Scatterer':
+        """
+        Removes a population from the Scatterer instance by name.
+
+        Parameters
+        ----------
+        name : str
+            The name of the population to remove.
+
+        Returns
+        -------
+        Scatterer
+            The Scatterer instance (to support chaining).
+
+        Raises
+        ------
+        ValueError
+            If the population with the specified name does not exist.
+        """
+        population_names = [p.name for p in self.populations]
+        if name not in population_names:
+            raise ValueError(f"Population '{name}' not found in Scatterer.")
+
+        self.populations = [p for p in self.populations if p.name != name]
+        return self
+
+    def add_to_ax(self, *axes) -> None:
+        """
+        Adds vertical lines representing events for each population to the provided axes.
+
+        Parameters
+        ----------
+        *axes : matplotlib.axes.Axes
+            One or more matplotlib axes to which the vertical lines will be added.
+
+        Returns
+        -------
+        None
+        """
+        vlines_color_palette = plt.get_cmap('Set2')
+
+        for index, population in enumerate(self.populations):
+            vlines_color = vlines_color_palette(index % 8)
+            x = population.dataframe['Time']
+
+            for ax in axes:
+                ax.vlines(x=x, ymin=0, ymax=1, transform=ax.get_xaxis_transform(), color=vlines_color, lw=2.5, linestyle='--', label=f"{population.name}")
+
+    @property
+    def concentrations(self) -> List[Quantity]:
+        """
+        Gets the concentration of each population in the Scatterer instance.
+
+        Returns
+        -------
+        List[Quantity]
+            A list of concentrations for each population.
+        """
+        return [population.concentration for population in self.populations]
+
+    @concentrations.setter
+    def concentrations(self, values: Union[List[Quantity], Quantity]) -> None:
+        """
+        Sets the concentration of each population in the Scatterer instance.
+
+        Parameters
+        ----------
+        values : Union[List[Quantity], Quantity]
+            A list of concentrations to set for each population, or a single concentration value to set for all populations.
+
+        Raises
+        ------
+        ValueError
+            If the length of the values list does not match the number of populations or if any concentration has an incorrect dimensionality.
+        """
+        if isinstance(values, list):
+            if len(values) != len(self.populations):
+                raise ValueError("The length of the values list must match the number of populations.")
+
+            for value in values:
+                if value.dimensionality != (particle / liter).dimensionality:
+                    raise ValueError(
+                        f"Invalid concentration dimensionality: {value.dimensionality}. Expected dimensionality is 'particles per liter' or similar."
+                    )
+
+            for population, value in zip(self.populations, values):
+                population.concentration = value
+        else:
+            if values.dimensionality != (particle / liter).dimensionality:
+                raise ValueError(
+                    f"Invalid concentration dimensionality: {values.dimensionality}. Expected dimensionality is 'particles per liter' or similar."
+                )
+            for population in self.populations:
+                population.concentration = values

@@ -4,7 +4,7 @@ from FlowCyPy.units import second, volt, Quantity
 import pandas as pd
 import pint_pandas
 from tabulate import tabulate
-from dataclasses import fields
+from dataclasses import fields, dataclass
 
 
 class ProxyDetector():
@@ -89,6 +89,7 @@ def array_to_compact(array: np.ndarray):
     return array.to(compact_unit)
 
 
+@dataclass(slots=True)
 class PropertiesReport:
     def print_properties(self, **properties_dict: Dict[str, Quantity]) -> None:
         """
