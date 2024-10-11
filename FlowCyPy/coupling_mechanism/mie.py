@@ -67,7 +67,7 @@ def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatt
 
     size_list = scatterer.dataframe['Size']
     ri_list = scatterer.dataframe['RefractiveIndex']
-    couplings = np.empty_like(size_list).astype(float)
+    couplings = np.empty_like(size_list).astype(float) * ureg.watt
 
     for index, (size, ri) in enumerate(zip(size_list, ri_list)):
         # Generate a cache key based on the size and refractive index, using tolerance
@@ -100,4 +100,4 @@ def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatt
             _cache[cache_key_] = coupling_value
             couplings[index] = coupling_value
 
-    return couplings * ureg.watt
+    return couplings

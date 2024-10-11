@@ -6,6 +6,7 @@ from FlowCyPy.utils import PropertiesReport
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 from MPSPlots.styles import mps
+from functools import cached_property
 import pandas as pd
 import pint_pandas
 
@@ -77,8 +78,12 @@ class Detector(PropertiesReport):
 
     name: Optional[str] = None
 
-    @property
+    BOLTZMANN_CONSTANT = 1.380649e-23 * joule / kelvin  # Class constant
+    ELECTRON_CHARGE = 1.602176634e-19 * coulomb
+
+    @cached_property
     def bandwidth(self) -> Quantity:
+        return self.sampling_freq / 2
         """
         Automatically calculates the bandwidth based on the sampling frequency.
 
@@ -224,10 +229,8 @@ class Detector(PropertiesReport):
         if self.resistance.magnitude == 0 or self.temperature.magnitude == 0 or not self.include_thermal_noise or not self.include_noises:
             return
 
-        k_B = 1.380649e-23 * joule / kelvin # Boltzmann constant in J/K
-
         noise_std = np.sqrt(
-            4 * k_B * self.temperature * self.resistance * self.bandwidth
+            4 * self.BOLTZMANN_CONSTANT * self.temperature * self.resistance * self.bandwidth
         )
 
         thermal_noise = np.random.normal(0, noise_std.to(volt).magnitude, size=len(self.dataframe)) * volt
@@ -319,13 +322,11 @@ class Detector(PropertiesReport):
         if not self.include_shot_noise or not self.include_noises:
             return
 
-        e = 1.602e-19 * coulomb  # Electron charge (C)
-
         # Step 1: Compute the photocurrent for all time points at once using vectorization
         I_photon = self.responsitivity * optical_power
 
         # Step 2: Compute the shot noise current for each time point using vectorization
-        i_shot = 2 * e * I_photon * self.bandwidth
+        i_shot = 2 * self.BOLTZMANN_CONSTANT * I_photon * self.bandwidth
 
         I_shot = np.sqrt(i_shot)
 
