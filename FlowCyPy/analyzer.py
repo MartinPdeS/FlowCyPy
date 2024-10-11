@@ -245,7 +245,7 @@ class Analyzer:
             dataset.print_properties()  # Reuse the print_properties method from DataSet
 
 
-    def plot_peak(self, show: bool = True, figure_size: tuple = (7, 6)) -> None:
+    def plot_peak(self, show: bool = True, figure_size: tuple = (10, 6)) -> None:
         """
         Plots the detected peaks on the signal for each detector, including peak widths at half-maximum.
 
@@ -256,17 +256,24 @@ class Analyzer:
         figure_size : tuple, optional
             The size of the figure, by default (7, 6).
         """
+        n_detectors = len(self.cytometer.detectors)
+
         with plt.style.context(mps):
-            n_detectors = len(self.cytometer.detectors)
-            _, axes = plt.subplots(ncols=1, nrows=n_detectors, figsize=figure_size, sharex=True)
+            _, axes = plt.subplots(ncols=1, nrows=n_detectors + 1, figsize=figure_size, sharex=True, sharey=True, gridspec_kw={'height_ratios': [1, 1, 0.3]})
 
-            for ax, detector in zip(axes, self.cytometer.detectors):
-                self.algorithm.plot(detector, ax=ax, show=False)
+        axes[-1].get_yaxis().set_visible(False)
+        self.cytometer.scatterer.add_to_ax(axes[-1])
 
-            plt.tight_layout()
+        for ax, detector in zip(axes, self.cytometer.detectors):
+            self.algorithm.plot(detector, ax=ax, show=False)
 
-            if show:
-                plt.show()
+        plt.tight_layout()
+
+        for ax in axes:
+            ax.legend()
+
+        if show:
+            plt.show()
 
     def plot(self, show: bool = True, log_plot: bool = True) -> None:
         """
@@ -311,10 +318,8 @@ class Analyzer:
             )
 
             # # Set the x and y labels with units
-            g.ax_joint.set_xlabel(f"Heights [{x_unit}]")
-            g.ax_joint.set_ylabel(f"Heights [{y_unit}]")
-
-            plt.tight_layout()
+            g.ax_joint.set_xlabel(f"Heights : {self.cytometer.detectors[0].name} [{x_unit}]")
+            g.ax_joint.set_ylabel(f"Heights: {self.cytometer.detectors[1].name} [{y_unit}]")
 
             if log_plot:
                 ax = g.ax_joint
@@ -322,6 +327,8 @@ class Analyzer:
                 ax.set_yscale('log')
                 g.ax_marg_x.set_xscale('log')
                 g.ax_marg_y.set_yscale('log')
+
+            plt.tight_layout()
 
 
             if show:
