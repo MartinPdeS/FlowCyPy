@@ -326,12 +326,13 @@ class Detector(PropertiesReport):
         I_photon = self.responsitivity * optical_power
 
         # Step 2: Compute the shot noise current for each time point using vectorization
-        i_shot = 2 * self.BOLTZMANN_CONSTANT * I_photon * self.bandwidth
+        i_shot = 2 * self.ELECTRON_CHARGE * I_photon * self.bandwidth
 
         I_shot = np.sqrt(i_shot)
 
         # Step 3: Convert shot noise current to shot noise voltage using vectorization
         V_shot = I_shot * self.resistance
+
 
         # Step 4: Generate Gaussian noise for each time point with standard deviation V_shot
         noise_signal = np.random.normal(0, V_shot.to(volt).magnitude) * volt
