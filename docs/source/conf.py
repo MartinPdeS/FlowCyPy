@@ -26,7 +26,6 @@ autodoc_mock_imports = [
     'MPSPlots',
 ]
 
-
 project = 'FlowCyPy'
 copyright = '2024, Martin Poinsinet de Sivry-Houle'
 author = 'Martin Poinsinet de Sivry-Houle'
