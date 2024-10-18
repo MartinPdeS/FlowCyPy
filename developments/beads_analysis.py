@@ -58,7 +58,7 @@ cytometer.add_detector(
     sampling_freq=100 * megahertz,          # Sampling frequency: 60 MHz
     saturation_level=100 * millivolt,        # Saturation level: 5000 mV (detector capacity)
     resistance=1 * ohm,                     # Resistance: 1 ohm
-    temperature=25 * kelvin,                # Operating temperature: 300 K (room temperature)
+    temperature=300 * kelvin,                # Operating temperature: 300 K (room temperature)
     # n_bins='14bit'                          # Discretization bins: 14-bit resolution
 )
 
