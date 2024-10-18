@@ -261,11 +261,11 @@ class Analyzer:
         with plt.style.context(mps):
             _, axes = plt.subplots(ncols=1, nrows=n_detectors + 1, figsize=figure_size, sharex=True, sharey=True, gridspec_kw={'height_ratios': [1, 1, 0.3]})
 
-        axes[-1].get_yaxis().set_visible(False)
-        self.cytometer.scatterer.add_to_ax(axes[-1])
-
         for ax, detector in zip(axes, self.cytometer.detectors):
             self.algorithm.plot(detector, ax=ax, show=False)
+
+        axes[-1].get_yaxis().set_visible(False)
+        self.cytometer.scatterer.add_to_ax(axes[-1])
 
         plt.tight_layout()
 
