@@ -11,7 +11,6 @@ from FlowCyPy.directories import project_path, doc_css_path
 
 sys.path.insert(0, project_path)
 sys.path.insert(0, project_path.joinpath('FlowCyPy'))
-
 sys.path.insert(0, project_path.joinpath('docs/source'))
 
 
@@ -121,6 +120,11 @@ html_theme_options = {
             "name": "PyPI",
             "url": "https://pypi.org/project/flowcypy/",
             "icon": "fa-solid fa-box",
+        },
+        {
+            "name": "Anaconda",
+            "url": "https://anaconda.org/MartinPdeS/flowcypy",
+            "icon": "fa-brands fa-python",
         },
     ],
     "navbar_align": "left",
