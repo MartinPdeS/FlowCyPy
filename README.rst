@@ -286,3 +286,6 @@ Email:`martin.poinsinet.de.sivry@gmail.ca <mailto:martin.poinsinet.de.sivry@gmai
     :target: https://colab.research.google.com/github/MartinPdeS/FlowCyPy/blob/master/workflow.ipynb
     :alt: FlowCyPy on Google colab
 
+.. |ci/cd| image:: https://github.com/martinpdes/flowcypy/actions/workflows/deploy_coverage.yml/badge.svg
+   :target: https://martinpdes.github.io/FlowCyPy/actions
+   :alt: Unittest Status
