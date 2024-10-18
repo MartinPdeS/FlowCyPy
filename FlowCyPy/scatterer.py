@@ -30,7 +30,7 @@ class Scatterer(PropertiesReport):
     ----------
     populations : List[Population]
         A list of Population instances that define different scatterer populations.
-    coupling_factor : Optional[CouplingModel], optional
+    coupling_model : Optional[CouplingModel], optional
         The type of coupling factor to use (CouplingModel.MIE, CouplingModel.RAYLEIGH, CouplingModel.UNIFORM). Default is CouplingModel.MIE.
     medium_refractive_index : float
         The refractive index of the medium. Default is 1.0.
@@ -38,7 +38,7 @@ class Scatterer(PropertiesReport):
 
     medium_refractive_index: Quantity = 1.0 * refractive_index_unit
     populations: List[Population] = field(default_factory=lambda: [])
-    coupling_factor: Optional[CouplingModel] = CouplingModel.MIE
+    coupling_model: Optional[CouplingModel] = CouplingModel.MIE
 
     flow_cell: FlowCell = None
     n_events: int = None
@@ -132,7 +132,7 @@ class Scatterer(PropertiesReport):
         mean_delta_position = self.dataframe['Time'].diff().mean().to_compact()
 
         _dict = {
-            'coupling factor': self.coupling_factor.value,
+            'coupling factor': self.coupling_model.value,
             'medium refractive index': self.medium_refractive_index,
             'minimum time between events': min_delta_position,
             'average time between events': mean_delta_position
@@ -227,9 +227,14 @@ class Scatterer(PropertiesReport):
         for index, population in enumerate(self.populations):
             vlines_color = vlines_color_palette(index % 8)
             x = population.dataframe['Time']
+            units = x.max().to_compact().units
+
+            x.pint.values = x.pint.to(units)
 
             for ax in axes:
                 ax.vlines(x=x, ymin=0, ymax=1, transform=ax.get_xaxis_transform(), color=vlines_color, lw=2.5, linestyle='--', label=f"{population.name}")
+
+            ax.set_xlabel(f'Time [{units}]')
 
     @property
     def concentrations(self) -> List[Quantity]:
