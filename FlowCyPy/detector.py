@@ -449,7 +449,7 @@ class Detector(PropertiesReport):
             )
 
             ax.set_xlabel(f"Time [{time_unit:P}]")
-            ax.set_ylabel(f"Signal {self.name} [{signal_unit:P}]")
+            ax.set_ylabel(f"{self.name} [{signal_unit:P}]")
 
             if show:
                 plt.show()

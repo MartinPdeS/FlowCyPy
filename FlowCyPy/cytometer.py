@@ -212,14 +212,14 @@ class FlowCytometer:
         n_detectors = len(self.detectors)
 
         with plt.style.context(mps):
-            _, axes = plt.subplots(ncols=1, nrows=n_detectors + 1, figsize=figure_size, sharex=True, sharey=True, gridspec_kw={'height_ratios': [1, 1, 0.3]})
-
-        axes[-1].get_yaxis().set_visible(False)
-        self.scatterer.add_to_ax(axes[-1])
+            _, axes = plt.subplots(ncols=1, nrows=n_detectors + 1, figsize=figure_size, sharex=True, sharey=True, gridspec_kw={'height_ratios': [1, 1, 0.4]})
 
         # Plot the main signals for each detector
         for ax, detector in zip(axes, self.detectors):
             detector.plot(ax=ax, show=False)
+
+        axes[-1].get_yaxis().set_visible(False)
+        self.scatterer.add_to_ax(axes[-1])
 
         # Add legends to each subplot
         for ax in axes:

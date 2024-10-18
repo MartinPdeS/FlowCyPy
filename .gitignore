@@ -5,7 +5,6 @@
 *.pytest_cache
 *htmlcov
 *.coverage
-developments/*
 
 dist
 build
