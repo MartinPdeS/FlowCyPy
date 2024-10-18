@@ -1,4 +1,4 @@
-# .github/workflows/coverage.yml
+# .github/workflows/deploy_coverage.yml
 name: Coverage
 
 on:
@@ -9,6 +9,7 @@ on:
   pull_request:
     branches: [ "master" ]
 
+
 jobs:
   coverage:
     name: Run test and generate coverage data
@@ -18,18 +19,16 @@ jobs:
       contents: write
 
     steps:
-      - name: "Set-up: Python ${{ env.cp_python_version }}"
+      - name: "Set-up: Python 3.10"
         uses: actions/setup-python@v4
         id: cp310
         with:
             python-version: "3.10"
 
-
       - name: "Install: Dependencies for headless server"
         shell: bash
         run: |
             sudo apt-get update
-            # sudo apt-get install libgl1-mesa-glx xvfb
             sudo apt-get install xvfb
 
       - name: "Checkout requirements and files for testing"
@@ -46,8 +45,10 @@ jobs:
           pytest
 
       - name: Coverage comment
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         uses: py-cov-action/python-coverage-comment-action@v3
         with:
+          GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MINIMUM_GREEN: 90
           MINIMUM_ORANGE: 50

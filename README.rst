@@ -1,16 +1,26 @@
-|logo|
-
-|python|
-|coverage|
-|PyPi|
-|PyPi_download|
-|docs|
-|colab|
-|anaconda_release|
-|license|
-
 FlowCyPy: Flow Cytometer Simulation Tool
 ========================================
+
+
+|logo|
+
+.. list-table::
+   :widths: 10 25 25 25
+   :header-rows: 0
+
+   * - Meta
+     - |python|
+     - |docs|
+     - |colab|
+   * - Testing
+     - |ci/cd|
+     - |coverage|
+     -
+   * - PyPi
+     - |PyPi|
+     - |PyPi_download|
+     -
+
 
 Overview
 --------
@@ -175,7 +185,7 @@ To run the tests, use `pytest` with coverage:
 
 .. code-block:: bash
 
-    pytest --cov=FlowCyPy --cov-report=html
+    pytest
 
 This will generate a coverage report in `htmlcov/index.html`.
 
@@ -276,8 +286,3 @@ Email:`martin.poinsinet.de.sivry@gmail.ca <mailto:martin.poinsinet.de.sivry@gmai
     :target: https://colab.research.google.com/github/MartinPdeS/FlowCyPy/blob/master/workflow.ipynb
     :alt: FlowCyPy on Google colab
 
-.. |anaconda_release| image:: https://anaconda.org/martinpdes/flowcypy/badges/latest_release_date.svg
-    :target: https://anaconda.org/MartinPdeS/flowcypy
-    :alt: Anaconda project
-
-.. |license| image:: https://anaconda.org/martinpdes/flowcypy/badges/license.svg
