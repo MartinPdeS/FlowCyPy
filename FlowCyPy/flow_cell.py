@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import List
 from FlowCyPy.units import meter, second, particle
 from PyMieSim.units import Quantity

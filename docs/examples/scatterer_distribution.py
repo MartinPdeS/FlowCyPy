@@ -19,7 +19,7 @@ Steps in the Workflow:
 # Import necessary libraries and modules
 from FlowCyPy import Scatterer, FlowCell
 from FlowCyPy import distribution
-from FlowCyPy.units import second, nanometer, RIU, particle, milliliter, meter, micrometer, millisecond, AU
+from FlowCyPy.units import second, nanometer, RIU, particle, milliliter, meter, micrometer, millisecond
 import numpy as np
 
 # Set random seed for reproducibility

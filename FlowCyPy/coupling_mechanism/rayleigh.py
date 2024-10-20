@@ -3,6 +3,7 @@ import numpy as np
 from FlowCyPy import Scatterer, Detector, Source
 from FlowCyPy.units import meter
 
+
 def compute_scattering_cross_section(scatterer: Scatterer, source: Source, detector: Detector) -> np.ndarray:
     r"""
     Computes the Rayleigh scattering cross-section for a spherical particle with angle dependency.
@@ -59,7 +60,6 @@ def compute_scattering_cross_section(scatterer: Scatterer, source: Source, detec
     cross_section = sigma_0 * np.sin(phi * np.pi / 180) ** 2
 
     return cross_section.magnitude * meter**2
-
 
 
 def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatterer) -> float:

@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -59,7 +58,6 @@ class Analyzer:
         self.algorithm = algorithm
         self.cytometer = cytometer
         self.datasets = []
-
 
     def run_analysis(self, compute_peak_area: bool = False) -> None:
         """
@@ -183,7 +181,6 @@ class Analyzer:
         # Log total peaks across all detectors
         logging.info(f"\nTotal number of peaks detected across all detectors: {total_peaks}")
 
-
     def get_coincidence(self, margin: second.dimensionality) -> None:
         """
         Identifies coincident events between two detectors within a specified time margin.
@@ -243,7 +240,6 @@ class Analyzer:
         for i, dataset in enumerate(self.datasets):
             print(f"\nFeatures for Dataset {i + 1}:")
             dataset.print_properties()  # Reuse the print_properties method from DataSet
-
 
     def plot_peak(self, show: bool = True, figure_size: tuple = (10, 6)) -> None:
         """
@@ -329,7 +325,6 @@ class Analyzer:
                 g.ax_marg_y.set_yscale('log')
 
             plt.tight_layout()
-
 
             if show:
                 plt.show()
