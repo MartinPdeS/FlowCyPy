@@ -4,7 +4,7 @@ from FlowCyPy.units import second, volt, Quantity
 import pandas as pd
 import pint_pandas
 from tabulate import tabulate
-from dataclasses import fields, dataclass
+from dataclasses import dataclass
 
 
 class ProxyDetector():
@@ -28,7 +28,6 @@ class ProxyDetector():
 
     def plot(self, *args, **kwargs):
         pass
-
 
 
 def generate_dummy_detector(time: np.ndarray, centers: List[float], heights: List[float], stds: List[float]):
@@ -62,6 +61,7 @@ def generate_dummy_detector(time: np.ndarray, centers: List[float], heights: Lis
         signal += height * np.exp(-((time - center) ** 2) / (2 * sigma ** 2))
 
     return ProxyDetector(time=time, signal=signal)
+
 
 def find_matching_indices(array_0: np.ndarray, array_1: np.ndarray, margin: float):
     """
@@ -116,11 +116,6 @@ class PropertiesReport:
 
         The list contains formatted strings representing the detector's physical and operational characteristics.
         """
-        if properties_dict is None:
-            properties_str = {
-                f.name: getattr(self, f.name) for f in fields(self)
-            }
-
         properties_dict = {
             k: f"{v.to_compact():.1f~P}" if isinstance(v, Quantity) else v for k, v in properties_dict.items()
         }

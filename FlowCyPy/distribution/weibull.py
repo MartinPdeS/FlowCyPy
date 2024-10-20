@@ -1,9 +1,9 @@
-from dataclasses import dataclass
 import numpy as np
 from typing import Tuple
 from PyMieSim.units import Quantity
 from FlowCyPy.distribution.base_class import Base
 from pydantic.dataclasses import dataclass
+
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -74,7 +74,7 @@ class Weibull(Base):
         """
         a = self.shape / self.scale
         b = (x / self.scale)
-        c =  np.exp(-(x / self.scale) ** self.shape)
+        c = np.exp(-(x / self.scale) ** self.shape)
         pdf = a * b ** (self.shape - 1) * c
 
         return x, self.scale_factor * pdf

@@ -4,10 +4,12 @@ from FlowCyPy import ureg
 from PyMieSim.single.scatterer import Sphere as PMS_SPHERE
 from PyMieSim.single.source import Gaussian as PMS_GAUSSIAN
 from PyMieSim.single.detector import Photodiode as PMS_PHOTODIODE
-from FlowCyPy.units import meter, watt, degree
+from PyMieSim.units import degree
+
 
 # Initialize a cache (dictionary) to store computed results for (size, ri) pairs
 _cache = {}
+
 
 def cache_key(size, ri, detector, tolerance: float = 0):
     """
@@ -34,6 +36,7 @@ def cache_key(size, ri, detector, tolerance: float = 0):
     ri_rounded = np.round(ri / tolerance) * tolerance
     return (size_rounded, detector, ri_rounded)
 
+
 def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatterer, tolerance: float = 1e-5) -> float:
     """
     Computes the detected signal by analyzing the scattering properties of particles.
@@ -57,7 +60,6 @@ def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatt
     np.ndarray
         Array of coupling values for each particle, based on the detected signal.
     """
-    from PyMieSim.units import degree, AU
     pms_source = PMS_GAUSSIAN(
         wavelength=source.wavelength,
         polarization=0 * degree,

@@ -19,6 +19,7 @@ config_dict = dict(
     extra='forbid'
 )
 
+
 @dataclass(config=config_dict, unsafe_hash=True)
 class Detector(PropertiesReport):
     """
@@ -195,7 +196,6 @@ class Detector(PropertiesReport):
             if isinstance(attr_value, Quantity):
                 setattr(self, attr_name, attr_value.to_base_units())
 
-
     def _process_n_bins(self) -> None:
         r"""
         Processes the `n_bins` attribute to ensure it is an integer representing the number of bins.
@@ -271,7 +271,6 @@ class Detector(PropertiesReport):
 
         return dark_voltage_noise
 
-
     def _add_photon_shot_noise_to_raw_signal(self, optical_power: Quantity) -> None:
         r"""
         Simulates photon shot noise based on the given optical power and detector bandwidth, and returns
@@ -332,7 +331,6 @@ class Detector(PropertiesReport):
 
         # Step 3: Convert shot noise current to shot noise voltage using vectorization
         V_shot = I_shot * self.resistance
-
 
         # Step 4: Generate Gaussian noise for each time point with standard deviation V_shot
         noise_signal = np.random.normal(0, V_shot.to(volt).magnitude) * volt
@@ -416,7 +414,6 @@ class Detector(PropertiesReport):
                 bins=bins.to(volt).magnitude
             ) - 1
             self.dataframe.Signal = pint_pandas.PintArray(bins[digitized], volt)
-
 
     def plot(self, show: bool = True, figure_size: tuple = None, color: str = 'C0', ax: plt.Axes = None) -> None:
         """

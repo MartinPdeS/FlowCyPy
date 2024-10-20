@@ -17,6 +17,12 @@ Workflow Summary:
 import numpy as np
 from FlowCyPy import FlowCell
 from FlowCyPy.units import meter, micrometer, millisecond, second, degree
+from FlowCyPy import Scatterer, distribution
+from FlowCyPy.units import particle, milliliter, nanometer, RIU, AU, milliwatt
+from FlowCyPy import FlowCytometer
+from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, microvolt, microsecond
+from FlowCyPy import Analyzer, peak_finder
+from FlowCyPy import Source
 
 np.random.seed(3)  # Ensure reproducibility
 
@@ -26,10 +32,6 @@ flow_cell = FlowCell(
     flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
     run_time=0.5 * millisecond               # Simulation run time: 0.5 ms
 )
-
-# Step 2: Defining Particle Populations
-from FlowCyPy import Scatterer, distribution
-from FlowCyPy.units import particle, milliliter, nanometer, RIU
 
 # Initialize scatterer with a medium refractive index
 scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
@@ -43,19 +45,14 @@ scatterer.add_population(
         spread=4.5                           # Spread factor for the distribution
     ),
     refractive_index=distribution.Normal(
-        mean=1.39 * RIU,   # Mean refractive index: 1.39
-        std_dev=0.02 * RIU # Standard deviation: 0.02 refractive index units
+        mean=1.39 * RIU,    # Mean refractive index: 1.39
+        std_dev=0.02 * RIU  # Standard deviation: 0.02 refractive index units
     )
 )
 
 scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
 scatterer.print_properties()               # Display population properties
 scatterer.plot()                           # Visualize the population distributions
-
-# %%
-# Step 3: Laser Source Configuration
-from FlowCyPy import Source
-from FlowCyPy.units import milliwatt, nanometer, AU
 
 # Set up the laser source parameters
 source = Source(
@@ -65,10 +62,6 @@ source = Source(
 )
 
 # Step 4: Simulating the Flow Cytometry Experiment
-from FlowCyPy import FlowCytometer
-from FlowCyPy.units import degree, ohm, megahertz, ampere, volt, kelvin, watt, microvolt
-
-# Initialize the cytometer and configure detectors
 cytometer = FlowCytometer(coupling_mechanism='mie', source=source, scatterer=scatterer)
 
 # Add forward scatter detector
@@ -107,14 +100,10 @@ cytometer.plot()
 
 # %%
 # Step 5: Analyzing Pulse Signals
-from FlowCyPy import Analyzer, peak_finder
-from FlowCyPy.units import microsecond
-
-# Configure peak finding algorithm
 algorithm = peak_finder.MovingAverage(
-    threshold=5 * microvolt,          # Signal threshold: 0.1 mV
-    window_size=1 * microsecond,        # Moving average window size: 1 µs
-    min_peak_distance=0.3 * microsecond # Minimum distance between peaks: 0.3 µs
+    threshold=5 * microvolt,           # Signal threshold: 0.1 mV
+    window_size=1 * microsecond,         # Moving average window size: 1 µs
+    min_peak_distance=0.3 * microsecond  # Minimum distance between peaks: 0.3 µs
 )
 
 # Initialize analyzer with the cytometer and algorithm

@@ -1,9 +1,9 @@
-from dataclasses import dataclass
 import numpy as np
 from typing import Optional, Tuple
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 from FlowCyPy.units import particle, Quantity
+
 
 class Base:
     """

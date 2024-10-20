@@ -1,6 +1,7 @@
 import numpy as np
 from FlowCyPy import Scatterer, Detector, Source, ureg
 
+
 def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatterer) -> np.ndarray:
     r"""
     Computes the power detected by a detector from a uniform distribution.

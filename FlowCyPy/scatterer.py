@@ -14,10 +14,12 @@ from enum import Enum
 
 config_dict = dict(arbitrary_types_allowed=True, extra='forbid')
 
+
 class CouplingModel(Enum):
     MIE = 'mie'
     RAYLEIGH = 'rayleigh'
     UNIFORM = 'uniform'
+
 
 @dataclass(config=config_dict, slots=True)
 class Scatterer(PropertiesReport):
@@ -43,7 +45,6 @@ class Scatterer(PropertiesReport):
     flow_cell: FlowCell = None
     n_events: int = None
     dataframe: pd.DataFrame = None
-
 
     def initialize(self, flow_cell: FlowCell) -> None:
         """
@@ -103,9 +104,6 @@ class Scatterer(PropertiesReport):
                 kind='scatter',
                 alpha=0.8
             )
-
-        ax = g.ax_joint
-        fig = g.figure
 
         g.ax_joint.set_xlabel(f"Size [{x_unit}]")
 

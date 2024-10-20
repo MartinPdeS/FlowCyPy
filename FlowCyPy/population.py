@@ -125,7 +125,7 @@ class Population(PropertiesReport):
         size = self.size.generate(self.n_events)
         self.dataframe['Size'] = pint_pandas.PintArray(size, dtype=size.units)
 
-        ri =  self.refractive_index.generate(self.n_events)
+        ri = self.refractive_index.generate(self.n_events)
         self.dataframe['RefractiveIndex'] = pint_pandas.PintArray(ri, dtype=ri.units)
 
     def _generate_longitudinal_positions(self) -> None:
