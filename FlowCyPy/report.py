@@ -10,17 +10,16 @@ import shutil
 
 
 def df2table(df):
-    return Table(
-    [[Paragraph(col) for col in df.columns]] + df.values.tolist(),
-    style=[
-        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-        ('LINEBELOW',(0,0), (-1,0), 1, colors.black),
-        ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
-        ('BOX', (0,0), (-1,-1), 1, colors.black),
-        ('ROWBACKGROUNDS', (0,0), (-1,-1), [colors.lightgrey, colors.white])],
-      hAlign = 'LEFT')
+    paragraphs = [[Paragraph(col) for col in df.columns]] + df.values.tolist()
+    style = [
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('LINEBELOW', (0, 0), (-1, 0), 1, colors.black),
+        ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+        ('BOX', (0, 0), (-1, -1), 1, colors.black),
+        ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.lightgrey, colors.white])
+    ]
 
-
+    return Table(paragraphs, hAlign='LEFT', style=style)
 
 
 @dataclass
@@ -67,7 +66,7 @@ class Report:
         """Returns a Paragraph or Table for the FlowCell section."""
         style = getSampleStyleSheet()['Heading2']
 
-        table_data = [['Attribute', f'Value']]
+        table_data = [['Attribute', 'Value']]
         table_data += self.flow_cell.get_properties()
 
         table = Table(table_data, hAlign='LEFT')
@@ -96,14 +95,11 @@ class Report:
         """Returns a Table for the scatterer distribution section."""
         style = getSampleStyleSheet()['Heading2']
 
-
         df = self.scatterer.populations[0].dataframe.pint.dequantify().reset_index().describe(percentiles=[])
         df = df[['Time']]
         print(df)
 
         table = df2table(df)
-
-        # dsa
 
         # df = self.scatterer.dataframe#.reset_index()
         # _report = df.pint.dequantify().describe(percentiles=[])
@@ -119,9 +115,7 @@ class Report:
 
         table.setStyle(self.get_table_style())
 
-
-
-        image = self.get_image_from(self.scatterer.plot, figure_size=(8, 8), scale=0.5)
+        self.get_image_from(self.scatterer.plot, figure_size=(8, 8), scale=0.5)
 
         # combined_table = Table([[table, image]], hAlign='LEFT')
         combined_table = Table([[table]], hAlign='LEFT')
@@ -146,7 +140,6 @@ class Report:
         # Create and return the table
         table = Table(table_data, hAlign='LEFT')
         table.setStyle(self.get_table_style())
-
 
         image_0 = self.get_image_from(detector_0.plot, align='CENTER', figure_size=(6, 3))
         image_1 = self.get_image_from(detector_1.plot, align='CENTER', figure_size=(6, 3))
@@ -233,7 +226,6 @@ class Report:
             onPage=self.add_background,
             onPageEnd=self.add_footer,
         )
-
 
         doc.addPageTemplates([template])
 

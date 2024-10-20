@@ -60,8 +60,6 @@ class Uniform(Base):
         np.ndarray
             An array of scatterer sizes in meters.
         """
-        common_unit = self.lower_bound.units
-
         return np.random.uniform(
             self.lower_bound.to(self._main_units).magnitude,
             self.upper_bound.to(self._main_units).magnitude,

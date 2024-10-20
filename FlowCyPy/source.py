@@ -2,7 +2,7 @@
 from typing import Optional
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-from FlowCyPy.units import  meter, joule, second, particle, degree
+from FlowCyPy.units import meter, joule, second, particle, degree
 from PyMieSim.units import Quantity
 from PyMieSim.polarization import BasePolarization
 from FlowCyPy.utils import PropertiesReport
@@ -65,8 +65,7 @@ class Source(PropertiesReport):
         Initialize additional parameters after class instantiation by assigning physical units to parameters.
         """
         # Calculate Gaussian beam waist at the focus
-        self.waist = self.wavelength / (np.pi * self.numerical_aperture)
-
+        self.waist = 2 * self.wavelength / (np.pi * self.numerical_aperture)
 
         h = 6.62607015e-34 * joule * second  # Planck constant
         c = 3e8 * meter / second  # Speed of light

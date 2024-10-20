@@ -18,6 +18,9 @@ from FlowCyPy import FlowCytometer, Scatterer, Analyzer, Detector, Source, FlowC
 from FlowCyPy import distribution
 from FlowCyPy import peak_finder
 from FlowCyPy.units import particle, milliliter, nanometer, RIU, second, micrometer, millisecond, meter
+from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliampere, megahertz
+from FlowCyPy.units import microsecond
+from FlowCyPy.units import milliwatt, AU
 
 # Set random seed for reproducibility
 np.random.seed(3)
@@ -41,8 +44,8 @@ scatterer.add_population(
         spread=10.5                           # Spread factor for size distribution
     ),
     refractive_index=distribution.Normal(
-        mean=1.45 * RIU,   # Mean refractive index: 1.39
-        std_dev=0.02 * RIU # Standard deviation: 0.05 refractive index units
+        mean=1.45 * RIU,    # Mean refractive index: 1.39
+        std_dev=0.02 * RIU  # Standard deviation: 0.05 refractive index units
     )
 )
 
@@ -51,12 +54,12 @@ scatterer.add_population(
     name='LP',  # Population name: Liposomes (LP)
     concentration=2e+9 * particle / milliliter / 10,  # Concentration: 1e9 particles per milliliter
     size=distribution.RosinRammler(
-        characteristic_size=200 * nanometer, # Characteristic size: 200 nanometers
+        characteristic_size=200 * nanometer,  # Characteristic size: 200 nanometers
         spread=10.5                           # Spread factor for size distribution
     ),
     refractive_index=distribution.Normal(
-        mean=1.45 * RIU,   # Mean refractive index: 1.45
-        std_dev=0.02 * RIU # Standard deviation: 0.05 refractive index units
+        mean=1.45 * RIU,    # Mean refractive index: 1.45
+        std_dev=0.02 * RIU  # Standard deviation: 0.05 refractive index units
     )
 )
 
@@ -69,7 +72,6 @@ scatterer.plot()
 
 # %%
 # Step 4: Set up the Laser Source
-from FlowCyPy.units import milliwatt, AU
 source = Source(
     numerical_aperture=0.3 * AU,             # Numerical aperture of the laser: 0.3
     wavelength=800 * nanometer,              # Laser wavelength: 800 nanometers
@@ -80,7 +82,6 @@ source.print_properties()  # Print the laser source properties
 
 # Step 5: Configure Detectors
 # Side scatter detector
-from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliampere, megahertz
 detector_0 = Detector(
     name='side',                             # Detector name: Side scatter detector
     phi_angle=90 * degree,                   # Angle: 90 degrees (Side Scatter)
@@ -129,7 +130,6 @@ cytometer.plot()
 
 # %%
 # Step 7: Analyze Pulse Signals
-from FlowCyPy.units import microsecond
 algorithm = peak_finder.MovingAverage(
     threshold=0.01 * millivolt,              # Peak detection threshold: 0.03 millivolts
     window_size=10 * microsecond,             # Moving average window size: 1 microsecond

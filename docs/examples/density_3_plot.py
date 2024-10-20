@@ -17,6 +17,12 @@ Workflow Summary:
 import numpy as np
 from FlowCyPy import FlowCell
 from FlowCyPy.units import meter, micrometer, millisecond, second, degree
+from FlowCyPy import Scatterer, distribution
+from FlowCyPy.units import particle, milliliter, nanometer, RIU, milliwatt, AU
+from FlowCyPy import FlowCytometer
+from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, millivolt, microsecond
+from FlowCyPy import Analyzer, peak_finder
+from FlowCyPy import Source
 
 np.random.seed(3)  # Ensure reproducibility
 
@@ -28,9 +34,6 @@ flow_cell = FlowCell(
 )
 
 # Step 2: Defining Particle Populations
-from FlowCyPy import Scatterer, distribution
-from FlowCyPy.units import particle, milliliter, nanometer, RIU
-
 # Initialize scatterer with a medium refractive index
 scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
 
@@ -43,8 +46,8 @@ scatterer.add_population(
         spread=4.5                           # Spread factor for the distribution
     ),
     refractive_index=distribution.Normal(
-        mean=1.39 * RIU,   # Mean refractive index: 1.39
-        std_dev=0.02 * RIU # Standard deviation: 0.02 refractive index units
+        mean=1.39 * RIU,    # Mean refractive index: 1.39
+        std_dev=0.02 * RIU  # Standard deviation: 0.02 refractive index units
     )
 )
 
@@ -52,12 +55,12 @@ scatterer.add_population(
     name='LP',  # Population name: Liposomes
     concentration=1e9 * particle / milliliter,  # Concentration: 1e9 particles/milliliter
     size=distribution.RosinRammler(
-        characteristic_size=200 * nanometer, # Characteristic size: 200 nm
-        spread=4.5                           # Spread factor for the distribution
+        characteristic_size=200 * nanometer,  # Characteristic size: 200 nm
+        spread=4.5                            # Spread factor for the distribution
     ),
     refractive_index=distribution.Normal(
-        mean=1.45 * RIU,   # Mean refractive index: 1.45
-        std_dev=0.02 * RIU # Standard deviation: 0.02 refractive index units
+        mean=1.45 * RIU,    # Mean refractive index: 1.45
+        std_dev=0.02 * RIU  # Standard deviation: 0.02 refractive index units
     )
 )
 
@@ -65,8 +68,8 @@ scatterer.add_population(
     name='Cells',  # Population name: Cells
     concentration=1e9 * particle / milliliter,  # Concentration: 1e9 particles/milliliter
     size=distribution.RosinRammler(
-        characteristic_size=1000 * nanometer, # Characteristic size: 1000 nm
-        spread=4.5                            # Spread factor for the distribution
+        characteristic_size=1000 * nanometer,  # Characteristic size: 1000 nm
+        spread=4.5                             # Spread factor for the distribution
     ),
     refractive_index=distribution.Normal(
         mean=1.43 * RIU,    # Mean refractive index: 1.43
@@ -80,10 +83,6 @@ scatterer.plot()                           # Visualize the population distributi
 
 # %%
 # Step 3: Laser Source Configuration
-from FlowCyPy import Source
-from FlowCyPy.units import milliwatt, nanometer, AU
-
-# Set up the laser source parameters
 source = Source(
     numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
     wavelength=200 * nanometer,           # Laser wavelength: 200 nm
@@ -91,9 +90,6 @@ source = Source(
 )
 
 # Step 4: Simulating the Flow Cytometry Experiment
-from FlowCyPy import FlowCytometer
-from FlowCyPy.units import degree, ohm, megahertz, ampere, volt, kelvin, watt, millivolt
-
 # Initialize the cytometer and configure detectors
 cytometer = FlowCytometer(coupling_mechanism='mie', source=source, scatterer=scatterer)
 
@@ -133,14 +129,11 @@ cytometer.plot()
 
 # %%
 # Step 5: Analyzing Pulse Signals
-from FlowCyPy import Analyzer, peak_finder
-from FlowCyPy.units import microsecond, millivolt
-
 # Configure peak finding algorithm
 algorithm = peak_finder.MovingAverage(
-    threshold=0.1 * millivolt,          # Signal threshold: 0.1 mV
-    window_size=1 * microsecond,        # Moving average window size: 1 µs
-    min_peak_distance=0.3 * microsecond # Minimum distance between peaks: 0.3 µs
+    threshold=0.1 * millivolt,           # Signal threshold: 0.1 mV
+    window_size=1 * microsecond,         # Moving average window size: 1 µs
+    min_peak_distance=0.3 * microsecond  # Minimum distance between peaks: 0.3 µs
 )
 
 # Initialize analyzer with the cytometer and algorithm

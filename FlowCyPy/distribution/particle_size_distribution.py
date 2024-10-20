@@ -11,6 +11,7 @@ config_dict = dict(
     extra='forbid'
 )
 
+
 @dataclass(config=config_dict)
 class RosinRammler(Base):
     r"""

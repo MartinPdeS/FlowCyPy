@@ -20,6 +20,7 @@ logging.basicConfig(
     format='%(levelname)s - %(message)s'
 )
 
+
 @dataclass
 class FlowCytometer:
     """
@@ -48,9 +49,8 @@ class FlowCytometer:
     """
     scatterer: Scatterer
     source: Source
-    detectors: List[Detector] = field(default_factory= lambda : [])
+    detectors: List[Detector] = field(default_factory=lambda: [])
     coupling_mechanism: Optional[str] = 'mie'
-
 
     def simulate_pulse(self) -> None:
         """
@@ -163,7 +163,6 @@ class FlowCytometer:
         # Log total events across all detectors
         logging.info(f"\nTotal number of events detected across all detectors: {total_events}")
 
-
     def _get_detection_mechanism(self) -> Callable:
         """
         Generates coupling factors for the scatterer sizes based on the selected coupling mechanism.
@@ -207,7 +206,7 @@ class FlowCytometer:
 
     def plot(self, figure_size: tuple = (10, 6)) -> None:
         """Plots the signals generated for each detector channel."""
-        logging.info(f"Plotting the signal for the different channels.")
+        logging.info("Plotting the signal for the different channels.")
 
         n_detectors = len(self.detectors)
 
