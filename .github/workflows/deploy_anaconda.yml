@@ -1,4 +1,4 @@
-name: Deploy to Conda
+name: Deploy Conda Package
 
 on:
   push:
@@ -9,26 +9,26 @@ on:
     branches: [ "master" ]
 
 jobs:
-  conda_deployment:
-    name: OS [${{ matrix.os }}]  Python [${{ matrix.python-version }}]
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-        python-version: ["3.11", "3.12"]
-
+  build_and_publish_conda_package:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Conda environment creation and activation
-        uses: conda-incubator/setup-miniconda@v3
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          channels: conda-forge, martinpdes
-          python-version: ${{ matrix.python-version }}
+          channels: conda-forge
+          python-version: '3.11'
 
-      - name: Conda environment creation and activation
+      - name: Upload to Anaconda (if tag)
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         run: |
-          conda install anaconda-client conda-build
-          conda config --add channels conda-forge
-          conda config --add channels martinpdes
-          conda build . --token ${{ secrets.ANACONDA_API_TOKEN }} --user martinpdes
+          conda config --set anaconda_upload true
+
+      - name: Create Conda Environment and Install Dependencies
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_API_TOKEN }}  # Ensure the Anaconda token is set
+        run: |
+          conda install conda-build anaconda-client conda-verify -y
+          conda build . -c martinpdes
