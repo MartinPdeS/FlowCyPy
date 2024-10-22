@@ -14,6 +14,7 @@ EXPECTED_PEAKS = Quantity(np.array([1, 3]), second)
 EXPECTED_HEIGHTS = Quantity(np.array([3, 8]), volt)
 EXPECTED_STDS = Quantity(np.array([0.01, 0.01]), second)
 
+
 # Parametrize the test with the detector
 @pytest.mark.parametrize("algorithm", algorithms, ids=lambda x: x.__class__.__name__)
 def test_peak_finders(algorithm):
@@ -38,9 +39,9 @@ def test_peak_finders(algorithm):
     )
 
     # Allow a tolerance in height comparison due to numerical differences
-    assert np.allclose(detector.peak_properties['Heights'].values.numpy_data, EXPECTED_HEIGHTS.magnitude, atol=0.5),\
+    assert np.allclose(detector.peak_properties['Heights'].values.numpy_data, EXPECTED_HEIGHTS.magnitude, atol=0.5), \
         f"Expected peak heights {EXPECTED_HEIGHTS}, but got {detector.peak_properties['Heights'].values}."
 
 
 if __name__ == '__main__':
-    pytest.main([__file__])
+    pytest.main(["-W error", __file__])

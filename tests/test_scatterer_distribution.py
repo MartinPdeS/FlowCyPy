@@ -11,8 +11,8 @@ from FlowCyPy.units import (
 )
 
 
-
 default_concentration = 1.8e7 * particle / milliliter
+
 
 # Fixtures to set up a default Flow and Distributions
 @pytest.fixture
@@ -24,6 +24,7 @@ def default_flow_cell():
         run_time=1.0 * millisecond,
     )
 
+
 # Parametrize different distributions
 distributions = [
     dist.Normal(mean=1.0 * micrometer, std_dev=1.0 * nanometer),
@@ -31,6 +32,7 @@ distributions = [
     dist.Uniform(lower_bound=0.5 * micrometer, upper_bound=1.5 * micrometer),
     dist.RosinRammler(characteristic_size=0.5 * micrometer, spread=1.5),
 ]
+
 
 @pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__)
 def test_generate_distribution_size(distribution, default_flow_cell):
@@ -152,4 +154,4 @@ def test_plot_positions(mock_show, default_flow_cell, distribution):
 
 
 if __name__ == '__main__':
-    pytest.main([__file__])
+    pytest.main(["-W error", __file__])

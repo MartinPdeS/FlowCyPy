@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 import pint_pandas
 
+
 class BaseClass:
     """
     A base class to handle common functionality for peak detection,
@@ -35,6 +36,7 @@ class BaseClass:
         np.ndarray
             The area under each peak.
         """
+        dt = 1
         start_idx = np.maximum(0, (peak_indices - widths / (2 * self.dt)).astype(int)).magnitude
         end_idx = np.minimum(len(signal), (peak_indices + widths / (2 * dt)).astype(int)).magnitude
 

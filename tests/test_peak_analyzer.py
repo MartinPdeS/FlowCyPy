@@ -13,6 +13,7 @@ from FlowCyPy.utils import generate_dummy_detector
 # Seed for reproducibility
 np.random.seed(10)
 
+
 # Fixtures
 @pytest.fixture
 def flow_cell():
@@ -22,6 +23,7 @@ def flow_cell():
         run_time=1e-3 * second,
     )
 
+
 @pytest.fixture
 def default_size_distribution():
     return distribution.Normal(
@@ -29,12 +31,14 @@ def default_size_distribution():
         std_dev=0.1 * micrometer
     )
 
+
 @pytest.fixture
 def default_ri_distribution():
     return distribution.Normal(
         mean=1.0 * RIU,
         std_dev=0.1 * RIU
     )
+
 
 @pytest.fixture
 def default_population(default_size_distribution, default_ri_distribution):
@@ -45,12 +49,14 @@ def default_population(default_size_distribution, default_ri_distribution):
         name="Default population"
     )
 
+
 @pytest.fixture
 def default_scatterer(flow_cell, default_population):
-    scatterer =  Scatterer(populations=[default_population])
+    scatterer = Scatterer(populations=[default_population])
     scatterer.initialize(flow_cell=flow_cell)
 
     return scatterer
+
 
 @pytest.fixture
 def default_source():
@@ -59,6 +65,7 @@ def default_source():
         wavelength=1550e-9 * meter,
         optical_power=1e-3 * watt,
     )
+
 
 @pytest.fixture
 def default_detector():
@@ -77,6 +84,7 @@ def default_detector():
         )
     return create_detector
 
+
 @pytest.fixture
 def default_cytometer(default_source, default_scatterer, default_detector):
     """Fixture for a default cytometer with two detectors."""
@@ -91,11 +99,13 @@ def default_cytometer(default_source, default_scatterer, default_detector):
     cytometer.simulate_pulse()
     return cytometer
 
+
 # Algorithm setup
 algorithm = peak_finder.MovingAverage(
     threshold=0.001 * volt,
     window_size=0.8 * second,
 )
+
 
 # API Test: Ensure peak detection API works correctly
 def test_analyzer_peak_detection_api(default_cytometer):
@@ -118,6 +128,7 @@ def test_analyzer_peak_detection_api(default_cytometer):
     expected_peak_positions = [3, 7] * second
     assert np.all(np.isclose(analyzer.coincidence[detector_0.name]['PeakTimes'], expected_peak_positions, atol=0.1 * second)), \
         f"Peak locations are incorrect: {analyzer.coincidence[detector_0.name]['PeakTimes']}"
+
 
 # Test Plottings: Ensure plotting functions work correctly
 @patch('matplotlib.pyplot.show')
@@ -142,6 +153,7 @@ def test_analyzer_plotting(mock_show, default_cytometer):
     analyzer.plot()
     plt.close()
 
+
 # Test Pulse Width Analysis: Ensure width calculation is accurate
 def test_pulse_width_analysis(default_cytometer):
     """Test pulse width calculation in the Analyzer."""
@@ -164,6 +176,7 @@ def test_pulse_width_analysis(default_cytometer):
     assert np.allclose(measured_widths.numpy_data, expected_widths.magnitude, atol=0.5 * 10), \
         f"Measured widths: {measured_widths.numpy_data} do not match expected: {expected_widths}."
 
+
 # Test Pulse Heights: Ensure height calculation is accurate
 def test_pulse_height_analysis(default_cytometer):
     """Test pulse height calculation in the Analyzer."""
@@ -184,6 +197,7 @@ def test_pulse_height_analysis(default_cytometer):
 
     assert np.allclose(measured_heights.numpy_data, heights, atol=0.1), \
         f"Measured heights: {measured_heights.numpy_data} do not match expected: {heights}."
+
 
 # Test Pulse Area: Ensure area calculation is accurate
 def test_pulse_area_analysis(default_cytometer):
@@ -209,5 +223,6 @@ def test_pulse_area_analysis(default_cytometer):
     assert np.allclose(measured_area.numpy_data, expected_area.magnitude, atol=0.5 * 100), \
         f"Measured areas: {measured_area.numpy_data} do not match expected: {expected_area.magnitude}."
 
+
 if __name__ == '__main__':
-    pytest.main([__file__])
+    pytest.main(["-W error", __file__])
