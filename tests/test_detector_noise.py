@@ -27,7 +27,7 @@ def default_detector_shot_noise():
 @pytest.fixture
 def default_detector_thermal_noise():
     """Fixture to create a default detector with thermal noise enabled."""
-    detector =  Detector(
+    detector = Detector(
         name='thermal_noise_detector',
         numerical_aperture=1 * AU,
         phi_angle=90 * degree,
@@ -60,6 +60,7 @@ def default_detector_dark_current():
     detector.init_raw_signal(run_time=1 * microsecond)
 
     return detector
+
 
 def test_shot_noise_generation(default_detector_shot_noise):
     """Test that shot noise is generated and not zero for a detector."""
@@ -118,4 +119,4 @@ def test_combined_noise_generation(default_detector_shot_noise):
 
 
 if __name__ == '__main__':
-    pytest.main([__file__])
+    pytest.main(["-W error", __file__])

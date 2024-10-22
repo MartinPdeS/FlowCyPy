@@ -1,26 +1,7 @@
 import numpy as np
 import pytest
 from FlowCyPy.utils import find_matching_indices
-from FlowCyPy.units import megahertz, degree
 
-
-def find_matching_indices(array1, array2, margin):
-    """
-    Finds the indices where the values of two arrays match within a certain margin.
-
-    Parameters:
-        array1 (np.ndarray): First array.
-        array2 (np.ndarray): Second array.
-        margin (float): The margin within which values are considered matching.
-
-    Returns:
-        np.ndarray: Array of index pairs (i, j) where array1[i] and array2[j] match within the margin.
-    """
-    difference_matrix = np.abs(array1[:, np.newaxis] - array2)
-    matching_indices = np.argwhere(difference_matrix <= margin)
-    return matching_indices
-
-# Test cases using pytest
 
 def test_exact_matches():
     """Test with exact matching values between the two arrays."""
@@ -33,6 +14,7 @@ def test_exact_matches():
 
     np.testing.assert_array_equal(result, expected)
 
+
 def test_with_margin():
     """Test with values that match within a margin."""
     array1 = np.array([1.0, 2.05, 3.1, 4.2])
@@ -43,6 +25,7 @@ def test_with_margin():
     result = find_matching_indices(array1, array2, margin)
 
     np.testing.assert_array_equal(result, expected)
+
 
 def test_no_matches():
     """Test with arrays where no values match within the margin."""
@@ -55,6 +38,7 @@ def test_no_matches():
 
     np.testing.assert_array_equal(result, expected)
 
+
 def test_empty_arrays():
     """Test with empty arrays."""
     array1 = np.array([])
@@ -66,5 +50,6 @@ def test_empty_arrays():
 
     np.testing.assert_array_equal(result, expected)
 
+
 if __name__ == '__main__':
-    pytest.main([__file__])
+    pytest.main(["-W error", __file__])

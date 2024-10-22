@@ -1,18 +1,16 @@
 from dataclasses import dataclass
-from typing import Optional, Tuple, Callable
+from typing import Optional, Tuple
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks, peak_widths
 from FlowCyPy.peak_finder.base_class import BaseClass
-from FlowCyPy.units import Quantity
 from FlowCyPy.detector import Detector
 import pandas as pd
 import pint_pandas
-from MPSPlots.styles import mps
-import matplotlib.pyplot as plt
 
-from FlowCyPy.units import Quantity, second, volt, microsecond
+from FlowCyPy.units import Quantity, volt, microsecond
 PT_ = pint_pandas.PintType
+
 
 @dataclass
 class MovingAverage(BaseClass):
@@ -176,6 +174,3 @@ class MovingAverage(BaseClass):
 
         # Plot the signal threshold line
         ax.axhline(y=self.threshold.to(signal_unit).magnitude, color='black', linestyle='--', label='Threshold', lw=1)
-
-
-

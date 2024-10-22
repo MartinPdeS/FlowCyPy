@@ -6,9 +6,10 @@ from FlowCyPy.coupling_mechanism.rayleigh import compute_detected_signal
 from FlowCyPy.units import micrometer, refractive_index_unit
 from FlowCyPy.population import Population
 from FlowCyPy.units import (
-    volt, watt, meter, hertz, particle, milliliter, volt, watt, hertz, degree, ampere,
+    volt, watt, meter, hertz, particle, milliliter, degree, ampere,
     nanometer, milliwatt, second, millisecond, AU
 )
+
 
 @pytest.fixture
 def normal_size_distribution():
@@ -18,6 +19,7 @@ def normal_size_distribution():
         std_dev=0.1 * micrometer,
     )
 
+
 @pytest.fixture
 def normal_ri_distribution():
     """Fixture for creating a distribution.Normal."""
@@ -25,6 +27,7 @@ def normal_ri_distribution():
         mean=1.5 * refractive_index_unit,
         std_dev=0.1 * refractive_index_unit,
     )
+
 
 @pytest.fixture
 def normal_population(normal_size_distribution, normal_ri_distribution):
@@ -36,6 +39,7 @@ def normal_population(normal_size_distribution, normal_ri_distribution):
         name="Default population"
     )
 
+
 @pytest.fixture
 def default_flow_cell():
     return FlowCell(
@@ -43,6 +47,7 @@ def default_flow_cell():
         flow_area=(10 * micrometer) ** 2,
         run_time=1 * millisecond,
     )
+
 
 @pytest.fixture
 def detector():
@@ -58,11 +63,13 @@ def detector():
         n_bins=1024                          # Discretization bins: 1024
     )
 
+
 @pytest.fixture
 def scatterer(normal_population, default_flow_cell):
     scatterer = Scatterer(populations=[normal_population])
     scatterer.initialize(flow_cell=default_flow_cell)
     return scatterer
+
 
 @pytest.fixture
 def source():
@@ -71,6 +78,7 @@ def source():
         wavelength=1550 * nanometer,    # Wavelength of the laser source: 1550 nm
         optical_power=200 * milliwatt,   # Optical power of the laser source: 200 milliwatt
     )
+
 
 def test_generate_scatterer_size(scatterer):
     """
@@ -81,6 +89,7 @@ def test_generate_scatterer_size(scatterer):
     assert sizes is not None, "Scatterer sizes should be generated."
     assert len(sizes) > 0, f"Expected 10 scatterer sizes, but got {len(sizes)}."
     assert sizes.values.numpy_data.min() > 0, f"Expected all sizes to be positive, but got a minimum size of {sizes.magnitude.min()}."
+
 
 def test_rayleigh_mechanism_output(detector, scatterer, source):
     """
@@ -95,6 +104,7 @@ def test_rayleigh_mechanism_output(detector, scatterer, source):
     assert detected_power is not None, "Detected power should not be None."
     assert np.all(detected_power > 0), f"Expected detected power to be positive, but got {detected_power}."
 
+
 def test_detector_properties(detector):
     """
     Test the detector's properties and ensure they are correctly initialized.
@@ -106,6 +116,7 @@ def test_detector_properties(detector):
     assert detector.saturation_level == 1e30 * volt, f"Expected saturation level to be 1e30, but got {detector.saturation_level}."
     assert detector.n_bins == 1024, f"Expected 1024 bins, but got {detector.n_bins}."
 
+
 def test_source_properties(source):
     """
     Test the properties of the light source to ensure they are correctly set.
@@ -114,5 +125,6 @@ def test_source_properties(source):
     assert source.wavelength == 1550 * nanometer, f"Expected source wavelength to be 1550 nm (1.55e-6 m), but got {source.wavelength}."
     assert source.optical_power == 200e-3 * watt, f"Expected source optical power to be 200 mW, but got {source.optical_power}."
 
+
 if __name__ == '__main__':
-    pytest.main([__file__])
+    pytest.main(["-W error", __file__])

@@ -33,6 +33,7 @@ def default_detector_0():
         sampling_freq=1e5 * hertz,
     )
 
+
 @pytest.fixture
 def default_detector_1():
     return Detector(
@@ -46,6 +47,7 @@ def default_detector_1():
         baseline_shift=0.0 * volt,
         n_bins='12bit',
     )
+
 
 @pytest.fixture
 def flow_cell():
@@ -63,12 +65,14 @@ def default_size_distribution():
         std_dev=0.1 * micrometer
     )
 
+
 @pytest.fixture
 def default_ri_distribution():
     return distribution.Normal(
         mean=1.0 * RIU,
         std_dev=0.1 * RIU
     )
+
 
 @pytest.fixture
 def default_population(default_size_distribution, default_ri_distribution):
@@ -95,6 +99,7 @@ def default_source():
         optical_power=100e-3 * watt,
     )
 
+
 def test_flow_cytometer_simulation(default_source, default_detector_0, default_detector_1, default_scatterer):
     """Test the simulation of flow cytometer signals."""
     cytometer = FlowCytometer(
@@ -113,6 +118,7 @@ def test_flow_cytometer_simulation(default_source, default_detector_0, default_d
     assert np.std(default_detector_1.dataframe.Signal) > 0 * volt, "FSC signal variance is zero, indicating no noise added."
     assert np.std(default_detector_1.dataframe.Signal) > 0 * volt, "SSC signal variance is zero, indicating no noise added."
 
+
 @patch('matplotlib.pyplot.show')
 def test_flow_cytometer_plot(mock_show, default_source, default_detector_0, default_detector_1, default_scatterer):
     """Test the plotting of flow cytometer signals."""
@@ -130,5 +136,6 @@ def test_flow_cytometer_plot(mock_show, default_source, default_detector_0, defa
 
     cytometer.print_properties()
 
+
 if __name__ == '__main__':
-    pytest.main([__file__])
+    pytest.main(["-W error", __file__])
