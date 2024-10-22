@@ -4,14 +4,17 @@ from FlowCyPy import distribution as dist
 from FlowCyPy.units import nanometer, micrometer, particle
 from unittest.mock import patch
 
+
 # Common test parameters
 @pytest.fixture
 def n_samples():
     return 1000
 
+
 @pytest.fixture
 def x_values():
     return np.linspace(0.01, 1, 1000) * micrometer
+
 
 # Parametrize different distributions
 distributions = [
@@ -20,6 +23,7 @@ distributions = [
     dist.Uniform(lower_bound=0.5 * micrometer, upper_bound=1.5 * micrometer),
     dist.Delta(position=1 * micrometer),
 ]
+
 
 @patch('matplotlib.pyplot.show')
 @pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__.__name__)
@@ -52,6 +56,7 @@ def test_number_of_samples(mock_show, distribution, n_samples, x_values):
 
     distribution.plot()
 
+
 def test_uniform_properties(x_values):
     """Test boundary conditions in the PDF generation."""
     distribution = distributions[2]
@@ -77,6 +82,7 @@ def test_normal_properties():
     expected_mean = distribution.mean
     assert np.isclose(mean_size, expected_mean, rtol=0.1), f"NormalDistribution: Mean size {mean_size} deviates from expected mean {expected_mean}"
 
+
 def test_lognormal_properties():
     """Test specific properties of certain distributions."""
     distribution = distributions[1]
@@ -89,6 +95,5 @@ def test_lognormal_properties():
     assert np.isclose(std_dev_size, expected_std, rtol=2), f"LogNormalDistribution: Standard deviation {std_dev_size} deviates from expected {expected_std}"
 
 
-
-if __name__ == "__main__":
-    pytest.main([__file__])
+if __name__ == '__main__':
+    pytest.main(["-W error", __file__])

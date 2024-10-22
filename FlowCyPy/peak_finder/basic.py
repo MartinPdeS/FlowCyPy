@@ -4,7 +4,7 @@ import pandas as pd
 from scipy.signal import find_peaks, peak_widths
 from FlowCyPy.detector import Detector
 from FlowCyPy.peak_finder.base_class import BaseClass
-from FlowCyPy.units import Quantity, volt, second
+from FlowCyPy.units import Quantity, volt
 import pint_pandas
 
 
@@ -81,7 +81,6 @@ class Basic(BaseClass):
         if compute_area:
             detector.peak_properties['Areas'] = self._compute_peak_areas(detector)
 
-
     @BaseClass.plot_wrapper
     def plot(self, detector: Detector, ax: plt.Axes = None, show: bool = True) -> None:
         """
@@ -117,4 +116,3 @@ class Basic(BaseClass):
         # Plot vertical lines at peak times
         for _, row in detector.peak_properties.iterrows():
             ax.axvline(row['PeakTimes'].to(time_unit), color='r', linestyle='--', lw=1, label='Peak')
-

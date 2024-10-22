@@ -2,6 +2,7 @@ import numpy as np
 from FlowCyPy import Scatterer, Detector, Source
 from FlowCyPy.units import watt, meter
 
+
 def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatterer, granularity: float = 1.0, A: float = 1.5, n: float = 2.0) -> float:
     """
     Empirical model for scattering intensity based on particle size, granularity, and detector angle.
@@ -41,6 +42,5 @@ def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatt
 
     # Side scatter is proportional to granularity and modulated by angular dependence
     ssc_intensity = granularity * (1 + A * np.sin(np.radians(detector.phi_angle))**n) * np.ones_like(size_list)
-
 
     return fsc_intensity * watt if detector.phi_angle < np.radians(10) else ssc_intensity * watt

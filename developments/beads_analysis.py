@@ -1,6 +1,6 @@
 import numpy as np
 from FlowCyPy import FlowCytometer, Analyzer, peak_finder, FlowCell, Source, Scatterer, distribution
-from FlowCyPy.units import meter, micrometer, millisecond, second, degree, particle, milliliter, nanometer, RIU, milliwatt, AU, microsecond, millivolt, degree, ohm, megahertz, ampere, volt, kelvin, watt
+from FlowCyPy.units import meter, micrometer, millisecond, second, degree, particle, milliliter, nanometer, RIU, milliwatt, AU, microsecond, millivolt, ohm, megahertz, ampere, kelvin, watt
 from PyOptik import MaterialBank
 
 np.random.seed(3)
@@ -24,23 +24,22 @@ scatterer.add_population(
     name='LP',
     concentration=1e10 * particle / milliliter,
     size=distribution.RosinRammler(characteristic_size=20 * nanometer, spread=5),
-    refractive_index=distribution.Normal(mean=1.46 * RIU, std_dev=0.0001  * RIU)
+    refractive_index=distribution.Normal(mean=1.46 * RIU, std_dev=0.0001 * RIU)
 )
 
 scatterer.add_population(
     name='EV',
     concentration=1e8 * particle / milliliter,
     size=distribution.RosinRammler(characteristic_size=300 * nanometer, spread=5),
-    refractive_index=distribution.Normal(mean=1.39 * RIU, std_dev=0.0001  * RIU)
+    refractive_index=distribution.Normal(mean=1.39 * RIU, std_dev=0.0001 * RIU)
 )
 
 
-#scatterer.concentrations = 2e8 * particle / milliliter
+# scatterer.concentrations = 2e8 * particle / milliliter
 
 scatterer.initialize(flow_cell=flow_cell)
 scatterer.print_properties()
 scatterer.plot()
-
 
 
 cytometer = FlowCytometer(source=source, scatterer=scatterer)
@@ -56,8 +55,8 @@ cytometer.add_detector(
     temperature=300 * kelvin,                # Operating temperature: 300 K (room temperature)
     # n_bins='14bit'                          # Discretization bins: 14-bit resolution
     # include_noises=False
-    #include_thermal_noise=False,
-    #include_dark_current_noise=False
+    # include_thermal_noise=False,
+    # include_dark_current_noise=False
 )
 
 # Add side scatter detector
@@ -72,8 +71,8 @@ cytometer.add_detector(
     temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
     # n_bins='14bit'                          # Discretization bins: 14-bit resolution
     # include_noises=False
-    #include_thermal_noise=False,
-    #include_dark_current_noise=False
+    # include_thermal_noise=False,
+    # include_dark_current_noise=False
     background_cross_section=10 * meter * meter
 
 )

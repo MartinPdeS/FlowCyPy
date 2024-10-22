@@ -4,12 +4,13 @@ from FlowCyPy import distribution
 from FlowCyPy.population import Population
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.units import (
-    nanometer, micrometer, meter, particle, milliliter, second, refractive_index_unit, particle
+    nanometer, micrometer, meter, milliliter, second, refractive_index_unit, particle
 )
 from pint import UnitRegistry
 
 # Initialize a UnitRegistry
 ureg = UnitRegistry()
+
 
 # Step 1: Define some global variables and objects to be used across tests
 @pytest.fixture
@@ -20,6 +21,7 @@ def flow_cell():
         flow_area=(10 * micrometer) ** 2,
         run_time=1 * second,
     )
+
 
 @pytest.fixture
 def population():
@@ -38,6 +40,7 @@ def population():
         name="Test Population"
     )
 
+
 # Test 1: Check if the population is properly initialized
 def test_population_initialization(population, flow_cell):
     """Test if the Population object initializes correctly."""
@@ -46,6 +49,7 @@ def test_population_initialization(population, flow_cell):
     assert population.n_events > 0 * particle, "Number of events should be greater than 0 after initialization"
     assert len(population.dataframe) == population.n_events.magnitude, "Size list should match number of events"
 
+
 # Test 2: Check if particle arrival times are generated correctly
 def test_particle_arrival_times(population, flow_cell):
     """Test if the particle arrival times are generated correctly."""
@@ -53,6 +57,7 @@ def test_particle_arrival_times(population, flow_cell):
 
     assert len(population.dataframe['Time']) > 0, "Particle arrival times should be generated"
     assert np.all(population.dataframe['Time'] <= flow_cell.run_time), "Arrival times should not exceed total experiment duration"
+
 
 # Test 3: Check longitudinal positions
 def test_longitudinal_positions(population, flow_cell):
@@ -64,12 +69,14 @@ def test_longitudinal_positions(population, flow_cell):
     assert len(population.dataframe['Position']) == len(population.dataframe['Time']), "Longitudinal positions should match the number of time positions"
     assert np.all(population.dataframe['Position'] >= 0 * meter), "All longitudinal positions should be positive"
 
+
 # Test 4: Check the concentration and particle flux
 def test_particle_flux(population, flow_cell):
     """Test if the particle flux is calculated correctly."""
     particle_flux = (population.concentration * flow_cell.flow_speed * flow_cell.flow_area)
 
     assert particle_flux > 0 * (particle / second), "Particle flux should be greater than 0"
+
 
 # Test 5: Check if invalid flow parameters raise errors
 def test_invalid_flow_cell():
@@ -90,4 +97,4 @@ def test_invalid_flow_cell():
 
 
 if __name__ == '__main__':
-    pytest.main([__file__])
+    pytest.main(["-W error", __file__])

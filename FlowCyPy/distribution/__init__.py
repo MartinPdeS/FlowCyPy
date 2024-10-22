@@ -4,9 +4,7 @@ from .uniform import Uniform
 from .delta import Delta
 from .weibull import Weibull
 from .base_class import Base
-from.particle_size_distribution import RosinRammler
-
-
+from .particle_size_distribution import RosinRammler
 
 __all__ = [
     Normal,
