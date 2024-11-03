@@ -52,7 +52,7 @@ scatterer.add_population(
 
 scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
 scatterer.print_properties()               # Display population properties
-scatterer.plot()                           # Visualize the population distributions
+# scatterer.plot()                         # Visualize the population distributions
 
 # Set up the laser source parameters
 source = Source(
@@ -62,7 +62,7 @@ source = Source(
 )
 
 # Step 4: Simulating the Flow Cytometry Experiment
-cytometer = FlowCytometer(coupling_mechanism='mie', source=source, scatterer=scatterer)
+cytometer = FlowCytometer(coupling_mechanism='mie', source=source, scatterer=scatterer, background_power=0.001 * milliwatt)
 
 # Add forward scatter detector
 cytometer.add_detector(

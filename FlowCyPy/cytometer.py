@@ -13,6 +13,7 @@ from FlowCyPy.source import Source
 from tabulate import tabulate
 import pandas as pd
 import pint_pandas
+from FlowCyPy.units import Quantity, milliwatt
 
 # Set up logging configuration
 logging.basicConfig(
@@ -51,6 +52,7 @@ class FlowCytometer:
     source: Source
     detectors: List[Detector] = field(default_factory=lambda: [])
     coupling_mechanism: Optional[str] = 'mie'
+    background_power: Optional[Quantity] = 0 * milliwatt
 
     def simulate_pulse(self) -> None:
         """
@@ -100,7 +102,7 @@ class FlowCytometer:
             # Compute the Gaussian for each height, center, and width using broadcasting
             power_gaussians = coupling_power[:, np.newaxis] * np.exp(- (time_grid - centers) ** 2 / (2 * widths ** 2))
 
-            total_power = np.sum(power_gaussians, axis=0)
+            total_power = np.sum(power_gaussians, axis=0) + self.background_power
 
             detector._add_photon_shot_noise_to_raw_signal(optical_power=total_power)
 

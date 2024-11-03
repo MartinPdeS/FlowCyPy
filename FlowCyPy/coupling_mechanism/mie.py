@@ -1,40 +1,10 @@
 import numpy as np
 from FlowCyPy import Scatterer, Detector, Source
-from FlowCyPy import ureg
-from PyMieSim.single.scatterer import Sphere as PMS_SPHERE
-from PyMieSim.single.source import Gaussian as PMS_GAUSSIAN
-from PyMieSim.single.detector import Photodiode as PMS_PHOTODIODE
-from PyMieSim.units import degree
-
-
-# Initialize a cache (dictionary) to store computed results for (size, ri) pairs
-_cache = {}
-
-
-def cache_key(size, ri, detector, tolerance: float = 0):
-    """
-    Generates a cache key based on size and refractive index, rounding based on a tolerance.
-
-    Parameters
-    ----------
-    size : float
-        The particle size (in meters).
-    ri : float
-        The refractive index of the particle.
-    tolerance : float, optional
-        The tolerance for determining if two values are close enough to be considered identical.
-
-    Returns
-    -------
-    tuple
-        A tuple representing the cached key based on size and refractive index.
-    """
-    if tolerance == 0:
-        return (size, detector, ri)
-    # Round size and ri to the specified tolerance
-    size_rounded = np.round(size / tolerance) * tolerance
-    ri_rounded = np.round(ri / tolerance) * tolerance
-    return (size_rounded, detector, ri_rounded)
+from PyMieSim.experiment.scatterer import Sphere as PMS_SPHERE
+from PyMieSim.experiment.source import Gaussian as PMS_GAUSSIAN
+from PyMieSim.experiment.detector import Photodiode as PMS_PHOTODIODE
+from PyMieSim.experiment import Setup
+from PyMieSim.units import degree, watt, AU
 
 
 def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatterer, tolerance: float = 1e-5) -> float:
@@ -60,46 +30,45 @@ def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatt
     np.ndarray
         Array of coupling values for each particle, based on the detected signal.
     """
+    size_list = scatterer.dataframe['Size'].values
+    ri_list = scatterer.dataframe['RefractiveIndex'].values
+
+    size_list = size_list.quantity.magnitude * size_list.units
+    ri_list = ri_list.quantity.magnitude * ri_list.units
+
+    total_size = ri_list.size
+    ONES = np.ones(total_size)
+
     pms_source = PMS_GAUSSIAN(
-        wavelength=source.wavelength,
-        polarization=0 * degree,
-        optical_power=source.optical_power,
-        NA=source.numerical_aperture
+        wavelength=ONES * source.wavelength,
+        polarization=ONES * 0 * degree,
+        optical_power=ONES * source.optical_power,
+        NA=ONES * source.numerical_aperture
     )
 
-    size_list = scatterer.dataframe['Size']
-    ri_list = scatterer.dataframe['RefractiveIndex']
-    couplings = np.empty_like(size_list).astype(float) * ureg.watt
+    pms_scatterer = PMS_SPHERE(
+        diameter=size_list,
+        property=ri_list,
+        medium_property=ONES * scatterer.medium_refractive_index,
+        source=pms_source
+    )
 
-    for index, (size, ri) in enumerate(zip(size_list, ri_list)):
-        # Generate a cache key based on the size and refractive index, using tolerance
-        cache_key_ = cache_key(size, ri, detector, tolerance)
+    pms_detector = PMS_PHOTODIODE(
+        NA=ONES * detector.numerical_aperture,
+        cache_NA=ONES * 0 * AU,
+        gamma_offset=ONES * detector.gamma_angle,
+        phi_offset=ONES * detector.phi_angle,
+        polarization_filter=ONES * np.nan * degree,
+        sampling=ONES * detector.sampling
+    )
 
-        # Check if the result for this key is already cached
-        if cache_key_ in _cache:
-            couplings[index] = _cache[cache_key_]
-        else:
-            # If not cached, compute the scattering and store it in the cache
-            pms_scatterer = PMS_SPHERE(
-                diameter=size,
-                property=ri,
-                medium_property=scatterer.medium_refractive_index,
-                source=pms_source
-            )
+    pms_detector.mode_number = ['NC00'] * total_size
+    pms_detector.rotation = ONES * 0 * degree
 
-            pms_detector = PMS_PHOTODIODE(
-                NA=detector.numerical_aperture,
-                gamma_offset=detector.gamma_angle,
-                phi_offset=detector.phi_angle,
-                polarization_filter=None,
-                sampling=detector.sampling
-            )
+    pms_detector.__post_init__()
 
-            # Compute the coupling
-            coupling_value = pms_detector.coupling(pms_scatterer)
+    experiment = Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
 
-            # Store in the cache
-            _cache[cache_key_] = coupling_value
-            couplings[index] = coupling_value
+    coupling_value = experiment.get_sequential('coupling').squeeze() * watt
 
-    return couplings
+    return coupling_value

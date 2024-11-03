@@ -47,8 +47,10 @@ packages = ["FlowCyPy"]
 
 [tool.setuptools_scm]
 write_to = "FlowCyPy/_version.py"
-version_scheme = "post-release"
+version_scheme = "only-version"
 local_scheme = "no-local-version"
+
+
 
 [project.optional-dependencies]
 testing = [
