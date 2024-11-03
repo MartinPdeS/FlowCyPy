@@ -55,7 +55,7 @@ local_scheme = "no-local-version"
 [project.optional-dependencies]
 testing = [
     "pytest >=7.4,<9.0",
-    "pytest-cov >=2,<6",
+    "pytest-cov >=2,<7",
     "pytest-json-report ~=1.5",
     "flake8 ==7.1.1",
     "coverage ~=7.6"
