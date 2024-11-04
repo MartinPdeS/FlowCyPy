@@ -8,7 +8,7 @@ np.random.seed(3)
 
 source = Source(numerical_aperture=0.1 * AU, wavelength=480 * nanometer, optical_power=100 * milliwatt)
 
-ri = MaterialBank.polystyren.compute_refractive_index(source.wavelength)[0]
+ri = MaterialBank.polystyren.compute_refractive_index(source.wavelength)
 
 
 flow_cell = FlowCell(
@@ -39,7 +39,7 @@ scatterer.add_population(
 
 scatterer.initialize(flow_cell=flow_cell)
 scatterer.print_properties()
-scatterer.plot()
+# scatterer.plot()
 
 
 cytometer = FlowCytometer(source=source, scatterer=scatterer)
@@ -73,7 +73,7 @@ cytometer.add_detector(
     # include_noises=False
     # include_thermal_noise=False,
     # include_dark_current_noise=False
-    background_cross_section=10 * meter * meter
+    # background_cross_section=10 * meter * meter
 
 )
 
@@ -81,18 +81,18 @@ cytometer.simulate_pulse()
 
 cytometer.plot()
 
-algorithm = peak_finder.MovingAverage(
-    threshold=50 * millivolt,
-    window_size=1 * microsecond,
-    min_peak_distance=1 * microsecond
-)
+# algorithm = peak_finder.MovingAverage(
+#     threshold=50 * millivolt,
+#     window_size=1 * microsecond,
+#     min_peak_distance=1 * microsecond
+# )
 
-analyzer = Analyzer(cytometer=cytometer, algorithm=algorithm)
+# analyzer = Analyzer(cytometer=cytometer, algorithm=algorithm)
 
-analyzer.run_analysis(compute_peak_area=False)
+# analyzer.run_analysis(compute_peak_area=False)
 
-analyzer.plot_peak()
+# analyzer.plot_peak()
 
-analyzer.get_coincidence(margin=1e-9 * microsecond)
+# analyzer.get_coincidence(margin=1e-9 * microsecond)
 
-analyzer.plot(log_plot=False)
+# analyzer.plot(log_plot=False)

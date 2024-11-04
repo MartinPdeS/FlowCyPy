@@ -29,7 +29,7 @@ np.random.seed(3)
 flow_cell = FlowCell(
     flow_speed=7.56 * meter / second,      # Flow speed: 7.56 meters per second
     flow_area=(10 * micrometer) ** 2,      # Flow area: 10 x 10 micrometers
-    run_time=0.1 * millisecond             # Total simulation time: 0.3 milliseconds
+    run_time=0.4 * millisecond             # Total simulation time: 0.3 milliseconds
 )
 
 # Step 2: Create Populations (Extracellular Vesicles and Liposomes)
@@ -38,7 +38,7 @@ scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive i
 # Add first population (Extracellular Vesicles)
 scatterer.add_population(
     name='EV',  # Population name: Extracellular Vesicles (EV)
-    concentration=2e+9 * particle / milliliter / 10,  # Concentration: 1e9 particles per milliliter
+    concentration=1e+9 * particle / milliliter,  # Concentration: 1e9 particles per milliliter
     size=distribution.RosinRammler(
         characteristic_size=50 * nanometer,  # Characteristic size: 50 nanometers
         spread=10.5                           # Spread factor for size distribution
@@ -52,7 +52,7 @@ scatterer.add_population(
 # Add second population (Liposomes)
 scatterer.add_population(
     name='LP',  # Population name: Liposomes (LP)
-    concentration=2e+9 * particle / milliliter / 10,  # Concentration: 1e9 particles per milliliter
+    concentration=1e+9 * particle / milliliter,  # Concentration: 1e9 particles per milliliter
     size=distribution.RosinRammler(
         characteristic_size=200 * nanometer,  # Characteristic size: 200 nanometers
         spread=10.5                           # Spread factor for size distribution
@@ -88,7 +88,7 @@ detector_0 = Detector(
     numerical_aperture=1.2 * AU,             # Numerical aperture: 1.2
     responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
     sampling_freq=60 * megahertz,            # Sampling frequency: 60 MHz
-    saturation_level=1 * millivolt,          # Saturation level: 2 millivolts
+    saturation_level=3 * millivolt,          # Saturation level: 2 millivolts
     n_bins='16bit',                          # Number of bins: 14-bit resolution
     resistance=50 * ohm,                     # Detector resistance: 50 ohms
     dark_current=0.1 * milliampere,          # Dark current: 0.1 milliamps
@@ -102,15 +102,13 @@ detector_1 = Detector(
     numerical_aperture=1.2 * AU,             # Numerical aperture: 1.2
     responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
     sampling_freq=60 * megahertz,            # Sampling frequency: 60 MHz
-    saturation_level=1 * millivolt,          # Saturation level: 2 millivolts
+    saturation_level=3 * millivolt,          # Saturation level: 2 millivolts
     n_bins='16bit',                          # Number of bins: 14-bit resolution
     resistance=50 * ohm,                     # Detector resistance: 50 ohms
     dark_current=0.1 * milliampere,          # Dark current: 0.1 milliamps
     temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
 )
 
-detector_0.include_noises = False
-detector_1.include_noises = False
 
 detector_1.print_properties()  # Print the properties of the forward scatter detector
 
@@ -119,6 +117,7 @@ cytometer = FlowCytometer(
     coupling_mechanism='mie',                # Scattering mechanism: Mie scattering
     source=source,                           # Laser source used in the experiment
     scatterer=scatterer,                     # Populations used in the experiment
+    background_power=0.02 * milliwatt,
     detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
 )
 
