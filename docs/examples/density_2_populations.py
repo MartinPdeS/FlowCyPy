@@ -40,7 +40,7 @@ scatterer.add_population(
     name='EV',  # Population name: Extracellular Vesicles (EV)
     concentration=1e+9 * particle / milliliter,  # Concentration: 1e9 particles per milliliter
     size=distribution.RosinRammler(
-        characteristic_size=50 * nanometer,  # Characteristic size: 50 nanometers
+        characteristic_size=150 * nanometer,  # Characteristic size: 50 nanometers
         spread=10.5                           # Spread factor for size distribution
     ),
     refractive_index=distribution.Normal(
@@ -62,6 +62,8 @@ scatterer.add_population(
         std_dev=0.02 * RIU  # Standard deviation: 0.05 refractive index units
     )
 )
+
+scatterer.concentrations = 1e+9 / 3 * particle / milliliter
 
 # Initialize scatterer and link it to the flow cell
 scatterer.initialize(flow_cell=flow_cell)
@@ -130,9 +132,9 @@ cytometer.plot()
 # %%
 # Step 7: Analyze Pulse Signals
 algorithm = peak_finder.MovingAverage(
-    threshold=0.01 * millivolt,              # Peak detection threshold: 0.03 millivolts
+    threshold=0.001 * millivolt,              # Peak detection threshold: 0.03 millivolts
     window_size=10 * microsecond,             # Moving average window size: 1 microsecond
-    min_peak_distance=0.2 * microsecond      # Minimum distance between peaks: 0.2 microseconds
+    min_peak_distance=1 * microsecond      # Minimum distance between peaks: 0.2 microseconds
 )
 
 analyzer = Analyzer(cytometer=cytometer, algorithm=algorithm)
