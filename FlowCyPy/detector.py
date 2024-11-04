@@ -26,7 +26,7 @@ class Detector(PropertiesReport):
     A class representing a signal detector used in flow cytometry.
 
     This class models a photodetector, simulating signal acquisition, noise addition, and signal processing
-    for analysis. It can optionally simulate different noise sources: shot noise, thermal noise, and dark current noise.
+    for analysis.  It can optionally simulate different noise sources: shot noise, thermal noise, and dark current noise.
 
     Parameters
     ----------
