@@ -11,11 +11,10 @@ build:
 
 requirements:
   host:
-    - python >=3.8
+    - python {{ PY_VER }}*
     - setuptools >=40.8.0
     - wheel
     - setuptools-scm >=8.0
-    - pip
   run:
     - pandas ~=2.2
     - pint-pandas ~=0.6
@@ -49,10 +48,10 @@ test:
     - FlowCyPy
   requires:
     - python {{PY_VER}}*
-    - pytest>=0.6
-    - pytest-cov>=2.0
-    - pytest-json-report==1.5.0
-    - coverage==7.6.1
+    - pytest >=0.6
+    - pytest-cov >=2.0
+    - pytest-json-report ~=1.5.0
+    - coverage ~=7.6.1
   commands:
     - python -m pytest
   source_files:
