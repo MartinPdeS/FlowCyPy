@@ -70,8 +70,8 @@ class Scatterer(PropertiesReport):
         )
         self.dataframe.index.names = ['Population', 'Index']
 
-        print(self.dataframe)
-        dsa
+        # print(self.dataframe)
+        # dsa
 
         self.n_events = len(self.dataframe)
 
