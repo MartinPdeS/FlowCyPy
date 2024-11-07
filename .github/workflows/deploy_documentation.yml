@@ -92,11 +92,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y jq
 
-      - name: Get current tag
-        id: get_tag
+      - name: Get current tag from GITHUB_REF
         run: |
-          git fetch --tags
-          echo "tag=$(git describe --tags --abbrev=0 --all)" >> $GITHUB_ENV
+          # Extract the tag name from GITHUB_REF, which should be refs/tags/<tag>
+          tag="${GITHUB_REF#refs/tags/}"
+          echo "tag=$tag" >> $GITHUB_ENV
+          echo "Current tag: $tag"
 
       - name: Update version_switcher.json with new tag
         env:
