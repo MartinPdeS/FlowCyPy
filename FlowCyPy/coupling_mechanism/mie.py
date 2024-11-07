@@ -30,10 +30,12 @@ def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatt
     np.ndarray
         Array of coupling values for each particle, based on the detected signal.
     """
-    print(scatterer.dataframe['Size'].values.__class__)
 
     size_list = scatterer.dataframe['Size'].values
     ri_list = scatterer.dataframe['RefractiveIndex'].values
+
+    if len(size_list) == 0:
+        return np.array([]) * watt
 
     size_list = size_list.quantity.magnitude * size_list.units
     ri_list = ri_list.quantity.magnitude * ri_list.units
