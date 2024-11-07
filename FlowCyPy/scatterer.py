@@ -5,7 +5,7 @@ from dataclasses import field
 from pydantic.dataclasses import dataclass
 import seaborn as sns
 import pandas as pd
-from FlowCyPy.units import Quantity, RIU, particle, liter
+from FlowCyPy.units import Quantity, RIU, particle, liter, meter, second
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Population
 from FlowCyPy.utils import PropertiesReport
@@ -61,7 +61,17 @@ class Scatterer(PropertiesReport):
         for population in self.populations:
             population.initialize(flow_cell=self.flow_cell)
 
-        empty_dataframe = pd.DataFrame(columns=['Time', 'Position', 'Size', 'RefractiveIndex'])
+        from pint_pandas import PintType
+
+        dtypes = {
+            'Time': PintType(second),            # Time column with seconds unit
+            'Position': PintType(meter),         # Position column with meters unit
+            'Size': PintType(meter),        # Size column with micrometers unit
+            'RefractiveIndex': PintType(RIU)  # Dimensionless unit for refractive index
+        }
+
+        # # Create an empty DataFrame with specified PintArray column types
+        empty_dataframe = pd.DataFrame({col: pd.Series(dtype=dtype) for col, dtype in dtypes.items()})
 
         self.dataframe = pd.concat(
             [empty_dataframe] + [p.dataframe for p in self.populations],
