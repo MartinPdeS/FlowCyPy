@@ -3,5 +3,15 @@
         "name": "v0.2.3",
         "version": "v0.2.3",
         "url": "https://martinpdes.github.io/FlowCyPy/docs/v0.2.3"
+    },
+    {
+        "name": "v0.2.4",
+        "version": "v0.2.4",
+        "url": "https://martinpdes.github.io/FlowCyPy/docs/v0.2.4"
+    },
+    {
+        "name": "v0.2.5",
+        "version": "v0.2.5",
+        "url": "https://martinpdes.github.io/FlowCyPy/docs/v0.2.5"
     }
 ]
