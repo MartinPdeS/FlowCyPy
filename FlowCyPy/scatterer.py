@@ -63,30 +63,26 @@ class Scatterer(PropertiesReport):
 
         from pint_pandas import PintType
 
-        dtypes = {
-            'Time': PintType(second),            # Time column with seconds unit
-            'Position': PintType(meter),         # Position column with meters unit
-            'Size': PintType(meter),        # Size column with micrometers unit
-            'RefractiveIndex': PintType(RIU)  # Dimensionless unit for refractive index
-        }
+        if len(self.populations) != 0:
+            self.dataframe = pd.concat(
+                [p.dataframe for p in self.populations],
+                axis=0,
+                keys=[p.name for p in self.populations],
+            )
 
-        # # Create an empty DataFrame with specified PintArray column types
-        empty_dataframe = pd.DataFrame({col: pd.Series(dtype=dtype) for col, dtype in dtypes.items()})
-        # print(empty_dataframe)
-        # dsa
+        # else:
+        #     dtypes = {
+        #         'Time': PintType('second'),            # Time column with seconds unit
+        #         'Position': PintType('meter'),         # Position column with meters unit
+        #         'Size': PintType('meter'),        # Size column with micrometers unit
+        #         'RefractiveIndex': PintType('meter')  # Dimensionless unit for refractive index
+        #     }
 
-        self.dataframe = pd.concat(
-            [p.dataframe for p in self.populations],
-            axis=0,
-            keys=[p.name for p in self.populations],
-        )
+        #     self.dataframe = pd.DataFrame(
+        #         {col: pd.Series(dtype=dtype) for col, dtype in dtypes.items()}
+        #         index
+        #     )
 
-
-        # self.dataframe = pd.concat(
-        #     [empty_dataframe] + [p.dataframe for p in self.populations],
-        #     axis=0,
-        #     keys=['test'] + [p.name for p in self.populations],
-        # )
         self.dataframe.index.names = ['Population', 'Index']
 
         self.n_events = len(self.dataframe)
