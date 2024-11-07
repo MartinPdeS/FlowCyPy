@@ -36,9 +36,6 @@ flow_cell = FlowCell(
 scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
 
 
-
-
-
 # Add first population (Extracellular Vesicles)
 scatterer.add_population(
     name='EV',  # Population name: Extracellular Vesicles (EV)
