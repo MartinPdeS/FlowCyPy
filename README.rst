@@ -247,19 +247,16 @@ Email:`martin.poinsinet.de.sivry@gmail.ca <mailto:martin.poinsinet.de.sivry@gmai
     :align: middle
     :alt: FlowCyPy Logo
 
-.. |report| image:: https://github.com/MartinPdeS/FlowCyPy/blob/master/docs/images/report.pdf
+.. |example_0| image:: https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/master/docs/images/example_0.png
     :width: 45%
 
-.. |example_0| image:: https://github.com/MartinPdeS/FlowCyPy/blob/master/docs/images/example_0.png
+.. |example_1| image:: https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/master/docs/images/example_1.png
     :width: 45%
 
-.. |example_1| image:: https://github.com/MartinPdeS/FlowCyPy/blob/master/docs/images/example_1.png
-    :width: 45%
-
-.. |example_2| image:: https://github.com/MartinPdeS/FlowCyPy/blob/master/docs/images/example_2.png
+.. |example_2| image:: https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/master/docs/images/example_2.png
     :width: 100%
 
-.. |example_3| image:: https://github.com/MartinPdeS/FlowCyPy/blob/master/docs/images/example_3.png
+.. |example_3| image:: https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/master/docs/images/example_3.png
     :width: 100%
 
 .. |python| image:: https://img.shields.io/pypi/pyversions/flowcypy.svg
