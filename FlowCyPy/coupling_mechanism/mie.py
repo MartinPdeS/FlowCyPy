@@ -30,6 +30,8 @@ def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatt
     np.ndarray
         Array of coupling values for each particle, based on the detected signal.
     """
+    print(scatterer.dataframe['Size'].values.__class__)
+
     size_list = scatterer.dataframe['Size'].values
     ri_list = scatterer.dataframe['RefractiveIndex'].values
 

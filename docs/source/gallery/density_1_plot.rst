@@ -19,7 +19,7 @@
 
 
 Flow Cytometry Simulation with One Populations: Density Plot of Scattering Intensities
-=====================================================================================
+======================================================================================
 
 This example demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library.
 The simulation includes one populations of particles, and we analyze pulse signals from two detectors
@@ -31,7 +31,7 @@ Workflow Summary:
 3. Run the Experiment: Simulate the flow cytometry experiment.
 4. Data Analysis: Analyze the pulse signals and generate a 2D density plot of the scattering intensities.
 
-.. GENERATED FROM PYTHON SOURCE LINES 15-55
+.. GENERATED FROM PYTHON SOURCE LINES 15-101
 
 .. code-block:: python3
 
@@ -40,6 +40,12 @@ Workflow Summary:
     import numpy as np
     from FlowCyPy import FlowCell
     from FlowCyPy.units import meter, micrometer, millisecond, second, degree
+    from FlowCyPy import Scatterer, distribution
+    from FlowCyPy.units import particle, milliliter, nanometer, RIU, AU, milliwatt
+    from FlowCyPy import FlowCytometer
+    from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, microvolt, microsecond
+    from FlowCyPy import Analyzer, peak_finder
+    from FlowCyPy import Source
 
     np.random.seed(3)  # Ensure reproducibility
 
@@ -49,10 +55,6 @@ Workflow Summary:
         flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
         run_time=0.5 * millisecond               # Simulation run time: 0.5 ms
     )
-
-    # Step 2: Defining Particle Populations
-    from FlowCyPy import Scatterer, distribution
-    from FlowCyPy.units import particle, milliliter, nanometer, RIU
 
     # Initialize scatterer with a medium refractive index
     scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
@@ -66,14 +68,58 @@ Workflow Summary:
             spread=4.5                           # Spread factor for the distribution
         ),
         refractive_index=distribution.Normal(
-            mean=1.39 * RIU,   # Mean refractive index: 1.39
-            std_dev=0.02 * RIU # Standard deviation: 0.02 refractive index units
+            mean=1.39 * RIU,    # Mean refractive index: 1.39
+            std_dev=0.02 * RIU  # Standard deviation: 0.02 refractive index units
         )
     )
 
     scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
     scatterer.print_properties()               # Display population properties
-    scatterer.plot()                           # Visualize the population distributions
+    # scatterer.plot()                         # Visualize the population distributions
+
+    # Set up the laser source parameters
+    source = Source(
+        numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
+        wavelength=200 * nanometer,           # Laser wavelength: 200 nm
+        optical_power=100 * milliwatt         # Laser optical power: 20 mW
+    )
+
+    # Step 4: Simulating the Flow Cytometry Experiment
+    cytometer = FlowCytometer(coupling_mechanism='mie', source=source, scatterer=scatterer, background_power=0.001 * milliwatt)
+
+    # Add forward scatter detector
+    cytometer.add_detector(
+        name='forward',                         # Detector name: Forward scatter
+        phi_angle=0 * degree,                   # Detector angle: 0 degrees (forward scatter)
+        numerical_aperture=1.2 * AU,            # Detector numerical aperture: 1.2
+        responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
+        sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
+        noise_level=0.0 * volt,                 # Noise level: 0 V
+        saturation_level=2000 * microvolt,      # Saturation level: 5000 mV (detector capacity)
+        resistance=50 * ohm,                    # Resistance: 50 ohm
+        temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
+        n_bins='14bit'                          # Discretization bins: 14-bit resolution
+    )
+
+    # Add side scatter detector
+    cytometer.add_detector(
+        name='side',                            # Detector name: Side scatter
+        phi_angle=90 * degree,                  # Detector angle: 90 degrees (side scatter)
+        numerical_aperture=1.2 * AU,            # Detector numerical aperture: 1.2
+        responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
+        sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
+        noise_level=0.0 * volt,                 # Noise level: 0 V
+        saturation_level=2000 * microvolt,      # Saturation level: 5 V (detector capacity)
+        resistance=50 * ohm,                    # Resistance: 50 ohm
+        temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
+        n_bins='14bit'                          # Discretization bins: 14-bit resolution
+    )
+
+    # Run the flow cytometry simulation
+    cytometer.simulate_pulse()
+
+    # Visualize the scatter signals from both detectors
+    cytometer.plot()
 
 
 
@@ -116,97 +162,24 @@ Workflow Summary:
     +------------------+------------------------------+
     | N events         | 378.0 particle               |
     +------------------+------------------------------+
+    <class 'pint_pandas.pint_array.PintArray'>
+    <class 'pint_pandas.pint_array.PintArray'>
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 56-57
-
-Step 3: Laser Source Configuration
-
-.. GENERATED FROM PYTHON SOURCE LINES 57-108
-
-.. code-block:: python3
-
-    from FlowCyPy import Source
-    from FlowCyPy.units import milliwatt, nanometer, AU
-
-    # Set up the laser source parameters
-    source = Source(
-        numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
-        wavelength=200 * nanometer,           # Laser wavelength: 200 nm
-        optical_power=100 * milliwatt         # Laser optical power: 20 mW
-    )
-
-    # Step 4: Simulating the Flow Cytometry Experiment
-    from FlowCyPy import FlowCytometer
-    from FlowCyPy.units import degree, ohm, megahertz, ampere, volt, kelvin, watt, microvolt
-
-    # Initialize the cytometer and configure detectors
-    cytometer = FlowCytometer(coupling_mechanism='mie', source=source, scatterer=scatterer)
-
-    # Add forward scatter detector
-    cytometer.add_detector(
-        name='forward',                         # Detector name: Forward scatter
-        phi_angle=0 * degree,                   # Detector angle: 0 degrees (forward scatter)
-        numerical_aperture=1.2 * AU,            # Detector numerical aperture: 1.2
-        responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
-        sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
-        noise_level=0.0 * volt,                 # Noise level: 0 V
-        saturation_level=2000 * microvolt,      # Saturation level: 5000 mV (detector capacity)
-        resistance=50 * ohm,                    # Resistance: 50 ohm
-        temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
-        n_bins='14bit'                          # Discretization bins: 14-bit resolution
-    )
-
-    # Add side scatter detector
-    cytometer.add_detector(
-        name='side',                            # Detector name: Side scatter
-        phi_angle=90 * degree,                  # Detector angle: 90 degrees (side scatter)
-        numerical_aperture=1.2 * AU,            # Detector numerical aperture: 1.2
-        responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
-        sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
-        noise_level=0.0 * volt,                 # Noise level: 0 V
-        saturation_level=2000 * microvolt,      # Saturation level: 5 V (detector capacity)
-        resistance=50 * ohm,                    # Resistance: 50 ohm
-        temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
-        n_bins='14bit'                          # Discretization bins: 14-bit resolution
-    )
-
-    # Run the flow cytometry simulation
-    cytometer.simulate_pulse()
-
-    # Visualize the scatter signals from both detectors
-    cytometer.plot()
-
-
-
-
-.. image-sg:: /gallery/images/sphx_glr_density_1_plot_002.png
-   :alt: density 1 plot
-   :srcset: /gallery/images/sphx_glr_density_1_plot_002.png
-   :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 109-110
+.. GENERATED FROM PYTHON SOURCE LINES 102-103
 
 Step 5: Analyzing Pulse Signals
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-129
+.. GENERATED FROM PYTHON SOURCE LINES 103-118
 
 .. code-block:: python3
 
-    from FlowCyPy import Analyzer, peak_finder
-    from FlowCyPy.units import microsecond
-
-    # Configure peak finding algorithm
     algorithm = peak_finder.MovingAverage(
-        threshold=5 * microvolt,          # Signal threshold: 0.1 mV
-        window_size=1 * microsecond,        # Moving average window size: 1 µs
-        min_peak_distance=0.3 * microsecond # Minimum distance between peaks: 0.3 µs
+        threshold=5 * microvolt,           # Signal threshold: 0.1 mV
+        window_size=1 * microsecond,         # Moving average window size: 1 µs
+        min_peak_distance=0.3 * microsecond  # Minimum distance between peaks: 0.3 µs
     )
 
     # Initialize analyzer with the cytometer and algorithm
@@ -221,21 +194,21 @@ Step 5: Analyzing Pulse Signals
 
 
 
-.. image-sg:: /gallery/images/sphx_glr_density_1_plot_003.png
+.. image-sg:: /gallery/images/sphx_glr_density_1_plot_002.png
    :alt: density 1 plot
-   :srcset: /gallery/images/sphx_glr_density_1_plot_003.png
+   :srcset: /gallery/images/sphx_glr_density_1_plot_002.png
    :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 130-132
+.. GENERATED FROM PYTHON SOURCE LINES 119-121
 
 Step 6: Coincidence Data and 2D Density Plot
 Extract coincidence data within a defined margin
 
-.. GENERATED FROM PYTHON SOURCE LINES 132-136
+.. GENERATED FROM PYTHON SOURCE LINES 121-125
 
 .. code-block:: python3
 
@@ -246,9 +219,9 @@ Extract coincidence data within a defined margin
 
 
 
-.. image-sg:: /gallery/images/sphx_glr_density_1_plot_004.png
+.. image-sg:: /gallery/images/sphx_glr_density_1_plot_003.png
    :alt: density 1 plot
-   :srcset: /gallery/images/sphx_glr_density_1_plot_004.png
+   :srcset: /gallery/images/sphx_glr_density_1_plot_003.png
    :class: sphx-glr-single-img
 
 
@@ -258,7 +231,7 @@ Extract coincidence data within a defined margin
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 9.404 seconds)
+   **Total running time of the script:** (0 minutes 7.825 seconds)
 
 
 .. _sphx_glr_download_gallery_density_1_plot.py:

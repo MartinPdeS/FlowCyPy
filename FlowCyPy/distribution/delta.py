@@ -56,7 +56,7 @@ class Delta(Base):
         np.ndarray
             An array of identical scatterer sizes in meters.
         """
-        return np.ones(n_samples.magnitude) * self.position
+        return np.ones(n_samples.magnitude) * self.position.magnitude * self._main_units
 
     def get_pdf(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         r"""

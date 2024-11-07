@@ -15,3 +15,5 @@ CMakeCache.txt
 CMakeFiles
 install_manifest.txt
 cmake_install.cmake
+
+docs/source/gallery/*

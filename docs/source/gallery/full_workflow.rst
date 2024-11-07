@@ -180,6 +180,13 @@ Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    <class 'pint_pandas.pint_array.PintArray'>
+    <class 'pint_pandas.pint_array.PintArray'>
+
 
 
 
@@ -226,9 +233,9 @@ Display the properties of the simulated cytometer setup, including flow speed an
     +-----------------------------+----------+
     | medium refractive index     | 1.0 RIU  |
     +-----------------------------+----------+
-    | minimum time between events | 29.6 ps  |
+    | minimum time between events | 26.3 ps  |
     +-----------------------------+----------+
-    | average time between events | 188.5 ns |
+    | average time between events | 185.1 ns |
     +-----------------------------+----------+
 
     Population [EV] Properties
@@ -311,7 +318,7 @@ Display the properties of the simulated cytometer setup, including flow speed an
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.804 seconds)
+   **Total running time of the script:** (0 minutes 2.583 seconds)
 
 
 .. _sphx_glr_download_gallery_full_workflow.py:

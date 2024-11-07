@@ -1,6 +1,6 @@
 """
 Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities
-=====================================================================================
+======================================================================================
 
 This example demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library.
 The simulation includes two populations of particles, and we analyze pulse signals from two detectors
@@ -102,7 +102,7 @@ cytometer.add_detector(
     sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
     noise_level=0.0 * volt,                 # Noise level: 0 V
     saturation_level=5000 * millivolt,      # Saturation level: 5000 mV (detector capacity)
-    resistance=1e-3 * ohm,                     # Resistance: 1 ohm
+    resistance=1 * ohm,                     # Resistance: 1 ohm
     temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
     n_bins='14bit'                          # Discretization bins: 14-bit resolution
 )
@@ -112,7 +112,7 @@ cytometer.add_detector(
     name='side',                            # Detector name: Side scatter
     phi_angle=90 * degree,                  # Detector angle: 90 degrees (side scatter)
     numerical_aperture=1.2 * AU,            # Detector numerical aperture: 1.2
-    responsitivity=1e-3 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
+    responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
     sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
     noise_level=0.0 * volt,                 # Noise level: 0 V
     saturation_level=5 * volt,              # Saturation level: 5 V (detector capacity)

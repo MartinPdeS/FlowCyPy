@@ -5,7 +5,7 @@ from dataclasses import field
 from pydantic.dataclasses import dataclass
 import seaborn as sns
 import pandas as pd
-from FlowCyPy.units import Quantity, refractive_index_unit, particle, liter
+from FlowCyPy.units import Quantity, RIU, particle, liter
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Population
 from FlowCyPy.utils import PropertiesReport
@@ -38,7 +38,7 @@ class Scatterer(PropertiesReport):
         The refractive index of the medium. Default is 1.0.
     """
 
-    medium_refractive_index: Quantity = 1.0 * refractive_index_unit
+    medium_refractive_index: Quantity = 1.0 * RIU
     populations: List[Population] = field(default_factory=lambda: [])
     coupling_model: Optional[CouplingModel] = CouplingModel.MIE
 
@@ -55,9 +55,6 @@ class Scatterer(PropertiesReport):
         flow_cell : FlowCell
             An instance of the FlowCell class that describes the flow cell being used.
 
-        Returns
-        -------
-        None
         """
         self.flow_cell = flow_cell
 
@@ -73,24 +70,38 @@ class Scatterer(PropertiesReport):
 
         self.n_events = len(self.dataframe)
 
-    def plot(self, ax: Optional[plt.Axes] = None, show: bool = True, figure_size: tuple = (5, 5), log_plot: bool = False) -> None:
+    def plot(self, ax: Optional[plt.Axes] = None, show: bool = True, alpha: float = 0.8, bandwidth_adjust: float = 1, log_plot: bool = False) -> None:
         """
         Visualizes the joint distribution of scatterer sizes and refractive indices using a Seaborn jointplot.
 
         Parameters
         ----------
         ax : matplotlib.axes.Axes, optional
-            An existing matplotlib axes to plot on. If None, a new figure and axes will be created. Default is None.
+            Existing matplotlib axes to plot on. If `None`, a new figure and axes are created. Default is `None`.
         show : bool, optional
-            Whether to display the plot. Default is True.
-        figure_size : tuple, optional
-            The size of the figure to be displayed. Default is (5, 5).
+            If `True`, displays the plot after creation. Default is `True`.
+        alpha : float, optional
+            Transparency level for the scatter plot points, ranging from 0 (fully transparent) to 1 (fully opaque). Default is 0.8.
+        bandwidth_adjust : float, optional
+            Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Higher values produce smoother density estimates. Default is 1.
         log_plot : bool, optional
-            Whether to use logarithmic scales for the plot axes. Default is False.
+            If `True`, applies a logarithmic scale to both axes of the joint plot and their marginal distributions. Default is `False`.
 
         Returns
         -------
         None
+            This function does not return any value. It either displays the plot (if `show=True`) or simply creates it for later use.
+
+        Notes
+        -----
+        This method resets the index of the internal dataframe and extracts units from the 'Size' column.
+        The plot uses the specified matplotlib style (`mps`) for consistent styling.
+
+        Examples
+        --------
+        >>> plot(show=False, alpha=0.5, bandwidth_adjust=0.8, log_plot=True)
+        This will generate a joint plot with 50% opacity, lower KDE bandwidth, and logarithmic scales on both axes.
+
         """
         df_reset = self.dataframe.reset_index()
         x_unit = df_reset['Size'].pint.units
@@ -102,7 +113,8 @@ class Scatterer(PropertiesReport):
                 y='RefractiveIndex',
                 hue='Population',
                 kind='scatter',
-                alpha=0.8
+                alpha=alpha,
+                marginal_kws=dict(bw_adjust=bandwidth_adjust)
             )
 
         g.ax_joint.set_xlabel(f"Size [{x_unit}]")
@@ -122,9 +134,6 @@ class Scatterer(PropertiesReport):
         """
         Prints specific properties of the Scatterer instance, such as coupling factor and medium refractive index.
 
-        Returns
-        -------
-        None
         """
         min_delta_position = abs(self.dataframe['Time'].diff()).min().to_compact()
         mean_delta_position = self.dataframe['Time'].diff().mean().to_compact()
