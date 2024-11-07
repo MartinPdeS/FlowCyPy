@@ -67,13 +67,16 @@ def find_matching_indices(array_0: np.ndarray, array_1: np.ndarray, margin: floa
     """
     Finds the indices where the values of two arrays match within a certain margin.
 
-    Parameters:
+    Parameters
+    ----------
         array_0 (np.ndarray): First array.
         array_1 (np.ndarray): Second array.
         margin (float): The margin within which values are considered matching.
 
-    Returns:
-        np.ndarray: Array of index pairs (i, j) where array_0[i] and array_1[j] match within the margin.
+    Returns
+    -------
+    np.ndarray
+        Array of index pairs (i, j) where array_0[i] and array_1[j] match within the margin.
     """
     # Use broadcasting to compute the absolute difference between every value in array_0 and array_1
     difference_matrix = np.abs(array_0[:, np.newaxis] - array_1)

@@ -30,7 +30,7 @@ Steps:
 3. Simulate the flow cytometry experiment.
 4. Analyze pulse signals and generate a 2D density plot.
 
-.. GENERATED FROM PYTHON SOURCE LINES 14-70
+.. GENERATED FROM PYTHON SOURCE LINES 14-75
 
 .. code-block:: python3
 
@@ -41,6 +41,9 @@ Steps:
     from FlowCyPy import distribution
     from FlowCyPy import peak_finder
     from FlowCyPy.units import particle, milliliter, nanometer, RIU, second, micrometer, millisecond, meter
+    from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliampere, megahertz
+    from FlowCyPy.units import microsecond
+    from FlowCyPy.units import milliwatt, AU
 
     # Set random seed for reproducibility
     np.random.seed(3)
@@ -49,7 +52,7 @@ Steps:
     flow_cell = FlowCell(
         flow_speed=7.56 * meter / second,      # Flow speed: 7.56 meters per second
         flow_area=(10 * micrometer) ** 2,      # Flow area: 10 x 10 micrometers
-        run_time=0.3 * millisecond             # Total simulation time: 0.3 milliseconds
+        run_time=0.4 * millisecond             # Total simulation time: 0.3 milliseconds
     )
 
     # Step 2: Create Populations (Extracellular Vesicles and Liposomes)
@@ -60,28 +63,30 @@ Steps:
         name='EV',  # Population name: Extracellular Vesicles (EV)
         concentration=1e+9 * particle / milliliter,  # Concentration: 1e9 particles per milliliter
         size=distribution.RosinRammler(
-            characteristic_size=50 * nanometer,  # Characteristic size: 50 nanometers
-            spread=4.5                           # Spread factor for size distribution
+            characteristic_size=150 * nanometer,  # Characteristic size: 50 nanometers
+            spread=10.5                           # Spread factor for size distribution
         ),
         refractive_index=distribution.Normal(
-            mean=1.39 * RIU,   # Mean refractive index: 1.39
-            std_dev=0.05 * RIU # Standard deviation: 0.05 refractive index units
+            mean=1.45 * RIU,    # Mean refractive index: 1.39
+            std_dev=0.02 * RIU  # Standard deviation: 0.05 refractive index units
         )
     )
 
     # Add second population (Liposomes)
     scatterer.add_population(
         name='LP',  # Population name: Liposomes (LP)
-        concentration=2e+10 * particle / milliliter,  # Concentration: 1e9 particles per milliliter
+        concentration=1e+9 * particle / milliliter,  # Concentration: 1e9 particles per milliliter
         size=distribution.RosinRammler(
-            characteristic_size=200 * nanometer, # Characteristic size: 200 nanometers
-            spread=4.5                           # Spread factor for size distribution
+            characteristic_size=200 * nanometer,  # Characteristic size: 200 nanometers
+            spread=10.5                           # Spread factor for size distribution
         ),
         refractive_index=distribution.Normal(
-            mean=1.45 * RIU,   # Mean refractive index: 1.45
-            std_dev=0.05 * RIU # Standard deviation: 0.05 refractive index units
+            mean=1.45 * RIU,    # Mean refractive index: 1.45
+            std_dev=0.02 * RIU  # Standard deviation: 0.05 refractive index units
         )
     )
+
+    scatterer.concentrations = 1e+9 / 3 * particle / milliliter
 
     # Initialize scatterer and link it to the flow cell
     scatterer.initialize(flow_cell=flow_cell)
@@ -105,17 +110,17 @@ Steps:
 
 
     Scatterer [] Properties
-    +-----------------------------+----------+
-    | Property                    | Value    |
-    +=============================+==========+
-    | coupling factor             | mie      |
-    +-----------------------------+----------+
-    | medium refractive index     | 1.3 RIU  |
-    +-----------------------------+----------+
-    | minimum time between events | 974.6 fs |
-    +-----------------------------+----------+
-    | average time between events | 63.3 ns  |
-    +-----------------------------+----------+
+    +-----------------------------+---------+
+    | Property                    | Value   |
+    +=============================+=========+
+    | coupling factor             | mie     |
+    +-----------------------------+---------+
+    | medium refractive index     | 1.3 RIU |
+    +-----------------------------+---------+
+    | minimum time between events | 26.7 ns |
+    +-----------------------------+---------+
+    | average time between events | 2.1 µs  |
+    +-----------------------------+---------+
 
     Population [EV] Properties
     +------------------+------------------------------+
@@ -123,13 +128,13 @@ Steps:
     +==================+==============================+
     | Name             | EV                           |
     +------------------+------------------------------+
-    | Refractive Index | Normal(1.390 RIU, 0.050 RIU) |
+    | Refractive Index | Normal(1.450 RIU, 0.020 RIU) |
     +------------------+------------------------------+
-    | Size             | RR(50.000 nm, 4.500)         |
+    | Size             | RR(150.000 nm, 10.500)       |
     +------------------+------------------------------+
-    | Concentration    | 1.7 nmol/m³                  |
+    | Concentration    | 333.3 Gparticle/l            |
     +------------------+------------------------------+
-    | N events         | 227.0 particle               |
+    | N events         | 101.0 particle               |
     +------------------+------------------------------+
 
     Population [LP] Properties
@@ -138,46 +143,44 @@ Steps:
     +==================+==============================+
     | Name             | LP                           |
     +------------------+------------------------------+
-    | Refractive Index | Normal(1.450 RIU, 0.050 RIU) |
+    | Refractive Index | Normal(1.450 RIU, 0.020 RIU) |
     +------------------+------------------------------+
-    | Size             | RR(200.000 nm, 4.500)        |
+    | Size             | RR(200.000 nm, 10.500)       |
     +------------------+------------------------------+
-    | Concentration    | 33.2 nmol/m³                 |
+    | Concentration    | 333.3 Gparticle/l            |
     +------------------+------------------------------+
-    | N events         | 4.5 kparticle                |
+    | N events         | 91.0 particle                |
     +------------------+------------------------------+
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 71-72
+.. GENERATED FROM PYTHON SOURCE LINES 76-77
 
 Step 4: Set up the Laser Source
 
-.. GENERATED FROM PYTHON SOURCE LINES 72-127
+.. GENERATED FROM PYTHON SOURCE LINES 77-132
 
 .. code-block:: python3
 
-    from FlowCyPy.units import milliwatt, AU
     source = Source(
         numerical_aperture=0.3 * AU,             # Numerical aperture of the laser: 0.3
         wavelength=800 * nanometer,              # Laser wavelength: 800 nanometers
-        optical_power=10 * milliwatt             # Laser optical power: 10 milliwatts
+        optical_power=100 * milliwatt             # Laser optical power: 10 milliwatts
     )
 
     source.print_properties()  # Print the laser source properties
 
     # Step 5: Configure Detectors
     # Side scatter detector
-    from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliampere, megahertz
     detector_0 = Detector(
         name='side',                             # Detector name: Side scatter detector
         phi_angle=90 * degree,                   # Angle: 90 degrees (Side Scatter)
         numerical_aperture=1.2 * AU,             # Numerical aperture: 1.2
         responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
         sampling_freq=60 * megahertz,            # Sampling frequency: 60 MHz
-        saturation_level=2 * millivolt,          # Saturation level: 2 millivolts
-        n_bins='14bit',                          # Number of bins: 14-bit resolution
+        saturation_level=3 * millivolt,          # Saturation level: 2 millivolts
+        n_bins='16bit',                          # Number of bins: 14-bit resolution
         resistance=50 * ohm,                     # Detector resistance: 50 ohms
         dark_current=0.1 * milliampere,          # Dark current: 0.1 milliamps
         temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
@@ -186,16 +189,17 @@ Step 4: Set up the Laser Source
     # Forward scatter detector
     detector_1 = Detector(
         name='forward',                          # Detector name: Forward scatter detector
-        phi_angle=180 * degree,                  # Angle: 180 degrees (Forward Scatter)
+        phi_angle=0 * degree,                    # Angle: 0 degrees (Forward Scatter)
         numerical_aperture=1.2 * AU,             # Numerical aperture: 1.2
         responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
         sampling_freq=60 * megahertz,            # Sampling frequency: 60 MHz
-        saturation_level=2 * millivolt,          # Saturation level: 2 millivolts
-        n_bins='14bit',                          # Number of bins: 14-bit resolution
+        saturation_level=3 * millivolt,          # Saturation level: 2 millivolts
+        n_bins='16bit',                          # Number of bins: 14-bit resolution
         resistance=50 * ohm,                     # Detector resistance: 50 ohms
         dark_current=0.1 * milliampere,          # Dark current: 0.1 milliamps
         temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
     )
+
 
     detector_1.print_properties()  # Print the properties of the forward scatter detector
 
@@ -204,6 +208,7 @@ Step 4: Set up the Laser Source
         coupling_mechanism='mie',                # Scattering mechanism: Mie scattering
         source=source,                           # Laser source used in the experiment
         scatterer=scatterer,                     # Populations used in the experiment
+        background_power=0.02 * milliwatt,
         detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
     )
 
@@ -234,46 +239,47 @@ Step 4: Set up the Laser Source
     +------------+---------+
 
     Detector [forward] Properties
-    +--------------------+-----------+
-    | Property           | Value     |
-    +====================+===========+
-    | Sampling frequency | 60.0 MHz  |
-    +--------------------+-----------+
-    | Phi angle          | 180.0 deg |
-    +--------------------+-----------+
-    | Gamma angle        | 0.0 deg   |
-    +--------------------+-----------+
-    | Numerical aperture | 1.2       |
-    +--------------------+-----------+
-    | Responsitivity     | 1.0 A/W   |
-    +--------------------+-----------+
-    | Saturation Level   | 2.0 mV    |
-    +--------------------+-----------+
-    | Dark Current       | 100.0 µA  |
-    +--------------------+-----------+
-    | Resistance         | 50.0 Ω    |
-    +--------------------+-----------+
-    | Temperature        | 300.0 K   |
-    +--------------------+-----------+
-    | N Bins             | 16384     |
-    +--------------------+-----------+
+    +--------------------+----------+
+    | Property           | Value    |
+    +====================+==========+
+    | Sampling frequency | 60.0 MHz |
+    +--------------------+----------+
+    | Phi angle          | 0.0 deg  |
+    +--------------------+----------+
+    | Gamma angle        | 0.0 deg  |
+    +--------------------+----------+
+    | Numerical aperture | 1.2      |
+    +--------------------+----------+
+    | Responsitivity     | 1.0 A/W  |
+    +--------------------+----------+
+    | Saturation Level   | 3.0 mV   |
+    +--------------------+----------+
+    | Dark Current       | 100.0 µA |
+    +--------------------+----------+
+    | Resistance         | 50.0 Ω   |
+    +--------------------+----------+
+    | Temperature        | 300.0 K  |
+    +--------------------+----------+
+    | N Bins             | 65536    |
+    +--------------------+----------+
+    <class 'pint_pandas.pint_array.PintArray'>
+    <class 'pint_pandas.pint_array.PintArray'>
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 128-129
+.. GENERATED FROM PYTHON SOURCE LINES 133-134
 
 Step 7: Analyze Pulse Signals
 
-.. GENERATED FROM PYTHON SOURCE LINES 129-144
+.. GENERATED FROM PYTHON SOURCE LINES 134-148
 
 .. code-block:: python3
 
-    from FlowCyPy.units import microsecond
     algorithm = peak_finder.MovingAverage(
-        threshold=0.03 * millivolt,              # Peak detection threshold: 0.03 millivolts
-        window_size=1 * microsecond,             # Moving average window size: 1 microsecond
-        min_peak_distance=0.2 * microsecond      # Minimum distance between peaks: 0.2 microseconds
+        threshold=0.001 * millivolt,              # Peak detection threshold: 0.03 millivolts
+        window_size=10 * microsecond,             # Moving average window size: 1 microsecond
+        min_peak_distance=1 * microsecond      # Minimum distance between peaks: 0.2 microseconds
     )
 
     analyzer = Analyzer(cytometer=cytometer, algorithm=algorithm)
@@ -296,11 +302,11 @@ Step 7: Analyze Pulse Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 145-146
+.. GENERATED FROM PYTHON SOURCE LINES 149-150
 
 Step 8: Extract and Plot Coincidence Data
 
-.. GENERATED FROM PYTHON SOURCE LINES 146-150
+.. GENERATED FROM PYTHON SOURCE LINES 150-154
 
 .. code-block:: python3
 
@@ -323,7 +329,7 @@ Step 8: Extract and Plot Coincidence Data
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 17.193 seconds)
+   **Total running time of the script:** (0 minutes 5.731 seconds)
 
 
 .. _sphx_glr_download_gallery_density_2_populations.py:

@@ -6,20 +6,20 @@
 
 Computation times
 =================
-**00:49.804** total execution time for **gallery** files:
+**00:16.637** total execution time for **gallery** files:
 
 +-----------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_density_2_populations.py` (``density_2_populations.py``)   | 00:17.193 | 0.0 MB |
+| :ref:`sphx_glr_gallery_density_3_plot.py` (``density_3_plot.py``)                 | 00:08.812 | 0.0 MB |
 +-----------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_density_3_plot.py` (``density_3_plot.py``)                 | 00:10.612 | 0.0 MB |
+| :ref:`sphx_glr_gallery_density_1_plot.py` (``density_1_plot.py``)                 | 00:07.825 | 0.0 MB |
 +-----------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_density_1_plot.py` (``density_1_plot.py``)                 | 00:09.404 | 0.0 MB |
+| :ref:`sphx_glr_gallery_density_2_populations.py` (``density_2_populations.py``)   | 00:00.000 | 0.0 MB |
 +-----------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_full_workflow.py` (``full_workflow.py``)                   | 00:05.804 | 0.0 MB |
+| :ref:`sphx_glr_gallery_distributions.py` (``distributions.py``)                   | 00:00.000 | 0.0 MB |
 +-----------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_flow_cytometer_signal.py` (``flow_cytometer_signal.py``)   | 00:05.294 | 0.0 MB |
+| :ref:`sphx_glr_gallery_flow_cytometer_signal.py` (``flow_cytometer_signal.py``)   | 00:00.000 | 0.0 MB |
 +-----------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_distributions.py` (``distributions.py``)                   | 00:00.782 | 0.0 MB |
+| :ref:`sphx_glr_gallery_full_workflow.py` (``full_workflow.py``)                   | 00:00.000 | 0.0 MB |
 +-----------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_gallery_scatterer_distribution.py` (``scatterer_distribution.py``) | 00:00.715 | 0.0 MB |
+| :ref:`sphx_glr_gallery_scatterer_distribution.py` (``scatterer_distribution.py``) | 00:00.000 | 0.0 MB |
 +-----------------------------------------------------------------------------------+-----------+--------+
