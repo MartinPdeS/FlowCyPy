@@ -62,6 +62,16 @@ jobs:
         run: |
           sphinx-build docs/source _build
 
+      - name: "Deploy to documentation_page: specific version"
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        with:
+          publish_branch: documentation_page
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: _build/
+          destination_dir: "docs/${{ env.tag }}"
+          keep_files: true
+
       - name: Update version_switcher.json
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         run: |
@@ -87,23 +97,3 @@ jobs:
           git add $json_file
           git commit -m "Update version_switcher.json with new tag $current_tag"
           git push origin documentation_page
-
-      - name: "Deploy to documentation_page: specific version"
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        with:
-          publish_branch: documentation_page
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _build/
-          destination_dir: "docs/${{ env.tag }}"
-          keep_files: true
-
-      - name: "Deploy to documentation_page: latest"
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.event_name == 'push'  && startsWith(github.ref, 'refs/tags/')
-        with:
-          publish_branch: documentation_page
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _build/
-          destination_dir: "docs/latest"
-          keep_files: true
