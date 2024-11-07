@@ -10,7 +10,8 @@ from FlowCyPy.units import particle, second
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.utils import PropertiesReport
 import logging
-from PyMieSim.units import Quantity
+from PyMieSim.units import Quantity, RIU, meter
+import warnings
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -58,13 +59,18 @@ class Population(PropertiesReport):
         """
         Validates that the concentration is expressed in units of inverse volume.
 
-        Args:
-            value (Quantity): The concentration to validate.
+        Parameters
+        ----------
+        value : Quantity
+            The concentration to validate.
 
-        Returns:
-            Quantity: The validated concentration.
+        Returns
+        -------
+        Quantity
+            The validated concentration.
 
-        Raises:
+        Raises
+        ------
             ValueError: If the concentration is not expressed in units of inverse volume.
         """
         if not value.check('particles / [length]**3'):
@@ -76,36 +82,58 @@ class Population(PropertiesReport):
         """
         Validates that the refractive index is either a Quantity or a valid distribution.Base instance.
 
-        Args:
-            value (Union[distribution.Base, Quantity]): The refractive index to validate.
+        Parameters
+        ----------
+        value : Union[distribution.Base, Quantity]
+            The refractive index to validate.
 
-        Returns:
-            Union[distribution.Base, Quantity]: The validated refractive index.
+        Returns
+        -------
+        Union[distribution.Base, Quantity]
+            The validated refractive index.
 
-        Raises:
-            TypeError: If the refractive index is not of type Quantity or distribution.Base.
+        Raises
+        ------
+        TypeError
+            If the refractive index is not of type Quantity or distribution.Base.
         """
-        if not isinstance(value, (Quantity, distribution.Base)):
-            raise TypeError(f"refractive_index must be of type Quantity or distribution.Base, but got {type(value)}")
-        return value
+        if isinstance(value, Quantity):
+            assert value.check(RIU), "The refractive index value provided does not have refractive index units [RIU]"
+            return distribution.Delta(position=value)
+
+        if isinstance(value, distribution.Base):
+            return value
+
+        raise TypeError(f"refractive_index must be of type Quantity<RIU or refractive_index_units> or distribution.Base, but got {type(value)}")
 
     @field_validator('size')
     def _validate_size(cls, value):
         """
         Validates that the size is either a Quantity or a valid distribution.Base instance.
 
-        Args:
-            value (Union[distribution.Base, Quantity]): The size to validate.
+        Parameters
+        ----------
+        value : Union[distribution.Base, Quantity]
+            The size to validate.
 
-        Returns:
-            Union[distribution.Base, Quantity]: The validated size.
+        Returns
+        -------
+        Union[distribution.Base, Quantity]
+            The validated size.
 
-        Raises:
-            TypeError: If the size is not of type Quantity or distribution.Base.
+        Raises
+        ------
+        TypeError
+            If the size is not of type Quantity or distribution.Base.
         """
-        if not isinstance(value, (Quantity, distribution.Base)):
-            raise TypeError(f"size must be of type Quantity or distribution.Base, but got {type(value)}")
-        return value
+        if isinstance(value, Quantity):
+            assert value.check(meter), "The size value provided does not have length units [meter]"
+            return distribution.Delta(position=value)
+
+        if isinstance(value, distribution.Base):
+            return value
+
+        raise TypeError(f"suze must be of type Quantity or distribution.Base, but got {type(value)}")
 
     def initialize(self, flow_cell: FlowCell) -> None:
 
@@ -196,7 +224,7 @@ class Population(PropertiesReport):
         self.n_events = len(arrival_times) * particle
 
         if self.n_events == 0:
-            raise ValueError("Population has been initialized with 0 events.")
+            warnings.warn("Population has been initialized with 0 events.")
 
     def print_properties(self) -> List[str]:
         """

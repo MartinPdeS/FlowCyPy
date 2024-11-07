@@ -2,16 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from sphinx_gallery.sorting import FileNameSortKey
+import os
 from MPSPlots.styles import use_mpsplots_style
-
 import FlowCyPy
-from FlowCyPy.directories import project_path, doc_css_path
+from pathlib import Path
+from FlowCyPy.directories import doc_css_path
 
 
-sys.path.insert(0, project_path)
-sys.path.insert(0, project_path.joinpath('FlowCyPy'))
-sys.path.insert(0, project_path.joinpath('docs/source'))
+sys.path.append(str(Path(".").resolve()))
 
 
 def setup(app):
@@ -48,6 +46,9 @@ extensions = [
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
 
+html_logo = "_static/thumbnail.png"
+html_favicon = "_static/thumbnail.png"
+
 
 def reset_mpl(gallery_conf, fname):
     use_mpsplots_style()
@@ -65,7 +66,6 @@ sphinx_gallery_conf = {
     'reset_modules': reset_mpl,
     'line_numbers': False,
     'remove_config_comments': True,
-    'within_subsection_order': FileNameSortKey,
     'capture_repr': ('_repr_html_', '__repr__'),
     'nested_sections': True,
 }
@@ -102,13 +102,12 @@ binder_branch = "master"
 major, minor = version[:2]
 binder_branch = f"v{major}.{minor}.x"
 
-html_theme_options = {
-    # Navigation bar
-    "logo": {
-        "alt_text": "FlowCyPy's logo",
-        "text": "FlowCyPy",
-        "link": "https://martinpdes.github.io/flowcypy/",
-    },
+html_theme_options = dict()
+
+html_theme_options['logo'] = dict(text='FlowCyPy', image="_static/thumbnail.png")
+html_theme_options["show_nav_level"] = 0
+
+html_theme_options.update({
     "icon_links": [
         {
             "name": "GitHub",
@@ -134,9 +133,17 @@ html_theme_options = {
     "footer_start": ["copyright"],
     "footer_end": ["sphinx-version", "theme-version"],
     # Other
-    "pygment_light_style": "default",
-    "pygment_dark_style": "github-dark",
+    "pygments_light_style": "default",
+    "pygments_dark_style": "github-dark",
 }
+)
+
+current_version = os.getenv("tag", "latest")
+
+# html_theme_options["switcher"] = dict(
+#     json_url="https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json",
+#     version_match=current_version,
+# )
 
 htmlhelp_basename = 'FlowCyPydoc'
 
@@ -161,10 +168,11 @@ texinfo_documents = [
 
 epub_title = project
 
-# html_static_path = ['_static']
-# templates_path = ['_templates']
-# html_css_files = ['default.css']
+html_static_path = ['_static']
+templates_path = ['_templates']
+html_css_files = ['default.css']
 epub_exclude_files = ['search.html']
+
 
 # -- MyST --------------------------------------------------------------------
 myst_enable_extensions = [

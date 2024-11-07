@@ -171,9 +171,9 @@ Steps:
     +-----------------------------+----------+
     | medium refractive index     | 1.3 RIU  |
     +-----------------------------+----------+
-    | minimum time between events | 47.3 ps  |
+    | minimum time between events | 155.0 ps |
     +-----------------------------+----------+
-    | average time between events | 170.3 ns |
+    | average time between events | 166.5 ns |
     +-----------------------------+----------+
 
     Population [EV] Properties
@@ -205,6 +205,8 @@ Steps:
     +------------------+------------------------------+
     | N events         | 1.5 kparticle                |
     +------------------+------------------------------+
+    <class 'pint_pandas.pint_array.PintArray'>
+    <class 'pint_pandas.pint_array.PintArray'>
 
     Scatterer [] Properties
     +-----------------------------+----------+
@@ -214,9 +216,9 @@ Steps:
     +-----------------------------+----------+
     | medium refractive index     | 1.3 RIU  |
     +-----------------------------+----------+
-    | minimum time between events | 47.3 ps  |
+    | minimum time between events | 155.0 ps |
     +-----------------------------+----------+
-    | average time between events | 170.3 ns |
+    | average time between events | 166.5 ns |
     +-----------------------------+----------+
 
     Population [EV] Properties
@@ -320,7 +322,7 @@ and complexity and can be further analyzed for feature extraction, such as peak 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.294 seconds)
+   **Total running time of the script:** (0 minutes 2.009 seconds)
 
 
 .. _sphx_glr_download_gallery_flow_cytometer_signal.py:

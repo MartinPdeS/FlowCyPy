@@ -82,7 +82,13 @@ class Normal(Base):
             The input x-values and the corresponding scaled PDF values.
         """
         common_units = x.units
-        pdf = norm.pdf(x.magnitude, loc=self.mean.to(common_units).magnitude, scale=self.std_dev.to(common_units).magnitude)
+
+        pdf = norm.pdf(
+            x.magnitude,
+            loc=self.mean.to(common_units).magnitude,
+            scale=self.std_dev.to(common_units).magnitude
+        )
+
         return x, pdf
 
     def __repr__(self) -> str:
