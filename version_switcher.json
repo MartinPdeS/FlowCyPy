@@ -38,5 +38,10 @@
     "name": "heads/documentation_page",
     "version": "heads/documentation_page",
     "url": "https://martinpdes.github.io/FlowCyPy/docs/heads/documentation_page"
+  },
+  {
+    "name": "v0.2.9.7",
+    "version": "v0.2.9.7",
+    "url": "https://martinpdes.github.io/FlowCyPy/docs/v0.2.9.7"
   }
 ]
