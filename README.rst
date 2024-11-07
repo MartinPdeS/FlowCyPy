@@ -248,16 +248,16 @@ Email:`martin.poinsinet.de.sivry@gmail.ca <mailto:martin.poinsinet.de.sivry@gmai
     :alt: FlowCyPy Logo
 
 .. |example_0| image:: https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/master/docs/images/example_0.png
-    :width: 45%
+    :width: 80%
 
 .. |example_1| image:: https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/master/docs/images/example_1.png
-    :width: 45%
+    :width: 80%
 
 .. |example_2| image:: https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/master/docs/images/example_2.png
-    :width: 100%
+    :width: 80%
 
 .. |example_3| image:: https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/master/docs/images/example_3.png
-    :width: 100%
+    :width: 80%
 
 .. |python| image:: https://img.shields.io/pypi/pyversions/flowcypy.svg
    :target: https://www.python.org/

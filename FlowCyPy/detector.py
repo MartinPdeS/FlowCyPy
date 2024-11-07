@@ -253,8 +253,10 @@ class Detector(PropertiesReport):
             - \( I_{\text{dark}} \) is the dark current,
             - \( B \) is the bandwidth.
 
-        Returns:
-            np.ndarray: An array of dark current noise values.
+        Returns
+        -------
+        np.ndarray
+            An array of dark current noise values.
         """
         if self.dark_current.magnitude == 0 or not self.include_dark_current_noise or not self.include_noises:
             return
