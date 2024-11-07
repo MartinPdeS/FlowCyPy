@@ -40,12 +40,12 @@ scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive i
 
 
 # Add first population (Extracellular Vesicles)
-scatterer.add_population(
-    name='EV',  # Population name: Extracellular Vesicles (EV)
-    concentration=1e+9 * particle / milliliter,  # Concentration: 1e9 particles per milliliter
-    size=distribution.Delta(position=1 * nanometer),
-    refractive_index=distribution.Delta(position=1.45 * RIU)
-)
+# scatterer.add_population(
+#     name='EV',  # Population name: Extracellular Vesicles (EV)
+#     concentration=1e+9 * particle / milliliter,  # Concentration: 1e9 particles per milliliter
+#     size=distribution.Delta(position=1 * nanometer),
+#     refractive_index=distribution.Delta(position=1.45 * RIU)
+# )
 
 
 
