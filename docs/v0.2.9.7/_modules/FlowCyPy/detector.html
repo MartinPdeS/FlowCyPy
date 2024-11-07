@@ -1,0 +1,989 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlowCyPy.detector &#8212; FlowCyPy  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/default.css?v=265c6c44" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/FlowCyPy/detector';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v0.2.9.7';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = true;
+        </script>
+    <link rel="icon" href="../../_static/thumbnail.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.2.9.7" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/thumbnail.png" class="logo__image only-light" alt=""/>
+    <img src="../../_static/thumbnail.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">FlowCyPy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../code.html">
+    Code Documentation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../gallery/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theoretical Background
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../references.html">
+    References
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/flowcypy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/flowcypy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Anaconda</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../code.html">
+    Code Documentation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../gallery/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theoretical Background
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../references.html">
+    References
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/flowcypy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/flowcypy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Anaconda</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">FlowCyPy.detector</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for FlowCyPy.detector</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">AU</span><span class="p">,</span> <span class="n">volt</span><span class="p">,</span> <span class="n">watt</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">coulomb</span><span class="p">,</span> <span class="n">joule</span><span class="p">,</span> <span class="n">kelvin</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy.utils</span> <span class="kn">import</span> <span class="n">PropertiesReport</span>
+<span class="kn">from</span> <span class="nn">pydantic.dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">field_validator</span>
+<span class="kn">from</span> <span class="nn">MPSPlots.styles</span> <span class="kn">import</span> <span class="n">mps</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pint_pandas</span>
+
+<span class="kn">from</span> <span class="nn">PyMieSim.units</span> <span class="kn">import</span> <span class="n">Quantity</span>
+
+<span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">extra</span><span class="o">=</span><span class="s1">&#39;forbid&#39;</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="Detector">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.detector.Detector">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">unsafe_hash</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Detector</span><span class="p">(</span><span class="n">PropertiesReport</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing a signal detector used in flow cytometry.</span>
+
+<span class="sd">    This class models a photodetector, simulating signal acquisition, noise addition, and signal processing</span>
+<span class="sd">    for analysis.  It can optionally simulate different noise sources: shot noise, thermal noise, and dark current noise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        The name or identifier of the detector.</span>
+<span class="sd">    sampling_freq : Quantity</span>
+<span class="sd">        The sampling frequency of the detector in hertz.</span>
+<span class="sd">    phi_angle : Quantity</span>
+<span class="sd">        The detection angle in degrees.</span>
+<span class="sd">    numerical_aperture : Quantity</span>
+<span class="sd">        The numerical aperture of the detector, a unitless value.</span>
+<span class="sd">    responsitivity : Quantity</span>
+<span class="sd">        Detector&#39;s responsivity, default is 1 volt per watt.</span>
+<span class="sd">    noise_level : Quantity</span>
+<span class="sd">        The base noise level added to the signal, default is 0 volts.</span>
+<span class="sd">    baseline_shift : Quantity</span>
+<span class="sd">        The baseline shift applied to the signal, default is 0 volts.</span>
+<span class="sd">    saturation_level : Quantity</span>
+<span class="sd">        The maximum signal level in volts before saturation, default is infinity.</span>
+<span class="sd">    dark_current : Quantity</span>
+<span class="sd">        The dark current of the detector, default is 0 amperes.</span>
+<span class="sd">    resistance : Quantity</span>
+<span class="sd">        Resistance of the detector, used for thermal noise simulation.</span>
+<span class="sd">    temperature : Quantity</span>
+<span class="sd">        Temperature of the detector in Kelvin, used for thermal noise simulation.</span>
+<span class="sd">    n_bins : Union[int, str]</span>
+<span class="sd">        The number of discretization bins or bit-depth (e.g., &#39;12bit&#39;).</span>
+<span class="sd">    include_shot_noise : bool</span>
+<span class="sd">        Flag to include shot noise in the simulation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sampling_freq</span><span class="p">:</span> <span class="n">Quantity</span>
+    <span class="n">phi_angle</span><span class="p">:</span> <span class="n">Quantity</span>
+    <span class="n">numerical_aperture</span><span class="p">:</span> <span class="n">Quantity</span>
+
+    <span class="n">gamma_angle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span>
+    <span class="n">sampling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">AU</span>
+    <span class="n">responsitivity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ampere</span> <span class="o">/</span> <span class="n">watt</span><span class="p">)</span>
+    <span class="n">noise_level</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">volt</span><span class="p">)</span>
+    <span class="n">baseline_shift</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">volt</span><span class="p">)</span>
+    <span class="n">saturation_level</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">volt</span><span class="p">)</span>
+    <span class="n">dark_current</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">ampere</span><span class="p">)</span>  <span class="c1"># Dark current</span>
+    <span class="n">resistance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="s1">&#39;ohm&#39;</span><span class="p">)</span>  <span class="c1"># Resistance for thermal noise</span>
+    <span class="n">temperature</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;kelvin&#39;</span><span class="p">)</span>  <span class="c1"># Temperature for thermal noise</span>
+    <span class="n">n_bins</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">include_shot_noise</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Flag to include shot noise</span>
+    <span class="n">include_dark_current_noise</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Flag to include dark current noise</span>
+    <span class="n">include_thermal_noise</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Flag to include thermal noise</span>
+    <span class="n">include_noises</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">BOLTZMANN_CONSTANT</span> <span class="o">=</span> <span class="mf">1.380649e-23</span> <span class="o">*</span> <span class="n">joule</span> <span class="o">/</span> <span class="n">kelvin</span>  <span class="c1"># Class constant</span>
+    <span class="n">ELECTRON_CHARGE</span> <span class="o">=</span> <span class="mf">1.602176634e-19</span> <span class="o">*</span> <span class="n">coulomb</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span> <span class="nf">bandwidth</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_freq</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Automatically calculates the bandwidth based on the sampling frequency.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Quantity</span>
+<span class="sd">            The bandwidth of the detector, which is half the sampling frequency (Nyquist limit).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_freq</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;sampling_freq&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_validate_sampling_freq</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates that the sampling frequency is provided in hertz.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : Quantity</span>
+<span class="sd">            The sampling frequency to validate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Quantity</span>
+<span class="sd">            The validated sampling frequency.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the sampling frequency is not in hertz.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sampling_freq must be in hertz, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;phi_angle&#39;</span><span class="p">,</span> <span class="s1">&#39;gamma_angle&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_validate_angles</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates that the provided angles are in degrees.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : Quantity</span>
+<span class="sd">            The angle value to validate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Quantity</span>
+<span class="sd">            The validated angle.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the angle is not in degrees.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;degree&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Angle must be in degrees, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;responsitivity&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_validate_responsitivity</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates that the detector&#39;s responsivity is provided in volts per watt.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : Quantity</span>
+<span class="sd">            The responsivity value to validate.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Quantity: The validated responsivity.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the responsivity is not in volts per watt.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;A / W&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Responsitivity must be in ampere per watt, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;noise_level&#39;</span><span class="p">,</span> <span class="s1">&#39;baseline_shift&#39;</span><span class="p">,</span> <span class="s1">&#39;saturation_level&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_validate_voltage_attributes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates that noise level, baseline shift, and saturation level are all in volts.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : Quantity</span>
+<span class="sd">            The voltage attribute to validate (noise level, baseline shift, or saturation).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Quantity</span>
+<span class="sd">            The validated voltage attribute.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the attribute is not in volts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;volt&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Voltage attributes must be in volts, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finalizes the initialization of the detector object and processes the number of bins.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_n_bins</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_convert_attr_to_SI</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Convert all Quantity attributes to base SI units (without any prefixes)</span>
+        <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_process_n_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes the `n_bins` attribute to ensure it is an integer representing the number of bins.</span>
+
+<span class="sd">        If `n_bins` is provided as a bit-depth string (e.g., &#39;12bit&#39;), it converts it to an integer number of bins.</span>
+<span class="sd">        If no valid `n_bins` is provided, a default of 100 bins is used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">bit_depth</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;bit&#39;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">bit_depth</span>
+
+    <span class="k">def</span> <span class="nf">_add_thermal_noise_to_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates thermal noise (Johnson-Nyquist noise) based on temperature, resistance, and bandwidth.</span>
+
+<span class="sd">        Thermal noise is caused by the thermal agitation of charge carriers. It is given by:</span>
+<span class="sd">        \[</span>
+<span class="sd">        \sigma_{\text{thermal}} = \sqrt{4 k_B T B R}</span>
+<span class="sd">        \]</span>
+<span class="sd">        Where:</span>
+<span class="sd">            - \( k_B \) is the Boltzmann constant (\(1.38 \times 10^{-23}\) J/K),</span>
+<span class="sd">            - \( T \) is the temperature in Kelvin,</span>
+<span class="sd">            - \( B \) is the bandwidth,</span>
+<span class="sd">            - \( R \) is the resistance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            An array of thermal noise values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_thermal_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">noise_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">BOLTZMANN_CONSTANT</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span>
+        <span class="p">)</span>
+
+        <span class="n">thermal_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">noise_std</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">volt</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">))</span> <span class="o">*</span> <span class="n">volt</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RawSignal&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">thermal_noise</span>
+
+        <span class="k">return</span> <span class="n">thermal_noise</span>
+
+    <span class="k">def</span> <span class="nf">_add_dark_current_noise_to_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates dark current noise (shot noise from dark current).</span>
+
+<span class="sd">        Dark current noise is a type of shot noise caused by the random generation of electrons in a detector,</span>
+<span class="sd">        even in the absence of light. It is given by:</span>
+<span class="sd">        \[</span>
+<span class="sd">        \sigma_{\text{dark current}} = \sqrt{2 e I_{\text{dark}} B}</span>
+<span class="sd">        \]</span>
+<span class="sd">        Where:</span>
+<span class="sd">            - \( e \) is the elementary charge,</span>
+<span class="sd">            - \( I_{\text{dark}} \) is the dark current,</span>
+<span class="sd">            - \( B \) is the bandwidth.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            np.ndarray: An array of dark current noise values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_dark_current_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">dark_current_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="mi">2</span> <span class="o">*</span> <span class="mf">1.602176634e-19</span> <span class="o">*</span> <span class="n">coulomb</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span>
+        <span class="p">)</span>
+
+        <span class="n">dark_current_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dark_current_std</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ampere</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">))</span> <span class="o">*</span> <span class="n">ampere</span>
+
+        <span class="n">dark_voltage_noise</span> <span class="o">=</span> <span class="n">dark_current_noise</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RawSignal&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dark_voltage_noise</span>
+
+        <span class="k">return</span> <span class="n">dark_voltage_noise</span>
+
+    <span class="k">def</span> <span class="nf">_add_photon_shot_noise_to_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optical_power</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simulates photon shot noise based on the given optical power and detector bandwidth, and returns</span>
+<span class="sd">        the corresponding voltage noise due to photon shot noise.</span>
+
+<span class="sd">        Photon shot noise arises from the random and discrete arrival of photons at the detector. The noise</span>
+<span class="sd">        follows Poisson statistics, and the standard deviation of the shot noise depends on the photon flux</span>
+<span class="sd">        and the detector bandwidth. The result is a voltage noise that models these fluctuations.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        optical_power : Quantity</span>
+<span class="sd">            The optical power incident on the detector, in watts (W).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            An array representing the voltage noise due to photon shot noise, in volts (V).</span>
+
+<span class="sd">        Physics:</span>
+<span class="sd">            - The number of photons arriving at the detector \( N_{\text{ph}} \) is given by:</span>
+<span class="sd">            \[</span>
+<span class="sd">            N_{\text{ph}} = \frac{P_{\text{opt}}}{E_{\text{photon}}}</span>
+<span class="sd">            \]</span>
+<span class="sd">            where:</span>
+<span class="sd">                - \( P_{\text{opt}} \) is the optical power (W),</span>
+<span class="sd">                - \( E_{\text{photon}} = \frac{h \cdot c}{\lambda} \) is the energy of a photon (J),</span>
+<span class="sd">                - \( h \) is Planck&#39;s constant \(6.626 \times 10^{-34}\, \text{J} \cdot \text{s}\),</span>
+<span class="sd">                - \( c \) is the speed of light \(3 \times 10^8 \, \text{m/s}\),</span>
+<span class="sd">                - \( \lambda \) is the wavelength of the incident light.</span>
+
+<span class="sd">            - The standard deviation of the current noise due to photon shot noise is:</span>
+<span class="sd">            \[</span>
+<span class="sd">            \sigma_{I_{\text{shot}}} = \sqrt{2 \cdot e \cdot I_{\text{photon}} \cdot B}</span>
+<span class="sd">            \]</span>
+<span class="sd">            where:</span>
+<span class="sd">                - \( I_{\text{photon}} \) is the photocurrent generated by the incident optical power (A),</span>
+<span class="sd">                - \( e \) is the elementary charge \(1.602 \times 10^{-19} \, \text{C}\),</span>
+<span class="sd">                - \( B \) is the bandwidth of the detector (Hz).</span>
+
+<span class="sd">            - The voltage shot noise \( \sigma_{V_{\text{shot}}} \) is then given by Ohm&#39;s law:</span>
+<span class="sd">            \[</span>
+<span class="sd">            \sigma_{V_{\text{shot}}} = \sigma_{I_{\text{shot}}} \cdot R_{\text{load}}</span>
+<span class="sd">            \]</span>
+<span class="sd">            where:</span>
+<span class="sd">                - \( R_{\text{load}} \) is the load resistance of the detector (ohms).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Step 1: Compute the photocurrent for all time points at once using vectorization</span>
+        <span class="n">I_photon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">responsitivity</span> <span class="o">*</span> <span class="n">optical_power</span>
+
+        <span class="c1"># Step 2: Compute the shot noise current for each time point using vectorization</span>
+        <span class="n">i_shot</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ELECTRON_CHARGE</span> <span class="o">*</span> <span class="n">I_photon</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span>
+
+        <span class="n">I_shot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">i_shot</span><span class="p">)</span>
+
+        <span class="c1"># Step 3: Convert shot noise current to shot noise voltage using vectorization</span>
+        <span class="n">V_shot</span> <span class="o">=</span> <span class="n">I_shot</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>
+
+        <span class="c1"># Step 4: Generate Gaussian noise for each time point with standard deviation V_shot</span>
+        <span class="n">noise_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">V_shot</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">volt</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="o">*</span> <span class="n">volt</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RawSignal&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">noise_signal</span>
+
+        <span class="k">return</span> <span class="n">noise_signal</span>
+
+    <span class="k">def</span> <span class="nf">init_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the raw signal and time arrays for the detector and generates optional noise.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        run_time : Quantity</span>
+<span class="sd">            The total duration of the signal to simulate (in seconds).</span>
+
+<span class="sd">        The photocurrent is calculated as:</span>
+<span class="sd">        \[</span>
+<span class="sd">        I_{\text{ph}} = P_{\text{opt}} \times R_{\text{ph}}</span>
+<span class="sd">        \]</span>
+<span class="sd">        Where:</span>
+<span class="sd">            - \( P_{\text{opt}} \) is the optical power,</span>
+<span class="sd">            - \( R_{\text{ph}} \) is the responsivity in amperes per watt.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time_points</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_freq</span> <span class="o">*</span> <span class="n">run_time</span><span class="p">)</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">run_time</span><span class="p">,</span> <span class="n">time_points</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">Time</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">second</span><span class="p">),</span>
+                <span class="n">RawSignal</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">volt</span><span class="p">),</span>
+                <span class="n">Signal</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">volt</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">capture_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes and captures the final signal by applying noise, baseline shifts, and saturation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RawSignal&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_baseline_and_noise</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_apply_saturation</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_discretize_signal</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_apply_baseline_and_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds baseline shift and base noise to the raw signal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">w0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">second</span>
+        <span class="n">baseline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseline_shift</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">w0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="p">)</span>
+
+        <span class="c1"># Scale noise level by the square root of the bandwidth</span>
+        <span class="n">noise_scaling</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;Hz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
+        <span class="n">noise</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_level</span> <span class="o">*</span> <span class="n">noise_scaling</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span> <span class="o">+=</span> <span class="n">baseline</span> <span class="o">+</span> <span class="n">noise</span>
+
+    <span class="k">def</span> <span class="nf">_apply_saturation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies a saturation limit to the signal.</span>
+
+<span class="sd">        Signal values that exceed the saturation level are clipped to the maximum allowed value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">clipped</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span><span class="p">,</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">volt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_level</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">clipped</span><span class="p">,</span> <span class="n">clipped</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_discretize_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Discretizes the processed signal into a specified number of bins.</span>
+
+<span class="sd">        The signal is mapped to discrete levels, depending on the number of bins (derived from `n_bins`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">max_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_level</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">saturation_level</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+            <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span> <span class="o">*</span> <span class="n">max_level</span><span class="p">,</span> <span class="n">max_level</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span><span class="p">)</span>
+
+            <span class="n">digitized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">volt</span><span class="p">)</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+                <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">volt</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+            <span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="n">digitized</span><span class="p">],</span> <span class="n">volt</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">figure_size</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots the processed signal over time.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        show : bool, optional</span>
+<span class="sd">            If True, display the plot immediately. Default is True.</span>
+<span class="sd">        figure_size : tuple, optional</span>
+<span class="sd">            The size of the figure in inches (width, height). Default is None.</span>
+<span class="sd">        color : str, optional</span>
+<span class="sd">            The color of the plotted signal line. Default is &#39;C0&#39;.</span>
+
+<span class="sd">        This method visualizes the processed signal as a function of time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">mps</span><span class="p">):</span>
+            <span class="n">signal_unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="o">.</span><span class="n">units</span>
+            <span class="n">time_unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="o">.</span><span class="n">units</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_unit</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">time_unit</span><span class="p">)</span>
+
+            <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span>
+                <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">],</span>
+                <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                <span class="n">figsize</span><span class="o">=</span><span class="n">figure_size</span>
+            <span class="p">)</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time [</span><span class="si">{</span><span class="n">time_unit</span><span class="si">:</span><span class="s2">P</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">signal_unit</span><span class="si">:</span><span class="s2">P</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">print_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prints specific properties of the Detector instance, such as coupling factor and medium refractive index.</span>
+<span class="sd">        This method calls the parent class method to handle the actual property printing logic.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Sampling frequency&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_freq</span><span class="p">,</span>
+            <span class="s1">&#39;Phi angle&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_angle</span><span class="p">,</span>
+            <span class="s1">&#39;Gamma angle&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma_angle</span><span class="p">,</span>
+            <span class="s1">&#39;Numerical aperture&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture</span><span class="p">,</span>
+            <span class="s1">&#39;Responsitivity&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">responsitivity</span><span class="p">,</span>
+            <span class="s1">&#39;Saturation Level&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_level</span><span class="p">,</span>
+            <span class="s1">&#39;Dark Current&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span><span class="p">,</span>
+            <span class="s1">&#39;Resistance&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span><span class="p">,</span>
+            <span class="s1">&#39;Temperature&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="s1">&#39;N Bins&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span>
+        <span class="p">}</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Detector</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">print_properties</span><span class="p">(</span><span class="o">**</span><span class="n">_dict</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Martin Poinsinet de Sivry-Houle.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
