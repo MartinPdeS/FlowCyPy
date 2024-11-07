@@ -87,8 +87,6 @@ class Scatterer(PropertiesReport):
                 index=multi_index
             )
 
-        print(self.dataframe)
-
         self.n_events = len(self.dataframe)
 
     def plot(self, ax: Optional[plt.Axes] = None, show: bool = True, alpha: float = 0.8, bandwidth_adjust: float = 1, log_plot: bool = False) -> None:
@@ -125,8 +123,10 @@ class Scatterer(PropertiesReport):
 
         """
         df_reset = self.dataframe.reset_index()
-        # print(df_reset['Size'])
-        # dsa
+        print(df_reset, len(df_reset))
+        if len(df_reset.Time) == 0:
+            return
+
         x_unit = df_reset['Size'].pint.units
 
         with plt.style.context(mps):
