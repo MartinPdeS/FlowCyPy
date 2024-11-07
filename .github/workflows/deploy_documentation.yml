@@ -96,7 +96,7 @@ jobs:
         id: get_tag
         run: |
           git fetch --tags
-          echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+          echo "tag=$(git describe --tags --abbrev=0 --all)" >> $GITHUB_ENV
 
       - name: Update version_switcher.json with new tag
         env:

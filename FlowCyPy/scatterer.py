@@ -69,21 +69,25 @@ class Scatterer(PropertiesReport):
                 axis=0,
                 keys=[p.name for p in self.populations],
             )
+            self.dataframe.index.names = ['Population', 'Index']
 
-        # else:
-        #     dtypes = {
-        #         'Time': PintType('second'),            # Time column with seconds unit
-        #         'Position': PintType('meter'),         # Position column with meters unit
-        #         'Size': PintType('meter'),        # Size column with micrometers unit
-        #         'RefractiveIndex': PintType('meter')  # Dimensionless unit for refractive index
-        #     }
+        else:
+            dtypes = {
+                'Time': PintType('second'),            # Time column with seconds unit
+                'Position': PintType('meter'),         # Position column with meters unit
+                'Size': PintType('meter'),        # Size column with micrometers unit
+                'RefractiveIndex': PintType('meter')  # Dimensionless unit for refractive index
+            }
 
-        #     self.dataframe = pd.DataFrame(
-        #         {col: pd.Series(dtype=dtype) for col, dtype in dtypes.items()}
-        #         index
-        #     )
+            multi_index = pd.MultiIndex.from_tuples([('Population', 'Index')])
 
-        self.dataframe.index.names = ['Population', 'Index']
+            # Create an empty DataFrame with specified column types and a multi-index
+            self.dataframe = pd.DataFrame(
+                {col: pd.Series(dtype=dtype) for col, dtype in dtypes.items()},
+                index=multi_index
+            )
+
+        print(self.dataframe)
 
         self.n_events = len(self.dataframe)
 
