@@ -10,10 +10,10 @@ from dataclasses import dataclass, field
 from FlowCyPy.scatterer import Scatterer
 from FlowCyPy.detector import Detector
 from FlowCyPy.source import Source
-from tabulate import tabulate
 import pandas as pd
 import pint_pandas
 from FlowCyPy.units import Quantity, milliwatt
+from FlowCyPy.logger import SimulationLogger
 
 # Set up logging configuration
 logging.basicConfig(
@@ -120,50 +120,12 @@ class FlowCytometer:
         Logs key statistics about the simulated pulse events for each detector using tabulate for better formatting.
         Includes total events, average time between events, gfirst and last event times, and minimum time between events.
         """
-        total_events = 0
-        table_data = []  # List to store table data for each detector
+        logger = SimulationLogger(
+            detectors=self.detectors,
+            pulse_dataframe=self.pulse_dataframe
+        )
 
-        logging.info("\n=== Simulation Statistics Summary ===")
-
-        # Iterate through each detector to calculate statistics
-        for detector in self.detectors:
-            centers = self.pulse_dataframe['Centers']
-            num_events = len(centers)
-            total_events += num_events
-
-            # Calculate average and minimum time between events if more than one event is detected
-            if num_events > 1:
-                centers_sorted = centers.sort_values()
-                time_diffs = centers_sorted.diff().dropna()  # Compute time differences between events
-                avg_time_between_events = time_diffs.mean()
-                min_time_between_events = time_diffs.min()
-            else:
-                avg_time_between_events = "N/A"
-                min_time_between_events = "N/A"
-
-            # Get first and last event times
-            first_event_time = centers.min() if num_events > 0 else "N/A"
-            last_event_time = centers.max() if num_events > 0 else "N/A"
-
-            # Append detector statistics to table data
-            table_data.append([
-                detector.name,                                  # Detector name
-                num_events,                                     # Number of events
-                f"{first_event_time.to_compact():.4~P}",        # First event time
-                f"{last_event_time.to_compact():.4~P}",         # Last event time
-                f"{avg_time_between_events.to_compact():.4~P}" if avg_time_between_events != "N/A" else "N/A",  # Average time between events
-                f"{min_time_between_events.to_compact():.4~P}" if min_time_between_events != "N/A" else "N/A"   # Minimum time between events
-            ])
-
-        # Format the table using tabulate for better readability
-        headers = ["Detector", "Number of Events", "First Event Time", "Last Event Time", "Avg Time Between Events", "Min Time Between Events"]
-        formatted_table = tabulate(table_data, headers=headers, tablefmt="grid", floatfmt=".3f")
-
-        # Log the formatted table
-        logging.info("\n" + formatted_table)
-
-        # Log total events across all detectors
-        logging.info(f"\nTotal number of events detected across all detectors: {total_events}")
+        logger.log_statistics(include_totals=True, table_format="fancy_grid")
 
     def _get_detection_mechanism(self) -> Callable:
         """

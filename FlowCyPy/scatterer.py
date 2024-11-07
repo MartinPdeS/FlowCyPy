@@ -1,11 +1,9 @@
 from typing import List, Optional, Union
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
-from dataclasses import field
-from pydantic.dataclasses import dataclass
 import seaborn as sns
 import pandas as pd
-from FlowCyPy.units import Quantity, RIU, particle, liter, meter, second
+from FlowCyPy.units import Quantity, RIU, particle, liter
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Population
 from FlowCyPy.utils import PropertiesReport
@@ -21,30 +19,31 @@ class CouplingModel(Enum):
     UNIFORM = 'uniform'
 
 
-@dataclass(config=config_dict, slots=True)
 class Scatterer(PropertiesReport):
     """
     Defines and manages the size and refractive index distributions of scatterers (particles)
     passing through a flow cytometer. This class generates random scatterer sizes and refractive
     indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).
 
-    Parameters
-    ----------
-    populations : List[Population]
-        A list of Population instances that define different scatterer populations.
-    coupling_model : Optional[CouplingModel], optional
-        The type of coupling factor to use (CouplingModel.MIE, CouplingModel.RAYLEIGH, CouplingModel.UNIFORM). Default is CouplingModel.MIE.
-    medium_refractive_index : float
-        The refractive index of the medium. Default is 1.0.
     """
+    def __init__(self, medium_refractive_index: Quantity = 1.0 * RIU, populations: List[Population] = [], coupling_model: Optional[CouplingModel] = CouplingModel.MIE):
+        """
+        Parameters
+        ----------
+        populations : List[Population]
+            A list of Population instances that define different scatterer populations.
+        coupling_model : Optional[CouplingModel], optional
+            The type of coupling factor to use (CouplingModel.MIE, CouplingModel.RAYLEIGH, CouplingModel.UNIFORM). Default is CouplingModel.MIE.
+        medium_refractive_index : float
+            The refractive index of the medium. Default is 1.0.
+        """
+        self.medium_refractive_index = medium_refractive_index
+        self.populations = populations
+        self.coupling_model = coupling_model
 
-    medium_refractive_index: Quantity = 1.0 * RIU
-    populations: List[Population] = field(default_factory=lambda: [])
-    coupling_model: Optional[CouplingModel] = CouplingModel.MIE
-
-    flow_cell: FlowCell = None
-    n_events: int = None
-    dataframe: pd.DataFrame = None
+        self.flow_cell: FlowCell = None
+        self.n_events: int = None
+        self.dataframe: pd.DataFrame = None
 
     def initialize(self, flow_cell: FlowCell) -> None:
         """
@@ -79,7 +78,7 @@ class Scatterer(PropertiesReport):
                 'RefractiveIndex': PintType('meter')  # Dimensionless unit for refractive index
             }
 
-            multi_index = pd.MultiIndex.from_tuples([('Population', 'Index')])
+            multi_index = pd.MultiIndex.from_tuples([], names=["Population", "Index"])
 
             # Create an empty DataFrame with specified column types and a multi-index
             self.dataframe = pd.DataFrame(
@@ -123,8 +122,8 @@ class Scatterer(PropertiesReport):
 
         """
         df_reset = self.dataframe.reset_index()
-        print(df_reset, len(df_reset))
-        if len(df_reset.Time) == 0:
+
+        if len(df_reset.Time) == 1:
             return
 
         x_unit = df_reset['Size'].pint.units
