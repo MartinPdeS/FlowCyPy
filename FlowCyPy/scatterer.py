@@ -72,12 +72,21 @@ class Scatterer(PropertiesReport):
 
         # # Create an empty DataFrame with specified PintArray column types
         empty_dataframe = pd.DataFrame({col: pd.Series(dtype=dtype) for col, dtype in dtypes.items()})
+        # print(empty_dataframe)
+        # dsa
 
         self.dataframe = pd.concat(
-            [empty_dataframe] + [p.dataframe for p in self.populations],
+            [p.dataframe for p in self.populations],
             axis=0,
-            keys=['test'] + [p.name for p in self.populations],
+            keys=[p.name for p in self.populations],
         )
+
+
+        # self.dataframe = pd.concat(
+        #     [empty_dataframe] + [p.dataframe for p in self.populations],
+        #     axis=0,
+        #     keys=['test'] + [p.name for p in self.populations],
+        # )
         self.dataframe.index.names = ['Population', 'Index']
 
         self.n_events = len(self.dataframe)
@@ -116,6 +125,8 @@ class Scatterer(PropertiesReport):
 
         """
         df_reset = self.dataframe.reset_index()
+        # print(df_reset['Size'])
+        # dsa
         x_unit = df_reset['Size'].pint.units
 
         with plt.style.context(mps):
