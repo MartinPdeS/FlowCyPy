@@ -140,10 +140,10 @@ html_theme_options.update({
 
 current_version = os.getenv("tag", "latest")
 
-# html_theme_options["switcher"] = dict(
-#     json_url="https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json",
-#     version_match=current_version,
-# )
+html_theme_options["switcher"] = dict(
+    json_url="https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json",
+    version_match=current_version,
+)
 
 htmlhelp_basename = 'FlowCyPydoc'
 
