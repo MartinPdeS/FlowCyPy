@@ -61,12 +61,17 @@ class Scatterer(PropertiesReport):
         for population in self.populations:
             population.initialize(flow_cell=self.flow_cell)
 
+        self.dataframe = pd.DataFrame(columns=['Time', 'Position', 'Size', 'RefractiveIndex'])
+
         self.dataframe = pd.concat(
             [p.dataframe for p in self.populations],
             axis=0,
             keys=[p.name for p in self.populations],
         )
         self.dataframe.index.names = ['Population', 'Index']
+
+        print(self.dataframe)
+        dsa
 
         self.n_events = len(self.dataframe)
 
