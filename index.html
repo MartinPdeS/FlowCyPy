@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 ">
     <title>Documentation Versions</title>
 </head>
 <body>
@@ -19,16 +19,36 @@
         // Base URL for your GitHub Pages site
         const baseUrl = "https://martinpdes.github.io/FlowCyPy";
 
+        // Function to parse and sort version strings in descending order
+        function parseAndSortVersions(versionsData) {
+            return versionsData.sort((a, b) => {
+                const versionA = a.version.slice(1).split('.').map(Number); // Remove "v" and split
+                const versionB = b.version.slice(1).split('.').map(Number);
+                for (let i = 0; i < Math.max(versionA.length, versionB.length); i++) {
+                    const numA = versionA[i] || 0; // Handle different version lengths
+                    const numB = versionB[i] || 0;
+                    if (numA !== numB) return numB - numA;
+                }
+                return 0;
+            });
+        }
+
         // Fetch available versions from version_switcher.json
         fetch(versionJsonUrl)
             .then(response => response.json())
             .then(versionsData => {
-                // Log available versions to the console
                 console.log("Available documentation versions:", versionsData);
+
+                // Sort versions and redirect to the largest version
+                const sortedVersions = parseAndSortVersions(versionsData);
+                const latestVersion = sortedVersions[0];
+
+                // Redirect to the largest version by default
+                window.location.href = `${baseUrl}/docs/${latestVersion.version}/index.html`;
 
                 // Display a list of all versions as links
                 const versionList = document.getElementById('version-list');
-                versionsData.forEach(entry => {
+                sortedVersions.forEach(entry => {
                     const listItem = document.createElement('li');
                     const link = document.createElement('a');
                     link.href = `${baseUrl}/docs/${entry.version}/index.html`;
@@ -36,12 +56,6 @@
                     listItem.appendChild(link);
                     versionList.appendChild(listItem);
                 });
-
-                // Optionally, redirect to the latest version (first in the JSON list or 'master')
-                const latestVersion = versionsData.find(entry => entry.version === 'master') || versionsData[0];
-                if (latestVersion) {
-                    window.location.href = `${baseUrl}/docs/${latestVersion.version}/index.html`;
-                }
             })
             .catch(error => {
                 console.error("Error loading versions from version_switcher.json:", error);
