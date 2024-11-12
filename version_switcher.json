@@ -1,5 +1,11 @@
 [
 {
+  "name": "v.0.2.9.9",
+  "version": "v.0.2.9.9",
+  "url": "https://martinpdes.github.io/FlowCyPy/docs/v.0.2.9.9"
+}
+,
+{
   "name": "v0.2.12",
   "version": "v0.2.12",
   "url": "https://martinpdes.github.io/FlowCyPy/docs/v0.2.12"
@@ -9,5 +15,11 @@
   "name": "v0.2.11",
   "version": "v0.2.11",
   "url": "https://martinpdes.github.io/FlowCyPy/docs/v0.2.11"
+}
+,
+{
+  "name": "v0.2.9.8",
+  "version": "v0.2.9.8",
+  "url": "https://martinpdes.github.io/FlowCyPy/docs/v0.2.9.8"
 }
 ]
