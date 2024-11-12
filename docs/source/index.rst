@@ -11,6 +11,6 @@ FlowCytometry's documentation
     :hidden:
 
     code
-    gallery/index
+    examples
     theory
     references

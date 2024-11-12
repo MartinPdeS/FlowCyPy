@@ -3,13 +3,19 @@
 
 import sys
 import os
+from sphinx_gallery.sorting import FileNameSortKey
 from MPSPlots.styles import use_mpsplots_style
-import FlowCyPy
 from pathlib import Path
+import FlowCyPy
 from FlowCyPy.directories import doc_css_path
 
 
-sys.path.append(str(Path(".").resolve()))
+package_name = "FlowCyPy"
+version = FlowCyPy.__version__
+
+current_dir = Path(".")
+
+sys.path.append(str(current_dir.resolve()))
 
 
 def setup(app):
@@ -19,20 +25,17 @@ def setup(app):
 autodoc_mock_imports = [
     'numpy',
     'matplotlib',
-    'scipy'
     'numpydoc',
-    'MPSPlots',
 ]
 
-project = 'FlowCyPy'
+
+project = package_name
 copyright = '2024, Martin Poinsinet de Sivry-Houle'
 author = 'Martin Poinsinet de Sivry-Houle'
 
-
-version = FlowCyPy.__version__
-
 extensions = [
     'sphinx.ext.mathjax',
+    'pyvista.ext.plot_directive',
     'sphinx_gallery.gen_gallery',
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
@@ -53,9 +56,13 @@ def reset_mpl(gallery_conf, fname):
     use_mpsplots_style()
 
 
+examples_files = [
+    'density_plots', 'extras'
+]
+
 sphinx_gallery_conf = {
-    'examples_dirs': '../examples',
-    'gallery_dirs': 'gallery',
+    "examples_dirs": ['../examples/' + f for f in examples_files],
+    "gallery_dirs": ['gallery/' + f for f in examples_files],
     'image_scrapers': ('matplotlib'),
     'ignore_pattern': '/__',
     'filename_pattern': r'.*\.py',
@@ -67,6 +74,7 @@ sphinx_gallery_conf = {
     'remove_config_comments': True,
     'capture_repr': ('_repr_html_', '__repr__'),
     'nested_sections': True,
+    'within_subsection_order': FileNameSortKey,
 }
 
 
@@ -75,7 +83,6 @@ autodoc_default_options = {
     'members-order': 'bysource',
     'undoc-members': False,
     'show-inheritance': True,
-    'ignore-module-all': True
 }
 
 autosectionlabel_prefix_document = True
@@ -96,31 +103,29 @@ exclude_trees = []
 pygments_style = "sphinx"
 
 # -- Sphinx-gallery configuration --------------------------------------------
-binder_branch = "master"
-
 major, minor = version[:2]
 binder_branch = f"v{major}.{minor}.x"
 
 html_theme_options = dict()
 
-html_theme_options['logo'] = dict(text='FlowCyPy', image="_static/thumbnail.png")
+html_theme_options['logo'] = dict(text=package_name, image="_static/thumbnail.png")
 html_theme_options["show_nav_level"] = 0
 
 html_theme_options.update({
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/MartinPdeS/FlowCyPy",
+            "url": f"https://github.com/MartinPdeS/{package_name}",
             "icon": "fa-brands fa-github",
         },
         {
             "name": "PyPI",
-            "url": "https://pypi.org/project/flowcypy/",
+            "url": f"https://pypi.org/project/{package_name}/",
             "icon": "fa-solid fa-box",
         },
         {
             "name": "Anaconda",
-            "url": "https://anaconda.org/MartinPdeS/flowcypy",
+            "url": f"https://anaconda.org/MartinPdeS/{package_name}",
             "icon": "fa-brands fa-python",
         },
     ],
@@ -140,28 +145,28 @@ html_theme_options.update({
 current_version = os.getenv("tag", "latest")
 
 html_theme_options["switcher"] = dict(
-    json_url="https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json",
+    json_url=f"https://raw.githubusercontent.com/MartinPdeS/{package_name}/documentation_page/version_switcher.json",
     version_match=current_version,
 )
 
-htmlhelp_basename = 'FlowCyPydoc'
+htmlhelp_basename = f'{package_name}doc'
 
 latex_elements = {}
 
 
 latex_documents = [
-    (master_doc, 'FlowCyPy.tex', 'FlowCyPy Documentation',
+    (master_doc, f'{package_name}.tex', f'{package_name} Documentation',
      'Martin Poinsinet de Sivry-Houle', 'manual'),
 ]
 
 man_pages = [
-    (master_doc, 'flowcypy', 'FlowCyPy Documentation',
+    (master_doc, 'supymode', f'{package_name} Documentation',
      [author], 1)
 ]
 
 texinfo_documents = [
-    (master_doc, 'FlowCyPy', 'FlowCyPy Documentation',
-     author, 'FlowCyPy', 'One line description of project.',
+    (master_doc, package_name, f'{package_name} Documentation',
+     author, package_name, 'One line description of project.',
      'Miscellaneous'),
 ]
 
@@ -171,12 +176,5 @@ html_static_path = ['_static']
 templates_path = ['_templates']
 html_css_files = ['default.css']
 epub_exclude_files = ['search.html']
-
-
-# -- MyST --------------------------------------------------------------------
-myst_enable_extensions = [
-    # Enable fieldlist to allow for Field Lists like in rST (e.g., :orphan:)
-    "fieldlist",
-]
 
 # -
