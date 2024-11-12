@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:00.000** total execution time for 7 files **from all galleries**:
+**01:00.701** total execution time for 7 files **from all galleries**:
 
 .. container::
 
@@ -32,24 +32,24 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_gallery_density_1_plot.py` (``../examples/density_1_plot.py``)
-     - 00:00.000
+   * - :ref:`sphx_glr_gallery_density_plots_density_3_plot.py` (``../examples/density_plots/density_3_plot.py``)
+     - 00:17.995
      - 0.0
-   * - :ref:`sphx_glr_gallery_density_2_populations.py` (``../examples/density_2_populations.py``)
-     - 00:00.000
+   * - :ref:`sphx_glr_gallery_density_plots_density_1_plot.py` (``../examples/density_plots/density_1_plot.py``)
+     - 00:16.107
      - 0.0
-   * - :ref:`sphx_glr_gallery_density_3_plot.py` (``../examples/density_3_plot.py``)
-     - 00:00.000
+   * - :ref:`sphx_glr_gallery_density_plots_density_2_populations.py` (``../examples/density_plots/density_2_populations.py``)
+     - 00:12.395
      - 0.0
-   * - :ref:`sphx_glr_gallery_distributions.py` (``../examples/distributions.py``)
-     - 00:00.000
+   * - :ref:`sphx_glr_gallery_extras_flow_cytometer_signal.py` (``../examples/extras/flow_cytometer_signal.py``)
+     - 00:07.433
      - 0.0
-   * - :ref:`sphx_glr_gallery_flow_cytometer_signal.py` (``../examples/flow_cytometer_signal.py``)
-     - 00:00.000
+   * - :ref:`sphx_glr_gallery_extras_full_workflow.py` (``../examples/extras/full_workflow.py``)
+     - 00:03.937
      - 0.0
-   * - :ref:`sphx_glr_gallery_full_workflow.py` (``../examples/full_workflow.py``)
-     - 00:00.000
+   * - :ref:`sphx_glr_gallery_extras_distributions.py` (``../examples/extras/distributions.py``)
+     - 00:01.508
      - 0.0
-   * - :ref:`sphx_glr_gallery_scatterer_distribution.py` (``../examples/scatterer_distribution.py``)
-     - 00:00.000
+   * - :ref:`sphx_glr_gallery_extras_scatterer_distribution.py` (``../examples/extras/scatterer_distribution.py``)
+     - 00:01.326
      - 0.0
