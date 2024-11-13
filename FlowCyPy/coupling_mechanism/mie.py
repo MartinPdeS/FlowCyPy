@@ -1,7 +1,7 @@
 import numpy as np
 from FlowCyPy import Scatterer, Detector, Source
 from PyMieSim.experiment.scatterer import Sphere as PMS_SPHERE
-from PyMieSim.experiment.source import PlaneWave, Gaussian as PMS_GAUSSIAN
+from PyMieSim.experiment.source import PlaneWave
 from PyMieSim.experiment.detector import Photodiode as PMS_PHOTODIODE
 from PyMieSim.experiment import Setup
 from PyMieSim.units import degree, watt, AU

@@ -100,5 +100,6 @@ def test_invalid_units():
             numerical_aperture_y=numerical_aperture_y
         )
 
+
 if __name__ == "__main__":
     pytest.main(["-W error", __file__])
