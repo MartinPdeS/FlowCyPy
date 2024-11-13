@@ -16,10 +16,10 @@ Examples: Density plots
 
 .. only:: html
 
-  .. image:: /gallery/density_plots/images/thumb/sphx_glr_density_1_plot_thumb.png
+  .. image:: /gallery/density_plots/images/thumb/sphx_glr_1_populations_thumb.png
     :alt:
 
-  :ref:`sphx_glr_gallery_density_plots_density_1_plot.py`
+  :ref:`sphx_glr_gallery_density_plots_1_populations.py`
 
 .. raw:: html
 
@@ -33,10 +33,10 @@ Examples: Density plots
 
 .. only:: html
 
-  .. image:: /gallery/density_plots/images/thumb/sphx_glr_density_2_populations_thumb.png
+  .. image:: /gallery/density_plots/images/thumb/sphx_glr_2_populations_thumb.png
     :alt:
 
-  :ref:`sphx_glr_gallery_density_plots_density_2_populations.py`
+  :ref:`sphx_glr_gallery_density_plots_2_populations.py`
 
 .. raw:: html
 
@@ -50,10 +50,10 @@ Examples: Density plots
 
 .. only:: html
 
-  .. image:: /gallery/density_plots/images/thumb/sphx_glr_density_3_plot_thumb.png
+  .. image:: /gallery/density_plots/images/thumb/sphx_glr_3_populations_thumb.png
     :alt:
 
-  :ref:`sphx_glr_gallery_density_plots_density_3_plot.py`
+  :ref:`sphx_glr_gallery_density_plots_3_populations.py`
 
 .. raw:: html
 
@@ -71,9 +71,9 @@ Examples: Density plots
 .. toctree::
    :hidden:
 
-   /gallery/density_plots/density_1_plot
-   /gallery/density_plots/density_2_populations
-   /gallery/density_plots/density_3_plot
+   /gallery/density_plots/1_populations
+   /gallery/density_plots/2_populations
+   /gallery/density_plots/3_populations
 
 
 
