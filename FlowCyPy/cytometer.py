@@ -6,7 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from typing import List, Callable, Optional
 from MPSPlots.styles import mps
-from dataclasses import dataclass, field
 from FlowCyPy.scatterer import Scatterer
 from FlowCyPy.detector import Detector
 from FlowCyPy.source import Source
@@ -22,7 +21,6 @@ logging.basicConfig(
 )
 
 
-@dataclass
 class FlowCytometer:
     """
     A class to simulate flow cytometer signals for Forward Scatter (FSC) and Side Scatter (SSC) channels.
@@ -48,20 +46,28 @@ class FlowCytometer:
     print_properties()
         Displays the key properties of the flow cytometer and its detectors.
     """
-    scatterer: Scatterer
-    source: Source
-    detectors: List[Detector] = field(default_factory=lambda: [])
-    coupling_mechanism: Optional[str] = 'mie'
-    background_power: Optional[Quantity] = 0 * milliwatt
+    def __init__(
+            self,
+            scatterer: Scatterer,
+            source: Source,
+            detectors: List[Detector],
+            coupling_mechanism: Optional[str] = 'mie',
+            background_power: Optional[Quantity] = 0 * milliwatt):
+
+        self.scatterer = scatterer
+        self.source = source
+        self.detectors = detectors
+        self.coupling_mechanism = coupling_mechanism
+        self.background_power = background_power
+
+        assert len(self.detectors) == 2, 'For now, FlowCytometer can only take two detectors for the analysis.'
+        assert self.detectors[0].name != self.detectors[1].name, 'Both detectors cannot have the same name'
 
     def simulate_pulse(self) -> None:
         """
         Simulates the signal pulses for the FSC and SSC channels by generating Gaussian pulses for
         each particle event and distributing them across the detectors.
         """
-        assert len(self.detectors) == 2, 'For now, FlowCytometer can only take two detectors for the analysis.'
-        assert self.detectors[0].name != self.detectors[1].name, 'Both detectors cannot have the same name'
-
         logging.debug("Starting pulse simulation.")
 
         columns = pd.MultiIndex.from_product(

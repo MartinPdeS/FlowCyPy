@@ -1,7 +1,7 @@
 import numpy as np
 from FlowCyPy import Scatterer, Detector, Source
 from PyMieSim.experiment.scatterer import Sphere as PMS_SPHERE
-from PyMieSim.experiment.source import Gaussian as PMS_GAUSSIAN
+from PyMieSim.experiment.source import PlaneWave, Gaussian as PMS_GAUSSIAN
 from PyMieSim.experiment.detector import Photodiode as PMS_PHOTODIODE
 from PyMieSim.experiment import Setup
 from PyMieSim.units import degree, watt, AU
@@ -43,11 +43,10 @@ def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatt
     total_size = ri_list.size
     ONES = np.ones(total_size)
 
-    pms_source = PMS_GAUSSIAN(
+    pms_source = PlaneWave(
         wavelength=ONES * source.wavelength,
         polarization=ONES * 0 * degree,
-        optical_power=ONES * source.optical_power,
-        NA=ONES * source.numerical_aperture
+        amplitude=ONES * source.amplitude
     )
 
     pms_scatterer = PMS_SPHERE(
