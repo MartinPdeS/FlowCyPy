@@ -507,6 +507,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span> <span class="o">=</span> <span class="n">cytometer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span> <span class="o">=</span> <span class="p">[]</span>
 
+<div class="viewcode-block" id="Analyzer.run_analysis">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.analyzer.Analyzer.run_analysis">[docs]</a>
     <span class="k">def</span> <span class="nf">run_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compute_peak_area</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs the peak detection analysis on all detectors within the flow cytometer.</span>
@@ -529,7 +531,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_analyze_all_detectors</span><span class="p">(</span><span class="n">compute_peak_area</span><span class="p">)</span>
 
         <span class="c1"># Calculate and log additional statistics</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_log_statistics</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_statistics</span><span class="p">()</span></div>
+
 
     <span class="k">def</span> <span class="nf">_analyze_detector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">detector</span><span class="p">:</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">compute_peak_area</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -629,6 +632,8 @@
         <span class="c1"># Log total peaks across all detectors</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Total number of peaks detected across all detectors: </span><span class="si">{</span><span class="n">total_peaks</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+<div class="viewcode-block" id="Analyzer.get_coincidence">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.analyzer.Analyzer.get_coincidence">[docs]</a>
     <span class="k">def</span> <span class="nf">get_coincidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">margin</span><span class="p">:</span> <span class="n">second</span><span class="o">.</span><span class="n">dimensionality</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Identifies coincident events between two detectors within a specified time margin.</span>
@@ -679,16 +684,22 @@
         <span class="c1"># Assign proper MultiIndex column names</span>
         <span class="n">combined_coincidences</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">([[</span><span class="n">d</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span><span class="o">.</span><span class="n">detectors</span><span class="p">],</span> <span class="n">d0</span><span class="o">.</span><span class="n">columns</span><span class="p">])</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">coincidence</span> <span class="o">=</span> <span class="n">combined_coincidences</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coincidence</span> <span class="o">=</span> <span class="n">combined_coincidences</span></div>
 
+
+<div class="viewcode-block" id="Analyzer.display_features">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.analyzer.Analyzer.display_features">[docs]</a>
     <span class="k">def</span> <span class="nf">display_features</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays extracted peak features for all datasets in a tabular format.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Features for Dataset </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
-            <span class="n">dataset</span><span class="o">.</span><span class="n">print_properties</span><span class="p">()</span>  <span class="c1"># Reuse the print_properties method from DataSet</span>
+            <span class="n">dataset</span><span class="o">.</span><span class="n">print_properties</span><span class="p">()</span>  <span class="c1"># Reuse the print_properties method from DataSet</span></div>
 
+
+<div class="viewcode-block" id="Analyzer.plot_peak">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.analyzer.Analyzer.plot_peak">[docs]</a>
     <span class="k">def</span> <span class="nf">plot_peak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">figure_size</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots the detected peaks on the signal for each detector, including peak widths at half-maximum.</span>
@@ -717,8 +728,11 @@
             <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
+
+<div class="viewcode-block" id="Analyzer.plot">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.analyzer.Analyzer.plot">[docs]</a>
     <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">log_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots a 2D density plot of the scattering intensities from the two detectors,</span>
@@ -775,8 +789,11 @@
             <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
+
+<div class="viewcode-block" id="Analyzer.generate_report">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.analyzer.Analyzer.generate_report">[docs]</a>
     <span class="k">def</span> <span class="nf">generate_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates a detailed report summarizing the analysis, including peak features</span>
@@ -794,6 +811,7 @@
         <span class="p">)</span>
 
         <span class="n">report</span><span class="o">.</span><span class="n">generate_report</span><span class="p">()</span></div>
+</div>
 
 </pre></div>
 

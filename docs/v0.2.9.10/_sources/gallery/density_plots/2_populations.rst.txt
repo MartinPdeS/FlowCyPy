@@ -37,7 +37,7 @@ Steps:
 
     # Import necessary libraries and modules
     import numpy as np
-    from FlowCyPy import FlowCytometer, Scatterer, Analyzer, Detector, Source, FlowCell
+    from FlowCyPy import FlowCytometer, Scatterer, Analyzer, Detector, GaussianBeam, FlowCell
     from FlowCyPy import distribution
     from FlowCyPy import peak_finder
     from FlowCyPy.units import particle, milliliter, nanometer, RIU, second, micrometer, millisecond, meter
@@ -172,13 +172,13 @@ Steps:
 
 .. GENERATED FROM PYTHON SOURCE LINES 76-77
 
-Step 4: Set up the Laser Source
+Step 4: Set up the Laser GaussianBeam
 
 .. GENERATED FROM PYTHON SOURCE LINES 77-132
 
 .. code-block:: Python
 
-    source = Source(
+    source = GaussianBeam(
         numerical_aperture=0.3 * AU,             # Numerical aperture of the laser: 0.3
         wavelength=800 * nanometer,              # Laser wavelength: 800 nanometers
         optical_power=100 * milliwatt             # Laser optical power: 10 milliwatts
@@ -247,7 +247,7 @@ Step 4: Set up the Laser Source
  .. code-block:: none
 
 
-    Source [] Properties
+    GaussianBeam [] Properties
     +------------+---------+
     | Property   | Value   |
     +============+=========+
@@ -342,7 +342,7 @@ Step 8: Extract and Plot Coincidence Data
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 12.343 seconds)
+   **Total running time of the script:** (0 minutes 12.395 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_2_populations.py:

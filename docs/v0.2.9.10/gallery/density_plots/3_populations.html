@@ -487,7 +487,7 @@ The simulation includes two populations of particles, and we analyze pulse signa
 to generate a 2D density plot of scattering intensities.</p>
 <p>Workflow Summary:
 1. Flow Setup: Configure flow parameters and define particle size distributions.
-2. Laser Source and Detector Setup: Define the laser source characteristics and configure the forward and side detectors.
+2. Laser GaussianBeam and Detector Setup: Define the laser source characteristics and configure the forward and side detectors.
 3. Run the Experiment: Simulate the flow cytometry experiment.
 4. Data Analysis: Analyze the pulse signals and generate a 2D density plot of the scattering intensities.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Step 1: Configuring Flow Parameters</span>
@@ -500,7 +500,7 @@ to generate a 2D density plot of scattering intensities.</p>
 <span class="kn">from</span> <span class="nn">FlowCyPy.detector</span> <span class="kn">import</span> <span class="n">Detector</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">ohm</span><span class="p">,</span> <span class="n">megahertz</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">volt</span><span class="p">,</span> <span class="n">kelvin</span><span class="p">,</span> <span class="n">watt</span><span class="p">,</span> <span class="n">millivolt</span><span class="p">,</span> <span class="n">microsecond</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">Analyzer</span><span class="p">,</span> <span class="n">peak_finder</span>
-<span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">Source</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">GaussianBeam</span>
 
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># Ensure reproducibility</span>
 
@@ -664,8 +664,8 @@ Population [Cells] Properties
 +------------------+------------------------------+
 </pre></div>
 </div>
-<p>Step 3: Laser Source Configuration</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span>
+<p>Step 3: Laser GaussianBeam Configuration</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">=</span> <span class="n">GaussianBeam</span><span class="p">(</span>
     <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">AU</span><span class="p">,</span>          <span class="c1"># Laser numerical aperture: 0.3</span>
     <span class="n">wavelength</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span>           <span class="c1"># Laser wavelength: 200 nm</span>
     <span class="n">optical_power</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">milliwatt</span>          <span class="c1"># Laser optical power: 20 mW</span>
@@ -745,7 +745,7 @@ Configure peak finding algorithm</p>
 <li><img src="../../_images/sphx_glr_3_populations_003.png" srcset="../../_images/sphx_glr_3_populations_003.png" alt="3 populations" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_3_populations_004.png" srcset="../../_images/sphx_glr_3_populations_004.png" alt="3 populations" class = "sphx-glr-multi-img"/></li>
 </ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 17.573 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 18.433 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-density-plots-3-populations-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/7a980bfc099fc5af620c87b55ac64cb4/3_populations.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">3_populations.ipynb</span></code></a></p>

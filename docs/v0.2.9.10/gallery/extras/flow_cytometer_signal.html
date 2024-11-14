@@ -491,7 +491,7 @@ using FlowCyPy and visualize the results.</p>
 3. Simulate the flow cytometer signals.
 4. Visualize and analyze the signals from FSC and SSC detectors.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Step 1: Import the necessary libraries</span>
-<span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">Scatterer</span><span class="p">,</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">Source</span><span class="p">,</span> <span class="n">FlowCell</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">Scatterer</span><span class="p">,</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">GaussianBeam</span><span class="p">,</span> <span class="n">FlowCell</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">distribution</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">RIU</span><span class="p">,</span> <span class="n">milliliter</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">microvolt</span><span class="p">,</span> <span class="n">AU</span><span class="p">,</span>
@@ -538,7 +538,7 @@ using FlowCyPy and visualize the results.</p>
 <span class="c1"># Step 4: Set up the light source</span>
 <span class="c1"># -------------------------------</span>
 <span class="c1"># A laser with a wavelength of 1550 nm, optical power of 2 mW, and a numerical aperture of 0.4 is used.</span>
-<span class="n">source</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span>
+<span class="n">source</span> <span class="o">=</span> <span class="n">GaussianBeam</span><span class="p">(</span>
     <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">AU</span><span class="p">,</span>     <span class="c1"># Numerical aperture: 0.4</span>
     <span class="n">wavelength</span><span class="o">=</span><span class="mi">1550</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span>     <span class="c1"># Wavelength: 1550 nm</span>
     <span class="n">optical_power</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">milliwatt</span>    <span class="c1"># Optical power: 2 mW</span>
@@ -872,7 +872,7 @@ Population [LP] Properties
 
 FlowCytometer Properties
 
-Source [] Properties
+GaussianBeam [] Properties
 +------------+---------+
 | Property   | Value   |
 +============+=========+
@@ -929,8 +929,10 @@ Detector [SSC] Properties
 +--------------------+----------+
 </pre></div>
 </div>
-<p>and complexity and can be further analyzed for feature extraction, such as peak height and width.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.531 seconds)</p>
+<p>The above plot shows the raw simulated signals for Forward Scatter (FSC) and
+Side Scatter (SSC) channels. These signals provide insights into particle size
+and complexity and can be further analyzed for feature extraction, such as peak height and width.</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.545 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-flow-cytometer-signal-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/45fd446fca2aadc7449b6542217db601/flow_cytometer_signal.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">flow_cytometer_signal.ipynb</span></code></a></p>

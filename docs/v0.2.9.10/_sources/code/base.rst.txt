@@ -8,6 +8,17 @@ FlowCell Class
    :members:
    :show-inheritance:
 
+Beams Class
+-----------
+
+.. autoclass:: FlowCyPy.source.GaussianBeam
+   :members:
+   :show-inheritance:
+
+.. autoclass:: FlowCyPy.source.AstigmaticGaussianBeam
+   :members:
+   :show-inheritance:
+
 Scatterer Class
 ---------------
 

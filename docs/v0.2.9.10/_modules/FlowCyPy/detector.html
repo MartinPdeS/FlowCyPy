@@ -445,17 +445,17 @@
                   
   <h1>Source code for FlowCyPy.detector</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">AU</span><span class="p">,</span> <span class="n">volt</span><span class="p">,</span> <span class="n">watt</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">coulomb</span><span class="p">,</span> <span class="n">joule</span><span class="p">,</span> <span class="n">kelvin</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">AU</span><span class="p">,</span> <span class="n">volt</span><span class="p">,</span> <span class="n">watt</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">coulomb</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.utils</span> <span class="kn">import</span> <span class="n">PropertiesReport</span>
 <span class="kn">from</span> <span class="nn">pydantic.dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">field_validator</span>
 <span class="kn">from</span> <span class="nn">MPSPlots.styles</span> <span class="kn">import</span> <span class="n">mps</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">cached_property</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">pint_pandas</span>
-
+<span class="kn">from</span> <span class="nn">FlowCyPy.physical_constant</span> <span class="kn">import</span> <span class="n">PhysicalConstant</span>
 <span class="kn">from</span> <span class="nn">PyMieSim.units</span> <span class="kn">import</span> <span class="n">Quantity</span>
 
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -526,9 +526,6 @@
     <span class="n">include_noises</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="n">BOLTZMANN_CONSTANT</span> <span class="o">=</span> <span class="mf">1.380649e-23</span> <span class="o">*</span> <span class="n">joule</span> <span class="o">/</span> <span class="n">kelvin</span>  <span class="c1"># Class constant</span>
-    <span class="n">ELECTRON_CHARGE</span> <span class="o">=</span> <span class="mf">1.602176634e-19</span> <span class="o">*</span> <span class="n">coulomb</span>
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">bandwidth</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
@@ -661,7 +658,7 @@
 
 <span class="sd">        Thermal noise is caused by the thermal agitation of charge carriers. It is given by:</span>
 <span class="sd">        \[</span>
-<span class="sd">        \sigma_{\text{thermal}} = \sqrt{4 k_B T B R}</span>
+<span class="sd">            \sigma_{\text{thermal}} = \sqrt{4 k_B T B R}</span>
 <span class="sd">        \]</span>
 <span class="sd">        Where:</span>
 <span class="sd">            - \( k_B \) is the Boltzmann constant (\(1.38 \times 10^{-23}\) J/K),</span>
@@ -678,7 +675,7 @@
             <span class="k">return</span>
 
         <span class="n">noise_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
-            <span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">BOLTZMANN_CONSTANT</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span>
+            <span class="mi">4</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">kb</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span>
         <span class="p">)</span>
 
         <span class="n">thermal_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">noise_std</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">volt</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">))</span> <span class="o">*</span> <span class="n">volt</span>
@@ -694,7 +691,7 @@
 <span class="sd">        Dark current noise is a type of shot noise caused by the random generation of electrons in a detector,</span>
 <span class="sd">        even in the absence of light. It is given by:</span>
 <span class="sd">        \[</span>
-<span class="sd">        \sigma_{\text{dark current}} = \sqrt{2 e I_{\text{dark}} B}</span>
+<span class="sd">            \sigma_{\text{dark current}} = \sqrt{2 e I_{\text{dark}} B}</span>
 <span class="sd">        \]</span>
 <span class="sd">        Where:</span>
 <span class="sd">            - \( e \) is the elementary charge,</span>
@@ -743,7 +740,7 @@
 <span class="sd">        Physics:</span>
 <span class="sd">            - The number of photons arriving at the detector \( N_{\text{ph}} \) is given by:</span>
 <span class="sd">            \[</span>
-<span class="sd">            N_{\text{ph}} = \frac{P_{\text{opt}}}{E_{\text{photon}}}</span>
+<span class="sd">                N_{\text{ph}} = \frac{P_{\text{opt}}}{E_{\text{photon}}}</span>
 <span class="sd">            \]</span>
 <span class="sd">            where:</span>
 <span class="sd">                - \( P_{\text{opt}} \) is the optical power (W),</span>
@@ -754,7 +751,7 @@
 
 <span class="sd">            - The standard deviation of the current noise due to photon shot noise is:</span>
 <span class="sd">            \[</span>
-<span class="sd">            \sigma_{I_{\text{shot}}} = \sqrt{2 \cdot e \cdot I_{\text{photon}} \cdot B}</span>
+<span class="sd">                \sigma_{I_{\text{shot}}} = \sqrt{2 \cdot e \cdot I_{\text{photon}} \cdot B}</span>
 <span class="sd">            \]</span>
 <span class="sd">            where:</span>
 <span class="sd">                - \( I_{\text{photon}} \) is the photocurrent generated by the incident optical power (A),</span>
@@ -775,7 +772,7 @@
         <span class="n">I_photon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">responsitivity</span> <span class="o">*</span> <span class="n">optical_power</span>
 
         <span class="c1"># Step 2: Compute the shot noise current for each time point using vectorization</span>
-        <span class="n">i_shot</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ELECTRON_CHARGE</span> <span class="o">*</span> <span class="n">I_photon</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span>
+        <span class="n">i_shot</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">I_photon</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span>
 
         <span class="n">I_shot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">i_shot</span><span class="p">)</span>
 
@@ -789,6 +786,8 @@
 
         <span class="k">return</span> <span class="n">noise_signal</span>
 
+<div class="viewcode-block" id="Detector.init_raw_signal">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.detector.Detector.init_raw_signal">[docs]</a>
     <span class="k">def</span> <span class="nf">init_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the raw signal and time arrays for the detector and generates optional noise.</span>
@@ -800,7 +799,7 @@
 
 <span class="sd">        The photocurrent is calculated as:</span>
 <span class="sd">        \[</span>
-<span class="sd">        I_{\text{ph}} = P_{\text{opt}} \times R_{\text{ph}}</span>
+<span class="sd">            I_{\text{ph}} = P_{\text{opt}} \times R_{\text{ph}}</span>
 <span class="sd">        \]</span>
 <span class="sd">        Where:</span>
 <span class="sd">            - \( P_{\text{opt}} \) is the optical power,</span>
@@ -815,8 +814,11 @@
                 <span class="n">RawSignal</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">volt</span><span class="p">),</span>
                 <span class="n">Signal</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">volt</span><span class="p">)</span>
             <span class="p">)</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="Detector.capture_signal">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.detector.Detector.capture_signal">[docs]</a>
     <span class="k">def</span> <span class="nf">capture_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes and captures the final signal by applying noise, baseline shifts, and saturation.</span>
@@ -824,7 +826,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RawSignal&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_apply_baseline_and_noise</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_apply_saturation</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_discretize_signal</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_discretize_signal</span><span class="p">()</span></div>
+
 
     <span class="k">def</span> <span class="nf">_apply_baseline_and_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -865,6 +868,8 @@
             <span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="n">digitized</span><span class="p">],</span> <span class="n">volt</span><span class="p">)</span>
 
+<div class="viewcode-block" id="Detector.plot">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.detector.Detector.plot">[docs]</a>
     <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">figure_size</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots the processed signal over time.</span>
@@ -899,8 +904,11 @@
             <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">signal_unit</span><span class="si">:</span><span class="s2">P</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
+
+<div class="viewcode-block" id="Detector.print_properties">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.detector.Detector.print_properties">[docs]</a>
     <span class="k">def</span> <span class="nf">print_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prints specific properties of the Detector instance, such as coupling factor and medium refractive index.</span>
@@ -921,6 +929,7 @@
         <span class="p">}</span>
 
         <span class="nb">super</span><span class="p">(</span><span class="n">Detector</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">print_properties</span><span class="p">(</span><span class="o">**</span><span class="n">_dict</span><span class="p">)</span></div>
+</div>
 
 </pre></div>
 

@@ -556,6 +556,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">flow_area</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_area</span><span class="p">,</span> <span class="n">meter</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run_time</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_time</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span>
 
+<div class="viewcode-block" id="FlowCell.calculate_number_of_events">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.FlowCell.calculate_number_of_events">[docs]</a>
     <span class="k">def</span> <span class="nf">calculate_number_of_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">concentration</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the total number of particles based on the scatterer density, flow speed, and flow area.</span>
@@ -571,21 +573,28 @@
         <span class="c1"># Calculate the total number of particles in this volume</span>
         <span class="n">number_of_particles</span> <span class="o">=</span> <span class="n">concentration</span> <span class="o">*</span> <span class="n">volume</span>
 
-        <span class="k">return</span> <span class="n">number_of_particles</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">particle</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">number_of_particles</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">particle</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">()</span></div>
 
+
+<div class="viewcode-block" id="FlowCell.print_properties">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.FlowCell.print_properties">[docs]</a>
     <span class="k">def</span> <span class="nf">print_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the core properties of the flow and particle interactions in the flow cytometer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Flow Properties&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_properties</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Property&quot;</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;grid&quot;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_properties</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Property&quot;</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;grid&quot;</span><span class="p">))</span></div>
 
+
+<div class="viewcode-block" id="FlowCell.get_properties">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.FlowCell.get_properties">[docs]</a>
     <span class="k">def</span> <span class="nf">get_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="p">[</span><span class="s1">&#39;Flow Speed&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_speed</span><span class="si">:</span><span class="s2">.2f~#P</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
             <span class="p">[</span><span class="s1">&#39;Flow Area&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_area</span><span class="si">:</span><span class="s2">.2f~#P</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
             <span class="p">[</span><span class="s1">&#39;Total Time&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">run_time</span><span class="si">:</span><span class="s2">.2f~#P</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
         <span class="p">]</span></div>
+</div>
 
 </pre></div>
 

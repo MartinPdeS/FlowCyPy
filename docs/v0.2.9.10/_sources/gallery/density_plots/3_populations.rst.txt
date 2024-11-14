@@ -27,7 +27,7 @@ to generate a 2D density plot of scattering intensities.
 
 Workflow Summary:
 1. Flow Setup: Configure flow parameters and define particle size distributions.
-2. Laser Source and Detector Setup: Define the laser source characteristics and configure the forward and side detectors.
+2. Laser GaussianBeam and Detector Setup: Define the laser source characteristics and configure the forward and side detectors.
 3. Run the Experiment: Simulate the flow cytometry experiment.
 4. Data Analysis: Analyze the pulse signals and generate a 2D density plot of the scattering intensities.
 
@@ -46,7 +46,7 @@ Workflow Summary:
     from FlowCyPy.detector import Detector
     from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, millivolt, microsecond
     from FlowCyPy import Analyzer, peak_finder
-    from FlowCyPy import Source
+    from FlowCyPy import GaussianBeam
 
     np.random.seed(3)  # Ensure reproducibility
 
@@ -227,13 +227,13 @@ Workflow Summary:
 
 .. GENERATED FROM PYTHON SOURCE LINES 86-87
 
-Step 3: Laser Source Configuration
+Step 3: Laser GaussianBeam Configuration
 
 .. GENERATED FROM PYTHON SOURCE LINES 87-137
 
 .. code-block:: Python
 
-    source = Source(
+    source = GaussianBeam(
         numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
         wavelength=200 * nanometer,           # Laser wavelength: 200 nm
         optical_power=20 * milliwatt          # Laser optical power: 20 mW
@@ -352,7 +352,7 @@ Configure peak finding algorithm
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 17.573 seconds)
+   **Total running time of the script:** (0 minutes 18.433 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_3_populations.py:

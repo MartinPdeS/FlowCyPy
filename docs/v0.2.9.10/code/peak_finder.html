@@ -483,15 +483,41 @@ Default is <cite>Quantity(0.1, volt)</cite>.</p></li>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.peak_finder.basic.Basic.detect_peaks">
-<span class="sig-name descname"><span class="pre">detect_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pd.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/peak_finder/basic.html#Basic.detect_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.peak_finder.basic.Basic.detect_peaks" title="Link to this definition">#</a></dt>
-<dd><p>Detects peaks in the input signal and computes their properties.</p>
+<span class="sig-name descname"><span class="pre">detect_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="base.html#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><span class="pre">Detector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/peak_finder/basic.html#Basic.detect_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.peak_finder.basic.Basic.detect_peaks" title="Link to this definition">#</a></dt>
+<dd><p>Detects peaks in the signal and calculates their properties such as heights, widths, and areas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>detector</strong> (<em>pd.DataFrame</em>) – DataFrame with the signal data to detect peaks in.</p></li>
+<li><p><strong>compute_area</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, computes the area under each peak. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>peak_times</strong> (<em>Quantity</em>) – The times at which peaks occur.</p></li>
+<li><p><strong>heights</strong> (<em>Quantity</em>) – The heights of the detected peaks.</p></li>
+<li><p><strong>widths</strong> (<em>Quantity</em>) – The widths of the detected peaks.</p></li>
+<li><p><strong>areas</strong> (<em>Quantity or None</em>) – The areas under each peak, if <cite>compute_area</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.peak_finder.basic.Basic.height_threshold">
+<span class="sig-name descname"><span class="pre">height_threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(0.0,</span> <span class="pre">'volt')&gt;</span></em><a class="headerlink" href="#FlowCyPy.peak_finder.basic.Basic.height_threshold" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.peak_finder.basic.Basic.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.peak_finder.basic.Basic.plot" title="Link to this definition">#</a></dt>
-<dd><p>Plots the input signal with detected peaks and their properties.</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.peak_finder.basic.Basic.plot" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.peak_finder.basic.Basic.rel_height">
+<span class="sig-name descname"><span class="pre">rel_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></em><a class="headerlink" href="#FlowCyPy.peak_finder.basic.Basic.rel_height" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -518,16 +544,57 @@ Default is <cite>Quantity(0.1)</cite>.</p></li>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.peak_finder.moving_average.MovingAverage.compute_moving_average">
+<span class="sig-name descname"><span class="pre">compute_moving_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/peak_finder/moving_average.html#MovingAverage.compute_moving_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.compute_moving_average" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.peak_finder.moving_average.MovingAverage.detect_peaks">
-<span class="sig-name descname"><span class="pre">detect_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/peak_finder/moving_average.html#MovingAverage.detect_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.detect_peaks" title="Link to this definition">#</a></dt>
-<dd><p>Detects peaks and calculates their properties from the input signal.</p>
+<span class="sig-name descname"><span class="pre">detect_peaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="base.html#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><span class="pre">Detector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Quantity</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/FlowCyPy/peak_finder/moving_average.html#MovingAverage.detect_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.detect_peaks" title="Link to this definition">#</a></dt>
+<dd><p>Detects peaks in the signal using a moving average and a threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>detector</strong> (<a class="reference internal" href="base.html#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><em>Detector</em></a>) – The detector which owns the signal data.</p></li>
+<li><p><strong>compute_area</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, computes the area under each peak. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>peak_times</strong> (<em>Quantity</em>) – The times at which peaks occur.</p></li>
+<li><p><strong>heights</strong> (<em>Quantity</em>) – The heights of the detected peaks.</p></li>
+<li><p><strong>widths</strong> (<em>Quantity</em>) – The widths of the detected peaks.</p></li>
+<li><p><strong>areas</strong> (<em>Quantity or None</em>) – The areas under each peak, if <cite>compute_area</cite> is True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.peak_finder.moving_average.MovingAverage.min_peak_distance">
+<span class="sig-name descname"><span class="pre">min_peak_distance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.min_peak_distance" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.peak_finder.moving_average.MovingAverage.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.plot" title="Link to this definition">#</a></dt>
-<dd><p>Plots the signal with detected peaks and FWHM lines.</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.plot" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.peak_finder.moving_average.MovingAverage.rel_height">
+<span class="sig-name descname"><span class="pre">rel_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.8</span></em><a class="headerlink" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.rel_height" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.peak_finder.moving_average.MovingAverage.threshold">
+<span class="sig-name descname"><span class="pre">threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.threshold" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.peak_finder.moving_average.MovingAverage.window_size">
+<span class="sig-name descname"><span class="pre">window_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(5,</span> <span class="pre">'microsecond')&gt;</span></em><a class="headerlink" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.window_size" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -560,15 +627,22 @@ Default is <cite>Quantity(0.1)</cite>.</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#base-class">Base Class</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_finder.basic.Basic"><code class="docutils literal notranslate"><span class="pre">Basic</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_finder.basic.Basic.detect_peaks"><code class="docutils literal notranslate"><span class="pre">Basic.detect_peaks()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_finder.basic.Basic.height_threshold"><code class="docutils literal notranslate"><span class="pre">Basic.height_threshold</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_finder.basic.Basic.plot"><code class="docutils literal notranslate"><span class="pre">Basic.plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_finder.basic.Basic.rel_height"><code class="docutils literal notranslate"><span class="pre">Basic.rel_height</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moving-average-class">Moving-average Class</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_finder.moving_average.MovingAverage"><code class="docutils literal notranslate"><span class="pre">MovingAverage</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.compute_moving_average"><code class="docutils literal notranslate"><span class="pre">MovingAverage.compute_moving_average()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.detect_peaks"><code class="docutils literal notranslate"><span class="pre">MovingAverage.detect_peaks()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.min_peak_distance"><code class="docutils literal notranslate"><span class="pre">MovingAverage.min_peak_distance</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.plot"><code class="docutils literal notranslate"><span class="pre">MovingAverage.plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.rel_height"><code class="docutils literal notranslate"><span class="pre">MovingAverage.rel_height</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.threshold"><code class="docutils literal notranslate"><span class="pre">MovingAverage.threshold</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_finder.moving_average.MovingAverage.window_size"><code class="docutils literal notranslate"><span class="pre">MovingAverage.window_size</span></code></a></li>
 </ul>
 </li>
 </ul>

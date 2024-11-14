@@ -480,13 +480,6 @@
 <span class="sd">    rel_height : float, optional</span>
 <span class="sd">        The relative height at which the peak width is measured. Default is `0.5` (half-height).</span>
 
-<span class="sd">    Methods</span>
-<span class="sd">    -------</span>
-<span class="sd">    detect_peaks(signal, time, compute_area=True)</span>
-<span class="sd">        Detects peaks and calculates their properties from the input signal.</span>
-
-<span class="sd">    plot()</span>
-<span class="sd">        Plots the signal with detected peaks and FWHM lines.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">threshold</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="kc">None</span>
@@ -494,6 +487,8 @@
     <span class="n">min_peak_distance</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">rel_height</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span>
 
+<div class="viewcode-block" id="MovingAverage.compute_moving_average">
+<a class="viewcode-back" href="../../../code/peak_finder.html#FlowCyPy.peak_finder.moving_average.MovingAverage.compute_moving_average">[docs]</a>
     <span class="k">def</span> <span class="nf">compute_moving_average</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -507,7 +502,8 @@
         <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;MovingAverage&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">moving_avrg</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
 
         <span class="c1"># Calculate the difference between signal and moving average</span>
-        <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Difference&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;MovingAverage&#39;</span><span class="p">]</span>
+        <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Difference&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;MovingAverage&#39;</span><span class="p">]</span></div>
+
 
 <div class="viewcode-block" id="MovingAverage.detect_peaks">
 <a class="viewcode-back" href="../../../code/peak_finder.html#FlowCyPy.peak_finder.moving_average.MovingAverage.detect_peaks">[docs]</a>

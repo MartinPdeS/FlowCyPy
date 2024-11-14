@@ -494,7 +494,7 @@ provide insights into the physical properties of particles passing through the l
 <li><p>Visualize the generated signals and display the extracted pulse features.</p></li>
 </ol>
 <p>Step 1: Import necessary modules from FlowCyPy</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">Scatterer</span><span class="p">,</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">Source</span><span class="p">,</span> <span class="n">FlowCell</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">Scatterer</span><span class="p">,</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">GaussianBeam</span><span class="p">,</span> <span class="n">FlowCell</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">distribution</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.population</span> <span class="kn">import</span> <span class="n">Population</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">millisecond</span><span class="p">,</span> <span class="n">meter</span><span class="p">,</span> <span class="n">micrometer</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">milliliter</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">millivolt</span><span class="p">,</span> <span class="n">watt</span><span class="p">,</span> <span class="n">megahertz</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">milliwatt</span><span class="p">,</span> <span class="n">AU</span>
@@ -545,7 +545,7 @@ This represents the population of scatterers (particles) that will interact with
 <section id="step-4-define-the-laser-source">
 <h2>Step 4: Define the laser source<a class="headerlink" href="#step-4-define-the-laser-source" title="Link to this heading">#</a></h2>
 <p>Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and a numerical aperture of 0.3.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">=</span> <span class="n">GaussianBeam</span><span class="p">(</span>
     <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">AU</span><span class="p">,</span>  <span class="c1"># Numerical aperture: 0.3</span>
     <span class="n">wavelength</span><span class="o">=</span><span class="mi">800</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span>   <span class="c1"># Laser wavelength: 800 nm</span>
     <span class="n">optical_power</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">milliwatt</span>  <span class="c1"># Optical power: 20 milliwatts</span>
@@ -637,7 +637,7 @@ Population [EV] Properties
 
 FlowCytometer Properties
 
-Source [] Properties
+GaussianBeam [] Properties
 +------------+---------+
 | Property   | Value   |
 +============+=========+
@@ -696,7 +696,7 @@ Detector [second detector] Properties
 &#39;\nSummary:\n--------\nThis script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,\nand extracts important features. The process is visualized through signal plots, and key properties are displayed.\n&#39;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.862 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.921 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-full-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/7765c7c9dfbad7ed6be152008ccfca41/full_workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">full_workflow.ipynb</span></code></a></p>
