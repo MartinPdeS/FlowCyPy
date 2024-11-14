@@ -8,7 +8,7 @@ to generate a 2D density plot of scattering intensities.
 
 Workflow Summary:
 1. Flow Setup: Configure flow parameters and define particle size distributions.
-2. Laser Source and Detector Setup: Define the laser source characteristics and configure the forward and side detectors.
+2. Laser GaussianBeam and Detector Setup: Define the laser source characteristics and configure the forward and side detectors.
 3. Run the Experiment: Simulate the flow cytometry experiment.
 4. Data Analysis: Analyze the pulse signals and generate a 2D density plot of the scattering intensities.
 """
@@ -23,7 +23,7 @@ from FlowCyPy import FlowCytometer
 from FlowCyPy.detector import Detector
 from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, millivolt, microsecond
 from FlowCyPy import Analyzer, peak_finder
-from FlowCyPy import Source
+from FlowCyPy import GaussianBeam
 
 np.random.seed(3)  # Ensure reproducibility
 
@@ -83,8 +83,8 @@ scatterer.print_properties()               # Display population properties
 scatterer.plot()                           # Visualize the population distributions
 
 # %%
-# Step 3: Laser Source Configuration
-source = Source(
+# Step 3: Laser GaussianBeam Configuration
+source = GaussianBeam(
     numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
     wavelength=200 * nanometer,           # Laser wavelength: 200 nm
     optical_power=20 * milliwatt          # Laser optical power: 20 mW

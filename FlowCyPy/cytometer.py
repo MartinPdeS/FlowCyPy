@@ -8,7 +8,7 @@ from typing import List, Callable, Optional
 from MPSPlots.styles import mps
 from FlowCyPy.scatterer import Scatterer
 from FlowCyPy.detector import Detector
-from FlowCyPy.source import Source
+from FlowCyPy.source import GaussianBeam
 import pandas as pd
 import pint_pandas
 from FlowCyPy.units import Quantity, milliwatt
@@ -32,24 +32,16 @@ class FlowCytometer:
     ----------
     scatterer : Scatterer
         The distribution of particle sizes which affects scattering signals.
-    source : Source
+    source : GaussianBeam
         The laser source object representing the illumination scheme.
     detectors : List[Detector]
         List of `Detector` objects representing the detectors in the system.
 
-    Methods
-    -------
-    simulate_pulse()
-        Simulates the signal pulses for FSC and SSC channels based on particle distribution and flow.
-    plot()
-        Plots the simulated signals for each detector channel.
-    print_properties()
-        Displays the key properties of the flow cytometer and its detectors.
     """
     def __init__(
             self,
             scatterer: Scatterer,
-            source: Source,
+            source: GaussianBeam,
             detectors: List[Detector],
             coupling_mechanism: Optional[str] = 'mie',
             background_power: Optional[Quantity] = 0 * milliwatt):

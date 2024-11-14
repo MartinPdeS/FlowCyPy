@@ -10,4 +10,4 @@ from .analyzer import Analyzer
 from .scatterer import Scatterer, CouplingModel
 from .detector import Detector
 from .flow_cell import FlowCell
-from .source import Source
+from .source import GaussianBeam

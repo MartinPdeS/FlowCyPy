@@ -1,5 +1,6 @@
 import numpy as np
-from FlowCyPy import Scatterer, Detector, Source
+from FlowCyPy import Scatterer, Detector
+from FlowCyPy.source import BaseBeam
 from PyMieSim.experiment.scatterer import Sphere as PMS_SPHERE
 from PyMieSim.experiment.source import PlaneWave
 from PyMieSim.experiment.detector import Photodiode as PMS_PHOTODIODE
@@ -7,7 +8,7 @@ from PyMieSim.experiment import Setup
 from PyMieSim.units import degree, watt, AU
 
 
-def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatterer, tolerance: float = 1e-5) -> float:
+def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: Scatterer, tolerance: float = 1e-5) -> float:
     """
     Computes the detected signal by analyzing the scattering properties of particles.
 
@@ -16,7 +17,7 @@ def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatt
 
     Parameters
     ----------
-    source : Source
+    source : BaseBeam
         The light source object containing wavelength, power, and other optical properties.
     detector : Detector
         The detector object containing properties such as numerical aperture and angles.

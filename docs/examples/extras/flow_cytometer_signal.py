@@ -14,7 +14,7 @@ Steps:
 """
 
 # Step 1: Import the necessary libraries
-from FlowCyPy import FlowCytometer, Scatterer, Detector, Source, FlowCell
+from FlowCyPy import FlowCytometer, Scatterer, Detector, GaussianBeam, FlowCell
 from FlowCyPy import distribution
 from FlowCyPy.units import (
     RIU, milliliter, particle, nanometer, degree, microvolt, AU,
@@ -61,7 +61,7 @@ scatterer.print_properties()
 # Step 4: Set up the light source
 # -------------------------------
 # A laser with a wavelength of 1550 nm, optical power of 2 mW, and a numerical aperture of 0.4 is used.
-source = Source(
+source = GaussianBeam(
     numerical_aperture=0.4 * AU,     # Numerical aperture: 0.4
     wavelength=1550 * nanometer,     # Wavelength: 1550 nm
     optical_power=200 * milliwatt    # Optical power: 2 mW
@@ -116,7 +116,7 @@ cytometer.print_properties()
 cytometer.plot()
 
 # %%
-# #############################################################################
+#
 # The above plot shows the raw simulated signals for Forward Scatter (FSC) and
 # Side Scatter (SSC) channels. These signals provide insights into particle size
 # and complexity and can be further analyzed for feature extraction, such as peak height and width.

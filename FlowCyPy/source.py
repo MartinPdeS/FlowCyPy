@@ -17,10 +17,23 @@ config_dict = dict(
 )
 
 
-class QuantityValidationMixin:
+class BaseBeam(PropertiesReport):
     """
     Mixin class providing unit validation for quantities used in optical sources.
     """
+
+    def initialization(self):
+        """
+        Initialize beam waists based on the numerical apertures and calculate electric field amplitude at the focus.
+        """
+        self.frequency = PhysicalConstant.c / self.wavelength
+        self.photon_energy = (PhysicalConstant.h * self.frequency).to(joule) / particle
+
+        # Calculate amplitude at focus
+        self.amplitude = self.calculate_field_amplitude_at_focus()
+
+    def calculate_field_amplitude_at_focus(self) -> Quantity:
+        return NotImplementedError('This method should be implemneted by the derived class!')
 
     @field_validator('wavelength', mode='plain')
     def validate_wavelength(cls, value, field):
@@ -66,20 +79,31 @@ class QuantityValidationMixin:
 
 
 @dataclass(config=config_dict)
-class Source(PropertiesReport, QuantityValidationMixin):
+class GaussianBeam(BaseBeam):
     """
-    Represents a monochromatic Gaussian laser source.
+    Represents a monochromatic Gaussian laser beam focused by a standard lens.
 
     Parameters
     ----------
     optical_power : Quantity
-        Optical power of the laser (in watts).
+        The optical power of the laser (in watts).
     wavelength : Quantity
-        Wavelength of the laser (in meters).
-    numerical_aperture: Quantity
-        Numerical aperture of the laser (unitless).
+        The wavelength of the laser (in meters).
+    numerical_aperture : Quantity
+        The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).
     polarization : Optional[Quantity]
-        Polarization of the laser source in degrees (default is 0 degrees).
+        The polarization of the laser source in degrees (default is 0 degrees).
+
+    Attributes
+    ----------
+    waist : Quantity
+        The beam waist at the focus, calculated as `waist = wavelength / (pi * numerical_aperture)`.
+    frequency : Quantity
+        The frequency of the laser, calculated as `frequency = c / wavelength`.
+    photon_energy : Quantity
+        The energy of a single photon, calculated as `photon_energy = h * frequency`.
+    amplitude : Quantity
+        The electric field amplitude at the focus, derived from optical power, waist, and fundamental constants.
     """
     optical_power: Quantity
     wavelength: Quantity
@@ -91,65 +115,100 @@ class Source(PropertiesReport, QuantityValidationMixin):
         Initialize additional parameters like beam waist, frequency, photon energy,
         and electric field amplitude at the focus.
         """
-        self.waist = 2 * self.wavelength / (PhysicalConstant.pi * self.numerical_aperture)
-        self.frequency = PhysicalConstant.c / self.wavelength
-        self.photon_energy = (PhysicalConstant.h * self.frequency).to(joule) / particle
-        self.amplitude = self.calculate_field_amplitude_at_focus()
+        self.initialization()
 
     def calculate_field_amplitude_at_focus(self) -> Quantity:
-        """
-        Calculate the electric field amplitude at the focus for a Gaussian beam.
+        r"""
+        Calculate the electric field amplitude (E0) at the focus for a Gaussian beam.
+
+        The electric field amplitude at the focus is given by:
+
+        .. math::
+            E_0 = \sqrt{\frac{2 P}{\pi \epsilon_0 c w_0^2}}
+
+        where:
+        - `P` is the optical power of the beam,
+        - `epsilon_0` is the permittivity of free space,
+        - `c` is the speed of light,
+        - `w_0` is the beam waist at the focus.
 
         Returns
         -------
         Quantity
-            Electric field amplitude at the focus in volts per meter.
+            The electric field amplitude at the focus in volts per meter.
         """
+        self.waist = self.wavelength / (PhysicalConstant.pi * self.numerical_aperture)
+
         E0 = np.sqrt(2 * self.optical_power / (PhysicalConstant.pi * PhysicalConstant.epsilon_0 * PhysicalConstant.c * self.waist**2))
+
         return E0.to(volt / meter)
 
 
 @dataclass(config=config_dict)
-class AstigmaticGaussianBeam(PropertiesReport, QuantityValidationMixin):
+class AstigmaticGaussianBeam(BaseBeam):
     """
-    Represents an astigmatic Gaussian laser beam passing through a cylindrical lens.
+    Represents an astigmatic Gaussian laser beam focused by a cylindrical lens system.
 
     Parameters
     ----------
     optical_power : Quantity
-        Optical power of the laser (in watts).
+        The optical power of the laser (in watts).
     wavelength : Quantity
-        Wavelength of the laser (in meters).
+        The wavelength of the laser (in meters).
     numerical_aperture_x : Quantity
-        Numerical aperture of the laser along the x-axis (unitless).
+        The numerical aperture of the lens along the x-axis (unitless).
     numerical_aperture_y : Quantity
-        Numerical aperture of the laser along the y-axis (unitless).
+        The numerical aperture of the lens along the y-axis (unitless).
+    polarization : Optional[Quantity]
+        The polarization of the laser source in degrees (default is 0 degrees).
+
+    Attributes
+    ----------
+    waist_x : Quantity
+        The beam waist at the focus along the x-axis, calculated as `waist_x = wavelength / (pi * numerical_aperture_x)`.
+    waist_y : Quantity
+        The beam waist at the focus along the y-axis, calculated as `waist_y = wavelength / (pi * numerical_aperture_y)`.
+    amplitude : Quantity
+        The electric field amplitude at the focus, derived from optical power, waist_x, waist_y, and fundamental constants.
     """
     optical_power: Quantity
     wavelength: Quantity
     numerical_aperture_x: Quantity
     numerical_aperture_y: Quantity
+    polarization: Optional[Quantity] = 0 * degree
 
     def __post_init__(self):
         """
-        Initialize beam waists based on the numerical apertures and calculate electric field amplitude at the focus.
+        Initialize additional parameters like beam waist, frequency, photon energy,
+        and electric field amplitude at the focus.
         """
-        # Calculate waists based on numerical apertures
-        self.w_0x = (self.wavelength / (PhysicalConstant.pi * self.numerical_aperture_x))
-        self.w_0y = (self.wavelength / (PhysicalConstant.pi * self.numerical_aperture_y))
-
-        # Calculate amplitude at focus
-        self.amplitude = self.calculate_field_amplitude_at_focus()
+        self.initialization()
 
     def calculate_field_amplitude_at_focus(self) -> Quantity:
         """
-        Calculate the electric field amplitude at the focus for an astigmatic Gaussian beam.
+        Calculate the electric field amplitude (E0) at the focus for an astigmatic Gaussian beam.
+
+        The electric field amplitude at the focus is given by:
+
+        .. math::
+            E_0 = \\sqrt{\\frac{2 P}{\\pi \\epsilon_0 c w_{0x} w_{0y}}}
+
+        where:
+        - `P` is the optical power of the beam,
+        - `epsilon_0` is the permittivity of free space,
+        - `c` is the speed of light,
+        - `w_{0x}` is the beam waist at the focus along the x-axis,
+        - `w_{0y}` is the beam waist at the focus along the y-axis.
 
         Returns
         -------
         Quantity
-            Electric field amplitude at the focus in volts per meter.
+            The electric field amplitude at the focus in volts per meter.
         """
-        E0 = np.sqrt(2 * self.optical_power / (PhysicalConstant.pi * PhysicalConstant.epsilon_0 * PhysicalConstant.c * self.w_0x * self.w_0y))
+        # Calculate waists based on numerical apertures
+        self.waist_x = (self.wavelength / (PhysicalConstant.pi * self.numerical_aperture_x))
+        self.waist_y = (self.wavelength / (PhysicalConstant.pi * self.numerical_aperture_y))
+
+        E0 = np.sqrt(2 * self.optical_power / (PhysicalConstant.pi * PhysicalConstant.epsilon_0 * PhysicalConstant.c * self.waist_x * self.waist_y))
 
         return E0.to(volt / meter)

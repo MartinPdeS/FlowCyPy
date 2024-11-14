@@ -1,10 +1,11 @@
 import pytest
 import numpy as np
-from FlowCyPy import Scatterer, Detector, Source, FlowCell
+from FlowCyPy import Scatterer, Detector, FlowCell
 from FlowCyPy import distribution
 from FlowCyPy.coupling_mechanism.rayleigh import compute_detected_signal
 from FlowCyPy.units import micrometer, refractive_index_unit
 from FlowCyPy.population import Population
+from FlowCyPy.source import GaussianBeam
 from FlowCyPy.units import (
     volt, watt, meter, hertz, particle, milliliter, degree, ampere,
     nanometer, milliwatt, second, millisecond, AU
@@ -73,7 +74,7 @@ def scatterer(normal_population, default_flow_cell):
 
 @pytest.fixture
 def source():
-    return Source(
+    return GaussianBeam(
         numerical_aperture=0.2 * AU,
         wavelength=1550 * nanometer,    # Wavelength of the laser source: 1550 nm
         optical_power=200 * milliwatt,   # Optical power of the laser source: 200 milliwatt

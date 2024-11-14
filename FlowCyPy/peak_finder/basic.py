@@ -21,13 +21,6 @@ class Basic(BaseClass):
     rel_height : float, optional
         The relative height at which the peak width is measured. Default is `0.5`.
 
-    Methods
-    -------
-    detect_peaks(detector: pd.DataFrame, compute_area=True)
-        Detects peaks in the input signal and computes their properties.
-
-    plot(detector, ax=None, show=True)
-        Plots the input signal with detected peaks and their properties.
     """
 
     height_threshold: Quantity = Quantity(0.0, volt)

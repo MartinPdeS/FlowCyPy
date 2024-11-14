@@ -1,10 +1,11 @@
 
 import numpy as np
-from FlowCyPy import Scatterer, Detector, Source
+from FlowCyPy import Scatterer, Detector
+from FlowCyPy.source import BaseBeam
 from FlowCyPy.units import meter
 
 
-def compute_scattering_cross_section(scatterer: Scatterer, source: Source, detector: Detector) -> np.ndarray:
+def compute_scattering_cross_section(scatterer: Scatterer, source: BaseBeam, detector: Detector) -> np.ndarray:
     r"""
     Computes the Rayleigh scattering cross-section for a spherical particle with angle dependency.
 
@@ -29,8 +30,8 @@ def compute_scattering_cross_section(scatterer: Scatterer, source: Source, detec
     ----------
     scatterer : Scatterer
         An instance of `Scatterer` containing the scatterer properties such as size and refractive index.
-    source : Source
-        An instance of `Source` containing the laser properties, including the wavelength.
+    source : BaseBeam
+        An instance of `BaseBeam` containing the laser properties, including the wavelength.
     detector : Detector
         An instance of `Detector` that contains the angle of observation (`theta_angle` in radians).
 
@@ -62,7 +63,7 @@ def compute_scattering_cross_section(scatterer: Scatterer, source: Source, detec
     return cross_section.magnitude * meter**2
 
 
-def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatterer) -> float:
+def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: Scatterer) -> float:
     r"""
     Computes the power detected by a detector from a Rayleigh scattering event.
 
@@ -85,8 +86,8 @@ def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatt
 
     Parameters
     ----------
-    source : Source
-        An instance of `Source` containing the laser properties, including the optical power and numerical aperture.
+    source : BaseBeam
+        An instance of `BaseBeam` containing the laser properties, including the optical power and numerical aperture.
     detector : Detector
         An instance of `Detector` containing the detector properties, including numerical aperture and responsitivity.
 

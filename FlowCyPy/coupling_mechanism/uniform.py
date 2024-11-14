@@ -1,8 +1,9 @@
 import numpy as np
-from FlowCyPy import Scatterer, Detector, Source, ureg
+from FlowCyPy import Scatterer, Detector, ureg
+from FlowCyPy.source import BaseBeam
 
 
-def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatterer) -> np.ndarray:
+def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: Scatterer) -> np.ndarray:
     r"""
     Computes the power detected by a detector from a uniform distribution.
 
@@ -25,8 +26,8 @@ def compute_detected_signal(source: Source, detector: Detector, scatterer: Scatt
 
     Parameters
     ----------
-    source : Source
-        An instance of `Source` containing the laser properties, including the optical power and numerical aperture.
+    source : BaseBeam
+        An instance of `BaseBeam` containing the laser properties, including the optical power and numerical aperture.
     detector : Detector
         An instance of `Detector` containing the detector properties, including numerical aperture and responsitivity.
 
