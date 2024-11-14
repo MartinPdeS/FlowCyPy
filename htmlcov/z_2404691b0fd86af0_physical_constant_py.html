@@ -55,8 +55,8 @@
             </div>
         </aside>
         <h2>
-            <span class="text">8 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">8<span class="text"> run</span></button>
+            <span class="text">10 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">10<span class="text"> run</span></button>
             <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">0<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
             <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">0<span class="text"> partial</span></button>
@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_2404691b0fd86af0_population_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2024-11-13 13:16 +0000
+            created at 2024-11-14 12:55 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -82,7 +82,7 @@
     </div>
 </header>
 <main id="source">
-    <p class="run"><span class="n"><a id="t1" href="#t1">1</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">units</span> <span class="key">import</span> <span class="nam">meter</span><span class="op">,</span> <span class="nam">joule</span><span class="op">,</span> <span class="nam">second</span><span class="op">,</span> <span class="nam">farad</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1" href="#t1">1</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">units</span> <span class="key">import</span> <span class="nam">meter</span><span class="op">,</span> <span class="nam">joule</span><span class="op">,</span> <span class="nam">second</span><span class="op">,</span> <span class="nam">farad</span><span class="op">,</span> <span class="nam">kelvin</span><span class="op">,</span> <span class="nam">coulomb</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t2" href="#t2">2</a></span><span class="t"><span class="key">import</span> <span class="nam">numpy</span> <span class="key">as</span> <span class="nam">np</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -99,6 +99,8 @@
     <p class="run"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t">    <span class="nam">c</span> <span class="op">=</span> <span class="num">3e8</span> <span class="op">*</span> <span class="nam">meter</span> <span class="op">/</span> <span class="nam">second</span>  <span class="com"># Speed of light</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t">    <span class="nam">epsilon_0</span> <span class="op">=</span> <span class="num">8.8541878128e-12</span> <span class="op">*</span> <span class="nam">farad</span> <span class="op">/</span> <span class="nam">meter</span>  <span class="com"># Permtivitty of vacuum</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t">    <span class="nam">pi</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">pi</span>  <span class="com"># Pi, what else?</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t">    <span class="nam">kb</span> <span class="op">=</span> <span class="num">1.380649e-23</span> <span class="op">*</span> <span class="nam">joule</span> <span class="op">/</span> <span class="nam">kelvin</span>  <span class="com"># Botlzmann constant</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t">    <span class="nam">e</span> <span class="op">=</span> <span class="num">1.602176634e-19</span> <span class="op">*</span> <span class="nam">coulomb</span>  <span class="com"># Electron charge</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -108,7 +110,7 @@
             <a class="nav" href="z_2404691b0fd86af0_population_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2024-11-13 13:16 +0000
+            created at 2024-11-14 12:55 +0000
         </p>
     </div>
 </footer>
