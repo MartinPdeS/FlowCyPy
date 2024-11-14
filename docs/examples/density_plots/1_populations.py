@@ -8,7 +8,7 @@ to generate a 2D density plot of scattering intensities.
 
 Workflow Summary:
 1. Flow Setup: Configure flow parameters and define particle size distributions.
-2. Laser Source and Detector Setup: Define the laser source characteristics and configure the forward and side detectors.
+2. Laser GaussianBeam and Detector Setup: Define the laser source characteristics and configure the forward and side detectors.
 3. Run the Experiment: Simulate the flow cytometry experiment.
 4. Data Analysis: Analyze the pulse signals and generate a 2D density plot of the scattering intensities.
 """
@@ -23,7 +23,7 @@ from FlowCyPy import FlowCytometer
 from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, microvolt, microsecond
 from FlowCyPy.detector import Detector
 from FlowCyPy import Analyzer, peak_finder
-from FlowCyPy import Source
+from FlowCyPy import GaussianBeam
 
 np.random.seed(3)  # Ensure reproducibility
 
@@ -31,7 +31,7 @@ np.random.seed(3)  # Ensure reproducibility
 flow_cell = FlowCell(
     flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
     flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
-    run_time=0.5 * millisecond               # Simulation run time: 0.5 ms
+    run_time=0.1 * millisecond               # Simulation run time: 0.5 ms
 )
 
 # Initialize scatterer with a medium refractive index
@@ -53,10 +53,10 @@ scatterer.add_population(
 
 scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
 scatterer.print_properties()               # Display population properties
-# scatterer.plot()                         # Visualize the population distributions
+scatterer.plot()                         # Visualize the population distributions
 
 # Set up the laser source parameters
-source = Source(
+source = GaussianBeam(
     numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
     wavelength=200 * nanometer,           # Laser wavelength: 200 nm
     optical_power=100 * milliwatt         # Laser optical power: 20 mW
@@ -110,7 +110,7 @@ cytometer.plot()
 # %%
 # Step 5: Analyzing Pulse Signals
 algorithm = peak_finder.MovingAverage(
-    threshold=5 * microvolt,           # Signal threshold: 0.1 mV
+    threshold=10 * microvolt,           # Signal threshold: 0.1 mV
     window_size=1 * microsecond,         # Moving average window size: 1 µs
     min_peak_distance=0.3 * microsecond  # Minimum distance between peaks: 0.3 µs
 )

@@ -32,13 +32,6 @@ class MovingAverage(BaseClass):
     rel_height : float, optional
         The relative height at which the peak width is measured. Default is `0.5` (half-height).
 
-    Methods
-    -------
-    detect_peaks(signal, time, compute_area=True)
-        Detects peaks and calculates their properties from the input signal.
-
-    plot()
-        Plots the signal with detected peaks and FWHM lines.
     """
 
     threshold: Quantity = None

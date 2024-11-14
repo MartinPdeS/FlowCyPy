@@ -79,7 +79,7 @@ sphinx_gallery_conf = {
 
 
 autodoc_default_options = {
-    'members': False,
+    'members': True,
     'members-order': 'bysource',
     'undoc-members': False,
     'show-inheritance': True,

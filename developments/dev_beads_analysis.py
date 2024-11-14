@@ -7,14 +7,14 @@ analyzes pulse signals from two detectors, and generates a 2D density plot of th
 
 Steps:
 1. Set flow parameters and particle size distributions.
-2. Set up the laser source and detectors.
+2. Set up the laser GaussianBeam and detectors.
 3. Simulate the flow cytometry experiment.
 4. Analyze pulse signals and generate a 2D density plot.
 """
 
 # Import necessary libraries and modules
 import numpy as np
-from FlowCyPy import FlowCytometer, Scatterer, Analyzer, Detector, Source, FlowCell
+from FlowCyPy import FlowCytometer, Scatterer, Analyzer, Detector, GaussianBeam, FlowCell
 from FlowCyPy import distribution
 from FlowCyPy import peak_finder
 from FlowCyPy.units import particle, milliliter, nanometer, RIU, second, micrometer, millisecond, meter
@@ -74,14 +74,14 @@ scatterer.plot(bandwidth_adjust=1)
 
 
 # %%
-# Step 4: Set up the Laser Source
-source = Source(
+# Step 4: Set up the Laser GaussianBeam
+GaussianBeam = GaussianBeam(
     numerical_aperture=0.3 * AU,             # Numerical aperture of the laser: 0.3
     wavelength=488 * nanometer,              # Laser wavelength: 800 nanometers
     optical_power=200 * milliwatt             # Laser optical power: 10 milliwatts
 )
 
-source.print_properties()  # Print the laser source properties
+GaussianBeam.print_properties()  # Print the laser GaussianBeam properties
 
 # Step 5: Configure Detectors
 # Side scatter detector
@@ -118,7 +118,7 @@ detector_1.print_properties()  # Print the properties of the forward scatter det
 # Step 6: Simulate Flow Cytometry Experiment
 cytometer = FlowCytometer(
     coupling_mechanism='mie',                # Scattering mechanism: Mie scattering
-    source=source,                           # Laser source used in the experiment
+    GaussianBeam=GaussianBeam,                           # Laser GaussianBeam used in the experiment
     scatterer=scatterer,                     # Populations used in the experiment
     background_power=0.02 * milliwatt,
     detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter

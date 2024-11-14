@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from unittest.mock import patch
 
 # Importing from FlowCyPy
-from FlowCyPy import Analyzer, FlowCytometer, Detector, Scatterer, Source, peak_finder, distribution
+from FlowCyPy import Analyzer, FlowCytometer, Detector, Scatterer, GaussianBeam, peak_finder, distribution
 from FlowCyPy.units import second, volt, hertz, watt, degree, micrometer, meter, particle, milliliter, ampere, AU, RIU
 from FlowCyPy.population import Population
 from FlowCyPy.flow_cell import FlowCell
@@ -60,7 +60,7 @@ def default_scatterer(flow_cell, default_population):
 
 @pytest.fixture
 def default_source():
-    return Source(
+    return GaussianBeam(
         numerical_aperture=1 * AU,
         wavelength=1550e-9 * meter,
         optical_power=1e-3 * watt,

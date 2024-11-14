@@ -16,7 +16,7 @@ Workflow:
 
 # %%
 # Step 1: Import necessary modules from FlowCyPy
-from FlowCyPy import FlowCytometer, Scatterer, Detector, Source, FlowCell
+from FlowCyPy import FlowCytometer, Scatterer, Detector, GaussianBeam, FlowCell
 from FlowCyPy import distribution
 from FlowCyPy.population import Population
 from FlowCyPy.units import nanometer, millisecond, meter, micrometer, second, RIU, milliliter, particle, millivolt, watt, megahertz, degree, ampere, milliwatt, AU
@@ -64,7 +64,7 @@ scatterer.plot()
 # Step 4: Define the laser source
 # -------------------------------
 # Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and a numerical aperture of 0.3.
-source = Source(
+source = GaussianBeam(
     numerical_aperture=0.3 * AU,  # Numerical aperture: 0.3
     wavelength=800 * nanometer,   # Laser wavelength: 800 nm
     optical_power=20 * milliwatt  # Optical power: 20 milliwatts
