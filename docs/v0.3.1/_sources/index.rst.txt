@@ -1,6 +1,3 @@
-FlowCytometry's documentation
-=============================
-
 **Date**: |today|, **Version**: |version|
 
 
