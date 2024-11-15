@@ -62,12 +62,12 @@
             <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">2<span class="text"> partial</span></button>
         </h2>
         <p class="text">
-            <a id="prevFileLink" class="nav" href="z_2404691b0fd86af0_flow_cell_py.html">&#xab; prev</a> &nbsp; &nbsp;
+            <a id="prevFileLink" class="nav" href="z_2404691b0fd86af0_helper_py.html">&#xab; prev</a> &nbsp; &nbsp;
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
-            <a id="nextFileLink" class="nav" href="z_5285227d0dd90efd_base_class_py.html">&#xbb; next</a>
+            <a id="nextFileLink" class="nav" href="z_2404691b0fd86af0_noises_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2024-11-14 12:55 +0000
+            created at 2024-11-15 22:28 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -121,7 +121,7 @@
     <p class="run"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">        <span class="nam">logging</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="str">"\n=== Simulation Statistics Summary ==="</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t">        <span class="nam">table_data</span> <span class="op">=</span> <span class="op">[</span><span class="nam">self</span><span class="op">.</span><span class="nam">_get_detector_stats</span><span class="op">(</span><span class="nam">detector</span><span class="op">)</span> <span class="key">for</span> <span class="nam">detector</span> <span class="key">in</span> <span class="nam">self</span><span class="op">.</span><span class="nam">detectors</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t">        <span class="nam">headers</span> <span class="op">=</span> <span class="op">[</span><span class="str">"Detector"</span><span class="op">,</span> <span class="str">"Number of Events"</span><span class="op">,</span> <span class="str">"First Event Time"</span><span class="op">,</span> <span class="str">"Last Event Time"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t">        <span class="nam">headers</span> <span class="op">=</span> <span class="op">[</span><span class="str">"Detector"</span><span class="op">,</span> <span class="str">"Number of Events"</span><span class="op">,</span> <span class="str">"Saturated"</span><span class="op">,</span> <span class="str">"First Event Time"</span><span class="op">,</span> <span class="str">"Last Event Time"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t">                   <span class="str">"Avg Time Between Events"</span><span class="op">,</span> <span class="str">"Min Time Between Events"</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t">        <span class="nam">formatted_table</span> <span class="op">=</span> <span class="nam">tabulate</span><span class="op">(</span><span class="nam">table_data</span><span class="op">,</span> <span class="nam">headers</span><span class="op">=</span><span class="nam">headers</span><span class="op">,</span> <span class="nam">tablefmt</span><span class="op">=</span><span class="nam">table_format</span><span class="op">,</span> <span class="nam">floatfmt</span><span class="op">=</span><span class="str">".3f"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -164,40 +164,41 @@
     <p class="run"><span class="n"><a id="t80" href="#t80">80</a></span><span class="t">        <span class="key">return</span> <span class="op">[</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t">            <span class="nam">detector</span><span class="op">.</span><span class="nam">name</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t">            <span class="nam">num_events</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t">            <span class="nam">first_event_time</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t">            <span class="nam">last_event_time</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t">            <span class="nam">avg_time_between_events</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t">            <span class="nam">min_time_between_events</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t">        <span class="op">]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t">    <span class="key">def</span> <span class="nam">_format_time</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">time_value</span><span class="op">)</span> <span class="op">-></span> <span class="nam">str</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t">        <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t"><span class="str">        Formats a time value for display, converting to compact notation if available.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t92" href="#t92">92</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t"><span class="str">        Parameters</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t"><span class="str">        ----------</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t"><span class="str">        time_value : pint.Quantity or pd.Timestamp or float</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t"><span class="str">            The time value to format.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t"><span class="str">        Returns</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t"><span class="str">        -------</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t100" href="#t100">100</a></span><span class="t"><span class="str">        str</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t"><span class="str">            The formatted time string.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t102" href="#t102">102</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t103" href="#t103">103</a></span><span class="t">        <span class="key">try</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t104" href="#t104">104</a></span><span class="t">            <span class="key">return</span> <span class="fst">f"</span><span class="op">{</span><span class="nam">time_value</span><span class="op">.</span><span class="nam">to_compact</span><span class="op">(</span><span class="op">)</span><span class="op">:</span><span class="fst">.4~P</span><span class="op">}</span><span class="fst">"</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t105" href="#t105">105</a></span><span class="t">        <span class="key">except</span> <span class="nam">AttributeError</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t">            <span class="key">return</span> <span class="fst">f"</span><span class="op">{</span><span class="nam">time_value</span><span class="op">:</span><span class="fst">.4f</span><span class="op">}</span><span class="fst">"</span> <span class="key">if</span> <span class="nam">pd</span><span class="op">.</span><span class="nam">notnull</span><span class="op">(</span><span class="nam">time_value</span><span class="op">)</span> <span class="key">else</span> <span class="str">"N/A"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t">            <span class="nam">detector</span><span class="op">.</span><span class="nam">is_saturated</span><span class="op">,</span>  <span class="com"># Was the detector saturated at some point</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t">            <span class="nam">first_event_time</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t">            <span class="nam">last_event_time</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t">            <span class="nam">avg_time_between_events</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t">            <span class="nam">min_time_between_events</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t">        <span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t">    <span class="key">def</span> <span class="nam">_format_time</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">time_value</span><span class="op">)</span> <span class="op">-></span> <span class="nam">str</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t">        <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t92" href="#t92">92</a></span><span class="t"><span class="str">        Formats a time value for display, converting to compact notation if available.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t"><span class="str">        Parameters</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t"><span class="str">        ----------</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t"><span class="str">        time_value : pint.Quantity or pd.Timestamp or float</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t"><span class="str">            The time value to format.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t"><span class="str">        Returns</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t100" href="#t100">100</a></span><span class="t"><span class="str">        -------</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t"><span class="str">        str</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t102" href="#t102">102</a></span><span class="t"><span class="str">            The formatted time string.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t103" href="#t103">103</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t104" href="#t104">104</a></span><span class="t">        <span class="key">try</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t105" href="#t105">105</a></span><span class="t">            <span class="key">return</span> <span class="fst">f"</span><span class="op">{</span><span class="nam">time_value</span><span class="op">.</span><span class="nam">to_compact</span><span class="op">(</span><span class="op">)</span><span class="op">:</span><span class="fst">.4~P</span><span class="op">}</span><span class="fst">"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t">        <span class="key">except</span> <span class="nam">AttributeError</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t">            <span class="key">return</span> <span class="fst">f"</span><span class="op">{</span><span class="nam">time_value</span><span class="op">:</span><span class="fst">.4f</span><span class="op">}</span><span class="fst">"</span> <span class="key">if</span> <span class="nam">pd</span><span class="op">.</span><span class="nam">notnull</span><span class="op">(</span><span class="nam">time_value</span><span class="op">)</span> <span class="key">else</span> <span class="str">"N/A"</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
         <p>
-            <a class="nav" href="z_2404691b0fd86af0_flow_cell_py.html">&#xab; prev</a> &nbsp; &nbsp;
+            <a class="nav" href="z_2404691b0fd86af0_helper_py.html">&#xab; prev</a> &nbsp; &nbsp;
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
-            <a class="nav" href="z_5285227d0dd90efd_base_class_py.html">&#xbb; next</a>
+            <a class="nav" href="z_2404691b0fd86af0_noises_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2024-11-14 12:55 +0000
+            created at 2024-11-15 22:28 +0000
         </p>
     </div>
 </footer>
