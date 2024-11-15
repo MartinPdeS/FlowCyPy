@@ -92,7 +92,6 @@ detector_1 = Detector(
     sampling_freq=2 * megahertz,        # Sampling frequency: 10,000 Hz
     saturation_level=40 * millivolt,    # Saturation level: Large enough to avoid saturation
     n_bins='14bit',                     # Number of bins for signal discretization: 1024
-    include_shot_noise=False
 )
 
 # Step 6: Simulate Flow Cytometer Signals
