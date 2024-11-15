@@ -155,19 +155,15 @@ latex_elements = {}
 
 
 latex_documents = [
-    (master_doc, f'{package_name}.tex', f'{package_name} Documentation',
-     'Martin Poinsinet de Sivry-Houle', 'manual'),
+    (master_doc, f'{package_name}.tex', '', 'Martin Poinsinet de Sivry-Houle', 'manual'),
 ]
 
 man_pages = [
-    (master_doc, 'supymode', f'{package_name} Documentation',
-     [author], 1)
+    (master_doc, 'FlowCyPy', '', [author], 1)
 ]
 
 texinfo_documents = [
-    (master_doc, package_name, f'{package_name} Documentation',
-     author, package_name, 'One line description of project.',
-     'Miscellaneous'),
+    (master_doc, package_name, '', author, package_name, 'One line description of project.', 'Miscellaneous'),
 ]
 
 epub_title = project
