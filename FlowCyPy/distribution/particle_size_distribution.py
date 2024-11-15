@@ -53,19 +53,28 @@ class RosinRammler(Base):
         Parameters
         ----------
         n_samples : Quantity
-            The number of particle sizes to generate.
+            The number of particle sizes to generate (dimensionless).
 
         Returns
         -------
         Quantity
             An array of particle sizes in meters (or other units).
         """
-        d = self.characteristic_size.to(self._main_units).magnitude
-        k = self.spread
+        # Validate inputs
+        if not isinstance(n_samples, Quantity) or not n_samples.check("particle"):
+            raise ValueError("n_samples must be a dimensionless Quantity.")
+        if self.spread <= 0:
+            raise ValueError("Spread parameter must be greater than zero.")
 
-        # Inverse of the Rosin-Rammler CDF to generate random samples
+        # Convert characteristic size to main units
+        d = self.characteristic_size.to(self._main_units).magnitude
+
+        # Generate uniform random samples in [0, 1)
         u = np.random.uniform(size=n_samples.magnitude)
-        sizes = d * (-np.log(1 - u))**(1/k)
+        u = np.clip(u, 1e-10, 1 - 1e-10)  # Avoid numerical issues
+
+        # Apply inverse CDF of Rosin-Rammler distribution
+        sizes = d * (-np.log(1 - u))**(1 / self.spread)
 
         return sizes * self._main_units
 

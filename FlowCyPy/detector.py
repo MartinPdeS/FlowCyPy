@@ -6,11 +6,12 @@ from FlowCyPy.units import AU, volt, watt, degree, second, ampere, coulomb
 from FlowCyPy.utils import PropertiesReport
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-from MPSPlots.styles import mps
 from functools import cached_property
 import pint_pandas
 from FlowCyPy.physical_constant import PhysicalConstant
 from PyMieSim.units import Quantity
+from FlowCyPy.noises import NoiseSetting
+from FlowCyPy.helper import plot_helper
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -54,8 +55,6 @@ class Detector(PropertiesReport):
         Temperature of the detector in Kelvin, used for thermal noise simulation.
     n_bins : Union[int, str]
         The number of discretization bins or bit-depth (e.g., '12bit').
-    include_shot_noise : bool
-        Flag to include shot noise in the simulation.
     """
     sampling_freq: Quantity
     phi_angle: Quantity
@@ -71,12 +70,6 @@ class Detector(PropertiesReport):
     resistance: Optional[Quantity] = Quantity(50.0, 'ohm')  # Resistance for thermal noise
     temperature: Optional[Quantity] = Quantity(0.0, 'kelvin')  # Temperature for thermal noise
     n_bins: Optional[Union[int, str]] = None
-
-    include_shot_noise: Optional[bool] = True  # Flag to include shot noise
-    include_dark_current_noise: Optional[bool] = True  # Flag to include dark current noise
-    include_thermal_noise: Optional[bool] = True  # Flag to include thermal noise
-    include_noises: Optional[bool] = True
-
     name: Optional[str] = None
 
     @cached_property
@@ -223,7 +216,7 @@ class Detector(PropertiesReport):
         np.ndarray
             An array of thermal noise values.
         """
-        if self.resistance.magnitude == 0 or self.temperature.magnitude == 0 or not self.include_thermal_noise or not self.include_noises:
+        if self.resistance.magnitude == 0 or self.temperature.magnitude == 0 or not NoiseSetting.include_thermal_noise or not NoiseSetting.include_noises:
             return
 
         noise_std = np.sqrt(
@@ -255,7 +248,7 @@ class Detector(PropertiesReport):
         np.ndarray
             An array of dark current noise values.
         """
-        if self.dark_current.magnitude == 0 or not self.include_dark_current_noise or not self.include_noises:
+        if self.dark_current.magnitude == 0 or not NoiseSetting.include_dark_current_noise or not NoiseSetting.include_noises:
             return
 
         dark_current_std = np.sqrt(
@@ -317,7 +310,7 @@ class Detector(PropertiesReport):
             where:
                 - \( R_{\text{load}} \) is the load resistance of the detector (ohms).
         """
-        if not self.include_shot_noise or not self.include_noises:
+        if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
             return
 
         # Step 1: Compute the photocurrent for all time points at once using vectorization
@@ -375,6 +368,8 @@ class Detector(PropertiesReport):
         self._apply_saturation()
         self._discretize_signal()
 
+        self.is_saturated = True if np.any(self.dataframe.Signal == self.saturation_level.to(volt).magnitude) else False
+
     def _apply_baseline_and_noise(self) -> None:
         """
         Adds baseline shift and base noise to the raw signal.
@@ -403,6 +398,7 @@ class Detector(PropertiesReport):
 
         The signal is mapped to discrete levels, depending on the number of bins (derived from `n_bins`).
         """
+
         if self.n_bins is not None:
             max_level = self.saturation_level if not np.isinf(self.saturation_level) else self.dataframe.Signal.max()
 
@@ -414,41 +410,53 @@ class Detector(PropertiesReport):
             ) - 1
             self.dataframe.Signal = pint_pandas.PintArray(bins[digitized], volt)
 
-    def plot(self, show: bool = True, figure_size: tuple = None, color: str = 'C0', ax: plt.Axes = None) -> None:
+    @plot_helper
+    def plot(self, color: str = 'C0', ax: plt.Axes = None, time_unit: str | Quantity = None, signal_unit: str | Quantity = None) -> None:
         """
-        Plots the processed signal over time.
+        Visualizes the processed signal as a function of time.
+
+        This method generates a plot of the processed signal data over time,
+        allowing customization of appearance and axis scaling.
 
         Parameters
         ----------
         show : bool, optional
-            If True, display the plot immediately. Default is True.
+            Whether to display the plot immediately. Default is True.
         figure_size : tuple, optional
-            The size of the figure in inches (width, height). Default is None.
+            Size of the plot in inches as (width, height). Default is None, which uses the default Matplotlib settings.
         color : str, optional
-            The color of the plotted signal line. Default is 'C0'.
+            Color of the signal line in the plot. Default is 'C0' (Matplotlib's default color cycle).
+        ax : matplotlib.axes.Axes, optional
+            Pre-existing Matplotlib Axes to plot on. If None, a new figure and axes will be created.
+        time_unit : str or Quantity, optional
+            Unit to use for the time axis. If None, it defaults to the unit of the maximum time value in the data.
+        signal_unit : str or Quantity, optional
+            Unit to use for the signal axis. If None, it defaults to the unit of the maximum signal value in the data.
 
-        This method visualizes the processed signal as a function of time.
+        Returns
+        -------
+        None
+            Displays the plot if `show` is True. The function also updates the data's time and signal columns to the specified units.
+
+        Notes
+        -----
+            - The method automatically converts the data's `Time` and `Signal` columns to the specified units,
+            ensuring consistency between the data and plot axes.
+            - If `show` is False, the plot will not be displayed but can be retrieved through the provided `ax`.
         """
-        with plt.style.context(mps):
-            signal_unit = self.dataframe.Signal.max().to_compact().units
-            time_unit = self.dataframe.Time.max().to_compact().units
+        signal_unit = signal_unit or self.dataframe.Signal.max().to_compact().units
 
-            self.dataframe['Signal'] = self.dataframe['Signal'].pint.to(signal_unit)
-            self.dataframe['Time'] = self.dataframe['Time'].pint.to(time_unit)
+        time_unit = time_unit or self.dataframe.Time.max().to_compact().units
 
-            ax = self.dataframe.plot(
-                x='Time',
-                y=['Signal'],
-                ax=ax,
-                color=color,
-                figsize=figure_size
-            )
+        y = self.dataframe['Signal'].pint.to(signal_unit)
+        x = self.dataframe['Time'].pint.to(time_unit)
 
-            ax.set_xlabel(f"Time [{time_unit:P}]")
-            ax.set_ylabel(f"{self.name} [{signal_unit:P}]")
+        ax.plot(x, y, color=color)
 
-            if show:
-                plt.show()
+        ax.set_xlabel(f"Time [{time_unit:P}]")
+        ax.set_ylabel(f"{self.name} [{signal_unit:P}]")
+
+        return time_unit, signal_unit
 
     def print_properties(self) -> None:
         """

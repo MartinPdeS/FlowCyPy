@@ -146,7 +146,6 @@ class Analyzer:
         for detector, (_, group) in zip(self.cytometer.detectors, self.dataframe.groupby('Detector')):
             num_events = len(group)
             total_peaks += num_events
-
             # Calculate average and minimum time between peaks if more than one event is detected
             if num_events > 1:
                 times = group['PeakTimes'].sort_values()
@@ -167,8 +166,8 @@ class Analyzer:
                 num_events,                                     # Number of events
                 f"{first_peak_time.to_compact():.4~P}",         # First peak time
                 f"{last_peak_time.to_compact():.4~P}",          # Last peak time
-                f"{avg_time_between_peaks.to_compact():.4~P}",  # Average time between peaks
-                f"{min_time_between_peaks.to_compact():.4~P}"   # Minimum time between peaks
+                f"{avg_time_between_peaks.to_compact():.4~P}" if avg_time_between_peaks != "N/A" else "N/A",  # Average time between peaks
+                f"{min_time_between_peaks.to_compact():.4~P}" if min_time_between_peaks != "N/A" else "N/A"  # Minimum time between peaks
             ])
 
         # Format the table using tabulate
@@ -289,8 +288,11 @@ class Analyzer:
         y_data = df_reset[(self.cytometer.detectors[1].name, 'Heights')]
 
         # Extract the units from the pint-pandas columns
-        x_unit = x_data.pint.units
-        y_unit = y_data.pint.units
+        x_units = x_data.max().to_compact().units
+        y_units = y_data.max().to_compact().units
+
+        x_data = x_data.pint.to(x_units)
+        y_data = y_data.pint.to(y_units)
 
         import seaborn as sns
         with plt.style.context(mps):
@@ -314,15 +316,18 @@ class Analyzer:
             )
 
             # # Set the x and y labels with units
-            g.ax_joint.set_xlabel(f"Heights : {self.cytometer.detectors[0].name} [{x_unit}]")
-            g.ax_joint.set_ylabel(f"Heights: {self.cytometer.detectors[1].name} [{y_unit}]")
+            g.ax_joint.set_xlabel(f"Heights : {self.cytometer.detectors[0].name} [{x_units:P}]")
+            g.ax_joint.set_ylabel(f"Heights: {self.cytometer.detectors[1].name} [{x_units:P}]")
 
             if log_plot:
-                ax = g.ax_joint
-                ax.set_xscale('log')
-                ax.set_yscale('log')
+                g.ax_joint.set_xscale('log')
+                g.ax_joint.set_yscale('log')
                 g.ax_marg_x.set_xscale('log')
                 g.ax_marg_y.set_yscale('log')
+
+            else:
+                g.ax_joint.set_xlim(0, None)
+                g.ax_joint.set_ylim(0, None)
 
             plt.tight_layout()
 

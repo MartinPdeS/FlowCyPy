@@ -11,3 +11,4 @@ from .scatterer import Scatterer, CouplingModel
 from .detector import Detector
 from .flow_cell import FlowCell
 from .source import GaussianBeam
+from .noises import NoiseSetting
