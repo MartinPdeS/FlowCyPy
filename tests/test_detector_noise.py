@@ -17,7 +17,6 @@ def default_detector_shot_noise():
         sampling_freq=1e6 * hertz,  # High sampling frequency to test shot noise
         resistance=50 * ohm,
         temperature=300 * kelvin,
-        include_shot_noise=True,  # Enable shot noise
     )
     detector.init_raw_signal(run_time=1 * microsecond)
 
@@ -35,7 +34,6 @@ def default_detector_thermal_noise():
         sampling_freq=1e6 * hertz,  # High sampling frequency
         resistance=50 * ohm,  # Resistance for thermal noise
         temperature=300 * kelvin,  # Typical room temperature
-        include_shot_noise=False,  # Disable shot noise
     )
 
     detector.init_raw_signal(run_time=1 * microsecond)
@@ -54,7 +52,6 @@ def default_detector_dark_current():
         sampling_freq=1e6 * hertz,  # High sampling frequency
         dark_current=10e-2 * ampere,  # Dark current of 10 nA
         temperature=300 * kelvin,
-        include_shot_noise=False,  # Disable shot noise
     )
 
     detector.init_raw_signal(run_time=1 * microsecond)
