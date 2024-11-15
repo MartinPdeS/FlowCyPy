@@ -37,7 +37,7 @@ class SimulationLogger:
         logging.info("\n=== Simulation Statistics Summary ===")
 
         table_data = [self._get_detector_stats(detector) for detector in self.detectors]
-        headers = ["Detector", "Number of Events", "First Event Time", "Last Event Time",
+        headers = ["Detector", "Number of Events", "Saturated", "First Event Time", "Last Event Time",
                    "Avg Time Between Events", "Min Time Between Events"]
 
         formatted_table = tabulate(table_data, headers=headers, tablefmt=table_format, floatfmt=".3f")
@@ -80,6 +80,7 @@ class SimulationLogger:
         return [
             detector.name,
             num_events,
+            detector.is_saturated,  # Was the detector saturated at some point
             first_event_time,
             last_event_time,
             avg_time_between_events,

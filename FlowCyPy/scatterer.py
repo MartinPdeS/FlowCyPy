@@ -292,7 +292,7 @@ class Scatterer(PropertiesReport):
         ValueError
             If the length of the values list does not match the number of populations or if any concentration has an incorrect dimensionality.
         """
-        if isinstance(values, list):
+        if isinstance(values, (list, tuple)):
             if len(values) != len(self.populations):
                 raise ValueError("The length of the values list must match the number of populations.")
 
@@ -311,3 +311,7 @@ class Scatterer(PropertiesReport):
                 )
             for population in self.populations:
                 population.concentration = values
+
+    def dilute(self, factor: float) -> None:
+        for population in self.populations:
+            population.concentration /= factor
