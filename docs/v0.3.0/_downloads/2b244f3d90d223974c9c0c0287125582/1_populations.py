@@ -24,6 +24,9 @@ from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, microvolt
 from FlowCyPy.detector import Detector
 from FlowCyPy import Analyzer, peak_finder
 from FlowCyPy import GaussianBeam
+from FlowCyPy import NoiseSetting
+
+NoiseSetting.include_noises = False
 
 np.random.seed(3)  # Ensure reproducibility
 

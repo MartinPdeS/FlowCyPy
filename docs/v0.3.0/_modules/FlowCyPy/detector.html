@@ -452,11 +452,12 @@
 <span class="kn">from</span> <span class="nn">FlowCyPy.utils</span> <span class="kn">import</span> <span class="n">PropertiesReport</span>
 <span class="kn">from</span> <span class="nn">pydantic.dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">field_validator</span>
-<span class="kn">from</span> <span class="nn">MPSPlots.styles</span> <span class="kn">import</span> <span class="n">mps</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">cached_property</span>
 <span class="kn">import</span> <span class="nn">pint_pandas</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.physical_constant</span> <span class="kn">import</span> <span class="n">PhysicalConstant</span>
 <span class="kn">from</span> <span class="nn">PyMieSim.units</span> <span class="kn">import</span> <span class="n">Quantity</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy.noises</span> <span class="kn">import</span> <span class="n">NoiseSetting</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy.helper</span> <span class="kn">import</span> <span class="n">plot_helper</span>
 
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -502,8 +503,6 @@
 <span class="sd">        Temperature of the detector in Kelvin, used for thermal noise simulation.</span>
 <span class="sd">    n_bins : Union[int, str]</span>
 <span class="sd">        The number of discretization bins or bit-depth (e.g., &#39;12bit&#39;).</span>
-<span class="sd">    include_shot_noise : bool</span>
-<span class="sd">        Flag to include shot noise in the simulation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">sampling_freq</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">phi_angle</span><span class="p">:</span> <span class="n">Quantity</span>
@@ -519,12 +518,6 @@
     <span class="n">resistance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="s1">&#39;ohm&#39;</span><span class="p">)</span>  <span class="c1"># Resistance for thermal noise</span>
     <span class="n">temperature</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;kelvin&#39;</span><span class="p">)</span>  <span class="c1"># Temperature for thermal noise</span>
     <span class="n">n_bins</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="n">include_shot_noise</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Flag to include shot noise</span>
-    <span class="n">include_dark_current_noise</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Flag to include dark current noise</span>
-    <span class="n">include_thermal_noise</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Flag to include thermal noise</span>
-    <span class="n">include_noises</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@cached_property</span>
@@ -671,7 +664,7 @@
 <span class="sd">        np.ndarray</span>
 <span class="sd">            An array of thermal noise values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_thermal_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_thermal_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="n">noise_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
@@ -703,7 +696,7 @@
 <span class="sd">        np.ndarray</span>
 <span class="sd">            An array of dark current noise values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_dark_current_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_dark_current_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="n">dark_current_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
@@ -765,7 +758,7 @@
 <span class="sd">            where:</span>
 <span class="sd">                - \( R_{\text{load}} \) is the load resistance of the detector (ohms).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="c1"># Step 1: Compute the photocurrent for all time points at once using vectorization</span>
@@ -826,7 +819,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RawSignal&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_apply_baseline_and_noise</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_apply_saturation</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_discretize_signal</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_discretize_signal</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_saturated</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_level</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">volt</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="k">else</span> <span class="kc">False</span></div>
 
 
     <span class="k">def</span> <span class="nf">_apply_baseline_and_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -857,6 +852,7 @@
 
 <span class="sd">        The signal is mapped to discrete levels, depending on the number of bins (derived from `n_bins`).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">max_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_level</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">saturation_level</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
 
@@ -868,44 +864,53 @@
             <span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="n">digitized</span><span class="p">],</span> <span class="n">volt</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Detector.plot">
-<a class="viewcode-back" href="../../code/base.html#FlowCyPy.detector.Detector.plot">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">figure_size</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nd">@plot_helper</span>
+    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">time_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">signal_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Plots the processed signal over time.</span>
+<span class="sd">        Visualizes the processed signal as a function of time.</span>
+
+<span class="sd">        This method generates a plot of the processed signal data over time,</span>
+<span class="sd">        allowing customization of appearance and axis scaling.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        show : bool, optional</span>
-<span class="sd">            If True, display the plot immediately. Default is True.</span>
+<span class="sd">            Whether to display the plot immediately. Default is True.</span>
 <span class="sd">        figure_size : tuple, optional</span>
-<span class="sd">            The size of the figure in inches (width, height). Default is None.</span>
+<span class="sd">            Size of the plot in inches as (width, height). Default is None, which uses the default Matplotlib settings.</span>
 <span class="sd">        color : str, optional</span>
-<span class="sd">            The color of the plotted signal line. Default is &#39;C0&#39;.</span>
+<span class="sd">            Color of the signal line in the plot. Default is &#39;C0&#39; (Matplotlib&#39;s default color cycle).</span>
+<span class="sd">        ax : matplotlib.axes.Axes, optional</span>
+<span class="sd">            Pre-existing Matplotlib Axes to plot on. If None, a new figure and axes will be created.</span>
+<span class="sd">        time_unit : str or Quantity, optional</span>
+<span class="sd">            Unit to use for the time axis. If None, it defaults to the unit of the maximum time value in the data.</span>
+<span class="sd">        signal_unit : str or Quantity, optional</span>
+<span class="sd">            Unit to use for the signal axis. If None, it defaults to the unit of the maximum signal value in the data.</span>
 
-<span class="sd">        This method visualizes the processed signal as a function of time.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">            Displays the plot if `show` is True. The function also updates the data&#39;s time and signal columns to the specified units.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">            - The method automatically converts the data&#39;s `Time` and `Signal` columns to the specified units,</span>
+<span class="sd">            ensuring consistency between the data and plot axes.</span>
+<span class="sd">            - If `show` is False, the plot will not be displayed but can be retrieved through the provided `ax`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">mps</span><span class="p">):</span>
-            <span class="n">signal_unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="o">.</span><span class="n">units</span>
-            <span class="n">time_unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="o">.</span><span class="n">units</span>
+        <span class="n">signal_unit</span> <span class="o">=</span> <span class="n">signal_unit</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="o">.</span><span class="n">units</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_unit</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">time_unit</span><span class="p">)</span>
+        <span class="n">time_unit</span> <span class="o">=</span> <span class="n">time_unit</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="o">.</span><span class="n">units</span>
 
-            <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-                <span class="n">x</span><span class="o">=</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span>
-                <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">],</span>
-                <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
-                <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
-                <span class="n">figsize</span><span class="o">=</span><span class="n">figure_size</span>
-            <span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_unit</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">time_unit</span><span class="p">)</span>
 
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time [</span><span class="si">{</span><span class="n">time_unit</span><span class="si">:</span><span class="s2">P</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">signal_unit</span><span class="si">:</span><span class="s2">P</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time [</span><span class="si">{</span><span class="n">time_unit</span><span class="si">:</span><span class="s2">P</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">signal_unit</span><span class="si">:</span><span class="s2">P</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
 
+        <span class="k">return</span> <span class="n">time_unit</span><span class="p">,</span> <span class="n">signal_unit</span>
 
 <div class="viewcode-block" id="Detector.print_properties">
 <a class="viewcode-back" href="../../code/base.html#FlowCyPy.detector.Detector.print_properties">[docs]</a>

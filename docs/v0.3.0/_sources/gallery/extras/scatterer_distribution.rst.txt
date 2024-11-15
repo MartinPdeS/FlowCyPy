@@ -186,7 +186,7 @@ Display the properties of the scatterer distribution.
     +------------------+------------------------------+
     | Refractive Index | Normal(1.390 RIU, 0.020 RIU) |
     +------------------+------------------------------+
-    | Size             | RR(50.000 nm, 4.500)         |
+    | Size             | RR(100.000 nm, 4.500)        |
     +------------------+------------------------------+
     | Concentration    | 1.7 nmol/m³                  |
     +------------------+------------------------------+
@@ -216,7 +216,7 @@ Display the properties of the scatterer distribution.
     +------------------+------------------------------+
     | Refractive Index | Normal(1.430 RIU, 0.020 RIU) |
     +------------------+------------------------------+
-    | Size             | RR(1000.000 nm, 4.500)       |
+    | Size             | RR(300.000 nm, 4.500)        |
     +------------------+------------------------------+
     | Concentration    | 1.7 nmol/m³                  |
     +------------------+------------------------------+
@@ -290,7 +290,7 @@ Display the properties of the scatterer distribution.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.313 seconds)
+   **Total running time of the script:** (0 minutes 1.272 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_scatterer_distribution.py:

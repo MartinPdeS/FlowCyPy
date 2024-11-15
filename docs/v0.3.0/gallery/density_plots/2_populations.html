@@ -498,6 +498,9 @@ analyzes pulse signals from two detectors, and generates a 2D density plot of th
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">degree</span><span class="p">,</span> <span class="n">watt</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">millivolt</span><span class="p">,</span> <span class="n">ohm</span><span class="p">,</span> <span class="n">kelvin</span><span class="p">,</span> <span class="n">milliampere</span><span class="p">,</span> <span class="n">megahertz</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">microsecond</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">milliwatt</span><span class="p">,</span> <span class="n">AU</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">NoiseSetting</span>
+
+<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="c1"># Set random seed for reproducibility</span>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
@@ -696,6 +699,8 @@ Detector [forward] Properties
 +--------------------+----------+
 | N Bins             | 65536    |
 +--------------------+----------+
+/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/FlowCyPy/cytometer.py:186: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  ax.legend()
 </pre></div>
 </div>
 <p>Step 7: Analyze Pulse Signals</p>
@@ -721,7 +726,7 @@ Detector [forward] Properties
 <span class="n">analyzer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Plot with a linear scale (log_plot=False)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_2_populations_004.png" srcset="../../_images/sphx_glr_2_populations_004.png" alt="2 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.367 seconds)</p>
+<img src="../../_images/sphx_glr_2_populations_004.png" srcset="../../_images/sphx_glr_2_populations_004.png" alt="2 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 10.293 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-density-plots-2-populations-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/07ecafb66464397f8456d156b722f249/2_populations.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">2_populations.ipynb</span></code></a></p>

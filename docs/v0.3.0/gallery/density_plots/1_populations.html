@@ -501,6 +501,9 @@ to generate a 2D density plot of scattering intensities.</p>
 <span class="kn">from</span> <span class="nn">FlowCyPy.detector</span> <span class="kn">import</span> <span class="n">Detector</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">Analyzer</span><span class="p">,</span> <span class="n">peak_finder</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">GaussianBeam</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">NoiseSetting</span>
+
+<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># Ensure reproducibility</span>
 
@@ -616,6 +619,8 @@ Population [EV] Properties
 +------------------+------------------------------+
 | N events         | 76.0 particle                |
 +------------------+------------------------------+
+/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/FlowCyPy/cytometer.py:186: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  ax.legend()
 </pre></div>
 </div>
 <p>Step 5: Analyzing Pulse Signals</p>
@@ -643,7 +648,7 @@ Extract coincidence data within a defined margin</p>
 <span class="n">analyzer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_1_populations_004.png" srcset="../../_images/sphx_glr_1_populations_004.png" alt="1 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.420 seconds)</p>
+<img src="../../_images/sphx_glr_1_populations_004.png" srcset="../../_images/sphx_glr_1_populations_004.png" alt="1 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.395 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-density-plots-1-populations-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/8182ce70349c788bb9f874a196561c48/1_populations.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">1_populations.ipynb</span></code></a></p>

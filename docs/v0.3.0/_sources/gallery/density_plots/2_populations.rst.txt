@@ -30,7 +30,7 @@ Steps:
 3. Simulate the flow cytometry experiment.
 4. Analyze pulse signals and generate a 2D density plot.
 
-.. GENERATED FROM PYTHON SOURCE LINES 14-75
+.. GENERATED FROM PYTHON SOURCE LINES 14-78
 
 .. code-block:: Python
 
@@ -44,6 +44,9 @@ Steps:
     from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliampere, megahertz
     from FlowCyPy.units import microsecond
     from FlowCyPy.units import milliwatt, AU
+    from FlowCyPy import NoiseSetting
+
+    NoiseSetting.include_noises = False
 
     # Set random seed for reproducibility
     np.random.seed(3)
@@ -170,11 +173,11 @@ Steps:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 76-77
+.. GENERATED FROM PYTHON SOURCE LINES 79-80
 
 Step 4: Set up the Laser GaussianBeam
 
-.. GENERATED FROM PYTHON SOURCE LINES 77-132
+.. GENERATED FROM PYTHON SOURCE LINES 80-135
 
 .. code-block:: Python
 
@@ -277,15 +280,17 @@ Step 4: Set up the Laser GaussianBeam
     +--------------------+----------+
     | N Bins             | 65536    |
     +--------------------+----------+
+    /opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/FlowCyPy/cytometer.py:186: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+      ax.legend()
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 133-134
+.. GENERATED FROM PYTHON SOURCE LINES 136-137
 
 Step 7: Analyze Pulse Signals
 
-.. GENERATED FROM PYTHON SOURCE LINES 134-148
+.. GENERATED FROM PYTHON SOURCE LINES 137-151
 
 .. code-block:: Python
 
@@ -315,11 +320,11 @@ Step 7: Analyze Pulse Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-150
+.. GENERATED FROM PYTHON SOURCE LINES 152-153
 
 Step 8: Extract and Plot Coincidence Data
 
-.. GENERATED FROM PYTHON SOURCE LINES 150-154
+.. GENERATED FROM PYTHON SOURCE LINES 153-157
 
 .. code-block:: Python
 
@@ -342,7 +347,7 @@ Step 8: Extract and Plot Coincidence Data
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 12.367 seconds)
+   **Total running time of the script:** (0 minutes 10.293 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_2_populations.py:

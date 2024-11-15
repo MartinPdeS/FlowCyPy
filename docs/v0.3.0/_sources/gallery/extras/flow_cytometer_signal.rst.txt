@@ -229,7 +229,7 @@ Steps:
     +------------------+------------------------------+
     | Refractive Index | Normal(1.390 RIU, 0.020 RIU) |
     +------------------+------------------------------+
-    | Size             | RR(50.000 nm, 4.500)         |
+    | Size             | RR(100.000 nm, 4.500)        |
     +------------------+------------------------------+
     | Concentration    | 1.7 nmol/m³                  |
     +------------------+------------------------------+
@@ -259,7 +259,7 @@ Steps:
     +------------------+------------------------------+
     | Refractive Index | Normal(1.430 RIU, 0.020 RIU) |
     +------------------+------------------------------+
-    | Size             | RR(1000.000 nm, 4.500)       |
+    | Size             | RR(300.000 nm, 4.500)        |
     +------------------+------------------------------+
     | Concentration    | 1.7 nmol/m³                  |
     +------------------+------------------------------+
@@ -362,7 +362,7 @@ Steps:
     +------------------+------------------------------+
     | Refractive Index | Normal(1.390 RIU, 0.020 RIU) |
     +------------------+------------------------------+
-    | Size             | RR(50.000 nm, 4.500)         |
+    | Size             | RR(100.000 nm, 4.500)        |
     +------------------+------------------------------+
     | Concentration    | 1.7 nmol/m³                  |
     +------------------+------------------------------+
@@ -392,7 +392,7 @@ Steps:
     +------------------+------------------------------+
     | Refractive Index | Normal(1.430 RIU, 0.020 RIU) |
     +------------------+------------------------------+
-    | Size             | RR(1000.000 nm, 4.500)       |
+    | Size             | RR(300.000 nm, 4.500)        |
     +------------------+------------------------------+
     | Concentration    | 1.7 nmol/m³                  |
     +------------------+------------------------------+
@@ -486,6 +486,8 @@ Steps:
     +--------------------+----------+
     | N Bins             | 16384    |
     +--------------------+----------+
+    /opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/FlowCyPy/cytometer.py:186: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+      ax.legend()
 
 
 
@@ -499,7 +501,7 @@ and complexity and can be further analyzed for feature extraction, such as peak 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.374 seconds)
+   **Total running time of the script:** (0 minutes 7.346 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_flow_cytometer_signal.py:

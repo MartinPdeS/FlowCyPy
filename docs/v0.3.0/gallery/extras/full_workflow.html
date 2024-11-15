@@ -573,7 +573,6 @@ This represents the population of scatterers (particles) that will interact with
     <span class="n">sampling_freq</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">megahertz</span><span class="p">,</span>        <span class="c1"># Sampling frequency: 10,000 Hz</span>
     <span class="n">saturation_level</span><span class="o">=</span><span class="mi">40</span> <span class="o">*</span> <span class="n">millivolt</span><span class="p">,</span>    <span class="c1"># Saturation level: Large enough to avoid saturation</span>
     <span class="n">n_bins</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>                     <span class="c1"># Number of bins for signal discretization: 1024</span>
-    <span class="n">include_shot_noise</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
 
 <span class="c1"># Step 6: Simulate Flow Cytometer Signals</span>
@@ -615,9 +614,9 @@ This represents the population of scatterers (particles) that will interact with
 +-----------------------------+----------+
 | medium refractive index     | 1.0 RIU  |
 +-----------------------------+----------+
-| minimum time between events | 19.9 ps  |
+| minimum time between events | 9.1 ps   |
 +-----------------------------+----------+
-| average time between events | 176.5 ns |
+| average time between events | 176.9 ns |
 +-----------------------------+----------+
 
 Population [EV] Properties
@@ -692,11 +691,13 @@ Detector [second detector] Properties
 +--------------------+---------+
 | N Bins             | 16384   |
 +--------------------+---------+
+/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/FlowCyPy/cytometer.py:186: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  ax.legend()
 
 &#39;\nSummary:\n--------\nThis script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,\nand extracts important features. The process is visualized through signal plots, and key properties are displayed.\n&#39;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.875 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.749 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-full-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/7765c7c9dfbad7ed6be152008ccfca41/full_workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">full_workflow.ipynb</span></code></a></p>

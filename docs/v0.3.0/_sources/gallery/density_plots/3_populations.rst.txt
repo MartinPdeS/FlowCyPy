@@ -31,7 +31,7 @@ Workflow Summary:
 3. Run the Experiment: Simulate the flow cytometry experiment.
 4. Data Analysis: Analyze the pulse signals and generate a 2D density plot of the scattering intensities.
 
-.. GENERATED FROM PYTHON SOURCE LINES 15-85
+.. GENERATED FROM PYTHON SOURCE LINES 15-88
 
 .. code-block:: Python
 
@@ -44,9 +44,12 @@ Workflow Summary:
     from FlowCyPy.units import particle, milliliter, nanometer, RIU, milliwatt, AU
     from FlowCyPy import FlowCytometer
     from FlowCyPy.detector import Detector
-    from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, millivolt, microsecond
+    from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, microsecond, microvolt
     from FlowCyPy import Analyzer, peak_finder
     from FlowCyPy import GaussianBeam
+    from FlowCyPy import NoiseSetting
+
+    NoiseSetting.include_noises = False
 
     np.random.seed(3)  # Ensure reproducibility
 
@@ -54,7 +57,7 @@ Workflow Summary:
     flow_cell = FlowCell(
         flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
         flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
-        run_time=0.5 * millisecond               # Simulation run time: 0.5 ms
+        run_time=0.2 * millisecond               # Simulation run time: 0.5 ms
     )
 
     # Step 2: Defining Particle Populations
@@ -66,7 +69,7 @@ Workflow Summary:
         name='EV',  # Population name: Extracellular Vesicles
         concentration=1e9 * particle / milliliter,  # Concentration: 1e9 particles/milliliter
         size=distribution.RosinRammler(
-            characteristic_size=50 * nanometer,  # Characteristic size: 50 nm
+            characteristic_size=100 * nanometer,  # Characteristic size: 50 nm
             spread=4.5                           # Spread factor for the distribution
         ),
         refractive_index=distribution.Normal(
@@ -92,7 +95,7 @@ Workflow Summary:
         name='Cells',  # Population name: Cells
         concentration=1e9 * particle / milliliter,  # Concentration: 1e9 particles/milliliter
         size=distribution.RosinRammler(
-            characteristic_size=1000 * nanometer,  # Characteristic size: 1000 nm
+            characteristic_size=300 * nanometer,  # Characteristic size: 1000 nm
             spread=4.5                             # Spread factor for the distribution
         ),
         refractive_index=distribution.Normal(
@@ -127,9 +130,9 @@ Workflow Summary:
     +-----------------------------+----------+
     | medium refractive index     | 1.3 RIU  |
     +-----------------------------+----------+
-    | minimum time between events | 356.7 ps |
+    | minimum time between events | 1.8 ns   |
     +-----------------------------+----------+
-    | average time between events | 340.2 ns |
+    | average time between events | 332.1 ns |
     +-----------------------------+----------+
 
     Population [EV] Properties
@@ -144,7 +147,7 @@ Workflow Summary:
     +------------------+------------------------------+
     | Concentration    | 333.3 Gparticle/l            |
     +------------------+------------------------------+
-    | N events         | 126.0 particle               |
+    | N events         | 50.0 particle                |
     +------------------+------------------------------+
 
     Population [EV] Properties
@@ -159,7 +162,7 @@ Workflow Summary:
     +------------------+------------------------------+
     | Concentration    | 333.3 Gparticle/l            |
     +------------------+------------------------------+
-    | N events         | 126.0 particle               |
+    | N events         | 50.0 particle                |
     +------------------+------------------------------+
 
     Population [LP] Properties
@@ -174,7 +177,7 @@ Workflow Summary:
     +------------------+------------------------------+
     | Concentration    | 333.3 Gparticle/l            |
     +------------------+------------------------------+
-    | N events         | 101.0 particle               |
+    | N events         | 41.0 particle                |
     +------------------+------------------------------+
 
     Population [EV] Properties
@@ -185,11 +188,11 @@ Workflow Summary:
     +------------------+------------------------------+
     | Refractive Index | Normal(1.390 RIU, 0.020 RIU) |
     +------------------+------------------------------+
-    | Size             | RR(50.000 nm, 4.500)         |
+    | Size             | RR(100.000 nm, 4.500)        |
     +------------------+------------------------------+
     | Concentration    | 1.7 nmol/m³                  |
     +------------------+------------------------------+
-    | N events         | 361.0 particle               |
+    | N events         | 151.0 particle               |
     +------------------+------------------------------+
 
     Population [LP] Properties
@@ -204,7 +207,7 @@ Workflow Summary:
     +------------------+------------------------------+
     | Concentration    | 1.7 nmol/m³                  |
     +------------------+------------------------------+
-    | N events         | 378.0 particle               |
+    | N events         | 147.0 particle               |
     +------------------+------------------------------+
 
     Population [Cells] Properties
@@ -215,27 +218,27 @@ Workflow Summary:
     +------------------+------------------------------+
     | Refractive Index | Normal(1.430 RIU, 0.020 RIU) |
     +------------------+------------------------------+
-    | Size             | RR(1000.000 nm, 4.500)       |
+    | Size             | RR(300.000 nm, 4.500)        |
     +------------------+------------------------------+
     | Concentration    | 1.7 nmol/m³                  |
     +------------------+------------------------------+
-    | N events         | 365.0 particle               |
+    | N events         | 151.0 particle               |
     +------------------+------------------------------+
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-87
+.. GENERATED FROM PYTHON SOURCE LINES 89-90
 
 Step 3: Laser GaussianBeam Configuration
 
-.. GENERATED FROM PYTHON SOURCE LINES 87-137
+.. GENERATED FROM PYTHON SOURCE LINES 90-140
 
 .. code-block:: Python
 
     source = GaussianBeam(
         numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
-        wavelength=200 * nanometer,           # Laser wavelength: 200 nm
+        wavelength=488 * nanometer,           # Laser wavelength: 200 nm
         optical_power=20 * milliwatt          # Laser optical power: 20 mW
     )
 
@@ -245,28 +248,28 @@ Step 3: Laser GaussianBeam Configuration
     detector_0 = Detector(
         name='forward',                         # Detector name: Forward scatter
         phi_angle=0 * degree,                   # Detector angle: 0 degrees (forward scatter)
-        numerical_aperture=1.2 * AU,            # Detector numerical aperture: 1.2
+        numerical_aperture=.2 * AU,             # Detector numerical aperture: 1.2
         responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
         sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
         noise_level=0.0 * volt,                 # Noise level: 0 V
-        saturation_level=5000 * millivolt,      # Saturation level: 5000 mV (detector capacity)
-        resistance=1 * ohm,                     # Resistance: 1 ohm
+        saturation_level=1600 * microvolt,         # Saturation level: 5000 mV (detector capacity)
+        resistance=150 * ohm,                    # Resistance: 1 ohm
         temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
-        n_bins='14bit'                          # Discretization bins: 14-bit resolution
+        # n_bins='14bit'                        # Discretization bins: 14-bit resolution
     )
 
     # Add side scatter detector
     detector_1 = Detector(
         name='side',                            # Detector name: Side scatter
         phi_angle=90 * degree,                  # Detector angle: 90 degrees (side scatter)
-        numerical_aperture=1.2 * AU,            # Detector numerical aperture: 1.2
+        numerical_aperture=.2 * AU,             # Detector numerical aperture: 1.2
         responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
         sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
         noise_level=0.0 * volt,                 # Noise level: 0 V
-        saturation_level=5 * volt,              # Saturation level: 5 V (detector capacity)
-        resistance=1 * ohm,                     # Resistance: 1 ohm
+        saturation_level=1600 * microvolt,         # Saturation level: 5 V (detector capacity)
+        resistance=150 * ohm,                    # Resistance: 1 ohm
         temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
-        n_bins='14bit'                          # Discretization bins: 14-bit resolution
+        # n_bins='14bit'                        # Discretization bins: 14-bit resolution
     )
 
 
@@ -292,20 +295,27 @@ Step 3: Laser GaussianBeam Configuration
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/FlowCyPy/cytometer.py:186: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+      ax.legend()
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 138-140
+
+.. GENERATED FROM PYTHON SOURCE LINES 141-143
 
 Step 5: Analyzing Pulse Signals
 Configure peak finding algorithm
 
-.. GENERATED FROM PYTHON SOURCE LINES 140-161
+.. GENERATED FROM PYTHON SOURCE LINES 143-164
 
 .. code-block:: Python
 
     algorithm = peak_finder.MovingAverage(
-        threshold=0.1 * millivolt,           # Signal threshold: 0.1 mV
+        threshold=0.1 * microvolt,           # Signal threshold: 0.1 mV
         window_size=1 * microsecond,         # Moving average window size: 1 µs
         min_peak_distance=0.3 * microsecond  # Minimum distance between peaks: 0.3 µs
     )
@@ -321,7 +331,7 @@ Configure peak finding algorithm
 
     # Step 6: Coincidence Data and 2D Density Plot
     # Extract coincidence data within a defined margin
-    analyzer.get_coincidence(margin=1e-9 * microsecond)
+    analyzer.get_coincidence(margin=0.1 * microsecond)
 
     # Generate and plot the 2D density plot of scattering intensities
     analyzer.plot(log_plot=False)
@@ -352,7 +362,7 @@ Configure peak finding algorithm
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 18.030 seconds)
+   **Total running time of the script:** (0 minutes 7.843 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_3_populations.py:

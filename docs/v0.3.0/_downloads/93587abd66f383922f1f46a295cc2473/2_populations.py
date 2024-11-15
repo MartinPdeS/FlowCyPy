@@ -21,6 +21,9 @@ from FlowCyPy.units import particle, milliliter, nanometer, RIU, second, microme
 from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliampere, megahertz
 from FlowCyPy.units import microsecond
 from FlowCyPy.units import milliwatt, AU
+from FlowCyPy import NoiseSetting
+
+NoiseSetting.include_noises = False
 
 # Set random seed for reproducibility
 np.random.seed(3)
