@@ -270,7 +270,7 @@ class Analyzer:
         if show:
             plt.show()
 
-    def plot(self, show: bool = True, log_plot: bool = True) -> None:
+    def plot(self, show: bool = True, log_plot: bool = True, x_limits: tuple = None, y_limits: tuple = None, bandwidth_adjust: float = 1) -> None:
         """
         Plots a 2D density plot of the scattering intensities from the two detectors,
         along with individual peak heights.
@@ -281,6 +281,8 @@ class Analyzer:
             Whether to display the plot immediately, by default True.
         log_plot : bool, optional
             Whether to use logarithmic scaling for the plot axes, by default True.
+        bandwidth_adjust : float, optional
+            Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Higher values produce smoother density estimates. Default is 1.
         """
         # Reset the index if necessary (to handle MultiIndex)
         df_reset = self.coincidence.reset_index()
@@ -294,6 +296,7 @@ class Analyzer:
         x_data = x_data.pint.to(x_units)
         y_data = y_data.pint.to(y_units)
 
+        bandwidth_adjust = 1
         import seaborn as sns
         with plt.style.context(mps):
 
@@ -304,7 +307,7 @@ class Analyzer:
                 kind='kde',
                 alpha=0.8,
                 fill=True,
-                joint_kws={'alpha': 0.7}
+                joint_kws={'alpha': 0.7, 'bw_adjust': bandwidth_adjust}
             )
             sns.scatterplot(
                 data=df_reset,
@@ -317,17 +320,23 @@ class Analyzer:
 
             # # Set the x and y labels with units
             g.ax_joint.set_xlabel(f"Heights : {self.cytometer.detectors[0].name} [{x_units:P}]")
-            g.ax_joint.set_ylabel(f"Heights: {self.cytometer.detectors[1].name} [{x_units:P}]")
+            g.ax_joint.set_ylabel(f"Heights: {self.cytometer.detectors[1].name} [{y_units:P}]")
 
             if log_plot:
-                g.ax_joint.set_xscale('log')
-                g.ax_joint.set_yscale('log')
                 g.ax_marg_x.set_xscale('log')
                 g.ax_marg_y.set_yscale('log')
 
-            else:
-                g.ax_joint.set_xlim(0, None)
-                g.ax_joint.set_ylim(0, None)
+            if x_limits is not None:
+                x0, x1 = x_limits
+                x0 = x0.to(x_units).magnitude
+                x1 = x1.to(x_units).magnitude
+                g.ax_joint.set_xlim(x0, x1)
+
+            if y_limits is not None:
+                y0, y1 = y_limits
+                y0 = y0.to(y_units).magnitude
+                y1 = y1.to(y_units).magnitude
+                g.ax_joint.set_ylim(y0, y1)
 
             plt.tight_layout()
 
