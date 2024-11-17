@@ -21,12 +21,13 @@ from FlowCyPy import Scatterer, distribution
 from FlowCyPy.units import particle, milliliter, nanometer, RIU, milliwatt, AU
 from FlowCyPy import FlowCytometer
 from FlowCyPy.detector import Detector
-from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, millivolt, microsecond, microvolt
+from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, millivolt, microsecond, microvolt, nanovolt
 from FlowCyPy import Analyzer, peak_finder
 from FlowCyPy import GaussianBeam
 from FlowCyPy import NoiseSetting
+from FlowCyPy.data import LDL, HDL, Platelet, Exosome
 
-NoiseSetting.include_noises = False
+NoiseSetting.include_noises = True
 
 np.random.seed(3)  # Ensure reproducibility
 
@@ -34,7 +35,7 @@ np.random.seed(3)  # Ensure reproducibility
 flow_cell = FlowCell(
     flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
     flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
-    run_time=.5 * millisecond                # Simulation run time: 0.5 ms
+    run_time=1.5 * millisecond                # Simulation run time: 0.5 ms
 )
 
 spread = 10
@@ -43,45 +44,29 @@ spread = 10
 # Initialize scatterer with a medium refractive index
 scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
 
-# Define populations with size distribution and refractive index
-scatterer.add_population(
-    name='EV',  # Population name: Extracellular Vesicles
-    concentration=1e9 * particle / milliliter,  # Concentration: 1e9 particles/milliliter
-    size=distribution.RosinRammler(
-        characteristic_size=100 * nanometer,  # Characteristic size: 50 nm
-        spread=spread                           # Spread factor for the distribution
-    ),
-    refractive_index=distribution.Normal(
-        mean=1.39 * RIU,    # Mean refractive index: 1.39
-        std_dev=0.01 * RIU  # Standard deviation: 0.02 refractive index units
-    )
-)
+scatterer.populations.append(Exosome)
+scatterer.populations.append(LDL)
+scatterer.populations.append(HDL)
+scatterer.populations.append(Platelet)
 
-# Define populations with size distribution and refractive index
-scatterer.add_population(
-    name='LP',  # Population name: Extracellular Vesicles
-    concentration=1e9 * particle / milliliter,  # Concentration: 1e9 particles/milliliter
-    size=distribution.RosinRammler(
-        characteristic_size=250 * nanometer,    # Characteristic size: 50 nm
-        spread=spread                           # Spread factor for the distribution
-    ),
-    refractive_index=distribution.Normal(
-        mean=1.39 * RIU,    # Mean refractive index: 1.39
-        std_dev=0.01 * RIU  # Standard deviation: 0.02 refractive index units
-    )
-)
 
+scatterer.concentrations = 1e9 * particle / milliliter
+
+HDL.concentration /= 3
+LDL.concentration /= 3
+# scatterer.dilute(1000)
 # scatterer.concentrations = 1e7 * particle / milliliter
 scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
 scatterer.print_properties()               # Display population properties
 scatterer.plot()                           # Visualize the population distributions
+
 
 # %%
 # Step 3: Laser GaussianBeam Configuration
 source = GaussianBeam(
     numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
     wavelength=488 * nanometer,           # Laser wavelength: 200 nm
-    optical_power=20 * milliwatt          # Laser optical power: 20 mW
+    optical_power=50 * milliwatt          # Laser optical power: 20 mW
 )
 
 # Step 4: Simulating the Flow Cytometry Experiment
@@ -127,7 +112,7 @@ cytometer = FlowCytometer(
 cytometer.simulate_pulse()
 
 # Visualize the scatter signals from both detectors
-# cytometer.plot()
+cytometer.plot()
 
 # %%
 # Step 5: Analyzing Pulse Signals
@@ -145,11 +130,15 @@ analyzer = Analyzer(cytometer=cytometer, algorithm=algorithm)
 analyzer.run_analysis(compute_peak_area=False)
 
 # Plot the detected peaks
-analyzer.plot_peak()
+# analyzer.plot_peak()
 
 # Step 6: Coincidence Data and 2D Density Plot
 # Extract coincidence data within a defined margin
 analyzer.get_coincidence(margin=1e-9 * microsecond)
 
 # Generate and plot the 2D density plot of scattering intensities
-analyzer.plot(log_plot=False)
+analyzer.plot(
+    x_limits=(1 * nanovolt, 300 * microvolt),
+    y_limits=(1 * nanovolt, 25 * microvolt),
+    log_plot=False
+    )

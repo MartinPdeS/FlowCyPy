@@ -12,6 +12,8 @@ from FlowCyPy.utils import PropertiesReport
 import logging
 from PyMieSim.units import Quantity, RIU, meter
 import warnings
+from FlowCyPy.populations_instances import *  # noqa F403
+
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -136,7 +138,6 @@ class Population(PropertiesReport):
         raise TypeError(f"suze must be of type Quantity or distribution.Base, but got {type(value)}")
 
     def initialize(self, flow_cell: FlowCell) -> None:
-
         self.dataframe = pd.DataFrame()
 
         if isinstance(self.size, Quantity):

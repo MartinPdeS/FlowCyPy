@@ -123,6 +123,19 @@ class Scatterer(PropertiesReport):
         """
         df_reset = self.dataframe.reset_index()
 
+        with plt.style.context(mps):
+            g = sns.displot(
+                df_reset,
+                x="Size",
+                hue="Population",
+                kind="kde",
+                fill=True
+            )
+            g.ax.set_yscale('log')
+            # plt.tight_layout()
+
+            plt.show()
+
         if len(df_reset.Time) == 1:
             return
 
@@ -210,7 +223,7 @@ class Scatterer(PropertiesReport):
         )
 
         self.populations.append(population)
-        return self
+        return population
 
     def remove_population(self, name: str) -> 'Scatterer':
         """
