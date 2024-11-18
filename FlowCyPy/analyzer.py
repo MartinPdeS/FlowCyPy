@@ -286,6 +286,9 @@ class Analyzer:
         """
         # Reset the index if necessary (to handle MultiIndex)
         df_reset = self.coincidence.reset_index()
+        df_reset.loc[:10, 'scatterer'] = 1
+        df_reset.loc[10:, 'scatterer'] = 2
+
         x_data = df_reset[(self.cytometer.detectors[0].name, 'Heights')]
         y_data = df_reset[(self.cytometer.detectors[1].name, 'Heights')]
 
@@ -313,12 +316,13 @@ class Analyzer:
                 data=df_reset,
                 x=x_data,
                 y=y_data,
+                hue='scatterer',
                 ax=g.ax_joint,
                 alpha=0.6,
                 zorder=1
             )
 
-            # # Set the x and y labels with units
+            # Set the x and y labels with units
             g.ax_joint.set_xlabel(f"Heights : {self.cytometer.detectors[0].name} [{x_units:P}]")
             g.ax_joint.set_ylabel(f"Heights: {self.cytometer.detectors[1].name} [{y_units:P}]")
 

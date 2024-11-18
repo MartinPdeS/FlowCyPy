@@ -25,7 +25,7 @@ from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, millivolt
 from FlowCyPy import Analyzer, peak_finder
 from FlowCyPy import GaussianBeam
 from FlowCyPy import NoiseSetting
-from FlowCyPy.data import LDL, HDL, Platelet, Exosome
+from FlowCyPy.populations_instances import LDL, HDL, Platelet, Exosome
 
 NoiseSetting.include_noises = True
 
@@ -35,7 +35,7 @@ np.random.seed(3)  # Ensure reproducibility
 flow_cell = FlowCell(
     flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
     flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
-    run_time=1.5 * millisecond                # Simulation run time: 0.5 ms
+    run_time=0.3 * millisecond                # Simulation run time: 0.5 ms
 )
 
 spread = 10
@@ -46,8 +46,8 @@ scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive i
 
 scatterer.populations.append(Exosome)
 scatterer.populations.append(LDL)
-scatterer.populations.append(HDL)
-scatterer.populations.append(Platelet)
+# scatterer.populations.append(HDL)
+# scatterer.populations.append(Platelet)
 
 
 scatterer.concentrations = 1e9 * particle / milliliter
@@ -58,7 +58,7 @@ LDL.concentration /= 3
 # scatterer.concentrations = 1e7 * particle / milliliter
 scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
 scatterer.print_properties()               # Display population properties
-scatterer.plot()                           # Visualize the population distributions
+# scatterer.plot()                           # Visualize the population distributions
 
 
 # %%
@@ -112,7 +112,7 @@ cytometer = FlowCytometer(
 cytometer.simulate_pulse()
 
 # Visualize the scatter signals from both detectors
-cytometer.plot()
+# cytometer.plot()
 
 # %%
 # Step 5: Analyzing Pulse Signals
