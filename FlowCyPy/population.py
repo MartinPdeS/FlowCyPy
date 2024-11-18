@@ -12,7 +12,6 @@ from FlowCyPy.utils import PropertiesReport
 import logging
 from PyMieSim.units import Quantity, RIU, meter
 import warnings
-from FlowCyPy.populations_instances import *  # noqa F403
 
 
 config_dict = dict(
@@ -245,3 +244,5 @@ class Population(PropertiesReport):
         }
 
         super(Population, self).print_properties(**_dict)
+
+from FlowCyPy.populations_instances import *  # noqa F403

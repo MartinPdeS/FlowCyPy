@@ -26,7 +26,7 @@ class Scatterer(PropertiesReport):
     indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).
 
     """
-    def __init__(self, medium_refractive_index: Quantity = 1.0 * RIU, populations: List[Population] = [], coupling_model: Optional[CouplingModel] = CouplingModel.MIE):
+    def __init__(self, medium_refractive_index: Quantity = 1.0 * RIU, populations: List[Population] = None, coupling_model: Optional[CouplingModel] = CouplingModel.MIE):
         """
         Parameters
         ----------
@@ -37,8 +37,8 @@ class Scatterer(PropertiesReport):
         medium_refractive_index : float
             The refractive index of the medium. Default is 1.0.
         """
+        self.populations = populations or []
         self.medium_refractive_index = medium_refractive_index
-        self.populations = populations
         self.coupling_model = coupling_model
 
         self.flow_cell: FlowCell = None
@@ -122,19 +122,6 @@ class Scatterer(PropertiesReport):
 
         """
         df_reset = self.dataframe.reset_index()
-
-        with plt.style.context(mps):
-            g = sns.displot(
-                df_reset,
-                x="Size",
-                hue="Population",
-                kind="kde",
-                fill=True
-            )
-            g.ax.set_yscale('log')
-            # plt.tight_layout()
-
-            plt.show()
 
         if len(df_reset.Time) == 1:
             return
