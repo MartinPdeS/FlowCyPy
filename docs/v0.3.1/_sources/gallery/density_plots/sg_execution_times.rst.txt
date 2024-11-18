@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:22.313** total execution time for 3 files **from gallery/density_plots**:
+**00:21.773** total execution time for 3 files **from gallery/density_plots**:
 
 .. container::
 
@@ -33,11 +33,11 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_gallery_density_plots_2_populations.py` (``2_populations.py``)
-     - 00:10.147
+     - 00:09.833
      - 0.0
    * - :ref:`sphx_glr_gallery_density_plots_3_populations.py` (``3_populations.py``)
-     - 00:07.498
+     - 00:07.505
      - 0.0
    * - :ref:`sphx_glr_gallery_density_plots_1_populations.py` (``1_populations.py``)
-     - 00:04.668
+     - 00:04.435
      - 0.0
