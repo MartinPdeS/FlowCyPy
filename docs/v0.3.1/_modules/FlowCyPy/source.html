@@ -541,6 +541,9 @@
 <span class="sd">        The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).</span>
 <span class="sd">    polarization : Optional[Quantity]</span>
 <span class="sd">        The polarization of the laser source in degrees (default is 0 degrees).</span>
+<span class="sd">    RIN : Optional[float], optional</span>
+<span class="sd">        The Relative Intensity Noise (RIN) of the laser, specified as a fractional value (e.g., 0.01 for 1% RIN).</span>
+<span class="sd">        Default is 0.0, representing a perfectly stable laser.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -552,11 +555,26 @@
 <span class="sd">        The energy of a single photon, calculated as `photon_energy = h * frequency`.</span>
 <span class="sd">    amplitude : Quantity</span>
 <span class="sd">        The electric field amplitude at the focus, derived from optical power, waist, and fundamental constants.</span>
+
+<span class="sd">    RIN Interpretation</span>
+<span class="sd">    ------------------</span>
+<span class="sd">    The Relative Intensity Noise (RIN) represents fluctuations in the laser&#39;s intensity relative to its mean optical power.</span>
+<span class="sd">    For a Gaussian beam, the instantaneous intensity at any given time can be modeled as:</span>
+
+<span class="sd">        I(t) = &lt;I&gt; * (1 + ΔI)</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        - `&lt;I&gt;` is the mean intensity derived from the optical power.</span>
+<span class="sd">        - `ΔI` is the noise component, modeled as a Gaussian random variable with:</span>
+<span class="sd">            - Mean = 0 (fluctuations are around the mean intensity).</span>
+<span class="sd">            - Variance = RIN * &lt;I&gt;².</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">optical_power</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">numerical_aperture</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">polarization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">degree</span>
+    <span class="n">RIN</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -577,10 +595,10 @@
 <span class="sd">            E_0 = \sqrt{\frac{2 P}{\pi \epsilon_0 c w_0^2}}</span>
 
 <span class="sd">        where:</span>
-<span class="sd">        - `P` is the optical power of the beam,</span>
-<span class="sd">        - `epsilon_0` is the permittivity of free space,</span>
-<span class="sd">        - `c` is the speed of light,</span>
-<span class="sd">        - `w_0` is the beam waist at the focus.</span>
+<span class="sd">            - `P` is the optical power of the beam,</span>
+<span class="sd">            - `epsilon_0` is the permittivity of free space,</span>
+<span class="sd">            - `c` is the speed of light,</span>
+<span class="sd">            - `w_0` is the beam waist at the focus.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -615,6 +633,9 @@
 <span class="sd">        The numerical aperture of the lens along the y-axis (unitless).</span>
 <span class="sd">    polarization : Optional[Quantity]</span>
 <span class="sd">        The polarization of the laser source in degrees (default is 0 degrees).</span>
+<span class="sd">    RIN : Optional[float], optional</span>
+<span class="sd">        The Relative Intensity Noise (RIN) of the laser, specified as a fractional value (e.g., 0.01 for 1% RIN).</span>
+<span class="sd">        Default is 0.0, representing a perfectly stable laser.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -624,12 +645,27 @@
 <span class="sd">        The beam waist at the focus along the y-axis, calculated as `waist_y = wavelength / (pi * numerical_aperture_y)`.</span>
 <span class="sd">    amplitude : Quantity</span>
 <span class="sd">        The electric field amplitude at the focus, derived from optical power, waist_x, waist_y, and fundamental constants.</span>
+
+<span class="sd">    RIN Interpretation</span>
+<span class="sd">    ------------------</span>
+<span class="sd">    The Relative Intensity Noise (RIN) represents fluctuations in the laser&#39;s intensity relative to its mean optical power.</span>
+<span class="sd">    For a Gaussian beam, the instantaneous intensity at any given time can be modeled as:</span>
+
+<span class="sd">        I(t) = &lt;I&gt; * (1 + ΔI)</span>
+
+<span class="sd">    where:</span>
+<span class="sd">        - `&lt;I&gt;` is the mean intensity derived from the optical power.</span>
+<span class="sd">        - `ΔI` is the noise component, modeled as a Gaussian random variable with:</span>
+<span class="sd">            - Mean = 0 (fluctuations are around the mean intensity).</span>
+<span class="sd">            - Variance = RIN * &lt;I&gt;².</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">optical_power</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">numerical_aperture_x</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">numerical_aperture_y</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">polarization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">degree</span>
+    <span class="n">RIN</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -650,11 +686,11 @@
 <span class="sd">            E_0 = \\sqrt{\\frac{2 P}{\\pi \\epsilon_0 c w_{0x} w_{0y}}}</span>
 
 <span class="sd">        where:</span>
-<span class="sd">        - `P` is the optical power of the beam,</span>
-<span class="sd">        - `epsilon_0` is the permittivity of free space,</span>
-<span class="sd">        - `c` is the speed of light,</span>
-<span class="sd">        - `w_{0x}` is the beam waist at the focus along the x-axis,</span>
-<span class="sd">        - `w_{0y}` is the beam waist at the focus along the y-axis.</span>
+<span class="sd">            - `P` is the optical power of the beam,</span>
+<span class="sd">            - `epsilon_0` is the permittivity of free space,</span>
+<span class="sd">            - `c` is the speed of light,</span>
+<span class="sd">            - `w_{0x}` is the beam waist at the focus along the x-axis,</span>
+<span class="sd">            - `w_{0y}` is the beam waist at the focus along the y-axis.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
