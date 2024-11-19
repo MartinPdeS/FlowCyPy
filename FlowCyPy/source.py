@@ -93,6 +93,9 @@ class GaussianBeam(BaseBeam):
         The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).
     polarization : Optional[Quantity]
         The polarization of the laser source in degrees (default is 0 degrees).
+    RIN : Optional[float], optional
+        The Relative Intensity Noise (RIN) of the laser, specified as a fractional value (e.g., 0.01 for 1% RIN).
+        Default is 0.0, representing a perfectly stable laser.
 
     Attributes
     ----------
@@ -104,11 +107,26 @@ class GaussianBeam(BaseBeam):
         The energy of a single photon, calculated as `photon_energy = h * frequency`.
     amplitude : Quantity
         The electric field amplitude at the focus, derived from optical power, waist, and fundamental constants.
+
+    RIN Interpretation
+    ------------------
+    The Relative Intensity Noise (RIN) represents fluctuations in the laser's intensity relative to its mean optical power.
+    For a Gaussian beam, the instantaneous intensity at any given time can be modeled as:
+
+        I(t) = <I> * (1 + ΔI)
+
+    where:
+        - `<I>` is the mean intensity derived from the optical power.
+        - `ΔI` is the noise component, modeled as a Gaussian random variable with:
+            - Mean = 0 (fluctuations are around the mean intensity).
+            - Variance = RIN * <I>².
+
     """
     optical_power: Quantity
     wavelength: Quantity
     numerical_aperture: Quantity
     polarization: Optional[Quantity] = 0 * degree
+    RIN: Optional[float] = 0.0
 
     def __post_init__(self):
         """
@@ -127,10 +145,10 @@ class GaussianBeam(BaseBeam):
             E_0 = \sqrt{\frac{2 P}{\pi \epsilon_0 c w_0^2}}
 
         where:
-        - `P` is the optical power of the beam,
-        - `epsilon_0` is the permittivity of free space,
-        - `c` is the speed of light,
-        - `w_0` is the beam waist at the focus.
+            - `P` is the optical power of the beam,
+            - `epsilon_0` is the permittivity of free space,
+            - `c` is the speed of light,
+            - `w_0` is the beam waist at the focus.
 
         Returns
         -------
@@ -161,6 +179,9 @@ class AstigmaticGaussianBeam(BaseBeam):
         The numerical aperture of the lens along the y-axis (unitless).
     polarization : Optional[Quantity]
         The polarization of the laser source in degrees (default is 0 degrees).
+    RIN : Optional[float], optional
+        The Relative Intensity Noise (RIN) of the laser, specified as a fractional value (e.g., 0.01 for 1% RIN).
+        Default is 0.0, representing a perfectly stable laser.
 
     Attributes
     ----------
@@ -170,12 +191,27 @@ class AstigmaticGaussianBeam(BaseBeam):
         The beam waist at the focus along the y-axis, calculated as `waist_y = wavelength / (pi * numerical_aperture_y)`.
     amplitude : Quantity
         The electric field amplitude at the focus, derived from optical power, waist_x, waist_y, and fundamental constants.
+
+    RIN Interpretation
+    ------------------
+    The Relative Intensity Noise (RIN) represents fluctuations in the laser's intensity relative to its mean optical power.
+    For a Gaussian beam, the instantaneous intensity at any given time can be modeled as:
+
+        I(t) = <I> * (1 + ΔI)
+
+    where:
+        - `<I>` is the mean intensity derived from the optical power.
+        - `ΔI` is the noise component, modeled as a Gaussian random variable with:
+            - Mean = 0 (fluctuations are around the mean intensity).
+            - Variance = RIN * <I>².
+
     """
     optical_power: Quantity
     wavelength: Quantity
     numerical_aperture_x: Quantity
     numerical_aperture_y: Quantity
     polarization: Optional[Quantity] = 0 * degree
+    RIN: Optional[float] = 0.0
 
     def __post_init__(self):
         """
@@ -194,11 +230,11 @@ class AstigmaticGaussianBeam(BaseBeam):
             E_0 = \\sqrt{\\frac{2 P}{\\pi \\epsilon_0 c w_{0x} w_{0y}}}
 
         where:
-        - `P` is the optical power of the beam,
-        - `epsilon_0` is the permittivity of free space,
-        - `c` is the speed of light,
-        - `w_{0x}` is the beam waist at the focus along the x-axis,
-        - `w_{0y}` is the beam waist at the focus along the y-axis.
+            - `P` is the optical power of the beam,
+            - `epsilon_0` is the permittivity of free space,
+            - `c` is the speed of light,
+            - `w_{0x}` is the beam waist at the focus along the x-axis,
+            - `w_{0y}` is the beam waist at the focus along the y-axis.
 
         Returns
         -------
