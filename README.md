@@ -4,9 +4,9 @@
 
 | Name                                                  |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |------------------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
-| FlowCyPy/analyzer.py                                  |      124 |       15 |       24 |        8 |     84% |156-157, 218, 240-241, 270->exit, 329->333, 334-337, 340-343, 347->exit, 360-366 |
+| FlowCyPy/analyzer.py                                  |      132 |       24 |       30 |        8 |     77% |156-157, 218, 240-241, 270->exit, 275-293, 351->355, 356-359, 362-365, 369->exit, 382-388 |
 | FlowCyPy/coupling\_mechanism/empirical.py             |        9 |        4 |        0 |        0 |     56% |     39-47 |
-| FlowCyPy/coupling\_mechanism/mie.py                   |       26 |        1 |        2 |        1 |     93% |        39 |
+| FlowCyPy/coupling\_mechanism/mie.py                   |       41 |        4 |        6 |        3 |     85% |30-31, 57, 119 |
 | FlowCyPy/coupling\_mechanism/rayleigh.py              |       22 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/uniform.py               |        5 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/cytometer.py                                 |       88 |        8 |       14 |        2 |     88% |142, 147-150, 202-208 |
@@ -30,10 +30,10 @@
 | FlowCyPy/populations\_instances.py                    |        9 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/report.py                                    |      109 |       75 |        2 |        0 |     31% |13-22, 44-48, 52-57, 61-63, 67-75, 79-92, 96-127, 131-147, 151-155, 159, 172-183, 189-236 |
 | FlowCyPy/scatterer.py                                 |      101 |       29 |       36 |        5 |     62% |74-84, 127, 145-148, 152->exit, 201, 234-239, 278, 295-313, 316-317 |
-| FlowCyPy/source.py                                    |       72 |        7 |       18 |        6 |     86% |36, 41, 51, 54, 61, 64, 74 |
+| FlowCyPy/source.py                                    |       74 |        7 |       18 |        6 |     86% |36, 41, 51, 54, 61, 64, 74 |
 | FlowCyPy/units.py                                     |       18 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       45 |        5 |        2 |        0 |     89% |25, 30, 91-92, 114 |
-|                                             **TOTAL** | **1233** |  **221** |  **188** |   **49** | **79%** |           |
+|                                             **TOTAL** | **1258** |  **233** |  **198** |   **51** | **78%** |           |
 
 
 ## Setup coverage badge
