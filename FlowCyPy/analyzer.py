@@ -270,6 +270,28 @@ class Analyzer:
         if show:
             plt.show()
 
+    # Function to map scatterers to time points
+    def map_scatterers_to_time(time_points, scatterers, margin):
+        results = []  # List to hold the results for each time point
+
+        for t in time_points:
+            scatterer_names = []  # To store scatterer names that match
+            for i, scatterer_times in enumerate(scatterers):
+                # Check if any scatterer time is within the margin
+                if np.any(np.abs(scatterer_times - t) <= margin):
+                    scatterer_names.append(f"Scatterer_{i+1}")
+
+            # Concatenate scatterer names with a dash
+            scatterers_str = "-".join(scatterer_names)
+
+            # Add results for this time point
+            results.append({
+                "Time Point": t,
+                "Scatterers": scatterers_str
+            })
+
+        return pd.DataFrame(results)
+
     def plot(self, show: bool = True, log_plot: bool = True, x_limits: tuple = None, y_limits: tuple = None, bandwidth_adjust: float = 1) -> None:
         """
         Plots a 2D density plot of the scattering intensities from the two detectors,
@@ -286,8 +308,8 @@ class Analyzer:
         """
         # Reset the index if necessary (to handle MultiIndex)
         df_reset = self.coincidence.reset_index()
-        df_reset.loc[:10, 'scatterer'] = 1
-        df_reset.loc[10:, 'scatterer'] = 2
+        # df_reset.loc[:10, 'scatterer'] = 1
+        # df_reset.loc[10:, 'scatterer'] = 2
 
         x_data = df_reset[(self.cytometer.detectors[0].name, 'Heights')]
         y_data = df_reset[(self.cytometer.detectors[1].name, 'Heights')]
@@ -316,7 +338,7 @@ class Analyzer:
                 data=df_reset,
                 x=x_data,
                 y=y_data,
-                hue='scatterer',
+                # hue='scatterer',
                 ax=g.ax_joint,
                 alpha=0.6,
                 zorder=1
