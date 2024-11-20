@@ -23,3 +23,4 @@ distance = ureg.meter.dimensionality
 time = ureg.second.dimensionality
 volume = ureg.liter.dimensionality
 frequency = ureg.hertz.dimensionality
+dB = ureg.dB
