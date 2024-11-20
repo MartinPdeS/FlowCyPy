@@ -21,15 +21,16 @@ from FlowCyPy import Scatterer, distribution
 from FlowCyPy.units import particle, milliliter, nanometer, RIU, milliwatt, AU
 from FlowCyPy import FlowCytometer
 from FlowCyPy.detector import Detector
-from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, millivolt, microsecond, microvolt, nanovolt
+from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, millivolt, microsecond, microvolt, nanovolt, dB, hertz
 from FlowCyPy import Analyzer, peak_finder
 from FlowCyPy import GaussianBeam
 from FlowCyPy import NoiseSetting
 from FlowCyPy.populations_instances import LDL, HDL, Platelet, Exosome
 
 NoiseSetting.include_noises = True
+NoiseSetting.include_RIN_noise = True
 
-np.random.seed(3)  # Ensure reproducibility
+# np.random.seed(3)  # Ensure reproducibility
 
 # Define the flow cell parameters
 flow_cell = FlowCell(
@@ -66,7 +67,8 @@ scatterer.print_properties()               # Display population properties
 source = GaussianBeam(
     numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
     wavelength=488 * nanometer,           # Laser wavelength: 200 nm
-    optical_power=50 * milliwatt          # Laser optical power: 20 mW
+    optical_power=50 * milliwatt,          # Laser optical power: 20 mW
+    RIN = -100
 )
 
 # Step 4: Simulating the Flow Cytometry Experiment
