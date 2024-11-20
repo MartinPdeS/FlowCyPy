@@ -326,13 +326,22 @@ Step 8: Extract and Plot Coincidence Data
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/seaborn/axisgrid.py:1883: UserWarning: Dataset has 0 variance; skipping density estimate. Pass `warn_singular=False` to disable this warning.
+      func(x=self.x, ax=self.ax_marg_x, **kwargs)
+    /opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/seaborn/axisgrid.py:1889: UserWarning: Dataset has 0 variance; skipping density estimate. Pass `warn_singular=False` to disable this warning.
+      func(y=self.y, ax=self.ax_marg_y, **kwargs)
+
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 10.130 seconds)
+   **Total running time of the script:** (0 minutes 9.862 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_2_populations.py:
