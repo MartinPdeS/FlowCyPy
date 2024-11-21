@@ -8,6 +8,7 @@ from .units import ureg, watt, meter, second, liter, particle
 from .cytometer import FlowCytometer
 from .analyzer import Analyzer
 from .scatterer import Scatterer, CouplingModel
+from .population import Population
 from .detector import Detector
 from .flow_cell import FlowCell
 from .source import GaussianBeam

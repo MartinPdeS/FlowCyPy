@@ -94,8 +94,7 @@ class GaussianBeam(BaseBeam):
     polarization : Optional[Quantity]
         The polarization of the laser source in degrees (default is 0 degrees).
     RIN : Optional[float], optional
-        The Relative Intensity Noise (RIN) of the laser, specified as a fractional value (e.g., 0.01 for 1% RIN).
-        Default is 0.0, representing a perfectly stable laser.
+        The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a pretty stable laser.
 
     Attributes
     ----------
@@ -126,7 +125,7 @@ class GaussianBeam(BaseBeam):
     wavelength: Quantity
     numerical_aperture: Quantity
     polarization: Optional[Quantity] = 0 * degree
-    RIN: Optional[float] = 0.0
+    RIN: Optional[float] = -120.0
 
     def __post_init__(self):
         """

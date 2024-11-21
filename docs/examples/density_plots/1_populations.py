@@ -17,14 +17,16 @@ Workflow Summary:
 import numpy as np
 from FlowCyPy import FlowCell
 from FlowCyPy.units import meter, micrometer, millisecond, second, degree
-from FlowCyPy import Scatterer, distribution
+from FlowCyPy import Scatterer
 from FlowCyPy.units import particle, milliliter, nanometer, RIU, AU, milliwatt
 from FlowCyPy import FlowCytometer
 from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, microvolt, microsecond
 from FlowCyPy.detector import Detector
-from FlowCyPy import Analyzer, peak_finder
+from FlowCyPy import Analyzer, peak_locator
 from FlowCyPy import GaussianBeam
 from FlowCyPy import NoiseSetting
+from FlowCyPy.population import Exosome
+
 
 NoiseSetting.include_noises = False
 
@@ -41,18 +43,7 @@ flow_cell = FlowCell(
 scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
 
 # Define populations with size distribution and refractive index
-scatterer.add_population(
-    name='EV',  # Population name: Extracellular Vesicles
-    concentration=1e9 * particle / milliliter,  # Concentration: 1e9 particles/milliliter
-    size=distribution.RosinRammler(
-        characteristic_size=50 * nanometer,  # Characteristic size: 50 nm
-        spread=4.5                           # Spread factor for the distribution
-    ),
-    refractive_index=distribution.Normal(
-        mean=1.39 * RIU,    # Mean refractive index: 1.39
-        std_dev=0.02 * RIU  # Standard deviation: 0.02 refractive index units
-    )
-)
+scatterer.add_population(Exosome, concentration=5e9 * particle / milliliter)
 
 scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
 scatterer.print_properties()               # Display population properties
@@ -62,7 +53,7 @@ scatterer.plot()                         # Visualize the population distribution
 source = GaussianBeam(
     numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
     wavelength=200 * nanometer,           # Laser wavelength: 200 nm
-    optical_power=100 * milliwatt         # Laser optical power: 20 mW
+    optical_power=20 * milliwatt          # Laser optical power: 20 mW
 )
 
 # Add forward scatter detector
@@ -73,7 +64,7 @@ detector_0 = Detector(
     responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
     sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
     noise_level=0.0 * volt,                 # Noise level: 0 V
-    saturation_level=2000 * microvolt,      # Saturation level: 5000 mV (detector capacity)
+    saturation_level=10000 * microvolt,     # Saturation level: 10 mV (detector capacity)
     resistance=50 * ohm,                    # Resistance: 50 ohm
     temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
     n_bins='14bit'                          # Discretization bins: 14-bit resolution
@@ -87,7 +78,7 @@ detector_1 = Detector(
     responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
     sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
     noise_level=0.0 * volt,                 # Noise level: 0 V
-    saturation_level=2000 * microvolt,      # Saturation level: 5 V (detector capacity)
+    saturation_level=10000 * microvolt,     # Saturation level: 10 mV (detector capacity)
     resistance=50 * ohm,                    # Resistance: 50 ohm
     temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
     n_bins='14bit'                          # Discretization bins: 14-bit resolution
@@ -112,14 +103,17 @@ cytometer.plot()
 
 # %%
 # Step 5: Analyzing Pulse Signals
-algorithm = peak_finder.MovingAverage(
+algorithm = peak_locator.MovingAverage(
     threshold=10 * microvolt,           # Signal threshold: 0.1 mV
     window_size=1 * microsecond,         # Moving average window size: 1 µs
     min_peak_distance=0.3 * microsecond  # Minimum distance between peaks: 0.3 µs
 )
 
+detector_0.set_peak_locator(algorithm)
+detector_1.set_peak_locator(algorithm)
+
 # Initialize analyzer with the cytometer and algorithm
-analyzer = Analyzer(cytometer=cytometer, algorithm=algorithm)
+analyzer = Analyzer(cytometer=cytometer)
 
 # Run the pulse signal analysis
 analyzer.run_analysis(compute_peak_area=False)
@@ -133,4 +127,4 @@ analyzer.plot_peak()
 analyzer.get_coincidence(margin=1e-9 * microsecond)
 
 # Generate and plot the 2D density plot of scattering intensities
-analyzer.plot(log_plot=True)
+analyzer.plot(log_plot=False)

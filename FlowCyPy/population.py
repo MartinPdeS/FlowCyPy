@@ -3,6 +3,7 @@ import numpy as np
 from typing import Union, List
 from FlowCyPy import distribution
 import pandas as pd
+from dataclasses import field
 import pint_pandas
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
@@ -29,20 +30,20 @@ class Population(PropertiesReport):
 
     Parameters
     ----------
+    name : str
+        Name of the population distribution.
     refractive_index : Union[distribution.Base, Quantity]
         Refractive index or refractive index distributions.
     size : Union[distribution.Base, Quantity]
         Particle size or size distributions.
     concentration : Quantity
         Scatterer density in particles per cubic meter, default is 1 particle/m³.
-    name : str
-        Name of the population distribution, default is an empty string.
-    """
 
+    """
+    name: str
     refractive_index: Union[distribution.Base, Quantity]
     size: Union[distribution.Base, Quantity]
-    concentration: Quantity
-    name: str = ''
+    concentration: Quantity = field(init=False)
 
     def __post_init__(self):
         """

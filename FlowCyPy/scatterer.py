@@ -172,7 +172,42 @@ class Scatterer(PropertiesReport):
         for population in self.populations:
             population.print_properties()
 
-    def add_population(self, name: str, size: BaseDistribution, refractive_index: BaseDistribution, concentration: Quantity) -> 'Scatterer':
+    def add_population(self, population: Population, concentration: Quantity) -> 'Scatterer':
+        """
+        Adds a population to the Scatterer instance with the specified attributes.
+
+        Parameters
+        ----------
+        name : str
+            The name of the population.
+        size : BaseDistribution
+            The size distribution of the population.
+        refractive_index : BaseDistribution
+            The refractive index distribution of the population.
+        concentration : Quantity
+            The concentration of the population. Must have the dimensionality of 'particles per liter'.
+
+        Returns
+        -------
+        Scatterer
+            The Scatterer instance (to support chaining).
+
+        Raises
+        ------
+        ValueError
+            If the concentration does not have the expected dimensionality.
+        """
+        if concentration.dimensionality != (particle / liter).dimensionality:
+            raise ValueError(
+                f"Invalid concentration dimensionality: {concentration.dimensionality}. Expected dimensionality is 'particles per liter' or similar."
+            )
+
+        population.concentration = concentration
+
+        self.populations.append(population)
+        return population
+
+    def _add_population(self, name: str, size: BaseDistribution, refractive_index: BaseDistribution, concentration: Quantity) -> 'Scatterer':
         """
         Adds a population to the Scatterer instance with the specified attributes.
 

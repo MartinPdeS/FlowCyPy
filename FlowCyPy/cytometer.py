@@ -176,7 +176,7 @@ class FlowCytometer:
             _, axes = plt.subplots(ncols=1, nrows=n_detectors + 1, figsize=figure_size, sharex=True, sharey=True, gridspec_kw={'height_ratios': [1, 1, 0.4]})
 
         time_unit, signal_unit = self.detectors[0].plot(ax=axes[0], show=False)
-        self.detectors[0].plot(ax=axes[1], show=False, time_unit=time_unit, signal_unit=signal_unit)
+        self.detectors[1].plot(ax=axes[1], show=False, time_unit=time_unit, signal_unit=signal_unit)
 
         axes[-1].get_yaxis().set_visible(False)
         self.scatterer.add_to_ax(axes[-1])

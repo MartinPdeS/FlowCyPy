@@ -15,4 +15,4 @@ codebase using Sphinx `autoclass` directives.
 
    code/base.rst
    code/distributions.rst
-   code/peak_finder.rst
+   code/peak_locator.rst

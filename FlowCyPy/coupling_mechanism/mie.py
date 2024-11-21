@@ -77,7 +77,7 @@ def apply_rin_noise(source: BaseBeam, total_size: int, bandwidth: float) -> np.n
     """
     amplitude_with_rin = np.ones(total_size) * source.amplitude
 
-    if NoiseSetting.include_RIN_noise:
+    if NoiseSetting.include_RIN_noise and NoiseSetting.include_noises:
         # Convert RIN from dB/Hz to linear scale if necessary
         rin_linear = 10**(source.RIN / 10)
 
