@@ -1,0 +1,1621 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Classes and Methods &#8212; FlowCyPy  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/default.css?v=265c6c44" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'code/base';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.3.2';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = true;
+        </script>
+    <link rel="icon" href="../_static/thumbnail.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Distribution Classes" href="distributions.html" />
+    <link rel="prev" title="Code Documentation" href="../code.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.3.2" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/thumbnail.png" class="logo__image only-light" alt=""/>
+    <img src="../_static/thumbnail.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">FlowCyPy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../code.html">
+    Code Documentation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Coding examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory.html">
+    Theoretical Background
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/FlowCyPy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/FlowCyPy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Anaconda</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../code.html">
+    Code Documentation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Coding examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory.html">
+    Theoretical Background
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/FlowCyPy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/FlowCyPy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Anaconda</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Classes and Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="distributions.html">Distribution Classes</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="peak_locator.html">PeakFinder Classes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../code.html" class="nav-link">Code Documentation</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Classes and Methods</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="classes-and-methods">
+<h1>Classes and Methods<a class="headerlink" href="#classes-and-methods" title="Link to this heading">#</a></h1>
+<section id="flowcell-class">
+<h2>FlowCell Class<a class="headerlink" href="#flowcell-class" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.FlowCell">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.FlowCell" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to model the flow parameters in a flow cytometer, including flow speed, flow area,
+and particle interactions. This class interacts with ScattererDistribution to simulate
+the flow of particles through the cytometer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flow_speed</strong> (<em>float</em>) – The speed of the flow in meters per second (m/s).</p></li>
+<li><p><strong>flow_area</strong> (<em>float</em>) – The cross-sectional area of the flow tube in square meters (m²).</p></li>
+<li><p><strong>run_time</strong> (<em>float</em>) – The total duration of the flow simulation in seconds.</p></li>
+<li><p><strong>scatterer_density</strong> (<em>float</em>) – The density of the scatterers (particles) in particles per cubic meter (particles/m³).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.FlowCell.calculate_number_of_events">
+<span class="sig-name descname"><span class="pre">calculate_number_of_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concentration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell.calculate_number_of_events"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.FlowCell.calculate_number_of_events" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the total number of particles based on the scatterer density, flow speed, and flow area.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The total number of particles in the flow.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.FlowCell.flow_area">
+<span class="sig-name descname"><span class="pre">flow_area</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.FlowCell.flow_area" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.FlowCell.flow_speed">
+<span class="sig-name descname"><span class="pre">flow_speed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.FlowCell.flow_speed" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.FlowCell.get_properties">
+<span class="sig-name descname"><span class="pre">get_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell.get_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.FlowCell.get_properties" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.FlowCell.print_properties">
+<span class="sig-name descname"><span class="pre">print_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell.print_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.FlowCell.print_properties" title="Link to this definition">#</a></dt>
+<dd><p>Print the core properties of the flow and particle interactions in the flow cytometer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.FlowCell.run_time">
+<span class="sig-name descname"><span class="pre">run_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.FlowCell.run_time" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="beams-class">
+<h2>Beams Class<a class="headerlink" href="#beams-class" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GaussianBeam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optical_power:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polarization:</span> <span class="pre">~pint.Quantity</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'degree')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RIN:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">-120.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/source.html#GaussianBeam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.GaussianBeam" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseBeam</span></code></p>
+<p>Represents a monochromatic Gaussian laser beam focused by a standard lens.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optical_power</strong> (<em>Quantity</em>) – The optical power of the laser (in watts).</p></li>
+<li><p><strong>wavelength</strong> (<em>Quantity</em>) – The wavelength of the laser (in meters).</p></li>
+<li><p><strong>numerical_aperture</strong> (<em>Quantity</em>) – The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).</p></li>
+<li><p><strong>polarization</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The polarization of the laser source in degrees (default is 0 degrees).</p></li>
+<li><p><strong>RIN</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a pretty stable laser.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.waist">
+<span class="sig-name descname"><span class="pre">waist</span></span><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.waist" title="Link to this definition">#</a></dt>
+<dd><p>The beam waist at the focus, calculated as <cite>waist = wavelength / (pi * numerical_aperture)</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.frequency">
+<span class="sig-name descname"><span class="pre">frequency</span></span><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.frequency" title="Link to this definition">#</a></dt>
+<dd><p>The frequency of the laser, calculated as <cite>frequency = c / wavelength</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.photon_energy">
+<span class="sig-name descname"><span class="pre">photon_energy</span></span><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.photon_energy" title="Link to this definition">#</a></dt>
+<dd><p>The energy of a single photon, calculated as <cite>photon_energy = h * frequency</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.amplitude">
+<span class="sig-name descname"><span class="pre">amplitude</span></span><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.amplitude" title="Link to this definition">#</a></dt>
+<dd><p>The electric field amplitude at the focus, derived from optical power, waist, and fundamental constants.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">RIN</span> <span class="pre">Interpretation</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">------------------</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">The</span> <span class="pre">Relative</span> <span class="pre">Intensity</span> <span class="pre">Noise</span> <span class="pre">(RIN)</span> <span class="pre">represents</span> <span class="pre">fluctuations</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">laser's</span> <span class="pre">intensity</span> <span class="pre">relative</span> <span class="pre">to</span> <span class="pre">its</span> <span class="pre">mean</span> <span class="pre">optical</span> <span class="pre">power.</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">For</span> <span class="pre">a</span> <span class="pre">Gaussian</span> <span class="pre">beam,</span> <span class="pre">the</span> <span class="pre">instantaneous</span> <span class="pre">intensity</span> <span class="pre">at</span> <span class="pre">any</span> <span class="pre">given</span> <span class="pre">time</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">modeled</span> <span class="pre">as</span></span></dt>
+<dd><p>I(t) = &lt;I&gt; * (1 + ΔI)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.where">
+<span class="sig-name descname"><span class="pre">where</span></span><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.where" title="Link to this definition">#</a></dt>
+<dd><ul class="simple">
+<li><p><cite>&lt;I&gt;</cite> is the mean intensity derived from the optical power.</p></li>
+<li><dl class="simple">
+<dt><cite>ΔI</cite> is the noise component, modeled as a Gaussian random variable with:</dt><dd><ul>
+<li><p>Mean = 0 (fluctuations are around the mean intensity).</p></li>
+<li><p>Variance = RIN * &lt;I&gt;².</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.RIN">
+<span class="sig-name descname"><span class="pre">RIN</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-120.0</span></em><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.RIN" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.calculate_field_amplitude_at_focus">
+<span class="sig-name descname"><span class="pre">calculate_field_amplitude_at_focus</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Quantity</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/source.html#GaussianBeam.calculate_field_amplitude_at_focus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.calculate_field_amplitude_at_focus" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the electric field amplitude (E0) at the focus for a Gaussian beam.</p>
+<p>The electric field amplitude at the focus is given by:</p>
+<div class="math notranslate nohighlight">
+\[E_0 = \sqrt{\frac{2 P}{\pi \epsilon_0 c w_0^2}}\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><cite>P</cite> is the optical power of the beam,</p></li>
+<li><p><cite>epsilon_0</cite> is the permittivity of free space,</p></li>
+<li><p><cite>c</cite> is the speed of light,</p></li>
+<li><p><cite>w_0</cite> is the beam waist at the focus.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The electric field amplitude at the focus in volts per meter.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.numerical_aperture">
+<span class="sig-name descname"><span class="pre">numerical_aperture</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.numerical_aperture" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.optical_power">
+<span class="sig-name descname"><span class="pre">optical_power</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.optical_power" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.polarization">
+<span class="sig-name descname"><span class="pre">polarization</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(0,</span> <span class="pre">'degree')&gt;</span></em><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.polarization" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.wavelength">
+<span class="sig-name descname"><span class="pre">wavelength</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.wavelength" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AstigmaticGaussianBeam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optical_power:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture_x:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture_y:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polarization:</span> <span class="pre">~pint.Quantity</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'degree')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RIN:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/source.html#AstigmaticGaussianBeam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseBeam</span></code></p>
+<p>Represents an astigmatic Gaussian laser beam focused by a cylindrical lens system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optical_power</strong> (<em>Quantity</em>) – The optical power of the laser (in watts).</p></li>
+<li><p><strong>wavelength</strong> (<em>Quantity</em>) – The wavelength of the laser (in meters).</p></li>
+<li><p><strong>numerical_aperture_x</strong> (<em>Quantity</em>) – The numerical aperture of the lens along the x-axis (unitless).</p></li>
+<li><p><strong>numerical_aperture_y</strong> (<em>Quantity</em>) – The numerical aperture of the lens along the y-axis (unitless).</p></li>
+<li><p><strong>polarization</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The polarization of the laser source in degrees (default is 0 degrees).</p></li>
+<li><p><strong>RIN</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The Relative Intensity Noise (RIN) of the laser, specified as a fractional value (e.g., 0.01 for 1% RIN).
+Default is 0.0, representing a perfectly stable laser.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.waist_x">
+<span class="sig-name descname"><span class="pre">waist_x</span></span><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_x" title="Link to this definition">#</a></dt>
+<dd><p>The beam waist at the focus along the x-axis, calculated as <cite>waist_x = wavelength / (pi * numerical_aperture_x)</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.waist_y">
+<span class="sig-name descname"><span class="pre">waist_y</span></span><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_y" title="Link to this definition">#</a></dt>
+<dd><p>The beam waist at the focus along the y-axis, calculated as <cite>waist_y = wavelength / (pi * numerical_aperture_y)</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.amplitude">
+<span class="sig-name descname"><span class="pre">amplitude</span></span><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.amplitude" title="Link to this definition">#</a></dt>
+<dd><p>The electric field amplitude at the focus, derived from optical power, waist_x, waist_y, and fundamental constants.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">RIN</span> <span class="pre">Interpretation</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">------------------</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">The</span> <span class="pre">Relative</span> <span class="pre">Intensity</span> <span class="pre">Noise</span> <span class="pre">(RIN)</span> <span class="pre">represents</span> <span class="pre">fluctuations</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">laser's</span> <span class="pre">intensity</span> <span class="pre">relative</span> <span class="pre">to</span> <span class="pre">its</span> <span class="pre">mean</span> <span class="pre">optical</span> <span class="pre">power.</span></span></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">For</span> <span class="pre">a</span> <span class="pre">Gaussian</span> <span class="pre">beam,</span> <span class="pre">the</span> <span class="pre">instantaneous</span> <span class="pre">intensity</span> <span class="pre">at</span> <span class="pre">any</span> <span class="pre">given</span> <span class="pre">time</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">modeled</span> <span class="pre">as</span></span></dt>
+<dd><p>I(t) = &lt;I&gt; * (1 + ΔI)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.where">
+<span class="sig-name descname"><span class="pre">where</span></span><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.where" title="Link to this definition">#</a></dt>
+<dd><ul class="simple">
+<li><p><cite>&lt;I&gt;</cite> is the mean intensity derived from the optical power.</p></li>
+<li><dl class="simple">
+<dt><cite>ΔI</cite> is the noise component, modeled as a Gaussian random variable with:</dt><dd><ul>
+<li><p>Mean = 0 (fluctuations are around the mean intensity).</p></li>
+<li><p>Variance = RIN * &lt;I&gt;².</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.RIN">
+<span class="sig-name descname"><span class="pre">RIN</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.RIN" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.calculate_field_amplitude_at_focus">
+<span class="sig-name descname"><span class="pre">calculate_field_amplitude_at_focus</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Quantity</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/source.html#AstigmaticGaussianBeam.calculate_field_amplitude_at_focus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.calculate_field_amplitude_at_focus" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the electric field amplitude (E0) at the focus for an astigmatic Gaussian beam.</p>
+<p>The electric field amplitude at the focus is given by:</p>
+<div class="math notranslate nohighlight">
+\[E_0 = \sqrt{\frac{2 P}{\pi \epsilon_0 c w_{0x} w_{0y}}}\]</div>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><cite>P</cite> is the optical power of the beam,</p></li>
+<li><p><cite>epsilon_0</cite> is the permittivity of free space,</p></li>
+<li><p><cite>c</cite> is the speed of light,</p></li>
+<li><p><cite>w_{0x}</cite> is the beam waist at the focus along the x-axis,</p></li>
+<li><p><cite>w_{0y}</cite> is the beam waist at the focus along the y-axis.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The electric field amplitude at the focus in volts per meter.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.numerical_aperture_x">
+<span class="sig-name descname"><span class="pre">numerical_aperture_x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.numerical_aperture_x" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.numerical_aperture_y">
+<span class="sig-name descname"><span class="pre">numerical_aperture_y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.numerical_aperture_y" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.optical_power">
+<span class="sig-name descname"><span class="pre">optical_power</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.optical_power" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.polarization">
+<span class="sig-name descname"><span class="pre">polarization</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(0,</span> <span class="pre">'degree')&gt;</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.polarization" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.wavelength">
+<span class="sig-name descname"><span class="pre">wavelength</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.wavelength" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="scatterer-class">
+<h2>Scatterer Class<a class="headerlink" href="#scatterer-class" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.Scatterer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Scatterer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">medium_refractive_index:</span> <span class="pre">~pint.Quantity</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'refractive_index_unit')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">populations:</span> <span class="pre">~typing.List[~FlowCyPy.population.Population]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coupling_model:</span> <span class="pre">~FlowCyPy.scatterer.CouplingModel</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">CouplingModel.MIE</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PropertiesReport</span></code></p>
+<p>Defines and manages the size and refractive index distributions of scatterers (particles)
+passing through a flow cytometer. This class generates random scatterer sizes and refractive
+indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.Scatterer.add_population">
+<span class="sig-name descname"><span class="pre">add_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.population.Population" title="FlowCyPy.population.Population"><span class="pre">Population</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">concentration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#FlowCyPy.Scatterer" title="FlowCyPy.scatterer.Scatterer"><span class="pre">Scatterer</span></a></span></span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer.add_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer.add_population" title="Link to this definition">#</a></dt>
+<dd><p>Adds a population to the Scatterer instance with the specified attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the population.</p></li>
+<li><p><strong>size</strong> (<em>BaseDistribution</em>) – The size distribution of the population.</p></li>
+<li><p><strong>refractive_index</strong> (<em>BaseDistribution</em>) – The refractive index distribution of the population.</p></li>
+<li><p><strong>concentration</strong> (<em>Quantity</em>) – The concentration of the population. Must have the dimensionality of ‘particles per liter’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Scatterer instance (to support chaining).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#FlowCyPy.Scatterer" title="FlowCyPy.Scatterer">Scatterer</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the concentration does not have the expected dimensionality.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.Scatterer.add_to_ax">
+<span class="sig-name descname"><span class="pre">add_to_ax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">axes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer.add_to_ax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer.add_to_ax" title="Link to this definition">#</a></dt>
+<dd><p>Adds vertical lines representing events for each population to the provided axes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*axes</strong> (<em>matplotlib.axes.Axes</em>) – One or more matplotlib axes to which the vertical lines will be added.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.Scatterer.concentrations">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">concentrations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Quantity</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#FlowCyPy.Scatterer.concentrations" title="Link to this definition">#</a></dt>
+<dd><p>Gets the concentration of each population in the Scatterer instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of concentrations for each population.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[Quantity]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.Scatterer.dilute">
+<span class="sig-name descname"><span class="pre">dilute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer.dilute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer.dilute" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.Scatterer.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.FlowCell" title="FlowCyPy.flow_cell.FlowCell"><span class="pre">FlowCell</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer.initialize" title="Link to this definition">#</a></dt>
+<dd><p>Initializes particle size, refractive index, and medium refractive index distributions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>flow_cell</strong> (<a class="reference internal" href="#FlowCyPy.FlowCell" title="FlowCyPy.FlowCell"><em>FlowCell</em></a>) – An instance of the FlowCell class that describes the flow cell being used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.Scatterer.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Axes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth_adjust</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer.plot" title="Link to this definition">#</a></dt>
+<dd><p>Visualizes the joint distribution of scatterer sizes and refractive indices using a Seaborn jointplot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – Existing matplotlib axes to plot on. If <cite>None</cite>, a new figure and axes are created. Default is <cite>None</cite>.</p></li>
+<li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, displays the plot after creation. Default is <cite>True</cite>.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – Transparency level for the scatter plot points, ranging from 0 (fully transparent) to 1 (fully opaque). Default is 0.8.</p></li>
+<li><p><strong>bandwidth_adjust</strong> (<em>float</em><em>, </em><em>optional</em>) – Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Higher values produce smoother density estimates. Default is 1.</p></li>
+<li><p><strong>log_plot</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, applies a logarithmic scale to both axes of the joint plot and their marginal distributions. Default is <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>This function does not return any value. It either displays the plot (if <cite>show=True</cite>) or simply creates it for later use.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method resets the index of the internal dataframe and extracts units from the ‘Size’ column.
+The plot uses the specified matplotlib style (<cite>mps</cite>) for consistent styling.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">bandwidth_adjust</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">log_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">This will generate a joint plot with 50% opacity, lower KDE bandwidth, and logarithmic scales on both axes.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.Scatterer.print_properties">
+<span class="sig-name descname"><span class="pre">print_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer.print_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer.print_properties" title="Link to this definition">#</a></dt>
+<dd><p>Prints specific properties of the Scatterer instance, such as coupling factor and medium refractive index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.Scatterer.remove_population">
+<span class="sig-name descname"><span class="pre">remove_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#FlowCyPy.Scatterer" title="FlowCyPy.scatterer.Scatterer"><span class="pre">Scatterer</span></a></span></span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer.remove_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer.remove_population" title="Link to this definition">#</a></dt>
+<dd><p>Removes a population from the Scatterer instance by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the population to remove.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Scatterer instance (to support chaining).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#FlowCyPy.Scatterer" title="FlowCyPy.Scatterer">Scatterer</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the population with the specified name does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="population-class">
+<h2>Population Class<a class="headerlink" href="#population-class" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.population.Population">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refractive_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Base</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Base</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Population" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PropertiesReport</span></code></p>
+<p>A class representing a population of scatterers in a flow cytometry setup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the population distribution.</p></li>
+<li><p><strong>refractive_index</strong> (<em>Union</em><em>[</em><em>distribution.Base</em><em>, </em><em>Quantity</em><em>]</em>) – Refractive index or refractive index distributions.</p></li>
+<li><p><strong>size</strong> (<em>Union</em><em>[</em><em>distribution.Base</em><em>, </em><em>Quantity</em><em>]</em>) – Particle size or size distributions.</p></li>
+<li><p><strong>concentration</strong> (<em>Quantity</em>) – Scatterer density in particles per cubic meter, default is 1 particle/m³.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.population.Population.concentration">
+<span class="sig-name descname"><span class="pre">concentration</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.population.Population.concentration" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.population.Population.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.FlowCell" title="FlowCyPy.flow_cell.FlowCell"><span class="pre">FlowCell</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Population.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Population.initialize" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.population.Population.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#FlowCyPy.population.Population.name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.population.Population.print_properties">
+<span class="sig-name descname"><span class="pre">print_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Population.print_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Population.print_properties" title="Link to this definition">#</a></dt>
+<dd><p>Prints specific properties of the Scatterer instance, such as coupling factor and medium refractive index.
+This method calls the parent class method to handle the actual property printing logic.</p>
+<dl class="simple">
+<dt>Overrides:</dt><dd><p>Scatterer.print_properties: Extends the parent method to print the desired properties.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.population.Population.refractive_index">
+<span class="sig-name descname"><span class="pre">refractive_index</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Base</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.population.Population.refractive_index" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.population.Population.size">
+<span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Base</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.population.Population.size" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="detector-class">
+<h2>Detector Class<a class="headerlink" href="#detector-class" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sampling_freq:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi_angle:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma_angle:</span> <span class="pre">~pint.Quantity</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'degree')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling:</span> <span class="pre">~pint.Quantity</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'dimensionless')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">responsitivity:</span> <span class="pre">~pint.Quantity</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ampere</span> <span class="pre">/</span> <span class="pre">watt')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_level:</span> <span class="pre">~pint.Quantity</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'volt')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_shift:</span> <span class="pre">~pint.Quantity</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'volt')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saturation_level:</span> <span class="pre">~pint.Quantity</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'volt')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_current:</span> <span class="pre">~pint.Quantity</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ampere')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resistance:</span> <span class="pre">~pint.Quantity</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ohm')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature:</span> <span class="pre">~pint.Quantity</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'kelvin')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bins:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PropertiesReport</span></code></p>
+<p>A class representing a signal detector used in flow cytometry.</p>
+<p>This class models a photodetector, simulating signal acquisition, noise addition, and signal processing
+for analysis.  It can optionally simulate different noise sources: shot noise, thermal noise, and dark current noise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name or identifier of the detector.</p></li>
+<li><p><strong>sampling_freq</strong> (<em>Quantity</em>) – The sampling frequency of the detector in hertz.</p></li>
+<li><p><strong>phi_angle</strong> (<em>Quantity</em>) – The detection angle in degrees.</p></li>
+<li><p><strong>numerical_aperture</strong> (<em>Quantity</em>) – The numerical aperture of the detector, a unitless value.</p></li>
+<li><p><strong>responsitivity</strong> (<em>Quantity</em>) – Detector’s responsivity, default is 1 volt per watt.</p></li>
+<li><p><strong>noise_level</strong> (<em>Quantity</em>) – The base noise level added to the signal, default is 0 volts.</p></li>
+<li><p><strong>baseline_shift</strong> (<em>Quantity</em>) – The baseline shift applied to the signal, default is 0 volts.</p></li>
+<li><p><strong>saturation_level</strong> (<em>Quantity</em>) – The maximum signal level in volts before saturation, default is infinity.</p></li>
+<li><p><strong>dark_current</strong> (<em>Quantity</em>) – The dark current of the detector, default is 0 amperes.</p></li>
+<li><p><strong>resistance</strong> (<em>Quantity</em>) – Resistance of the detector, used for thermal noise simulation.</p></li>
+<li><p><strong>temperature</strong> (<em>Quantity</em>) – Temperature of the detector in Kelvin, used for thermal noise simulation.</p></li>
+<li><p><strong>n_bins</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>str</em><em>]</em>) – The number of discretization bins or bit-depth (e.g., ‘12bit’).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.bandwidth">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bandwidth</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.bandwidth" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.baseline_shift">
+<span class="sig-name descname"><span class="pre">baseline_shift</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(0.0,</span> <span class="pre">'volt')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.baseline_shift" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.capture_signal">
+<span class="sig-name descname"><span class="pre">capture_signal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.capture_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.capture_signal" title="Link to this definition">#</a></dt>
+<dd><p>Processes and captures the final signal by applying noise, baseline shifts, and saturation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.dark_current">
+<span class="sig-name descname"><span class="pre">dark_current</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(0.0,</span> <span class="pre">'ampere')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.dark_current" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.gamma_angle">
+<span class="sig-name descname"><span class="pre">gamma_angle</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(0,</span> <span class="pre">'degree')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.gamma_angle" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.init_raw_signal">
+<span class="sig-name descname"><span class="pre">init_raw_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.init_raw_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.init_raw_signal" title="Link to this definition">#</a></dt>
+<dd><p>Initializes the raw signal and time arrays for the detector and generates optional noise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>run_time</strong> (<em>Quantity</em>) – The total duration of the signal to simulate (in seconds).</p></li>
+<li><p><strong>as</strong> (<em>The photocurrent is calculated</em>)</p></li>
+<li><p><strong>[</strong> – I_{text{ph}} = P_{text{opt}} times R_{text{ph}}</p></li>
+<li><p><strong>]</strong></p></li>
+<li><p><strong>Where</strong> – <ul>
+<li><p>( P_{text{opt}} ) is the optical power,</p></li>
+<li><p>( R_{text{ph}} ) is the responsivity in amperes per watt.</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.n_bins">
+<span class="sig-name descname"><span class="pre">n_bins</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.n_bins" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.noise_level">
+<span class="sig-name descname"><span class="pre">noise_level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(0.0,</span> <span class="pre">'volt')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.noise_level" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.numerical_aperture">
+<span class="sig-name descname"><span class="pre">numerical_aperture</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.numerical_aperture" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.phi_angle">
+<span class="sig-name descname"><span class="pre">phi_angle</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.phi_angle" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Axes</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figure_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#FlowCyPy.detector.Detector.plot" title="Link to this definition">#</a></dt>
+<dd><p>A wrapped version of the plotting function that provides additional functionality for creating
+and managing plots.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> (<em>object</em>) – The instance of the class calling this method.</p></li>
+<li><p><strong>ax</strong> (<em>plt.Axes</em><em>, </em><em>optional</em>) – A matplotlib Axes object to draw the plot on. If None, a new figure and axes are created.
+Default is None.</p></li>
+<li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display the plot. If False, the plot will not be shown but can still be saved
+or returned. Default is True.</p></li>
+<li><p><strong>mode_of_interest</strong> (<em>str</em><em>, </em><em>optional</em>) – Specifies the mode of interest for the plot. If ‘all’, all available modes will be plotted.
+This parameter is interpreted using the <cite>interpret_mode_of_interest</cite> function. Default is ‘all’.</p></li>
+<li><p><strong>save_filename</strong> (<em>str</em><em>, </em><em>optional</em>) – A file path to save the figure. If None, the figure will not be saved. Default is None.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional keyword arguments passed to the decorated function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The matplotlib Figure object created or used for the plot.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>plt.Figure</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If no <cite>ax</cite> is provided, a new figure and axes are created using the style context <cite>mps</cite>.</p></li>
+<li><p>The legend is only added if there are labels to display.</p></li>
+<li><p>If <cite>save_filename</cite> is specified, the figure is saved to the given path.</p></li>
+<li><p>The plot is shown if <cite>show</cite> is set to True.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.print_properties">
+<span class="sig-name descname"><span class="pre">print_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.print_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.print_properties" title="Link to this definition">#</a></dt>
+<dd><p>Prints specific properties of the Detector instance, such as coupling factor and medium refractive index.
+This method calls the parent class method to handle the actual property printing logic.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.resistance">
+<span class="sig-name descname"><span class="pre">resistance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(50.0,</span> <span class="pre">'ohm')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.resistance" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.responsitivity">
+<span class="sig-name descname"><span class="pre">responsitivity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(1,</span> <span class="pre">'ampere</span> <span class="pre">/</span> <span class="pre">watt')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.responsitivity" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.sampling">
+<span class="sig-name descname"><span class="pre">sampling</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(100,</span> <span class="pre">'dimensionless')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.sampling" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.sampling_freq">
+<span class="sig-name descname"><span class="pre">sampling_freq</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.sampling_freq" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.saturation_level">
+<span class="sig-name descname"><span class="pre">saturation_level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(inf,</span> <span class="pre">'volt')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.saturation_level" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.set_peak_locator">
+<span class="sig-name descname"><span class="pre">set_peak_locator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BasePeakLocator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_peak_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.set_peak_locator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.set_peak_locator" title="Link to this definition">#</a></dt>
+<dd><p>Assigns a peak detection algorithm to the detector, analyzes the signal,
+and extracts peak features such as height, width, and area.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>algorithm</strong> (<em>BasePeakLocator</em>) – An instance of a peak detection algorithm derived from BasePeakLocator.</p></li>
+<li><p><strong>compute_peak_area</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to compute the area under the detected peaks (default is True).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the provided algorithm is not an instance of BasePeakLocator.</p></li>
+<li><p><strong>ValueError</strong> – If the algorithm has already been initialized with peak data.</p></li>
+<li><p><strong>RuntimeError</strong> – If the detector’s signal data (dataframe) is not available.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The <cite>algorithm</cite> parameter should be a fresh instance of a peak detection algorithm.</p></li>
+<li><p>The method will analyze the detector’s signal immediately upon setting the algorithm.</p></li>
+<li><p>Peak detection results are stored in the algorithm’s <cite>peak_properties</cite> attribute.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.temperature">
+<span class="sig-name descname"><span class="pre">temperature</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(0.0,</span> <span class="pre">'kelvin')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.temperature" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="cytometer-class">
+<h2>Cytometer Class<a class="headerlink" href="#cytometer-class" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCytometer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">scatterer:</span> <span class="pre">~FlowCyPy.scatterer.Scatterer,</span> <span class="pre">source:</span> <span class="pre">~FlowCyPy.source.GaussianBeam,</span> <span class="pre">detectors:</span> <span class="pre">~typing.List[~FlowCyPy.detector.Detector],</span> <span class="pre">coupling_mechanism:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">'mie',</span> <span class="pre">background_power:</span> <span class="pre">~pint.Quantity</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(0,</span> <span class="pre">'milliwatt')&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to simulate flow cytometer signals for Forward Scatter (FSC) and Side Scatter (SSC) channels.</p>
+<p>This class models the particle distribution, flow characteristics, and detector configurations to
+simulate the signal generated as particles pass through the flow cytometer’s laser.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scatterer</strong> (<a class="reference internal" href="#FlowCyPy.Scatterer" title="FlowCyPy.Scatterer"><em>Scatterer</em></a>) – The distribution of particle sizes which affects scattering signals.</p></li>
+<li><p><strong>source</strong> (<a class="reference internal" href="#FlowCyPy.source.GaussianBeam" title="FlowCyPy.source.GaussianBeam"><em>GaussianBeam</em></a>) – The laser source object representing the illumination scheme.</p></li>
+<li><p><strong>detectors</strong> (<em>List</em><em>[</em><a class="reference internal" href="#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><em>Detector</em></a><em>]</em>) – List of <cite>Detector</cite> objects representing the detectors in the system.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.add_detector">
+<span class="sig-name descname"><span class="pre">add_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><span class="pre">Detector</span></a></span></span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.add_detector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.add_detector" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figure_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(10,</span> <span class="pre">6)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.plot" title="Link to this definition">#</a></dt>
+<dd><p>Plots the signals generated for each detector channel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.print_properties">
+<span class="sig-name descname"><span class="pre">print_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.print_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.print_properties" title="Link to this definition">#</a></dt>
+<dd><p>Displays the core properties of the flow cytometer and its detectors using the <cite>tabulate</cite> library.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.simulate_pulse">
+<span class="sig-name descname"><span class="pre">simulate_pulse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.simulate_pulse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.simulate_pulse" title="Link to this definition">#</a></dt>
+<dd><p>Simulates the signal pulses for the FSC and SSC channels by generating Gaussian pulses for
+each particle event and distributing them across the detectors.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="analyzer-class">
+<h2>Analyzer Class<a class="headerlink" href="#analyzer-class" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.analyzer.Analyzer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cytometer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.cytometer.FlowCytometer" title="FlowCyPy.cytometer.FlowCytometer"><span class="pre">FlowCytometer</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/analyzer.html#Analyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.analyzer.Analyzer" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for analyzing pulse signals generated by a flow cytometer. It processes signals
+from multiple detectors to extract key features such as peak height, width, area,
+and time of occurrence, while providing tools to detect coincident events between detectors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cytometer</strong> (<a class="reference internal" href="#FlowCyPy.cytometer.FlowCytometer" title="FlowCyPy.cytometer.FlowCytometer"><em>FlowCytometer</em></a>) – An instance of FlowCytometer that contains detectors and their associated signals.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">run_analysis(compute_peak_area=False):</span></span></dt>
+<dd><p>Performs peak analysis on all detectors, extracting features such as height, width,
+and area, and stores the results in a DataFrame.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_coincidence(margin):</span></span></dt>
+<dd><p>Identifies and returns events where peak times from different detectors coincide
+within a given time margin.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">display_features():</span></span></dt>
+<dd><p>Displays the extracted features from the analysis in a tabular format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">plot_peak(show=True,</span> <span class="pre">figure_size=(7,</span> <span class="pre">6)):</span></span></dt>
+<dd><p>Plots the signals and highlights the detected peaks and their properties (e.g., width).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">plot(show=True,</span> <span class="pre">log_plot=True):</span></span></dt>
+<dd><p>Generates a 2D density plot of the scattering intensities from the detectors.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">generate_report(filename):</span></span></dt>
+<dd><p>Generates a report summarizing the results of the analysis.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.analyzer.Analyzer.display_features">
+<span class="sig-name descname"><span class="pre">display_features</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/analyzer.html#Analyzer.display_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.analyzer.Analyzer.display_features" title="Link to this definition">#</a></dt>
+<dd><p>Displays extracted peak features for all datasets in a tabular format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.analyzer.Analyzer.generate_report">
+<span class="sig-name descname"><span class="pre">generate_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/analyzer.html#Analyzer.generate_report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.analyzer.Analyzer.generate_report" title="Link to this definition">#</a></dt>
+<dd><p>Generates a detailed report summarizing the analysis, including peak features
+and detected events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – The filename where the report will be saved.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.analyzer.Analyzer.get_coincidence">
+<span class="sig-name descname"><span class="pre">get_coincidence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">margin:</span> <span class="pre">&lt;UnitsContainer({'[time]':</span> <span class="pre">1})&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/analyzer.html#Analyzer.get_coincidence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.analyzer.Analyzer.get_coincidence" title="Link to this definition">#</a></dt>
+<dd><p>Identifies coincident events between two detectors within a specified time margin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>margin</strong> (<em>pint.Quantity</em>) – The time margin within which peaks are considered coincident, in compatible time units.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.analyzer.Analyzer.map_scatterers_to_time">
+<span class="sig-name descname"><span class="pre">map_scatterers_to_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scatterers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/analyzer.html#Analyzer.map_scatterers_to_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.analyzer.Analyzer.map_scatterers_to_time" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.analyzer.Analyzer.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_limits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_limits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth_adjust</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/analyzer.html#Analyzer.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.analyzer.Analyzer.plot" title="Link to this definition">#</a></dt>
+<dd><p>Plots a 2D density plot of the scattering intensities from the two detectors,
+along with individual peak heights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display the plot immediately, by default True.</p></li>
+<li><p><strong>log_plot</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use logarithmic scaling for the plot axes, by default True.</p></li>
+<li><p><strong>bandwidth_adjust</strong> (<em>float</em><em>, </em><em>optional</em>) – Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Higher values produce smoother density estimates. Default is 1.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.analyzer.Analyzer.plot_peak">
+<span class="sig-name descname"><span class="pre">plot_peak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figure_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(10,</span> <span class="pre">6)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/analyzer.html#Analyzer.plot_peak"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.analyzer.Analyzer.plot_peak" title="Link to this definition">#</a></dt>
+<dd><p>Plots the detected peaks on the signal for each detector, including peak widths at half-maximum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display the plot immediately, by default True.</p></li>
+<li><p><strong>figure_size</strong> (<em>tuple</em><em>, </em><em>optional</em>) – The size of the figure, by default (7, 6).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.analyzer.Analyzer.run_analysis">
+<span class="sig-name descname"><span class="pre">run_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compute_peak_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/analyzer.html#Analyzer.run_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.analyzer.Analyzer.run_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Runs the peak detection analysis on all detectors within the flow cytometer.
+Extracts key features such as peak height, width, area, and stores the results
+in a pandas DataFrame for further analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>compute_peak_area</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to compute the area under the peaks, by default False.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A DataFrame with the detected peak properties, organized by detector.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#flowcell-class">FlowCell Class</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell"><code class="docutils literal notranslate"><span class="pre">FlowCell</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.calculate_number_of_events"><code class="docutils literal notranslate"><span class="pre">FlowCell.calculate_number_of_events()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.flow_area"><code class="docutils literal notranslate"><span class="pre">FlowCell.flow_area</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.flow_speed"><code class="docutils literal notranslate"><span class="pre">FlowCell.flow_speed</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.get_properties"><code class="docutils literal notranslate"><span class="pre">FlowCell.get_properties()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.print_properties"><code class="docutils literal notranslate"><span class="pre">FlowCell.print_properties()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.run_time"><code class="docutils literal notranslate"><span class="pre">FlowCell.run_time</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#beams-class">Beams Class</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam"><code class="docutils literal notranslate"><span class="pre">GaussianBeam</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.waist"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.waist</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.frequency"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.frequency</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.photon_energy"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.photon_energy</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.amplitude"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.amplitude</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.where"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.where</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.RIN"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.RIN</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.calculate_field_amplitude_at_focus"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.calculate_field_amplitude_at_focus()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.numerical_aperture"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.numerical_aperture</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.optical_power"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.optical_power</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.polarization"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.polarization</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.wavelength"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.wavelength</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_x"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.waist_x</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_y"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.waist_y</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.amplitude"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.amplitude</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.where"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.where</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.RIN"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.RIN</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.calculate_field_amplitude_at_focus"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.calculate_field_amplitude_at_focus()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.numerical_aperture_x"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.numerical_aperture_x</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.numerical_aperture_y"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.numerical_aperture_y</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.optical_power"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.optical_power</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.polarization"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.polarization</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.wavelength"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.wavelength</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scatterer-class">Scatterer Class</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer"><code class="docutils literal notranslate"><span class="pre">Scatterer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.add_population"><code class="docutils literal notranslate"><span class="pre">Scatterer.add_population()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.add_to_ax"><code class="docutils literal notranslate"><span class="pre">Scatterer.add_to_ax()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.concentrations"><code class="docutils literal notranslate"><span class="pre">Scatterer.concentrations</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.dilute"><code class="docutils literal notranslate"><span class="pre">Scatterer.dilute()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.initialize"><code class="docutils literal notranslate"><span class="pre">Scatterer.initialize()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.plot"><code class="docutils literal notranslate"><span class="pre">Scatterer.plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.print_properties"><code class="docutils literal notranslate"><span class="pre">Scatterer.print_properties()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.remove_population"><code class="docutils literal notranslate"><span class="pre">Scatterer.remove_population()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#population-class">Population Class</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population"><code class="docutils literal notranslate"><span class="pre">Population</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population.concentration"><code class="docutils literal notranslate"><span class="pre">Population.concentration</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population.initialize"><code class="docutils literal notranslate"><span class="pre">Population.initialize()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population.name"><code class="docutils literal notranslate"><span class="pre">Population.name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population.print_properties"><code class="docutils literal notranslate"><span class="pre">Population.print_properties()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population.refractive_index"><code class="docutils literal notranslate"><span class="pre">Population.refractive_index</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population.size"><code class="docutils literal notranslate"><span class="pre">Population.size</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#detector-class">Detector Class</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector"><code class="docutils literal notranslate"><span class="pre">Detector</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.bandwidth"><code class="docutils literal notranslate"><span class="pre">Detector.bandwidth</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.baseline_shift"><code class="docutils literal notranslate"><span class="pre">Detector.baseline_shift</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.capture_signal"><code class="docutils literal notranslate"><span class="pre">Detector.capture_signal()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.dark_current"><code class="docutils literal notranslate"><span class="pre">Detector.dark_current</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.gamma_angle"><code class="docutils literal notranslate"><span class="pre">Detector.gamma_angle</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.init_raw_signal"><code class="docutils literal notranslate"><span class="pre">Detector.init_raw_signal()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.n_bins"><code class="docutils literal notranslate"><span class="pre">Detector.n_bins</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.name"><code class="docutils literal notranslate"><span class="pre">Detector.name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.noise_level"><code class="docutils literal notranslate"><span class="pre">Detector.noise_level</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.numerical_aperture"><code class="docutils literal notranslate"><span class="pre">Detector.numerical_aperture</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.phi_angle"><code class="docutils literal notranslate"><span class="pre">Detector.phi_angle</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.plot"><code class="docutils literal notranslate"><span class="pre">Detector.plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.print_properties"><code class="docutils literal notranslate"><span class="pre">Detector.print_properties()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.resistance"><code class="docutils literal notranslate"><span class="pre">Detector.resistance</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.responsitivity"><code class="docutils literal notranslate"><span class="pre">Detector.responsitivity</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.sampling"><code class="docutils literal notranslate"><span class="pre">Detector.sampling</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.sampling_freq"><code class="docutils literal notranslate"><span class="pre">Detector.sampling_freq</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.saturation_level"><code class="docutils literal notranslate"><span class="pre">Detector.saturation_level</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.set_peak_locator"><code class="docutils literal notranslate"><span class="pre">Detector.set_peak_locator()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.temperature"><code class="docutils literal notranslate"><span class="pre">Detector.temperature</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cytometer-class">Cytometer Class</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer"><code class="docutils literal notranslate"><span class="pre">FlowCytometer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.add_detector"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.add_detector()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.plot"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.print_properties"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.print_properties()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.simulate_pulse"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.simulate_pulse()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analyzer-class">Analyzer Class</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.analyzer.Analyzer"><code class="docutils literal notranslate"><span class="pre">Analyzer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.analyzer.Analyzer.display_features"><code class="docutils literal notranslate"><span class="pre">Analyzer.display_features()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.analyzer.Analyzer.generate_report"><code class="docutils literal notranslate"><span class="pre">Analyzer.generate_report()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.analyzer.Analyzer.get_coincidence"><code class="docutils literal notranslate"><span class="pre">Analyzer.get_coincidence()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.analyzer.Analyzer.map_scatterers_to_time"><code class="docutils literal notranslate"><span class="pre">Analyzer.map_scatterers_to_time()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.analyzer.Analyzer.plot"><code class="docutils literal notranslate"><span class="pre">Analyzer.plot()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.analyzer.Analyzer.plot_peak"><code class="docutils literal notranslate"><span class="pre">Analyzer.plot_peak()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.analyzer.Analyzer.run_analysis"><code class="docutils literal notranslate"><span class="pre">Analyzer.run_analysis()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/code/base.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Martin Poinsinet de Sivry-Houle.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
