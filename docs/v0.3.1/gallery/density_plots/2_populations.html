@@ -408,6 +408,7 @@
 <li class="toctree-l2"><a class="reference internal" href="1_populations.html">Flow Cytometry Simulation with One Populations: Density Plot of Scattering Intensities</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Flow Cytometry Simulation [2 populations] Density Plot of Scattering Intensities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="3_populations.html">Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_populations.html">Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../extras/index.html">Examples: extras</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -492,13 +493,13 @@ analyzes pulse signals from two detectors, and generates a 2D density plot of th
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import necessary libraries and modules</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">Scatterer</span><span class="p">,</span> <span class="n">Analyzer</span><span class="p">,</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">GaussianBeam</span><span class="p">,</span> <span class="n">FlowCell</span>
-<span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">distribution</span>
-<span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">peak_finder</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">peak_locator</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">particle</span><span class="p">,</span> <span class="n">milliliter</span><span class="p">,</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">micrometer</span><span class="p">,</span> <span class="n">millisecond</span><span class="p">,</span> <span class="n">meter</span>
-<span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">degree</span><span class="p">,</span> <span class="n">watt</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">millivolt</span><span class="p">,</span> <span class="n">ohm</span><span class="p">,</span> <span class="n">kelvin</span><span class="p">,</span> <span class="n">milliampere</span><span class="p">,</span> <span class="n">megahertz</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">degree</span><span class="p">,</span> <span class="n">watt</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">millivolt</span><span class="p">,</span> <span class="n">ohm</span><span class="p">,</span> <span class="n">kelvin</span><span class="p">,</span> <span class="n">milliampere</span><span class="p">,</span> <span class="n">megahertz</span><span class="p">,</span> <span class="n">microvolt</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">microsecond</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">milliwatt</span><span class="p">,</span> <span class="n">AU</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">NoiseSetting</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy.population</span> <span class="kn">import</span> <span class="n">Exosome</span><span class="p">,</span> <span class="n">HDL</span>
 
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -509,41 +510,16 @@ analyzes pulse signals from two detectors, and generates a 2D density plot of th
 <span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
     <span class="n">flow_speed</span><span class="o">=</span><span class="mf">7.56</span> <span class="o">*</span> <span class="n">meter</span> <span class="o">/</span> <span class="n">second</span><span class="p">,</span>      <span class="c1"># Flow speed: 7.56 meters per second</span>
     <span class="n">flow_area</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">micrometer</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>      <span class="c1"># Flow area: 10 x 10 micrometers</span>
-    <span class="n">run_time</span><span class="o">=</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">millisecond</span>             <span class="c1"># Total simulation time: 0.3 milliseconds</span>
+    <span class="n">run_time</span><span class="o">=</span><span class="mf">0.8</span> <span class="o">*</span> <span class="n">millisecond</span>             <span class="c1"># Total simulation time: 0.3 milliseconds</span>
 <span class="p">)</span>
 
 <span class="c1"># Step 2: Create Populations (Extracellular Vesicles and Liposomes)</span>
 <span class="n">scatterer</span> <span class="o">=</span> <span class="n">Scatterer</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>  <span class="c1"># Medium refractive index: 1.33</span>
 
-<span class="c1"># Add first population (Extracellular Vesicles)</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EV&#39;</span><span class="p">,</span>  <span class="c1"># Population name: Extracellular Vesicles (EV)</span>
-    <span class="n">concentration</span><span class="o">=</span><span class="mf">1e+9</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">,</span>  <span class="c1"># Concentration: 1e9 particles per milliliter</span>
-    <span class="n">size</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span>
-        <span class="n">characteristic_size</span><span class="o">=</span><span class="mi">150</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span>  <span class="c1"># Characteristic size: 50 nanometers</span>
-        <span class="n">spread</span><span class="o">=</span><span class="mf">10.5</span>                           <span class="c1"># Spread factor for size distribution</span>
-    <span class="p">),</span>
-    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span>
-        <span class="n">mean</span><span class="o">=</span><span class="mf">1.45</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span>    <span class="c1"># Mean refractive index: 1.39</span>
-        <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.02</span> <span class="o">*</span> <span class="n">RIU</span>  <span class="c1"># Standard deviation: 0.05 refractive index units</span>
-    <span class="p">)</span>
-<span class="p">)</span>
+<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">Exosome</span><span class="p">,</span> <span class="n">concentration</span><span class="o">=</span><span class="mf">3e+8</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
+<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">HDL</span><span class="p">,</span> <span class="n">concentration</span><span class="o">=</span><span class="mf">3e+8</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
 
-<span class="c1"># Add second population (Liposomes)</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LP&#39;</span><span class="p">,</span>  <span class="c1"># Population name: Liposomes (LP)</span>
-    <span class="n">concentration</span><span class="o">=</span><span class="mf">1e+9</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">,</span>  <span class="c1"># Concentration: 1e9 particles per milliliter</span>
-    <span class="n">size</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span>
-        <span class="n">characteristic_size</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span>  <span class="c1"># Characteristic size: 200 nanometers</span>
-        <span class="n">spread</span><span class="o">=</span><span class="mf">10.5</span>                           <span class="c1"># Spread factor for size distribution</span>
-    <span class="p">),</span>
-    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span>
-        <span class="n">mean</span><span class="o">=</span><span class="mf">1.45</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span>    <span class="c1"># Mean refractive index: 1.45</span>
-        <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.02</span> <span class="o">*</span> <span class="n">RIU</span>  <span class="c1"># Standard deviation: 0.05 refractive index units</span>
-    <span class="p">)</span>
-<span class="p">)</span>
-
-<span class="n">scatterer</span><span class="o">.</span><span class="n">concentrations</span> <span class="o">=</span> <span class="mf">1e+9</span> <span class="o">/</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span>
+<span class="c1"># scatterer.concentrations = 1e+9 / 3 * particle / milliliter</span>
 
 <span class="c1"># Initialize scatterer and link it to the flow cell</span>
 <span class="n">scatterer</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">)</span>
@@ -561,46 +537,46 @@ analyzes pulse signals from two detectors, and generates a 2D density plot of th
 +-----------------------------+---------+
 | medium refractive index     | 1.3 RIU |
 +-----------------------------+---------+
-| minimum time between events | 26.7 ns |
+| minimum time between events | 20.0 ns |
 +-----------------------------+---------+
 | average time between events | 2.1 µs  |
 +-----------------------------+---------+
 
-Population [EV] Properties
+Population [Exosome] Properties
 +------------------+------------------------------+
 | Property         | Value                        |
 +==================+==============================+
-| Name             | EV                           |
+| Name             | Exosome                      |
 +------------------+------------------------------+
-| Refractive Index | Normal(1.450 RIU, 0.020 RIU) |
+| Refractive Index | Normal(1.390 RIU, 0.020 RIU) |
 +------------------+------------------------------+
-| Size             | RR(150.000 nm, 10.500)       |
+| Size             | RR(70.000 nm, 2.000)         |
 +------------------+------------------------------+
-| Concentration    | 333.3 Gparticle/l            |
+| Concentration    | 300.0 Gparticle/l            |
 +------------------+------------------------------+
-| N events         | 101.0 particle               |
+| N events         | 181.0 particle               |
 +------------------+------------------------------+
 
-Population [LP] Properties
+Population [HDL] Properties
 +------------------+------------------------------+
 | Property         | Value                        |
 +==================+==============================+
-| Name             | LP                           |
+| Name             | HDL                          |
 +------------------+------------------------------+
-| Refractive Index | Normal(1.450 RIU, 0.020 RIU) |
+| Refractive Index | Normal(1.330 RIU, 0.010 RIU) |
 +------------------+------------------------------+
-| Size             | RR(200.000 nm, 10.500)       |
+| Size             | RR(10.000 nm, 3.500)         |
 +------------------+------------------------------+
-| Concentration    | 333.3 Gparticle/l            |
+| Concentration    | 300.0 Gparticle/l            |
 +------------------+------------------------------+
-| N events         | 91.0 particle                |
+| N events         | 181.0 particle               |
 +------------------+------------------------------+
 </pre></div>
 </div>
 <p>Step 4: Set up the Laser GaussianBeam</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">=</span> <span class="n">GaussianBeam</span><span class="p">(</span>
     <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">AU</span><span class="p">,</span>             <span class="c1"># Numerical aperture of the laser: 0.3</span>
-    <span class="n">wavelength</span><span class="o">=</span><span class="mi">800</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span>              <span class="c1"># Laser wavelength: 800 nanometers</span>
+    <span class="n">wavelength</span><span class="o">=</span><span class="mi">488</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span>              <span class="c1"># Laser wavelength: 800 nanometers</span>
     <span class="n">optical_power</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">milliwatt</span>             <span class="c1"># Laser optical power: 10 milliwatts</span>
 <span class="p">)</span>
 
@@ -611,11 +587,11 @@ Population [LP] Properties
 <span class="n">detector_0</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>                             <span class="c1"># Detector name: Side scatter detector</span>
     <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">degree</span><span class="p">,</span>                   <span class="c1"># Angle: 90 degrees (Side Scatter)</span>
-    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.2</span> <span class="o">*</span> <span class="n">AU</span><span class="p">,</span>             <span class="c1"># Numerical aperture: 1.2</span>
+    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">.2</span> <span class="o">*</span> <span class="n">AU</span><span class="p">,</span>             <span class="c1"># Numerical aperture: 1.2</span>
     <span class="n">responsitivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ampere</span> <span class="o">/</span> <span class="n">watt</span><span class="p">,</span>        <span class="c1"># Responsitivity: 1 ampere per watt</span>
     <span class="n">sampling_freq</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">megahertz</span><span class="p">,</span>            <span class="c1"># Sampling frequency: 60 MHz</span>
-    <span class="n">saturation_level</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">millivolt</span><span class="p">,</span>          <span class="c1"># Saturation level: 2 millivolts</span>
-    <span class="n">n_bins</span><span class="o">=</span><span class="s1">&#39;16bit&#39;</span><span class="p">,</span>                          <span class="c1"># Number of bins: 14-bit resolution</span>
+    <span class="n">saturation_level</span><span class="o">=</span><span class="mf">0.04</span> <span class="o">*</span> <span class="n">millivolt</span><span class="p">,</span>          <span class="c1"># Saturation level: 2 millivolts</span>
+    <span class="c1"># n_bins=&#39;16bit&#39;,                          # Number of bins: 14-bit resolution</span>
     <span class="n">resistance</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">ohm</span><span class="p">,</span>                     <span class="c1"># Detector resistance: 50 ohms</span>
     <span class="n">dark_current</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">milliampere</span><span class="p">,</span>          <span class="c1"># Dark current: 0.1 milliamps</span>
     <span class="n">temperature</span><span class="o">=</span><span class="mi">300</span> <span class="o">*</span> <span class="n">kelvin</span>                 <span class="c1"># Operating temperature: 300 Kelvin</span>
@@ -625,11 +601,11 @@ Population [LP] Properties
 <span class="n">detector_1</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>                          <span class="c1"># Detector name: Forward scatter detector</span>
     <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">degree</span><span class="p">,</span>                    <span class="c1"># Angle: 0 degrees (Forward Scatter)</span>
-    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.2</span> <span class="o">*</span> <span class="n">AU</span><span class="p">,</span>             <span class="c1"># Numerical aperture: 1.2</span>
+    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">.2</span> <span class="o">*</span> <span class="n">AU</span><span class="p">,</span>             <span class="c1"># Numerical aperture: 1.2</span>
     <span class="n">responsitivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ampere</span> <span class="o">/</span> <span class="n">watt</span><span class="p">,</span>        <span class="c1"># Responsitivity: 1 ampere per watt</span>
     <span class="n">sampling_freq</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">megahertz</span><span class="p">,</span>            <span class="c1"># Sampling frequency: 60 MHz</span>
-    <span class="n">saturation_level</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">millivolt</span><span class="p">,</span>          <span class="c1"># Saturation level: 2 millivolts</span>
-    <span class="n">n_bins</span><span class="o">=</span><span class="s1">&#39;16bit&#39;</span><span class="p">,</span>                          <span class="c1"># Number of bins: 14-bit resolution</span>
+    <span class="n">saturation_level</span><span class="o">=</span><span class="mf">0.04</span> <span class="o">*</span> <span class="n">millivolt</span><span class="p">,</span>          <span class="c1"># Saturation level: 2 millivolts</span>
+    <span class="c1"># n_bins=&#39;16bit&#39;,                          # Number of bins: 14-bit resolution</span>
     <span class="n">resistance</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">ohm</span><span class="p">,</span>                     <span class="c1"># Detector resistance: 50 ohms</span>
     <span class="n">dark_current</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">milliampere</span><span class="p">,</span>          <span class="c1"># Dark current: 0.1 milliamps</span>
     <span class="n">temperature</span><span class="o">=</span><span class="mi">300</span> <span class="o">*</span> <span class="n">kelvin</span>                 <span class="c1"># Operating temperature: 300 Kelvin</span>
@@ -643,7 +619,7 @@ Population [LP] Properties
     <span class="n">coupling_mechanism</span><span class="o">=</span><span class="s1">&#39;mie&#39;</span><span class="p">,</span>                <span class="c1"># Scattering mechanism: Mie scattering</span>
     <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>                           <span class="c1"># Laser source used in the experiment</span>
     <span class="n">scatterer</span><span class="o">=</span><span class="n">scatterer</span><span class="p">,</span>                     <span class="c1"># Populations used in the experiment</span>
-    <span class="n">background_power</span><span class="o">=</span><span class="mf">0.02</span> <span class="o">*</span> <span class="n">milliwatt</span><span class="p">,</span>
+    <span class="n">background_power</span><span class="o">=</span><span class="mf">0.0</span> <span class="o">*</span> <span class="n">milliwatt</span><span class="p">,</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">]</span>       <span class="c1"># List of detectors: Side scatter and Forward scatter</span>
 <span class="p">)</span>
 
@@ -670,11 +646,11 @@ Detector [forward] Properties
 +--------------------+----------+
 | Gamma angle        | 0.0 deg  |
 +--------------------+----------+
-| Numerical aperture | 1.2      |
+| Numerical aperture | 0.2      |
 +--------------------+----------+
 | Responsitivity     | 1.0 A/W  |
 +--------------------+----------+
-| Saturation Level   | 3.0 mV   |
+| Saturation Level   | 40.0 µV  |
 +--------------------+----------+
 | Dark Current       | 100.0 µA |
 +--------------------+----------+
@@ -682,20 +658,21 @@ Detector [forward] Properties
 +--------------------+----------+
 | Temperature        | 300.0 K  |
 +--------------------+----------+
-| N Bins             | 65536    |
+| N Bins             |          |
 +--------------------+----------+
-/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/FlowCyPy/cytometer.py:186: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-  ax.legend()
 </pre></div>
 </div>
-<p>Step 7: Analyze Pulse Signals</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">peak_finder</span><span class="o">.</span><span class="n">MovingAverage</span><span class="p">(</span>
-    <span class="n">threshold</span><span class="o">=</span><span class="mf">0.001</span> <span class="o">*</span> <span class="n">millivolt</span><span class="p">,</span>              <span class="c1"># Peak detection threshold: 0.03 millivolts</span>
-    <span class="n">window_size</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">microsecond</span><span class="p">,</span>             <span class="c1"># Moving average window size: 1 microsecond</span>
-    <span class="n">min_peak_distance</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">microsecond</span>      <span class="c1"># Minimum distance between peaks: 0.2 microseconds</span>
+<p>Step 5: Analyzing Pulse Signals</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">MovingAverage</span><span class="p">(</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="mf">0.1e-20</span> <span class="o">*</span> <span class="n">microvolt</span><span class="p">,</span>       <span class="c1"># Signal threshold: 0.1 mV</span>
+    <span class="n">window_size</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">microsecond</span><span class="p">,</span>         <span class="c1"># Moving average window size: 1 µs</span>
+    <span class="n">min_peak_distance</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">microsecond</span>  <span class="c1"># Minimum distance between peaks: 0.3 µs</span>
 <span class="p">)</span>
 
-<span class="n">analyzer</span> <span class="o">=</span> <span class="n">Analyzer</span><span class="p">(</span><span class="n">cytometer</span><span class="o">=</span><span class="n">cytometer</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">)</span>
+<span class="n">detector_0</span><span class="o">.</span><span class="n">set_peak_locator</span><span class="p">(</span><span class="n">algorithm</span><span class="p">)</span>
+<span class="n">detector_1</span><span class="o">.</span><span class="n">set_peak_locator</span><span class="p">(</span><span class="n">algorithm</span><span class="p">)</span>
+
+<span class="n">analyzer</span> <span class="o">=</span> <span class="n">Analyzer</span><span class="p">(</span><span class="n">cytometer</span><span class="o">=</span><span class="n">cytometer</span><span class="p">)</span>
 
 <span class="c1"># Run the pulse signal analysis without computing peak area</span>
 <span class="n">analyzer</span><span class="o">.</span><span class="n">run_analysis</span><span class="p">(</span><span class="n">compute_peak_area</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -711,13 +688,7 @@ Detector [forward] Properties
 <span class="n">analyzer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Plot with a linear scale (log_plot=False)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_2_populations_004.png" srcset="../../_images/sphx_glr_2_populations_004.png" alt="2 populations" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/seaborn/axisgrid.py:1883: UserWarning: Dataset has 0 variance; skipping density estimate. Pass `warn_singular=False` to disable this warning.
-  func(x=self.x, ax=self.ax_marg_x, **kwargs)
-/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/seaborn/axisgrid.py:1889: UserWarning: Dataset has 0 variance; skipping density estimate. Pass `warn_singular=False` to disable this warning.
-  func(y=self.y, ax=self.ax_marg_y, **kwargs)
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 9.862 seconds)</p>
+<img src="../../_images/sphx_glr_2_populations_004.png" srcset="../../_images/sphx_glr_2_populations_004.png" alt="2 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 18.587 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-density-plots-2-populations-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/07ecafb66464397f8456d156b722f249/2_populations.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">2_populations.ipynb</span></code></a></p>

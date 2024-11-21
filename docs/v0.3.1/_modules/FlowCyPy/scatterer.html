@@ -631,7 +631,43 @@
 
 <div class="viewcode-block" id="Scatterer.add_population">
 <a class="viewcode-back" href="../../code/base.html#FlowCyPy.Scatterer.add_population">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">refractive_index</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">concentration</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Scatterer&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="n">Population</span><span class="p">,</span> <span class="n">concentration</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Scatterer&#39;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a population to the Scatterer instance with the specified attributes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The name of the population.</span>
+<span class="sd">        size : BaseDistribution</span>
+<span class="sd">            The size distribution of the population.</span>
+<span class="sd">        refractive_index : BaseDistribution</span>
+<span class="sd">            The refractive index distribution of the population.</span>
+<span class="sd">        concentration : Quantity</span>
+<span class="sd">            The concentration of the population. Must have the dimensionality of &#39;particles per liter&#39;.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Scatterer</span>
+<span class="sd">            The Scatterer instance (to support chaining).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the concentration does not have the expected dimensionality.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">concentration</span><span class="o">.</span><span class="n">dimensionality</span> <span class="o">!=</span> <span class="p">(</span><span class="n">particle</span> <span class="o">/</span> <span class="n">liter</span><span class="p">)</span><span class="o">.</span><span class="n">dimensionality</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid concentration dimensionality: </span><span class="si">{</span><span class="n">concentration</span><span class="o">.</span><span class="n">dimensionality</span><span class="si">}</span><span class="s2">. Expected dimensionality is &#39;particles per liter&#39; or similar.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">population</span><span class="o">.</span><span class="n">concentration</span> <span class="o">=</span> <span class="n">concentration</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">population</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_add_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">refractive_index</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">concentration</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Scatterer&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a population to the Scatterer instance with the specified attributes.</span>
 
@@ -669,8 +705,7 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">population</span></div>
-
+        <span class="k">return</span> <span class="n">population</span>
 
 <div class="viewcode-block" id="Scatterer.remove_population">
 <a class="viewcode-back" href="../../code/base.html#FlowCyPy.Scatterer.remove_population">[docs]</a>

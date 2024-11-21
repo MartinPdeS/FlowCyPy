@@ -31,14 +31,14 @@ Steps:
 3. Simulate the flow cytometer signals.
 4. Visualize and analyze the signals from FSC and SSC detectors.
 
-.. GENERATED FROM PYTHON SOURCE LINES 15-118
+.. GENERATED FROM PYTHON SOURCE LINES 15-117
 
 .. code-block:: Python
 
 
     # Step 1: Import the necessary libraries
     from FlowCyPy import FlowCytometer, Scatterer, Detector, GaussianBeam, FlowCell
-    from FlowCyPy import distribution
+    from FlowCyPy import distribution, Population
     from FlowCyPy.units import (
         RIU, milliliter, particle, nanometer, degree, microvolt, AU,
         megahertz, milliwatt, micrometer, millisecond, meter, second
@@ -61,21 +61,20 @@ Steps:
     # and a refractive index of 1.39 with a small variation of 0.01.
     scatterer = Scatterer(medium_refractive_index=1.33 * RIU)
 
-    scatterer.add_population(
+    population_0 = Population(
         name='EV',
-        concentration=1e+9 * particle / milliliter,
         size=distribution.RosinRammler(characteristic_size=50 * nanometer, spread=4.5),
         refractive_index=distribution.Normal(mean=1.39 * RIU, std_dev=0.05 * RIU)
     )
 
-
-    scatterer.add_population(
+    population_1 = Population(
         name='LP',
-        concentration=1e+9 * particle / milliliter,
         size=distribution.RosinRammler(characteristic_size=200 * nanometer, spread=4.5),
         refractive_index=distribution.Normal(mean=1.45 * RIU, std_dev=0.05 * RIU)
     )
 
+    scatterer.add_population(population_0, concentration=1e+9 * particle / milliliter)
+    scatterer.add_population(population_1, concentration=1e+9 * particle / milliliter)
 
     scatterer.initialize(flow_cell=flow_cell)
 
@@ -186,7 +185,7 @@ Steps:
     +------------------+------------------------------+
     | Size             | RR(50.000 nm, 4.500)         |
     +------------------+------------------------------+
-    | Concentration    | 1.7 nmol/m³                  |
+    | Concentration    | 1.0 Tparticle/l              |
     +------------------+------------------------------+
     | N events         | 1.5 kparticle                |
     +------------------+------------------------------+
@@ -201,7 +200,7 @@ Steps:
     +------------------+------------------------------+
     | Size             | RR(200.000 nm, 4.500)        |
     +------------------+------------------------------+
-    | Concentration    | 1.7 nmol/m³                  |
+    | Concentration    | 1.0 Tparticle/l              |
     +------------------+------------------------------+
     | N events         | 1.5 kparticle                |
     +------------------+------------------------------+
@@ -229,7 +228,7 @@ Steps:
     +------------------+------------------------------+
     | Size             | RR(50.000 nm, 4.500)         |
     +------------------+------------------------------+
-    | Concentration    | 1.7 nmol/m³                  |
+    | Concentration    | 1.0 Tparticle/l              |
     +------------------+------------------------------+
     | N events         | 1.5 kparticle                |
     +------------------+------------------------------+
@@ -244,7 +243,7 @@ Steps:
     +------------------+------------------------------+
     | Size             | RR(200.000 nm, 4.500)        |
     +------------------+------------------------------+
-    | Concentration    | 1.7 nmol/m³                  |
+    | Concentration    | 1.0 Tparticle/l              |
     +------------------+------------------------------+
     | N events         | 1.5 kparticle                |
     +------------------+------------------------------+
@@ -306,13 +305,11 @@ Steps:
     +--------------------+----------+
     | N Bins             | 16384    |
     +--------------------+----------+
-    /opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/FlowCyPy/cytometer.py:186: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-      ax.legend()
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-122
+.. GENERATED FROM PYTHON SOURCE LINES 118-121
 
 The above plot shows the raw simulated signals for Forward Scatter (FSC) and
 Side Scatter (SSC) channels. These signals provide insights into particle size
@@ -321,7 +318,7 @@ and complexity and can be further analyzed for feature extraction, such as peak 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.053 seconds)
+   **Total running time of the script:** (0 minutes 3.190 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_flow_cytometer_signal.py:

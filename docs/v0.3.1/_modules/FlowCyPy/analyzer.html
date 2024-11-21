@@ -450,8 +450,6 @@
 <span class="kn">from</span> <span class="nn">MPSPlots.styles</span> <span class="kn">import</span> <span class="n">mps</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">second</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">FlowCyPy.detector</span> <span class="kn">import</span> <span class="n">Detector</span>
-<span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">peak_finder</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.cytometer</span> <span class="kn">import</span> <span class="n">FlowCytometer</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -471,8 +469,6 @@
 <span class="sd">    ----------</span>
 <span class="sd">    cytometer : FlowCytometer</span>
 <span class="sd">        An instance of FlowCytometer that contains detectors and their associated signals.</span>
-<span class="sd">    algorithm : peak_finder.BaseClass</span>
-<span class="sd">        The peak-finding algorithm used to detect peaks in the signals.</span>
 
 <span class="sd">    Methods</span>
 <span class="sd">    -------</span>
@@ -492,18 +488,15 @@
 <span class="sd">        Generates a report summarizing the results of the analysis.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cytometer</span><span class="p">:</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">:</span> <span class="n">peak_finder</span><span class="o">.</span><span class="n">BaseClass</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cytometer</span><span class="p">:</span> <span class="n">FlowCytometer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes the Analyzer class with the cytometer object and the peak-finding algorithm.</span>
+<span class="sd">        Initializes the Analyzer class with the cytometer object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        cytometer : FlowCytometer</span>
 <span class="sd">            An instance of FlowCytometer that contains detectors and their signals.</span>
-<span class="sd">        algorithm : peak_finder.BaseClass</span>
-<span class="sd">            The peak-finding algorithm used to detect peaks in the signals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">algorithm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span> <span class="o">=</span> <span class="n">cytometer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -525,60 +518,17 @@
 <span class="sd">        pd.DataFrame</span>
 <span class="sd">            A DataFrame with the detected peak properties, organized by detector.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting peak analysis for all detectors.&quot;</span><span class="p">)</span>
-
         <span class="c1"># Run peak detection on each detector</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_analyze_all_detectors</span><span class="p">(</span><span class="n">compute_peak_area</span><span class="p">)</span>
-
-        <span class="c1"># Calculate and log additional statistics</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_log_statistics</span><span class="p">()</span></div>
-
-
-    <span class="k">def</span> <span class="nf">_analyze_detector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">detector</span><span class="p">:</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">compute_peak_area</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Analyzes the signal from a single detector, detecting peaks and extracting</span>
-<span class="sd">        features such as height, width, and area.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        detector : Detector</span>
-<span class="sd">            The detector object that contains signal data.</span>
-<span class="sd">        compute_peak_area : bool</span>
-<span class="sd">            Whether to compute the area under the peaks.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        pd.DataFrame</span>
-<span class="sd">            A DataFrame containing the peak properties (e.g., height, width, area)</span>
-<span class="sd">            for the analyzed detector.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Analyzing Detector </span><span class="si">{</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-
-        <span class="c1"># Run the peak detection algorithm</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">detect_peaks</span><span class="p">(</span><span class="n">detector</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span> <span class="n">compute_area</span><span class="o">=</span><span class="n">compute_peak_area</span><span class="p">)</span>
-
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detector </span><span class="si">{</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Detected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">detector</span><span class="o">.</span><span class="n">peak_properties</span><span class="p">)</span><span class="si">}</span><span class="s2"> peaks.&quot;</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_analyze_all_detectors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compute_peak_area</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Runs the peak detection analysis on all detectors, concatenating the results</span>
-<span class="sd">        into a combined DataFrame.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        compute_peak_area : bool</span>
-<span class="sd">            Whether to compute the area under the peaks for all detectors.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
-            <span class="c1"># Analyze each detector and append the results</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_analyze_detector</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="n">compute_peak_area</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">peak_properties</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span><span class="o">.</span><span class="n">detectors</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">peak_properties</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span><span class="o">.</span><span class="n">detectors</span><span class="p">],</span>
             <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">d</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span><span class="o">.</span><span class="n">detectors</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Detector&#39;</span><span class="p">,</span> <span class="s1">&#39;Event&#39;</span><span class="p">]</span>
+
+        <span class="c1"># Calculate and log additional statistics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_statistics</span><span class="p">()</span></div>
+
 
     <span class="k">def</span> <span class="nf">_log_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -716,7 +666,7 @@
             <span class="n">_</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="n">n_detectors</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figure_size</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;height_ratios&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]})</span>
 
         <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">detector</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span><span class="o">.</span><span class="n">detectors</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">detector</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">add_peak_locator</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_yaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span><span class="o">.</span><span class="n">scatterer</span><span class="o">.</span><span class="n">add_to_ax</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>

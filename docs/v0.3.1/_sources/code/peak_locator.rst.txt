@@ -5,7 +5,7 @@ PeakFinder Classes
 Base Class
 ----------
 
-.. autoclass:: FlowCyPy.peak_finder.basic.Basic
+.. autoclass:: FlowCyPy.peak_finder.basic.BasicPeakLocator
    :members:
    :show-inheritance:
 
@@ -13,7 +13,7 @@ Base Class
 Moving-average Class
 --------------------
 
-.. autoclass:: FlowCyPy.peak_finder.moving_average.MovingAverage
+.. autoclass:: FlowCyPy.peak_locator.moving_average.MovingAverage
    :members:
    :show-inheritance:
 

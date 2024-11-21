@@ -449,6 +449,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">distribution</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">field</span>
 <span class="kn">import</span> <span class="nn">pint_pandas</span>
 <span class="kn">from</span> <span class="nn">pydantic.dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">field_validator</span>
@@ -477,20 +478,20 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the population distribution.</span>
 <span class="sd">    refractive_index : Union[distribution.Base, Quantity]</span>
 <span class="sd">        Refractive index or refractive index distributions.</span>
 <span class="sd">    size : Union[distribution.Base, Quantity]</span>
 <span class="sd">        Particle size or size distributions.</span>
 <span class="sd">    concentration : Quantity</span>
 <span class="sd">        Scatterer density in particles per cubic meter, default is 1 particle/m³.</span>
-<span class="sd">    name : str</span>
-<span class="sd">        Name of the population distribution, default is an empty string.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
 
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">refractive_index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
-    <span class="n">concentration</span><span class="p">:</span> <span class="n">Quantity</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">concentration</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

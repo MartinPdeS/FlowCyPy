@@ -458,6 +458,9 @@
 <span class="kn">from</span> <span class="nn">PyMieSim.units</span> <span class="kn">import</span> <span class="n">Quantity</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.noises</span> <span class="kn">import</span> <span class="n">NoiseSetting</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.helper</span> <span class="kn">import</span> <span class="n">plot_helper</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy.peak_locator</span> <span class="kn">import</span> <span class="n">BasePeakLocator</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
 
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -865,7 +868,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">bins</span><span class="p">[</span><span class="n">digitized</span><span class="p">],</span> <span class="n">volt</span><span class="p">)</span>
 
     <span class="nd">@plot_helper</span>
-    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">time_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">signal_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;C0&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">time_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">signal_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">add_peak_locator</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Visualizes the processed signal as a function of time.</span>
 
@@ -899,18 +902,68 @@
 <span class="sd">            - If `show` is False, the plot will not be displayed but can be retrieved through the provided `ax`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">signal_unit</span> <span class="o">=</span> <span class="n">signal_unit</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="o">.</span><span class="n">units</span>
-
         <span class="n">time_unit</span> <span class="o">=</span> <span class="n">time_unit</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="o">.</span><span class="n">units</span>
 
         <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_unit</span><span class="p">)</span>
         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">time_unit</span><span class="p">)</span>
 
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Signal&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">add_peak_locator</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">_add_to_ax</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">signal_unit</span><span class="o">=</span><span class="n">signal_unit</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="n">time_unit</span><span class="p">)</span>
 
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time [</span><span class="si">{</span><span class="n">time_unit</span><span class="si">:</span><span class="s2">P</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">signal_unit</span><span class="si">:</span><span class="s2">P</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">time_unit</span><span class="p">,</span> <span class="n">signal_unit</span>
+
+<div class="viewcode-block" id="Detector.set_peak_locator">
+<a class="viewcode-back" href="../../code/base.html#FlowCyPy.detector.Detector.set_peak_locator">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_peak_locator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algorithm</span><span class="p">:</span> <span class="n">BasePeakLocator</span><span class="p">,</span> <span class="n">compute_peak_area</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assigns a peak detection algorithm to the detector, analyzes the signal,</span>
+<span class="sd">        and extracts peak features such as height, width, and area.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        algorithm : BasePeakLocator</span>
+<span class="sd">            An instance of a peak detection algorithm derived from BasePeakLocator.</span>
+<span class="sd">        compute_peak_area : bool, optional</span>
+<span class="sd">            Whether to compute the area under the detected peaks (default is True).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If the provided algorithm is not an instance of BasePeakLocator.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the algorithm has already been initialized with peak data.</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            If the detector&#39;s signal data (dataframe) is not available.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - The `algorithm` parameter should be a fresh instance of a peak detection algorithm.</span>
+<span class="sd">        - The method will analyze the detector&#39;s signal immediately upon setting the algorithm.</span>
+<span class="sd">        - Peak detection results are stored in the algorithm&#39;s `peak_properties` attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Ensure the algorithm is an instance of BasePeakLocator</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">BasePeakLocator</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;The algorithm must be an instance of BasePeakLocator.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Ensure the detector has signal data available for analysis</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;dataframe&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The detector does not have signal data available for peak detection.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Set the algorithm and perform peak detection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">algorithm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">init_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">detect_peaks</span><span class="p">(</span><span class="n">compute_area</span><span class="o">=</span><span class="n">compute_peak_area</span><span class="p">)</span>
+
+        <span class="c1"># Log the result of peak detection</span>
+        <span class="n">peak_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">peak_properties</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="p">,</span> <span class="s1">&#39;peak_properties&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detector </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Detected </span><span class="si">{</span><span class="n">peak_count</span><span class="si">}</span><span class="s2"> peaks.&quot;</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="Detector.print_properties">
 <a class="viewcode-back" href="../../code/base.html#FlowCyPy.detector.Detector.print_properties">[docs]</a>

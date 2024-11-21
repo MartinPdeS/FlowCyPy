@@ -82,7 +82,7 @@ Step 3: Define the particle size distribution
 Use a normal size distribution with a mean size of 200 nanometers and a standard deviation of 10 nanometers.
 This represents the population of scatterers (particles) that will interact with the laser source.
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-63
+.. GENERATED FROM PYTHON SOURCE LINES 39-64
 
 .. code-block:: Python
 
@@ -99,11 +99,12 @@ This represents the population of scatterers (particles) that will interact with
     ev = Population(
         size=ev_size,               # Particle size distribution
         refractive_index=ev_ri,     # Refractive index distribution
-        concentration=1.8e+9 * particle / milliliter,  # Particle concentration: 1.8 million particles per milliliter
         name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
     )
 
-    scatterer = Scatterer(populations=[ev])
+    scatterer = Scatterer()
+
+    scatterer.add_population(ev, concentration=1.8e+9 * particle / milliliter)
 
     scatterer.initialize(flow_cell=flow_cell)
 
@@ -122,13 +123,13 @@ This represents the population of scatterers (particles) that will interact with
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 64-67
+.. GENERATED FROM PYTHON SOURCE LINES 65-68
 
 Step 4: Define the laser source
 -------------------------------
 Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and a numerical aperture of 0.3.
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-110
+.. GENERATED FROM PYTHON SOURCE LINES 68-111
 
 .. code-block:: Python
 
@@ -182,13 +183,13 @@ Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-114
+.. GENERATED FROM PYTHON SOURCE LINES 112-115
 
 Step 7: Analyze and Visualize Results
 -------------------------------------
 Display the properties of the simulated cytometer setup, including flow speed and laser power.
 
-.. GENERATED FROM PYTHON SOURCE LINES 114-125
+.. GENERATED FROM PYTHON SOURCE LINES 115-126
 
 .. code-block:: Python
 
@@ -225,9 +226,9 @@ Display the properties of the simulated cytometer setup, including flow speed an
     +-----------------------------+----------+
     | medium refractive index     | 1.0 RIU  |
     +-----------------------------+----------+
-    | minimum time between events | 292.4 ps |
+    | minimum time between events | 123.2 ps |
     +-----------------------------+----------+
-    | average time between events | 183.4 ns |
+    | average time between events | 189.8 ns |
     +-----------------------------+----------+
 
     Population [EV] Properties
@@ -240,9 +241,9 @@ Display the properties of the simulated cytometer setup, including flow speed an
     +------------------+-------------------------------+
     | Size             | Normal(200.000 nm, 10.000 nm) |
     +------------------+-------------------------------+
-    | Concentration    | 3.0 nmol/m³                   |
+    | Concentration    | 1.8 Tparticle/l               |
     +------------------+-------------------------------+
-    | N events         | 2.7 kparticle                 |
+    | N events         | 2.6 kparticle                 |
     +------------------+-------------------------------+
 
     FlowCytometer Properties
@@ -302,8 +303,6 @@ Display the properties of the simulated cytometer setup, including flow speed an
     +--------------------+---------+
     | N Bins             | 16384   |
     +--------------------+---------+
-    /opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/FlowCyPy/cytometer.py:186: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-      ax.legend()
 
     '\nSummary:\n--------\nThis script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,\nand extracts important features. The process is visualized through signal plots, and key properties are displayed.\n'
 
@@ -312,7 +311,7 @@ Display the properties of the simulated cytometer setup, including flow speed an
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.677 seconds)
+   **Total running time of the script:** (0 minutes 3.735 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_full_workflow.py:

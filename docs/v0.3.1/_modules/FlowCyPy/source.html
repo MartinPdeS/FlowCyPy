@@ -542,8 +542,7 @@
 <span class="sd">    polarization : Optional[Quantity]</span>
 <span class="sd">        The polarization of the laser source in degrees (default is 0 degrees).</span>
 <span class="sd">    RIN : Optional[float], optional</span>
-<span class="sd">        The Relative Intensity Noise (RIN) of the laser, specified as a fractional value (e.g., 0.01 for 1% RIN).</span>
-<span class="sd">        Default is 0.0, representing a perfectly stable laser.</span>
+<span class="sd">        The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a pretty stable laser.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -574,7 +573,7 @@
     <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">numerical_aperture</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">polarization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">degree</span>
-    <span class="n">RIN</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">RIN</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">120.0</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

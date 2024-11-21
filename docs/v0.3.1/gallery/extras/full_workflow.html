@@ -408,6 +408,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../density_plots/1_populations.html">Flow Cytometry Simulation with One Populations: Density Plot of Scattering Intensities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../density_plots/2_populations.html">Flow Cytometry Simulation [2 populations] Density Plot of Scattering Intensities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../density_plots/3_populations.html">Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../density_plots/custom_populations.html">Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: extras</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
@@ -529,11 +530,12 @@ This represents the population of scatterers (particles) that will interact with
 <span class="n">ev</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
     <span class="n">size</span><span class="o">=</span><span class="n">ev_size</span><span class="p">,</span>               <span class="c1"># Particle size distribution</span>
     <span class="n">refractive_index</span><span class="o">=</span><span class="n">ev_ri</span><span class="p">,</span>     <span class="c1"># Refractive index distribution</span>
-    <span class="n">concentration</span><span class="o">=</span><span class="mf">1.8e+9</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">,</span>  <span class="c1"># Particle concentration: 1.8 million particles per milliliter</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EV&#39;</span>                   <span class="c1"># Name of the particle population: Extracellular Vesicles (EV)</span>
 <span class="p">)</span>
 
-<span class="n">scatterer</span> <span class="o">=</span> <span class="n">Scatterer</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="p">[</span><span class="n">ev</span><span class="p">])</span>
+<span class="n">scatterer</span> <span class="o">=</span> <span class="n">Scatterer</span><span class="p">()</span>
+
+<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">concentration</span><span class="o">=</span><span class="mf">1.8e+9</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
 
 <span class="n">scatterer</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">)</span>
 
@@ -614,9 +616,9 @@ This represents the population of scatterers (particles) that will interact with
 +-----------------------------+----------+
 | medium refractive index     | 1.0 RIU  |
 +-----------------------------+----------+
-| minimum time between events | 292.4 ps |
+| minimum time between events | 123.2 ps |
 +-----------------------------+----------+
-| average time between events | 183.4 ns |
+| average time between events | 189.8 ns |
 +-----------------------------+----------+
 
 Population [EV] Properties
@@ -629,9 +631,9 @@ Population [EV] Properties
 +------------------+-------------------------------+
 | Size             | Normal(200.000 nm, 10.000 nm) |
 +------------------+-------------------------------+
-| Concentration    | 3.0 nmol/m³                   |
+| Concentration    | 1.8 Tparticle/l               |
 +------------------+-------------------------------+
-| N events         | 2.7 kparticle                 |
+| N events         | 2.6 kparticle                 |
 +------------------+-------------------------------+
 
 FlowCytometer Properties
@@ -691,13 +693,11 @@ Detector [second detector] Properties
 +--------------------+---------+
 | N Bins             | 16384   |
 +--------------------+---------+
-/opt/hostedtoolcache/Python/3.11.10/x64/lib/python3.11/site-packages/FlowCyPy/cytometer.py:186: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-  ax.legend()
 
 &#39;\nSummary:\n--------\nThis script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,\nand extracts important features. The process is visualized through signal plots, and key properties are displayed.\n&#39;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.677 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.735 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-full-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/7765c7c9dfbad7ed6be152008ccfca41/full_workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">full_workflow.ipynb</span></code></a></p>

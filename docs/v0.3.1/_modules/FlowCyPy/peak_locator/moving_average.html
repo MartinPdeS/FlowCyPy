@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FlowCyPy.peak_finder.moving_average &#8212; FlowCyPy  documentation</title>
+    <title>FlowCyPy.peak_locator.moving_average &#8212; FlowCyPy  documentation</title>
   
   
   
@@ -46,7 +46,7 @@
     <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/FlowCyPy/peak_finder/moving_average';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/FlowCyPy/peak_locator/moving_average';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
@@ -426,7 +426,7 @@
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">FlowCyPy.peak_finder.moving_average</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">FlowCyPy.peak_locator.moving_average</span></li>
   </ul>
 </nav>
 </div>
@@ -443,14 +443,12 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for FlowCyPy.peak_finder.moving_average</h1><div class="highlight"><pre>
+  <h1>Source code for FlowCyPy.peak_locator.moving_average</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">find_peaks</span><span class="p">,</span> <span class="n">peak_widths</span>
-<span class="kn">from</span> <span class="nn">FlowCyPy.peak_finder.base_class</span> <span class="kn">import</span> <span class="n">BaseClass</span>
-<span class="kn">from</span> <span class="nn">FlowCyPy.detector</span> <span class="kn">import</span> <span class="n">Detector</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy.peak_locator.base_class</span> <span class="kn">import</span> <span class="n">BasePeakLocator</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">pint_pandas</span>
 
@@ -459,9 +457,9 @@
 
 
 <div class="viewcode-block" id="MovingAverage">
-<a class="viewcode-back" href="../../../code/peak_finder.html#FlowCyPy.peak_finder.moving_average.MovingAverage">[docs]</a>
+<a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.moving_average.MovingAverage">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">MovingAverage</span><span class="p">(</span><span class="n">BaseClass</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MovingAverage</span><span class="p">(</span><span class="n">BasePeakLocator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Detects peaks in a signal using a moving average algorithm.</span>
 <span class="sd">    A peak is identified when the signal exceeds the moving average by a defined threshold.</span>
@@ -469,14 +467,11 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    threshold : Quantity, optional</span>
-<span class="sd">        The minimum difference between the signal and its moving average required to detect a peak.</span>
-<span class="sd">        Default is `Quantity(0.2)`.</span>
+<span class="sd">        The minimum difference between the signal and its moving average required to detect a peak. Default is `Quantity(0.2)`.</span>
 <span class="sd">    window_size : Quantity, optional</span>
-<span class="sd">        The window size for calculating the moving average.</span>
-<span class="sd">        Default is `Quantity(500)`.</span>
+<span class="sd">        The window size for calculating the moving average. Default is `Quantity(500)`.</span>
 <span class="sd">    min_peak_distance : Quantity, optional</span>
-<span class="sd">        The minimum distance between detected peaks.</span>
-<span class="sd">        Default is `Quantity(0.1)`.</span>
+<span class="sd">        The minimum distance between detected peaks. Default is `Quantity(0.1)`.</span>
 <span class="sd">    rel_height : float, optional</span>
 <span class="sd">        The relative height at which the peak width is measured. Default is `0.5` (half-height).</span>
 
@@ -487,27 +482,61 @@
     <span class="n">min_peak_distance</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">rel_height</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span>
 
+<div class="viewcode-block" id="MovingAverage.init_data">
+<a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.moving_average.MovingAverage.init_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">init_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the data for peak detection.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataframe : pd.DataFrame</span>
+<span class="sd">            A DataFrame containing the signal data with columns &#39;Signal&#39; and &#39;Time&#39;.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the DataFrame is missing required columns or is empty.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">{</span><span class="s1">&#39;Signal&#39;</span><span class="p">,</span> <span class="s1">&#39;Time&#39;</span><span class="p">}</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The DataFrame must contain &#39;Signal&#39; and &#39;Time&#39; columns.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The DataFrame is empty. Please provide valid signal data.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">peak_properties</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Time</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
 <div class="viewcode-block" id="MovingAverage.compute_moving_average">
-<a class="viewcode-back" href="../../../code/peak_finder.html#FlowCyPy.peak_finder.moving_average.MovingAverage.compute_moving_average">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute_moving_average</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.moving_average.MovingAverage.compute_moving_average">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_moving_average</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the moving average of the signal and calculate the difference.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">window_size_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
 
-        <span class="n">window_size_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">/</span> <span class="n">dt</span><span class="p">))</span>
+        <span class="n">moving_avrg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window_size_samples</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">min_periods</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
-        <span class="n">moving_avrg</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="n">window_size_samples</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-
-        <span class="c1"># Handle NaN values resulting from rolling mean</span>
-        <span class="n">moving_avrg</span> <span class="o">=</span> <span class="n">moving_avrg</span><span class="o">.</span><span class="n">bfill</span><span class="p">()</span><span class="o">.</span><span class="n">ffill</span><span class="p">()</span>
-
-        <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;MovingAverage&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">moving_avrg</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
-
-        <span class="c1"># Calculate the difference between signal and moving average</span>
-        <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Difference&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;MovingAverage&#39;</span><span class="p">]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;MovingAverage&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">moving_avrg</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Difference&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;MovingAverage&#39;</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="MovingAverage.detect_peaks">
-<a class="viewcode-back" href="../../../code/peak_finder.html#FlowCyPy.peak_finder.moving_average.MovingAverage.detect_peaks">[docs]</a>
-    <span class="k">def</span> <span class="nf">detect_peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">detector</span><span class="p">:</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">compute_area</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Quantity</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]]:</span>
+<a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.moving_average.MovingAverage.detect_peaks">[docs]</a>
+    <span class="k">def</span> <span class="nf">detect_peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compute_area</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Detects peaks in the signal using a moving average and a threshold.</span>
 
@@ -529,57 +558,42 @@
 <span class="sd">        areas : Quantity or None</span>
 <span class="sd">            The areas under each peak, if `compute_area` is True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">signal</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-        <span class="n">time</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
-
-        <span class="c1"># Calculate the moving average</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">compute_moving_average</span><span class="p">(</span><span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_moving_average</span><span class="p">()</span>
 
         <span class="c1"># Find peaks in the difference signal</span>
         <span class="n">peak_indices</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span>
-            <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Difference&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Difference&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
             <span class="n">height</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">distance</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span> <span class="o">/</span> <span class="n">dt</span><span class="p">))</span>
+            <span class="n">distance</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
         <span class="p">)</span>
 
         <span class="c1"># Calculate peak properties</span>
         <span class="n">widths_samples</span><span class="p">,</span> <span class="n">width_heights</span><span class="p">,</span> <span class="n">left_ips</span><span class="p">,</span> <span class="n">right_ips</span> <span class="o">=</span> <span class="n">peak_widths</span><span class="p">(</span>
-            <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Difference&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-            <span class="n">peak_indices</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Difference&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+            <span class="n">peaks</span><span class="o">=</span><span class="n">peak_indices</span><span class="p">,</span>
             <span class="n">rel_height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rel_height</span>
         <span class="p">)</span>
 
         <span class="c1"># Convert widths from samples to time units</span>
-        <span class="n">widths</span> <span class="o">=</span> <span class="n">widths_samples</span> <span class="o">*</span> <span class="n">dt</span>
-        <span class="n">peak_times</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">peak_indices</span><span class="p">]</span>
-        <span class="n">heights</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">peak_indices</span><span class="p">]</span>
+        <span class="n">widths</span> <span class="o">=</span> <span class="n">widths_samples</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+        <span class="n">peak_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">peak_indices</span><span class="p">]</span>
+        <span class="n">heights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">peak_indices</span><span class="p">]</span>
 
-        <span class="n">detector</span><span class="o">.</span><span class="n">peak_properties</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-                <span class="s1">&#39;PeakTimes&#39;</span><span class="p">:</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">peak_times</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">peak_times</span><span class="o">.</span><span class="n">units</span><span class="p">),</span>
-                <span class="s1">&#39;Heights&#39;</span><span class="p">:</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">heights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">volt</span><span class="p">),</span>
-                <span class="s1">&#39;Widths&#39;</span><span class="p">:</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">widths</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">widths</span><span class="o">.</span><span class="n">units</span><span class="p">),</span>
-                <span class="s1">&#39;WidthHeights&#39;</span><span class="p">:</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">width_heights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">volt</span><span class="p">),</span>
-                <span class="s1">&#39;LeftIPs&#39;</span><span class="p">:</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">left_ips</span> <span class="o">*</span> <span class="n">dt</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">units</span><span class="p">),</span>
-                <span class="s1">&#39;RightIPs&#39;</span><span class="p">:</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">right_ips</span> <span class="o">*</span> <span class="n">dt</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">units</span><span class="p">),</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">peak_properties</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+            <span class="s1">&#39;PeakTimes&#39;</span><span class="p">:</span> <span class="n">peak_times</span><span class="p">,</span>
+            <span class="s1">&#39;Heights&#39;</span><span class="p">:</span> <span class="n">heights</span><span class="p">,</span>
+            <span class="s1">&#39;Widths&#39;</span><span class="p">:</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">widths</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">widths</span><span class="o">.</span><span class="n">units</span><span class="p">),</span>
+            <span class="s1">&#39;WidthHeights&#39;</span><span class="p">:</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">width_heights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">volt</span><span class="p">),</span>
+            <span class="s1">&#39;LeftIPs&#39;</span><span class="p">:</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">left_ips</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">units</span><span class="p">),</span>
+            <span class="s1">&#39;RightIPs&#39;</span><span class="p">:</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">right_ips</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">units</span><span class="p">),</span>
         <span class="p">})</span>
 
         <span class="c1"># Compute areas under peaks</span>
         <span class="k">if</span> <span class="n">compute_area</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_compute_peak_areas</span><span class="p">(</span><span class="n">detector</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_compute_peak_areas</span><span class="p">()</span></div>
 
 
-    <span class="nd">@BaseClass</span><span class="o">.</span><span class="n">plot_wrapper</span>
-    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">detector</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_add_to_ax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">signal_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots the signal data from the detector, including peaks, moving average, and signal differences.</span>
 <span class="sd">        Optionally, this method can also display the plot.</span>
@@ -589,34 +603,22 @@
 <span class="sd">        detector : object</span>
 <span class="sd">            The detector object containing the signal data and peak properties.</span>
 <span class="sd">            It should have a &#39;dataframe&#39; attribute for the signal data and &#39;peak_properties&#39; for peak information.</span>
-
 <span class="sd">        ax : matplotlib.axes.Axes, optional</span>
 <span class="sd">            A matplotlib Axes object to plot the graph. If not provided, a new one will be created.</span>
-
 <span class="sd">        show : bool, optional, default=True</span>
 <span class="sd">            Whether to display the plot after creating it.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Convert units of signal and time for consistency</span>
-        <span class="n">signal_unit</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="o">.</span><span class="n">units</span>
-        <span class="n">time_unit</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="o">.</span><span class="n">units</span>
-
-        <span class="c1"># Update the detector dataframe with converted units</span>
-        <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">time_unit</span><span class="p">)</span>
-        <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_unit</span><span class="p">)</span>
-
-        <span class="c1"># Create the plot using pandas plot method for the dataframe</span>
-        <span class="n">ax</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-            <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">,</span> <span class="s1">&#39;Difference&#39;</span><span class="p">],</span>
-            <span class="n">x</span><span class="o">=</span><span class="s1">&#39;Time&#39;</span><span class="p">,</span>
-            <span class="n">style</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">],</span>
-            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
-            <span class="n">ylabel</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> Signal [</span><span class="si">{</span><span class="n">signal_unit</span><span class="si">}</span><span class="s1">]&#39;</span><span class="p">,</span>
-            <span class="n">xlabel</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Time [</span><span class="si">{</span><span class="n">time_unit</span><span class="si">}</span><span class="s1">]&#39;</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Time</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Difference</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s1">&#39;MA-difference&#39;</span>
         <span class="p">)</span>
 
         <span class="c1"># Plot vertical lines at peak times</span>
-        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">detector</span><span class="o">.</span><span class="n">peak_properties</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">peak_properties</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;PeakTimes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">time_unit</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
 
         <span class="c1"># Plot the signal threshold line</span>

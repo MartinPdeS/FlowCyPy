@@ -408,7 +408,7 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Classes and Methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="distributions.html">Distribution Classes</a></li>
 
-<li class="toctree-l1"><a class="reference internal" href="peak_finder.html">PeakFinder Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="peak_locator.html">PeakFinder Classes</a></li>
 </ul>
 </div>
 </nav></div>
@@ -532,7 +532,7 @@ the flow of particles through the cytometer.</p>
 <h2>Beams Class<a class="headerlink" href="#beams-class" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GaussianBeam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optical_power:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polarization:</span> <span class="pre">~pint.Quantity</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'degree')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RIN:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/source.html#GaussianBeam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.GaussianBeam" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GaussianBeam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optical_power:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture:</span> <span class="pre">~pint.Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polarization:</span> <span class="pre">~pint.Quantity</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'degree')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RIN:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">-120.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/source.html#GaussianBeam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.GaussianBeam" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseBeam</span></code></p>
 <p>Represents a monochromatic Gaussian laser beam focused by a standard lens.</p>
 <dl class="field-list simple">
@@ -542,8 +542,7 @@ the flow of particles through the cytometer.</p>
 <li><p><strong>wavelength</strong> (<em>Quantity</em>) – The wavelength of the laser (in meters).</p></li>
 <li><p><strong>numerical_aperture</strong> (<em>Quantity</em>) – The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).</p></li>
 <li><p><strong>polarization</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The polarization of the laser source in degrees (default is 0 degrees).</p></li>
-<li><p><strong>RIN</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The Relative Intensity Noise (RIN) of the laser, specified as a fractional value (e.g., 0.01 for 1% RIN).
-Default is 0.0, representing a perfectly stable laser.</p></li>
+<li><p><strong>RIN</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a pretty stable laser.</p></li>
 </ul>
 </dd>
 </dl>
@@ -630,7 +629,7 @@ Default is 0.0, representing a perfectly stable laser.</p></li>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.RIN">
-<span class="sig-name descname"><span class="pre">RIN</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.RIN" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">RIN</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-120.0</span></em><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.RIN" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -840,7 +839,7 @@ passing through a flow cytometer. This class generates random scatterer sizes an
 indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.Scatterer.add_population">
-<span class="sig-name descname"><span class="pre">add_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refractive_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Base</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concentration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#FlowCyPy.Scatterer" title="FlowCyPy.scatterer.Scatterer"><span class="pre">Scatterer</span></a></span></span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer.add_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer.add_population" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.population.Population" title="FlowCyPy.population.Population"><span class="pre">Population</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">concentration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#FlowCyPy.Scatterer" title="FlowCyPy.scatterer.Scatterer"><span class="pre">Scatterer</span></a></span></span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer.add_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer.add_population" title="Link to this definition">#</a></dt>
 <dd><p>Adds a population to the Scatterer instance with the specified attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -971,16 +970,16 @@ The plot uses the specified matplotlib style (<cite>mps</cite>) for consistent s
 <h2>Population Class<a class="headerlink" href="#population-class" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.population.Population">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">refractive_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Base</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Base</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concentration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Population" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refractive_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Base</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Base</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Population" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PropertiesReport</span></code></p>
 <p>A class representing a population of scatterers in a flow cytometry setup.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the population distribution.</p></li>
 <li><p><strong>refractive_index</strong> (<em>Union</em><em>[</em><em>distribution.Base</em><em>, </em><em>Quantity</em><em>]</em>) – Refractive index or refractive index distributions.</p></li>
 <li><p><strong>size</strong> (<em>Union</em><em>[</em><em>distribution.Base</em><em>, </em><em>Quantity</em><em>]</em>) – Particle size or size distributions.</p></li>
 <li><p><strong>concentration</strong> (<em>Quantity</em>) – Scatterer density in particles per cubic meter, default is 1 particle/m³.</p></li>
-<li><p><strong>name</strong> (<em>str</em>) – Name of the population distribution, default is an empty string.</p></li>
 </ul>
 </dd>
 </dl>
@@ -996,7 +995,7 @@ The plot uses the specified matplotlib style (<cite>mps</cite>) for consistent s
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.population.Population.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#FlowCyPy.population.Population.name" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#FlowCyPy.population.Population.name" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1189,6 +1188,34 @@ This method calls the parent class method to handle the actual property printing
 <span class="sig-name descname"><span class="pre">saturation_level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(inf,</span> <span class="pre">'volt')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.saturation_level" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.set_peak_locator">
+<span class="sig-name descname"><span class="pre">set_peak_locator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BasePeakLocator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_peak_area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.set_peak_locator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.set_peak_locator" title="Link to this definition">#</a></dt>
+<dd><p>Assigns a peak detection algorithm to the detector, analyzes the signal,
+and extracts peak features such as height, width, and area.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>algorithm</strong> (<em>BasePeakLocator</em>) – An instance of a peak detection algorithm derived from BasePeakLocator.</p></li>
+<li><p><strong>compute_peak_area</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to compute the area under the detected peaks (default is True).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the provided algorithm is not an instance of BasePeakLocator.</p></li>
+<li><p><strong>ValueError</strong> – If the algorithm has already been initialized with peak data.</p></li>
+<li><p><strong>RuntimeError</strong> – If the detector’s signal data (dataframe) is not available.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The <cite>algorithm</cite> parameter should be a fresh instance of a peak detection algorithm.</p></li>
+<li><p>The method will analyze the detector’s signal immediately upon setting the algorithm.</p></li>
+<li><p>Peak detection results are stored in the algorithm’s <cite>peak_properties</cite> attribute.</p></li>
+</ul>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector.temperature">
 <span class="sig-name descname"><span class="pre">temperature</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(0.0,</span> <span class="pre">'kelvin')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.temperature" title="Link to this definition">#</a></dt>
@@ -1246,17 +1273,14 @@ each particle event and distributing them across the detectors.</p>
 <h2>Analyzer Class<a class="headerlink" href="#analyzer-class" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.analyzer.Analyzer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cytometer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.cytometer.FlowCytometer" title="FlowCyPy.cytometer.FlowCytometer"><span class="pre">FlowCytometer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">algorithm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseClass</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/analyzer.html#Analyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.analyzer.Analyzer" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Analyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cytometer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.cytometer.FlowCytometer" title="FlowCyPy.cytometer.FlowCytometer"><span class="pre">FlowCytometer</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/analyzer.html#Analyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.analyzer.Analyzer" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A class for analyzing pulse signals generated by a flow cytometer. It processes signals
 from multiple detectors to extract key features such as peak height, width, area,
 and time of occurrence, while providing tools to detect coincident events between detectors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>cytometer</strong> (<a class="reference internal" href="#FlowCyPy.cytometer.FlowCytometer" title="FlowCyPy.cytometer.FlowCytometer"><em>FlowCytometer</em></a>) – An instance of FlowCytometer that contains detectors and their associated signals.</p></li>
-<li><p><strong>algorithm</strong> (<em>peak_finder.BaseClass</em>) – The peak-finding algorithm used to detect peaks in the signals.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>cytometer</strong> (<a class="reference internal" href="#FlowCyPy.cytometer.FlowCytometer" title="FlowCyPy.cytometer.FlowCytometer"><em>FlowCytometer</em></a>) – An instance of FlowCytometer that contains detectors and their associated signals.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -1497,6 +1521,7 @@ in a pandas DataFrame for further analysis.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.sampling"><code class="docutils literal notranslate"><span class="pre">Detector.sampling</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.sampling_freq"><code class="docutils literal notranslate"><span class="pre">Detector.sampling_freq</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.saturation_level"><code class="docutils literal notranslate"><span class="pre">Detector.saturation_level</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.set_peak_locator"><code class="docutils literal notranslate"><span class="pre">Detector.set_peak_locator()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.temperature"><code class="docutils literal notranslate"><span class="pre">Detector.temperature</span></code></a></li>
 </ul>
 </li>
