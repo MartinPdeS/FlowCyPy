@@ -17,7 +17,7 @@ Workflow Summary:
 import numpy as np
 from FlowCyPy import FlowCell
 from FlowCyPy.units import meter, micrometer, millisecond, second, degree
-from FlowCyPy import Scatterer, distribution
+from FlowCyPy import Scatterer, distribution, Population
 from FlowCyPy.units import particle, milliliter, nanometer, RIU, milliwatt, AU
 from FlowCyPy import FlowCytometer
 from FlowCyPy.detector import Detector
@@ -25,7 +25,7 @@ from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, millivolt
 from FlowCyPy import EventCorrelator, peak_locator
 from FlowCyPy import GaussianBeam
 from FlowCyPy import NoiseSetting
-from FlowCyPy.populations_instances import LDL, HDL, VLDL, Platelet, Exosome
+from FlowCyPy.populations_instances import LDL, HDL, Platelet, Exosome
 
 NoiseSetting.include_noises = False
 NoiseSetting.include_RIN_noise = True
@@ -36,15 +36,30 @@ np.random.seed(3)  # Ensure reproducibility
 flow_cell = FlowCell(
     flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
     flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
-    run_time=1.0 * millisecond                # Simulation run time: 0.5 ms
+    run_time=0.3 * millisecond                # Simulation run time: 0.5 ms
 )
 
 # Step 2: Defining Particle Populations
 # Initialize scatterer with a medium refractive index
 scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
 
-scatterer.add_population(Exosome, concentration=1e9 * particle / milliliter)
-scatterer.add_population(VLDL, 1e9 * particle / milliliter)
+population_0 = Population(
+    name='EV',
+    size=150 * nanometer,
+    # refractive_index=1.41 * RIU
+    refractive_index=distribution.Normal(mean=1.41 * RIU, std_dev=0.001 * RIU)
+)
+
+population_1 = Population(
+    name='EV',
+    size=100 * nanometer,
+    # refractive_index=1.41 * RIU
+    refractive_index=distribution.Normal(mean=1.41 * RIU, std_dev=0.01 * RIU)
+)
+
+
+scatterer.add_population(population_0, concentration=1e9 * particle / milliliter)
+scatterer.add_population(population_1, 1e9 * particle / milliliter)
 
 scatterer.dilute(10)
 scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
@@ -57,7 +72,7 @@ scatterer.plot()                           # Visualize the population distributi
 source = GaussianBeam(
     numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
     wavelength=488 * nanometer,           # Laser wavelength: 200 nm
-    optical_power=200 * milliwatt,          # Laser optical power: 20 mW
+    optical_power=50 * milliwatt,          # Laser optical power: 20 mW
     RIN = -200
 )
 
@@ -110,7 +125,7 @@ cytometer.simulate_pulse()
 # Step 5: Analyzing Pulse Signals
 # Configure peak finding algorithm
 algorithm = peak_locator.MovingAverage(
-    threshold=1 * nanovolt,           # Signal threshold: 0.1 mV
+    threshold=0.06 * microvolt,           # Signal threshold: 0.1 mV
     window_size=1 * microsecond,         # Moving average window size: 1 µs
     min_peak_distance=0.3 * microsecond  # Minimum distance between peaks: 0.3 µs
 )
@@ -119,25 +134,20 @@ detector_0.set_peak_locator(algorithm)
 
 detector_1.set_peak_locator(algorithm)
 
-
-cytometer.plot(add_peak_locator=True)
-
 # Initialize analyzer with the cytometer and algorithm
-correlator = EventCorrelator(cytometer=cytometer)
+analyzer = EventCorrelator(cytometer=cytometer)
 
 # Run the pulse signal analysis
-correlator.run_analysis(compute_peak_area=False)
+analyzer.run_analysis(compute_peak_area=False)
 
-# Plot the detected peaks
-# analyzer.plot_peak()
 
 # Step 6: Coincidence Data and 2D Density Plot
 # Extract coincidence data within a defined margin
-correlator.get_coincidence(margin=1e-9 * microsecond)
+analyzer.get_coincidence(margin=1e-9 * microsecond)
 
 # Generate and plot the 2D density plot of scattering intensities
-correlator.plot(
-    # x_limits=(1 * nanovolt, 30 * microvolt),
-    # y_limits=(1 * nanovolt, 15 * microvolt),
+analyzer.plot(
+    # x_limits=(1 * nanovolt, 300 * microvolt),
+    # y_limits=(1 * nanovolt, 25 * microvolt),
     log_plot=False
 )

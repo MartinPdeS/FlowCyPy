@@ -22,7 +22,7 @@ from FlowCyPy.units import particle, milliliter, nanometer, RIU, AU, milliwatt
 from FlowCyPy import FlowCytometer
 from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, microvolt, microsecond
 from FlowCyPy.detector import Detector
-from FlowCyPy import Analyzer, peak_locator
+from FlowCyPy import EventCorrelator, peak_locator
 from FlowCyPy import GaussianBeam
 from FlowCyPy import NoiseSetting
 from FlowCyPy.population import Exosome
@@ -113,7 +113,7 @@ detector_0.set_peak_locator(algorithm)
 detector_1.set_peak_locator(algorithm)
 
 # Initialize analyzer with the cytometer and algorithm
-analyzer = Analyzer(cytometer=cytometer)
+analyzer = EventCorrelator(cytometer=cytometer)
 
 # Run the pulse signal analysis
 analyzer.run_analysis(compute_peak_area=False)

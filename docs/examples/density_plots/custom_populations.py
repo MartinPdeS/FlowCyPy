@@ -23,7 +23,7 @@ from FlowCyPy import FlowCytometer
 from FlowCyPy import Population, distribution
 from FlowCyPy.detector import Detector
 from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, microsecond, microvolt
-from FlowCyPy import Analyzer, peak_locator
+from FlowCyPy import EventCorrelator, peak_locator
 from FlowCyPy import GaussianBeam
 from FlowCyPy import NoiseSetting
 
@@ -126,7 +126,7 @@ detector_0.set_peak_locator(algorithm)
 detector_1.set_peak_locator(algorithm)
 
 # Initialize analyzer with the cytometer and algorithm
-analyzer = Analyzer(cytometer=cytometer)
+analyzer = EventCorrelator(cytometer=cytometer)
 
 # Run the pulse signal analysis
 analyzer.run_analysis(compute_peak_area=False)
