@@ -14,7 +14,7 @@ Steps:
 
 # Import necessary libraries and modules
 import numpy as np
-from FlowCyPy import FlowCytometer, Scatterer, Analyzer, Detector, GaussianBeam, FlowCell
+from FlowCyPy import FlowCytometer, Scatterer, EventCorrelator, Detector, GaussianBeam, FlowCell
 from FlowCyPy import peak_locator
 from FlowCyPy.units import particle, milliliter, nanometer, RIU, second, micrometer, millisecond, meter
 from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliampere, megahertz, microvolt
@@ -118,7 +118,7 @@ algorithm = peak_locator.MovingAverage(
 detector_0.set_peak_locator(algorithm)
 detector_1.set_peak_locator(algorithm)
 
-analyzer = Analyzer(cytometer=cytometer)
+analyzer = EventCorrelator(cytometer=cytometer)
 
 # Run the pulse signal analysis without computing peak area
 analyzer.run_analysis(compute_peak_area=False)

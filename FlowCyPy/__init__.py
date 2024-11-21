@@ -6,7 +6,7 @@ except ImportError:
 
 from .units import ureg, watt, meter, second, liter, particle
 from .cytometer import FlowCytometer
-from .analyzer import Analyzer
+from .event_correlator import EventCorrelator
 from .scatterer import Scatterer, CouplingModel
 from .population import Population
 from .detector import Detector

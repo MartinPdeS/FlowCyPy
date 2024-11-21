@@ -456,7 +456,10 @@ class Detector(PropertiesReport):
         ax.plot(x, y, color=color, label='Signal')
 
         if add_peak_locator:
-            self.algorithm._add_to_ax(ax=ax, signal_unit=signal_unit, time_unit=time_unit)
+            if not hasattr(self, 'algorithm'):
+                logging.warning("The detector does not have a dedicated peak_locator algorithm, it thus cannot plot the peak positions.")
+            else:
+                self.algorithm._add_to_ax(ax=ax, signal_unit=signal_unit, time_unit=time_unit)
 
         ax.set_xlabel(f"Time [{time_unit:P}]")
         ax.set_ylabel(f"{self.name} [{signal_unit:P}]")

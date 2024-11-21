@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from unittest.mock import patch
 
 # Importing from FlowCyPy
-from FlowCyPy import Analyzer, FlowCytometer, Detector, Scatterer, GaussianBeam, peak_locator, distribution
+from FlowCyPy import EventCorrelator, FlowCytometer, Detector, Scatterer, GaussianBeam, peak_locator, distribution
 from FlowCyPy.units import second, volt, hertz, watt, degree, micrometer, meter, particle, milliliter, ampere, AU, RIU
 from FlowCyPy.population import Population
 from FlowCyPy.flow_cell import FlowCell
@@ -111,7 +111,7 @@ algorithm = peak_locator.MovingAverage(
 
 # API Test: Ensure peak detection API works correctly
 def test_analyzer_peak_detection_api(default_cytometer):
-    """Test peak detection API of the Analyzer."""
+    """Test peak detection API of the EventCorrelator."""
     time = np.linspace(0, 10, 1000) * second
     detector_0 = generate_dummy_detector(
         time=time, centers=[3, 7, 8], heights=[1, 1, 4], stds=[0.1, 0.1, 1]
@@ -129,7 +129,7 @@ def test_analyzer_peak_detection_api(default_cytometer):
     detector_0.set_peak_locator(algorithm)
     detector_1.set_peak_locator(algorithm)
 
-    analyzer = Analyzer(default_cytometer)
+    analyzer = EventCorrelator(default_cytometer)
     analyzer.run_analysis()
     analyzer.get_coincidence(margin=0.1 * second)
 
@@ -142,7 +142,7 @@ def test_analyzer_peak_detection_api(default_cytometer):
 # Test Plottings: Ensure plotting functions work correctly
 @patch('matplotlib.pyplot.show')
 def test_analyzer_plotting(mock_show, default_cytometer):
-    """Test plotting functionality of the Analyzer."""
+    """Test plotting functionality of the EventCorrelator."""
     time = np.linspace(0, 10, 1000) * second
     detector_0 = generate_dummy_detector(time=time, centers=[3, 7, 8, 9], heights=[1, 1, 4, 3], stds=[0.1, 0.1, 1, 0.1])
     detector_1 = generate_dummy_detector(time=time, centers=[3.05, 7, 5, 9], heights=[1, 2, 4, 2], stds=[0.1, 0.1, 1, 0.1])
@@ -151,24 +151,25 @@ def test_analyzer_plotting(mock_show, default_cytometer):
     detector_0.set_peak_locator(algorithm)
     detector_1.set_peak_locator(algorithm)
 
-    analyzer = Analyzer(default_cytometer)
-    analyzer.run_analysis()
-    analyzer.get_coincidence(margin=1e-6 * second)
+    default_cytometer.plot(add_peak_locator=True)
 
-    analyzer.display_features()
-    analyzer.plot_peak()
+    correlator = EventCorrelator(default_cytometer)
+    correlator.run_analysis()
+    correlator.get_coincidence(margin=1e-6 * second)
+
+    correlator.display_features()
     plt.close()
 
     detector_1.plot(add_peak_locator=True)
     plt.close()
 
-    analyzer.plot()
+    correlator.plot()
     plt.close()
 
 
 # Test Pulse Width Analysis: Ensure width calculation is accurate
 def test_pulse_width_analysis(default_cytometer):
-    """Test pulse width calculation in the Analyzer."""
+    """Test pulse width calculation in the EventCorrelator."""
     n_peaks = 4
     centers = np.linspace(1, 8, n_peaks)
     stds = np.random.rand(n_peaks) * 0.1
@@ -181,7 +182,7 @@ def test_pulse_width_analysis(default_cytometer):
     detector_0.set_peak_locator(algorithm)
     detector_1.set_peak_locator(algorithm)
 
-    analyzer = Analyzer(default_cytometer)
+    analyzer = EventCorrelator(default_cytometer)
     analyzer.run_analysis()
     analyzer.get_coincidence(margin=1e-6 * second)
 
@@ -194,7 +195,7 @@ def test_pulse_width_analysis(default_cytometer):
 
 # Test Pulse Heights: Ensure height calculation is accurate
 def test_pulse_height_analysis(default_cytometer):
-    """Test pulse height calculation in the Analyzer."""
+    """Test pulse height calculation in the EventCorrelator."""
     n_peaks = 2
     centers = np.linspace(1, 8, n_peaks)
     heights = np.random.rand(n_peaks)
@@ -207,7 +208,7 @@ def test_pulse_height_analysis(default_cytometer):
     detector_0.set_peak_locator(algorithm)
     detector_1.set_peak_locator(algorithm)
 
-    analyzer = Analyzer(default_cytometer)
+    analyzer = EventCorrelator(default_cytometer)
     analyzer.run_analysis()
     analyzer.get_coincidence(margin=1e-1 * second)
 
@@ -219,7 +220,7 @@ def test_pulse_height_analysis(default_cytometer):
 
 # Test Pulse Area: Ensure area calculation is accurate
 def test_pulse_area_analysis(default_cytometer):
-    """Test pulse area calculation in the Analyzer."""
+    """Test pulse area calculation in the EventCorrelator."""
     n_peaks = 4
     centers = np.linspace(1, 8, n_peaks)
     stds = np.random.rand(n_peaks) * 0.1
@@ -233,7 +234,7 @@ def test_pulse_area_analysis(default_cytometer):
     detector_0.set_peak_locator(algorithm, compute_peak_area=True)
     detector_1.set_peak_locator(algorithm, compute_peak_area=True)
 
-    analyzer = Analyzer(default_cytometer)
+    analyzer = EventCorrelator(default_cytometer)
     analyzer.run_analysis(compute_peak_area=True)
 
     analyzer.get_coincidence(margin=1e-6 * second)

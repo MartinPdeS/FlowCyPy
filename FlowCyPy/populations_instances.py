@@ -8,6 +8,7 @@ _populations = (
     ('ApoptoticBodies',  2 * micrometer, 1.2, 1.40 * RIU, 0.03 * RIU),
     ('HDL',              10 * nanometer, 3.5, 1.33 * RIU, 0.01 * RIU),
     ('LDL',              20 * nanometer, 3.0, 1.35 * RIU, 0.02 * RIU),
+    ('VLDL',             50 * nanometer, 2.0, 1.445 * RIU, 0.0005 * RIU),
     ('Platelet',       2000 * nanometer, 2.5, 1.38 * RIU, 0.01 * RIU),
     ('CellularDebris',   3 * micrometer, 1.0, 1.40 * RIU, 0.03 * RIU)
 )
