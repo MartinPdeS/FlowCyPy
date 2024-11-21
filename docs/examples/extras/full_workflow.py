@@ -49,11 +49,12 @@ ev_ri = distribution.Normal(
 ev = Population(
     size=ev_size,               # Particle size distribution
     refractive_index=ev_ri,     # Refractive index distribution
-    concentration=1.8e+9 * particle / milliliter,  # Particle concentration: 1.8 million particles per milliliter
     name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
 )
 
-scatterer = Scatterer(populations=[ev])
+scatterer = Scatterer()
+
+scatterer.add_population(ev, concentration=1.8e+9 * particle / milliliter)
 
 scatterer.initialize(flow_cell=flow_cell)
 

@@ -18,7 +18,7 @@ Steps in the Workflow:
 
 # Import necessary libraries and modules
 from FlowCyPy import Scatterer, FlowCell
-from FlowCyPy import distribution
+from FlowCyPy import distribution, Population
 from FlowCyPy.units import second, nanometer, RIU, particle, milliliter, meter, micrometer, millisecond
 import numpy as np
 
@@ -40,19 +40,21 @@ flow_cell = FlowCell(
 # Two particle populations are defined with different sizes and refractive indices.
 scatterer = Scatterer(medium_refractive_index=1.33 * RIU)
 
-scatterer.add_population(
+population_0 = Population(
     name='EV',
-    concentration=2e+9 * particle / milliliter,
     size=distribution.RosinRammler(characteristic_size=50 * nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.39 * RIU, std_dev=0.05 * RIU)
 )
 
-scatterer.add_population(
+population_1 = Population(
     name='LP',
-    concentration=1e+10 * particle / milliliter,
     size=distribution.RosinRammler(characteristic_size=200 * nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.45 * RIU, std_dev=0.05 * RIU)
 )
+
+scatterer.add_population(population_0, concentration=2e+9 * particle / milliliter)
+
+scatterer.add_population(population_1, concentration=1e+10 * particle / milliliter)
 
 scatterer.initialize(flow_cell=flow_cell)
 
