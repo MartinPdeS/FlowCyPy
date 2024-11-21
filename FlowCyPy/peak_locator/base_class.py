@@ -1,14 +1,13 @@
 from typing import Callable
 import numpy as np
-from FlowCyPy.units import ureg, volt, second
-from FlowCyPy.detector import Detector
+from FlowCyPy.units import ureg
 from scipy.integrate import cumulative_trapezoid
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 import pint_pandas
 
 
-class BaseClass:
+class BasePeakLocator:
     """
     A base class to handle common functionality for peak detection,
     including area calculation under peaks.
@@ -47,7 +46,7 @@ class BaseClass:
 
         return areas
 
-    def _compute_peak_areas(self, detector: Detector) -> None:
+    def _compute_peak_areas(self) -> None:
         """
         Computes the areas under the detected peaks using vectorized operations.
 
@@ -59,28 +58,28 @@ class BaseClass:
         """
         # Compute cumulative integral of the signal
         cumulative = cumulative_trapezoid(
-            detector.dataframe.Signal.values.numpy_data,
-            x=detector.dataframe.Time.values.numpy_data
+            self.data.Signal.values.numpy_data,
+            x=self.data.Time.values.numpy_data
         )
         cumulative_integral = np.concatenate(([0], cumulative))
 
         # Interpolate cumulative integral at left and right interpolated positions
         left_cum_integral = np.interp(
-            x=detector.peak_properties.LeftIPs,
-            xp=np.arange(len(detector.dataframe)),
+            x=self.peak_properties.LeftIPs,
+            xp=np.arange(len(self.data)),
             fp=cumulative_integral
         )
 
         right_cum_integral = np.interp(
-            x=detector.peak_properties.RightIPs,
-            xp=np.arange(len(detector.dataframe)),
+            x=self.peak_properties.RightIPs,
+            xp=np.arange(len(self.data)),
             fp=cumulative_integral
         )
 
         # Compute areas under peaks
         areas = right_cum_integral - left_cum_integral
 
-        detector.peak_properties['Areas'] = pint_pandas.PintArray(areas, dtype=volt * second)
+        self.peak_properties['Areas'] = pint_pandas.PintArray(areas, dtype=self.data.Signal.pint.units * self.data.Time.pint.units)
 
     def plot_wrapper(plot_function: Callable) -> Callable:
         def wrapper(self, detector: object, show: bool = True, **kwargs):

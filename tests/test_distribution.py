@@ -3,6 +3,7 @@ import numpy as np
 from FlowCyPy import distribution as dist
 from FlowCyPy.units import nanometer, micrometer, particle
 from unittest.mock import patch
+import matplotlib.pyplot as plt
 
 
 # Common test parameters
@@ -55,6 +56,8 @@ def test_number_of_samples(mock_show, distribution, n_samples, x_values):
         assert np.sum(pdf > 0) == 1, "DeltaDistribution: PDF should have only one non-zero value."
 
     distribution.plot()
+
+    plt.close()
 
 
 def test_uniform_properties(x_values):

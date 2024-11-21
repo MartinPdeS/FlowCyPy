@@ -12,6 +12,9 @@ from FlowCyPy.physical_constant import PhysicalConstant
 from PyMieSim.units import Quantity
 from FlowCyPy.noises import NoiseSetting
 from FlowCyPy.helper import plot_helper
+from FlowCyPy.peak_locator import BasePeakLocator
+import logging
+from copy import copy
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -411,7 +414,7 @@ class Detector(PropertiesReport):
             self.dataframe.Signal = pint_pandas.PintArray(bins[digitized], volt)
 
     @plot_helper
-    def plot(self, color: str = 'C0', ax: plt.Axes = None, time_unit: str | Quantity = None, signal_unit: str | Quantity = None) -> None:
+    def plot(self, color: str = 'C0', ax: plt.Axes = None, time_unit: str | Quantity = None, signal_unit: str | Quantity = None, add_peak_locator: bool = False) -> None:
         """
         Visualizes the processed signal as a function of time.
 
@@ -445,18 +448,65 @@ class Detector(PropertiesReport):
             - If `show` is False, the plot will not be displayed but can be retrieved through the provided `ax`.
         """
         signal_unit = signal_unit or self.dataframe.Signal.max().to_compact().units
-
         time_unit = time_unit or self.dataframe.Time.max().to_compact().units
 
         y = self.dataframe['Signal'].pint.to(signal_unit)
         x = self.dataframe['Time'].pint.to(time_unit)
 
-        ax.plot(x, y, color=color)
+        ax.plot(x, y, color=color, label='Signal')
+
+        if add_peak_locator:
+            self.algorithm._add_to_ax(ax=ax, signal_unit=signal_unit, time_unit=time_unit)
 
         ax.set_xlabel(f"Time [{time_unit:P}]")
         ax.set_ylabel(f"{self.name} [{signal_unit:P}]")
 
         return time_unit, signal_unit
+
+    def set_peak_locator(self, algorithm: BasePeakLocator, compute_peak_area: bool = True) -> None:
+        """
+        Assigns a peak detection algorithm to the detector, analyzes the signal,
+        and extracts peak features such as height, width, and area.
+
+        Parameters
+        ----------
+        algorithm : BasePeakLocator
+            An instance of a peak detection algorithm derived from BasePeakLocator.
+        compute_peak_area : bool, optional
+            Whether to compute the area under the detected peaks (default is True).
+
+        Raises
+        ------
+        TypeError
+            If the provided algorithm is not an instance of BasePeakLocator.
+        ValueError
+            If the algorithm has already been initialized with peak data.
+        RuntimeError
+            If the detector's signal data (dataframe) is not available.
+
+        Notes
+        -----
+        - The `algorithm` parameter should be a fresh instance of a peak detection algorithm.
+        - The method will analyze the detector's signal immediately upon setting the algorithm.
+        - Peak detection results are stored in the algorithm's `peak_properties` attribute.
+        """
+
+        # Ensure the algorithm is an instance of BasePeakLocator
+        if not isinstance(algorithm, BasePeakLocator):
+            raise TypeError("The algorithm must be an instance of BasePeakLocator.")
+
+        # Ensure the detector has signal data available for analysis
+        if not hasattr(self, 'dataframe') or self.dataframe is None:
+            raise RuntimeError("The detector does not have signal data available for peak detection.")
+
+        # Set the algorithm and perform peak detection
+        self.algorithm = copy(algorithm)
+        self.algorithm.init_data(self.dataframe)
+        self.algorithm.detect_peaks(compute_area=compute_peak_area)
+
+        # Log the result of peak detection
+        peak_count = len(self.algorithm.peak_properties) if hasattr(self.algorithm, 'peak_properties') else 0
+        logging.info(f"Detector {self.name}: Detected {peak_count} peaks.")
 
     def print_properties(self) -> None:
         """

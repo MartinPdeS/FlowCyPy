@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 from FlowCyPy.units import second
 import warnings
-from FlowCyPy.detector import Detector
-from FlowCyPy import peak_finder
 from FlowCyPy.cytometer import FlowCytometer
 
 import logging
@@ -23,8 +21,6 @@ class Analyzer:
     ----------
     cytometer : FlowCytometer
         An instance of FlowCytometer that contains detectors and their associated signals.
-    algorithm : peak_finder.BaseClass
-        The peak-finding algorithm used to detect peaks in the signals.
 
     Methods
     -------
@@ -44,18 +40,15 @@ class Analyzer:
         Generates a report summarizing the results of the analysis.
     """
 
-    def __init__(self, cytometer: FlowCytometer, algorithm: peak_finder.BaseClass) -> None:
+    def __init__(self, cytometer: FlowCytometer) -> None:
         """
-        Initializes the Analyzer class with the cytometer object and the peak-finding algorithm.
+        Initializes the Analyzer class with the cytometer object.
 
         Parameters
         ----------
         cytometer : FlowCytometer
             An instance of FlowCytometer that contains detectors and their signals.
-        algorithm : peak_finder.BaseClass
-            The peak-finding algorithm used to detect peaks in the signals.
         """
-        self.algorithm = algorithm
         self.cytometer = cytometer
         self.datasets = []
 
@@ -75,59 +68,16 @@ class Analyzer:
         pd.DataFrame
             A DataFrame with the detected peak properties, organized by detector.
         """
-        logging.info("Starting peak analysis for all detectors.")
-
         # Run peak detection on each detector
-        self._analyze_all_detectors(compute_peak_area)
-
-        # Calculate and log additional statistics
-        self._log_statistics()
-
-    def _analyze_detector(self, detector: Detector, compute_peak_area: bool) -> None:
-        """
-        Analyzes the signal from a single detector, detecting peaks and extracting
-        features such as height, width, and area.
-
-        Parameters
-        ----------
-        detector : Detector
-            The detector object that contains signal data.
-        compute_peak_area : bool
-            Whether to compute the area under the peaks.
-
-        Returns
-        -------
-        pd.DataFrame
-            A DataFrame containing the peak properties (e.g., height, width, area)
-            for the analyzed detector.
-        """
-        logging.info(f"Analyzing Detector {detector.name}.")
-
-        # Run the peak detection algorithm
-        self.algorithm.detect_peaks(detector=detector, compute_area=compute_peak_area)
-
-        logging.info(f"Detector {detector.name}: Detected {len(detector.peak_properties)} peaks.")
-
-    def _analyze_all_detectors(self, compute_peak_area: bool) -> None:
-        """
-        Runs the peak detection analysis on all detectors, concatenating the results
-        into a combined DataFrame.
-
-        Parameters
-        ----------
-        compute_peak_area : bool
-            Whether to compute the area under the peaks for all detectors.
-        """
-        for detector in self.cytometer.detectors:
-            # Analyze each detector and append the results
-            self._analyze_detector(detector, compute_peak_area)
-
         self.dataframe = pd.concat(
-            [d.peak_properties for d in self.cytometer.detectors],
+            [d.algorithm.peak_properties for d in self.cytometer.detectors],
             keys=[f'{d.name}' for d in self.cytometer.detectors]
         )
 
         self.dataframe.index.names = ['Detector', 'Event']
+
+        # Calculate and log additional statistics
+        self._log_statistics()
 
     def _log_statistics(self) -> None:
         """
@@ -257,7 +207,7 @@ class Analyzer:
             _, axes = plt.subplots(ncols=1, nrows=n_detectors + 1, figsize=figure_size, sharex=True, sharey=True, gridspec_kw={'height_ratios': [1, 1, 0.3]})
 
         for ax, detector in zip(axes, self.cytometer.detectors):
-            self.algorithm.plot(detector, ax=ax, show=False)
+            detector.plot(ax=ax, show=False, add_peak_locator=True)
 
         axes[-1].get_yaxis().set_visible(False)
         self.cytometer.scatterer.add_to_ax(axes[-1])

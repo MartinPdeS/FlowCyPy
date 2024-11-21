@@ -15,13 +15,13 @@ Steps:
 # Import necessary libraries and modules
 import numpy as np
 from FlowCyPy import FlowCytometer, Scatterer, Analyzer, Detector, GaussianBeam, FlowCell
-from FlowCyPy import distribution
-from FlowCyPy import peak_finder
+from FlowCyPy import peak_locator
 from FlowCyPy.units import particle, milliliter, nanometer, RIU, second, micrometer, millisecond, meter
-from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliampere, megahertz
+from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliampere, megahertz, microvolt
 from FlowCyPy.units import microsecond
 from FlowCyPy.units import milliwatt, AU
 from FlowCyPy import NoiseSetting
+from FlowCyPy.population import Exosome, HDL
 
 NoiseSetting.include_noises = False
 
@@ -32,41 +32,16 @@ np.random.seed(3)
 flow_cell = FlowCell(
     flow_speed=7.56 * meter / second,      # Flow speed: 7.56 meters per second
     flow_area=(10 * micrometer) ** 2,      # Flow area: 10 x 10 micrometers
-    run_time=0.4 * millisecond             # Total simulation time: 0.3 milliseconds
+    run_time=0.8 * millisecond             # Total simulation time: 0.3 milliseconds
 )
 
 # Step 2: Create Populations (Extracellular Vesicles and Liposomes)
 scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
 
-# Add first population (Extracellular Vesicles)
-scatterer.add_population(
-    name='EV',  # Population name: Extracellular Vesicles (EV)
-    concentration=1e+9 * particle / milliliter,  # Concentration: 1e9 particles per milliliter
-    size=distribution.RosinRammler(
-        characteristic_size=150 * nanometer,  # Characteristic size: 50 nanometers
-        spread=10.5                           # Spread factor for size distribution
-    ),
-    refractive_index=distribution.Normal(
-        mean=1.45 * RIU,    # Mean refractive index: 1.39
-        std_dev=0.02 * RIU  # Standard deviation: 0.05 refractive index units
-    )
-)
+scatterer.add_population(Exosome, concentration=3e+8 * particle / milliliter)
+scatterer.add_population(HDL, concentration=3e+8 * particle / milliliter)
 
-# Add second population (Liposomes)
-scatterer.add_population(
-    name='LP',  # Population name: Liposomes (LP)
-    concentration=1e+9 * particle / milliliter,  # Concentration: 1e9 particles per milliliter
-    size=distribution.RosinRammler(
-        characteristic_size=200 * nanometer,  # Characteristic size: 200 nanometers
-        spread=10.5                           # Spread factor for size distribution
-    ),
-    refractive_index=distribution.Normal(
-        mean=1.45 * RIU,    # Mean refractive index: 1.45
-        std_dev=0.02 * RIU  # Standard deviation: 0.05 refractive index units
-    )
-)
-
-scatterer.concentrations = 1e+9 / 3 * particle / milliliter
+# scatterer.concentrations = 1e+9 / 3 * particle / milliliter
 
 # Initialize scatterer and link it to the flow cell
 scatterer.initialize(flow_cell=flow_cell)
@@ -79,7 +54,7 @@ scatterer.plot()
 # Step 4: Set up the Laser GaussianBeam
 source = GaussianBeam(
     numerical_aperture=0.3 * AU,             # Numerical aperture of the laser: 0.3
-    wavelength=800 * nanometer,              # Laser wavelength: 800 nanometers
+    wavelength=488 * nanometer,              # Laser wavelength: 800 nanometers
     optical_power=100 * milliwatt             # Laser optical power: 10 milliwatts
 )
 
@@ -90,11 +65,11 @@ source.print_properties()  # Print the laser source properties
 detector_0 = Detector(
     name='side',                             # Detector name: Side scatter detector
     phi_angle=90 * degree,                   # Angle: 90 degrees (Side Scatter)
-    numerical_aperture=1.2 * AU,             # Numerical aperture: 1.2
+    numerical_aperture=.2 * AU,             # Numerical aperture: 1.2
     responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
     sampling_freq=60 * megahertz,            # Sampling frequency: 60 MHz
-    saturation_level=3 * millivolt,          # Saturation level: 2 millivolts
-    n_bins='16bit',                          # Number of bins: 14-bit resolution
+    saturation_level=0.04 * millivolt,          # Saturation level: 2 millivolts
+    # n_bins='16bit',                          # Number of bins: 14-bit resolution
     resistance=50 * ohm,                     # Detector resistance: 50 ohms
     dark_current=0.1 * milliampere,          # Dark current: 0.1 milliamps
     temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
@@ -104,11 +79,11 @@ detector_0 = Detector(
 detector_1 = Detector(
     name='forward',                          # Detector name: Forward scatter detector
     phi_angle=0 * degree,                    # Angle: 0 degrees (Forward Scatter)
-    numerical_aperture=1.2 * AU,             # Numerical aperture: 1.2
+    numerical_aperture=.2 * AU,             # Numerical aperture: 1.2
     responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
     sampling_freq=60 * megahertz,            # Sampling frequency: 60 MHz
-    saturation_level=3 * millivolt,          # Saturation level: 2 millivolts
-    n_bins='16bit',                          # Number of bins: 14-bit resolution
+    saturation_level=0.04 * millivolt,          # Saturation level: 2 millivolts
+    # n_bins='16bit',                          # Number of bins: 14-bit resolution
     resistance=50 * ohm,                     # Detector resistance: 50 ohms
     dark_current=0.1 * milliampere,          # Dark current: 0.1 milliamps
     temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
@@ -122,7 +97,7 @@ cytometer = FlowCytometer(
     coupling_mechanism='mie',                # Scattering mechanism: Mie scattering
     source=source,                           # Laser source used in the experiment
     scatterer=scatterer,                     # Populations used in the experiment
-    background_power=0.02 * milliwatt,
+    background_power=0.0 * milliwatt,
     detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
 )
 
@@ -133,14 +108,17 @@ cytometer.simulate_pulse()
 cytometer.plot()
 
 # %%
-# Step 7: Analyze Pulse Signals
-algorithm = peak_finder.MovingAverage(
-    threshold=0.001 * millivolt,              # Peak detection threshold: 0.03 millivolts
-    window_size=10 * microsecond,             # Moving average window size: 1 microsecond
-    min_peak_distance=1 * microsecond      # Minimum distance between peaks: 0.2 microseconds
+# Step 5: Analyzing Pulse Signals
+algorithm = peak_locator.MovingAverage(
+    threshold=0.1e-20 * microvolt,       # Signal threshold: 0.1 mV
+    window_size=1 * microsecond,         # Moving average window size: 1 µs
+    min_peak_distance=0.1 * microsecond  # Minimum distance between peaks: 0.3 µs
 )
 
-analyzer = Analyzer(cytometer=cytometer, algorithm=algorithm)
+detector_0.set_peak_locator(algorithm)
+detector_1.set_peak_locator(algorithm)
+
+analyzer = Analyzer(cytometer=cytometer)
 
 # Run the pulse signal analysis without computing peak area
 analyzer.run_analysis(compute_peak_area=False)

@@ -7,8 +7,8 @@ from FlowCyPy.units import micrometer, refractive_index_unit
 from FlowCyPy.population import Population
 from FlowCyPy.source import GaussianBeam
 from FlowCyPy.units import (
-    volt, watt, meter, hertz, particle, milliliter, degree, ampere,
-    nanometer, milliwatt, second, millisecond, AU
+    volt, watt, meter, hertz, particle, RIU, degree, ampere,
+    nanometer, milliwatt, second, millisecond, AU, milliliter
 )
 
 
@@ -36,7 +36,6 @@ def normal_population(normal_size_distribution, normal_ri_distribution):
     return Population(
         size=normal_size_distribution,
         refractive_index=normal_ri_distribution,
-        concentration=1.8e9 * particle / milliliter,
         name="Default population"
     )
 
@@ -67,7 +66,8 @@ def detector():
 
 @pytest.fixture
 def scatterer(normal_population, default_flow_cell):
-    scatterer = Scatterer(populations=[normal_population])
+    scatterer = Scatterer(medium_refractive_index=1.33 * RIU)
+    scatterer.add_population(normal_population, concentration=1e10 * particle / milliliter)
     scatterer.initialize(flow_cell=default_flow_cell)
     return scatterer
 

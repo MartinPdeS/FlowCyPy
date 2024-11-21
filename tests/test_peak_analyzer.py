@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from unittest.mock import patch
 
 # Importing from FlowCyPy
-from FlowCyPy import Analyzer, FlowCytometer, Detector, Scatterer, GaussianBeam, peak_finder, distribution
+from FlowCyPy import Analyzer, FlowCytometer, Detector, Scatterer, GaussianBeam, peak_locator, distribution
 from FlowCyPy.units import second, volt, hertz, watt, degree, micrometer, meter, particle, milliliter, ampere, AU, RIU
 from FlowCyPy.population import Population
 from FlowCyPy.flow_cell import FlowCell
@@ -45,14 +45,16 @@ def default_population(default_size_distribution, default_ri_distribution):
     return Population(
         size=default_size_distribution,
         refractive_index=default_ri_distribution,
-        concentration=1.8e5 * particle / milliliter,
         name="Default population"
     )
 
 
 @pytest.fixture
 def default_scatterer(flow_cell, default_population):
-    scatterer = Scatterer(populations=[default_population])
+    scatterer = Scatterer()
+
+    scatterer.add_population(default_population, concentration=1.8e5 * particle / milliliter,)
+
     scatterer.initialize(flow_cell=flow_cell)
 
     return scatterer
@@ -101,7 +103,7 @@ def default_cytometer(default_source, default_scatterer, default_detector):
 
 
 # Algorithm setup
-algorithm = peak_finder.MovingAverage(
+algorithm = peak_locator.MovingAverage(
     threshold=0.001 * volt,
     window_size=0.8 * second,
 )
@@ -118,9 +120,16 @@ def test_analyzer_peak_detection_api(default_cytometer):
         time=time, centers=[3.05, 7, 5], heights=[1, 2, 4], stds=[0.1, 0.1, 1]
     )
 
-    default_cytometer.detectors = [detector_0, detector_1]
+    algorithm = peak_locator.MovingAverage(
+        threshold=0.001 * volt,
+        window_size=0.8 * second,
+    )
 
-    analyzer = Analyzer(default_cytometer, algorithm=algorithm)
+    default_cytometer.detectors = [detector_0, detector_1]
+    detector_0.set_peak_locator(algorithm)
+    detector_1.set_peak_locator(algorithm)
+
+    analyzer = Analyzer(default_cytometer)
     analyzer.run_analysis()
     analyzer.get_coincidence(margin=0.1 * second)
 
@@ -139,7 +148,10 @@ def test_analyzer_plotting(mock_show, default_cytometer):
     detector_1 = generate_dummy_detector(time=time, centers=[3.05, 7, 5, 9], heights=[1, 2, 4, 2], stds=[0.1, 0.1, 1, 0.1])
     default_cytometer.detectors = [detector_0, detector_1]
 
-    analyzer = Analyzer(default_cytometer, algorithm=algorithm)
+    detector_0.set_peak_locator(algorithm)
+    detector_1.set_peak_locator(algorithm)
+
+    analyzer = Analyzer(default_cytometer)
     analyzer.run_analysis()
     analyzer.get_coincidence(margin=1e-6 * second)
 
@@ -147,7 +159,7 @@ def test_analyzer_plotting(mock_show, default_cytometer):
     analyzer.plot_peak()
     plt.close()
 
-    algorithm.plot(detector_1)
+    detector_1.plot(add_peak_locator=True)
     plt.close()
 
     analyzer.plot()
@@ -166,7 +178,10 @@ def test_pulse_width_analysis(default_cytometer):
 
     default_cytometer.detectors = [detector_0, detector_1]
 
-    analyzer = Analyzer(default_cytometer, algorithm=algorithm)
+    detector_0.set_peak_locator(algorithm)
+    detector_1.set_peak_locator(algorithm)
+
+    analyzer = Analyzer(default_cytometer)
     analyzer.run_analysis()
     analyzer.get_coincidence(margin=1e-6 * second)
 
@@ -189,7 +204,10 @@ def test_pulse_height_analysis(default_cytometer):
 
     default_cytometer.detectors = [detector_0, detector_1]
 
-    analyzer = Analyzer(default_cytometer, algorithm=algorithm)
+    detector_0.set_peak_locator(algorithm)
+    detector_1.set_peak_locator(algorithm)
+
+    analyzer = Analyzer(default_cytometer)
     analyzer.run_analysis()
     analyzer.get_coincidence(margin=1e-1 * second)
 
@@ -205,14 +223,17 @@ def test_pulse_area_analysis(default_cytometer):
     n_peaks = 4
     centers = np.linspace(1, 8, n_peaks)
     stds = np.random.rand(n_peaks) * 0.1
-    heights = np.random.rand(n_peaks)
+    heights = 1 + np.random.rand(n_peaks)
     time = np.linspace(0, 10, 1000) * second
     detector_0 = generate_dummy_detector(time=time, centers=centers, heights=heights, stds=stds)
     detector_1 = generate_dummy_detector(time=time, centers=centers, heights=heights, stds=stds)
 
     default_cytometer.detectors = [detector_0, detector_1]
 
-    analyzer = Analyzer(default_cytometer, algorithm=algorithm)
+    detector_0.set_peak_locator(algorithm, compute_peak_area=True)
+    detector_1.set_peak_locator(algorithm, compute_peak_area=True)
+
+    analyzer = Analyzer(default_cytometer)
     analyzer.run_analysis(compute_peak_area=True)
 
     analyzer.get_coincidence(margin=1e-6 * second)
@@ -220,8 +241,7 @@ def test_pulse_area_analysis(default_cytometer):
     expected_area = np.sqrt(2 * np.pi) * stds * second * volt
     measured_area = analyzer.coincidence[detector_0.name].Areas.values
 
-    assert np.allclose(measured_area.numpy_data, expected_area.magnitude, atol=0.5 * 100), \
-        f"Measured areas: {measured_area.numpy_data} do not match expected: {expected_area.magnitude}."
+    assert np.allclose(measured_area.numpy_data, expected_area.magnitude, atol=0.5 * 100), f"Measured areas: {measured_area.numpy_data} do not match expected: {expected_area.magnitude}."
 
 
 if __name__ == '__main__':

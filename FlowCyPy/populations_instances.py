@@ -1,4 +1,4 @@
-from FlowCyPy.units import nanometer, RIU, particle, milliliter, micrometer
+from FlowCyPy.units import nanometer, RIU, micrometer
 from FlowCyPy.population import Population
 from FlowCyPy import distribution
 
@@ -28,7 +28,6 @@ for (name, size, size_spread, ri, ri_spread) in _populations:
         name=name,
         size=size_distribution,
         refractive_index=ri_distribution,
-        concentration=1 * particle / milliliter
     )
 
     locals()[name] = population
