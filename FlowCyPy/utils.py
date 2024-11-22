@@ -26,21 +26,16 @@ class ProxyDetector():
         )
 
     def set_peak_locator(self, algorithm: BasePeakLocator, compute_peak_area: bool = True) -> None:
-        algorithm = copy(algorithm)
         # Ensure the algorithm is an instance of BasePeakLocator
         if not isinstance(algorithm, BasePeakLocator):
             raise TypeError("The algorithm must be an instance of BasePeakLocator.")
-
-        # Ensure the algorithm is not already initialized with data
-        if hasattr(algorithm, 'peak_properties'):
-            raise ValueError("The provided peak locator already contains data. Please provide a fresh, uninitialized algorithm instance.")
 
         # Ensure the detector has signal data available for analysis
         if not hasattr(self, 'dataframe') or self.dataframe is None:
             raise RuntimeError("The detector does not have signal data available for peak detection.")
 
         # Set the algorithm and perform peak detection
-        self.algorithm = algorithm
+        self.algorithm = copy(algorithm)
         self.algorithm.init_data(self.dataframe)
         self.algorithm.detect_peaks(compute_area=compute_peak_area)
 
