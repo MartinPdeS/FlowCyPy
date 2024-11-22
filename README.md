@@ -22,9 +22,10 @@
 | FlowCyPy/helper.py                                    |       19 |        1 |        8 |        2 |     89% |74->77, 78 |
 | FlowCyPy/logger.py                                    |       35 |        4 |        4 |        2 |     85% |46->exit, 74-75, 106-107 |
 | FlowCyPy/noises.py                                    |       22 |       10 |        4 |        0 |     46% |7-9, 19, 23-29 |
-| FlowCyPy/peak\_locator/base\_class.py                 |       30 |       13 |        4 |        0 |     50% |38-47, 85-98 |
-| FlowCyPy/peak\_locator/basic.py                       |       38 |        5 |       12 |        5 |     76% |46, 49, 55->58, 59, 114->exit, 131-132 |
-| FlowCyPy/peak\_locator/moving\_average.py             |       50 |        2 |       12 |        4 |     90% |52, 55, 62->65, 136->exit |
+| FlowCyPy/peak\_locator/base\_class.py                 |       48 |        5 |       12 |        5 |     83% |34, 37, 51, 84->87, 104, 107 |
+| FlowCyPy/peak\_locator/basic.py                       |       27 |        2 |        4 |        2 |     87% |46->49, 50, 108 |
+| FlowCyPy/peak\_locator/derivative.py                  |       40 |        2 |        6 |        2 |     91% |50->55, 55->exit, 128-137 |
+| FlowCyPy/peak\_locator/moving\_average.py             |       36 |        0 |        4 |        1 |     98% |    51->54 |
 | FlowCyPy/physical\_constant.py                        |       10 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/population.py                                |       75 |       12 |       18 |        7 |     77% |57, 78-80, 103-104, 109, 132-133, 138, 144, 228 |
 | FlowCyPy/populations\_instances.py                    |        9 |        0 |        2 |        0 |    100% |           |
@@ -32,8 +33,8 @@
 | FlowCyPy/scatterer.py                                 |      107 |       34 |       38 |        5 |     59% |74-84, 127, 145-148, 152->exit, 201, 235-248, 269-274, 313, 330-348, 351-352 |
 | FlowCyPy/source.py                                    |       74 |        7 |       18 |        6 |     86% |36, 41, 51, 54, 61, 64, 74 |
 | FlowCyPy/units.py                                     |       19 |        0 |        4 |        0 |    100% |           |
-| FlowCyPy/utils.py                                     |       70 |        7 |       10 |        4 |     86% |32, 36, 40, 48, 94->97, 161-162, 184 |
-|                                             **TOTAL** | **1287** |  **256** |  **220** |   **59** | **76%** |           |
+| FlowCyPy/utils.py                                     |       67 |        6 |        8 |        3 |     88% |31, 35, 43, 89->92, 156-157, 179 |
+|                                             **TOTAL** | **1317** |  **244** |  **216** |   **59** | **77%** |           |
 
 
 ## Setup coverage badge
