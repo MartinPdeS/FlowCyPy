@@ -1,18 +1,19 @@
 import numpy as np
 import pytest
 from FlowCyPy import peak_locator
-from FlowCyPy.units import Quantity, second, volt
+from FlowCyPy.units import Quantity, second, volt, microsecond
 from FlowCyPy.utils import generate_dummy_detector
 
 # Update the algorithm class name to match the new implementation
 algorithms = [
     peak_locator.BasicPeakLocator(threshold=0.1 * volt, rel_height=0.3),
     peak_locator.MovingAverage(threshold=0.1 * volt, window_size=0.1 * second, min_peak_distance=1e-4 * second),
+    peak_locator.DerivativePeakLocator(derivative_threshold=1e-6 * volt / microsecond, min_peak_distance=1e-4 * second),
 ]
 
 EXPECTED_PEAKS = Quantity(np.array([1, 3]), second)
 EXPECTED_HEIGHTS = Quantity(np.array([3, 8]), volt)
-EXPECTED_STDS = Quantity(np.array([0.01, 0.01]), second)
+EXPECTED_STDS = Quantity(np.array([0.03, 0.03]), second)
 
 
 # Parametrize the test with the detector
