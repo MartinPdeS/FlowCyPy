@@ -119,9 +119,6 @@ analyzer = EventCorrelator(cytometer=cytometer)
 # Run the pulse signal analysis
 analyzer.run_analysis(compute_peak_area=False)
 
-# Plot the detected peaks
-analyzer.plot_peak()
-
 # Step 6: Coincidence Data and 2D Density Plot
 # Extract coincidence data within a defined margin
 analyzer.get_coincidence(margin=0.1 * microsecond)
