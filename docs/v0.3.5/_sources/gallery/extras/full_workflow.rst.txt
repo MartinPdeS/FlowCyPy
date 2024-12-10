@@ -311,7 +311,7 @@ Display the properties of the simulated cytometer setup, including flow speed an
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.551 seconds)
+   **Total running time of the script:** (0 minutes 3.769 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_full_workflow.py:
