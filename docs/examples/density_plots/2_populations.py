@@ -32,7 +32,7 @@ np.random.seed(3)
 flow_cell = FlowCell(
     flow_speed=7.56 * meter / second,      # Flow speed: 7.56 meters per second
     flow_area=(10 * micrometer) ** 2,      # Flow area: 10 x 10 micrometers
-    run_time=0.8 * millisecond             # Total simulation time: 0.3 milliseconds
+    run_time=.2 * millisecond             # Total simulation time: 0.3 milliseconds
 )
 
 # Step 2: Create Populations (Extracellular Vesicles and Liposomes)
@@ -118,13 +118,12 @@ algorithm = peak_locator.MovingAverage(
 detector_0.set_peak_locator(algorithm)
 detector_1.set_peak_locator(algorithm)
 
+cytometer.plot(add_peak_locator=True)
+
 analyzer = EventCorrelator(cytometer=cytometer)
 
 # Run the pulse signal analysis without computing peak area
 analyzer.run_analysis(compute_peak_area=False)
-
-# Plot the analyzed pulse signals
-analyzer.plot_peak()
 
 # %%
 # Step 8: Extract and Plot Coincidence Data

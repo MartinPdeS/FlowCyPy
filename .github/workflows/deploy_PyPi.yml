@@ -12,19 +12,9 @@ permissions:
     contents: write
 
 jobs:
-    build_pure_python:
-        runs-on: ubuntu-latest
-        steps:
-          - uses: MartinPdeS/MPSActions/build_pure_python_package@master
-            with:
-                python-version: 3.11
-
-    publish_wheel:
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        needs: [build_pure_python]
-        runs-on: ubuntu-latest
-        steps:
-          - uses: MartinPdeS/MPSActions/publish_pypi@master
-            with:
-                python-version: 3.11
-                password: ${{ secrets.PYPI_API_TOKEN }}
+  pure_package:
+    uses: MartinPdeS/MPSActions/.github/workflows/publish_pure_package_to_PyPi.yml@master
+    with:
+      python-version: "3.11"
+    secrets:
+      PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
