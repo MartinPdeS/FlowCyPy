@@ -113,17 +113,16 @@ class FlowCytometer:
 
         self._log_statistics()
 
-    def _log_statistics(self) -> None:
+    def _log_statistics(self) -> SimulationLogger:
         """
         Logs key statistics about the simulated pulse events for each detector using tabulate for better formatting.
         Includes total events, average time between events, gfirst and last event times, and minimum time between events.
         """
-        logger = SimulationLogger(
-            detectors=self.detectors,
-            pulse_dataframe=self.pulse_dataframe
-        )
+        logger = SimulationLogger(cytometer=self)
 
         logger.log_statistics(include_totals=True, table_format="fancy_grid")
+
+        return logger
 
     def _get_detection_mechanism(self) -> Callable:
         """

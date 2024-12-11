@@ -8,6 +8,7 @@ from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Population
 from FlowCyPy.utils import PropertiesReport
 from FlowCyPy.distribution import Base as BaseDistribution
+from FlowCyPy.logger import ScattererLogger
 from enum import Enum
 
 config_dict = dict(arbitrary_types_allowed=True, extra='forbid')
@@ -170,7 +171,19 @@ class Scatterer(PropertiesReport):
         super(Scatterer, self).print_properties(**_dict)
 
         for population in self.populations:
-            population.print_properties()
+            population._log_properties()
+
+    def _log_properties(self) -> None:
+        """
+        Logs key properties of the Scatterer instance in a formatted table, including its name,
+        refractive index, size, concentration, and number of events.
+
+        The results are displayed in a formatted table using `tabulate` for clarity.
+        """
+        # Gather properties
+        logger = ScattererLogger(self)
+
+        logger.log_properties(table_format="fancy_grid")
 
     def add_population(self, population: Population, concentration: Quantity) -> 'Scatterer':
         """

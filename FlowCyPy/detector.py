@@ -489,9 +489,9 @@ class Detector(PropertiesReport):
 
         Notes
         -----
-        - The `algorithm` parameter should be a fresh instance of a peak detection algorithm.
-        - The method will analyze the detector's signal immediately upon setting the algorithm.
-        - Peak detection results are stored in the algorithm's `peak_properties` attribute.
+            - The `algorithm` parameter should be a fresh instance of a peak detection algorithm.
+            - The method will analyze the detector's signal immediately upon setting the algorithm.
+            - Peak detection results are stored in the algorithm's `peak_properties` attribute.
         """
 
         # Ensure the algorithm is an instance of BasePeakLocator

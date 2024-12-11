@@ -55,7 +55,7 @@ scatterer.add_population(population_1, concentration=1e+9 * particle / millilite
 
 scatterer.initialize(flow_cell=flow_cell)
 
-scatterer.print_properties()
+scatterer._log_properties()
 
 # Step 4: Set up the light source
 # -------------------------------
@@ -107,7 +107,7 @@ cytometer.simulate_pulse()
 # Step 8: Display the properties of the simulation
 # ------------------------------------------------
 # Print the properties of the simulation setup to better understand flow speed, particle density, and source power.
-cytometer.print_properties()
+cytometer._log_statistics()
 
 # Step 9: Visualize the generated signals
 # ---------------------------------------

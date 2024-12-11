@@ -24,6 +24,7 @@ def setup(app):
 
 autodoc_mock_imports = [
     'numpy',
+    'pydantic',
     'matplotlib',
     'numpydoc',
 ]
@@ -37,12 +38,22 @@ extensions = [
     'sphinx.ext.mathjax',
     'pyvista.ext.plot_directive',
     'sphinx_gallery.gen_gallery',
+    'sphinx.ext.autosummary',
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.intersphinx',
 ]
+
+autodoc_pydantic_model_show_json = False  # Do not show JSON schema
+autodoc_pydantic_model_show_config_summary = False  # Show Pydantic Config options
+autodoc_pydantic_field_show_default = False  # Show default field values
+autodoc_pydantic_field_list_validators = False  # List validators associated with fields
+
+
+autodoc_typehints = "description"
+autosummary_generate = True
 
 # Napoleon settings for docstrings
 napoleon_google_docstring = False
@@ -79,10 +90,11 @@ sphinx_gallery_conf = {
 
 
 autodoc_default_options = {
-    'members': True,
+    "members": True,
+    "undoc-members": False,
+    "show-inheritance": True,
+    "exclude-members": "__annotations__",
     'members-order': 'bysource',
-    'undoc-members': False,
-    'show-inheritance': True,
 }
 
 autosectionlabel_prefix_document = True

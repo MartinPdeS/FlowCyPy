@@ -1,6 +1,6 @@
 
 import numpy as np
-from typing import Union, List
+from typing import Union
 from FlowCyPy import distribution
 import pandas as pd
 from dataclasses import field
@@ -226,24 +226,5 @@ class Population(PropertiesReport):
 
         if self.n_events == 0:
             warnings.warn("Population has been initialized with 0 events.")
-
-    def print_properties(self) -> List[str]:
-        """
-        Prints specific properties of the Scatterer instance, such as coupling factor and medium refractive index.
-        This method calls the parent class method to handle the actual property printing logic.
-
-        Overrides:
-            Scatterer.print_properties: Extends the parent method to print the desired properties.
-
-        """
-        _dict = {
-            'Name': self.name,
-            'Refractive Index': self.refractive_index,
-            'Size': self.size,
-            'Concentration': self.concentration,
-            'N events': self.n_events
-        }
-
-        super(Population, self).print_properties(**_dict)
 
 from FlowCyPy.populations_instances import *  # noqa F403

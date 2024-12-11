@@ -48,7 +48,7 @@ scatterer.add_population(HDL, concentration=10e+8 * particle / milliliter)
 scatterer.add_population(LDL, concentration=10e+8 * particle / milliliter)
 
 scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
-scatterer.print_properties()               # Display population properties
+scatterer._log_properties()               # Display population properties
 scatterer.plot()                           # Visualize the population distributions
 
 # %%

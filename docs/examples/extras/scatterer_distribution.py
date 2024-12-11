@@ -63,7 +63,7 @@ scatterer.plot()
 
 # %%
 # Display the properties of the scatterer distribution.
-scatterer.print_properties()
+scatterer._log_properties()
 
 """
 Summary:

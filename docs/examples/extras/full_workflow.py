@@ -112,7 +112,7 @@ cytometer.simulate_pulse()
 # Step 7: Analyze and Visualize Results
 # -------------------------------------
 # Display the properties of the simulated cytometer setup, including flow speed and laser power.
-cytometer.print_properties()
+cytometer._log_statistics()
 
 # Plot the simulated signals for the detector.
 cytometer.plot()

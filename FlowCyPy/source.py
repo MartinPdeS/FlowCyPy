@@ -107,12 +107,11 @@ class GaussianBeam(BaseBeam):
     amplitude : Quantity
         The electric field amplitude at the focus, derived from optical power, waist, and fundamental constants.
 
-    RIN Interpretation
-    ------------------
-    The Relative Intensity Noise (RIN) represents fluctuations in the laser's intensity relative to its mean optical power.
-    For a Gaussian beam, the instantaneous intensity at any given time can be modeled as:
-
-        I(t) = <I> * (1 + ΔI)
+    Notes
+    -----
+    RIN Interpretation:
+        - The Relative Intensity Noise (RIN) represents fluctuations in the laser's intensity relative to its mean optical power.
+        - For a Gaussian beam, the instantaneous intensity at any given time can be modeled as: I(t) = <I> * (1 + ΔI)
 
     where:
         - `<I>` is the mean intensity derived from the optical power.
@@ -191,10 +190,11 @@ class AstigmaticGaussianBeam(BaseBeam):
     amplitude : Quantity
         The electric field amplitude at the focus, derived from optical power, waist_x, waist_y, and fundamental constants.
 
-    RIN Interpretation
-    ------------------
-    The Relative Intensity Noise (RIN) represents fluctuations in the laser's intensity relative to its mean optical power.
-    For a Gaussian beam, the instantaneous intensity at any given time can be modeled as:
+    Notes
+    -----
+    RIN Interpretation:
+        - The Relative Intensity Noise (RIN) represents fluctuations in the laser's intensity relative to its mean optical power.
+        - For a Gaussian beam, the instantaneous intensity at any given time can be modeled as:
 
         I(t) = <I> * (1 + ΔI)
 
