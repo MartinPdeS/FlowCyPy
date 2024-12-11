@@ -3,6 +3,7 @@ import numpy as np
 from FlowCyPy import distribution
 from FlowCyPy.population import Population
 from FlowCyPy.flow_cell import FlowCell
+from FlowCyPy.particle_count import ParticleCount
 from FlowCyPy.units import (
     nanometer, micrometer, meter, milliliter, second, refractive_index_unit, particle
 )
@@ -44,7 +45,8 @@ def population():
         refractive_index=refractive_index_dist,
         name="Test Population"
     )
-    population.concentration = 1.8e11 * particle / milliliter
+
+    population.particle_count = ParticleCount(value=1.8e11 * particle / milliliter)
 
     population.initialize(flow_cell)
 

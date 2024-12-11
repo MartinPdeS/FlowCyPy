@@ -46,12 +46,6 @@ extensions = [
     'sphinx.ext.intersphinx',
 ]
 
-autodoc_pydantic_model_show_json = False  # Do not show JSON schema
-autodoc_pydantic_model_show_config_summary = False  # Show Pydantic Config options
-autodoc_pydantic_field_show_default = False  # Show default field values
-autodoc_pydantic_field_list_validators = False  # List validators associated with fields
-
-
 autodoc_typehints = "description"
 autosummary_generate = True
 

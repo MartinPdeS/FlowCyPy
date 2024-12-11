@@ -21,7 +21,14 @@ from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliam
 from FlowCyPy.units import microsecond
 from FlowCyPy.units import milliwatt, AU
 from FlowCyPy import NoiseSetting
-from FlowCyPy.population import Exosome, HDL
+from FlowCyPy.population import Exosome, HDL, get_microbeads
+from FlowCyPy.particle_count import ParticleCount
+
+
+concentration = ParticleCount(
+    # value=3e+8 * particle / milliliter
+    value=10 * particle
+)
 
 NoiseSetting.include_noises = False
 
@@ -38,17 +45,20 @@ flow_cell = FlowCell(
 # Step 2: Create Populations (Extracellular Vesicles and Liposomes)
 scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
 
-scatterer.add_population(Exosome, concentration=3e+8 * particle / milliliter)
-scatterer.add_population(HDL, concentration=3e+8 * particle / milliliter)
+scatterer.add_population(get_microbeads(name='pop_0', size=100 * nanometer, refractive_index=1.4 * RIU), particle_count=concentration)
+
+scatterer.add_population(get_microbeads(name='pop_1', size=200 * nanometer, refractive_index=1.4 * RIU), particle_count=concentration)
+
 
 # scatterer.concentrations = 1e+9 / 3 * particle / milliliter
 
 # Initialize scatterer and link it to the flow cell
 scatterer.initialize(flow_cell=flow_cell)
+scatterer.linearize_time(randomize_populations=False)
 
 # Print and plot properties of the populations
 scatterer._log_properties()
-scatterer.plot()
+# scatterer.plot()
 
 # %%
 # Step 4: Set up the Laser GaussianBeam

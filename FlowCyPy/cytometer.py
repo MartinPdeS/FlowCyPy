@@ -187,16 +187,6 @@ class FlowCytometer:
         # Display the plot
         plt.show()
 
-    def print_properties(self) -> None:
-        """Displays the core properties of the flow cytometer and its detectors using the `tabulate` library."""
-        self.scatterer.print_properties()
-        print("\nFlowCytometer Properties")
-
-        self.source.print_properties()
-
-        for detector in self.detectors:
-            detector.print_properties()
-
     def add_detector(self, **kwargs) -> Detector:
         detector = Detector(
             **kwargs

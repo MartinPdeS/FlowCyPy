@@ -54,7 +54,7 @@ ev = Population(
 
 scatterer = Scatterer()
 
-scatterer.add_population(ev, concentration=1.8e+9 * particle / milliliter)
+scatterer.add_population(ev, particle_count=1.8e+9 * particle / milliliter)
 
 scatterer.initialize(flow_cell=flow_cell)
 
