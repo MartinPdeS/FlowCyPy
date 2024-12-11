@@ -50,8 +50,8 @@ population_1 = Population(
     refractive_index=distribution.Normal(mean=1.45 * RIU, std_dev=0.05 * RIU)
 )
 
-scatterer.add_population(population_0, concentration=1e+9 * particle / milliliter)
-scatterer.add_population(population_1, concentration=1e+9 * particle / milliliter)
+scatterer.add_population(population_0, particle_count=1e+9 * particle / milliliter)
+scatterer.add_population(population_1, particle_count=1e+9 * particle / milliliter)
 
 scatterer.initialize(flow_cell=flow_cell)
 

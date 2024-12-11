@@ -9,6 +9,7 @@ from FlowCyPy.units import second, volt, hertz, watt, degree, micrometer, meter,
 from FlowCyPy.population import Population
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.utils import generate_dummy_detector
+from FlowCyPy.particle_count import ParticleCount
 
 # Seed for reproducibility
 np.random.seed(10)
@@ -53,7 +54,11 @@ def default_population(default_size_distribution, default_ri_distribution):
 def default_scatterer(flow_cell, default_population):
     scatterer = Scatterer()
 
-    scatterer.add_population(default_population, concentration=1.8e5 * particle / milliliter,)
+    particle_count = ParticleCount(
+        value=3e+5 * particle / milliliter
+    )
+
+    scatterer.add_population(default_population, particle_count=particle_count)
 
     scatterer.initialize(flow_cell=flow_cell)
 

@@ -6,12 +6,15 @@ from FlowCyPy.scatterer import Scatterer
 from FlowCyPy import distribution as dist
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Population
+from FlowCyPy.particle_count import ParticleCount
 from FlowCyPy.units import (
     micrometer, meter, refractive_index_unit, nanometer, milliliter, particle, millisecond, second
 )
 
 
-CONCENTRATION = 1.8e7 * particle / milliliter
+CONCENTRATION = ParticleCount(
+    value=3e+5 * particle / milliliter
+)
 
 
 # Fixtures to set up a default Flow and Distributions
@@ -53,7 +56,7 @@ def test_generate_distribution_size(distribution, default_flow_cell):
     # Create the Scatterer Distribution object with the chosen distribution
     scatterer = Scatterer()
 
-    scatterer.add_population(population_0, concentration=CONCENTRATION)
+    scatterer.add_population(population_0, particle_count=CONCENTRATION)
 
     scatterer.initialize(flow_cell=default_flow_cell)
 
@@ -106,7 +109,7 @@ def test_generate_longitudinal_positions(default_flow_cell, distribution):
 
     scatterer = Scatterer()
 
-    scatterer.add_population(population_0, concentration=CONCENTRATION)
+    scatterer.add_population(population_0, particle_count=CONCENTRATION)
 
     scatterer.initialize(flow_cell=default_flow_cell)
 
@@ -141,7 +144,7 @@ def test_plot_positions(mock_show, default_flow_cell, distribution):
 
     scatterer = Scatterer()
 
-    scatterer.add_population(population_0, concentration=CONCENTRATION)
+    scatterer.add_population(population_0, particle_count=CONCENTRATION)
 
     scatterer.initialize(flow_cell=default_flow_cell)
 

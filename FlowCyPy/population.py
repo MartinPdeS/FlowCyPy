@@ -7,12 +7,13 @@ from dataclasses import field
 import pint_pandas
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-from FlowCyPy.units import particle, second
+from FlowCyPy.units import particle
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.utils import PropertiesReport
 import logging
 from PyMieSim.units import Quantity, RIU, meter
 import warnings
+from FlowCyPy.particle_count import ParticleCount
 
 
 config_dict = dict(
@@ -36,14 +37,14 @@ class Population(PropertiesReport):
         Refractive index or refractive index distributions.
     size : Union[distribution.Base, Quantity]
         Particle size or size distributions.
-    concentration : Quantity
+    particle_count : ParticleCount
         Scatterer density in particles per cubic meter, default is 1 particle/m³.
 
     """
     name: str
     refractive_index: Union[distribution.Base, Quantity]
     size: Union[distribution.Base, Quantity]
-    concentration: Quantity = field(init=False)
+    particle_count: ParticleCount = field(init=False)
 
     def __post_init__(self):
         """
@@ -145,7 +146,11 @@ class Population(PropertiesReport):
 
         self.flow_cell = flow_cell
 
-        self.n_events = self.flow_cell.calculate_number_of_events(concentration=self.concentration)
+        self.n_events = self.particle_count.calculate_number_of_events(
+            flow_area=self.flow_cell.flow_area,
+            flow_speed=self.flow_cell.flow_speed,
+            run_time=self.flow_cell.run_time
+        )
 
         self._generate_longitudinal_positions()
 
@@ -198,7 +203,11 @@ class Population(PropertiesReport):
             An array of particle arrival times (in seconds) for the entire experiment duration, based on the Poisson process.
         """
         # Step 1: Compute the average particle flux (particles per second)
-        particle_flux = (self.concentration * self.flow_cell.flow_speed * self.flow_cell.flow_area).to(particle / second)
+        particle_flux = self.particle_count.compute_particle_flux(
+            flow_speed=self.flow_cell.flow_speed,
+            flow_area=self.flow_cell.flow_area,
+            run_time=self.flow_cell.run_time
+        )
 
         # Step 2: Calculate the expected number of particles over the entire experiment
         expected_particles = self.n_events

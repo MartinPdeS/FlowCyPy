@@ -170,7 +170,7 @@ class ScattererLogger:
             "Refractive Index",
             "Medium Refractive Index",
             "Size",
-            "Concentration",
+            "Particle Count",
             "Number of Events",
             "Min Time Between Events",
             "Avg Time Between Events"
@@ -196,7 +196,7 @@ class ScattererLogger:
         refractive_index = f"{population.refractive_index}"
         medium_refractive_index = f"{self.scatterers.medium_refractive_index}"
         size = f"{population.size}"
-        concentration = f"{population.concentration.to_compact():.4~P}"
+        concentration = f"{population.particle_count}"
         num_events = population.n_events
 
         min_delta_position = abs(population.dataframe['Time'].diff()).min().to_compact()

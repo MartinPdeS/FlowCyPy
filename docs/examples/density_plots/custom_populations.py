@@ -56,8 +56,8 @@ population_1 = Population(
 )
 
 # Define populations with size distribution and refractive index
-scatterer.add_population(population_0, concentration=3e+8 * particle / milliliter)
-scatterer.add_population(population_1, concentration=3e+8 * particle / milliliter)
+scatterer.add_population(population_0, particle_count=3e+8 * particle / milliliter)
+scatterer.add_population(population_1, particle_count=3e+8 * particle / milliliter)
 
 scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
 scatterer._log_properties()               # Display population properties

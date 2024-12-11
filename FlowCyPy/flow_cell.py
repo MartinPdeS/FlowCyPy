@@ -1,5 +1,5 @@
 from typing import List
-from FlowCyPy.units import meter, second, particle
+from FlowCyPy.units import meter, second
 from PyMieSim.units import Quantity
 from tabulate import tabulate
 from pydantic.dataclasses import dataclass
@@ -104,23 +104,6 @@ class FlowCell(object):
         self.flow_speed = Quantity(self.flow_speed, meter / second)
         self.flow_area = Quantity(self.flow_area, meter ** 2)
         self.run_time = Quantity(self.run_time, second)
-
-    def calculate_number_of_events(self, concentration: Quantity) -> int:
-        """
-        Calculate the total number of particles based on the scatterer density, flow speed, and flow area.
-
-        Returns
-        -------
-        int
-            The total number of particles in the flow.
-        """
-        # Volume swept by the flow over the total time
-        volume = self.flow_area * self.flow_speed * self.run_time
-
-        # Calculate the total number of particles in this volume
-        number_of_particles = concentration * volume
-
-        return number_of_particles.to(particle).round()
 
     def print_properties(self) -> None:
         """

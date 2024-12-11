@@ -3,12 +3,14 @@ import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 import seaborn as sns
 import pandas as pd
+import numpy
 from FlowCyPy.units import Quantity, RIU, particle, liter
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Population
 from FlowCyPy.utils import PropertiesReport
 from FlowCyPy.distribution import Base as BaseDistribution
 from FlowCyPy.logger import ScattererLogger
+from FlowCyPy.particle_count import ParticleCount
 from enum import Enum
 
 config_dict = dict(arbitrary_types_allowed=True, extra='forbid')
@@ -46,7 +48,7 @@ class Scatterer(PropertiesReport):
         self.n_events: int = None
         self.dataframe: pd.DataFrame = None
 
-    def initialize(self, flow_cell: FlowCell) -> None:
+    def initialize(self, flow_cell: FlowCell, size_units: str = 'micrometer') -> None:
         """
         Initializes particle size, refractive index, and medium refractive index distributions.
 
@@ -64,6 +66,9 @@ class Scatterer(PropertiesReport):
         from pint_pandas import PintType
 
         if len(self.populations) != 0:
+            for p in self.populations:
+                p.dataframe.Size = p.dataframe.Size.pint.to(size_units)
+
             self.dataframe = pd.concat(
                 [p.dataframe for p in self.populations],
                 axis=0,
@@ -88,6 +93,19 @@ class Scatterer(PropertiesReport):
             )
 
         self.n_events = len(self.dataframe)
+
+    def linearize_time(self, randomize_populations: bool = False) -> None:
+        import pint_pandas
+
+        linear_spacing = numpy.linspace(0, self.flow_cell.run_time, self.n_events)
+
+        if randomize_populations:
+            linear_spacing = numpy.random.shuffle(linear_spacing)
+
+        self.dataframe.Time = pint_pandas.PintArray(linear_spacing, dtype=self.dataframe.Time.pint.units)
+
+        for population in self.populations:
+            population.dataframe = self.dataframe.xs(population.name)
 
     def plot(self, ax: Optional[plt.Axes] = None, show: bool = True, alpha: float = 0.8, bandwidth_adjust: float = 1, log_plot: bool = False) -> None:
         """
@@ -185,7 +203,7 @@ class Scatterer(PropertiesReport):
 
         logger.log_properties(table_format="fancy_grid")
 
-    def add_population(self, population: Population, concentration: Quantity) -> 'Scatterer':
+    def add_population(self, population: Population, particle_count: ParticleCount) -> 'Scatterer':
         """
         Adds a population to the Scatterer instance with the specified attributes.
 
@@ -197,8 +215,8 @@ class Scatterer(PropertiesReport):
             The size distribution of the population.
         refractive_index : BaseDistribution
             The refractive index distribution of the population.
-        concentration : Quantity
-            The concentration of the population. Must have the dimensionality of 'particles per liter'.
+        particle_count : ParticleCount
+            The concentration or number of particle of the population. Must have the dimensionality of 'particles per liter'.
 
         Returns
         -------
@@ -210,12 +228,7 @@ class Scatterer(PropertiesReport):
         ValueError
             If the concentration does not have the expected dimensionality.
         """
-        if concentration.dimensionality != (particle / liter).dimensionality:
-            raise ValueError(
-                f"Invalid concentration dimensionality: {concentration.dimensionality}. Expected dimensionality is 'particles per liter' or similar."
-            )
-
-        population.concentration = concentration
+        population.particle_count = ParticleCount(particle_count)
 
         self.populations.append(population)
         return population
