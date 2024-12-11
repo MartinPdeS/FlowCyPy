@@ -14,27 +14,24 @@ config_dict = dict(
 
 
 @dataclass(config=config_dict)
-class FlowCell:
+class FlowCell(object):
     """
-    A class to model the flow parameters in a flow cytometer, including flow speed, flow area,
+    Models the flow parameters in a flow cytometer, including flow speed, flow area,
     and particle interactions. This class interacts with ScattererDistribution to simulate
     the flow of particles through the cytometer.
 
     Parameters
     ----------
-    flow_speed : float
+    flow_speed : Quantity
         The speed of the flow in meters per second (m/s).
-    flow_area : float
+    flow_area : Quantity
         The cross-sectional area of the flow tube in square meters (m²).
-    run_time : float
+    run_time : Quantity
         The total duration of the flow simulation in seconds.
-    scatterer_density : float
-        The density of the scatterers (particles) in particles per cubic meter (particles/m³).
     """
-
-    flow_speed: Quantity  # Flow speed in meters/second (default: 80 µm/s)
-    flow_area: Quantity  # Cross-sectional area in square meters (default: 1 µm²)
-    run_time: Quantity  # Total simulation time in seconds (default: 1 second)
+    flow_speed: Quantity
+    flow_area: Quantity
+    run_time: Quantity
 
     @field_validator('flow_speed')
     def _validate_flow_speed(cls, value):

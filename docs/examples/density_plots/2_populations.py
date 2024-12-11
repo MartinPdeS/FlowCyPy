@@ -47,7 +47,7 @@ scatterer.add_population(HDL, concentration=3e+8 * particle / milliliter)
 scatterer.initialize(flow_cell=flow_cell)
 
 # Print and plot properties of the populations
-scatterer.print_properties()
+scatterer._log_properties()
 scatterer.plot()
 
 # %%

@@ -46,7 +46,7 @@ scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive i
 scatterer.add_population(Exosome, concentration=5e9 * particle / milliliter)
 
 scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
-scatterer.print_properties()               # Display population properties
+scatterer._log_properties()               # Display population properties
 scatterer.plot()                         # Visualize the population distributions
 
 # Set up the laser source parameters

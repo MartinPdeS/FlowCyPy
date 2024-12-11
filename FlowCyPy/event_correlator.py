@@ -5,9 +5,7 @@ from MPSPlots.styles import mps
 from FlowCyPy.units import second
 import warnings
 from FlowCyPy.cytometer import FlowCytometer
-
-import logging
-from tabulate import tabulate
+from FlowCyPy.logger import EventCorrelatorLogger
 from FlowCyPy.report import Report
 
 
@@ -79,7 +77,7 @@ class EventCorrelator:
         # Calculate and log additional statistics
         self._log_statistics()
 
-    def _log_statistics(self) -> None:
+    def _log_statistics(self) -> EventCorrelatorLogger:
         """
         Logs statistical information about the detected peaks for each detector,
         including the number of events, the first and last peak times, the average
@@ -87,48 +85,11 @@ class EventCorrelator:
 
         The results are displayed in a formatted table using `tabulate` for clarity.
         """
-        total_peaks = 0
-        table_data = []  # List to store table data for each detector
+        logger = EventCorrelatorLogger(self)
 
-        logging.info("\n=== Analysis Summary ===")
+        logger.log_statistics(table_format="fancy_grid")
 
-        # Group by the 'Detector' column to calculate stats for each detector
-        for detector, (_, group) in zip(self.cytometer.detectors, self.dataframe.groupby('Detector')):
-            num_events = len(group)
-            total_peaks += num_events
-            # Calculate average and minimum time between peaks if more than one event is detected
-            if num_events > 1:
-                times = group['PeakTimes'].sort_values()
-                time_diffs = times.diff().dropna()  # Compute time differences between peaks
-                avg_time_between_peaks = time_diffs.mean()
-                min_time_between_peaks = time_diffs.min()  # Calculate minimum time difference between peaks
-            else:
-                avg_time_between_peaks = "N/A"
-                min_time_between_peaks = "N/A"
-
-            # Get first and last peak times
-            first_peak_time = group['PeakTimes'].min() if num_events > 0 else "N/A"
-            last_peak_time = group['PeakTimes'].max() if num_events > 0 else "N/A"
-
-            # Append detector statistics to table data
-            table_data.append([
-                detector.name,                                  # Detector name
-                num_events,                                     # Number of events
-                f"{first_peak_time.to_compact():.4~P}",         # First peak time
-                f"{last_peak_time.to_compact():.4~P}",          # Last peak time
-                f"{avg_time_between_peaks.to_compact():.4~P}" if avg_time_between_peaks != "N/A" else "N/A",  # Average time between peaks
-                f"{min_time_between_peaks.to_compact():.4~P}" if min_time_between_peaks != "N/A" else "N/A"  # Minimum time between peaks
-            ])
-
-        # Format the table using tabulate
-        headers = ["Detector", "Number of Events", "First Peak Time", "Last Peak Time", "Avg Time Between Peaks", "Min Time Between Peaks"]
-        formatted_table = tabulate(table_data, headers=headers, tablefmt="grid", floatfmt=".3f")
-
-        # Log the formatted table
-        logging.info("\n" + formatted_table)
-
-        # Log total peaks across all detectors
-        logging.info(f"\nTotal number of peaks detected across all detectors: {total_peaks}")
+        return logger
 
     def get_coincidence(self, margin: second.dimensionality) -> None:
         """

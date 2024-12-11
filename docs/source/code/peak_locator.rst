@@ -5,7 +5,7 @@ PeakFinder Classes
 Base Class
 ----------
 
-.. autoclass:: FlowCyPy.peak_finder.basic.BasicPeakLocator
+.. autoclass:: FlowCyPy.peak_locator.basic.BasicPeakLocator
    :members:
    :show-inheritance:
 
