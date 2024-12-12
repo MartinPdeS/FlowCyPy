@@ -176,6 +176,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: Sca
         Array of coupling values for each particle, based on the detected signal.
     """
     size_list = scatterer.dataframe['Size'].values
+
     if len(size_list) == 0:
         return np.array([]) * watt
 

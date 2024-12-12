@@ -22,15 +22,13 @@ from FlowCyPy.units import microsecond
 from FlowCyPy.units import milliwatt, AU
 from FlowCyPy import NoiseSetting
 from FlowCyPy.population import Exosome, HDL, get_microbeads
-from FlowCyPy.particle_count import ParticleCount
 
 
-concentration = ParticleCount(
-    # value=3e+8 * particle / milliliter
-    value=10 * particle
-)
-
-NoiseSetting.include_noises = False
+NoiseSetting.include_noises = True
+NoiseSetting.include_shot_noise = True
+NoiseSetting.include_dark_current_noise = False
+NoiseSetting.include_thermal_noise = True
+NoiseSetting.include_RIN_noise = False
 
 # Set random seed for reproducibility
 np.random.seed(3)
@@ -45,19 +43,21 @@ flow_cell = FlowCell(
 # Step 2: Create Populations (Extracellular Vesicles and Liposomes)
 scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
 
-scatterer.add_population(get_microbeads(name='pop_0', size=100 * nanometer, refractive_index=1.4 * RIU), particle_count=concentration)
+scatterer.add_population(get_microbeads(name='pop_0', size=50 * nanometer, refractive_index=1.4 * RIU), particle_count=5 * particle)
 
-scatterer.add_population(get_microbeads(name='pop_1', size=200 * nanometer, refractive_index=1.4 * RIU), particle_count=concentration)
+scatterer.add_population(get_microbeads(name='pop_1', size=80 * nanometer, refractive_index=1.4 * RIU), particle_count=5 * particle)
 
+scatterer.add_population(get_microbeads(name='pop_2', size=100 * nanometer, refractive_index=1.4 * RIU), particle_count=5 * particle)
 
-# scatterer.concentrations = 1e+9 / 3 * particle / milliliter
+scatterer.add_population(get_microbeads(name='pop_3', size=200 * nanometer, refractive_index=1.4 * RIU), particle_count=5 * particle)
 
 # Initialize scatterer and link it to the flow cell
 scatterer.initialize(flow_cell=flow_cell)
-scatterer.linearize_time(randomize_populations=False)
+scatterer.distribute_time_linearly(randomize_populations=False)
 
 # Print and plot properties of the populations
 scatterer._log_properties()
+
 # scatterer.plot()
 
 # %%
@@ -73,28 +73,28 @@ source = GaussianBeam(
 detector_0 = Detector(
     name='side',                             # Detector name: Side scatter detector
     phi_angle=90 * degree,                   # Angle: 90 degrees (Side Scatter)
-    numerical_aperture=.2 * AU,             # Numerical aperture: 1.2
+    numerical_aperture=.2 * AU,              # Numerical aperture: 1.2
     responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
     sampling_freq=60 * megahertz,            # Sampling frequency: 60 MHz
-    saturation_level=0.04 * millivolt,          # Saturation level: 2 millivolts
-    # n_bins='16bit',                          # Number of bins: 14-bit resolution
-    resistance=50 * ohm,                     # Detector resistance: 50 ohms
+    # saturation_level=0.04 * millivolt,     # Saturation level: 2 millivolts
+    n_bins='16bit',                          # Number of bins: 14-bit resolution
+    resistance=1500 * ohm,                   # Detector resistance: 50 ohms
     dark_current=0.1 * milliampere,          # Dark current: 0.1 milliamps
-    temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
+    temperature=100 * kelvin                 # Operating temperature: 300 Kelvin
 )
 
 # Forward scatter detector
 detector_1 = Detector(
     name='forward',                          # Detector name: Forward scatter detector
     phi_angle=0 * degree,                    # Angle: 0 degrees (Forward Scatter)
-    numerical_aperture=.2 * AU,             # Numerical aperture: 1.2
+    numerical_aperture=.2 * AU,              # Numerical aperture: 1.2
     responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
     sampling_freq=60 * megahertz,            # Sampling frequency: 60 MHz
-    saturation_level=0.04 * millivolt,          # Saturation level: 2 millivolts
-    # n_bins='16bit',                          # Number of bins: 14-bit resolution
-    resistance=50 * ohm,                     # Detector resistance: 50 ohms
+    # saturation_level=0.04 * millivolt,     # Saturation level: 2 millivolts
+    n_bins='16bit',                          # Number of bins: 14-bit resolution
+    resistance=1500 * ohm,                   # Detector resistance: 50 ohms
     dark_current=0.1 * milliampere,          # Dark current: 0.1 milliamps
-    temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
+    temperature=100 * kelvin                 # Operating temperature: 300 Kelvin
 )
 
 # Step 6: Simulate Flow Cytometry Experiment

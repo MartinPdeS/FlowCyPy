@@ -12,8 +12,7 @@ from FlowCyPy.distribution import Base as BaseDistribution
 from FlowCyPy.logger import ScattererLogger
 from FlowCyPy.particle_count import ParticleCount
 from enum import Enum
-
-config_dict = dict(arbitrary_types_allowed=True, extra='forbid')
+from pint_pandas import PintType, PintArray
 
 
 class CouplingModel(Enum):
@@ -62,17 +61,13 @@ class Scatterer(PropertiesReport):
 
         for population in self.populations:
             population.initialize(flow_cell=self.flow_cell)
-
-        from pint_pandas import PintType
+            population.dataframe.Size = population.dataframe.Size.pint.to(size_units)
 
         if len(self.populations) != 0:
-            for p in self.populations:
-                p.dataframe.Size = p.dataframe.Size.pint.to(size_units)
-
             self.dataframe = pd.concat(
-                [p.dataframe for p in self.populations],
+                [population.dataframe for population in self.populations],
                 axis=0,
-                keys=[p.name for p in self.populations],
+                keys=[population.name for population in self.populations],
             )
             self.dataframe.index.names = ['Population', 'Index']
 
@@ -94,20 +89,29 @@ class Scatterer(PropertiesReport):
 
         self.n_events = len(self.dataframe)
 
-    def linearize_time(self, randomize_populations: bool = False) -> None:
-        import pint_pandas
+    def distribute_time_linearly(self, sequential_population: bool = False) -> None:
+        """
+        Distributes particle arrival times linearly across the total runtime of the flow cell.
 
+        Optionally randomizes the order of times for all populations to simulate non-sequential particle arrivals.
+
+        Parameters
+        ----------
+        sequential_population : bool, optional
+            If `True`, organize the order of arrival times across all populations (default is `False`).
+
+        """
+        # Generate linearly spaced time values across the flow cell runtime
         linear_spacing = numpy.linspace(0, self.flow_cell.run_time, self.n_events)
 
-        if randomize_populations:
-            linear_spacing = numpy.random.shuffle(linear_spacing)
+        # Optionally randomize the linear spacing
+        if not sequential_population:
+            numpy.random.shuffle(linear_spacing)
 
-        self.dataframe.Time = pint_pandas.PintArray(linear_spacing, dtype=self.dataframe.Time.pint.units)
+        # Assign the linearly spaced or randomized times to the scatterer DataFrame
+        self.dataframe.Time = PintArray(linear_spacing, dtype=self.dataframe.Time.pint.units)
 
-        for population in self.populations:
-            population.dataframe = self.dataframe.xs(population.name)
-
-    def plot(self, ax: Optional[plt.Axes] = None, show: bool = True, alpha: float = 0.8, bandwidth_adjust: float = 1, log_plot: bool = False) -> None:
+    def plot(self, ax: Optional[plt.Axes] = None, show: bool = True, alpha: float = 0.8, bandwidth_adjust: float = 1, log_plot: bool = False, color_palette: Optional[Union[str, dict]] = None) -> None:
         """
         Visualizes the joint distribution of scatterer sizes and refractive indices using a Seaborn jointplot.
 
@@ -123,6 +127,9 @@ class Scatterer(PropertiesReport):
             Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Higher values produce smoother density estimates. Default is 1.
         log_plot : bool, optional
             If `True`, applies a logarithmic scale to both axes of the joint plot and their marginal distributions. Default is `False`.
+        color_palette : str or dict, optional
+            The color palette to use for the hue in the scatterplot. Can be a seaborn palette name
+            (e.g., 'viridis', 'coolwarm') or a dictionary mapping hue levels to specific colors. Default is None.
 
         Returns
         -------
@@ -134,11 +141,6 @@ class Scatterer(PropertiesReport):
         This method resets the index of the internal dataframe and extracts units from the 'Size' column.
         The plot uses the specified matplotlib style (`mps`) for consistent styling.
 
-        Examples
-        --------
-        >>> plot(show=False, alpha=0.5, bandwidth_adjust=0.8, log_plot=True)
-        This will generate a joint plot with 50% opacity, lower KDE bandwidth, and logarithmic scales on both axes.
-
         """
         df_reset = self.dataframe.reset_index()
 
@@ -148,14 +150,9 @@ class Scatterer(PropertiesReport):
         x_unit = df_reset['Size'].pint.units
 
         with plt.style.context(mps):
-            g = sns.jointplot(
-                data=df_reset,
-                x='Size',
-                y='RefractiveIndex',
-                hue='Population',
-                kind='scatter',
-                alpha=alpha,
-                marginal_kws=dict(bw_adjust=bandwidth_adjust)
+            g = sns.jointplot(data=df_reset, x='Size', y='RefractiveIndex',
+                hue='Population', palette=color_palette, kind='scatter',
+                alpha=alpha, marginal_kws=dict(bw_adjust=bandwidth_adjust)
             )
 
         g.ax_joint.set_xlabel(f"Size [{x_unit}]")
@@ -314,15 +311,13 @@ class Scatterer(PropertiesReport):
         """
         vlines_color_palette = plt.get_cmap('Set2')
 
-        for index, population in enumerate(self.populations):
+        for index, (population_name, group) in enumerate(self.dataframe.groupby(level=0)):
             vlines_color = vlines_color_palette(index % 8)
-            x = population.dataframe['Time']
+            x = group['Time']
             units = x.max().to_compact().units
-
             x.pint.values = x.pint.to(units)
-
             for ax in axes:
-                ax.vlines(x=x, ymin=0, ymax=1, transform=ax.get_xaxis_transform(), color=vlines_color, lw=2.5, linestyle='--', label=f"{population.name}")
+                ax.vlines(x=x, ymin=0, ymax=1, transform=ax.get_xaxis_transform(), color=vlines_color, lw=2.5, linestyle='--', label=population_name)
 
             ax.set_xlabel(f'Time [{units}]')
 

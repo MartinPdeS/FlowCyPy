@@ -1,6 +1,8 @@
+from typing import Optional, Union
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 from MPSPlots.styles import mps
 from FlowCyPy.units import second
 import warnings
@@ -74,7 +76,6 @@ class EventCorrelator:
 
         self.dataframe.index.names = ['Detector', 'Event']
 
-        # Calculate and log additional statistics
         self._log_statistics()
 
     def _log_statistics(self) -> EventCorrelatorLogger:
@@ -91,7 +92,7 @@ class EventCorrelator:
 
         return logger
 
-    def get_coincidence(self, margin: second.dimensionality) -> None:
+    def get_coincidence(self, margin: second.dimensionality) -> pd.DataFrame:
         """
         Identifies coincident events between two detectors within a specified time margin.
 
@@ -143,6 +144,10 @@ class EventCorrelator:
 
         self.coincidence = combined_coincidences
 
+        self.coincidence['Label'] = 0
+
+        return self.coincidence
+
     def display_features(self) -> None:
         """
         Displays extracted peak features for all datasets in a tabular format.
@@ -151,29 +156,7 @@ class EventCorrelator:
             print(f"\nFeatures for Dataset {i + 1}:")
             dataset.print_properties()  # Reuse the print_properties method from DataSet
 
-    # Function to map scatterers to time points
-    def map_scatterers_to_time(time_points, scatterers, margin):
-        results = []  # List to hold the results for each time point
-
-        for t in time_points:
-            scatterer_names = []  # To store scatterer names that match
-            for i, scatterer_times in enumerate(scatterers):
-                # Check if any scatterer time is within the margin
-                if np.any(np.abs(scatterer_times - t) <= margin):
-                    scatterer_names.append(f"Scatterer_{i+1}")
-
-            # Concatenate scatterer names with a dash
-            scatterers_str = "-".join(scatterer_names)
-
-            # Add results for this time point
-            results.append({
-                "Time Point": t,
-                "Scatterers": scatterers_str
-            })
-
-        return pd.DataFrame(results)
-
-    def plot(self, show: bool = True, log_plot: bool = True, x_limits: tuple = None, y_limits: tuple = None, bandwidth_adjust: float = 1) -> None:
+    def plot(self, show: bool = True, log_plot: bool = True, x_limits: tuple = None, y_limits: tuple = None, bandwidth_adjust: float = 1, color_palette: Optional[Union[str, dict]] = None) -> None:
         """
         Plots a 2D density plot of the scattering intensities from the two detectors,
         along with individual peak heights.
@@ -184,13 +167,18 @@ class EventCorrelator:
             Whether to display the plot immediately, by default True.
         log_plot : bool, optional
             Whether to use logarithmic scaling for the plot axes, by default True.
+        x_limits : tuple, optional
+            The x-axis limits (min, max), by default None.
+        y_limits : tuple, optional
+            The y-axis limits (min, max), by default None.
         bandwidth_adjust : float, optional
-            Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Higher values produce smoother density estimates. Default is 1.
+            Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Default is 1.
+        color_palette : str or dict, optional
+            The color palette to use for the hue in the scatterplot. Can be a seaborn palette name
+            (e.g., 'viridis', 'coolwarm') or a dictionary mapping hue levels to specific colors. Default is None.
         """
         # Reset the index if necessary (to handle MultiIndex)
         df_reset = self.coincidence.reset_index()
-        # df_reset.loc[:10, 'scatterer'] = 1
-        # df_reset.loc[10:, 'scatterer'] = 2
 
         x_data = df_reset[(self.cytometer.detectors[0].name, 'Heights')]
         y_data = df_reset[(self.cytometer.detectors[1].name, 'Heights')]
@@ -202,27 +190,14 @@ class EventCorrelator:
         x_data = x_data.pint.to(x_units)
         y_data = y_data.pint.to(y_units)
 
-        bandwidth_adjust = 1
-        import seaborn as sns
         with plt.style.context(mps):
 
-            g = sns.jointplot(
-                data=df_reset,
-                x=x_data,
-                y=y_data,
-                kind='kde',
-                alpha=0.8,
-                fill=True,
+            g = sns.jointplot(data=df_reset, x=x_data, y=y_data,
+                kind='kde', alpha=0.8, fill=True,
                 joint_kws={'alpha': 0.7, 'bw_adjust': bandwidth_adjust}
             )
-            sns.scatterplot(
-                data=df_reset,
-                x=x_data,
-                y=y_data,
-                # hue='scatterer',
-                ax=g.ax_joint,
-                alpha=0.6,
-                zorder=1
+            sns.scatterplot(data=df_reset, x=x_data, y=y_data,
+                hue='Label', palette=color_palette, ax=g.ax_joint, alpha=0.6, zorder=1
             )
 
             # Set the x and y labels with units
