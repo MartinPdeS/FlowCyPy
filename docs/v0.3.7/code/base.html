@@ -831,6 +831,21 @@ indices based on a list of provided distributions (e.g., Normal, LogNormal, Unif
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.Scatterer.distribute_time_linearly">
+<span class="sig-name descname"><span class="pre">distribute_time_linearly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequential_population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer.distribute_time_linearly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer.distribute_time_linearly" title="Link to this definition">#</a></dt>
+<dd><p>Distributes particle arrival times linearly across the total runtime of the flow cell.</p>
+<p>Optionally randomizes the order of times for all populations to simulate non-sequential particle arrivals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sequential_population</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, organize the order of arrival times across all populations (default is <cite>False</cite>).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.Scatterer.initialize">
 <span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'micrometer'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer.initialize" title="Link to this definition">#</a></dt>
 <dd><p>Initializes particle size, refractive index, and medium refractive index distributions.</p>
@@ -848,21 +863,8 @@ indices based on a list of provided distributions (e.g., Normal, LogNormal, Unif
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.Scatterer.linearize_time">
-<span class="sig-name descname"><span class="pre">linearize_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">randomize_populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer.linearize_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer.linearize_time" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>randomize_populations</strong> (<em>bool</em>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.Scatterer.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth_adjust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer.plot" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth_adjust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_palette</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer.html#Scatterer.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.Scatterer.plot" title="Link to this definition">#</a></dt>
 <dd><p>Visualizes the joint distribution of scatterer sizes and refractive indices using a Seaborn jointplot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -872,6 +874,8 @@ indices based on a list of provided distributions (e.g., Normal, LogNormal, Unif
 <li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – Transparency level for the scatter plot points, ranging from 0 (fully transparent) to 1 (fully opaque). Default is 0.8.</p></li>
 <li><p><strong>bandwidth_adjust</strong> (<em>float</em><em>, </em><em>optional</em>) – Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Higher values produce smoother density estimates. Default is 1.</p></li>
 <li><p><strong>log_plot</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, applies a logarithmic scale to both axes of the joint plot and their marginal distributions. Default is <cite>False</cite>.</p></li>
+<li><p><strong>color_palette</strong> (<em>str</em><em> or </em><em>dict</em><em>, </em><em>optional</em>) – The color palette to use for the hue in the scatterplot. Can be a seaborn palette name
+(e.g., ‘viridis’, ‘coolwarm’) or a dictionary mapping hue levels to specific colors. Default is None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -884,11 +888,6 @@ indices based on a list of provided distributions (e.g., Normal, LogNormal, Unif
 <p class="rubric">Notes</p>
 <p>This method resets the index of the internal dataframe and extracts units from the ‘Size’ column.
 The plot uses the specified matplotlib style (<cite>mps</cite>) for consistent styling.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">bandwidth_adjust</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">log_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">This will generate a joint plot with 50% opacity, lower KDE bandwidth, and logarithmic scales on both axes.</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1280,19 +1279,14 @@ and detected events.</p>
 <dd class="field-odd"><p><strong>margin</strong> (<em>pint.Quantity</em>) – The time margin within which peaks are considered coincident, in compatible time units.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
+<dd class="field-even"><p><em>DataFrame</em></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.event_correlator.EventCorrelator.map_scatterers_to_time">
-<span class="sig-name descname"><span class="pre">map_scatterers_to_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scatterers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/event_correlator.html#EventCorrelator.map_scatterers_to_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.event_correlator.EventCorrelator.map_scatterers_to_time" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.event_correlator.EventCorrelator.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_limits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_limits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth_adjust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/event_correlator.html#EventCorrelator.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.event_correlator.EventCorrelator.plot" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_limits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_limits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth_adjust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_palette</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/event_correlator.html#EventCorrelator.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.event_correlator.EventCorrelator.plot" title="Link to this definition">#</a></dt>
 <dd><p>Plots a 2D density plot of the scattering intensities from the two detectors,
 along with individual peak heights.</p>
 <dl class="field-list simple">
@@ -1300,9 +1294,11 @@ along with individual peak heights.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display the plot immediately, by default True.</p></li>
 <li><p><strong>log_plot</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use logarithmic scaling for the plot axes, by default True.</p></li>
-<li><p><strong>bandwidth_adjust</strong> (<em>float</em><em>, </em><em>optional</em>) – Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Higher values produce smoother density estimates. Default is 1.</p></li>
-<li><p><strong>x_limits</strong> (<em>tuple</em>)</p></li>
-<li><p><strong>y_limits</strong> (<em>tuple</em>)</p></li>
+<li><p><strong>x_limits</strong> (<em>tuple</em><em>, </em><em>optional</em>) – The x-axis limits (min, max), by default None.</p></li>
+<li><p><strong>y_limits</strong> (<em>tuple</em><em>, </em><em>optional</em>) – The y-axis limits (min, max), by default None.</p></li>
+<li><p><strong>bandwidth_adjust</strong> (<em>float</em><em>, </em><em>optional</em>) – Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Default is 1.</p></li>
+<li><p><strong>color_palette</strong> (<em>str</em><em> or </em><em>dict</em><em>, </em><em>optional</em>) – The color palette to use for the hue in the scatterplot. Can be a seaborn palette name
+(e.g., ‘viridis’, ‘coolwarm’) or a dictionary mapping hue levels to specific colors. Default is None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1403,8 +1399,8 @@ in a pandas DataFrame for further analysis.</p>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.add_to_ax"><code class="docutils literal notranslate"><span class="pre">Scatterer.add_to_ax()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.concentrations"><code class="docutils literal notranslate"><span class="pre">Scatterer.concentrations</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.dilute"><code class="docutils literal notranslate"><span class="pre">Scatterer.dilute()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.distribute_time_linearly"><code class="docutils literal notranslate"><span class="pre">Scatterer.distribute_time_linearly()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.initialize"><code class="docutils literal notranslate"><span class="pre">Scatterer.initialize()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.linearize_time"><code class="docutils literal notranslate"><span class="pre">Scatterer.linearize_time()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.plot"><code class="docutils literal notranslate"><span class="pre">Scatterer.plot()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.print_properties"><code class="docutils literal notranslate"><span class="pre">Scatterer.print_properties()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.Scatterer.remove_population"><code class="docutils literal notranslate"><span class="pre">Scatterer.remove_population()</span></code></a></li>
@@ -1456,7 +1452,6 @@ in a pandas DataFrame for further analysis.</p>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.event_correlator.EventCorrelator.display_features"><code class="docutils literal notranslate"><span class="pre">EventCorrelator.display_features()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.event_correlator.EventCorrelator.generate_report"><code class="docutils literal notranslate"><span class="pre">EventCorrelator.generate_report()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.event_correlator.EventCorrelator.get_coincidence"><code class="docutils literal notranslate"><span class="pre">EventCorrelator.get_coincidence()</span></code></a></li>
-<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.event_correlator.EventCorrelator.map_scatterers_to_time"><code class="docutils literal notranslate"><span class="pre">EventCorrelator.map_scatterers_to_time()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.event_correlator.EventCorrelator.plot"><code class="docutils literal notranslate"><span class="pre">EventCorrelator.plot()</span></code></a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.event_correlator.EventCorrelator.run_analysis"><code class="docutils literal notranslate"><span class="pre">EventCorrelator.run_analysis()</span></code></a></li>
 </ul>

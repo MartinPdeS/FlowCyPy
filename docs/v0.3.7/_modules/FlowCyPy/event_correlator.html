@@ -444,9 +444,11 @@
                 <article class="bd-article">
                   
   <h1>Source code for FlowCyPy.event_correlator</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 <span class="kn">from</span> <span class="nn">MPSPlots.styles</span> <span class="kn">import</span> <span class="n">mps</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">second</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
@@ -524,7 +526,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Detector&#39;</span><span class="p">,</span> <span class="s1">&#39;Event&#39;</span><span class="p">]</span>
 
-        <span class="c1"># Calculate and log additional statistics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_statistics</span><span class="p">()</span></div>
 
 
@@ -544,7 +545,7 @@
 
 <div class="viewcode-block" id="EventCorrelator.get_coincidence">
 <a class="viewcode-back" href="../../code/base.html#FlowCyPy.event_correlator.EventCorrelator.get_coincidence">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_coincidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">margin</span><span class="p">:</span> <span class="n">second</span><span class="o">.</span><span class="n">dimensionality</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">get_coincidence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">margin</span><span class="p">:</span> <span class="n">second</span><span class="o">.</span><span class="n">dimensionality</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Identifies coincident events between two detectors within a specified time margin.</span>
 
@@ -594,7 +595,11 @@
         <span class="c1"># Assign proper MultiIndex column names</span>
         <span class="n">combined_coincidences</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">([[</span><span class="n">d</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span><span class="o">.</span><span class="n">detectors</span><span class="p">],</span> <span class="n">d0</span><span class="o">.</span><span class="n">columns</span><span class="p">])</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">coincidence</span> <span class="o">=</span> <span class="n">combined_coincidences</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coincidence</span> <span class="o">=</span> <span class="n">combined_coincidences</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">coincidence</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coincidence</span></div>
 
 
 <div class="viewcode-block" id="EventCorrelator.display_features">
@@ -608,34 +613,9 @@
             <span class="n">dataset</span><span class="o">.</span><span class="n">print_properties</span><span class="p">()</span>  <span class="c1"># Reuse the print_properties method from DataSet</span></div>
 
 
-    <span class="c1"># Function to map scatterers to time points</span>
-<div class="viewcode-block" id="EventCorrelator.map_scatterers_to_time">
-<a class="viewcode-back" href="../../code/base.html#FlowCyPy.event_correlator.EventCorrelator.map_scatterers_to_time">[docs]</a>
-    <span class="k">def</span> <span class="nf">map_scatterers_to_time</span><span class="p">(</span><span class="n">time_points</span><span class="p">,</span> <span class="n">scatterers</span><span class="p">,</span> <span class="n">margin</span><span class="p">):</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List to hold the results for each time point</span>
-
-        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">time_points</span><span class="p">:</span>
-            <span class="n">scatterer_names</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># To store scatterer names that match</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">scatterer_times</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">scatterers</span><span class="p">):</span>
-                <span class="c1"># Check if any scatterer time is within the margin</span>
-                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">scatterer_times</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">margin</span><span class="p">):</span>
-                    <span class="n">scatterer_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scatterer_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-            <span class="c1"># Concatenate scatterer names with a dash</span>
-            <span class="n">scatterers_str</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">scatterer_names</span><span class="p">)</span>
-
-            <span class="c1"># Add results for this time point</span>
-            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-                <span class="s2">&quot;Time Point&quot;</span><span class="p">:</span> <span class="n">t</span><span class="p">,</span>
-                <span class="s2">&quot;Scatterers&quot;</span><span class="p">:</span> <span class="n">scatterers_str</span>
-            <span class="p">})</span>
-
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">)</span></div>
-
-
 <div class="viewcode-block" id="EventCorrelator.plot">
 <a class="viewcode-back" href="../../code/base.html#FlowCyPy.event_correlator.EventCorrelator.plot">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">log_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">x_limits</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">y_limits</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">bandwidth_adjust</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">log_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">x_limits</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">y_limits</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">bandwidth_adjust</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">color_palette</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plots a 2D density plot of the scattering intensities from the two detectors,</span>
 <span class="sd">        along with individual peak heights.</span>
@@ -646,13 +626,18 @@
 <span class="sd">            Whether to display the plot immediately, by default True.</span>
 <span class="sd">        log_plot : bool, optional</span>
 <span class="sd">            Whether to use logarithmic scaling for the plot axes, by default True.</span>
+<span class="sd">        x_limits : tuple, optional</span>
+<span class="sd">            The x-axis limits (min, max), by default None.</span>
+<span class="sd">        y_limits : tuple, optional</span>
+<span class="sd">            The y-axis limits (min, max), by default None.</span>
 <span class="sd">        bandwidth_adjust : float, optional</span>
-<span class="sd">            Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Higher values produce smoother density estimates. Default is 1.</span>
+<span class="sd">            Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Default is 1.</span>
+<span class="sd">        color_palette : str or dict, optional</span>
+<span class="sd">            The color palette to use for the hue in the scatterplot. Can be a seaborn palette name</span>
+<span class="sd">            (e.g., &#39;viridis&#39;, &#39;coolwarm&#39;) or a dictionary mapping hue levels to specific colors. Default is None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Reset the index if necessary (to handle MultiIndex)</span>
         <span class="n">df_reset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coincidence</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-        <span class="c1"># df_reset.loc[:10, &#39;scatterer&#39;] = 1</span>
-        <span class="c1"># df_reset.loc[10:, &#39;scatterer&#39;] = 2</span>
 
         <span class="n">x_data</span> <span class="o">=</span> <span class="n">df_reset</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span><span class="o">.</span><span class="n">detectors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Heights&#39;</span><span class="p">)]</span>
         <span class="n">y_data</span> <span class="o">=</span> <span class="n">df_reset</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span><span class="o">.</span><span class="n">detectors</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Heights&#39;</span><span class="p">)]</span>
@@ -664,27 +649,14 @@
         <span class="n">x_data</span> <span class="o">=</span> <span class="n">x_data</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">x_units</span><span class="p">)</span>
         <span class="n">y_data</span> <span class="o">=</span> <span class="n">y_data</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">y_units</span><span class="p">)</span>
 
-        <span class="n">bandwidth_adjust</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
         <span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">mps</span><span class="p">):</span>
 
-            <span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span>
-                <span class="n">data</span><span class="o">=</span><span class="n">df_reset</span><span class="p">,</span>
-                <span class="n">x</span><span class="o">=</span><span class="n">x_data</span><span class="p">,</span>
-                <span class="n">y</span><span class="o">=</span><span class="n">y_data</span><span class="p">,</span>
-                <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;kde&#39;</span><span class="p">,</span>
-                <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
-                <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_reset</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_data</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_data</span><span class="p">,</span>
+                <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;kde&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">joint_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s1">&#39;bw_adjust&#39;</span><span class="p">:</span> <span class="n">bandwidth_adjust</span><span class="p">}</span>
             <span class="p">)</span>
-            <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span>
-                <span class="n">data</span><span class="o">=</span><span class="n">df_reset</span><span class="p">,</span>
-                <span class="n">x</span><span class="o">=</span><span class="n">x_data</span><span class="p">,</span>
-                <span class="n">y</span><span class="o">=</span><span class="n">y_data</span><span class="p">,</span>
-                <span class="c1"># hue=&#39;scatterer&#39;,</span>
-                <span class="n">ax</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">ax_joint</span><span class="p">,</span>
-                <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
-                <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span>
+            <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_reset</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_data</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_data</span><span class="p">,</span>
+                <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;Label&#39;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">color_palette</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">ax_joint</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">1</span>
             <span class="p">)</span>
 
             <span class="c1"># Set the x and y labels with units</span>
