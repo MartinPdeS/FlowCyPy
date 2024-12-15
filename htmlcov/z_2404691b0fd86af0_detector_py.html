@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for FlowCyPy/detector.py: 79%</title>
+    <title>Coverage for FlowCyPy/detector.py: 78%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
     <link rel="stylesheet" href="style_cb_8e611ae1.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>FlowCyPy/detector.py</b>:
-            <span class="pc_cov">79%</span>
+            <span class="pc_cov">78%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -56,8 +56,8 @@
         </aside>
         <h2>
             <span class="text">146 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">125<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">21<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">123<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">23<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
             <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">7<span class="text"> partial</span></button>
         </h2>
@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_a8dd2029198ba351_base_class_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2024-12-10 16:25 +0000
+            created at 2024-12-15 15:42 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -573,9 +573,9 @@
     <p class="pln"><span class="n"><a id="t489" href="#t489">489</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t490" href="#t490">490</a></span><span class="t"><span class="str">        Notes</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t491" href="#t491">491</a></span><span class="t"><span class="str">        -----</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t492" href="#t492">492</a></span><span class="t"><span class="str">        - The `algorithm` parameter should be a fresh instance of a peak detection algorithm.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t493" href="#t493">493</a></span><span class="t"><span class="str">        - The method will analyze the detector's signal immediately upon setting the algorithm.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t494" href="#t494">494</a></span><span class="t"><span class="str">        - Peak detection results are stored in the algorithm's `peak_properties` attribute.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t492" href="#t492">492</a></span><span class="t"><span class="str">            - The `algorithm` parameter should be a fresh instance of a peak detection algorithm.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t493" href="#t493">493</a></span><span class="t"><span class="str">            - The method will analyze the detector's signal immediately upon setting the algorithm.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t494" href="#t494">494</a></span><span class="t"><span class="str">            - Peak detection results are stored in the algorithm's `peak_properties` attribute.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t495" href="#t495">495</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t496" href="#t496">496</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t497" href="#t497">497</a></span><span class="t">        <span class="com"># Ensure the algorithm is an instance of BasePeakLocator</span>&nbsp;</span><span class="r"></span></p>
@@ -601,7 +601,7 @@
     <p class="pln"><span class="n"><a id="t517" href="#t517">517</a></span><span class="t"><span class="str">        This method calls the parent class method to handle the actual property printing logic.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t518" href="#t518">518</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t519" href="#t519">519</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t520" href="#t520">520</a></span><span class="t">        <span class="nam">_dict</span> <span class="op">=</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t520" href="#t520">520</a></span><span class="t">        <span class="nam">_dict</span> <span class="op">=</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t521" href="#t521">521</a></span><span class="t">            <span class="str">'Sampling frequency'</span><span class="op">:</span> <span class="nam">self</span><span class="op">.</span><span class="nam">sampling_freq</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t522" href="#t522">522</a></span><span class="t">            <span class="str">'Phi angle'</span><span class="op">:</span> <span class="nam">self</span><span class="op">.</span><span class="nam">phi_angle</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t523" href="#t523">523</a></span><span class="t">            <span class="str">'Gamma angle'</span><span class="op">:</span> <span class="nam">self</span><span class="op">.</span><span class="nam">gamma_angle</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -614,7 +614,7 @@
     <p class="pln"><span class="n"><a id="t530" href="#t530">530</a></span><span class="t">            <span class="str">'N Bins'</span><span class="op">:</span> <span class="nam">self</span><span class="op">.</span><span class="nam">n_bins</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t531" href="#t531">531</a></span><span class="t">        <span class="op">}</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t532" href="#t532">532</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t533" href="#t533">533</a></span><span class="t">        <span class="nam">super</span><span class="op">(</span><span class="nam">Detector</span><span class="op">,</span> <span class="nam">self</span><span class="op">)</span><span class="op">.</span><span class="nam">print_properties</span><span class="op">(</span><span class="op">**</span><span class="nam">_dict</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t533" href="#t533">533</a></span><span class="t">        <span class="nam">super</span><span class="op">(</span><span class="nam">Detector</span><span class="op">,</span> <span class="nam">self</span><span class="op">)</span><span class="op">.</span><span class="nam">print_properties</span><span class="op">(</span><span class="op">**</span><span class="nam">_dict</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -624,7 +624,7 @@
             <a class="nav" href="z_a8dd2029198ba351_base_class_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2024-12-10 16:25 +0000
+            created at 2024-12-15 15:42 +0000
         </p>
     </div>
 </footer>
