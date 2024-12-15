@@ -144,7 +144,7 @@ class EventCorrelator:
 
         self.coincidence = combined_coincidences
 
-        self.coincidence['Label'] = 0
+        self.coincidence['Label'] = None
 
         return self.coincidence
 
