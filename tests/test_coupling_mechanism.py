@@ -6,7 +6,6 @@ from FlowCyPy.coupling_mechanism.rayleigh import compute_detected_signal
 from FlowCyPy.units import micrometer, refractive_index_unit
 from FlowCyPy.population import Population
 from FlowCyPy.source import GaussianBeam
-from FlowCyPy.particle_count import ParticleCount
 from FlowCyPy.units import (
     volt, watt, meter, hertz, particle, RIU, degree, ampere,
     nanometer, milliwatt, second, millisecond, AU, milliliter
@@ -68,8 +67,7 @@ def detector():
 @pytest.fixture
 def scatterer(normal_population, default_flow_cell):
     scatterer = Scatterer(medium_refractive_index=1.33 * RIU)
-    particle_count = ParticleCount(value=1e+10 * particle / milliliter)
-    scatterer.add_population(normal_population, particle_count=particle_count)
+    scatterer.add_population(normal_population, particle_count=1e+10 * particle / milliliter)
     scatterer.initialize(flow_cell=default_flow_cell)
     return scatterer
 
