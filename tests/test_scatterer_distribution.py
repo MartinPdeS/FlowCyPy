@@ -6,15 +6,12 @@ from FlowCyPy.scatterer import Scatterer
 from FlowCyPy import distribution as dist
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Population
-from FlowCyPy.particle_count import ParticleCount
 from FlowCyPy.units import (
     micrometer, meter, refractive_index_unit, nanometer, milliliter, particle, millisecond, second
 )
 
 
-CONCENTRATION = ParticleCount(
-    value=3e+5 * particle / milliliter
-)
+CONCENTRATION = 3e+5 * particle / milliliter
 
 
 # Fixtures to set up a default Flow and Distributions

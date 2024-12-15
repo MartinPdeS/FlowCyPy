@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from unittest.mock import patch
 from FlowCyPy import distribution
 from FlowCyPy.population import Population
-from FlowCyPy.particle_count import ParticleCount
 
 from FlowCyPy.units import (
     RIU,
@@ -88,8 +87,7 @@ def default_population(default_size_distribution, default_ri_distribution):
 @pytest.fixture
 def default_scatterer(flow_cell, default_population):
     scatterer = Scatterer()
-    particle_count = ParticleCount(value=1.8e+5 * particle / milliliter)
-    scatterer.add_population(default_population, particle_count=particle_count)
+    scatterer.add_population(default_population, particle_count=1.8e+5 * particle / milliliter)
     scatterer.initialize(flow_cell=flow_cell)
     return scatterer
 
