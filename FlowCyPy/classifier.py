@@ -1,4 +1,7 @@
 from sklearn.cluster import KMeans
+from sklearn.cluster import DBSCAN
+import pandas as pd
+from typing import List, Dict, Tuple
 
 
 class BaseClassifier:
@@ -81,9 +84,6 @@ class KmeansClassifier(BaseClassifier):
         kmeans = KMeans(n_clusters=number_of_cluster, random_state=random_state)
         self.dataframe['Label'] = kmeans.fit_predict(X)
 
-from sklearn.cluster import DBSCAN
-import numpy as np
-
 class DBScanClassifier(BaseClassifier):
     def __init__(self, dataframe: object) -> None:
         """
@@ -125,3 +125,72 @@ class DBScanClassifier(BaseClassifier):
         # Run DBSCAN
         dbscan = DBSCAN(eps=eps, min_samples=min_samples)
         self.dataframe['Label'] = dbscan.fit_predict(X)
+
+
+class RangeClassifier:
+    """
+    A classifier for assigning population labels based on defined ranges.
+
+    Parameters
+    ----------
+    dataframe : pd.DataFrame
+        The input dataframe with features to classify.
+    feature : str
+        The column name of the feature to classify.
+
+    Attributes
+    ----------
+    dataframe : pd.DataFrame
+        The dataframe with an added 'Label' column.
+    ranges : List[Tuple[float, float, str]]
+        The list of ranges and their associated labels.
+    """
+
+    def __init__(self, dataframe: pd.DataFrame) -> None:
+        """
+        Initialize the classifier.
+
+        Parameters
+        ----------
+        dataframe : pd.DataFrame
+            The input dataframe with features to classify.
+        feature : str
+            The column name of the feature to classify.
+        """
+        self.dataframe = dataframe
+        self.ranges = []  # To store the ranges and their labels
+
+    def run(self, ranges: Dict[str, Tuple[float, float]]) -> None:
+        """
+        Classify the dataframe by assigning population labels based on specified ranges applied to the index.
+
+        Parameters
+        ----------
+        ranges : dict
+            A dictionary where keys are population names (labels) and values are tuples
+            specifying the (lower, upper) bounds of the range for that population.
+
+        Example
+        -------
+        >>> ranges = {
+        >>>     'Population 0': (0, 100),
+        >>>     'Population 1': (100, 150),
+        >>>     'Population 2': (150, 200)
+        >>> }
+        >>> classifier.run(ranges)
+        """
+        # Create conditions and corresponding labels
+        conditions = []
+        labels = []
+        for label, (lower, upper) in ranges.items():
+            conditions.append((self.dataframe.index >= lower) & (self.dataframe.index < upper))
+            labels.append(label)
+
+        # Use np.select to efficiently apply conditions
+        self.dataframe['Label'] = pd.Series(
+            pd.cut(self.dataframe.index,
+                   bins=[float('-inf')] + [upper for _, (_, upper) in ranges.items()],
+                   labels=list(ranges.keys()),
+                   include_lowest=True),
+            index=self.dataframe.index)
+
