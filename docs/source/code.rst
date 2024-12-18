@@ -1,5 +1,5 @@
-Code Documentation
-==================
+API reference
+=============
 
 This document provides the API documentation for the Flow Cytometer simulation package, which models
 the flow of particles through a flow cytometer and generates particle arrival times based on a
