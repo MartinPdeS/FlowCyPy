@@ -266,7 +266,7 @@ class Detector(PropertiesReport):
 
         return dark_voltage_noise
 
-    def _add_photon_shot_noise_to_raw_signal(self, optical_power: Quantity) -> None:
+    def _add_optical_power_to_raw_signal(self, optical_power: Quantity) -> None:
         r"""
         Simulates photon shot noise based on the given optical power and detector bandwidth, and returns
         the corresponding voltage noise due to photon shot noise.
@@ -313,9 +313,6 @@ class Detector(PropertiesReport):
             where:
                 - \( R_{\text{load}} \) is the load resistance of the detector (ohms).
         """
-        if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
-            return
-
         # Step 1: Compute the photocurrent for all time points at once using vectorization
         I_photon = self.responsitivity * optical_power
 
@@ -328,9 +325,12 @@ class Detector(PropertiesReport):
         V_shot = I_shot * self.resistance
 
         # Step 4: Generate Gaussian noise for each time point with standard deviation V_shot
-        noise_signal = np.random.normal(0, V_shot.to(volt).magnitude) * volt
+        noise_signal = np.random.normal(0, V_shot.to(volt).magnitude, len(self.dataframe['RawSignal'])) * volt
 
-        self.dataframe['RawSignal'] += noise_signal
+        self.dataframe['RawSignal'] += optical_power * self.responsitivity * self.resistance
+
+        if NoiseSetting.include_shot_noise and NoiseSetting.include_noises:
+            self.dataframe['RawSignal'] += noise_signal
 
         return noise_signal
 
@@ -351,6 +351,7 @@ class Detector(PropertiesReport):
             - \( P_{\text{opt}} \) is the optical power,
             - \( R_{\text{ph}} \) is the responsivity in amperes per watt.
         """
+        self.run_time = run_time
         time_points = int(self.sampling_freq * run_time)
         time = np.linspace(0, run_time, time_points)
 
@@ -367,6 +368,7 @@ class Detector(PropertiesReport):
         Processes and captures the final signal by applying noise, baseline shifts, and saturation.
         """
         self.dataframe['Signal'] = self.dataframe['RawSignal']
+
         self._apply_baseline_and_noise()
         self._apply_saturation()
         self._discretize_signal()
@@ -414,57 +416,138 @@ class Detector(PropertiesReport):
             self.dataframe.Signal = pint_pandas.PintArray(bins[digitized], volt)
 
     @plot_helper
-    def plot(self, color: str = 'C0', ax: plt.Axes = None, time_unit: str | Quantity = None, signal_unit: str | Quantity = None, add_peak_locator: bool = False) -> None:
+    def plot(
+        self,
+        color: str = None,
+        ax: Optional[plt.Axes] = None,
+        time_unit: Optional[Union[str, Quantity]] = None,
+        signal_unit: Optional[Union[str, Quantity]] = None,
+        add_captured: bool = True,
+        add_peak_locator: bool = False,
+        add_raw: bool = False
+    ) -> tuple[Quantity, Quantity]:
         """
-        Visualizes the processed signal as a function of time.
+        Visualizes the signal and optional components (peaks, raw signal) over time.
 
-        This method generates a plot of the processed signal data over time,
-        allowing customization of appearance and axis scaling.
+        This method generates a customizable plot of the processed signal as a function of time.
+        Additional components like raw signals and detected peaks can also be overlaid.
 
         Parameters
         ----------
-        show : bool, optional
-            Whether to display the plot immediately. Default is True.
-        figure_size : tuple, optional
-            Size of the plot in inches as (width, height). Default is None, which uses the default Matplotlib settings.
         color : str, optional
-            Color of the signal line in the plot. Default is 'C0' (Matplotlib's default color cycle).
+            Color for the processed signal line. Default is 'C0' (default Matplotlib color cycle).
         ax : matplotlib.axes.Axes, optional
-            Pre-existing Matplotlib Axes to plot on. If None, a new figure and axes will be created.
+            An existing Matplotlib Axes object to plot on. If None, a new Axes will be created.
         time_unit : str or Quantity, optional
-            Unit to use for the time axis. If None, it defaults to the unit of the maximum time value in the data.
+            Desired unit for the time axis. If None, defaults to the most compact unit of the `Time` column.
         signal_unit : str or Quantity, optional
-            Unit to use for the signal axis. If None, it defaults to the unit of the maximum signal value in the data.
+            Desired unit for the signal axis. If None, defaults to the most compact unit of the `Signal` column.
+        add_captured : bool, optional
+            If True, overlays the captured signal data on the plot. Default is True.
+        add_peak_locator : bool, optional
+            If True, adds the detected peaks (if available) to the plot. Default is False.
+        add_raw : bool, optional
+            If True, overlays the raw signal data on the plot. Default is False.
 
         Returns
         -------
-        None
-            Displays the plot if `show` is True. The function also updates the data's time and signal columns to the specified units.
+        tuple[Quantity, Quantity]
+            A tuple containing the units used for the time and signal axes, respectively.
 
         Notes
         -----
-            - The method automatically converts the data's `Time` and `Signal` columns to the specified units,
-            ensuring consistency between the data and plot axes.
-            - If `show` is False, the plot will not be displayed but can be retrieved through the provided `ax`.
+        - The `Time` and `Signal` data are automatically converted to the specified units for consistency.
+        - If no `ax` is provided, a new figure and axis will be generated.
+        - Warnings are logged if peak locator data is unavailable when `add_peak_locator` is True.
         """
+        # Set default units if not provided
         signal_unit = signal_unit or self.dataframe.Signal.max().to_compact().units
         time_unit = time_unit or self.dataframe.Time.max().to_compact().units
 
-        y = self.dataframe['Signal'].pint.to(signal_unit)
-        x = self.dataframe['Time'].pint.to(time_unit)
+        # Plot captured signal
+        if add_captured:
+            self._add_captured_signal_to_ax(ax=ax, time_unit=time_unit, signal_unit=signal_unit, color=color)
 
-        ax.plot(x, y, color=color, label='Signal')
-
+        # Overlay peak locator positions, if requested
         if add_peak_locator:
-            if not hasattr(self, 'algorithm'):
-                logging.warning("The detector does not have a dedicated peak_locator algorithm, it thus cannot plot the peak positions.")
-            else:
-                self.algorithm._add_to_ax(ax=ax, signal_unit=signal_unit, time_unit=time_unit)
+            self._add_peak_locator_to_ax(ax=ax, time_unit=time_unit, signal_unit=signal_unit)
 
+        # Overlay raw signal, if requested
+        if add_raw:
+            self._add_raw_signal_to_ax(ax=ax, time_unit=time_unit, signal_unit=signal_unit)
+
+
+        # Customize labels
         ax.set_xlabel(f"Time [{time_unit:P}]")
         ax.set_ylabel(f"{self.name} [{signal_unit:P}]")
+        ax.legend()
 
         return time_unit, signal_unit
+
+    def _add_peak_locator_to_ax(self, ax: plt.Axes, time_unit: Quantity, signal_unit: Quantity) -> None:
+        """
+        Adds peak positions detected by the algorithm to the plot.
+
+        Parameters
+        ----------
+        ax : matplotlib.axes.Axes
+            The axis object to plot on.
+        time_unit : Quantity
+            Unit for the time axis.
+        signal_unit : Quantity
+            Unit for the signal axis.
+        """
+        if not hasattr(self, 'algorithm'):
+            logging.warning("The detector does not have a peak locator algorithm. Peaks cannot be plotted.")
+            return
+
+        self.algorithm._add_to_ax(ax=ax, signal_unit=signal_unit, time_unit=time_unit)
+
+    def _add_captured_signal_to_ax(self, ax: plt.Axes, time_unit: Quantity, signal_unit: Quantity, color: str = None) -> None:
+        """
+        Adds the processed (captured) signal to the plot.
+
+        Parameters
+        ----------
+        ax : matplotlib.axes.Axes
+            The axis object to plot on.
+        time_unit : Quantity
+            Unit for the time axis.
+        signal_unit : Quantity
+            Unit for the signal axis.
+        color : str
+            Color for the signal line.
+        """
+        if not hasattr(self.dataframe, 'Signal'):
+            logging.warning("The detector does not have a captured signal. Please run .capture_signal() method first.")
+            return
+
+        x = self.dataframe['Time'].pint.to(time_unit)
+        y = self.dataframe['Signal'].pint.to(signal_unit)
+        ax.plot(x, y, color=color, label='Processed Signal')
+
+    def _add_raw_signal_to_ax(self, ax: plt.Axes, time_unit: Quantity, signal_unit: Quantity, color: str = None) -> None:
+        """
+        Adds the raw signal to the plot.
+
+        Parameters
+        ----------
+        ax : matplotlib.axes.Axes
+            The axis object to plot on.
+        time_unit : Quantity
+            Unit for the time axis.
+        signal_unit : Quantity
+            Unit for the signal axis.
+        color : str
+            Color for the raw signal line.
+        """
+        if not hasattr(self.dataframe, 'RawSignal'):
+            logging.warning("The detector does not have a captured signal. Please run .init_raw_signal(run_time) method first.")
+            return
+
+        x = self.dataframe['Time'].pint.to(time_unit)
+        y = self.dataframe['RawSignal'].pint.to(signal_unit)
+        ax.plot(x, y, color=color, linestyle='--', label=f'{self.name}: Raw Signal')
 
     def set_peak_locator(self, algorithm: BasePeakLocator, compute_peak_area: bool = True) -> None:
         """

@@ -66,7 +66,7 @@ def test_shot_noise_generation(default_detector_shot_noise):
 
     test_optical_power = np.linspace(1e-3, 3e-3, len(default_detector_shot_noise.dataframe)) * watt
 
-    shot_noise = default_detector_shot_noise._add_photon_shot_noise_to_raw_signal(optical_power=test_optical_power)
+    shot_noise = default_detector_shot_noise._add_optical_power_to_raw_signal(optical_power=test_optical_power)
 
     # # Assert that the shot noise is generated and is not zero
     assert np.std(shot_noise) > 0 * volt, "Shot noise variance is zero, indicating no noise generated."

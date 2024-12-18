@@ -102,12 +102,8 @@ class FlowCytometer:
 
             total_power = np.sum(power_gaussians, axis=0) + self.background_power
 
-            detector._add_photon_shot_noise_to_raw_signal(optical_power=total_power)
-
             # Sum all the Gaussians and add them to the detector.raw_signal
-            signal_volt = total_power * detector.responsitivity * detector.resistance
-
-            detector.dataframe['RawSignal'] += signal_volt
+            detector._add_optical_power_to_raw_signal(optical_power=total_power)
 
             detector.capture_signal()
 

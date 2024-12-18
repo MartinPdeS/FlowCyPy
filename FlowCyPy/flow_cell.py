@@ -105,6 +105,8 @@ class FlowCell(object):
         self.flow_area = Quantity(self.flow_area, meter ** 2)
         self.run_time = Quantity(self.run_time, second)
 
+        self.volume = self.flow_area * self.flow_speed * self.run_time
+
     def print_properties(self) -> None:
         """
         Print the core properties of the flow and particle interactions in the flow cytometer.

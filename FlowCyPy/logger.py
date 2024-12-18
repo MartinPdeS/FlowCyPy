@@ -2,6 +2,7 @@ import logging
 from tabulate import tabulate
 import pandas as pd
 from typing import List, Union, Optional
+from FlowCyPy.units import particle, milliliter
 
 
 class EventCorrelatorLogger:
@@ -46,7 +47,8 @@ class EventCorrelatorLogger:
             "First Peak Time",
             "Last Peak Time",
             "Avg Time Between Peaks",
-            "Min Time Between Peaks"
+            "Min Time Between Peaks",
+            'Measured Concentration'
         ]
 
         formatted_table = tabulate(table_data, headers=headers, tablefmt=table_format, floatfmt=".4f")
@@ -75,14 +77,16 @@ class EventCorrelatorLogger:
             time_diffs = times.diff().dropna()
             avg_time_between_peaks = f"{time_diffs.mean().to_compact():.4~P}"
             min_time_between_peaks = f"{time_diffs.min().to_compact():.4~P}"
+            measured_concentration = num_events * particle / self.correlator.cytometer.scatterer.flow_cell.volume.to(milliliter)
         else:
             avg_time_between_peaks = "N/A"
             min_time_between_peaks = "N/A"
+            measured_concentration = "N/A"
 
         first_peak_time = f"{group['PeakTimes'].min().to_compact():.4~P}" if num_events > 0 else "N/A"
         last_peak_time = f"{group['PeakTimes'].max().to_compact():.4~P}" if num_events > 0 else "N/A"
 
-        return [detector.name, num_events, first_peak_time, last_peak_time, avg_time_between_peaks, min_time_between_peaks]
+        return [detector.name, num_events, first_peak_time, last_peak_time, avg_time_between_peaks, min_time_between_peaks, measured_concentration]
 
     def log_coincidence_statistics(self, table_format: str = "grid") -> None:
         """
