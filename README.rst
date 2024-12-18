@@ -1,7 +1,28 @@
+|logo|
+
 FlowCyPy: Flow Cytometer Simulation Tool
 ========================================
 
-|logo|
+.. list-table::
+   :widths: 10 25 25 25
+   :header-rows: 0
+
+   * - Meta
+     - |python|
+     - |docs|
+     -
+   * - Testing
+     - |ci/cd|
+     - |coverage|
+     -
+   * - PyPi
+     - |PyPi|
+     - |PyPi_download|
+     -
+   * - Anaconda
+     - |anaconda|
+     - |anaconda_download|
+     - |anaconda_date|
 
 Overview
 --------
@@ -128,3 +149,38 @@ For inquiries or collaboration, contact `Martin Poinsinet de Sivry-Houle <mailto
 .. |logo| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/logo.png
     :align: middle
     :alt: FlowCyPy Logo
+
+.. |python| image:: https://img.shields.io/pypi/pyversions/flowcypy.svg
+    :alt: Python
+    :target: https://www.python.org/
+
+.. |docs| image:: https://github.com/martinpdes/flowcypy/actions/workflows/deploy_documentation.yml/badge.svg
+    :target: https://martinpdes.github.io/FlowCyPy/
+    :alt: Documentation Status
+
+.. |PyPi| image:: https://badge.fury.io/py/FlowCyPy.svg
+    :alt: PyPi version
+    :target: https://badge.fury.io/py/FlowCyPy
+
+.. |PyPi_download| image:: https://img.shields.io/pypi/dm/FlowCyPy?style=plastic&label=PyPi%20downloads&labelColor=hex&color=hex
+   :alt: PyPI - Downloads
+   :target: https://pypistats.org/packages/flowcypy
+
+.. |coverage| image:: https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/python-coverage-comment-action-data/badge.svg
+    :alt: Unittest coverage
+    :target: https://htmlpreview.github.io/?https://github.com/MartinPdeS/FlowCyPy/blob/python-coverage-comment-action-data/htmlcov/index.html
+
+.. |ci/cd| image:: https://github.com/martinpdes/flowcypy/actions/workflows/deploy_coverage.yml/badge.svg
+    :alt: Unittest Status
+
+.. |anaconda| image:: https://anaconda.org/martinpdes/flowcypy/badges/version.svg
+   :alt: Anaconda version
+   :target: https://anaconda.org/martinpdes/flowcypy
+
+.. |anaconda_download| image:: https://anaconda.org/martinpdes/flowcypy/badges/downloads.svg
+   :alt: Anaconda downloads
+   :target: https://anaconda.org/martinpdes/flowcypy
+
+.. |anaconda_date| image:: https://anaconda.org/martinpdes/flowcypy/badges/latest_release_relative_date.svg
+    :alt: Latest release date
+    :target: https://anaconda.org/martinpdes/flowcypy
