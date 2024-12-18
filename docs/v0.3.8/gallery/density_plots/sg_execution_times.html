@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="../../" >
+<html lang="en" data-content_root="../../" data-theme="dark">
 
   <head>
     <meta charset="utf-8" />
@@ -13,8 +13,8 @@
   
   
   <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
   </script>
   <!-- 
     this give us a css class that will be invisible only if js is disabled 
@@ -63,7 +63,7 @@
   </head>
   
   
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
 
   
   
@@ -122,11 +122,9 @@
   
     
     
-      
     
-    
-    <img src="../../_static/thumbnail.png" class="logo__image only-light" alt=""/>
-    <img src="../../_static/thumbnail.png" class="logo__image only-dark pst-js-only" alt=""/>
+    <img src="../../_static/thumbnail.png" class="logo__image only-dark" alt=""/>
+    <img src="../../_static/thumbnail.png" class="logo__image only-light pst-js-only" alt=""/>
   
   
     <p class="title logo__title">FlowCyPy</p>
@@ -145,7 +143,7 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../code.html">
-    Code Documentation
+    API reference
   </a>
 </li>
 
@@ -209,6 +207,14 @@
   </div>
 </div></div>
       
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
@@ -220,7 +226,7 @@
           
           
           
-          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -299,7 +305,7 @@
     
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../code.html">
-    Code Documentation
+    API reference
   </a>
 </li>
 
@@ -354,6 +360,14 @@
   </div>
 </div></div>
         
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
@@ -365,7 +379,7 @@
           
           
           
-          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
             <span class="sr-only">GitHub</span></a>
         </li>
         <li class="nav-item">
@@ -447,7 +461,7 @@
                   
   <section id="computation-times">
 <span id="sphx-glr-gallery-density-plots-sg-execution-times"></span><h1>Computation times<a class="headerlink" href="#computation-times" title="Link to this heading">#</a></h1>
-<p><strong>00:17.372</strong> total execution time for 4 files <strong>from gallery/density_plots</strong>:</p>
+<p><strong>00:17.052</strong> total execution time for 4 files <strong>from gallery/density_plots</strong>:</p>
 <div class="docutils container">
 <style scoped>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
@@ -469,19 +483,19 @@ $(document).ready( function () {
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference internal" href="2_populations.html#sphx-glr-gallery-density-plots-2-populations-py"><span class="std std-ref">Flow Cytometry Simulation [2 populations] Density Plot of Scattering Intensities</span></a> (<code class="docutils literal notranslate"><span class="pre">2_populations.py</span></code>)</p></td>
-<td><p>00:06.351</p></td>
+<td><p>00:06.187</p></td>
 <td><p>0.0</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="3_populations.html#sphx-glr-gallery-density-plots-3-populations-py"><span class="std std-ref">Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities</span></a> (<code class="docutils literal notranslate"><span class="pre">3_populations.py</span></code>)</p></td>
-<td><p>00:03.948</p></td>
+<td><p>00:03.986</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="custom_populations.html#sphx-glr-gallery-density-plots-custom-populations-py"><span class="std std-ref">Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities</span></a> (<code class="docutils literal notranslate"><span class="pre">custom_populations.py</span></code>)</p></td>
-<td><p>00:03.575</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="1_populations.html#sphx-glr-gallery-density-plots-1-populations-py"><span class="std std-ref">Flow Cytometry Simulation with One Populations: Density Plot of Scattering Intensities</span></a> (<code class="docutils literal notranslate"><span class="pre">1_populations.py</span></code>)</p></td>
+<td><p>00:03.451</p></td>
 <td><p>0.0</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="1_populations.html#sphx-glr-gallery-density-plots-1-populations-py"><span class="std std-ref">Flow Cytometry Simulation with One Populations: Density Plot of Scattering Intensities</span></a> (<code class="docutils literal notranslate"><span class="pre">1_populations.py</span></code>)</p></td>
-<td><p>00:03.498</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="custom_populations.html#sphx-glr-gallery-density-plots-custom-populations-py"><span class="std std-ref">Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities</span></a> (<code class="docutils literal notranslate"><span class="pre">custom_populations.py</span></code>)</p></td>
+<td><p>00:03.428</p></td>
 <td><p>0.0</p></td>
 </tr>
 </tbody>
@@ -539,7 +553,7 @@ $(document).ready( function () {
 
   <p class="copyright">
     
-      © Copyright 2024, Martin Poinsinet de Sivry-Houle.
+      © Copyright 2024-2024, Martin Poinsinet de Sivry-Houle.
       <br/>
     
   </p>
