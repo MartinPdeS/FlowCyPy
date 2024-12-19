@@ -7,7 +7,8 @@
 .. toctree::
     :hidden:
 
-    code
-    examples
-    theory
-    references
+    code.rst
+    examples.rst
+    theory.rst
+    references.rst
+    internal.rst
