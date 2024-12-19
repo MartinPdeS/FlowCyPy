@@ -2,96 +2,96 @@
 {
   "name": "v.0.2.9.9",
   "version": "v.0.2.9.9",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v.0.2.9.9"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v.0.2.9.9"
 }
 ,
 {
   "name": "v1.3.2",
   "version": "v1.3.2",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v1.3.2"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v1.3.2"
 }
 ,
 {
   "name": "v0.3.10",
   "version": "v0.3.10",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v0.3.10"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v0.3.10"
 }
 ,
 {
   "name": "v0.3.9",
   "version": "v0.3.9",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v0.3.9"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v0.3.9"
 }
 ,
 {
   "name": "v0.3.8",
   "version": "v0.3.8",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v0.3.8"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v0.3.8"
 }
 ,
 {
   "name": "v0.3.7",
   "version": "v0.3.7",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v0.3.7"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v0.3.7"
 }
 ,
 {
   "name": "v0.3.6",
   "version": "v0.3.6",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v0.3.6"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v0.3.6"
 }
 ,
 {
   "name": "v0.3.5",
   "version": "v0.3.5",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v0.3.5"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v0.3.5"
 }
 ,
 {
   "name": "v0.3.4",
   "version": "v0.3.4",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v0.3.4"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v0.3.4"
 }
 ,
 {
   "name": "v0.3.1",
   "version": "v0.3.1",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v0.3.1"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v0.3.1"
 }
 ,
 {
   "name": "v0.3.0",
   "version": "v0.3.0",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v0.3.0"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v0.3.0"
 }
 ,
 {
   "name": "v0.2.12",
   "version": "v0.2.12",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v0.2.12"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v0.2.12"
 }
 ,
 {
   "name": "v0.2.11",
   "version": "v0.2.11",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v0.2.11"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v0.2.11"
 }
 ,
 {
   "name": "v0.2.9.10",
   "version": "v0.2.9.10",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v0.2.9.10"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v0.2.9.10"
 }
 ,
 {
   "name": "v0.2.9.8",
   "version": "v0.2.9.8",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/v0.2.9.8"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v0.2.9.8"
 }
 ,
 {
   "name": "0.3.10",
   "version": "0.3.10",
-  "url": "https://martinpdes.github.io/LightWave2D/docs/0.3.10"
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/0.3.10"
 }
 ]
