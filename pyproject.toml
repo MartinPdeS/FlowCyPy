@@ -97,3 +97,7 @@ omit = [
 ]
 branch = true
 relative_files = true
+
+
+[tool.doc8]
+ignore = ["D001"]
