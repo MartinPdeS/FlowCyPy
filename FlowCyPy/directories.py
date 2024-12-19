@@ -15,7 +15,7 @@ __all__ = [
 
 root_path = Path(FlowCyPy.__path__[0])
 
-project_path = root_path.parents[0]
+project_path =  root_path.parents[0]
 
 example_directory = root_path.joinpath('examples')
 
