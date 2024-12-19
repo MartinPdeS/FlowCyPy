@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:01.830** total execution time for 3 files **from gallery/noise_sources**:
+**00:01.777** total execution time for 3 files **from gallery/noise_sources**:
 
 .. container::
 
@@ -33,11 +33,11 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_gallery_noise_sources_dark_current.py` (``dark_current.py``)
-     - 00:00.646
+     - 00:00.631
      - 0.0
    * - :ref:`sphx_glr_gallery_noise_sources_shot_noise.py` (``shot_noise.py``)
-     - 00:00.636
+     - 00:00.618
      - 0.0
    * - :ref:`sphx_glr_gallery_noise_sources_thermal.py` (``thermal.py``)
-     - 00:00.548
+     - 00:00.528
      - 0.0
