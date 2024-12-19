@@ -37,7 +37,7 @@ Git and Version Control
 Version control is essential for collaborative software development.
 You will use Git to manage the FlowCyPy codebase effectively. Familiarity with the following Git commands is expected:
 
-- ``git clone``: Clone repositories to your local machine for development.
+- ``git clone``:  Clone repositories to your local machine for development.
 - ``git pull``: Fetch and merge changes from the remote repository.
 - ``git commit``: Save changes locally with descriptive commit messages.
 - ``git push``: Upload your changes to the remote repository.
