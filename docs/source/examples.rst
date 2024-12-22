@@ -1,7 +1,7 @@
 .. _examples_gallery:
 
-Coding examples
-===============
+Examples
+========
 
 Explore our gallery of examples demonstrating the usage of FlowCyPy. These examples range from general API usage to specific applications, presented in a tutorial format to guide users through practical implementations.
 
