@@ -1,0 +1,37 @@
+# Set the default channels for Conda to search packages
+channels:
+  - conda-forge
+  - defaults
+  - martinpdes
+
+# Specify whether to automatically activate the base environment
+auto_activate_base: true
+
+# Enable SSL verification
+ssl_verify: true
+
+# Proxy settings (if behind a proxy, uncomment and configure)
+#proxy_servers:
+#  http: http://username:password@proxy.example.com:port
+#  https: https://username:password@proxy.example.com:port
+
+# Enable or disable Conda’s package signature verification
+# (useful for debugging or offline setups)
+#verify_ssl: true
+
+# Show channel URLs when searching or listing packages
+show_channel_urls: true
+
+# Automatically update Conda when a new version is available
+auto_update_conda: true
+
+# Configure pip interoperability
+pip_interop_enabled: true
+
+# Override the default number of threads for solving the environment
+# (useful for large environments)
+#sat_solver_threads: 4
+
+
+plugins:
+  anaconda_telemetry: false
