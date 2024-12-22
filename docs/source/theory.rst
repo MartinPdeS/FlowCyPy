@@ -1,5 +1,5 @@
-Theoretical Background
-=======================
+Theory
+======
 
 In flow cytometry, particles suspended in a fluid stream are illuminated by a focused laser beam. As the particles pass through the laser beam, light is scattered in various directions depending on the particle's size, shape, refractive index, and other physical properties.
 The scattered light is detected by one or more photodetectors, allowing the user to derive information about the particles' characteristics.

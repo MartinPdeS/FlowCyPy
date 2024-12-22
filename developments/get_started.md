@@ -1,161 +1,23 @@
-FlowCyPy: Intern Onboarding Guide
-=================================
+# Context: Flow Cytometry and EV Detection
 
+Flow cytometry is a powerful analytical technique used to study the physical and chemical properties of particles suspended in a fluid stream as they pass through a focused beam of light. It is widely applied in various fields, including immunology, cell biology, and clinical diagnostics. One of its critical applications is in the detection and characterization of extracellular vesicles (EVs), small lipid-bound particles released by cells that play crucial roles in intercellular communication. EVs are of significant interest in research due to their potential as biomarkers for diseases such as cancer and neurodegenerative disorders.
 
-Welcome to FlowCyPy!
----------------------
-This guide is designed to help you get started with **FlowCyPy**, a simulation tool we are developing for flow cytometry.
-Over the next weeks, you will contribute to validating and extending the software while gaining a deep understanding of its core components.
+Detecting EVs poses unique challenges because of their small size, heterogeneity, and often low refractive index. These factors make distinguishing them from background noise and other particles difficult. Traditional flow cytometers often rely on forward scatter (FSC) and side scatter (SSC) signals to detect and classify particles. However, the resolution and sensitivity required to study EVs demand advanced systems and methods, including robust calibration to better understand and improve detection processes.
 
-Prerequisites
--------------
-To work effectively with FlowCyPy, you should have the following foundational knowledge and skills:
+# About FlowCyPy
 
-**Programming Skills**
-- Python Programming:
+**FlowCyPy** is a currently-developed simulation tool designed to create a digital twin of flow cytometry systems. By combining computational physics, optics, and signal processing, FlowCyPy offers a detailed virtual representation of the key processes within a flow cytometer. This includes modeling how light interacts with particles, the behavior of optical detectors, and the generation of electronic signals. FlowCyPy leverages **PyMieSim**, a computational library for simulating Mie scattering, to replicate forward scatter (FSC) and side scatter (SSC) signals with high accuracy.
 
-  - Proficiency in Python 3.x, including:
+One of FlowCyPy’s distinguishing features is its ability to incorporate realistic noise models, such as shot noise, thermal noise, and detector saturation effects. Additionally, the software accounts for baseline shifts and digitization, enabling it to mimic the nuances of real-world experiments. These capabilities make FlowCyPy a vital tool for understanding the limitations and performance of flow cytometers, especially for challenging applications like EV detection.
 
-    - Writing and understanding functions and classes (Object-Oriented Programming).
-    - Working with popular libraries such as `numpy`, `matplotlib`, and `pandas`.
-    - Debugging and troubleshooting Python scripts.
+# The Role of Digital Twins in Flow Cytometry
 
-  - Suggested Practice: [CodeChef Practice](https://www.codechef.com/practice)
+FlowCyPy operates within the framework of digital twins, an approach in scientific research and engineering. A digital twin is a virtual representation of a physical system that allows researchers to simulate, predict, and optimize its behavior under different conditions. By creating a digital twin of a flow cytometry system, FlowCyPy empowers researchers to explore experimental setups and test hypotheses without the need for costly and time-consuming physical experiments.
 
-- Git and Version Control:
-  - Familiarity with Git commands, such as:
-    - `git clone`: Clone repositories to your local machine.
-    - `git pull`: Fetch and merge changes from a remote repository.
-    - `git commit`: Save changes locally with meaningful commit messages.
-    - `git push`: Upload your commits to a remote repository.
-    - `git branch`: Create and manage branches for new features or experiments.
-    - `git merge`: Integrate changes from one branch into another.
-    - `git stash`: Temporarily save changes without committing.
+This virtual approach is particularly valuable in optimizing the detection of EVs, where fine-tuning parameters like particle size thresholds, scattering angles, and detector sensitivity is crucial. By simulating various configurations, FlowCyPy can guide the design of experiments that maximize EV detection while minimizing noise and false positives.
 
-  - Recommended Resource: [Pro Git Book](https://git-scm.com/book/en/v2)
+# Internship Objectives with FlowCyPy
 
-**Physics and Optics**
-- Ray Optics and Scattering:
+During this internship, you will play a critical role in validating FlowCyPy’s outputs against experimental data, ensuring its simulations align with real-world observations. This involves comparing simulated FSC and SSC signals with those obtained from standard calibration beads and EV samples. Additionally, you will contribute to expanding the software’s capabilities, such as refining noise models, enhancing peak detection algorithms, or exploring new scattering configurations.
 
-  - Fundamental understanding of ray optics, Mie scattering, and the interaction of light with particles.
-  - Recommended Resource:
-
-    - [Introduction to Optics](https://www.springer.com/gp/book/9781108428262)
-    - [Mie Theory Basics](https://en.wikipedia.org/wiki/Mie_scattering)
-
-- Flow Cytometry Basics:
-  - Overview of how flow cytometers work, including FSC and SSC principles.
-  - Recommended Resource: [Flow Cytometry Guide by Thermo Fisher](https://www.thermofisher.com)
-
-**Software Knowledge**
-- Scientific Libraries:
-  - Familiarity with `pandas`, `scipy`, and `seaborn` for data manipulation and visualization.
-- Numerical Simulations:
-  - Basic understanding of simulation workflows in Python.
-
-**Mathematical Background**
-- Knowledge of:
-  - Signal processing (e.g., Fourier transforms, noise modeling).
-  - Probability and statistics for analyzing simulated data.
-
-Overview of FlowCyPy
----------------------
-**FlowCyPy** is a Python library designed to simulate the complex behavior of flow cytometry systems. It combines state-of-the-art computational tools with a modular architecture, allowing users to model key aspects of flow cytometry experiments. At its core, **FlowCyPy** integrates **PyMieSim** to compute the scattering interactions between light and particles, enabling precise modeling of forward scatter (FSC) and side scatter (SSC) signals.
-
-<div style="text-align: center;">
-  <img src="https://github.com/MartinPdeS/PyMieSim/raw/master/docs/images/optical_setup.png" alt="Optical Scattering Process" width="600">
-  <p><strong>Figure:</strong> The physical scattering process simulated by FlowCyPy.</p>
-</div>
-
-Key Features:
-- **Scattering Simulation**: Leveraging **PyMieSim**, FlowCyPy models Mie scattering to simulate light-particle interactions for realistic signal generation.
-- **Noise and Saturation Modeling**: Incorporates various noise sources (e.g., shot noise, thermal noise) and simulates detector saturation.
-- **Flow Dynamics**: Simulates particle distributions and flow behaviors through optical setups.
-- **Detectors and Signal Processing**: Models detector responses, including signal digitization and peak analysis.
-
-
-
-<div style="text-align: center;">
-  <img src="https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/flow_cytometer.png" alt="Optical Scattering Process" width="600">
-  <p><strong>Figure:</strong> Diagram of a flow cytometer used in experiments.</p>
-</div>
-
-### Key Components
-
-1. **Scatterer**:
-   - Models particle distributions and their optical properties.
-   - Allows adding populations with specific size and refractive index distributions.
-
-2. **Source**:
-   - Simulates laser sources with defined wavelength, power, and numerical aperture.
-
-3. **Detector**:
-   - Models the behavior of flow cytometer detectors, including noise, responsitivity, and resolution.
-
-4. **FlowCytometer**:
-   - Combines scatterers, sources, and detectors to simulate complete flow cytometry experiments.
-
-5. **Analyzer**:
-   - Tools for analyzing simulated signals, including peak detection and clustering.
-
-Getting Started with FlowCyPy
------------------------------
-Follow these steps to set up FlowCyPy and start working on your tasks.
-
-### Installation
-
-Clone the repository and install dependencies:
-
-```
-  >>> git clone https://github.com/MartinPdeS/FlowCyPy.git
-  >>> cd FlowCyPy
-  >>> python -m pip install -e .[testing, documentation] for (windows, linux)
-  >>> python -m pip install -e ".[testing, documentation]" for (macOS)
-```
-
-### Explore the Documentation
-
-Review the online documentation for detailed guidance on using FlowCyPy's components:
-
-- [FlowCyPy Documentation](https://martinpdes.github.io/FlowCyPy/)
-
-### Run Example Simulations
-
-Navigate to the `examples` folder and execute some pre-written scripts to understand the workflows:
-
-
-```
-  >>> cd examples
-  >>> python example_simulation.py
-```
-
-### Study Core Components
-
-Familiarize yourself with the following files in the repository:
-- `scatterer.py`: Defines particle properties and distributions.
-- `detector.py`: Models the detector response.
-- `flow_cytometer.py`: Combines scatterers, detectors, and sources for simulations.
-
-Tasks for the Internship
--------------------------
-- Validate simulated noise sources with experimental data (thermal noise, dark current noise, shot noise).
-- Simulate standard bead calibrations and compare results with real-world measurements.
-- Improve peak detection algorithms for low-SNR signals.
-
-Learning Resources
-------------------
-Below are additional resources to help you understand the scientific and technical concepts behind FlowCyPy:
-
-### Tutorials
-
-- **FlowCyPy:** [code examples](https://martinpdes.github.io/FlowCyPy/docs/v1.3.2/examples.html)
-- **PyMieSim:** [code examples](https://martinpdes.github.io/PyMieSim/docs/v3.1.0.6/index.html)
-- **PyMieSim:** [article](https://opg.optica.org/optcon/fulltext.cfm?uri=optcon-2-3-520&id=526697)
-
-
-Feedback and Questions
-----------------------
-If you have questions or suggestions during your work with FlowCyPy, please reach out to me:
-
-- **Martin Poinsinet de Sivry-Houle**
-- **Email**: `martin.poinsinet.de.sivry@gmail.com <mailto:martin.poinsinet.de.sivry@gmail.com>`_
+<!-- Your work will directly contribute to the development of a robust digital twin framework for flow cytometry, enabling researchers to push the boundaries of EV detection and other applications. Through this experience, you will gain hands-on expertise in computational physics, signal processing, and advanced simulation techniques, while making meaningful contributions to the advancement of scientific research tools. -->
