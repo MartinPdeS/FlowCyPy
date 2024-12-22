@@ -206,7 +206,7 @@ Extract coincidence data within a defined margin
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.177 seconds)
+   **Total running time of the script:** (0 minutes 3.597 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_1_populations.py:
