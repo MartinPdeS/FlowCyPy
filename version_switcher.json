@@ -10,4 +10,10 @@
   "version": "v0.3.13",
   "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/v0.3.13"
 }
+,
+{
+  "name": "latest",
+  "version": "latest",
+  "url": "https://martinpdes.github.io/{{ inputs.package-name}}/docs/latest"
+}
 ]
