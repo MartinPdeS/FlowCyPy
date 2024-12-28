@@ -332,7 +332,7 @@ as a 2D density graph to illustrate signal relationships between FSC and SSC.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.094 seconds)
+   **Total running time of the script:** (0 minutes 3.054 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:
