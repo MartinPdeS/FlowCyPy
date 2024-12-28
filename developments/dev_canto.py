@@ -46,7 +46,7 @@ for size, ri in combinations:
     )
 
     # scatterer.add_population(population, particle_count=particule_number * particle)
-    scatterer.add_population(population, particle_count=1e8 * particle / milliliter)
+    scatterer.add_population(population, particle_count=2 * particle)
 
 
 scatterer.initialize(flow_cell=flow_cell)
@@ -97,47 +97,50 @@ cytometer = FlowCytometer(
 
 cytometer.simulate_pulse()
 
-cytometer.plot()
 
-algorithm = peak_locator.MovingAverage(
-    threshold=0.001 * microvolt,
-    window_size=1 * microsecond,
-    min_peak_distance=0.3 * microsecond
-)
+print(scatterer.dataframe)
 
-detector_0.set_peak_locator(algorithm)
-detector_1.set_peak_locator(algorithm)
+# cytometer.plot()
 
-analyzer = EventCorrelator(cytometer=cytometer)
+# algorithm = peak_locator.MovingAverage(
+#     threshold=0.001 * microvolt,
+#     window_size=1 * microsecond,
+#     min_peak_distance=0.3 * microsecond
+# )
 
-analyzer.run_analysis(compute_peak_area=False)
+# detector_0.set_peak_locator(algorithm)
+# detector_1.set_peak_locator(algorithm)
 
-dataframe = analyzer.get_coincidence(margin=0.1 * microsecond)
+# analyzer = EventCorrelator(cytometer=cytometer)
+
+# analyzer.run_analysis(compute_peak_area=False)
+
+# dataframe = analyzer.get_coincidence(margin=0.1 * microsecond)
 
 
-# clas = classifier.KmeansClassifier(dataframe)
-# clas.run(number_of_cluster=3, features=['Heights'])
+# # clas = classifier.KmeansClassifier(dataframe)
+# # clas.run(number_of_cluster=3, features=['Heights'])
 
-clas = classifier.RangeClassifier(dataframe)
+# clas = classifier.RangeClassifier(dataframe)
 
-clas.run(
-    ranges={
-        'Population 0': (0, particule_number),
-        'Population 1': (particule_number, 2 * particule_number),
-        'Population 2': (2 * particule_number, 3 * particule_number)}
-)
+# clas.run(
+#     ranges={
+#         'Population 0': (0, particule_number),
+#         'Population 1': (particule_number, 2 * particule_number),
+#         'Population 2': (2 * particule_number, 3 * particule_number)}
+# )
 
-print(dataframe)
+# print(dataframe)
 
-plotter = MetricPlotter(
-    detector_names=['forward', 'side'],
-    coincidence_dataframe=dataframe,
-)
+# plotter = MetricPlotter(
+#     detector_names=['forward', 'side'],
+#     coincidence_dataframe=dataframe,
+# )
 
-plotter.plot(
-    feature='Heights',
-    show=True,
-    log_plot=False,
-    equal_axes=False
-)
+# plotter.plot(
+#     feature='Heights',
+#     show=True,
+#     log_plot=False,
+#     equal_axes=False
+# )
 

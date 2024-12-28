@@ -7,6 +7,7 @@ The simulation includes one populations of particles, and we analyze pulse signa
 to generate a 2D density plot of scattering intensities.
 
 Workflow Summary:
+
 1. Flow Setup: Configure flow parameters and define particle size distributions.
 2. Laser GaussianBeam and Detector Setup: Define the laser source characteristics and configure the forward and side detectors.
 3. Run the Experiment: Simulate the flow cytometry experiment.
@@ -14,6 +15,7 @@ Workflow Summary:
 """
 
 # Step 1: Configuring Flow Parameters
+# -----------------------------------
 import numpy as np
 from FlowCyPy import FlowCell
 from FlowCyPy.units import meter, micrometer, millisecond, second, degree
@@ -86,6 +88,7 @@ detector_1 = Detector(
 
 
 # Step 4: Simulating the Flow Cytometry Experiment
+# ------------------------------------------------
 cytometer = FlowCytometer(
     coupling_mechanism='mie',
     source=source,
@@ -103,6 +106,7 @@ cytometer.plot()
 
 # %%
 # Step 5: Analyzing Pulse Signals
+# -------------------------------
 algorithm = peak_locator.MovingAverage(
     threshold=10 * microvolt,           # Signal threshold: 0.1 mV
     window_size=1 * microsecond,         # Moving average window size: 1 µs
@@ -120,6 +124,7 @@ analyzer.run_analysis(compute_peak_area=False)
 
 # %%
 # Step 6: Coincidence Data and 2D Density Plot
+# --------------------------------------------
 # Extract coincidence data within a defined margin
 analyzer.get_coincidence(margin=1e-9 * microsecond)
 
