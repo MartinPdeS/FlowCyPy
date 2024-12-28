@@ -63,29 +63,34 @@ class FlowCytometer:
         logging.debug("Starting pulse simulation.")
 
         columns = pd.MultiIndex.from_product(
-            [[p.name for p in self.detectors], ['Centers', 'Widths', 'Heights']]
+            [[p.name for p in self.detectors], ['Centers', 'Heights']]
         )
 
         self.pulse_dataframe = pd.DataFrame(columns=columns)
 
         self._generate_pulse_parameters()
 
-        _widths = self.pulse_dataframe['Widths'].values
-        _centers = self.pulse_dataframe['Centers'].values
+        _widths = self.scatterer.dataframe['Widths'].values
+        _centers = self.scatterer.dataframe['Time'].values
 
         detection_mechanism = self._get_detection_mechanism()
 
+        # Initialize the detectors
         for detector in self.detectors:
             detector.source = self.source
-
             detector.init_raw_signal(run_time=self.scatterer.flow_cell.run_time)
 
+        # Fetch the coupling power for each scatterer
+        for detector in self.detectors:
             coupling_power = detection_mechanism(
                 source=self.source,
                 detector=detector,
                 scatterer=self.scatterer
             )
 
+            self.scatterer.dataframe['CouplingPower'] = pint_pandas.PintArray(coupling_power, dtype=coupling_power.units)
+
+        for detector in self.detectors:
             # Generate noise components
             detector._add_thermal_noise_to_raw_signal()
 
@@ -159,7 +164,7 @@ class FlowCytometer:
 
         widths = self.source.waist / self.scatterer.flow_cell.flow_speed * np.ones(self.scatterer.n_events)
 
-        self.pulse_dataframe['Widths'] = pint_pandas.PintArray(widths, dtype=widths.units)
+        self.scatterer.dataframe['Widths'] = pint_pandas.PintArray(widths, dtype=widths.units)
 
     def plot(self, figure_size: tuple = (10, 6), add_peak_locator: bool = False) -> None:
         """Plots the signals generated for each detector channel."""
