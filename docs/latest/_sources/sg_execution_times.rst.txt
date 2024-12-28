@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:28.179** total execution time for 11 files **from all galleries**:
+**00:30.136** total execution time for 12 files **from all galleries**:
 
 .. container::
 
@@ -33,35 +33,38 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_gallery_density_plots_2_populations.py` (``../examples/density_plots/2_populations.py``)
-     - 00:06.086
+     - 00:06.211
      - 0.0
    * - :ref:`sphx_glr_gallery_density_plots_3_populations.py` (``../examples/density_plots/3_populations.py``)
-     - 00:04.150
+     - 00:03.814
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_full_workflow.py` (``../examples/extras/full_workflow.py``)
-     - 00:03.666
-     - 0.0
-   * - :ref:`sphx_glr_gallery_density_plots_custom_populations.py` (``../examples/density_plots/custom_populations.py``)
-     - 00:03.479
+     - 00:03.664
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_flow_cytometer_signal.py` (``../examples/extras/flow_cytometer_signal.py``)
-     - 00:03.382
+     - 00:03.332
+     - 0.0
+   * - :ref:`sphx_glr_gallery_density_plots_custom_populations.py` (``../examples/density_plots/custom_populations.py``)
+     - 00:03.162
+     - 0.0
+   * - :ref:`sphx_glr_gallery_tutorials_workflow.py` (``../examples/tutorials/workflow.py``)
+     - 00:03.049
      - 0.0
    * - :ref:`sphx_glr_gallery_density_plots_1_populations.py` (``../examples/density_plots/1_populations.py``)
-     - 00:03.133
+     - 00:02.895
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_distributions.py` (``../examples/extras/distributions.py``)
-     - 00:01.549
+     - 00:01.534
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_scatterer_distribution.py` (``../examples/extras/scatterer_distribution.py``)
-     - 00:00.902
-     - 0.0
-   * - :ref:`sphx_glr_gallery_noise_sources_shot_noise.py` (``../examples/noise_sources/shot_noise.py``)
-     - 00:00.706
+     - 00:00.880
      - 0.0
    * - :ref:`sphx_glr_gallery_noise_sources_dark_current.py` (``../examples/noise_sources/dark_current.py``)
-     - 00:00.649
+     - 00:00.571
+     - 0.0
+   * - :ref:`sphx_glr_gallery_noise_sources_shot_noise.py` (``../examples/noise_sources/shot_noise.py``)
+     - 00:00.557
      - 0.0
    * - :ref:`sphx_glr_gallery_noise_sources_thermal.py` (``../examples/noise_sources/thermal.py``)
-     - 00:00.477
+     - 00:00.466
      - 0.0

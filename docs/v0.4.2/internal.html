@@ -47,6 +47,7 @@
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'internal';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
@@ -57,6 +58,7 @@
     <link rel="icon" href="_static/thumbnail.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Pre-requisites" href="internal/prerequisites/index.html" />
     <link rel="prev" title="References" href="references.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -430,7 +432,46 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"></div>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="internal/prerequisites/index.html"><strong>Pre-requisites</strong></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="internal/prerequisites/programming.html"><strong>Programming Skills</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="internal/prerequisites/optics.html"><strong>Physics and Optics</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="internal/prerequisites/mathematics.html"><strong>Mathematical Background</strong></a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="internal/getting_started.html">Getting Started with FlowCyPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal/core_components.html">Core Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal/tasks.html">Internship Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal/ressources.html">Learning Resources</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="gallery/tutorials/index.html">Examples: Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="gallery/tutorials/workflow.html">Flow Cytometry Simulation: Scattering Intensities with One Population</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="gallery/density_plots/index.html">Examples: Density plots</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="gallery/density_plots/1_populations.html">Flow Cytometry Simulation with One Populations: Density Plot of Scattering Intensities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/density_plots/2_populations.html">Flow Cytometry Simulation [2 populations] Density Plot of Scattering Intensities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/density_plots/3_populations.html">Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/density_plots/custom_populations.html">Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="gallery/noise_sources/index.html">Examples: Noises</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="gallery/noise_sources/dark_current.html">Effect of Dark Current Noise on Detector Signal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/noise_sources/shot_noise.html">Effect of Optical Power on Detector Signal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/noise_sources/thermal.html">Thermal Noise Simulation in a Flow Cytometer Detector</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="gallery/extras/index.html">Examples: extras</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="gallery/extras/distributions.html">Particle Size Distribution Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/extras/flow_cytometer_signal.html">Simulating Flow Cytometer Signals with Rayleigh Scattering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/extras/full_workflow.html">Simulating and Analyzing Flow Cytometer Signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/extras/scatterer_distribution.html">Flow Cytometry Simulation and 2D Hexbin Plot of Scattering Intensities</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</div>
 </nav></div>
     </div>
   
@@ -483,79 +524,36 @@
                   
   <section id="internal">
 <h1>Internal<a class="headerlink" href="#internal" title="Link to this heading">#</a></h1>
-<section id="welcome-to-flowcypy">
-<h2>Welcome to FlowCyPy!<a class="headerlink" href="#welcome-to-flowcypy" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#welcome-to-flowcypy-internship-documentation" id="id3">Welcome to FlowCyPy internship documentation!</a></p></li>
+<li><p><a class="reference internal" href="#prerequisites" id="id4">Prerequisites</a></p></li>
+<li><p><a class="reference internal" href="#flow-cytometry-basics" id="id5">Flow Cytometry Basics</a></p></li>
+<li><p><a class="reference internal" href="#overview-of-flowcypy" id="id6">Overview of FlowCyPy</a></p></li>
+<li><p><a class="reference internal" href="#feedback-and-questions" id="id7">Feedback and Questions</a></p></li>
+</ul>
+</nav>
+<section id="welcome-to-flowcypy-internship-documentation">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Welcome to FlowCyPy internship documentation!</a><a class="headerlink" href="#welcome-to-flowcypy-internship-documentation" title="Link to this heading">#</a></h2>
 <p>This guide is designed to help you get started with <strong>FlowCyPy</strong>, a simulation tool we are developing for flow cytometry.
 Over the next weeks, you will contribute to validating and extending the software while gaining a deep understanding of its core components.
 We will focus on simulating realistic flow cytometry signals, implementing advanced algorithms, and comparing results with real-world experimental data.</p>
 </section>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Prerequisites</a><a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
 <p>Before diving into the specifics of <strong>FlowCyPy</strong>, it’s essential to ensure you have a strong foundation in key areas such as programming, physics, and mathematics.
-The sections below outline the knowledge and skills you should possess or develop to effectively work on this project.</p>
-</section>
-<section id="programming-skills">
-<h2><strong>Programming Skills</strong><a class="headerlink" href="#programming-skills" title="Link to this heading">#</a></h2>
-<p>A solid grasp of programming concepts and tools is crucial for contributing to the development and validation of <strong>FlowCyPy</strong>.
-Below, we highlight the essential skills and resources to enhance your proficiency.</p>
-<section id="python-programming">
-<h3>Python Programming<a class="headerlink" href="#python-programming" title="Link to this heading">#</a></h3>
-<p>Python is the backbone of <strong>FlowCyPy</strong>. You will need to work with advanced Python features and popular scientific libraries.
-Key areas of focus include:</p>
-<ul class="simple">
-<li><p>Writing and understanding functions and classes, particularly within an Object-Oriented Programming (OOP) paradigm.</p></li>
-<li><p>Utilizing libraries such as <code class="docutils literal notranslate"><span class="pre">numpy</span></code> for numerical operations, <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> for visualization, and <code class="docutils literal notranslate"><span class="pre">pandas</span></code> for data manipulation.</p></li>
-<li><p>Debugging and troubleshooting Python scripts to identify and fix issues efficiently.</p></li>
-</ul>
-<p><em>Suggested Practice</em>: Enhance your skills with hands-on exercises available on <a class="reference external" href="https://www.codechef.com/practice">CodeChef Practice</a>.</p>
-</section>
-<section id="git-and-version-control">
-<h3>Git and Version Control<a class="headerlink" href="#git-and-version-control" title="Link to this heading">#</a></h3>
-<p>Version control is essential for collaborative software development.
-You will use Git to manage the FlowCyPy codebase effectively. Familiarity with the following Git commands is expected:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span></code>:  Clone repositories to your local machine for development.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code>: Fetch and merge changes from the remote repository.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code>: Save changes locally with descriptive commit messages.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code>: Upload your changes to the remote repository.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">branch</span></code>: Create and manage branches for new features or experimental changes.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span></code>: Integrate updates from different branches.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">stash</span></code>: Temporarily save changes without committing them.</p></li>
-</ul>
-<p><em>Recommended Resource</em>: Master Git workflows through the <a class="reference external" href="https://git-scm.com/book/en/v2">Pro Git Book</a>.</p>
-</section>
-</section>
-<section id="physics-and-optics">
-<h2><strong>Physics and Optics</strong><a class="headerlink" href="#physics-and-optics" title="Link to this heading">#</a></h2>
-<p>Understanding the principles of light scattering and flow cytometry is vital for interpreting and simulating signals in FlowCyPy.
-Below are the key topics you should familiarize yourself with.</p>
-<section id="ray-optics-and-scattering">
-<h3>Ray Optics and Scattering<a class="headerlink" href="#ray-optics-and-scattering" title="Link to this heading">#</a></h3>
-<p>A strong understanding of light-particle interactions is crucial for simulating scattering phenomena accurately.
-Key concepts include ray optics and Mie scattering, which describe how particles scatter light depending on their size and refractive index.</p>
-<p><em>Recommended Resources</em>:
-- [Introduction to Optics](<a class="reference external" href="https://www.springer.com/gp/book/9781108428262">https://www.springer.com/gp/book/9781108428262</a>): A comprehensive introduction to optics.
-- [Mie Theory Basics](<a class="reference external" href="https://en.wikipedia.org/wiki/Mie_scattering">https://en.wikipedia.org/wiki/Mie_scattering</a>): A concise overview of Mie scattering principles.</p>
+The sections on the left outline the knowledge and skills you should possess or develop to effectively work on this project.</p>
 </section>
 <section id="flow-cytometry-basics">
-<h3>Flow Cytometry Basics<a class="headerlink" href="#flow-cytometry-basics" title="Link to this heading">#</a></h3>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Flow Cytometry Basics</a><a class="headerlink" href="#flow-cytometry-basics" title="Link to this heading">#</a></h2>
 <p>Flow cytometry combines fluidics, optics, and electronics to analyze particles in a stream.
 Understanding the basics of Forward Scatter (FSC) and Side Scatter (SSC) principles is essential for working with FlowCyPy.</p>
-<p><em>Recommended Resource</em>: The first chapter of the [Flow Cytometry Basics Guide](<a class="reference external" href="https://biotech.ufl.edu/wp-content/uploads/2021/04/flow-cytometry-basics-guide.pdf">https://biotech.ufl.edu/wp-content/uploads/2021/04/flow-cytometry-basics-guide.pdf</a>) provides an excellent overview.</p>
-</section>
-</section>
-<section id="mathematical-background">
-<h2><strong>Mathematical Background</strong><a class="headerlink" href="#mathematical-background" title="Link to this heading">#</a></h2>
-<p>A solid foundation in mathematical concepts is critical for signal processing and data analysis within FlowCyPy.
-You should be familiar with:</p>
-<ul class="simple">
-<li><p>Signal processing techniques, such as Fourier transforms and noise modeling, which are used to analyze and manipulate signal data.</p></li>
-<li><p>Probability and statistics, particularly statistical moments, for quantifying and interpreting simulated data.</p></li>
-</ul>
-<p>By mastering these prerequisites, you will be well-prepared to dive into FlowCyPy and contribute meaningfully to its development and validation.</p>
+<p><em>Recommended Resource</em>: The first chapter of the <a class="reference external" href="https://biotech.ufl.edu/wp-content/uploads/2021/04/flow-cytometry-basics-guide.pdf">Flow Cytometry Basics Guide</a> provides an excellent overview.</p>
 </section>
 <section id="overview-of-flowcypy">
-<h2>Overview of FlowCyPy<a class="headerlink" href="#overview-of-flowcypy" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Overview of FlowCyPy</a><a class="headerlink" href="#overview-of-flowcypy" title="Link to this heading">#</a></h2>
 <p><strong>FlowCyPy</strong> is a Python library designed to simulate the complex behavior of flow cytometry systems.
 It combines advanced computational tools with a modular architecture, allowing users to model key aspects of flow cytometry experiments.
 At its core, <strong>FlowCyPy</strong> integrates <strong>PyMieSim</strong> (another library we developed) to compute the scattering interactions between light and particles, enabling precise modeling of forward scatter (FSC) and side scatter (SSC) signals.</p>
@@ -583,93 +581,8 @@ At its core, <strong>FlowCyPy</strong> integrates <strong>PyMieSim</strong> (ano
 </figcaption>
 </figure>
 </section>
-</section>
-<section id="core-components-and-getting-started">
-<h1>Core Components and Getting Started<a class="headerlink" href="#core-components-and-getting-started" title="Link to this heading">#</a></h1>
-<ol class="arabic simple">
-<li><p><strong>Scatterer</strong>:
-- Represents particle distributions and their optical properties.
-- Enables adding populations with defined size and refractive index distributions.
-- Simulates dynamic particle interactions within the flow cytometer.</p></li>
-<li><p><strong>Source</strong>:
-- Models laser sources with parameters like wavelength, optical power, and numerical aperture.
-- Simulates the illumination profile for scattering and fluorescence experiments.</p></li>
-<li><p><strong>Detector</strong>:
-- Emulates the response of flow cytometer detectors, including:
-- Responsitivity and resolution.
-- Noise modeling (thermal, shot noise, and dark current).
-- Signal saturation and digitization.</p></li>
-<li><p><strong>FlowCytometer</strong>:
-- Integrates scatterers, sources, and detectors to simulate a complete flow cytometry experiment.
-- Computes realistic Forward Scatter (FSC) and Side Scatter (SSC) signals.
-- Models optical coupling using <strong>PyMieSim</strong> for scattering calculations.</p></li>
-<li><p><strong>Analyzer</strong>:
-- Provides tools for analyzing simulated data:
-- Peak detection for particle events.
-- Signal clustering and classification.</p></li>
-</ol>
-<section id="getting-started-with-flowcypy">
-<h2>Getting Started with FlowCyPy<a class="headerlink" href="#getting-started-with-flowcypy" title="Link to this heading">#</a></h2>
-<p>This section will guide you through setting up <strong>FlowCyPy</strong> and running simulations.</p>
-<section id="installation">
-<h3>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h3>
-<p>Follow these steps to clone the repository and install dependencies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/MartinPdeS/FlowCyPy.git
-<span class="nb">cd</span><span class="w"> </span>FlowCyPy
-python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>testing,<span class="w"> </span>documentation<span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="o">(</span>Windows,<span class="w"> </span>Linux<span class="o">)</span>
-python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[testing, documentation]&quot;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="o">(</span>macOS<span class="o">)</span>
-python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>.<span class="w">  </span><span class="c1"># Run tests to validate the installation</span>
-</pre></div>
-</div>
-</section>
-<section id="explore-the-documentation">
-<h3>Explore the Documentation<a class="headerlink" href="#explore-the-documentation" title="Link to this heading">#</a></h3>
-<p>Dive into the <strong>FlowCyPy</strong> documentation for a comprehensive guide on using its features and components:</p>
-<ul class="simple">
-<li><p>[FlowCyPy Documentation](<a class="reference external" href="https://martinpdes.github.io/FlowCyPy/">https://martinpdes.github.io/FlowCyPy/</a>)</p></li>
-</ul>
-</section>
-<section id="run-example-simulations">
-<h3>Run Example Simulations<a class="headerlink" href="#run-example-simulations" title="Link to this heading">#</a></h3>
-<p>Explore pre-written scripts in the <cite>examples</cite> folder to understand the workflows.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>examples
-python<span class="w"> </span>example_simulation.py
-</pre></div>
-</div>
-</section>
-<section id="study-core-components">
-<h3>Study Core Components<a class="headerlink" href="#study-core-components" title="Link to this heading">#</a></h3>
-<p>Familiarize yourself with these essential files in the repository:
-- <cite>scatterer.py</cite>: Manages particle distributions and optical properties.
-- <cite>source.py</cite>: Defines laser characteristics.
-- <cite>detector.py</cite>: Handles detector configurations and signal processing.
-- <cite>flow_cytometer.py</cite>: Combines all components to simulate flow cytometry experiments.</p>
-</section>
-</section>
-<section id="internship-tasks">
-<h2>Internship Tasks<a class="headerlink" href="#internship-tasks" title="Link to this heading">#</a></h2>
-<p>As part of your internship, you will focus on the following:</p>
-<ol class="arabic simple">
-<li><p><strong>Validation</strong>:
-- Compare simulated noise sources (thermal, dark current, shot noise) against theoretical models and experimental data.
-- Perform simulations using standard calibration beads and validate results with real-world measurements.</p></li>
-<li><p><strong>Feature Improvements</strong>:
-- Enhance peak detection algorithms for low-SNR signals.
-- Implement classification features to identify particle populations.</p></li>
-<li><p><strong>Performance Optimization</strong>:
-- Profile simulation performance and improve runtime for large datasets.</p></li>
-</ol>
-</section>
-<section id="learning-resources">
-<h2>Learning Resources<a class="headerlink" href="#learning-resources" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p><strong>FlowCyPy</strong>: [Code Examples](<a class="reference external" href="https://martinpdes.github.io/FlowCyPy/docs/v1.3.2/examples.html">https://martinpdes.github.io/FlowCyPy/docs/v1.3.2/examples.html</a>)</p></li>
-<li><p><strong>PyMieSim</strong>: [Code Examples](<a class="reference external" href="https://martinpdes.github.io/PyMieSim/docs/v3.1.0.6/index.html">https://martinpdes.github.io/PyMieSim/docs/v3.1.0.6/index.html</a>)</p></li>
-<li><p><strong>PyMieSim</strong>: [Research Article](<a class="reference external" href="https://opg.optica.org/optcon/fulltext.cfm?uri=optcon-2-3-520&amp;id=526697">https://opg.optica.org/optcon/fulltext.cfm?uri=optcon-2-3-520&amp;id=526697</a>)</p></li>
-</ul>
-</section>
 <section id="feedback-and-questions">
-<h2>Feedback and Questions<a class="headerlink" href="#feedback-and-questions" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Feedback and Questions</a><a class="headerlink" href="#feedback-and-questions" title="Link to this heading">#</a></h2>
 <p>For assistance, feedback, or collaboration opportunities, feel free to contact me:</p>
 <ul class="simple">
 <li><p><strong>Martin Poinsinet de Sivry-Houle</strong></p></li>
@@ -701,38 +614,12 @@ python<span class="w"> </span>example_simulation.py
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Internal</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#welcome-to-flowcypy">Welcome to FlowCyPy!</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#welcome-to-flowcypy-internship-documentation">Welcome to FlowCyPy internship documentation!</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#programming-skills"><strong>Programming Skills</strong></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-programming">Python Programming</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#git-and-version-control">Git and Version Control</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#physics-and-optics"><strong>Physics and Optics</strong></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ray-optics-and-scattering">Ray Optics and Scattering</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flow-cytometry-basics">Flow Cytometry Basics</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mathematical-background"><strong>Mathematical Background</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#flow-cytometry-basics">Flow Cytometry Basics</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-flowcypy">Overview of FlowCyPy</a></li>
-</ul>
-</li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#core-components-and-getting-started">Core Components and Getting Started</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started-with-flowcypy">Getting Started with FlowCyPy</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explore-the-documentation">Explore the Documentation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-example-simulations">Run Example Simulations</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#study-core-components">Study Core Components</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#internship-tasks">Internship Tasks</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-resources">Learning Resources</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#feedback-and-questions">Feedback and Questions</a></li>
 </ul>
-</li>
-</ul>
-
   </nav></div>
 
   <div class="sidebar-secondary-item">

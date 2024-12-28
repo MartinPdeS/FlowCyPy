@@ -47,6 +47,7 @@
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.0';
@@ -57,7 +58,7 @@
     <link rel="icon" href="_static/thumbnail.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples: Density plots" href="gallery/density_plots/index.html" />
+    <link rel="next" title="Examples: Tutorials" href="gallery/tutorials/index.html" />
     <link rel="prev" title="PeakFinder Classes" href="code/peak_locator.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -150,7 +151,7 @@
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="#">
     Examples
   </a>
@@ -171,7 +172,7 @@
 </li>
 
 
-<li class="nav-item ">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="internal.html">
     Internal
   </a>
@@ -317,7 +318,7 @@
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="#">
     Examples
   </a>
@@ -338,7 +339,7 @@
 </li>
 
 
-<li class="nav-item ">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="internal.html">
     Internal
   </a>
@@ -431,25 +432,42 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="gallery/density_plots/index.html">Examples: Density plots</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="gallery/density_plots/1_populations.html">Flow Cytometry Simulation with One Populations: Density Plot of Scattering Intensities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gallery/density_plots/2_populations.html">Flow Cytometry Simulation [2 populations] Density Plot of Scattering Intensities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gallery/density_plots/3_populations.html">Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gallery/density_plots/custom_populations.html">Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities</a></li>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="internal/prerequisites/index.html"><strong>Pre-requisites</strong></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="internal/prerequisites/programming.html"><strong>Programming Skills</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="internal/prerequisites/optics.html"><strong>Physics and Optics</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="internal/prerequisites/mathematics.html"><strong>Mathematical Background</strong></a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="gallery/noise_sources/index.html">Examples: Noises</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="gallery/noise_sources/dark_current.html">Effect of Dark Current Noise on Detector Signal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gallery/noise_sources/shot_noise.html">Effect of Optical Power on Detector Signal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gallery/noise_sources/thermal.html">Thermal Noise Simulation in a Flow Cytometer Detector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal/getting_started.html">Getting Started with FlowCyPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal/core_components.html">Core Components</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal/tasks.html">Internship Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="internal/ressources.html">Learning Resources</a></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="gallery/tutorials/index.html">Examples: Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="gallery/tutorials/workflow.html">Flow Cytometry Simulation: Scattering Intensities with One Population</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="gallery/extras/index.html">Examples: extras</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="gallery/extras/distributions.html">Particle Size Distribution Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gallery/extras/flow_cytometer_signal.html">Simulating Flow Cytometer Signals with Rayleigh Scattering</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gallery/extras/full_workflow.html">Simulating and Analyzing Flow Cytometer Signals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gallery/extras/scatterer_distribution.html">Flow Cytometry Simulation and 2D Hexbin Plot of Scattering Intensities</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="gallery/density_plots/index.html">Examples: Density plots</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="gallery/density_plots/1_populations.html">Flow Cytometry Simulation with One Populations: Density Plot of Scattering Intensities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/density_plots/2_populations.html">Flow Cytometry Simulation [2 populations] Density Plot of Scattering Intensities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/density_plots/3_populations.html">Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/density_plots/custom_populations.html">Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="gallery/noise_sources/index.html">Examples: Noises</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="gallery/noise_sources/dark_current.html">Effect of Dark Current Noise on Detector Signal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/noise_sources/shot_noise.html">Effect of Optical Power on Detector Signal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/noise_sources/thermal.html">Thermal Noise Simulation in a Flow Cytometer Detector</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="gallery/extras/index.html">Examples: extras</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="gallery/extras/distributions.html">Particle Size Distribution Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/extras/flow_cytometer_signal.html">Simulating Flow Cytometer Signals with Rayleigh Scattering</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/extras/full_workflow.html">Simulating and Analyzing Flow Cytometer Signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gallery/extras/scatterer_distribution.html">Flow Cytometry Simulation and 2D Hexbin Plot of Scattering Intensities</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 </ul>
