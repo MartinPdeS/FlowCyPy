@@ -9,7 +9,7 @@
 | FlowCyPy/coupling\_mechanism/mie.py                   |       42 |        2 |        6 |        3 |     90% |80->94, 117, 181 |
 | FlowCyPy/coupling\_mechanism/rayleigh.py              |       22 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/uniform.py               |        5 |        0 |        0 |        0 |    100% |           |
-| FlowCyPy/cytometer.py                                 |       81 |        8 |       12 |        2 |     87% |137, 142-145, 187-193 |
+| FlowCyPy/cytometer.py                                 |       84 |        8 |       16 |        2 |     88% |142, 147-150, 192-198 |
 | FlowCyPy/detector.py                                  |      166 |       32 |       40 |        9 |     74% |110, 132, 152, 174, 188-190, 332->335, 468->472, 473, 477, 500-504, 522-523, 544-550, 581-595, 603-616 |
 | FlowCyPy/distribution/base\_class.py                  |       20 |        3 |        0 |        0 |     85% |26, 30, 59 |
 | FlowCyPy/distribution/delta.py                        |       22 |        1 |        0 |        0 |     95% |        86 |
@@ -37,7 +37,7 @@
 | FlowCyPy/source.py                                    |       74 |        7 |       18 |        6 |     86% |36, 41, 51, 54, 61, 64, 74 |
 | FlowCyPy/units.py                                     |       19 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       67 |        6 |        8 |        3 |     88% |31, 35, 43, 89->92, 156-157, 179 |
-|                                             **TOTAL** | **1516** |  **414** |  **254** |   **65** | **69%** |           |
+|                                             **TOTAL** | **1519** |  **414** |  **258** |   **65** | **69%** |           |
 
 
 ## Setup coverage badge
