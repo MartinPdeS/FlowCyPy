@@ -4,6 +4,12 @@ import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 from FlowCyPy.units import particle, Quantity
 
+config_dict = dict(
+    arbitrary_types_allowed=True,
+    kw_only=True,
+    slots=True,
+    extra='forbid'
+)
 
 class Base:
     """
