@@ -502,7 +502,7 @@
 
 
 <div class="viewcode-block" id="FlowCytometer">
-<a class="viewcode-back" href="../../code/base.html#FlowCyPy.cytometer.FlowCytometer">[docs]</a>
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer">[docs]</a>
 <span class="k">class</span> <span class="nc">FlowCytometer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class to simulate flow cytometer signals for Forward Scatter (FSC) and Side Scatter (SSC) channels.</span>
@@ -538,7 +538,7 @@
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Both detectors cannot have the same name&#39;</span>
 
 <div class="viewcode-block" id="FlowCytometer.simulate_pulse">
-<a class="viewcode-back" href="../../code/base.html#FlowCyPy.cytometer.FlowCytometer.simulate_pulse">[docs]</a>
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.simulate_pulse">[docs]</a>
     <span class="k">def</span> <span class="nf">simulate_pulse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simulates the signal pulses for the FSC and SSC channels by generating Gaussian pulses for</span>
@@ -652,7 +652,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">scatterer</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Widths&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">widths</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">widths</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FlowCytometer.plot">
-<a class="viewcode-back" href="../../code/base.html#FlowCyPy.cytometer.FlowCytometer.plot">[docs]</a>
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.plot">[docs]</a>
     <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_size</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">add_peak_locator</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots the signals generated for each detector channel.&quot;&quot;&quot;</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Plotting the signal for the different channels.&quot;</span><span class="p">)</span>
@@ -677,7 +677,7 @@
 
 
 <div class="viewcode-block" id="FlowCytometer.add_detector">
-<a class="viewcode-back" href="../../code/base.html#FlowCyPy.cytometer.FlowCytometer.add_detector">[docs]</a>
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.add_detector">[docs]</a>
     <span class="k">def</span> <span class="nf">add_detector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Detector</span><span class="p">:</span>
         <span class="n">detector</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span>
             <span class="o">**</span><span class="n">kwargs</span>

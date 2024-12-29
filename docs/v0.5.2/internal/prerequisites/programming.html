@@ -539,21 +539,72 @@
 Below, we highlight the essential skills and resources to enhance your proficiency.</p>
 <section id="python-programming">
 <span id="id2"></span><h2>Python Programming<a class="headerlink" href="#python-programming" title="Link to this heading">#</a></h2>
-<p>Python is the backbone of <strong>FlowCyPy</strong>. You will need to work with advanced Python features and popular scientific libraries.
-Key areas of focus include:</p>
+<p>Python is the backbone of <strong>FlowCyPy</strong>. It is essential to understand its key concepts, features, and best practices to effectively contribute to the project.</p>
+<p>Key areas of focus include:</p>
 <ul class="simple">
-<li><p>Writing and understanding functions and classes, particularly within an Object-Oriented Programming (OOP) paradigm.</p></li>
-<li><p>Utilizing libraries such as <code class="docutils literal notranslate"><span class="pre">numpy</span></code> for numerical operations, <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> for visualization, and <code class="docutils literal notranslate"><span class="pre">pandas</span></code> for data manipulation.</p></li>
-<li><p>Debugging and troubleshooting Python scripts to identify and fix issues efficiently.</p></li>
+<li><p><strong>Object-Oriented Programming (OOP)</strong>:</p>
+<ul>
+<li><p>Writing and understanding functions and classes.</p></li>
+<li><p>Classes in Python should always start with an uppercase letter (e.g., <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Detector</span></code>).</p></li>
+<li><p>All other objects are fully lowercase (e.g., <code class="docutils literal notranslate"><span class="pre">object</span></code>, <code class="docutils literal notranslate"><span class="pre">function</span></code>).</p></li>
+</ul>
+</li>
+<li><p><strong>Popular Libraries</strong>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code> for numerical operations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> for creating visualizations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pandas</span></code> for efficient data manipulation and analysis.</p></li>
+</ul>
+</li>
+<li><p><strong>Debugging and Troubleshooting</strong>:</p>
+<ul>
+<li><p>Use tools like <cite>pdb</cite>, <cite>ipdb</cite>, or IDE-based debuggers (e.g., in VS Code or PyCharm).</p></li>
+</ul>
+</li>
+</ul>
+<section id="additional-python-essentials">
+<h3>Additional Python Essentials<a class="headerlink" href="#additional-python-essentials" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>What is pip?</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">pip</span></code> is the Python package manager used to install, update, and manage libraries in Python projects.</p></li>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">numpy</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>What is conda?</strong></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">conda</span></code> is an environment and package manager that supports Python and other languages.</p></li>
+<li><p>It is useful for managing dependencies and creating isolated environments.</p></li>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">--name</span> <span class="pre">flowcypy-env</span> <span class="pre">python=3.10</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>PEP Standards</strong>:</p>
+<ul>
+<li><p>Python Enhancement Proposals (PEPs) define Python’s design and best practices.</p></li>
+<li><p>Follow <a class="reference external" href="https://peps.python.org/pep-0008/">PEP 8</a> for consistent and clean coding style.</p></li>
+<li><p>Example:</p>
+<ul>
+<li><p>Indentations should be 4 spaces.</p></li>
+<li><p>Use snake_case for variable and method names.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Interactive Python</strong>:</p>
+<ul>
+<li><p>Use Jupyter notebooks or Python’s interactive shell for rapid testing and prototyping.</p></li>
+</ul>
+</li>
 </ul>
 <p><em>Suggested Practice</em>: Enhance your skills with hands-on exercises available on <a class="reference external" href="https://www.codechef.com/practice">CodeChef Practice</a>.</p>
 </section>
+</section>
 <section id="git-and-version-control">
 <span id="id3"></span><h2>Git and Version Control<a class="headerlink" href="#git-and-version-control" title="Link to this heading">#</a></h2>
-<p>Version control is essential for collaborative software development.
-You will use Git to manage the FlowCyPy codebase effectively. Familiarity with the following Git commands is expected:</p>
+<p>Version control is essential for collaborative software development. You will use Git to manage the <strong>FlowCyPy</strong> codebase effectively.
+Familiarity with the following Git commands is expected:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span></code>:  Clone repositories to your local machine for development.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span></code>: Clone repositories to your local machine for development.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code>: Fetch and merge changes from the remote repository.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">commit</span></code>: Save changes locally with descriptive commit messages.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span></code>: Upload your changes to the remote repository.</p></li>
@@ -561,7 +612,20 @@ You will use Git to manage the FlowCyPy codebase effectively. Familiarity with t
 <li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span></code>: Integrate updates from different branches.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">stash</span></code>: Temporarily save changes without committing them.</p></li>
 </ul>
+<section id="best-practices-for-git">
+<h3>Best Practices for Git<a class="headerlink" href="#best-practices-for-git" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Commit frequently with clear and concise commit messages.</p></li>
+<li><p>Always pull the latest changes before starting new work to avoid conflicts.</p></li>
+<li><p>Use branches to isolate different tasks or features.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>Mini Objective</strong>:
+Try creating a new branch, making a change, committing it, and merging it back into the main branch.</p>
+</div>
 <p><em>Recommended Resource</em>: Master Git workflows through the <a class="reference external" href="https://git-scm.com/book/en/v2">Pro Git Book</a>.</p>
+</section>
 </section>
 </section>
 
@@ -588,8 +652,14 @@ You will use Git to manage the FlowCyPy codebase effectively. Familiarity with t
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-programming">Python Programming</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#git-and-version-control">Git and Version Control</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-programming">Python Programming</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-python-essentials">Additional Python Essentials</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#git-and-version-control">Git and Version Control</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#best-practices-for-git">Best Practices for Git</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

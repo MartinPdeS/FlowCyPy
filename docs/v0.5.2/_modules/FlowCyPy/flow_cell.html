@@ -494,7 +494,7 @@
 
 
 <div class="viewcode-block" id="FlowCell">
-<a class="viewcode-back" href="../../code/base.html#FlowCyPy.FlowCell">[docs]</a>
+<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.FlowCell">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">FlowCell</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -590,7 +590,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_area</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_speed</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_time</span>
 
 <div class="viewcode-block" id="FlowCell.print_properties">
-<a class="viewcode-back" href="../../code/base.html#FlowCyPy.FlowCell.print_properties">[docs]</a>
+<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.FlowCell.print_properties">[docs]</a>
     <span class="k">def</span> <span class="nf">print_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the core properties of the flow and particle interactions in the flow cytometer.</span>
@@ -600,7 +600,7 @@
 
 
 <div class="viewcode-block" id="FlowCell.get_properties">
-<a class="viewcode-back" href="../../code/base.html#FlowCyPy.FlowCell.get_properties">[docs]</a>
+<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.FlowCell.get_properties">[docs]</a>
     <span class="k">def</span> <span class="nf">get_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="p">[</span><span class="s1">&#39;Flow Speed&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_speed</span><span class="si">:</span><span class="s2">.2f~#P</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>

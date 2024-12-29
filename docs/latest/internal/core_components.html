@@ -532,43 +532,118 @@
                   
   <section id="core-components">
 <h1>Core Components<a class="headerlink" href="#core-components" title="Link to this heading">#</a></h1>
-<ol class="arabic simple">
-<li><p><strong>Scatterer</strong>:</p>
+<p><strong>FlowCyPy</strong> provides a modular framework to simulate key elements of a flow cytometry system. Below are its core components, their attributes, and functionalities. For more details, refer to the <a class="reference external" href="https://martinpdes.github.io/FlowCyPy/docs/latest/code.html">API Reference</a>.</p>
+<section id="scatterer">
+<h2>Scatterer<a class="headerlink" href="#scatterer" title="Link to this heading">#</a></h2>
+<p>The <strong>Scatterer</strong> represents particle distributions and their interactions with light.</p>
 <ul class="simple">
-<li><p>Represents particle distributions and their optical properties.</p></li>
-<li><p>Enables adding populations with defined size and refractive index distributions.</p></li>
-<li><p>Simulates dynamic particle interactions within the flow cytometer.</p></li>
+<li><p><strong>Attributes</strong>:</p>
+<ul>
+<li><p><cite>populations</cite>: List of particle populations, each with size and refractive index distributions.</p></li>
+<li><p><cite>medium_refractive_index</cite>: Refractive index of the surrounding medium (e.g., water).</p></li>
+<li><p><cite>dataframe</cite>: Contains particle data, including size, refractive index, and time of arrival.</p></li>
 </ul>
 </li>
-<li><p><strong>Source</strong>:</p>
-<ul class="simple">
-<li><p>Models laser sources with parameters like wavelength, optical power, and numerical aperture.</p></li>
-<li><p>Simulates the illumination profile for scattering and fluorescence experiments.</p></li>
+<li><p><strong>Key Features</strong>:</p>
+<ul>
+<li><p>Add populations with <cite>add_population(name, size, refractive_index, concentration)</cite>.</p></li>
+<li><p>Initialize the scatterer using <cite>initialize(flow_cell)</cite>.</p></li>
+<li><p>Visualize particle distributions with <cite>plot()</cite>.</p></li>
 </ul>
 </li>
-<li><p><strong>Detector</strong>:</p>
+</ul>
+</section>
+<section id="source">
+<h2>Source<a class="headerlink" href="#source" title="Link to this heading">#</a></h2>
+<p>The <strong>Source</strong> models the laser used for illumination in flow cytometry.</p>
 <ul class="simple">
-<li><p>Emulates the response of flow cytometer detectors, including:</p></li>
-<li><p>Responsitivity and resolution.</p></li>
-<li><p>Noise modeling (thermal, shot noise, and dark current).</p></li>
-<li><p>Signal saturation and digitization.</p></li>
+<li><p><strong>Attributes</strong>:</p>
+<ul>
+<li><p><cite>wavelength</cite>: Wavelength of the laser (e.g., 800 nm).</p></li>
+<li><p><cite>optical_power</cite>: Power of the laser beam (e.g., 20 mW).</p></li>
+<li><p><cite>numerical_aperture</cite>: Numerical aperture defining the beam’s focus.</p></li>
 </ul>
 </li>
-<li><p><strong>FlowCytometer</strong>:</p>
-<ul class="simple">
-<li><p>Integrates scatterers, sources, and detectors to simulate a complete flow cytometry experiment.</p></li>
-<li><p>Computes realistic Forward Scatter (FSC) and Side Scatter (SSC) signals.</p></li>
-<li><p>Models optical coupling using <strong>PyMieSim</strong> for scattering calculations.</p></li>
+<li><p><strong>Key Features</strong>:</p>
+<ul>
+<li><p>Simulates the laser profile for scattering calculations.</p></li>
+<li><p>Models coherent light sources using Gaussian beam theory.</p></li>
 </ul>
 </li>
-<li><p><strong>Analyzer</strong>:</p>
+</ul>
+</section>
+<section id="detector">
+<h2>Detector<a class="headerlink" href="#detector" title="Link to this heading">#</a></h2>
+<p>The <strong>Detector</strong> emulates the response of flow cytometer detectors.</p>
 <ul class="simple">
-<li><p>Provides tools for analyzing simulated data:</p></li>
-<li><p>Peak detection for particle events.</p></li>
-<li><p>Signal clustering and classification.</p></li>
+<li><p><strong>Attributes</strong>:</p>
+<ul>
+<li><p><cite>phi_angle</cite>: Angle of detection relative to the beam (e.g., forward or side scatter).</p></li>
+<li><p><cite>responsitivity</cite>: Sensitivity of the detector (e.g., current per unit power).</p></li>
+<li><p><cite>saturation_level</cite>: Maximum signal level the detector can handle.</p></li>
+<li><p><cite>noise_levels</cite>: Configurable noise types (thermal, shot, dark current).</p></li>
+<li><p><cite>dataframe</cite>: Stores raw and processed signal data.</p></li>
 </ul>
 </li>
-</ol>
+<li><p><strong>Key Features</strong>:</p>
+<ul>
+<li><p>Add various noise models using <cite>NoiseSetting</cite>.</p></li>
+<li><p>Simulate digitization with configurable bit-depth (e.g., 12-bit, 14-bit).</p></li>
+<li><p>Visualize signal data using <cite>plot()</cite>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="flowcytometer">
+<h2>FlowCytometer<a class="headerlink" href="#flowcytometer" title="Link to this heading">#</a></h2>
+<p>The <strong>FlowCytometer</strong> integrates all components to simulate a complete flow cytometry experiment.</p>
+<ul class="simple">
+<li><p><strong>Attributes</strong>:</p>
+<ul>
+<li><p><cite>scatterer</cite>: The scatterer object defining particle distributions.</p></li>
+<li><p><cite>source</cite>: The laser source illuminating particles.</p></li>
+<li><p><cite>detectors</cite>: List of detectors for signal acquisition.</p></li>
+<li><p><cite>background_power</cite>: Ambient light contribution.</p></li>
+</ul>
+</li>
+<li><p><strong>Key Features</strong>:</p>
+<ul>
+<li><p>Combines the scatterer, source, and detectors for realistic simulations.</p></li>
+<li><p>Computes Forward Scatter (FSC) and Side Scatter (SSC) signals.</p></li>
+<li><p>Uses <strong>PyMieSim</strong> for accurate scattering computations.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="eventcorrelator">
+<h2>EventCorrelator<a class="headerlink" href="#eventcorrelator" title="Link to this heading">#</a></h2>
+<p>The <strong>EventCorrelator</strong> (previously called Analyzer) provides tools for signal analysis and particle event detection.</p>
+<ul class="simple">
+<li><p><strong>Attributes</strong>:</p>
+<ul>
+<li><p><cite>cytometer</cite>: The associated FlowCytometer object.</p></li>
+<li><p><cite>coincidence_dataframe</cite>: Stores data for coinciding signals across detectors.</p></li>
+<li><p><cite>algorithm</cite>: Peak detection algorithm for identifying particle events.</p></li>
+</ul>
+</li>
+<li><p><strong>Key Features</strong>:</p>
+<ul>
+<li><p>Detect peaks in signals using customizable algorithms (e.g., MovingAverage).</p></li>
+<li><p>Correlate events between detectors to identify coincidences.</p></li>
+<li><p>Generate 2D density plots of Forward Scatter (FSC) and Side Scatter (SSC) signals.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="example-use-cases">
+<h2>Example Use Cases<a class="headerlink" href="#example-use-cases" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Simulate a scatterer with two distinct populations to analyze overlapping signals.</p></li>
+<li><p>Configure detectors with high noise to study the effect on signal clarity.</p></li>
+<li><p>Use EventCorrelator to investigate coincidence events in a multi-detector setup.</p></li>
+</ul>
+<p>For further details on classes and methods, visit the <a class="reference external" href="https://martinpdes.github.io/FlowCyPy/docs/latest/code.html">API Reference</a>.</p>
+</section>
 </section>
 
 
@@ -585,6 +660,23 @@
                 <dialog id="pst-secondary-sidebar-modal"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scatterer">Scatterer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#source">Source</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#detector">Detector</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#flowcytometer">FlowCytometer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#eventcorrelator">EventCorrelator</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-use-cases">Example Use Cases</a></li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
   <div role="note" aria-label="source link">
