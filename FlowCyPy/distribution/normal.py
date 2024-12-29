@@ -1,16 +1,9 @@
-from FlowCyPy.distribution.base_class import Base
+from FlowCyPy.distribution.base_class import Base, config_dict
 import numpy as np
 from typing import Tuple
 from scipy.stats import norm
 from PyMieSim.units import Quantity
 from pydantic.dataclasses import dataclass
-
-config_dict = dict(
-    arbitrary_types_allowed=True,
-    kw_only=True,
-    slots=True,
-    extra='forbid'
-)
 
 
 @dataclass(config=config_dict)

@@ -14,7 +14,7 @@ from FlowCyPy.directories import doc_css_path
 package_name = "FlowCyPy"
 version = FlowCyPy.__version__
 
-current_dir = Path(".")
+current_dir = Path("../")
 
 sys.path.append(str(current_dir.resolve()))
 
