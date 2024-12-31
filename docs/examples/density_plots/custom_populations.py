@@ -68,7 +68,7 @@ population_1 = Population(
 scatterer.add_population(population_0, particle_count=3e+8 * particle / milliliter)
 scatterer.add_population(population_1, particle_count=3e+8 * particle / milliliter)
 
-flow_cell.initialize(scatterer=scatterer)  # Link populations to flow cell
+flow_cell.initialize(scatterer_collection=scatterer)  # Link populations to flow cell
 scatterer._log_properties()                # Display population properties
 scatterer.plot()                           # Visualize the population distributions
 

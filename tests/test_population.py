@@ -2,10 +2,11 @@ import pytest
 import numpy as np
 from FlowCyPy import distribution
 from FlowCyPy.population import Population
+from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.particle_count import ParticleCount
 from FlowCyPy.units import (
-    nanometer, micrometer, meter, milliliter, second, refractive_index_unit, particle
+    nanometer, micrometer, meter, milliliter, second, RIU, particle
 )
 from pint import UnitRegistry
 
@@ -25,20 +26,14 @@ def flow_cell():
 
 
 @pytest.fixture
-def population():
+def population(flow_cell):
     """Fixture to create a Population object for testing."""
-    flow_cell = FlowCell(
-        flow_speed=5 * micrometer / second,
-        flow_area=(10 * micrometer) ** 2,
-        run_time=1 * second,
-    )
-
     size_dist = distribution.Normal(
         mean=500 * nanometer, std_dev=50 * nanometer
     )
     refractive_index_dist = distribution.Normal(
-        mean=1.4 * refractive_index_unit,
-        std_dev=0.01 * refractive_index_unit
+        mean=1.4 * RIU,
+        std_dev=0.01 * RIU
     )
     population = Population(
         size=size_dist,
@@ -48,7 +43,13 @@ def population():
 
     population.particle_count = ParticleCount(value=1.8e11 * particle / milliliter)
 
-    population.initialize(flow_cell)
+
+    scatterer_collection = ScattererCollection(
+        medium_refractive_index=1.33 * RIU,
+        populations=[population]
+    )
+
+    flow_cell.initialize(scatterer_collection=scatterer_collection)
 
     return population
 
@@ -64,6 +65,8 @@ def test_population_initialization(population, flow_cell):
 def test_particle_arrival_times(population, flow_cell):
     """Test if the particle arrival times are generated correctly."""
     assert len(population.dataframe['Time']) > 0, "Particle arrival times should be generated"
+    # print(population.dataframe['Time'])
+    # print(flow_cell.run_time)
     assert np.all(population.dataframe['Time'] <= flow_cell.run_time), "Arrival times should not exceed total experiment duration"
 
 

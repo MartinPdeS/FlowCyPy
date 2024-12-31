@@ -63,7 +63,7 @@ population_1 = Population(
 scatterer.add_population(population_0, particle_count=1e+9 * particle / milliliter)
 scatterer.add_population(population_1, particle_count=1e+9 * particle / milliliter)
 
-flow_cell.initialize(scatterer=scatterer)
+flow_cell.initialize(scatterer_collection=scatterer)
 
 scatterer._log_properties()
 

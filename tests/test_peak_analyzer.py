@@ -86,7 +86,7 @@ def default_detector():
 def default_cytometer(default_scatterer, default_detector, flow_cell):
     """Fixture for a default cytometer with two detectors."""
 
-    flow_cell.initialize(scatterer=default_scatterer)
+    flow_cell.initialize(scatterer_collection=default_scatterer)
 
     detectors = [default_detector('0'), default_detector('1')]
 

@@ -55,7 +55,7 @@ def test_generate_distribution_size(distribution, default_flow_cell):
 
     scatterer.add_population(population_0, particle_count=CONCENTRATION)
 
-    default_flow_cell.initialize(scatterer=scatterer)
+    default_flow_cell.initialize(scatterer_collection=scatterer)
 
     # Check that sizes were generated and are positive
     assert len(scatterer.dataframe) > 0, "Generated size array is empty."
@@ -108,7 +108,7 @@ def test_generate_longitudinal_positions(default_flow_cell, distribution):
 
     scatterer.add_population(population_0, particle_count=CONCENTRATION)
 
-    default_flow_cell.initialize(scatterer=scatterer)
+    default_flow_cell.initialize(scatterer_collection=scatterer)
 
     # Assert correct shape of generated longitudinal positions
     for population in scatterer.populations:
@@ -143,7 +143,7 @@ def test_plot_positions(mock_show, default_flow_cell, distribution):
 
     scatterer.add_population(population_0, particle_count=CONCENTRATION)
 
-    default_flow_cell.initialize(scatterer=scatterer)
+    default_flow_cell.initialize(scatterer_collection=scatterer)
 
     scatterer.plot()
 

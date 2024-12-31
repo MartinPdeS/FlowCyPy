@@ -3,9 +3,7 @@ import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 import seaborn as sns
 import pandas as pd
-import numpy
 from FlowCyPy.units import Quantity, RIU, particle, liter
-from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Population
 from FlowCyPy.utils import PropertiesReport
 from FlowCyPy.distribution import Base as BaseDistribution

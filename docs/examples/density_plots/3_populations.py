@@ -56,7 +56,7 @@ scatterer.add_population(Exosome, particle_count=10e+8 * particle / milliliter)
 scatterer.add_population(HDL, particle_count=10e+8 * particle / milliliter)
 scatterer.add_population(LDL, particle_count=10e+8 * particle / milliliter)
 
-flow_cell.initialize(scatterer=scatterer)   # Link populations to flow cell
+flow_cell.initialize(scatterer_collection=scatterer)   # Link populations to flow cell
 scatterer._log_properties()               # Display population properties
 scatterer.plot()                           # Visualize the population distributions
 
