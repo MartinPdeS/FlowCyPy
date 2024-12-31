@@ -1,5 +1,5 @@
-Getting Started with FlowCyPy
------------------------------
+**Getting Started with FlowCyPy**
+---------------------------------
 
 This section is designed to help you set up **FlowCyPy**, familiarize yourself with its components, and explore its capabilities through hands-on experimentation. By following the steps below, you will gain the foundational knowledge and skills needed to contribute meaningfully to the project.
 

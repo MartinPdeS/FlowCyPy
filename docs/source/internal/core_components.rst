@@ -1,5 +1,5 @@
-Core Components
-===============
+**Core Components**
+===================
 
 **FlowCyPy** provides a modular framework to simulate key elements of a flow cytometry system. Below are its core components, their attributes, and functionalities. For more details, refer to the `API Reference <https://martinpdes.github.io/FlowCyPy/docs/latest/code.html>`_.
 

@@ -1,18 +1,15 @@
 Internal
 ========
 
-
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :titlesonly:
-   :hidden:
 
-   internal/prerequisites/index.rst
-   internal/getting_started.rst
-   internal/core_components.rst
-   internal/tasks.rst
-   internal/ressources.rst
-   examples
+   internal/prerequisites/index
+   internal/getting_started
+   internal/core_components
+   internal/tasks
+   internal/ressources
 
 .. contents::
    :local:

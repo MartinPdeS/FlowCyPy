@@ -1,5 +1,5 @@
-**Mathematical Background**
----------------------------
+Mathematical Background
+-----------------------
 
 A strong mathematical foundation is essential for working effectively with **FlowCyPy**, particularly in the areas of signal processing, noise analysis, and data interpretation. This section highlights key concepts and provides a deeper dive into their application within the context of flow cytometry simulations.
 
