@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch
 import matplotlib.pyplot as plt
 import numpy as np
-from FlowCyPy.scatterer import Scatterer
+from FlowCyPy import ScattererCollection
 from FlowCyPy import distribution as dist
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Population
@@ -36,7 +36,7 @@ distributions = [
 
 @pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__)
 def test_generate_distribution_size(distribution, default_flow_cell):
-    """Test if the Scatterer generates sizes correctly for each distribution type."""
+    """Test if the ScattererCollection generates sizes correctly for each distribution type."""
     # Get the distribution from the fixtures
 
     ri_distribution = dist.Normal(
@@ -50,12 +50,12 @@ def test_generate_distribution_size(distribution, default_flow_cell):
         name="Default population"
     )
 
-    # Create the Scatterer Distribution object with the chosen distribution
-    scatterer = Scatterer()
+    # Create the ScattererCollection Distribution object with the chosen distribution
+    scatterer = ScattererCollection()
 
     scatterer.add_population(population_0, particle_count=CONCENTRATION)
 
-    scatterer.initialize(flow_cell=default_flow_cell)
+    default_flow_cell.initialize(scatterer=scatterer)
 
     # Check that sizes were generated and are positive
     assert len(scatterer.dataframe) > 0, "Generated size array is empty."
@@ -104,11 +104,11 @@ def test_generate_longitudinal_positions(default_flow_cell, distribution):
         name="Default population"
     )
 
-    scatterer = Scatterer()
+    scatterer = ScattererCollection()
 
     scatterer.add_population(population_0, particle_count=CONCENTRATION)
 
-    scatterer.initialize(flow_cell=default_flow_cell)
+    default_flow_cell.initialize(scatterer=scatterer)
 
     # Assert correct shape of generated longitudinal positions
     for population in scatterer.populations:
@@ -139,11 +139,11 @@ def test_plot_positions(mock_show, default_flow_cell, distribution):
         name="Default population"
     )
 
-    scatterer = Scatterer()
+    scatterer = ScattererCollection()
 
     scatterer.add_population(population_0, particle_count=CONCENTRATION)
 
-    scatterer.initialize(flow_cell=default_flow_cell)
+    default_flow_cell.initialize(scatterer=scatterer)
 
     scatterer.plot()
 

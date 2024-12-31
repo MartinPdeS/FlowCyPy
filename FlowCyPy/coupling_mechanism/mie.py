@@ -1,5 +1,5 @@
 import numpy as np
-from FlowCyPy import Scatterer, Detector
+from FlowCyPy import ScattererCollection, Detector
 from FlowCyPy.source import BaseBeam
 from PyMieSim.experiment.scatterer import Sphere as PMS_SPHERE
 from PyMieSim.experiment.source import PlaneWave
@@ -94,13 +94,13 @@ def apply_rin_noise(source: BaseBeam, total_size: int, bandwidth: float) -> np.n
     return amplitude_with_rin
 
 
-def initialize_scatterer(scatterer: Scatterer, source: PlaneWave) -> PMS_SPHERE:
+def initialize_scatterer(scatterer: ScattererCollection, source: PlaneWave) -> PMS_SPHERE:
     """
     Initializes the scatterer object for the PyMieSim experiment.
 
     Parameters
     ----------
-    scatterer : Scatterer
+    scatterer : ScattererCollection
         The scatterer object containing particle data.
     source : PlaneWave
         The light source for the simulation.
@@ -114,7 +114,7 @@ def initialize_scatterer(scatterer: Scatterer, source: PlaneWave) -> PMS_SPHERE:
     ri_list = scatterer.dataframe['RefractiveIndex'].values
 
     if len(size_list) == 0:
-        raise ValueError("Scatterer size list is empty.")
+        raise ValueError("ScattererCollection size list is empty.")
 
     size_list = size_list.quantity.magnitude * size_list.units
     ri_list = ri_list.quantity.magnitude * ri_list.units
@@ -155,7 +155,7 @@ def initialize_detector(detector: Detector, total_size: int) -> PMS_PHOTODIODE:
     )
 
 
-def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: Scatterer, tolerance: float = 1e-5) -> np.ndarray:
+def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: ScattererCollection, tolerance: float = 1e-5) -> np.ndarray:
     """
     Computes the detected signal by analyzing the scattering properties of particles.
 
@@ -165,7 +165,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: Sca
         The light source object containing wavelength, power, and other optical properties.
     detector : Detector
         The detector object containing properties such as numerical aperture and angles.
-    scatterer : Scatterer
+    scatterer : ScattererCollection
         The scatterer object containing particle size and refractive index data.
     tolerance : float, optional
         The tolerance for deciding if two values of size and refractive index are "close enough" to be cached.

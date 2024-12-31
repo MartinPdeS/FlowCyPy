@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from typing import List, Callable, Optional
 from MPSPlots.styles import mps
-from FlowCyPy.scatterer import Scatterer
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.detector import Detector
 from FlowCyPy.source import GaussianBeam
 import pandas as pd
@@ -30,8 +30,8 @@ class FlowCytometer:
 
     Parameters
     ----------
-    scatterer : Scatterer
-        The distribution of particle sizes which affects scattering signals.
+    flow_cell : FlowCell
+        Void
     source : GaussianBeam
         The laser source object representing the illumination scheme.
     detectors : List[Detector]
@@ -40,13 +40,14 @@ class FlowCytometer:
     """
     def __init__(
             self,
-            scatterer: Scatterer,
+            flow_cell: FlowCell,
             source: GaussianBeam,
             detectors: List[Detector],
             coupling_mechanism: Optional[str] = 'mie',
             background_power: Optional[Quantity] = 0 * milliwatt):
 
-        self.scatterer = scatterer
+        self.flow_cell = flow_cell
+        self.scatterer = flow_cell.scatterer
         self.source = source
         self.detectors = detectors
         self.coupling_mechanism = coupling_mechanism
@@ -78,7 +79,7 @@ class FlowCytometer:
         # Initialize the detectors
         for detector in self.detectors:
             detector.source = self.source
-            detector.init_raw_signal(run_time=self.scatterer.flow_cell.run_time)
+            detector.init_raw_signal(run_time=self.flow_cell.run_time)
 
         # Fetch the coupling power for each scatterer
         for detector in self.detectors:
@@ -162,7 +163,7 @@ class FlowCytometer:
         """
         self.pulse_dataframe['Centers'] = self.scatterer.dataframe['Time']
 
-        widths = self.source.waist / self.scatterer.flow_cell.flow_speed * np.ones(self.scatterer.n_events)
+        widths = self.source.waist / self.flow_cell.flow_speed * np.ones(self.flow_cell.n_events)
 
         self.scatterer.dataframe['Widths'] = pint_pandas.PintArray(widths, dtype=widths.units)
 

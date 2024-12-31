@@ -77,7 +77,7 @@ class EventCorrelatorLogger:
             time_diffs = times.diff().dropna()
             avg_time_between_peaks = f"{time_diffs.mean().to_compact():.4~P}"
             min_time_between_peaks = f"{time_diffs.min().to_compact():.4~P}"
-            measured_concentration = num_events * particle / self.correlator.cytometer.scatterer.flow_cell.volume.to(milliliter)
+            measured_concentration = num_events * particle / self.correlator.cytometer.flow_cell.volume.to(milliliter)
         else:
             avg_time_between_peaks = "N/A"
             min_time_between_peaks = "N/A"
@@ -289,7 +289,7 @@ class SimulationLogger:
         first_event_time = self._format_time(centers.min()) if num_events > 0 else "N/A"
         last_event_time = self._format_time(centers.max()) if num_events > 0 else "N/A"
 
-        mean_event_rate = (num_events / self.cytometer.scatterer.flow_cell.run_time).to('Hz')
+        mean_event_rate = (num_events / self.cytometer.flow_cell.run_time).to('Hz')
 
         return [
             detector.name,

@@ -14,7 +14,7 @@ Steps:
 
 # Import necessary libraries and modules
 import numpy as np
-from FlowCyPy import FlowCytometer, Scatterer, EventCorrelator, Detector, GaussianBeam, FlowCell
+from FlowCyPy import FlowCytometer, ScattererCollection, EventCorrelator, Detector, GaussianBeam, FlowCell
 from FlowCyPy import peak_locator
 from FlowCyPy.units import particle, milliliter, nanometer, RIU, second, micrometer, millisecond, meter
 from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliampere, megahertz, microvolt
@@ -36,13 +36,13 @@ flow_cell = FlowCell(
 )
 
 # Step 2: Create Populations (Extracellular Vesicles and Liposomes)
-scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
+scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
 
 scatterer.add_population(Exosome, particle_count=3e+8 * particle / milliliter)
 scatterer.add_population(HDL, particle_count=3e+8 * particle / milliliter)
 
 # Initialize scatterer and link it to the flow cell
-scatterer.initialize(flow_cell=flow_cell)
+flow_cell.initialize(scatterer=scatterer)
 
 # Print and plot properties of the populations
 scatterer._log_properties()
@@ -92,9 +92,8 @@ detector_1.print_properties()  # Print the properties of the forward scatter det
 
 # Step 6: Simulate Flow Cytometry Experiment
 cytometer = FlowCytometer(
-    coupling_mechanism='mie',                # Scattering mechanism: Mie scattering
     source=source,                           # Laser source used in the experiment
-    scatterer=scatterer,                     # Populations used in the experiment
+    flow_cell=flow_cell,                     # Populations used in the experiment
     background_power=0.0 * milliwatt,
     detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
 )

@@ -17,7 +17,7 @@ Workflow Summary:
 import numpy as np
 from FlowCyPy import FlowCell
 from FlowCyPy.units import meter, micrometer, millisecond, second, degree
-from FlowCyPy import Scatterer
+from FlowCyPy import ScattererCollection
 from FlowCyPy.units import particle, milliliter, nanometer, RIU, milliwatt, AU
 from FlowCyPy import FlowCytometer
 from FlowCyPy import Population, distribution
@@ -40,7 +40,7 @@ flow_cell = FlowCell(
 
 # Step 2: Defining Particle Populations
 # Initialize scatterer with a medium refractive index
-scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
+scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
 
 # Define populations with size distribution and refractive index
 population_0 = Population(
@@ -59,8 +59,8 @@ population_1 = Population(
 scatterer.add_population(population_0, particle_count=3e+8 * particle / milliliter)
 scatterer.add_population(population_1, particle_count=3e+8 * particle / milliliter)
 
-scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
-scatterer._log_properties()               # Display population properties
+flow_cell.initialize(scatterer=scatterer)  # Link populations to flow cell
+scatterer._log_properties()                # Display population properties
 scatterer.plot()                           # Visualize the population distributions
 
 # %%
@@ -101,10 +101,9 @@ detector_1 = Detector(
 
 
 cytometer = FlowCytometer(
-    coupling_mechanism='mie',
     detectors=[detector_0, detector_1],
     source=source,
-    scatterer=scatterer
+    flow_cell=flow_cell
 )
 
 # Run the flow cytometry simulation

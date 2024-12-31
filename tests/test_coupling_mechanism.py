@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from FlowCyPy import Scatterer, Detector, FlowCell
+from FlowCyPy import ScattererCollection, Detector, FlowCell
 from FlowCyPy import distribution
 from FlowCyPy.coupling_mechanism.rayleigh import compute_detected_signal
 from FlowCyPy.units import micrometer, refractive_index_unit
@@ -66,9 +66,9 @@ def detector():
 
 @pytest.fixture
 def scatterer(normal_population, default_flow_cell):
-    scatterer = Scatterer(medium_refractive_index=1.33 * RIU)
+    scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)
     scatterer.add_population(normal_population, particle_count=1e+10 * particle / milliliter)
-    scatterer.initialize(flow_cell=default_flow_cell)
+    default_flow_cell.initialize(scatterer=scatterer)
     return scatterer
 
 
@@ -83,11 +83,11 @@ def source():
 
 def test_generate_scatterer_size(scatterer):
     """
-    Test if the sizes are generated correctly in the Scatterer.
+    Test if the sizes are generated correctly in the ScattererCollection.
     """
     sizes = scatterer.dataframe['Size']
 
-    assert sizes is not None, "Scatterer sizes should be generated."
+    assert sizes is not None, "ScattererCollection sizes should be generated."
     assert len(sizes) > 0, f"Expected 10 scatterer sizes, but got {len(sizes)}."
     assert sizes.values.numpy_data.min() > 0, f"Expected all sizes to be positive, but got a minimum size of {sizes.magnitude.min()}."
 

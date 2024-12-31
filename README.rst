@@ -58,9 +58,10 @@ Quick Start
 
 Simulate a simple flow cytometer experiment:
 
-.. code-block:: python
+..  code-block:: python
+    :caption: Code snippet
 
-    from FlowCyPy import FlowCytometer, Scatterer, FlowCell
+    from FlowCyPy import FlowCytometer, ScattererCollection, FlowCell
     from FlowCyPy.units import particle, liter, nanometer, RIU
 
     # Define the flow cell
@@ -69,18 +70,18 @@ Simulate a simple flow cytometer experiment:
     )
 
     # Define scatterer properties
-    scatterer = Scatterer(medium_refractive_index=1.33 * RIU)
+    scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)
     scatterer.add_population(
         name='EVs',
         concentration=1e9 * particle / liter,
         size=distribution.Normal(mean=100 * nanometer, std_dev=20 * nanometer),
         refractive_index=distribution.Normal(mean=1.45 * RIU, std_dev=0.01 * RIU)
     )
-    scatterer.initialize(flow_cell=flow_cell)
+    flow_cell.initialize(scatterer=scatterer) 
 
     # Simulate the cytometer signals
     cytometer = FlowCytometer(
-        scatterer=scatterer,
+        flow_cell=flow_cell,
         source=source,
         detectors=[detector_fsc, detector_ssc]
     )

@@ -152,6 +152,7 @@ html_theme_options.update({
     # Other
     "pygments_light_style": "default",
     "pygments_dark_style": "github-dark",
+    "collapse_navigation": False,
 }
 )
 

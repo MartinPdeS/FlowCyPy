@@ -55,9 +55,8 @@ Validation
 
 .. math::
 
-   \text{Shot Noise Variance} = 2 e I B R^2
+   \text{Shot Noise Variance} = 2 e I B R^2 \\[20pt]
    \\[20pt]
-
    \text{Thermal Noise Variance} = \frac{4 k_B T B}{R}
 
 Where:

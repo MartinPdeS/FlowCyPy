@@ -60,7 +60,7 @@ flow_cell = FlowCell(
 
 
 # %%
-# Step 3: Define Scatterer and Population
+# Step 3: Define ScattererCollection and Population
 # ---------------------------------------
 # The scatterer represents particles in the flow. The concentration of particles in the flow cell is
 # given by:
@@ -68,10 +68,10 @@ flow_cell = FlowCell(
 # .. math::
 #     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
 
-from FlowCyPy import Scatterer
+from FlowCyPy import ScattererCollection
 from FlowCyPy.population import Exosome
 
-scatterer = Scatterer(medium_refractive_index=1.33 * units.RIU)
+scatterer = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
 # Add an Exosome population
 scatterer.add_population(
@@ -80,7 +80,7 @@ scatterer.add_population(
 )
 
 # Initialize the scatterer with the flow cell
-scatterer.initialize(flow_cell=flow_cell)
+flow_cell.initialize(scatterer=scatterer) 
 scatterer.plot()  # Visualize the particle population
 
 # %%
@@ -143,7 +143,7 @@ from FlowCyPy import FlowCytometer
 cytometer = FlowCytometer(
     source=source,
     detectors=[detector_0, detector_1],
-    scatterer=scatterer,
+    flow_cell=flow_cell,
     background_power=0.001 * units.milliwatt
 )
 
