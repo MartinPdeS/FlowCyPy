@@ -17,7 +17,7 @@ Steps in the Workflow:
 """
 
 # Import necessary libraries and modules
-from FlowCyPy import Scatterer, FlowCell
+from FlowCyPy import ScattererDistribution, FlowCell
 from FlowCyPy import distribution, Population
 from FlowCyPy.units import second, nanometer, RIU, particle, milliliter, meter, micrometer, millisecond
 import numpy as np
@@ -38,7 +38,7 @@ flow_cell = FlowCell(
 # Step 2: Define Particle Size and Refractive Index Distributions
 # ---------------------------------------------------------------
 # Two particle populations are defined with different sizes and refractive indices.
-scatterer = Scatterer(medium_refractive_index=1.33 * RIU)
+scatterer = ScattererDistribution(medium_refractive_index=1.33 * RIU)
 
 population_0 = Population(
     name='EV',
