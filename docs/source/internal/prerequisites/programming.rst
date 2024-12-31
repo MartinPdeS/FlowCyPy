@@ -1,7 +1,7 @@
 .. _programming-skills:
 
-**Programming Skills**
-----------------------
+Programming Skills
+------------------
 
 A solid grasp of programming concepts and tools is crucial for contributing to the development and validation of **FlowCyPy**.
 Below, we highlight the essential skills and resources to enhance your proficiency.
@@ -84,9 +84,8 @@ Best Practices for Git
 - Always pull the latest changes before starting new work to avoid conflicts.
 - Use branches to isolate different tasks or features.
 
-.. note::
-
-   **Mini Objective**:
-   Try creating a new branch, making a change, committing it, and merging it back into the main branch.
+.. admonition:: Mini Objective
+  
+  Try creating a new branch, making a change, committing it, and merging it back into the main branch.
 
 *Recommended Resource*: Master Git workflows through the `Pro Git Book <https://git-scm.com/book/en/v2>`_.

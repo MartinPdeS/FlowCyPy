@@ -1,12 +1,12 @@
-**Pre-requisites**
----------------------------
+**Prerequisites**
+=================
 
+Before proceeding, please review the following topics:
 
 .. toctree::
    :maxdepth: 1
    :titlesonly:
-   :hidden:
 
-   ./programming.rst
-   ./optics.rst
-   ./mathematics.rst
+   programming
+   optics
+   mathematics

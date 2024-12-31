@@ -1,5 +1,5 @@
-**Physics and Optics**
-----------------------
+Physics and Optics
+------------------
 
 Understanding the principles of light scattering and flow cytometry is vital for interpreting and simulating signals in FlowCyPy.
 Below are the key topics you should familiarize yourself with.

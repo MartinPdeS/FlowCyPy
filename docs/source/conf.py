@@ -126,7 +126,8 @@ html_context = {
 html_theme_options = dict()
 
 html_theme_options['logo'] = dict(text=package_name, image="_static/thumbnail.png")
-html_theme_options["show_nav_level"] = 0
+# html_theme_options["show_nav_level"] = 0
+
 
 html_theme_options.update({
     "github_url": "https://github.com/MartinPdeS/FlowCyPy",
@@ -152,7 +153,8 @@ html_theme_options.update({
     # Other
     "pygments_light_style": "default",
     "pygments_dark_style": "github-dark",
-    "collapse_navigation": False,
+    "show_nav_level": 2,
+    "collapse_navigation": False
 }
 )
 
@@ -184,7 +186,7 @@ epub_title = project
 
 html_static_path = ['_static']
 templates_path = ['_templates']
-html_css_files = ['default.css']
+html_css_files = ['_static/default.css']
 epub_exclude_files = ['search.html']
 
 

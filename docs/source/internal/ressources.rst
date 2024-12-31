@@ -1,5 +1,5 @@
-Learning Resources
-------------------
+**Learning Resources**
+----------------------
 
 - **FlowCyPy**: `FlowCyPy Examples <https://martinpdes.github.io/FlowCyPy/docs/latest/examples.html>`_
 - **PyMieSim**: `PyMieSim Examples <https://martinpdes.github.io/PyMieSim/docs/latest/index.html>`_
