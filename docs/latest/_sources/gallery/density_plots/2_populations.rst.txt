@@ -30,14 +30,14 @@ Steps:
 3. Simulate the flow cytometry experiment.
 4. Analyze pulse signals and generate a 2D density plot.
 
-.. GENERATED FROM PYTHON SOURCE LINES 14-51
+.. GENERATED FROM PYTHON SOURCE LINES 14-31
 
 .. code-block:: Python
 
 
     # Import necessary libraries and modules
     import numpy as np
-    from FlowCyPy import FlowCytometer, Scatterer, EventCorrelator, Detector, GaussianBeam, FlowCell
+    from FlowCyPy import FlowCytometer, ScattererCollection, EventCorrelator, Detector, GaussianBeam, FlowCell
     from FlowCyPy import peak_locator
     from FlowCyPy.units import particle, milliliter, nanometer, RIU, second, micrometer, millisecond, meter
     from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliampere, megahertz, microvolt
@@ -51,43 +51,18 @@ Steps:
     # Set random seed for reproducibility
     np.random.seed(3)
 
-    # Step 1: Define Flow Parameters
-    flow_cell = FlowCell(
-        flow_speed=7.56 * meter / second,      # Flow speed: 7.56 meters per second
-        flow_area=(10 * micrometer) ** 2,      # Flow area: 10 x 10 micrometers
-        run_time=.2 * millisecond             # Total simulation time: 0.3 milliseconds
-    )
-
-    # Step 2: Create Populations (Extracellular Vesicles and Liposomes)
-    scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
-
-    scatterer.add_population(Exosome, particle_count=3e+8 * particle / milliliter)
-    scatterer.add_population(HDL, particle_count=3e+8 * particle / milliliter)
-
-    # Initialize scatterer and link it to the flow cell
-    scatterer.initialize(flow_cell=flow_cell)
-
-    # Print and plot properties of the populations
-    scatterer._log_properties()
-    scatterer.plot()
-
-
-
-
-.. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_001.png
-   :alt: 2 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_2_populations_001.png
-   :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-53
 
-Step 4: Set up the Laser GaussianBeam
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-108
+.. GENERATED FROM PYTHON SOURCE LINES 32-33
+
+Step 1: Set up the Laser GaussianBeam
+
+.. GENERATED FROM PYTHON SOURCE LINES 33-107
 
 .. code-block:: Python
 
@@ -96,6 +71,27 @@ Step 4: Set up the Laser GaussianBeam
         wavelength=488 * nanometer,              # Laser wavelength: 800 nanometers
         optical_power=100 * milliwatt             # Laser optical power: 10 milliwatts
     )
+
+    # Step 2: Define Flow Parameters
+    flow_cell = FlowCell(
+        source=source,
+        flow_speed=7.56 * meter / second,      # Flow speed: 7.56 meters per second
+        flow_area=(10 * micrometer) ** 2,      # Flow area: 10 x 10 micrometers
+        run_time=.2 * millisecond             # Total simulation time: 0.3 milliseconds
+    )
+
+    # Step 3: Create Populations (Extracellular Vesicles and Liposomes)
+    scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
+
+    scatterer.add_population(Exosome, particle_count=3e+8 * particle / milliliter)
+    scatterer.add_population(HDL, particle_count=3e+8 * particle / milliliter)
+
+    # Initialize scatterer and link it to the flow cell
+    flow_cell.initialize(scatterer=scatterer)
+
+    # Print and plot properties of the populations
+    scatterer._log_properties()
+    scatterer.plot()
 
     source.print_properties()  # Print the laser source properties
 
@@ -132,10 +128,8 @@ Step 4: Set up the Laser GaussianBeam
     detector_1.print_properties()  # Print the properties of the forward scatter detector
 
     # Step 6: Simulate Flow Cytometry Experiment
-    cytometer = FlowCytometer(
-        coupling_mechanism='mie',                # Scattering mechanism: Mie scattering
-        source=source,                           # Laser source used in the experiment
-        scatterer=scatterer,                     # Populations used in the experiment
+    cytometer = FlowCytometer(                      # Laser source used in the experiment
+        flow_cell=flow_cell,                     # Populations used in the experiment
         background_power=0.0 * milliwatt,
         detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
     )
@@ -149,10 +143,22 @@ Step 4: Set up the Laser GaussianBeam
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_002.png
-   :alt: 2 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_2_populations_002.png
-   :class: sphx-glr-single-img
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_001.png
+         :alt: 2 populations
+         :srcset: /gallery/density_plots/images/sphx_glr_2_populations_001.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_002.png
+         :alt: 2 populations
+         :srcset: /gallery/density_plots/images/sphx_glr_2_populations_002.png
+         :class: sphx-glr-multi-img
 
 
 .. rst-class:: sphx-glr-script-out
@@ -194,11 +200,11 @@ Step 4: Set up the Laser GaussianBeam
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-110
+.. GENERATED FROM PYTHON SOURCE LINES 108-109
 
 Step 5: Analyzing Pulse Signals
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-126
+.. GENERATED FROM PYTHON SOURCE LINES 109-125
 
 .. code-block:: Python
 
@@ -230,11 +236,11 @@ Step 5: Analyzing Pulse Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-128
+.. GENERATED FROM PYTHON SOURCE LINES 126-127
 
 Step 8: Extract and Plot Coincidence Data
 
-.. GENERATED FROM PYTHON SOURCE LINES 128-132
+.. GENERATED FROM PYTHON SOURCE LINES 127-131
 
 .. code-block:: Python
 
@@ -257,7 +263,7 @@ Step 8: Extract and Plot Coincidence Data
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.775 seconds)
+   **Total running time of the script:** (0 minutes 5.937 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_2_populations.py:

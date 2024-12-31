@@ -40,7 +40,7 @@ Steps in the Workflow:
 
 
     # Import necessary libraries and modules
-    from FlowCyPy import Scatterer, FlowCell
+    from FlowCyPy import ScattererCollection, FlowCell
     from FlowCyPy import distribution, Population
     from FlowCyPy.units import second, nanometer, RIU, particle, milliliter, meter, micrometer, millisecond
     import numpy as np
@@ -61,7 +61,7 @@ Steps in the Workflow:
     # Step 2: Define Particle Size and Refractive Index Distributions
     # ---------------------------------------------------------------
     # Two particle populations are defined with different sizes and refractive indices.
-    scatterer = Scatterer(medium_refractive_index=1.33 * RIU)
+    scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)
 
     population_0 = Population(
         name='EV',
@@ -79,7 +79,7 @@ Steps in the Workflow:
 
     scatterer.add_population(population_1, particle_count=1e+10 * particle / milliliter)
 
-    scatterer.initialize(flow_cell=flow_cell)
+    flow_cell.initialize(scatterer=scatterer)
 
     # Plot and visualize the scatterer distribution.
     scatterer.plot()
@@ -129,7 +129,7 @@ Display the properties of the scatterer distribution.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.872 seconds)
+   **Total running time of the script:** (0 minutes 0.950 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_scatterer_distribution.py:

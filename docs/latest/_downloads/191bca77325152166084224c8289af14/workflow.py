@@ -42,49 +42,7 @@ np.random.seed(3)  # Ensure reproducibility
 
 
 # %%
-# Step 2: Set Up the Flow Cell
-# ----------------------------
-# The flow cell models the movement of particles in the cytometer. For example, the volume of fluid
-# passing through the cross-sectional area is calculated as:
-#
-# .. math::
-#     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
-
-from FlowCyPy import FlowCell
-
-flow_cell = FlowCell(
-    flow_speed=7.56 * units.meter / units.second,  # Flow speed
-    flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
-    run_time=0.1 * units.millisecond              # Simulation duration
-)
-
-
-# %%
-# Step 3: Define Scatterer and Population
-# ---------------------------------------
-# The scatterer represents particles in the flow. The concentration of particles in the flow cell is
-# given by:
-#
-# .. math::
-#     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
-
-from FlowCyPy import Scatterer
-from FlowCyPy.population import Exosome
-
-scatterer = Scatterer(medium_refractive_index=1.33 * units.RIU)
-
-# Add an Exosome population
-scatterer.add_population(
-    Exosome,
-    particle_count=5e9 * units.particle / units.milliliter  # Particle concentration
-)
-
-# Initialize the scatterer with the flow cell
-scatterer.initialize(flow_cell=flow_cell)
-scatterer.plot()  # Visualize the particle population
-
-# %%
-# Step 4: Configure the Laser Source
+# Step 2: Configure the Laser Source
 # ----------------------------------
 # The laser source generates light that interacts with the particles. Its parameters, like numerical
 # aperture and wavelength, affect how light scatters, governed by Mie theory.
@@ -96,6 +54,50 @@ source = GaussianBeam(
     wavelength=200 * units.nanometer,           # Wavelength
     optical_power=20 * units.milliwatt          # Optical power
 )
+
+
+# %%
+# Step 3: Set Up the Flow Cell
+# ----------------------------
+# The flow cell models the movement of particles in the cytometer. For example, the volume of fluid
+# passing through the cross-sectional area is calculated as:
+#
+# .. math::
+#     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
+
+from FlowCyPy import FlowCell
+
+flow_cell = FlowCell(
+    source=source,
+    flow_speed=7.56 * units.meter / units.second,  # Flow speed
+    flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
+    run_time=0.1 * units.millisecond              # Simulation duration
+)
+
+
+# %%
+# Step 4: Define ScattererCollection and Population
+# -------------------------------------------------
+# The scatterer represents particles in the flow. The concentration of particles in the flow cell is
+# given by:
+#
+# .. math::
+#     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
+
+from FlowCyPy import ScattererCollection
+from FlowCyPy.population import Exosome
+
+scatterer = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
+
+# Add an Exosome population
+scatterer.add_population(
+    Exosome,
+    particle_count=5e9 * units.particle / units.milliliter  # Particle concentration
+)
+
+# Initialize the scatterer with the flow cell
+flow_cell.initialize(scatterer=scatterer) 
+scatterer.plot()  # Visualize the particle population
 
 # %%
 # Step 5: Define Detectors
@@ -141,9 +143,8 @@ detector_1 = Detector(
 from FlowCyPy import FlowCytometer
 
 cytometer = FlowCytometer(
-    source=source,
     detectors=[detector_0, detector_1],
-    scatterer=scatterer,
+    flow_cell=flow_cell,
     background_power=0.001 * units.milliwatt
 )
 

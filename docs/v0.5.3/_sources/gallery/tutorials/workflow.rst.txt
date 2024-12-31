@@ -84,87 +84,14 @@ globally but exclude specific types, such as shot noise and thermal noise.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 45-52
+.. GENERATED FROM PYTHON SOURCE LINES 45-49
 
-Step 2: Set Up the Flow Cell
-----------------------------
-The flow cell models the movement of particles in the cytometer. For example, the volume of fluid
-passing through the cross-sectional area is calculated as:
-
-.. math::
-    \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
-
-.. GENERATED FROM PYTHON SOURCE LINES 52-62
-
-.. code-block:: Python
-
-
-    from FlowCyPy import FlowCell
-
-    flow_cell = FlowCell(
-        flow_speed=7.56 * units.meter / units.second,  # Flow speed
-        flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
-        run_time=0.1 * units.millisecond              # Simulation duration
-    )
-
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 63-70
-
-Step 3: Define Scatterer and Population
----------------------------------------
-The scatterer represents particles in the flow. The concentration of particles in the flow cell is
-given by:
-
-.. math::
-    \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
-
-.. GENERATED FROM PYTHON SOURCE LINES 70-86
-
-.. code-block:: Python
-
-
-    from FlowCyPy import Scatterer
-    from FlowCyPy.population import Exosome
-
-    scatterer = Scatterer(medium_refractive_index=1.33 * units.RIU)
-
-    # Add an Exosome population
-    scatterer.add_population(
-        Exosome,
-        particle_count=5e9 * units.particle / units.milliliter  # Particle concentration
-    )
-
-    # Initialize the scatterer with the flow cell
-    scatterer.initialize(flow_cell=flow_cell)
-    scatterer.plot()  # Visualize the particle population
-
-
-
-
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
-   :alt: workflow
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
-   :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 87-91
-
-Step 4: Configure the Laser Source
+Step 2: Configure the Laser Source
 ----------------------------------
 The laser source generates light that interacts with the particles. Its parameters, like numerical
 aperture and wavelength, affect how light scatters, governed by Mie theory.
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-100
+.. GENERATED FROM PYTHON SOURCE LINES 49-59
 
 .. code-block:: Python
 
@@ -184,14 +111,89 @@ aperture and wavelength, affect how light scatters, governed by Mie theory.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 101-105
+
+.. GENERATED FROM PYTHON SOURCE LINES 60-67
+
+Step 3: Set Up the Flow Cell
+----------------------------
+The flow cell models the movement of particles in the cytometer. For example, the volume of fluid
+passing through the cross-sectional area is calculated as:
+
+.. math::
+    \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
+
+.. GENERATED FROM PYTHON SOURCE LINES 67-78
+
+.. code-block:: Python
+
+
+    from FlowCyPy import FlowCell
+
+    flow_cell = FlowCell(
+        source=source,
+        flow_speed=7.56 * units.meter / units.second,  # Flow speed
+        flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
+        run_time=0.1 * units.millisecond              # Simulation duration
+    )
+
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 79-86
+
+Step 4: Define ScattererCollection and Population
+-------------------------------------------------
+The scatterer represents particles in the flow. The concentration of particles in the flow cell is
+given by:
+
+.. math::
+    \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
+
+.. GENERATED FROM PYTHON SOURCE LINES 86-102
+
+.. code-block:: Python
+
+
+    from FlowCyPy import ScattererCollection
+    from FlowCyPy.population import Exosome
+
+    scatterer = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
+
+    # Add an Exosome population
+    scatterer.add_population(
+        Exosome,
+        particle_count=5e9 * units.particle / units.milliliter  # Particle concentration
+    )
+
+    # Initialize the scatterer with the flow cell
+    flow_cell.initialize(scatterer=scatterer) 
+    scatterer.plot()  # Visualize the particle population
+
+
+
+
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :alt: workflow
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 103-107
 
 Step 5: Define Detectors
 ------------------------
 Detectors measure light intensity. Parameters like responsitivity define the conversion of optical
 power to electronic signals, and saturation level represents the maximum signal they can handle.
 
-.. GENERATED FROM PYTHON SOURCE LINES 105-132
+.. GENERATED FROM PYTHON SOURCE LINES 107-134
 
 .. code-block:: Python
 
@@ -229,7 +231,7 @@ power to electronic signals, and saturation level represents the maximum signal 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 133-140
+.. GENERATED FROM PYTHON SOURCE LINES 135-142
 
 Step 6: Simulate Flow Cytometry Experiment
 ------------------------------------------
@@ -239,7 +241,7 @@ and particles follows Mie theory:
 .. math::
     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
 
-.. GENERATED FROM PYTHON SOURCE LINES 140-153
+.. GENERATED FROM PYTHON SOURCE LINES 142-154
 
 .. code-block:: Python
 
@@ -247,9 +249,8 @@ and particles follows Mie theory:
     from FlowCyPy import FlowCytometer
 
     cytometer = FlowCytometer(
-        source=source,
         detectors=[detector_0, detector_1],
-        scatterer=scatterer,
+        flow_cell=flow_cell,
         background_power=0.001 * units.milliwatt
     )
 
@@ -268,14 +269,14 @@ and particles follows Mie theory:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 154-158
+.. GENERATED FROM PYTHON SOURCE LINES 155-159
 
 Step 7: Analyze Detected Signals
 --------------------------------
 The MovingAverage algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 158-175
+.. GENERATED FROM PYTHON SOURCE LINES 159-176
 
 .. code-block:: Python
 
@@ -303,14 +304,14 @@ window size and threshold.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 176-180
+.. GENERATED FROM PYTHON SOURCE LINES 177-181
 
 Step 8: Visualize Coincidence and Density Plot
 ----------------------------------------------
 Coincidence analysis checks for simultaneous detection events across detectors, which are plotted
 as a 2D density graph to illustrate signal relationships between FSC and SSC.
 
-.. GENERATED FROM PYTHON SOURCE LINES 180-183
+.. GENERATED FROM PYTHON SOURCE LINES 181-184
 
 .. code-block:: Python
 
@@ -332,7 +333,7 @@ as a 2D density graph to illustrate signal relationships between FSC and SSC.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.189 seconds)
+   **Total running time of the script:** (0 minutes 3.139 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

@@ -5,7 +5,7 @@ Scatterers
 Classes representing particles and populations within the cytometer.
 
 
-.. autoclass:: FlowCyPy.Scatterer
+.. autoclass:: FlowCyPy.ScattererCollection
    :members:
    :show-inheritance:
 

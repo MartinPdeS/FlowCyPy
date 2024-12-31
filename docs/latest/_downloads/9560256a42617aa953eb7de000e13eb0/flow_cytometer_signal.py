@@ -14,17 +14,27 @@ Steps:
 """
 
 # Step 1: Import the necessary libraries
-from FlowCyPy import FlowCytometer, Scatterer, Detector, GaussianBeam, FlowCell
+from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
 from FlowCyPy import distribution, Population
 from FlowCyPy.units import (
     RIU, milliliter, particle, nanometer, degree, microvolt, AU,
     megahertz, milliwatt, micrometer, millisecond, meter, second
 )
 
-# Step 2: Define the flow parameters
+# Step 2: Set up the light source
+# -------------------------------
+# A laser with a wavelength of 1550 nm, optical power of 2 mW, and a numerical aperture of 0.4 is used.
+source = GaussianBeam(
+    numerical_aperture=0.4 * AU,     # Numerical aperture: 0.4
+    wavelength=1550 * nanometer,     # Wavelength: 1550 nm
+    optical_power=200 * milliwatt    # Optical power: 2 mW
+)
+
+# Step 3: Define the flow parameters
 # ----------------------------------
 # Flow speed is set to 80 micrometers per second, with a flow area of 1 square micrometer and a total simulation time of 1 second.
 flow_cell = FlowCell(
+    source=source,
     flow_speed=7.56 * meter / second,        # Flow speed: 7.56 meters per second
     flow_area=(20 * micrometer) ** 2,        # Flow area: 10 x 10 micrometers
     run_time=0.5 * millisecond             # Total simulation time: 0.3 milliseconds
@@ -32,11 +42,11 @@ flow_cell = FlowCell(
 
 flow_cell.print_properties()
 
-# Step 3: Define the particle size distribution
+# Step 4: Define the particle size distribution
 # ---------------------------------------------
 # We define a normal distribution for particle sizes with a mean of 200 nm, standard deviation of 10 nm,
 # and a refractive index of 1.39 with a small variation of 0.01.
-scatterer = Scatterer(medium_refractive_index=1.33 * RIU)
+scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)
 
 population_0 = Population(
     name='EV',
@@ -53,18 +63,9 @@ population_1 = Population(
 scatterer.add_population(population_0, particle_count=1e+9 * particle / milliliter)
 scatterer.add_population(population_1, particle_count=1e+9 * particle / milliliter)
 
-scatterer.initialize(flow_cell=flow_cell)
+flow_cell.initialize(scatterer=scatterer)
 
 scatterer._log_properties()
-
-# Step 4: Set up the light source
-# -------------------------------
-# A laser with a wavelength of 1550 nm, optical power of 2 mW, and a numerical aperture of 0.4 is used.
-source = GaussianBeam(
-    numerical_aperture=0.4 * AU,     # Numerical aperture: 0.4
-    wavelength=1550 * nanometer,     # Wavelength: 1550 nm
-    optical_power=200 * milliwatt    # Optical power: 2 mW
-)
 
 # Step 5: Set up the detectors
 # ----------------------------
@@ -93,10 +94,8 @@ detector_ssc = Detector(
 # The flow cytometer is configured with the source, scatterer distribution, and detectors.
 # The 'mie' coupling mechanism models how the particles interact with the laser beam.
 cytometer = FlowCytometer(
-    source=source,                # Laser source
-    scatterer=scatterer,  # Particle size distribution
+    flow_cell=flow_cell,  # Particle size distribution
     detectors=[detector_fsc, detector_ssc],  # Detectors: FSC and SSC
-    coupling_mechanism='mie'      # Scattering model: Mie
 )
 
 # Step 7: Simulate flow cytometer signals

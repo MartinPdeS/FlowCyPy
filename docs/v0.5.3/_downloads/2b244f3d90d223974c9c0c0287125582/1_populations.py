@@ -19,7 +19,7 @@ Workflow Summary:
 import numpy as np
 from FlowCyPy import FlowCell
 from FlowCyPy.units import meter, micrometer, millisecond, second, degree
-from FlowCyPy import Scatterer
+from FlowCyPy import ScattererCollection
 from FlowCyPy.units import particle, milliliter, nanometer, RIU, AU, milliwatt
 from FlowCyPy import FlowCytometer
 from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, microvolt, microsecond
@@ -34,29 +34,30 @@ NoiseSetting.include_noises = False
 
 np.random.seed(3)  # Ensure reproducibility
 
-# Define the flow cell parameters
-flow_cell = FlowCell(
-    flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
-    flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
-    run_time=0.1 * millisecond               # Simulation run time: 0.5 ms
-)
-
-# Initialize scatterer with a medium refractive index
-scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
-
-# Define populations with size distribution and refractive index
-scatterer.add_population(Exosome, particle_count=5e9 * particle / milliliter)
-
-scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
-scatterer._log_properties()               # Display population properties
-scatterer.plot()                         # Visualize the population distributions
-
 # Set up the laser source parameters
 source = GaussianBeam(
     numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
     wavelength=200 * nanometer,           # Laser wavelength: 200 nm
     optical_power=20 * milliwatt          # Laser optical power: 20 mW
 )
+
+# Define the flow cell parameters
+flow_cell = FlowCell(
+    source=source,
+    flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
+    flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
+    run_time=0.1 * millisecond               # Simulation run time: 0.5 ms
+)
+
+# Initialize scatterer with a medium refractive index
+scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
+
+# Define populations with size distribution and refractive index
+scatterer.add_population(Exosome, particle_count=5e9 * particle / milliliter)
+
+flow_cell.initialize(scatterer=scatterer)  # Link populations to flow cell
+scatterer._log_properties()               # Display population properties
+scatterer.plot()                         # Visualize the population distributions
 
 # Add forward scatter detector
 detector_0 = Detector(
@@ -90,10 +91,8 @@ detector_1 = Detector(
 # Step 4: Simulating the Flow Cytometry Experiment
 # ------------------------------------------------
 cytometer = FlowCytometer(
-    coupling_mechanism='mie',
-    source=source,
+    flow_cell=flow_cell,
     detectors=[detector_0, detector_1],
-    scatterer=scatterer,
     background_power=0.001 * milliwatt
 )
 

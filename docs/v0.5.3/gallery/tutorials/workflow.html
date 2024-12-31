@@ -577,47 +577,8 @@ globally but exclude specific types, such as shot noise and thermal noise.</p>
 </pre></div>
 </div>
 </section>
-<section id="step-2-set-up-the-flow-cell">
-<h2>Step 2: Set Up the Flow Cell<a class="headerlink" href="#step-2-set-up-the-flow-cell" title="Link to this heading">#</a></h2>
-<p>The flow cell models the movement of particles in the cytometer. For example, the volume of fluid
-passing through the cross-sectional area is calculated as:</p>
-<div class="math notranslate nohighlight">
-\[\text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}\]</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">FlowCell</span>
-
-<span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
-    <span class="n">flow_speed</span><span class="o">=</span><span class="mf">7.56</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>  <span class="c1"># Flow speed</span>
-    <span class="n">flow_area</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>       <span class="c1"># Cross-sectional area</span>
-    <span class="n">run_time</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span>              <span class="c1"># Simulation duration</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="step-3-define-scatterer-and-population">
-<h2>Step 3: Define Scatterer and Population<a class="headerlink" href="#step-3-define-scatterer-and-population" title="Link to this heading">#</a></h2>
-<p>The scatterer represents particles in the flow. The concentration of particles in the flow cell is
-given by:</p>
-<div class="math notranslate nohighlight">
-\[\text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}\]</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">Scatterer</span>
-<span class="kn">from</span> <span class="nn">FlowCyPy.population</span> <span class="kn">import</span> <span class="n">Exosome</span>
-
-<span class="n">scatterer</span> <span class="o">=</span> <span class="n">Scatterer</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
-
-<span class="c1"># Add an Exosome population</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span>
-    <span class="n">Exosome</span><span class="p">,</span>
-    <span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span>  <span class="c1"># Particle concentration</span>
-<span class="p">)</span>
-
-<span class="c1"># Initialize the scatterer with the flow cell</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">)</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>  <span class="c1"># Visualize the particle population</span>
-</pre></div>
-</div>
-<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="workflow" class = "sphx-glr-single-img"/></section>
-<section id="step-4-configure-the-laser-source">
-<h2>Step 4: Configure the Laser Source<a class="headerlink" href="#step-4-configure-the-laser-source" title="Link to this heading">#</a></h2>
+<section id="step-2-configure-the-laser-source">
+<h2>Step 2: Configure the Laser Source<a class="headerlink" href="#step-2-configure-the-laser-source" title="Link to this heading">#</a></h2>
 <p>The laser source generates light that interacts with the particles. Its parameters, like numerical
 aperture and wavelength, affect how light scatters, governed by Mie theory.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">GaussianBeam</span>
@@ -630,6 +591,46 @@ aperture and wavelength, affect how light scatters, governed by Mie theory.</p>
 </pre></div>
 </div>
 </section>
+<section id="step-3-set-up-the-flow-cell">
+<h2>Step 3: Set Up the Flow Cell<a class="headerlink" href="#step-3-set-up-the-flow-cell" title="Link to this heading">#</a></h2>
+<p>The flow cell models the movement of particles in the cytometer. For example, the volume of fluid
+passing through the cross-sectional area is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[\text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}\]</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">FlowCell</span>
+
+<span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+    <span class="n">flow_speed</span><span class="o">=</span><span class="mf">7.56</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>  <span class="c1"># Flow speed</span>
+    <span class="n">flow_area</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>       <span class="c1"># Cross-sectional area</span>
+    <span class="n">run_time</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span>              <span class="c1"># Simulation duration</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="step-4-define-scatterercollection-and-population">
+<h2>Step 4: Define ScattererCollection and Population<a class="headerlink" href="#step-4-define-scatterercollection-and-population" title="Link to this heading">#</a></h2>
+<p>The scatterer represents particles in the flow. The concentration of particles in the flow cell is
+given by:</p>
+<div class="math notranslate nohighlight">
+\[\text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}\]</div>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">ScattererCollection</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy.population</span> <span class="kn">import</span> <span class="n">Exosome</span>
+
+<span class="n">scatterer</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
+
+<span class="c1"># Add an Exosome population</span>
+<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span>
+    <span class="n">Exosome</span><span class="p">,</span>
+    <span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span>  <span class="c1"># Particle concentration</span>
+<span class="p">)</span>
+
+<span class="c1"># Initialize the scatterer with the flow cell</span>
+<span class="n">flow_cell</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">scatterer</span><span class="o">=</span><span class="n">scatterer</span><span class="p">)</span>
+<span class="n">scatterer</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>  <span class="c1"># Visualize the particle population</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="workflow" class = "sphx-glr-single-img"/></section>
 <section id="step-5-define-detectors">
 <h2>Step 5: Define Detectors<a class="headerlink" href="#step-5-define-detectors" title="Link to this heading">#</a></h2>
 <p>Detectors measure light intensity. Parameters like responsitivity define the conversion of optical
@@ -671,9 +672,8 @@ and particles follows Mie theory:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">FlowCytometer</span>
 
 <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">],</span>
-    <span class="n">scatterer</span><span class="o">=</span><span class="n">scatterer</span><span class="p">,</span>
+    <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>
     <span class="n">background_power</span><span class="o">=</span><span class="mf">0.001</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span>
 <span class="p">)</span>
 
@@ -713,7 +713,7 @@ as a 2D density graph to illustrate signal relationships between FSC and SSC.</p
 <span class="n">analyzer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Generate a 2D density plot</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_003.png" srcset="../../_images/sphx_glr_workflow_003.png" alt="workflow" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.189 seconds)</p>
+<img src="../../_images/sphx_glr_workflow_003.png" srcset="../../_images/sphx_glr_workflow_003.png" alt="workflow" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.139 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/67e0cd555ca79f8bdb69184b227f40a4/workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow.ipynb</span></code></a></p>
@@ -755,9 +755,9 @@ as a 2D density graph to illustrate signal relationships between FSC and SSC.</p
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview:</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-0-import-necessary-libraries">Step 0: Import Necessary Libraries</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-configure-noise-settings">Step 1: Configure Noise Settings</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-set-up-the-flow-cell">Step 2: Set Up the Flow Cell</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-define-scatterer-and-population">Step 3: Define Scatterer and Population</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-configure-the-laser-source">Step 4: Configure the Laser Source</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-configure-the-laser-source">Step 2: Configure the Laser Source</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-set-up-the-flow-cell">Step 3: Set Up the Flow Cell</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-define-scatterercollection-and-population">Step 4: Define ScattererCollection and Population</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-define-detectors">Step 5: Define Detectors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-simulate-flow-cytometry-experiment">Step 6: Simulate Flow Cytometry Experiment</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-analyze-detected-signals">Step 7: Analyze Detected Signals</a></li>

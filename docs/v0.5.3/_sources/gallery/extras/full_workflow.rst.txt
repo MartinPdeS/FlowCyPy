@@ -27,7 +27,7 @@ provide insights into the physical properties of particles passing through the l
 
 Workflow:
 ---------
-1. Define a particle size distribution using `Scatterer`.
+1. Define a particle size distribution using `ScattererCollection`.
 2. Simulate flow cytometer signals using `FlowCytometer`.
 3. Analyze the forward scatter signal with `PulseAnalyzer` to extract features like peak height, width, and area.
 4. Visualize the generated signals and display the extracted pulse features.
@@ -40,7 +40,7 @@ Step 1: Import necessary modules from FlowCyPy
 
 .. code-block:: Python
 
-    from FlowCyPy import FlowCytometer, Scatterer, Detector, GaussianBeam, FlowCell
+    from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
     from FlowCyPy import distribution
     from FlowCyPy.population import Population
     from FlowCyPy.units import nanometer, millisecond, meter, micrometer, second, RIU, milliliter, particle, millivolt, watt, megahertz, degree, ampere, milliwatt, AU
@@ -54,15 +54,39 @@ Step 1: Import necessary modules from FlowCyPy
 
 .. GENERATED FROM PYTHON SOURCE LINES 25-28
 
-Step 2: Define flow parameters
-------------------------------
-Set the flow speed to 80 micrometers per second and a flow area of 1 square micrometer, with a total simulation time of 1 second.
+Step 2: Define the laser source
+-------------------------------
+Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and a numerical aperture of 0.3.
 
 .. GENERATED FROM PYTHON SOURCE LINES 28-34
 
 .. code-block:: Python
 
+    source = GaussianBeam(
+        numerical_aperture=0.3 * AU,  # Numerical aperture: 0.3
+        wavelength=800 * nanometer,   # Laser wavelength: 800 nm
+        optical_power=20 * milliwatt  # Optical power: 20 milliwatts
+    )
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 35-38
+
+Step 3: Define flow parameters
+------------------------------
+Set the flow speed to 80 micrometers per second and a flow area of 1 square micrometer, with a total simulation time of 1 second.
+
+.. GENERATED FROM PYTHON SOURCE LINES 38-45
+
+.. code-block:: Python
+
     flow_cell = FlowCell(
+        source=source,
         flow_speed=7.56 * meter / second,        # Flow speed: 7.56 meters per second
         flow_area=(20 * micrometer) ** 2,        # Flow area: 10 x 10 micrometers
         run_time=0.5 * millisecond             # Total simulation time: 0.3 milliseconds
@@ -75,14 +99,14 @@ Set the flow speed to 80 micrometers per second and a flow area of 1 square micr
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 35-39
+.. GENERATED FROM PYTHON SOURCE LINES 46-50
 
-Step 3: Define the particle size distribution
+Step 4: Define the particle size distribution
 ---------------------------------------------
 Use a normal size distribution with a mean size of 200 nanometers and a standard deviation of 10 nanometers.
 This represents the population of scatterers (particles) that will interact with the laser source.
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-64
+.. GENERATED FROM PYTHON SOURCE LINES 50-110
 
 .. code-block:: Python
 
@@ -102,42 +126,14 @@ This represents the population of scatterers (particles) that will interact with
         name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
     )
 
-    scatterer = Scatterer()
+    scatterer = ScattererCollection()
 
     scatterer.add_population(ev, particle_count=1.8e+9 * particle / milliliter)
 
-    scatterer.initialize(flow_cell=flow_cell)
+    flow_cell.initialize(scatterer=scatterer)
 
     # Plot the scatterer distribution
     scatterer.plot()
-
-
-
-
-.. image-sg:: /gallery/extras/images/sphx_glr_full_workflow_001.png
-   :alt: full workflow
-   :srcset: /gallery/extras/images/sphx_glr_full_workflow_001.png
-   :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 65-68
-
-Step 4: Define the laser source
--------------------------------
-Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and a numerical aperture of 0.3.
-
-.. GENERATED FROM PYTHON SOURCE LINES 68-111
-
-.. code-block:: Python
-
-    source = GaussianBeam(
-        numerical_aperture=0.3 * AU,  # Numerical aperture: 0.3
-        wavelength=800 * nanometer,   # Laser wavelength: 800 nm
-        optical_power=20 * milliwatt  # Optical power: 20 milliwatts
-    )
 
     # Step 5: Define the detector
     # ---------------------------
@@ -167,9 +163,7 @@ Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and
     # ---------------------------------------
     # Create a FlowCytometer instance to simulate the signals generated as particles pass through the laser beam.
     cytometer = FlowCytometer(
-        coupling_mechanism='mie',           # Scattering model: Empirical (Rayleigh scattering for small particles)
-        source=source,                      # Laser source
-        scatterer=scatterer,                # Particle size distribution
+        flow_cell=flow_cell,                # Particle size distribution
         detectors=[detector_0, detector_1]  # List of detectors used in the simulation
     )
 
@@ -179,17 +173,22 @@ Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and
 
 
 
+.. image-sg:: /gallery/extras/images/sphx_glr_full_workflow_001.png
+   :alt: full workflow
+   :srcset: /gallery/extras/images/sphx_glr_full_workflow_001.png
+   :class: sphx-glr-single-img
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 112-115
+
+.. GENERATED FROM PYTHON SOURCE LINES 111-114
 
 Step 7: Analyze and Visualize Results
 -------------------------------------
 Display the properties of the simulated cytometer setup, including flow speed and laser power.
 
-.. GENERATED FROM PYTHON SOURCE LINES 115-126
+.. GENERATED FROM PYTHON SOURCE LINES 114-125
 
 .. code-block:: Python
 
@@ -225,7 +224,7 @@ Display the properties of the simulated cytometer setup, including flow speed an
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.631 seconds)
+   **Total running time of the script:** (0 minutes 3.745 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_full_workflow.py:

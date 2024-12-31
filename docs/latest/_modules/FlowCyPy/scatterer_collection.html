@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FlowCyPy.scatterer &#8212; FlowCyPy  documentation</title>
+    <title>FlowCyPy.scatterer_collection &#8212; FlowCyPy  documentation</title>
   
   
   
@@ -46,7 +46,7 @@
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/FlowCyPy/scatterer';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/FlowCyPy/scatterer_collection';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
@@ -460,7 +460,7 @@
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">FlowCyPy.scatterer</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">FlowCyPy.scatterer_collection</span></li>
   </ul>
 </nav>
 </div>
@@ -477,7 +477,7 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for FlowCyPy.scatterer</h1><div class="highlight"><pre>
+  <h1>Source code for FlowCyPy.scatterer_collection</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">MPSPlots.styles</span> <span class="kn">import</span> <span class="n">mps</span>
@@ -492,7 +492,6 @@
 <span class="kn">from</span> <span class="nn">FlowCyPy.logger</span> <span class="kn">import</span> <span class="n">ScattererLogger</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.particle_count</span> <span class="kn">import</span> <span class="n">ParticleCount</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">pint_pandas</span> <span class="kn">import</span> <span class="n">PintType</span><span class="p">,</span> <span class="n">PintArray</span>
 
 
 <span class="k">class</span> <span class="nc">CouplingModel</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -501,9 +500,9 @@
     <span class="n">UNIFORM</span> <span class="o">=</span> <span class="s1">&#39;uniform&#39;</span>
 
 
-<div class="viewcode-block" id="Scatterer">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.Scatterer">[docs]</a>
-<span class="k">class</span> <span class="nc">Scatterer</span><span class="p">(</span><span class="n">PropertiesReport</span><span class="p">):</span>
+<div class="viewcode-block" id="ScattererCollection">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection">[docs]</a>
+<span class="k">class</span> <span class="nc">ScattererCollection</span><span class="p">(</span><span class="n">PropertiesReport</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Defines and manages the size and refractive index distributions of scatterers (particles)</span>
 <span class="sd">    passing through a flow cytometer. This class generates random scatterer sizes and refractive</span>
@@ -524,83 +523,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">populations</span> <span class="o">=</span> <span class="n">populations</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">medium_refractive_index</span> <span class="o">=</span> <span class="n">medium_refractive_index</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coupling_model</span> <span class="o">=</span> <span class="n">coupling_model</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">flow_cell</span><span class="p">:</span> <span class="n">FlowCell</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_events</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="Scatterer.initialize">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.Scatterer.initialize">[docs]</a>
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flow_cell</span><span class="p">:</span> <span class="n">FlowCell</span><span class="p">,</span> <span class="n">size_units</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;micrometer&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes particle size, refractive index, and medium refractive index distributions.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        flow_cell : FlowCell</span>
-<span class="sd">            An instance of the FlowCell class that describes the flow cell being used.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">flow_cell</span> <span class="o">=</span> <span class="n">flow_cell</span>
-
-        <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
-            <span class="n">population</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">flow_cell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_cell</span><span class="p">)</span>
-            <span class="n">population</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Size</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Size</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">size_units</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">dataframe</span> <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">],</span>
-                <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">],</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Population&#39;</span><span class="p">,</span> <span class="s1">&#39;Index&#39;</span><span class="p">]</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dtypes</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">&#39;Time&#39;</span><span class="p">:</span> <span class="n">PintType</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">),</span>            <span class="c1"># Time column with seconds unit</span>
-                <span class="s1">&#39;Position&#39;</span><span class="p">:</span> <span class="n">PintType</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">),</span>         <span class="c1"># Position column with meters unit</span>
-                <span class="s1">&#39;Size&#39;</span><span class="p">:</span> <span class="n">PintType</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">),</span>        <span class="c1"># Size column with micrometers unit</span>
-                <span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">:</span> <span class="n">PintType</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">)</span>  <span class="c1"># Dimensionless unit for refractive index</span>
-            <span class="p">}</span>
-
-            <span class="n">multi_index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">([],</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Population&quot;</span><span class="p">,</span> <span class="s2">&quot;Index&quot;</span><span class="p">])</span>
-
-            <span class="c1"># Create an empty DataFrame with specified column types and a multi-index</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
-                <span class="n">index</span><span class="o">=</span><span class="n">multi_index</span>
-            <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Scatterer.distribute_time_linearly">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.Scatterer.distribute_time_linearly">[docs]</a>
-    <span class="k">def</span> <span class="nf">distribute_time_linearly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequential_population</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Distributes particle arrival times linearly across the total runtime of the flow cell.</span>
-
-<span class="sd">        Optionally randomizes the order of times for all populations to simulate non-sequential particle arrivals.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        sequential_population : bool, optional</span>
-<span class="sd">            If `True`, organize the order of arrival times across all populations (default is `False`).</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Generate linearly spaced time values across the flow cell runtime</span>
-        <span class="n">linear_spacing</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">run_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_events</span><span class="p">)</span>
-
-        <span class="c1"># Optionally randomize the linear spacing</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">sequential_population</span><span class="p">:</span>
-            <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">linear_spacing</span><span class="p">)</span>
-
-        <span class="c1"># Assign the linearly spaced or randomized times to the scatterer DataFrame</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">linear_spacing</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Scatterer.plot">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.Scatterer.plot">[docs]</a>
+<div class="viewcode-block" id="ScattererCollection.plot">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.plot">[docs]</a>
     <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">bandwidth_adjust</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">log_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">color_palette</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Visualizes the joint distribution of scatterer sizes and refractive indices using a Seaborn jointplot.</span>
@@ -659,11 +585,11 @@
             <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="Scatterer.print_properties">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.Scatterer.print_properties">[docs]</a>
+<div class="viewcode-block" id="ScattererCollection.print_properties">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.print_properties">[docs]</a>
     <span class="k">def</span> <span class="nf">print_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prints specific properties of the Scatterer instance, such as coupling factor and medium refractive index.</span>
+<span class="sd">        Prints specific properties of the ScattererCollection instance, such as coupling factor and medium refractive index.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">min_delta_position</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">diff</span><span class="p">())</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span>
@@ -676,7 +602,7 @@
             <span class="s1">&#39;average time between events&#39;</span><span class="p">:</span> <span class="n">mean_delta_position</span>
         <span class="p">}</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">Scatterer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">print_properties</span><span class="p">(</span><span class="o">**</span><span class="n">_dict</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ScattererCollection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">print_properties</span><span class="p">(</span><span class="o">**</span><span class="n">_dict</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
             <span class="n">population</span><span class="o">.</span><span class="n">_log_properties</span><span class="p">()</span></div>
@@ -684,7 +610,7 @@
 
     <span class="k">def</span> <span class="nf">_log_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Logs key properties of the Scatterer instance in a formatted table, including its name,</span>
+<span class="sd">        Logs key properties of the ScattererCollection instance in a formatted table, including its name,</span>
 <span class="sd">        refractive index, size, concentration, and number of events.</span>
 
 <span class="sd">        The results are displayed in a formatted table using `tabulate` for clarity.</span>
@@ -694,11 +620,11 @@
 
         <span class="n">logger</span><span class="o">.</span><span class="n">log_properties</span><span class="p">(</span><span class="n">table_format</span><span class="o">=</span><span class="s2">&quot;fancy_grid&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Scatterer.add_population">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.Scatterer.add_population">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="n">Population</span><span class="p">,</span> <span class="n">particle_count</span><span class="p">:</span> <span class="n">ParticleCount</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Scatterer&#39;</span><span class="p">:</span>
+<div class="viewcode-block" id="ScattererCollection.add_population">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.add_population">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="n">Population</span><span class="p">,</span> <span class="n">particle_count</span><span class="p">:</span> <span class="n">ParticleCount</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;ScattererCollection&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adds a population to the Scatterer instance with the specified attributes.</span>
+<span class="sd">        Adds a population to the ScattererCollection instance with the specified attributes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -713,8 +639,8 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Scatterer</span>
-<span class="sd">            The Scatterer instance (to support chaining).</span>
+<span class="sd">        ScattererCollection</span>
+<span class="sd">            The ScattererCollection instance (to support chaining).</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
@@ -727,9 +653,9 @@
         <span class="k">return</span> <span class="n">population</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_add_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">refractive_index</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">concentration</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Scatterer&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_add_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">refractive_index</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">concentration</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;ScattererCollection&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adds a population to the Scatterer instance with the specified attributes.</span>
+<span class="sd">        Adds a population to the ScattererCollection instance with the specified attributes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -744,8 +670,8 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Scatterer</span>
-<span class="sd">            The Scatterer instance (to support chaining).</span>
+<span class="sd">        ScattererCollection</span>
+<span class="sd">            The ScattererCollection instance (to support chaining).</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
@@ -767,11 +693,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">population</span>
 
-<div class="viewcode-block" id="Scatterer.remove_population">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.Scatterer.remove_population">[docs]</a>
-    <span class="k">def</span> <span class="nf">remove_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Scatterer&#39;</span><span class="p">:</span>
+<div class="viewcode-block" id="ScattererCollection.remove_population">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.remove_population">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;ScattererCollection&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Removes a population from the Scatterer instance by name.</span>
+<span class="sd">        Removes a population from the ScattererCollection instance by name.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -780,8 +706,8 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Scatterer</span>
-<span class="sd">            The Scatterer instance (to support chaining).</span>
+<span class="sd">        ScattererCollection</span>
+<span class="sd">            The ScattererCollection instance (to support chaining).</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
@@ -790,14 +716,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">population_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">population_names</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Population &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; not found in Scatterer.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Population &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; not found in ScattererCollection.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">populations</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">name</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
-<div class="viewcode-block" id="Scatterer.add_to_ax">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.Scatterer.add_to_ax">[docs]</a>
+<div class="viewcode-block" id="ScattererCollection.add_to_ax">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.add_to_ax">[docs]</a>
     <span class="k">def</span> <span class="nf">add_to_ax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">axes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds vertical lines representing events for each population to the provided axes.</span>
@@ -827,7 +753,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">concentrations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Gets the concentration of each population in the Scatterer instance.</span>
+<span class="sd">        Gets the concentration of each population in the ScattererCollection instance.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -839,7 +765,7 @@
     <span class="nd">@concentrations</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">concentrations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Quantity</span><span class="p">],</span> <span class="n">Quantity</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Sets the concentration of each population in the Scatterer instance.</span>
+<span class="sd">        Sets the concentration of each population in the ScattererCollection instance.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -871,8 +797,8 @@
             <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
                 <span class="n">population</span><span class="o">.</span><span class="n">concentration</span> <span class="o">=</span> <span class="n">values</span>
 
-<div class="viewcode-block" id="Scatterer.dilute">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.Scatterer.dilute">[docs]</a>
+<div class="viewcode-block" id="ScattererCollection.dilute">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.dilute">[docs]</a>
     <span class="k">def</span> <span class="nf">dilute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
             <span class="n">population</span><span class="o">.</span><span class="n">concentration</span> <span class="o">/=</span> <span class="n">factor</span></div>

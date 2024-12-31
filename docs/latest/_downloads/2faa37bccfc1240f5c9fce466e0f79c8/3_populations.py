@@ -17,7 +17,7 @@ Workflow Summary:
 import numpy as np
 from FlowCyPy import FlowCell
 from FlowCyPy.units import meter, micrometer, millisecond, second, degree
-from FlowCyPy import Scatterer
+from FlowCyPy import ScattererCollection
 from FlowCyPy.units import particle, milliliter, nanometer, RIU, milliwatt, AU
 from FlowCyPy import FlowCytometer
 from FlowCyPy.detector import Detector
@@ -31,8 +31,17 @@ NoiseSetting.include_noises = False
 
 np.random.seed(3)  # Ensure reproducibility
 
+# %%
+# Step 1: Laser GaussianBeam Configuration
+source = GaussianBeam(
+    numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
+    wavelength=488 * nanometer,           # Laser wavelength: 200 nm
+    optical_power=20 * milliwatt          # Laser optical power: 20 mW
+)
+
 # Define the flow cell parameters
 flow_cell = FlowCell(
+    source=source,
     flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
     flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
     run_time=0.2 * millisecond               # Simulation run time: 0.5 ms
@@ -40,24 +49,16 @@ flow_cell = FlowCell(
 
 # Step 2: Defining Particle Populations
 # Initialize scatterer with a medium refractive index
-scatterer = Scatterer(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
+scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
 
 # Define populations with size distribution and refractive index
 scatterer.add_population(Exosome, particle_count=10e+8 * particle / milliliter)
 scatterer.add_population(HDL, particle_count=10e+8 * particle / milliliter)
 scatterer.add_population(LDL, particle_count=10e+8 * particle / milliliter)
 
-scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
+flow_cell.initialize(scatterer=scatterer)   # Link populations to flow cell
 scatterer._log_properties()               # Display population properties
 scatterer.plot()                           # Visualize the population distributions
-
-# %%
-# Step 3: Laser GaussianBeam Configuration
-source = GaussianBeam(
-    numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
-    wavelength=488 * nanometer,           # Laser wavelength: 200 nm
-    optical_power=20 * milliwatt          # Laser optical power: 20 mW
-)
 
 # Step 4: Simulating the Flow Cytometry Experiment
 # Initialize the cytometer and configure detectors
@@ -89,10 +90,8 @@ detector_1 = Detector(
 
 
 cytometer = FlowCytometer(
-    coupling_mechanism='mie',
     detectors=[detector_0, detector_1],
-    source=source,
-    scatterer=scatterer
+    flow_cell=flow_cell
 )
 
 # Run the flow cytometry simulation

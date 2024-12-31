@@ -512,7 +512,7 @@
 <h1>FlowCell Class<a class="headerlink" href="#flowcell-class" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.FlowCell">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_speed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_area</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.FlowCell" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_speed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_area</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.FlowCell" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Models the flow parameters in a flow cytometer, including flow speed, flow area,
 and particle interactions. This class interacts with ScattererDistribution to simulate
@@ -523,15 +523,48 @@ the flow of particles through the cytometer.</p>
 <li><p><strong>flow_speed</strong> (<em>Quantity</em>) – The speed of the flow in meters per second (m/s).</p></li>
 <li><p><strong>flow_area</strong> (<em>Quantity</em>) – The cross-sectional area of the flow tube in square meters (m²).</p></li>
 <li><p><strong>run_time</strong> (<em>Quantity</em>) – The total duration of the flow simulation in seconds.</p></li>
+<li><p><strong>source</strong> (<em>BaseBeam</em>)</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.FlowCell.distribute_time_linearly">
+<span class="sig-name descname"><span class="pre">distribute_time_linearly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequential_population</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell.distribute_time_linearly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.FlowCell.distribute_time_linearly" title="Link to this definition">#</a></dt>
+<dd><p>Distributes particle arrival times linearly across the total runtime of the flow cell.</p>
+<p>Optionally randomizes the order of times for all populations to simulate non-sequential particle arrivals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sequential_population</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, organize the order of arrival times across all populations (default is <cite>False</cite>).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.FlowCell.get_properties">
 <span class="sig-name descname"><span class="pre">get_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell.get_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.FlowCell.get_properties" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><em>List</em>[<em>List</em>[str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.FlowCell.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scatterer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'micrometer'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.FlowCell.initialize" title="Link to this definition">#</a></dt>
+<dd><p>Initializes particle size, refractive index, and medium refractive index distributions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scatterer</strong> (<em>Scatterer</em>) – An instance of the Scatterer class that describes the scatterer collection being used.</p></li>
+<li><p><strong>size_units</strong> (<em>str</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -546,6 +579,11 @@ the flow of particles through the cytometer.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.FlowCell.source">
+<span class="sig-name descname"><span class="pre">source</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BaseBeam</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.FlowCell.source" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -575,8 +613,11 @@ the flow of particles through the cytometer.</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell"><code class="docutils literal notranslate"><span class="pre">FlowCell</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.distribute_time_linearly"><code class="docutils literal notranslate"><span class="pre">FlowCell.distribute_time_linearly()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.get_properties"><code class="docutils literal notranslate"><span class="pre">FlowCell.get_properties()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.initialize"><code class="docutils literal notranslate"><span class="pre">FlowCell.initialize()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.print_properties"><code class="docutils literal notranslate"><span class="pre">FlowCell.print_properties()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.source"><code class="docutils literal notranslate"><span class="pre">FlowCell.source</span></code></a></li>
 </ul>
 </li>
 </ul>

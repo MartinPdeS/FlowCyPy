@@ -552,7 +552,7 @@ to generate a 2D density plot of scattering intensities.</p>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">FlowCell</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">meter</span><span class="p">,</span> <span class="n">micrometer</span><span class="p">,</span> <span class="n">millisecond</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">degree</span>
-<span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">Scatterer</span>
+<span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">ScattererCollection</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">particle</span><span class="p">,</span> <span class="n">milliliter</span><span class="p">,</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">milliwatt</span><span class="p">,</span> <span class="n">AU</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">FlowCytometer</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">Population</span><span class="p">,</span> <span class="n">distribution</span>
@@ -565,9 +565,18 @@ to generate a 2D density plot of scattering intensities.</p>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">False</span>
 
 <a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># Ensure reproducibility</span>
+</pre></div>
+</div>
+<p>Step 1: Laser GaussianBeam Configuration</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">=</span> <span class="n">GaussianBeam</span><span class="p">(</span>
+    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">AU</span><span class="p">,</span>          <span class="c1"># Laser numerical aperture: 0.3</span>
+    <span class="n">wavelength</span><span class="o">=</span><span class="mi">488</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span>           <span class="c1"># Laser wavelength: 200 nm</span>
+    <span class="n">optical_power</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">milliwatt</span>          <span class="c1"># Laser optical power: 20 mW</span>
+<span class="p">)</span>
 
 <span class="c1"># Define the flow cell parameters</span>
 <span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
     <span class="n">flow_speed</span><span class="o">=</span><span class="mf">7.56</span> <span class="o">*</span> <span class="n">meter</span> <span class="o">/</span> <span class="n">second</span><span class="p">,</span>        <span class="c1"># Flow speed: 7.56 m/s</span>
     <span class="n">flow_area</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">micrometer</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>        <span class="c1"># Flow area: 10 x 10 µm²</span>
     <span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">millisecond</span>               <span class="c1"># Simulation run time: 0.5 ms</span>
@@ -575,7 +584,7 @@ to generate a 2D density plot of scattering intensities.</p>
 
 <span class="c1"># Step 2: Defining Particle Populations</span>
 <span class="c1"># Initialize scatterer with a medium refractive index</span>
-<span class="n">scatterer</span> <span class="o">=</span> <span class="n">Scatterer</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>  <span class="c1"># Medium refractive index of 1.33 (water)</span>
+<span class="n">scatterer</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>  <span class="c1"># Medium refractive index of 1.33 (water)</span>
 
 <span class="c1"># Define populations with size distribution and refractive index</span>
 <span class="n">population_0</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
@@ -594,17 +603,9 @@ to generate a 2D density plot of scattering intensities.</p>
 <span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population_0</span><span class="p">,</span> <span class="n">particle_count</span><span class="o">=</span><span class="mf">3e+8</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
 <span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population_1</span><span class="p">,</span> <span class="n">particle_count</span><span class="o">=</span><span class="mf">3e+8</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
 
-<span class="n">scatterer</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">)</span>  <span class="c1"># Link populations to flow cell</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">_log_properties</span><span class="p">()</span>               <span class="c1"># Display population properties</span>
+<span class="n">flow_cell</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">scatterer</span><span class="o">=</span><span class="n">scatterer</span><span class="p">)</span>  <span class="c1"># Link populations to flow cell</span>
+<span class="n">scatterer</span><span class="o">.</span><span class="n">_log_properties</span><span class="p">()</span>                <span class="c1"># Display population properties</span>
 <span class="n">scatterer</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>                           <span class="c1"># Visualize the population distributions</span>
-</pre></div>
-</div>
-<img src="../../_images/sphx_glr_custom_populations_001.png" srcset="../../_images/sphx_glr_custom_populations_001.png" alt="custom populations" class = "sphx-glr-single-img"/><p>Step 3: Laser GaussianBeam Configuration</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">=</span> <span class="n">GaussianBeam</span><span class="p">(</span>
-    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">AU</span><span class="p">,</span>          <span class="c1"># Laser numerical aperture: 0.3</span>
-    <span class="n">wavelength</span><span class="o">=</span><span class="mi">488</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span>           <span class="c1"># Laser wavelength: 200 nm</span>
-    <span class="n">optical_power</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">milliwatt</span>          <span class="c1"># Laser optical power: 20 mW</span>
-<span class="p">)</span>
 
 <span class="c1"># Step 4: Simulating the Flow Cytometry Experiment</span>
 <span class="c1"># Initialize the cytometer and configure detectors</span>
@@ -636,10 +637,8 @@ to generate a 2D density plot of scattering intensities.</p>
 
 
 <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
-    <span class="n">coupling_mechanism</span><span class="o">=</span><span class="s1">&#39;mie&#39;</span><span class="p">,</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">],</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
-    <span class="n">scatterer</span><span class="o">=</span><span class="n">scatterer</span>
+    <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span>
 <span class="p">)</span>
 
 <span class="c1"># Run the flow cytometry simulation</span>
@@ -649,7 +648,11 @@ to generate a 2D density plot of scattering intensities.</p>
 <span class="n">cytometer</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_custom_populations_002.png" srcset="../../_images/sphx_glr_custom_populations_002.png" alt="custom populations" class = "sphx-glr-single-img"/><p>Step 5: Analyzing Pulse Signals
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_custom_populations_001.png" srcset="../../_images/sphx_glr_custom_populations_001.png" alt="custom populations" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_custom_populations_002.png" srcset="../../_images/sphx_glr_custom_populations_002.png" alt="custom populations" class = "sphx-glr-multi-img"/></li>
+</ul>
+<p>Step 5: Analyzing Pulse Signals
 Configure peak finding algorithm</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">MovingAverage</span><span class="p">(</span>
     <span class="n">threshold</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">microvolt</span><span class="p">,</span>           <span class="c1"># Signal threshold: 0.1 mV</span>
@@ -674,7 +677,7 @@ Configure peak finding algorithm</p>
 <span class="n">analyzer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_custom_populations_003.png" srcset="../../_images/sphx_glr_custom_populations_003.png" alt="custom populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.107 seconds)</p>
+<img src="../../_images/sphx_glr_custom_populations_003.png" srcset="../../_images/sphx_glr_custom_populations_003.png" alt="custom populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.111 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-density-plots-custom-populations-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/570b1e8a0d774172bc5a052dd2e36242/custom_populations.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">custom_populations.ipynb</span></code></a></p>

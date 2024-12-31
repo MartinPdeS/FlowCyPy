@@ -457,7 +457,7 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <p><strong>Date</strong>: Dec 29, 2024, <strong>Version</strong>: 0.5.3</p>
+  <p><strong>Date</strong>: Dec 31, 2024, <strong>Version</strong>: 0.5.3</p>
 <p><img alt="FlowCyPy Logo" class="align-middle" src="https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/logo.png" /></p>
 <section id="flowcypy-flow-cytometer-simulation-tool">
 <h1>FlowCyPy: Flow Cytometer Simulation Tool<a class="headerlink" href="#flowcypy-flow-cytometer-simulation-tool" title="Link to this heading">#</a></h1>
@@ -520,7 +520,9 @@ conda<span class="w"> </span>install<span class="w"> </span>FlowCyPy<span class=
 <section id="quick-start">
 <h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">#</a></h2>
 <p>Simulate a simple flow cytometer experiment:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">Scatterer</span><span class="p">,</span> <span class="n">FlowCell</span>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Code snippet</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">FlowCell</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">particle</span><span class="p">,</span> <span class="n">liter</span><span class="p">,</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">RIU</span>
 
 <span class="c1"># Define the flow cell</span>
@@ -529,24 +531,25 @@ conda<span class="w"> </span>install<span class="w"> </span>FlowCyPy<span class=
 <span class="p">)</span>
 
 <span class="c1"># Define scatterer properties</span>
-<span class="n">scatterer</span> <span class="o">=</span> <span class="n">Scatterer</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
+<span class="n">scatterer</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
 <span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EVs&#39;</span><span class="p">,</span>
     <span class="n">concentration</span><span class="o">=</span><span class="mf">1e9</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">liter</span><span class="p">,</span>
     <span class="n">size</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">),</span>
     <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">1.45</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
 <span class="p">)</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">)</span>
+<span class="n">flow_cell</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">scatterer</span><span class="o">=</span><span class="n">scatterer</span><span class="p">)</span>
 
 <span class="c1"># Simulate the cytometer signals</span>
 <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
-    <span class="n">scatterer</span><span class="o">=</span><span class="n">scatterer</span><span class="p">,</span>
+    <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>
     <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_fsc</span><span class="p">,</span> <span class="n">detector_ssc</span><span class="p">]</span>
 <span class="p">)</span>
 <span class="n">cytometer</span><span class="o">.</span><span class="n">simulate_pulse</span><span class="p">()</span>
 <span class="n">cytometer</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
+</div>
 </div>
 <p>Explore more examples in the <a class="reference external" href="https://martinpdes.github.io/FlowCyPy/gallery/index.html">FlowCyPy Examples</a>.</p>
 </section>
