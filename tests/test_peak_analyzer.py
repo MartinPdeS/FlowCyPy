@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from unittest.mock import patch
 
 # Importing from FlowCyPy
-from FlowCyPy import EventCorrelator, FlowCytometer, Detector, Scatterer, GaussianBeam, peak_locator, distribution
+from FlowCyPy import EventCorrelator, FlowCytometer, Detector, ScattererCollection, GaussianBeam, peak_locator, distribution
 from FlowCyPy.units import second, volt, hertz, watt, degree, micrometer, meter, particle, milliliter, ampere, AU, RIU
 from FlowCyPy.population import Population
 from FlowCyPy.flow_cell import FlowCell
@@ -51,11 +51,9 @@ def default_population(default_size_distribution, default_ri_distribution):
 
 @pytest.fixture
 def default_scatterer(flow_cell, default_population):
-    scatterer = Scatterer()
+    scatterer = ScattererCollection()
 
     scatterer.add_population(default_population, particle_count=3e+5 * particle / milliliter)
-
-    scatterer.initialize(flow_cell=flow_cell)
 
     return scatterer
 
@@ -88,14 +86,17 @@ def default_detector():
 
 
 @pytest.fixture
-def default_cytometer(default_source, default_scatterer, default_detector):
+def default_cytometer(default_source, default_scatterer, default_detector, flow_cell):
     """Fixture for a default cytometer with two detectors."""
+
+    flow_cell.initialize(scatterer=default_scatterer)
+
     detectors = [default_detector('0'), default_detector('1')]
 
     cytometer = FlowCytometer(
         source=default_source,
         detectors=detectors,
-        scatterer=default_scatterer,
+        flow_cell=flow_cell,
         coupling_mechanism='mie'
     )
     cytometer.simulate_pulse()

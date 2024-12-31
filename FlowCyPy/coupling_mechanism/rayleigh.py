@@ -1,11 +1,11 @@
 
 import numpy as np
-from FlowCyPy import Scatterer, Detector
+from FlowCyPy import ScattererCollection, Detector
 from FlowCyPy.source import BaseBeam
 from FlowCyPy.units import meter
 
 
-def compute_scattering_cross_section(scatterer: Scatterer, source: BaseBeam, detector: Detector) -> np.ndarray:
+def compute_scattering_cross_section(scatterer: ScattererCollection, source: BaseBeam, detector: Detector) -> np.ndarray:
     r"""
     Computes the Rayleigh scattering cross-section for a spherical particle with angle dependency.
 
@@ -28,8 +28,8 @@ def compute_scattering_cross_section(scatterer: Scatterer, source: BaseBeam, det
 
     Parameters
     ----------
-    scatterer : Scatterer
-        An instance of `Scatterer` containing the scatterer properties such as size and refractive index.
+    scatterer : ScattererCollection
+        An instance of `ScattererCollection` containing the scatterer properties such as size and refractive index.
     source : BaseBeam
         An instance of `BaseBeam` containing the laser properties, including the wavelength.
     detector : Detector
@@ -63,7 +63,7 @@ def compute_scattering_cross_section(scatterer: Scatterer, source: BaseBeam, det
     return cross_section.magnitude * meter**2
 
 
-def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: Scatterer) -> float:
+def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: ScattererCollection) -> float:
     r"""
     Computes the power detected by a detector from a Rayleigh scattering event.
 

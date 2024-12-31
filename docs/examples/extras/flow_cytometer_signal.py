@@ -14,7 +14,7 @@ Steps:
 """
 
 # Step 1: Import the necessary libraries
-from FlowCyPy import FlowCytometer, Scatterer, Detector, GaussianBeam, FlowCell
+from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
 from FlowCyPy import distribution, Population
 from FlowCyPy.units import (
     RIU, milliliter, particle, nanometer, degree, microvolt, AU,
@@ -36,7 +36,7 @@ flow_cell.print_properties()
 # ---------------------------------------------
 # We define a normal distribution for particle sizes with a mean of 200 nm, standard deviation of 10 nm,
 # and a refractive index of 1.39 with a small variation of 0.01.
-scatterer = Scatterer(medium_refractive_index=1.33 * RIU)
+scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)
 
 population_0 = Population(
     name='EV',
@@ -53,7 +53,7 @@ population_1 = Population(
 scatterer.add_population(population_0, particle_count=1e+9 * particle / milliliter)
 scatterer.add_population(population_1, particle_count=1e+9 * particle / milliliter)
 
-scatterer.initialize(flow_cell=flow_cell)
+flow_cell.initialize(scatterer=scatterer)
 
 scatterer._log_properties()
 
@@ -94,9 +94,8 @@ detector_ssc = Detector(
 # The 'mie' coupling mechanism models how the particles interact with the laser beam.
 cytometer = FlowCytometer(
     source=source,                # Laser source
-    scatterer=scatterer,  # Particle size distribution
+    flow_cell=flow_cell,  # Particle size distribution
     detectors=[detector_fsc, detector_ssc],  # Detectors: FSC and SSC
-    coupling_mechanism='mie'      # Scattering model: Mie
 )
 
 # Step 7: Simulate flow cytometer signals

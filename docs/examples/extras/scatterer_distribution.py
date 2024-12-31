@@ -56,7 +56,7 @@ scatterer.add_population(population_0, particle_count=2e+9 * particle / millilit
 
 scatterer.add_population(population_1, particle_count=1e+10 * particle / milliliter)
 
-scatterer.initialize(flow_cell=flow_cell)
+flow_cell.initialize(scatterer=scatterer)
 
 # Plot and visualize the scatterer distribution.
 scatterer.plot()

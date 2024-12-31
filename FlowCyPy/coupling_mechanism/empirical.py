@@ -1,10 +1,10 @@
 import numpy as np
-from FlowCyPy import Scatterer, Detector
+from FlowCyPy import ScattererCollection, Detector
 from FlowCyPy.source import BaseBeam
 from FlowCyPy.units import watt, meter
 
 
-def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: Scatterer, granularity: float = 1.0, A: float = 1.5, n: float = 2.0) -> float:
+def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: ScattererCollection, granularity: float = 1.0, A: float = 1.5, n: float = 2.0) -> float:
     """
     Empirical model for scattering intensity based on particle size, granularity, and detector angle.
 

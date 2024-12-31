@@ -8,7 +8,7 @@ provide insights into the physical properties of particles passing through the l
 
 Workflow:
 ---------
-1. Define a particle size distribution using `Scatterer`.
+1. Define a particle size distribution using `ScattererCollection`.
 2. Simulate flow cytometer signals using `FlowCytometer`.
 3. Analyze the forward scatter signal with `PulseAnalyzer` to extract features like peak height, width, and area.
 4. Visualize the generated signals and display the extracted pulse features.
@@ -16,7 +16,7 @@ Workflow:
 
 # %%
 # Step 1: Import necessary modules from FlowCyPy
-from FlowCyPy import FlowCytometer, Scatterer, Detector, GaussianBeam, FlowCell
+from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
 from FlowCyPy import distribution
 from FlowCyPy.population import Population
 from FlowCyPy.units import nanometer, millisecond, meter, micrometer, second, RIU, milliliter, particle, millivolt, watt, megahertz, degree, ampere, milliwatt, AU
@@ -52,11 +52,11 @@ ev = Population(
     name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
 )
 
-scatterer = Scatterer()
+scatterer = ScattererCollection()
 
 scatterer.add_population(ev, particle_count=1.8e+9 * particle / milliliter)
 
-scatterer.initialize(flow_cell=flow_cell)
+flow_cell.initialize(scatterer=scatterer)
 
 # Plot the scatterer distribution
 scatterer.plot()
@@ -99,9 +99,8 @@ detector_1 = Detector(
 # ---------------------------------------
 # Create a FlowCytometer instance to simulate the signals generated as particles pass through the laser beam.
 cytometer = FlowCytometer(
-    coupling_mechanism='mie',           # Scattering model: Empirical (Rayleigh scattering for small particles)
     source=source,                      # Laser source
-    scatterer=scatterer,                # Particle size distribution
+    flow_cell=flow_cell,                # Particle size distribution
     detectors=[detector_0, detector_1]  # List of detectors used in the simulation
 )
 

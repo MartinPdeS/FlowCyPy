@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from FlowCyPy import FlowCytometer, Detector, Scatterer, GaussianBeam, FlowCell
+from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, FlowCell
 import matplotlib.pyplot as plt
 from unittest.mock import patch
 from FlowCyPy import distribution
@@ -86,9 +86,8 @@ def default_population(default_size_distribution, default_ri_distribution):
 
 @pytest.fixture
 def default_scatterer(flow_cell, default_population):
-    scatterer = Scatterer()
+    scatterer = ScattererCollection()
     scatterer.add_population(default_population, particle_count=1.8e+5 * particle / milliliter)
-    scatterer.initialize(flow_cell=flow_cell)
     return scatterer
 
 
@@ -101,12 +100,14 @@ def default_source():
     )
 
 
-def test_flow_cytometer_simulation(default_source, default_detector_0, default_detector_1, default_scatterer):
+def test_flow_cytometer_simulation(default_source, default_detector_0, default_detector_1, default_scatterer, flow_cell):
     """Test the simulation of flow cytometer signals."""
+    flow_cell.initialize(scatterer=default_scatterer)
+    
     cytometer = FlowCytometer(
         source=default_source,
         detectors=[default_detector_0, default_detector_1],
-        scatterer=default_scatterer,
+        flow_cell=flow_cell,
         coupling_mechanism='mie'
     )
     cytometer.simulate_pulse()
@@ -121,12 +122,14 @@ def test_flow_cytometer_simulation(default_source, default_detector_0, default_d
 
 
 @patch('matplotlib.pyplot.show')
-def test_flow_cytometer_plot(mock_show, default_source, default_detector_0, default_detector_1, default_scatterer):
+def test_flow_cytometer_plot(mock_show, default_source, default_detector_0, default_detector_1, default_scatterer, flow_cell):
     """Test the plotting of flow cytometer signals."""
+    flow_cell.initialize(scatterer=default_scatterer)
+
     cytometer = FlowCytometer(
         source=default_source,
         detectors=[default_detector_0, default_detector_1],
-        scatterer=default_scatterer,
+        flow_cell=flow_cell,
         coupling_mechanism='uniform'
     )
     cytometer.simulate_pulse()

@@ -1,9 +1,9 @@
 import numpy as np
-from FlowCyPy import Scatterer, Detector, ureg
+from FlowCyPy import ScattererCollection, Detector, ureg
 from FlowCyPy.source import BaseBeam
 
 
-def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: Scatterer) -> np.ndarray:
+def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: ScattererCollection) -> np.ndarray:
     r"""
     Computes the power detected by a detector from a uniform distribution.
 

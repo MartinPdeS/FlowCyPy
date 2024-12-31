@@ -4,6 +4,9 @@ from PyMieSim.units import Quantity
 from tabulate import tabulate
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
+from pint_pandas import PintType, PintArray
+import pandas
+import numpy
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -120,3 +123,67 @@ class FlowCell(object):
             ['Flow Area', f"{self.flow_area:.2f~#P}"],
             ['Total Time', f"{self.run_time:.2f~#P}"]
         ]
+    
+    def initialize(self, scatterer: object, size_units: str = 'micrometer') -> None:
+        """
+        Initializes particle size, refractive index, and medium refractive index distributions.
+
+        Parameters
+        ----------
+        scatterer : Scatterer
+            An instance of the Scatterer class that describes the scatterer collection being used.
+
+        """        
+        self.scatterer = scatterer
+
+        for population in self.scatterer.populations:
+            population.initialize(flow_cell=self)
+            population.dataframe.Size = population.dataframe.Size.pint.to(size_units)
+        
+        if len(self.scatterer.populations) != 0:
+            self.scatterer.dataframe = pandas.concat(
+                [population.dataframe for population in self.scatterer.populations],
+                axis=0,
+                keys=[population.name for population in self.scatterer.populations],
+            )
+            self.scatterer.dataframe.index.names = ['Population', 'Index']
+
+        else:
+            dtypes = {
+                'Time': PintType('second'),            # Time column with seconds unit
+                'Position': PintType('meter'),         # Position column with meters unit
+                'Size': PintType('meter'),        # Size column with micrometers unit
+                'RefractiveIndex': PintType('meter')  # Dimensionless unit for refractive index
+            }
+
+            multi_index = pandas.MultiIndex.from_tuples([], names=["Population", "Index"])
+
+            # Create an empty DataFrame with specified column types and a multi-index
+            self.scatterer.dataframe = pandas.DataFrame(
+                {col: pandas.Series(dtype=dtype) for col, dtype in dtypes.items()},
+                index=multi_index
+            )
+
+        self.n_events = len(self.scatterer.dataframe)        
+
+    def distribute_time_linearly(self, sequential_population: bool = False) -> None:
+        """
+        Distributes particle arrival times linearly across the total runtime of the flow cell.
+
+        Optionally randomizes the order of times for all populations to simulate non-sequential particle arrivals.
+
+        Parameters
+        ----------
+        sequential_population : bool, optional
+            If `True`, organize the order of arrival times across all populations (default is `False`).
+
+        """
+        # Generate linearly spaced time values across the flow cell runtime
+        linear_spacing = numpy.linspace(0, self.run_time, self.n_events)
+
+        # Optionally randomize the linear spacing
+        if not sequential_population:
+            numpy.random.shuffle(linear_spacing)
+
+        # Assign the linearly spaced or randomized times to the scatterer DataFrame
+        self.scatterer.dataframe.Time = PintArray(linear_spacing, dtype=self.scatterer.dataframe.Time.pint.units)        

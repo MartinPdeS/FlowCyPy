@@ -12,7 +12,6 @@ from FlowCyPy.distribution import Base as BaseDistribution
 from FlowCyPy.logger import ScattererLogger
 from FlowCyPy.particle_count import ParticleCount
 from enum import Enum
-from pint_pandas import PintType, PintArray
 
 
 class CouplingModel(Enum):
@@ -21,7 +20,7 @@ class CouplingModel(Enum):
     UNIFORM = 'uniform'
 
 
-class Scatterer(PropertiesReport):
+class ScattererCollection(PropertiesReport):
     """
     Defines and manages the size and refractive index distributions of scatterers (particles)
     passing through a flow cytometer. This class generates random scatterer sizes and refractive
@@ -42,74 +41,7 @@ class Scatterer(PropertiesReport):
         self.populations = populations or []
         self.medium_refractive_index = medium_refractive_index
         self.coupling_model = coupling_model
-
-        self.flow_cell: FlowCell = None
-        self.n_events: int = None
         self.dataframe: pd.DataFrame = None
-
-    def initialize(self, flow_cell: FlowCell, size_units: str = 'micrometer') -> None:
-        """
-        Initializes particle size, refractive index, and medium refractive index distributions.
-
-        Parameters
-        ----------
-        flow_cell : FlowCell
-            An instance of the FlowCell class that describes the flow cell being used.
-
-        """
-        self.flow_cell = flow_cell
-
-        for population in self.populations:
-            population.initialize(flow_cell=self.flow_cell)
-            population.dataframe.Size = population.dataframe.Size.pint.to(size_units)
-
-        if len(self.populations) != 0:
-            self.dataframe = pd.concat(
-                [population.dataframe for population in self.populations],
-                axis=0,
-                keys=[population.name for population in self.populations],
-            )
-            self.dataframe.index.names = ['Population', 'Index']
-
-        else:
-            dtypes = {
-                'Time': PintType('second'),            # Time column with seconds unit
-                'Position': PintType('meter'),         # Position column with meters unit
-                'Size': PintType('meter'),        # Size column with micrometers unit
-                'RefractiveIndex': PintType('meter')  # Dimensionless unit for refractive index
-            }
-
-            multi_index = pd.MultiIndex.from_tuples([], names=["Population", "Index"])
-
-            # Create an empty DataFrame with specified column types and a multi-index
-            self.dataframe = pd.DataFrame(
-                {col: pd.Series(dtype=dtype) for col, dtype in dtypes.items()},
-                index=multi_index
-            )
-
-        self.n_events = len(self.dataframe)
-
-    def distribute_time_linearly(self, sequential_population: bool = False) -> None:
-        """
-        Distributes particle arrival times linearly across the total runtime of the flow cell.
-
-        Optionally randomizes the order of times for all populations to simulate non-sequential particle arrivals.
-
-        Parameters
-        ----------
-        sequential_population : bool, optional
-            If `True`, organize the order of arrival times across all populations (default is `False`).
-
-        """
-        # Generate linearly spaced time values across the flow cell runtime
-        linear_spacing = numpy.linspace(0, self.flow_cell.run_time, self.n_events)
-
-        # Optionally randomize the linear spacing
-        if not sequential_population:
-            numpy.random.shuffle(linear_spacing)
-
-        # Assign the linearly spaced or randomized times to the scatterer DataFrame
-        self.dataframe.Time = PintArray(linear_spacing, dtype=self.dataframe.Time.pint.units)
 
     def plot(self, ax: Optional[plt.Axes] = None, show: bool = True, alpha: float = 0.8, bandwidth_adjust: float = 1, log_plot: bool = False, color_palette: Optional[Union[str, dict]] = None) -> None:
         """
@@ -170,7 +102,7 @@ class Scatterer(PropertiesReport):
 
     def print_properties(self) -> None:
         """
-        Prints specific properties of the Scatterer instance, such as coupling factor and medium refractive index.
+        Prints specific properties of the ScattererCollection instance, such as coupling factor and medium refractive index.
 
         """
         min_delta_position = abs(self.dataframe['Time'].diff()).min().to_compact()
@@ -183,14 +115,14 @@ class Scatterer(PropertiesReport):
             'average time between events': mean_delta_position
         }
 
-        super(Scatterer, self).print_properties(**_dict)
+        super(ScattererCollection, self).print_properties(**_dict)
 
         for population in self.populations:
             population._log_properties()
 
     def _log_properties(self) -> None:
         """
-        Logs key properties of the Scatterer instance in a formatted table, including its name,
+        Logs key properties of the ScattererCollection instance in a formatted table, including its name,
         refractive index, size, concentration, and number of events.
 
         The results are displayed in a formatted table using `tabulate` for clarity.
@@ -200,9 +132,9 @@ class Scatterer(PropertiesReport):
 
         logger.log_properties(table_format="fancy_grid")
 
-    def add_population(self, population: Population, particle_count: ParticleCount) -> 'Scatterer':
+    def add_population(self, population: Population, particle_count: ParticleCount) -> 'ScattererCollection':
         """
-        Adds a population to the Scatterer instance with the specified attributes.
+        Adds a population to the ScattererCollection instance with the specified attributes.
 
         Parameters
         ----------
@@ -217,8 +149,8 @@ class Scatterer(PropertiesReport):
 
         Returns
         -------
-        Scatterer
-            The Scatterer instance (to support chaining).
+        ScattererCollection
+            The ScattererCollection instance (to support chaining).
 
         Raises
         ------
@@ -230,9 +162,9 @@ class Scatterer(PropertiesReport):
         self.populations.append(population)
         return population
 
-    def _add_population(self, name: str, size: BaseDistribution, refractive_index: BaseDistribution, concentration: Quantity) -> 'Scatterer':
+    def _add_population(self, name: str, size: BaseDistribution, refractive_index: BaseDistribution, concentration: Quantity) -> 'ScattererCollection':
         """
-        Adds a population to the Scatterer instance with the specified attributes.
+        Adds a population to the ScattererCollection instance with the specified attributes.
 
         Parameters
         ----------
@@ -247,8 +179,8 @@ class Scatterer(PropertiesReport):
 
         Returns
         -------
-        Scatterer
-            The Scatterer instance (to support chaining).
+        ScattererCollection
+            The ScattererCollection instance (to support chaining).
 
         Raises
         ------
@@ -270,9 +202,9 @@ class Scatterer(PropertiesReport):
         self.populations.append(population)
         return population
 
-    def remove_population(self, name: str) -> 'Scatterer':
+    def remove_population(self, name: str) -> 'ScattererCollection':
         """
-        Removes a population from the Scatterer instance by name.
+        Removes a population from the ScattererCollection instance by name.
 
         Parameters
         ----------
@@ -281,8 +213,8 @@ class Scatterer(PropertiesReport):
 
         Returns
         -------
-        Scatterer
-            The Scatterer instance (to support chaining).
+        ScattererCollection
+            The ScattererCollection instance (to support chaining).
 
         Raises
         ------
@@ -291,7 +223,7 @@ class Scatterer(PropertiesReport):
         """
         population_names = [p.name for p in self.populations]
         if name not in population_names:
-            raise ValueError(f"Population '{name}' not found in Scatterer.")
+            raise ValueError(f"Population '{name}' not found in ScattererCollection.")
 
         self.populations = [p for p in self.populations if p.name != name]
         return self
@@ -324,7 +256,7 @@ class Scatterer(PropertiesReport):
     @property
     def concentrations(self) -> List[Quantity]:
         """
-        Gets the concentration of each population in the Scatterer instance.
+        Gets the concentration of each population in the ScattererCollection instance.
 
         Returns
         -------
@@ -336,7 +268,7 @@ class Scatterer(PropertiesReport):
     @concentrations.setter
     def concentrations(self, values: Union[List[Quantity], Quantity]) -> None:
         """
-        Sets the concentration of each population in the Scatterer instance.
+        Sets the concentration of each population in the ScattererCollection instance.
 
         Parameters
         ----------
