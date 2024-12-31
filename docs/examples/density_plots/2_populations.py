@@ -28,14 +28,23 @@ NoiseSetting.include_noises = False
 # Set random seed for reproducibility
 np.random.seed(3)
 
-# Step 1: Define Flow Parameters
+# %%
+# Step 1: Set up the Laser GaussianBeam
+source = GaussianBeam(
+    numerical_aperture=0.3 * AU,             # Numerical aperture of the laser: 0.3
+    wavelength=488 * nanometer,              # Laser wavelength: 800 nanometers
+    optical_power=100 * milliwatt             # Laser optical power: 10 milliwatts
+)
+
+# Step 2: Define Flow Parameters
 flow_cell = FlowCell(
+    source=source,
     flow_speed=7.56 * meter / second,      # Flow speed: 7.56 meters per second
     flow_area=(10 * micrometer) ** 2,      # Flow area: 10 x 10 micrometers
     run_time=.2 * millisecond             # Total simulation time: 0.3 milliseconds
 )
 
-# Step 2: Create Populations (Extracellular Vesicles and Liposomes)
+# Step 3: Create Populations (Extracellular Vesicles and Liposomes)
 scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
 
 scatterer.add_population(Exosome, particle_count=3e+8 * particle / milliliter)
@@ -47,14 +56,6 @@ flow_cell.initialize(scatterer=scatterer)
 # Print and plot properties of the populations
 scatterer._log_properties()
 scatterer.plot()
-
-# %%
-# Step 4: Set up the Laser GaussianBeam
-source = GaussianBeam(
-    numerical_aperture=0.3 * AU,             # Numerical aperture of the laser: 0.3
-    wavelength=488 * nanometer,              # Laser wavelength: 800 nanometers
-    optical_power=100 * milliwatt             # Laser optical power: 10 milliwatts
-)
 
 source.print_properties()  # Print the laser source properties
 
@@ -91,8 +92,7 @@ detector_1 = Detector(
 detector_1.print_properties()  # Print the properties of the forward scatter detector
 
 # Step 6: Simulate Flow Cytometry Experiment
-cytometer = FlowCytometer(
-    source=source,                           # Laser source used in the experiment
+cytometer = FlowCytometer(                      # Laser source used in the experiment
     flow_cell=flow_cell,                     # Populations used in the experiment
     background_power=0.0 * milliwatt,
     detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter

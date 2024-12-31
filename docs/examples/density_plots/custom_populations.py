@@ -31,8 +31,17 @@ NoiseSetting.include_noises = False
 
 np.random.seed(3)  # Ensure reproducibility
 
+# %%
+# Step 1: Laser GaussianBeam Configuration
+source = GaussianBeam(
+    numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
+    wavelength=488 * nanometer,           # Laser wavelength: 200 nm
+    optical_power=20 * milliwatt          # Laser optical power: 20 mW
+)
+
 # Define the flow cell parameters
 flow_cell = FlowCell(
+    source=source,
     flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
     flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
     run_time=0.2 * millisecond               # Simulation run time: 0.5 ms
@@ -62,14 +71,6 @@ scatterer.add_population(population_1, particle_count=3e+8 * particle / millilit
 flow_cell.initialize(scatterer=scatterer)  # Link populations to flow cell
 scatterer._log_properties()                # Display population properties
 scatterer.plot()                           # Visualize the population distributions
-
-# %%
-# Step 3: Laser GaussianBeam Configuration
-source = GaussianBeam(
-    numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
-    wavelength=488 * nanometer,           # Laser wavelength: 200 nm
-    optical_power=20 * milliwatt          # Laser optical power: 20 mW
-)
 
 # Step 4: Simulating the Flow Cytometry Experiment
 # Initialize the cytometer and configure detectors
@@ -102,7 +103,6 @@ detector_1 = Detector(
 
 cytometer = FlowCytometer(
     detectors=[detector_0, detector_1],
-    source=source,
     flow_cell=flow_cell
 )
 
