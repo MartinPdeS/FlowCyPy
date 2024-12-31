@@ -41,14 +41,13 @@ class FlowCytometer:
     def __init__(
             self,
             flow_cell: FlowCell,
-            source: GaussianBeam,
             detectors: List[Detector],
             coupling_mechanism: Optional[str] = 'mie',
             background_power: Optional[Quantity] = 0 * milliwatt):
 
         self.flow_cell = flow_cell
         self.scatterer = flow_cell.scatterer
-        self.source = source
+        self.source = flow_cell.source
         self.detectors = detectors
         self.coupling_mechanism = coupling_mechanism
         self.background_power = background_power
