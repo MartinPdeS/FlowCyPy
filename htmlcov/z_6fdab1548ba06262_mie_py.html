@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_6fdab1548ba06262_rayleigh_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2024-12-29 22:58 +0000
+            created at 2024-12-31 00:12 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -83,7 +83,7 @@
 </header>
 <main id="source">
     <p class="run"><span class="n"><a id="t1" href="#t1">1</a></span><span class="t"><span class="key">import</span> <span class="nam">numpy</span> <span class="key">as</span> <span class="nam">np</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t2" href="#t2">2</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span> <span class="key">import</span> <span class="nam">Scatterer</span><span class="op">,</span> <span class="nam">Detector</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t2" href="#t2">2</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span> <span class="key">import</span> <span class="nam">ScattererCollection</span><span class="op">,</span> <span class="nam">Detector</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">source</span> <span class="key">import</span> <span class="nam">BaseBeam</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t"><span class="key">from</span> <span class="nam">PyMieSim</span><span class="op">.</span><span class="nam">experiment</span><span class="op">.</span><span class="nam">scatterer</span> <span class="key">import</span> <span class="nam">Sphere</span> <span class="key">as</span> <span class="nam">PMS_SPHERE</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="key">from</span> <span class="nam">PyMieSim</span><span class="op">.</span><span class="nam">experiment</span><span class="op">.</span><span class="nam">source</span> <span class="key">import</span> <span class="nam">PlaneWave</span>&nbsp;</span><span class="r"></span></p>
@@ -178,13 +178,13 @@
     <p class="run"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t">    <span class="key">return</span> <span class="nam">amplitude_with_rin</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t"><span class="key">def</span> <span class="nam">initialize_scatterer</span><span class="op">(</span><span class="nam">scatterer</span><span class="op">:</span> <span class="nam">Scatterer</span><span class="op">,</span> <span class="nam">source</span><span class="op">:</span> <span class="nam">PlaneWave</span><span class="op">)</span> <span class="op">-></span> <span class="nam">PMS_SPHERE</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t"><span class="key">def</span> <span class="nam">initialize_scatterer</span><span class="op">(</span><span class="nam">scatterer</span><span class="op">:</span> <span class="nam">ScattererCollection</span><span class="op">,</span> <span class="nam">source</span><span class="op">:</span> <span class="nam">PlaneWave</span><span class="op">)</span> <span class="op">-></span> <span class="nam">PMS_SPHERE</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t">    <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t"><span class="str">    Initializes the scatterer object for the PyMieSim experiment.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t100" href="#t100">100</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t"><span class="str">    Parameters</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t102" href="#t102">102</a></span><span class="t"><span class="str">    ----------</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t103" href="#t103">103</a></span><span class="t"><span class="str">    scatterer : Scatterer</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t103" href="#t103">103</a></span><span class="t"><span class="str">    scatterer : ScattererCollection</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t104" href="#t104">104</a></span><span class="t"><span class="str">        The scatterer object containing particle data.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t105" href="#t105">105</a></span><span class="t"><span class="str">    source : PlaneWave</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t"><span class="str">        The light source for the simulation.</span>&nbsp;</span><span class="r"></span></p>
@@ -198,7 +198,7 @@
     <p class="run"><span class="n"><a id="t114" href="#t114">114</a></span><span class="t">    <span class="nam">ri_list</span> <span class="op">=</span> <span class="nam">scatterer</span><span class="op">.</span><span class="nam">dataframe</span><span class="op">[</span><span class="str">'RefractiveIndex'</span><span class="op">]</span><span class="op">.</span><span class="nam">values</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t115" href="#t115">115</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="par run show_par"><span class="n"><a id="t116" href="#t116">116</a></span><span class="t">    <span class="key">if</span> <span class="nam">len</span><span class="op">(</span><span class="nam">size_list</span><span class="op">)</span> <span class="op">==</span> <span class="num">0</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">116&#x202F;&#x219B;&#x202F;117</span><span class="annotate long">line 116 didn't jump to line 117 because the condition on line 116 was never true</span></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t117" href="#t117">117</a></span><span class="t">        <span class="key">raise</span> <span class="nam">ValueError</span><span class="op">(</span><span class="str">"Scatterer size list is empty."</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t117" href="#t117">117</a></span><span class="t">        <span class="key">raise</span> <span class="nam">ValueError</span><span class="op">(</span><span class="str">"ScattererCollection size list is empty."</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t118" href="#t118">118</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t119" href="#t119">119</a></span><span class="t">    <span class="nam">size_list</span> <span class="op">=</span> <span class="nam">size_list</span><span class="op">.</span><span class="nam">quantity</span><span class="op">.</span><span class="nam">magnitude</span> <span class="op">*</span> <span class="nam">size_list</span><span class="op">.</span><span class="nam">units</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t120" href="#t120">120</a></span><span class="t">    <span class="nam">ri_list</span> <span class="op">=</span> <span class="nam">ri_list</span><span class="op">.</span><span class="nam">quantity</span><span class="op">.</span><span class="nam">magnitude</span> <span class="op">*</span> <span class="nam">ri_list</span><span class="op">.</span><span class="nam">units</span>&nbsp;</span><span class="r"></span></p>
@@ -239,7 +239,7 @@
     <p class="pln"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t"><span class="key">def</span> <span class="nam">compute_detected_signal</span><span class="op">(</span><span class="nam">source</span><span class="op">:</span> <span class="nam">BaseBeam</span><span class="op">,</span> <span class="nam">detector</span><span class="op">:</span> <span class="nam">Detector</span><span class="op">,</span> <span class="nam">scatterer</span><span class="op">:</span> <span class="nam">Scatterer</span><span class="op">,</span> <span class="nam">tolerance</span><span class="op">:</span> <span class="nam">float</span> <span class="op">=</span> <span class="num">1e-5</span><span class="op">)</span> <span class="op">-></span> <span class="nam">np</span><span class="op">.</span><span class="nam">ndarray</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t"><span class="key">def</span> <span class="nam">compute_detected_signal</span><span class="op">(</span><span class="nam">source</span><span class="op">:</span> <span class="nam">BaseBeam</span><span class="op">,</span> <span class="nam">detector</span><span class="op">:</span> <span class="nam">Detector</span><span class="op">,</span> <span class="nam">scatterer</span><span class="op">:</span> <span class="nam">ScattererCollection</span><span class="op">,</span> <span class="nam">tolerance</span><span class="op">:</span> <span class="nam">float</span> <span class="op">=</span> <span class="num">1e-5</span><span class="op">)</span> <span class="op">-></span> <span class="nam">np</span><span class="op">.</span><span class="nam">ndarray</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t">    <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t160" href="#t160">160</a></span><span class="t"><span class="str">    Computes the detected signal by analyzing the scattering properties of particles.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t161" href="#t161">161</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -249,7 +249,7 @@
     <p class="pln"><span class="n"><a id="t165" href="#t165">165</a></span><span class="t"><span class="str">        The light source object containing wavelength, power, and other optical properties.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t166" href="#t166">166</a></span><span class="t"><span class="str">    detector : Detector</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t167" href="#t167">167</a></span><span class="t"><span class="str">        The detector object containing properties such as numerical aperture and angles.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t168" href="#t168">168</a></span><span class="t"><span class="str">    scatterer : Scatterer</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t168" href="#t168">168</a></span><span class="t"><span class="str">    scatterer : ScattererCollection</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t169" href="#t169">169</a></span><span class="t"><span class="str">        The scatterer object containing particle size and refractive index data.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t170" href="#t170">170</a></span><span class="t"><span class="str">    tolerance : float, optional</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t171" href="#t171">171</a></span><span class="t"><span class="str">        The tolerance for deciding if two values of size and refractive index are "close enough" to be cached.</span>&nbsp;</span><span class="r"></span></p>
@@ -296,7 +296,7 @@
             <a class="nav" href="z_6fdab1548ba06262_rayleigh_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2024-12-29 22:58 +0000
+            created at 2024-12-31 00:12 +0000
         </p>
     </div>
 </footer>
