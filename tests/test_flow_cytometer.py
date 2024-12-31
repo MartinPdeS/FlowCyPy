@@ -100,7 +100,7 @@ def default_scatterer(flow_cell, default_population):
 
 def test_flow_cytometer_simulation(default_detector_0, default_detector_1, default_scatterer, flow_cell):
     """Test the simulation of flow cytometer signals."""
-    flow_cell.initialize(scatterer=default_scatterer)
+    flow_cell.initialize(scatterer_collection=default_scatterer)
     
     cytometer = FlowCytometer(
         detectors=[default_detector_0, default_detector_1],
@@ -121,7 +121,7 @@ def test_flow_cytometer_simulation(default_detector_0, default_detector_1, defau
 @patch('matplotlib.pyplot.show')
 def test_flow_cytometer_plot(mock_show, default_detector_0, default_detector_1, default_scatterer, flow_cell):
     """Test the plotting of flow cytometer signals."""
-    flow_cell.initialize(scatterer=default_scatterer)
+    flow_cell.initialize(scatterer_collection=default_scatterer)
 
     cytometer = FlowCytometer(
         detectors=[default_detector_0, default_detector_1],

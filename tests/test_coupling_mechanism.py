@@ -68,7 +68,7 @@ def detector():
 def scatterer(normal_population, default_flow_cell):
     scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)
     scatterer.add_population(normal_population, particle_count=1e+10 * particle / milliliter)
-    default_flow_cell.initialize(scatterer=scatterer)
+    default_flow_cell.initialize(scatterer_collection=scatterer)
     return scatterer
 
 

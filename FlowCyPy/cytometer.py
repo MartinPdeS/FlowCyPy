@@ -46,7 +46,7 @@ class FlowCytometer:
             background_power: Optional[Quantity] = 0 * milliwatt):
 
         self.flow_cell = flow_cell
-        self.scatterer = flow_cell.scatterer
+        self.scatterer_collection = flow_cell.scatterer_collection
         self.source = flow_cell.source
         self.detectors = detectors
         self.coupling_mechanism = coupling_mechanism
@@ -70,8 +70,8 @@ class FlowCytometer:
 
         self._generate_pulse_parameters()
 
-        _widths = self.scatterer.dataframe['Widths'].values
-        _centers = self.scatterer.dataframe['Time'].values
+        _widths = self.scatterer_collection.dataframe['Widths'].values
+        _centers = self.scatterer_collection.dataframe['Time'].values
 
         detection_mechanism = self._get_detection_mechanism()
 
@@ -85,10 +85,10 @@ class FlowCytometer:
             coupling_power = detection_mechanism(
                 source=self.source,
                 detector=detector,
-                scatterer=self.scatterer
+                scatterer=self.scatterer_collection
             )
 
-            self.scatterer.dataframe['CouplingPower'] = pint_pandas.PintArray(coupling_power, dtype=coupling_power.units)
+            self.scatterer_collection.dataframe['CouplingPower'] = pint_pandas.PintArray(coupling_power, dtype=coupling_power.units)
 
         for detector in self.detectors:
             # Generate noise components
@@ -160,11 +160,11 @@ class FlowCytometer:
         width : np.ndarray
             The width of the pulse (standard deviation of the Gaussian, in seconds).
         """
-        self.pulse_dataframe['Centers'] = self.scatterer.dataframe['Time']
+        self.pulse_dataframe['Centers'] = self.scatterer_collection.dataframe['Time']
 
-        widths = self.source.waist / self.flow_cell.flow_speed * np.ones(self.flow_cell.n_events)
+        widths = self.source.waist / self.flow_cell.flow_speed * np.ones(self.scatterer_collection.n_events)
 
-        self.scatterer.dataframe['Widths'] = pint_pandas.PintArray(widths, dtype=widths.units)
+        self.scatterer_collection.dataframe['Widths'] = pint_pandas.PintArray(widths, dtype=widths.units)
 
     def plot(self, figure_size: tuple = (10, 6), add_peak_locator: bool = False) -> None:
         """Plots the signals generated for each detector channel."""
@@ -179,7 +179,7 @@ class FlowCytometer:
         self.detectors[1].plot(ax=axes[1], show=False, time_unit=time_unit, signal_unit=signal_unit, add_peak_locator=add_peak_locator)
 
         axes[-1].get_yaxis().set_visible(False)
-        self.scatterer.add_to_ax(axes[-1])
+        self.scatterer_collection.add_to_ax(axes[-1])
 
         # Add legends to each subplot
         for ax in axes:

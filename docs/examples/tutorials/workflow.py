@@ -87,17 +87,17 @@ flow_cell = FlowCell(
 from FlowCyPy import ScattererCollection
 from FlowCyPy.population import Exosome
 
-scatterer = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
+scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
 # Add an Exosome population
-scatterer.add_population(
+scatterer_collection.add_population(
     Exosome,
     particle_count=5e9 * units.particle / units.milliliter  # Particle concentration
 )
 
 # Initialize the scatterer with the flow cell
-flow_cell.initialize(scatterer=scatterer) 
-scatterer.plot()  # Visualize the particle population
+flow_cell.initialize(scatterer_collection=scatterer_collection) 
+scatterer_collection.plot()  # Visualize the particle population
 
 # %%
 # Step 5: Define Detectors
