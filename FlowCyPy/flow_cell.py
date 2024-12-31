@@ -5,6 +5,7 @@ from tabulate import tabulate
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 from pint_pandas import PintType, PintArray
+from FlowCyPy.source import BaseBeam
 import pandas
 import numpy
 
@@ -36,6 +37,8 @@ class FlowCell(object):
     flow_area: Quantity
     run_time: Quantity
 
+    source: BaseBeam = None
+    
     @field_validator('flow_speed')
     def _validate_flow_speed(cls, value):
         """

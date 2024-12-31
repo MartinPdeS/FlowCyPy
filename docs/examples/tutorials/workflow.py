@@ -42,7 +42,22 @@ np.random.seed(3)  # Ensure reproducibility
 
 
 # %%
-# Step 2: Set Up the Flow Cell
+# Step 2: Configure the Laser Source
+# ----------------------------------
+# The laser source generates light that interacts with the particles. Its parameters, like numerical
+# aperture and wavelength, affect how light scatters, governed by Mie theory.
+
+from FlowCyPy import GaussianBeam
+
+source = GaussianBeam(
+    numerical_aperture=0.3 * units.AU,           # Numerical aperture
+    wavelength=200 * units.nanometer,           # Wavelength
+    optical_power=20 * units.milliwatt          # Optical power
+)
+
+
+# %%
+# Step 3: Set Up the Flow Cell
 # ----------------------------
 # The flow cell models the movement of particles in the cytometer. For example, the volume of fluid
 # passing through the cross-sectional area is calculated as:
@@ -53,6 +68,7 @@ np.random.seed(3)  # Ensure reproducibility
 from FlowCyPy import FlowCell
 
 flow_cell = FlowCell(
+    source=source,
     flow_speed=7.56 * units.meter / units.second,  # Flow speed
     flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
     run_time=0.1 * units.millisecond              # Simulation duration
@@ -60,8 +76,8 @@ flow_cell = FlowCell(
 
 
 # %%
-# Step 3: Define ScattererCollection and Population
-# ---------------------------------------
+# Step 4: Define ScattererCollection and Population
+# -------------------------------------------------
 # The scatterer represents particles in the flow. The concentration of particles in the flow cell is
 # given by:
 #
@@ -82,20 +98,6 @@ scatterer.add_population(
 # Initialize the scatterer with the flow cell
 flow_cell.initialize(scatterer=scatterer) 
 scatterer.plot()  # Visualize the particle population
-
-# %%
-# Step 4: Configure the Laser Source
-# ----------------------------------
-# The laser source generates light that interacts with the particles. Its parameters, like numerical
-# aperture and wavelength, affect how light scatters, governed by Mie theory.
-
-from FlowCyPy import GaussianBeam
-
-source = GaussianBeam(
-    numerical_aperture=0.3 * units.AU,           # Numerical aperture
-    wavelength=200 * units.nanometer,           # Wavelength
-    optical_power=20 * units.milliwatt          # Optical power
-)
 
 # %%
 # Step 5: Define Detectors
@@ -141,7 +143,6 @@ detector_1 = Detector(
 from FlowCyPy import FlowCytometer
 
 cytometer = FlowCytometer(
-    source=source,
     detectors=[detector_0, detector_1],
     flow_cell=flow_cell,
     background_power=0.001 * units.milliwatt
