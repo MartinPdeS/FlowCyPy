@@ -19,7 +19,7 @@
 | FlowCyPy/distribution/uniform.py                      |       21 |        1 |        0 |        0 |     95% |        88 |
 | FlowCyPy/distribution/weibull.py                      |       23 |        9 |        0 |        0 |     61% |30, 46-48, 67-72, 75 |
 | FlowCyPy/event\_correlator.py                         |       81 |       13 |       12 |        6 |     80% |130, 156-157, 207->211, 212-215, 218-221, 225->exit, 238-244 |
-| FlowCyPy/flow\_cell.py                                |       59 |       13 |       12 |        4 |     73% |61, 83, 105, 120-121, 124, 155-165, 185-192 |
+| FlowCyPy/flow\_cell.py                                |       83 |       14 |       14 |        5 |     78% |73, 95, 117, 124-125, 128, 183-193, 213-220, 295 |
 | FlowCyPy/helper.py                                    |       19 |        1 |        8 |        2 |     89% |74->77, 78 |
 | FlowCyPy/logger.py                                    |       96 |       33 |        8 |        3 |     63% |82-84, 100-110, 121-127, 156, 168-183, 199-209, 258->exit, 286-287, 321-322 |
 | FlowCyPy/noises.py                                    |       22 |       10 |        4 |        0 |     46% |7-9, 19, 23-29 |
@@ -30,14 +30,14 @@
 | FlowCyPy/peak\_locator/moving\_average.py             |       36 |        0 |        4 |        1 |     98% |    51->54 |
 | FlowCyPy/physical\_constant.py                        |       10 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/plottings.py                                 |       69 |       69 |       14 |        0 |      0% |     1-269 |
-| FlowCyPy/population.py                                |       73 |       12 |       18 |        7 |     77% |58, 79-81, 104-105, 110, 133-134, 139, 145, 237 |
+| FlowCyPy/population.py                                |       42 |       10 |       14 |        5 |     70% |52, 73-75, 98-99, 104, 127-128, 133 |
 | FlowCyPy/populations\_instances.py                    |       14 |        4 |        2 |        0 |     75% |     39-49 |
 | FlowCyPy/report.py                                    |      109 |       75 |        2 |        0 |     31% |13-22, 44-48, 52-57, 61-63, 67-75, 79-92, 96-127, 131-147, 151-155, 159, 172-183, 189-236 |
-| FlowCyPy/scatterer\_collection.py                     |       96 |       38 |       32 |        3 |     51% |80, 93-96, 100->exit, 108-121, 131-133, 190-203, 224-229, 266, 283-301, 304-305 |
+| FlowCyPy/scatterer\_collection.py                     |       94 |       38 |       32 |        3 |     50% |78, 91-94, 98->exit, 106-119, 129-131, 188-201, 222-227, 264, 281-299, 302-303 |
 | FlowCyPy/source.py                                    |       74 |        7 |       18 |        6 |     86% |36, 41, 51, 54, 61, 64, 74 |
 | FlowCyPy/units.py                                     |       19 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       67 |        6 |        8 |        3 |     88% |31, 35, 43, 89->92, 156-157, 179 |
-|                                             **TOTAL** | **1519** |  **415** |  **258** |   **65** | **69%** |           |
+|                                             **TOTAL** | **1510** |  **414** |  **256** |   **64** | **69%** |           |
 
 
 ## Setup coverage badge
