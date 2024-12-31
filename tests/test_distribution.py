@@ -34,8 +34,6 @@ def test_number_of_samples(mock_show, distribution, n_samples, x_values):
     # Generate particle sizes
     sizes = distribution.generate(n_samples * particle)
 
-    print(str(sizes))
-
     # Assert the shape is correct
     assert sizes.shape == (n_samples,), f"{distribution.__class__.__name__}: Generated size array has incorrect shape."
 

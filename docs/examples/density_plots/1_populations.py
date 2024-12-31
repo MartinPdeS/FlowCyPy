@@ -34,8 +34,16 @@ NoiseSetting.include_noises = False
 
 np.random.seed(3)  # Ensure reproducibility
 
+# Set up the laser source parameters
+source = GaussianBeam(
+    numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
+    wavelength=200 * nanometer,           # Laser wavelength: 200 nm
+    optical_power=20 * milliwatt          # Laser optical power: 20 mW
+)
+
 # Define the flow cell parameters
 flow_cell = FlowCell(
+    source=source,
     flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
     flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
     run_time=0.1 * millisecond               # Simulation run time: 0.5 ms
@@ -50,13 +58,6 @@ scatterer.add_population(Exosome, particle_count=5e9 * particle / milliliter)
 flow_cell.initialize(scatterer=scatterer)  # Link populations to flow cell
 scatterer._log_properties()               # Display population properties
 scatterer.plot()                         # Visualize the population distributions
-
-# Set up the laser source parameters
-source = GaussianBeam(
-    numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
-    wavelength=200 * nanometer,           # Laser wavelength: 200 nm
-    optical_power=20 * milliwatt          # Laser optical power: 20 mW
-)
 
 # Add forward scatter detector
 detector_0 = Detector(
@@ -91,7 +92,6 @@ detector_1 = Detector(
 # ------------------------------------------------
 cytometer = FlowCytometer(
     flow_cell=flow_cell,
-    source=source,
     detectors=[detector_0, detector_1],
     background_power=0.001 * milliwatt
 )

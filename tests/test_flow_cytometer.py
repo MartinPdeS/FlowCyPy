@@ -52,7 +52,14 @@ def default_detector_1():
 
 @pytest.fixture
 def flow_cell():
+    source = GaussianBeam(
+        numerical_aperture=1 * AU,
+        wavelength=1550 * nanometer,
+        optical_power=100e-3 * watt,
+    )
+    
     return FlowCell(
+        source=source,
         flow_speed=0.2 * meter / second,
         flow_area=(1e-6 * meter * meter),
         run_time=1e-3 * second,
@@ -91,21 +98,11 @@ def default_scatterer(flow_cell, default_population):
     return scatterer
 
 
-@pytest.fixture
-def default_source():
-    return GaussianBeam(
-        numerical_aperture=1 * AU,
-        wavelength=1550 * nanometer,
-        optical_power=100e-3 * watt,
-    )
-
-
-def test_flow_cytometer_simulation(default_source, default_detector_0, default_detector_1, default_scatterer, flow_cell):
+def test_flow_cytometer_simulation(default_detector_0, default_detector_1, default_scatterer, flow_cell):
     """Test the simulation of flow cytometer signals."""
     flow_cell.initialize(scatterer=default_scatterer)
     
     cytometer = FlowCytometer(
-        source=default_source,
         detectors=[default_detector_0, default_detector_1],
         flow_cell=flow_cell,
         coupling_mechanism='mie'
@@ -122,12 +119,11 @@ def test_flow_cytometer_simulation(default_source, default_detector_0, default_d
 
 
 @patch('matplotlib.pyplot.show')
-def test_flow_cytometer_plot(mock_show, default_source, default_detector_0, default_detector_1, default_scatterer, flow_cell):
+def test_flow_cytometer_plot(mock_show, default_detector_0, default_detector_1, default_scatterer, flow_cell):
     """Test the plotting of flow cytometer signals."""
     flow_cell.initialize(scatterer=default_scatterer)
 
     cytometer = FlowCytometer(
-        source=default_source,
         detectors=[default_detector_0, default_detector_1],
         flow_cell=flow_cell,
         coupling_mechanism='uniform'

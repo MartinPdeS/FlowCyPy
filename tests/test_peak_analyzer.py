@@ -17,7 +17,14 @@ np.random.seed(10)
 # Fixtures
 @pytest.fixture
 def flow_cell():
+    source = GaussianBeam(
+        numerical_aperture=1 * AU,
+        wavelength=1550e-9 * meter,
+        optical_power=1e-3 * watt,
+    )
+    
     return FlowCell(
+        source=source,
         flow_speed=0.2 * meter / second,
         flow_area=1e-6 * meter * meter,
         run_time=1e-3 * second,
@@ -57,16 +64,6 @@ def default_scatterer(flow_cell, default_population):
 
     return scatterer
 
-
-@pytest.fixture
-def default_source():
-    return GaussianBeam(
-        numerical_aperture=1 * AU,
-        wavelength=1550e-9 * meter,
-        optical_power=1e-3 * watt,
-    )
-
-
 @pytest.fixture
 def default_detector():
     """Creates a default detector with common properties."""
@@ -86,7 +83,7 @@ def default_detector():
 
 
 @pytest.fixture
-def default_cytometer(default_source, default_scatterer, default_detector, flow_cell):
+def default_cytometer(default_scatterer, default_detector, flow_cell):
     """Fixture for a default cytometer with two detectors."""
 
     flow_cell.initialize(scatterer=default_scatterer)
@@ -94,7 +91,6 @@ def default_cytometer(default_source, default_scatterer, default_detector, flow_
     detectors = [default_detector('0'), default_detector('1')]
 
     cytometer = FlowCytometer(
-        source=default_source,
         detectors=detectors,
         flow_cell=flow_cell,
         coupling_mechanism='mie'
