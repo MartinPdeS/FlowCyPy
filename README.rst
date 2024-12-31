@@ -59,7 +59,6 @@ Quick Start
 Simulate a simple flow cytometer experiment:
 
 ..  code-block:: python
-    :caption: Code snippet
 
     from FlowCyPy import FlowCytometer, ScattererCollection, FlowCell
     from FlowCyPy.units import particle, liter, nanometer, RIU
