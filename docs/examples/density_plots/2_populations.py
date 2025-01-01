@@ -99,6 +99,10 @@ cytometer = FlowCytometer(                      # Laser source used in the exper
 )
 
 # Run the simulation of pulse signals
+cytometer.run_coupling_analysis()
+
+cytometer.initialize_signal()
+
 cytometer.simulate_pulse()
 
 # Plot the results from both detectors

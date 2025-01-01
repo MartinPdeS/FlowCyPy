@@ -8,11 +8,11 @@ from typing import List, Callable, Optional
 from MPSPlots.styles import mps
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.detector import Detector
-from FlowCyPy.source import GaussianBeam
 import pandas as pd
 import pint_pandas
 from FlowCyPy.units import Quantity, milliwatt
 from FlowCyPy.logger import SimulationLogger
+import seaborn as sns
 
 # Set up logging configuration
 logging.basicConfig(
@@ -23,19 +23,44 @@ logging.basicConfig(
 
 class FlowCytometer:
     """
-    A class to simulate flow cytometer signals for Forward Scatter (FSC) and Side Scatter (SSC) channels.
+    A simulation class for modeling flow cytometer signals, including Forward Scatter (FSC) and Side Scatter (SSC) channels.
 
-    This class models the particle distribution, flow characteristics, and detector configurations to
-    simulate the signal generated as particles pass through the flow cytometer's laser.
+    The FlowCytometer class integrates optical and flow dynamics to simulate signal generation in a flow cytometer.
+    It handles particle distributions, flow cell properties, laser source configurations, and detector behavior to
+    replicate realistic cytometry conditions. This includes the generation of synthetic signal pulses for each
+    particle event and noise modeling for accurate signal representation.
 
     Parameters
     ----------
     flow_cell : FlowCell
-        Void
-    source : GaussianBeam
-        The laser source object representing the illumination scheme.
+        The flow cell object representing the fluidic and optical environment through which particles travel.
     detectors : List[Detector]
-        List of `Detector` objects representing the detectors in the system.
+        A list of `Detector` objects representing the detectors used to measure optical signals (e.g., FSC and SSC). Exactly two detectors must be provided.
+    coupling_mechanism : str, optional
+        The scattering mechanism used to couple the signal from the particles to the detectors.
+        Supported mechanisms include: 'mie' (default): Mie scattering, 'rayleigh': Rayleigh scattering, 'uniform': Uniform signal coupling, 'empirical': Empirical data-driven coupling
+    background_power : Quantity, optional
+        The background optical power added to the detector signal. Defaults to 0 milliwatts.
+
+    Attributes
+    ----------
+    flow_cell : FlowCell
+        The flow cell instance representing the system environment.
+    scatterer_collection : ScattererCollection
+        A collection of particles or scatterers passing through the flow cytometer.
+    source : GaussianBeam
+        The laser beam source providing illumination to the flow cytometer.
+    detectors : List[Detector]
+        The detectors used to collect and process signals from the scatterers.
+    coupling_mechanism : str
+        The selected mechanism for signal coupling.
+    background_power : Quantity
+        The optical background power added to the detector signals.
+
+    Raises
+    ------
+    AssertionError
+        If the number of detectors provided is not exactly two, or if both detectors share the same name.
 
     """
     def __init__(
@@ -55,42 +80,83 @@ class FlowCytometer:
         assert len(self.detectors) == 2, 'For now, FlowCytometer can only take two detectors for the analysis.'
         assert self.detectors[0].name != self.detectors[1].name, 'Both detectors cannot have the same name'
 
-    def simulate_pulse(self) -> None:
+    def run_coupling_analysis(self) -> None:
         """
-        Simulates the signal pulses for the FSC and SSC channels by generating Gaussian pulses for
-        each particle event and distributing them across the detectors.
-        """
-        logging.debug("Starting pulse simulation.")
+        Computes and assigns the optical coupling power for each particle-detection event.
 
-        columns = pd.MultiIndex.from_product(
-            [[p.name for p in self.detectors], ['Centers', 'Heights']]
-        )
+        This method evaluates the coupling between the scatterers in the flow cell and the detectors
+        using the specified detection mechanism. The computed coupling power is stored in the 
+        `scatterer_collection` dataframe under detector-specific columns.
 
-        self.pulse_dataframe = pd.DataFrame(columns=columns)
+        Updates
+        -------
+        scatterer_collection.dataframe : pandas.DataFrame
+            Adds columns for each detector, labeled as "detector: <detector_name>", containing the computed
+            coupling power for all particle events.
 
-        self._generate_pulse_parameters()
-
-        _widths = self.scatterer_collection.dataframe['Widths'].values
-        _centers = self.scatterer_collection.dataframe['Time'].values
-
+        Raises
+        ------
+        ValueError
+            If an invalid coupling mechanism is specified during initialization.
+        """        
         detection_mechanism = self._get_detection_mechanism()
 
-        # Initialize the detectors
         for detector in self.detectors:
-            detector.source = self.source
-            detector.init_raw_signal(run_time=self.flow_cell.run_time)
-
-        # Fetch the coupling power for each scatterer
-        for detector in self.detectors:
-            coupling_power = detection_mechanism(
+            self.coupling_power = detection_mechanism(
                 source=self.source,
                 detector=detector,
                 scatterer=self.scatterer_collection
             )
 
-            self.scatterer_collection.dataframe['CouplingPower'] = pint_pandas.PintArray(coupling_power, dtype=coupling_power.units)
+            self.scatterer_collection.dataframe["detector: " + detector.name] = pint_pandas.PintArray(self.coupling_power, dtype=self.coupling_power.units)
+        
+        self._generate_pulse_parameters()
+
+    def initialize_signal(self) -> None:
+        """
+        Initializes the raw signal for each detector based on the source and flow cell configuration.
+
+        This method prepares the detectors for signal capture by associating each detector with the
+        light source and generating a time-dependent raw signal placeholder.
+
+        Effects
+        -------
+        Each detector's `raw_signal` attribute is initialized with time-dependent values
+        based on the flow cell's runtime.
+
+        """        
+        # Initialize the detectors
+        for detector in self.detectors:
+            detector.source = self.source
+            detector.init_raw_signal(run_time=self.flow_cell.run_time)     
+
+    def simulate_pulse(self) -> None:
+        """
+        Simulates the generation of optical signal pulses for each particle event.
+
+        This method calculates Gaussian signal pulses based on particle positions, coupling power, and
+        widths. It adds the generated pulses, background power, and noise components (thermal and dark current)
+        to each detector's raw signal.
+
+        Notes
+        -----
+        - Adds Gaussian pulses to each detector's `raw_signal`.
+        - Includes noise and background power in the simulated signals.
+        - Updates detector dataframes with captured signal information.
+
+        Raises
+        ------
+        ValueError
+            If the scatterer collection lacks required data columns ('Widths', 'Time').
+        """
+        logging.debug("Starting pulse simulation.")
+
+        _widths = self.scatterer_collection.dataframe['Widths'].values
+        _centers = self.scatterer_collection.dataframe['Time'].values
 
         for detector in self.detectors:
+            _coupling_power = self.scatterer_collection.dataframe["detector: " + detector.name].values
+
             # Generate noise components
             detector._add_thermal_noise_to_raw_signal()
 
@@ -103,7 +169,7 @@ class FlowCytometer:
             widths = np.expand_dims(_widths.numpy_data, axis=1) * _widths.units
 
             # Compute the Gaussian for each height, center, and width using broadcasting
-            power_gaussians = coupling_power[:, np.newaxis] * np.exp(- (time_grid - centers) ** 2 / (2 * widths ** 2))
+            power_gaussians = _coupling_power[:, np.newaxis] * np.exp(- (time_grid - centers) ** 2 / (2 * widths ** 2))
 
             total_power = np.sum(power_gaussians, axis=0) + self.background_power
 
@@ -116,8 +182,22 @@ class FlowCytometer:
 
     def _log_statistics(self) -> SimulationLogger:
         """
-        Logs key statistics about the simulated pulse events for each detector using tabulate for better formatting.
-        Includes total events, average time between events, gfirst and last event times, and minimum time between events.
+        Logs and displays key statistics about the simulated events.
+
+        This includes metrics such as:
+        - Total number of events processed.
+        - Average time between events.
+        - First and last event times.
+        - Minimum time intervals between events.
+
+        Returns
+        -------
+        SimulationLogger
+            An instance of the logger containing all recorded statistics.
+
+        Effects
+        -------
+        Outputs formatted tables to the console or log file, depending on the logger's configuration.
         """
         logger = SimulationLogger(cytometer=self)
 
@@ -127,12 +207,24 @@ class FlowCytometer:
 
     def _get_detection_mechanism(self) -> Callable:
         """
-        Generates coupling factors for the scatterer sizes based on the selected coupling mechanism.
+        Retrieves the detection mechanism function for signal coupling based on the selected method.
+
+        Supported Coupling Mechanisms
+        -----------------------------
+        - 'mie': Mie scattering.
+        - 'rayleigh': Rayleigh scattering.
+        - 'uniform': Uniform scattering.
+        - 'empirical': Empirical (data-driven) scattering.
 
         Returns
         -------
         Callable
-            The generated coupling factors for the scatterer sizes.
+            A function that computes the detected signal for scatterer sizes and particle distributions.
+
+        Raises
+        ------
+        ValueError
+            If an unsupported coupling mechanism is specified.
         """
         from FlowCyPy import coupling_mechanism
 
@@ -151,23 +243,47 @@ class FlowCytometer:
 
     def _generate_pulse_parameters(self) -> None:
         """
-        Generates random parameters for a Gaussian pulse, including the center and width.
+        Generates and assigns random Gaussian pulse parameters for each particle event.
 
-        Returns
+        The generated parameters include:
+        - Centers: The time at which each pulse occurs.
+        - Widths: The standard deviation (spread) of each pulse in seconds.
+
+        Effects
         -------
-        center : np.ndarray
-            The center of the pulse in time.
-        width : np.ndarray
-            The width of the pulse (standard deviation of the Gaussian, in seconds).
+        scatterer_collection.dataframe : pandas.DataFrame
+            Adds a 'Widths' column with computed pulse widths for each particle.
+            Uses the flow speed and beam waist to calculate pulse widths.
         """
+        columns = pd.MultiIndex.from_product(
+            [[p.name for p in self.detectors], ['Centers', 'Heights']]
+        )
+
+        self.pulse_dataframe = pd.DataFrame(columns=columns)
+                
         self.pulse_dataframe['Centers'] = self.scatterer_collection.dataframe['Time']
 
         widths = self.source.waist / self.flow_cell.flow_speed * np.ones(self.scatterer_collection.n_events)
 
         self.scatterer_collection.dataframe['Widths'] = pint_pandas.PintArray(widths, dtype=widths.units)
 
-    def plot(self, figure_size: tuple = (10, 6), add_peak_locator: bool = False) -> None:
-        """Plots the signals generated for each detector channel."""
+    def plot(self, figure_size: tuple = (10, 6), add_peak_locator: bool = False, show: bool = True) -> None:
+        """
+        Visualizes the raw signals for all detector channels along with the scatterer distribution.
+
+        Parameters
+        ----------
+        figure_size : tuple, optional
+            Dimensions of the generated plot (default: (10, 6)).
+        add_peak_locator : bool, optional
+            If True, adds visual markers for detected signal peaks (default: False).
+
+        Effects
+        -------
+        Displays a multi-panel plot showing:
+        - Raw signals for each detector channel.
+        - Scatterer distribution along the time axis.
+        """
         logging.info("Plotting the signal for the different channels.")
 
         n_detectors = len(self.detectors)
@@ -185,13 +301,62 @@ class FlowCytometer:
         for ax in axes:
             ax.legend()
 
-        # Display the plot
-        plt.show()
+        if show: # Display the plot
+            plt.show()       
+
+    def plot_coupling_density(self, log_scale: bool = False, show: bool = True) -> None:
+        """
+        Plots the density distribution of optical coupling in the FSC and SSC channels.
+
+        This method generates a joint plot showing the relationship between the signals from
+        the forward scatter ('detector: forward') and side scatter ('detector: side') detectors.
+        The plot is color-coded by particle population and can optionally display axes on a logarithmic scale.
+
+        Parameters
+        ----------
+        log_scale : bool, optional
+            If True, applies a logarithmic scale to both the x and y axes of the plot (default: False).
+        show : bool, optional
+            If True, displays the plot immediately. If False, the plot is created but not displayed,
+            allowing for further customization or saving externally (default: True).
+
+        """
+        with plt.style.context(mps):
+            joint_plot = sns.jointplot(
+                data=self.scatterer_collection.dataframe,
+                y='detector: side',
+                x='detector: forward',
+                hue="Population",
+                alpha=0.8,
+            )
+
+
+        if log_scale:
+            joint_plot.ax_joint.set_xscale('log')
+            joint_plot.ax_joint.set_yscale('log')    
+
+        if show: # Display the plot
+            plt.show()            
 
     def add_detector(self, **kwargs) -> Detector:
-        detector = Detector(
-            **kwargs
-        )
+        """
+        Dynamically adds a new detector to the system configuration.
+
+        Parameters
+        ----------
+        **kwargs : dict
+            Keyword arguments passed to the `Detector` constructor.
+
+        Returns
+        -------
+        Detector
+            The newly added detector instance.
+
+        Effects
+        -------
+        - Appends the created detector to the `detectors` list.
+        """        
+        detector = Detector(**kwargs)
 
         self.detectors.append(detector)
 

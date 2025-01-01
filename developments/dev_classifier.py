@@ -1,140 +1,149 @@
+"""
+Flow Cytometry Simulation [2 populations] Density Plot of Scattering Intensities
+================================================================================
+
+This example simulates a flow cytometer experiment using the FlowCyPy library,
+analyzes pulse signals from two detectors, and generates a 2D density plot of the scattering intensities.
+
+Steps:
+1. Set flow parameters and particle size distributions.
+2. Set up the laser source and detectors.
+3. Simulate the flow cytometry experiment.
+4. Analyze pulse signals and generate a 2D density plot.
+"""
+
+# Import necessary libraries and modules
 import numpy as np
+from FlowCyPy import FlowCytometer, ScattererCollection, EventCorrelator, Detector, GaussianBeam, FlowCell
+from FlowCyPy import peak_locator
+from FlowCyPy import Population, distribution
+from FlowCyPy.units import particle, milliliter, nanometer, RIU, second, micrometer, millisecond, meter
+from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliampere, megahertz, microvolt
+from FlowCyPy.units import microsecond
+from FlowCyPy.units import milliwatt, AU
 from FlowCyPy import NoiseSetting
+from FlowCyPy.population import Exosome, HDL
 
-from FlowCyPy import (
-    FlowCytometer, FlowCell, Detector, GaussianBeam, EventCorrelator,
-    peak_locator, classifier, Scatterer, Population, distribution
-)
+NoiseSetting.include_noises = False
 
-from FlowCyPy.units import (
-    particle, nanometer, RIU, milliwatt, AU, meter, micrometer, millisecond,
-    second, degree, ohm, megahertz, ampere, volt, kelvin, watt, microsecond, microvolt
-)
-
-from FlowCyPy.plottings import MetricPlotter
-
-# NoiseSetting.include_noises = True
-NoiseSetting.include_shot_noise = False
-NoiseSetting.include_dark_current_noise = False
-NoiseSetting.include_thermal_noise = True
-NoiseSetting.include_RIN_noise = False
-
+# Set random seed for reproducibility
 np.random.seed(3)
 
-flow_cell = FlowCell(
-    flow_speed=7.56 * meter / second,
-    flow_area=(10 * micrometer) ** 2,
-    run_time=0.2 * millisecond
+# %%
+# Step 1: Set up the Laser GaussianBeam
+source = GaussianBeam(
+    numerical_aperture=0.3 * AU,             # Numerical aperture of the laser: 0.3
+    wavelength=488 * nanometer,              # Laser wavelength: 800 nanometers
+    optical_power=100 * milliwatt             # Laser optical power: 10 milliwatts
 )
 
-scatterer = Scatterer(medium_refractive_index=1.33 * RIU)
+# Step 2: Define Flow Parameters
+flow_cell = FlowCell(
+    source=source,
+    flow_speed=7.56 * meter / second,      # Flow speed: 7.56 meters per second
+    flow_area=(10 * micrometer) ** 2,      # Flow area: 10 x 10 micrometers
+    run_time=.2 * millisecond              # Total simulation time: 0.3 milliseconds
+)
 
+# Step 3: Create Populations (Extracellular Vesicles and Liposomes)
+scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
 
-combinations = [
-    (50, 1.42),
-    (150, 1.42),
-    # (250, 1.45)
-]
+ri_std_dev = 0.02 * RIU
+size_std_dev = 30 * nanometer
 
+population_0 = Population(
+    name='Pop 0',
+    # size=distribution.RosinRammler(characteristic_size=150 * nanometer, spread=4.5),
+    size=distribution.Normal(mean=650 * nanometer, std_dev=size_std_dev),
+    refractive_index=distribution.Normal(mean=1.39 * RIU, std_dev=ri_std_dev)
+)
 
-particule_number = 40
-for size, ri in combinations:
-    population = Population(
-        name=f'Size: {size}nm',
-        size=distribution.Normal(mean=size * nanometer, std_dev=size/20000 * nanometer),
-        refractive_index=distribution.Normal(mean=ri * RIU, std_dev=0.00001 * RIU)
-    )
+population_1 = Population(
+    name='Pop 1',
+    # size=distribution.Delta(position=200 * nanometer),
+    size=distribution.Normal(mean=400 * nanometer, std_dev=size_std_dev),
+    refractive_index=distribution.Normal(mean=1.42 * RIU, std_dev=ri_std_dev)
+)
 
-    scatterer.add_population(population, particle_count=particule_number * particle)
+population_2 = Population(
+    name='Pop 2',
+    # size=distribution.Delta(position=200 * nanometer),
+    size=distribution.Normal(mean=500 * nanometer, std_dev=size_std_dev),
+    refractive_index=distribution.Normal(mean=1.48 * RIU, std_dev=ri_std_dev)
+)
 
+# scatterer.add_population(population_0, particle_count=100 * particle)
+scatterer.add_population(population_1, particle_count=100 * particle)
+scatterer.add_population(population_2, particle_count=100 * particle)
 
-scatterer.initialize(flow_cell=flow_cell)
+# Initialize scatterer and link it to the flow cell
+flow_cell.initialize(scatterer_collection=scatterer)
 
-scatterer.distribute_time_linearly(sequential_population=True)
-
-scatterer._log_properties()
 scatterer.plot()
 
-source = GaussianBeam(
-    numerical_aperture=0.3 * AU,
-    wavelength=488 * nanometer,
-    optical_power=200 * milliwatt
-)
-
+# Step 5: Configure Detectors
+# Side scatter detector
 detector_0 = Detector(
-    name='forward',
-    phi_angle=0 * degree,
-    numerical_aperture=.2 * AU,
-    responsitivity=1 * ampere / watt,
-    sampling_freq=60 * megahertz,
-    noise_level=0.0 * volt,
-    # saturation_level=1600 * microvolt,
-    resistance=1500 * ohm,
-    temperature=30 * kelvin,
+    name='side',                             # Detector name: Side scatter detector
+    phi_angle=90 * degree,                   # Angle: 90 degrees (Side Scatter)
+    numerical_aperture=.2 * AU,              # Numerical aperture: 1.2
+    responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
+    sampling_freq=60 * megahertz,            # Sampling frequency: 60 MHz
+    saturation_level=0.04 * millivolt,       # Saturation level: 2 millivolts
+    # n_bins='16bit',                        # Number of bins: 14-bit resolution
+    resistance=50 * ohm,                     # Detector resistance: 50 ohms
+    dark_current=0.1 * milliampere,          # Dark current: 0.1 milliamps
+    temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
 )
 
+# Forward scatter detector
 detector_1 = Detector(
-    name='side',
-    phi_angle=90 * degree,
-    numerical_aperture=.2 * AU,
-    responsitivity=1 * ampere / watt,
-    sampling_freq=60 * megahertz,
-    noise_level=0.0 * volt,
-    # saturation_level=1600 * microvolt,
-    resistance=1500 * ohm,
-    temperature=30 * kelvin,
+    name='forward',                          # Detector name: Forward scatter detector
+    phi_angle=0 * degree,                    # Angle: 0 degrees (Forward Scatter)
+    numerical_aperture=.2 * AU,              # Numerical aperture: 1.2
+    responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
+    sampling_freq=60 * megahertz,            # Sampling frequency: 60 MHz
+    saturation_level=0.04 * millivolt,       # Saturation level: 2 millivolts
+    # n_bins='16bit',                        # Number of bins: 14-bit resolution
+    resistance=50 * ohm,                     # Detector resistance: 50 ohms
+    dark_current=0.1 * milliampere,          # Dark current: 0.1 milliamps
+    temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
 )
 
 
-cytometer = FlowCytometer(
-    detectors=[detector_0, detector_1],
-    source=source,
-    scatterer=scatterer
+# Step 6: Simulate Flow Cytometry Experiment
+cytometer = FlowCytometer(                   # Laser source used in the experiment
+    flow_cell=flow_cell,                     # Populations used in the experiment
+    background_power=0.0 * milliwatt,
+    detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
 )
+
+# Run the simulation of pulse signals
+cytometer.run_coupling_analysis()
+
+cytometer.initialize_signal()
 
 cytometer.simulate_pulse()
 
-cytometer.plot()
-
-algorithm = peak_locator.MovingAverage(
-    threshold=0.001 * microvolt,
-    window_size=1 * microsecond,
-    min_peak_distance=0.3 * microsecond
-)
-
-detector_0.set_peak_locator(algorithm)
-detector_1.set_peak_locator(algorithm)
-
-analyzer = EventCorrelator(cytometer=cytometer)
-
-analyzer.run_analysis(compute_peak_area=False)
-
-dataframe = analyzer.get_coincidence(margin=0.1 * microsecond)
+cytometer.plot_coupling_density()
 
 
-# clas = classifier.KmeansClassifier(dataframe)
-# clas.run(number_of_cluster=3, features=['Heights'])
+# import seaborn as sns
+# import matplotlib.pyplot as plt
 
-clas = classifier.RangeClassifier(dataframe)
+# figure, ax = plt.subplots(1, 1)
 
-clas.run(
-    ranges={
-        'Population 0': (0, particule_number),
-        'Population 1': (particule_number, 2 * particule_number),
-        'Population 2': (2 * particule_number, 3 * particule_number)}
-)
+# joint_plot = sns.jointplot(
+#     data=scatterer.dataframe,
+#     y='detector: side',
+#     x='detector: forward',
+#     hue="Population",
+#     alpha=0.8,
+#     ax=ax
+# )
 
-print(dataframe)
+# joint_plot.ax_joint.set_xscale('log')
+# joint_plot.ax_joint.set_yscale('log')
 
-plotter = MetricPlotter(
-    detector_names=['forward', 'side'],
-    coincidence_dataframe=dataframe,
-)
-
-plotter.plot(
-    feature='Heights',
-    show=True,
-    log_plot=False,
-    equal_axes=False
-)
+# plt.show()
 

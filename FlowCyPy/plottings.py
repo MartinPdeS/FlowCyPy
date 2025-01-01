@@ -122,8 +122,7 @@ class MetricPlotter:
         g: sns.JointGrid,
         feature: str,
         x_units: str,
-        y_units: str,
-    ):
+        y_units: str) -> None:
         """
         Sets the x and y labels with units on the plot.
 

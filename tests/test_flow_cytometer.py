@@ -107,6 +107,11 @@ def test_flow_cytometer_simulation(default_detector_0, default_detector_1, defau
         flow_cell=flow_cell,
         coupling_mechanism='mie'
     )
+    
+    cytometer.run_coupling_analysis()
+
+    cytometer.initialize_signal()
+
     cytometer.simulate_pulse()
 
     # Check that the signals are not all zeros (pulses should add non-zero values)
@@ -128,6 +133,11 @@ def test_flow_cytometer_plot(mock_show, default_detector_0, default_detector_1, 
         flow_cell=flow_cell,
         coupling_mechanism='uniform'
     )
+
+    cytometer.run_coupling_analysis()
+
+    cytometer.initialize_signal()
+
     cytometer.simulate_pulse()
 
     cytometer.plot()
