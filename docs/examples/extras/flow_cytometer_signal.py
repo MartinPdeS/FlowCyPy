@@ -101,6 +101,10 @@ cytometer = FlowCytometer(
 # Step 7: Simulate flow cytometer signals
 # ---------------------------------------
 # Simulate the signals for both detectors (FSC and SSC) as particles pass through the laser beam.
+cytometer.run_coupling_analysis()
+
+cytometer.initialize_signal()
+
 cytometer.simulate_pulse()
 
 # Step 8: Display the properties of the simulation

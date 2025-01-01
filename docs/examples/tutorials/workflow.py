@@ -148,7 +148,12 @@ cytometer = FlowCytometer(
     background_power=0.001 * units.milliwatt
 )
 
+cytometer.run_coupling_analysis()
+
+cytometer.initialize_signal()
+
 cytometer.simulate_pulse()
+
 cytometer.plot()  # Visualize signals from detectors
 
 # %%

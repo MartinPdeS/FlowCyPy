@@ -4,6 +4,7 @@ Internal
 .. toctree::
    :maxdepth: 2
    :titlesonly:
+   :hidden:
 
    internal/prerequisites/index
    internal/getting_started

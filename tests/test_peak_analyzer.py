@@ -95,6 +95,10 @@ def default_cytometer(default_scatterer, default_detector, flow_cell):
         flow_cell=flow_cell,
         coupling_mechanism='mie'
     )
+    cytometer.run_coupling_analysis()
+
+    cytometer.initialize_signal()
+
     cytometer.simulate_pulse()
     return cytometer
 

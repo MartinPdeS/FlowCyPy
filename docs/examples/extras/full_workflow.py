@@ -105,6 +105,10 @@ cytometer = FlowCytometer(
 )
 
 # Simulate the pulse signals generated from the interaction between particles and the laser.
+cytometer.run_coupling_analysis()
+
+cytometer.initialize_signal()
+
 cytometer.simulate_pulse()
 
 # %%
