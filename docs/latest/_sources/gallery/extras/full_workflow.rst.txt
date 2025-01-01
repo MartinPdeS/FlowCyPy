@@ -106,7 +106,7 @@ Step 4: Define the particle size distribution
 Use a normal size distribution with a mean size of 200 nanometers and a standard deviation of 10 nanometers.
 This represents the population of scatterers (particles) that will interact with the laser source.
 
-.. GENERATED FROM PYTHON SOURCE LINES 50-110
+.. GENERATED FROM PYTHON SOURCE LINES 50-114
 
 .. code-block:: Python
 
@@ -168,6 +168,10 @@ This represents the population of scatterers (particles) that will interact with
     )
 
     # Simulate the pulse signals generated from the interaction between particles and the laser.
+    cytometer.run_coupling_analysis()
+
+    cytometer.initialize_signal()
+
     cytometer.simulate_pulse()
 
 
@@ -182,13 +186,13 @@ This represents the population of scatterers (particles) that will interact with
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-114
+.. GENERATED FROM PYTHON SOURCE LINES 115-118
 
 Step 7: Analyze and Visualize Results
 -------------------------------------
 Display the properties of the simulated cytometer setup, including flow speed and laser power.
 
-.. GENERATED FROM PYTHON SOURCE LINES 114-125
+.. GENERATED FROM PYTHON SOURCE LINES 118-129
 
 .. code-block:: Python
 
@@ -224,7 +228,7 @@ Display the properties of the simulated cytometer setup, including flow speed an
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.744 seconds)
+   **Total running time of the script:** (0 minutes 3.658 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_full_workflow.py:

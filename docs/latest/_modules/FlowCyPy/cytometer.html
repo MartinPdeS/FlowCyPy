@@ -488,11 +488,11 @@
 <span class="kn">from</span> <span class="nn">MPSPlots.styles</span> <span class="kn">import</span> <span class="n">mps</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.flow_cell</span> <span class="kn">import</span> <span class="n">FlowCell</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.detector</span> <span class="kn">import</span> <span class="n">Detector</span>
-<span class="kn">from</span> <span class="nn">FlowCyPy.source</span> <span class="kn">import</span> <span class="n">GaussianBeam</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">pint_pandas</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.units</span> <span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">milliwatt</span>
 <span class="kn">from</span> <span class="nn">FlowCyPy.logger</span> <span class="kn">import</span> <span class="n">SimulationLogger</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 
 <span class="c1"># Set up logging configuration</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
@@ -505,19 +505,44 @@
 <a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer">[docs]</a>
 <span class="k">class</span> <span class="nc">FlowCytometer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class to simulate flow cytometer signals for Forward Scatter (FSC) and Side Scatter (SSC) channels.</span>
+<span class="sd">    A simulation class for modeling flow cytometer signals, including Forward Scatter (FSC) and Side Scatter (SSC) channels.</span>
 
-<span class="sd">    This class models the particle distribution, flow characteristics, and detector configurations to</span>
-<span class="sd">    simulate the signal generated as particles pass through the flow cytometer&#39;s laser.</span>
+<span class="sd">    The FlowCytometer class integrates optical and flow dynamics to simulate signal generation in a flow cytometer.</span>
+<span class="sd">    It handles particle distributions, flow cell properties, laser source configurations, and detector behavior to</span>
+<span class="sd">    replicate realistic cytometry conditions. This includes the generation of synthetic signal pulses for each</span>
+<span class="sd">    particle event and noise modeling for accurate signal representation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    flow_cell : FlowCell</span>
-<span class="sd">        Void</span>
-<span class="sd">    source : GaussianBeam</span>
-<span class="sd">        The laser source object representing the illumination scheme.</span>
+<span class="sd">        The flow cell object representing the fluidic and optical environment through which particles travel.</span>
 <span class="sd">    detectors : List[Detector]</span>
-<span class="sd">        List of `Detector` objects representing the detectors in the system.</span>
+<span class="sd">        A list of `Detector` objects representing the detectors used to measure optical signals (e.g., FSC and SSC). Exactly two detectors must be provided.</span>
+<span class="sd">    coupling_mechanism : str, optional</span>
+<span class="sd">        The scattering mechanism used to couple the signal from the particles to the detectors.</span>
+<span class="sd">        Supported mechanisms include: &#39;mie&#39; (default): Mie scattering, &#39;rayleigh&#39;: Rayleigh scattering, &#39;uniform&#39;: Uniform signal coupling, &#39;empirical&#39;: Empirical data-driven coupling</span>
+<span class="sd">    background_power : Quantity, optional</span>
+<span class="sd">        The background optical power added to the detector signal. Defaults to 0 milliwatts.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    flow_cell : FlowCell</span>
+<span class="sd">        The flow cell instance representing the system environment.</span>
+<span class="sd">    scatterer_collection : ScattererCollection</span>
+<span class="sd">        A collection of particles or scatterers passing through the flow cytometer.</span>
+<span class="sd">    source : GaussianBeam</span>
+<span class="sd">        The laser beam source providing illumination to the flow cytometer.</span>
+<span class="sd">    detectors : List[Detector]</span>
+<span class="sd">        The detectors used to collect and process signals from the scatterers.</span>
+<span class="sd">    coupling_mechanism : str</span>
+<span class="sd">        The selected mechanism for signal coupling.</span>
+<span class="sd">    background_power : Quantity</span>
+<span class="sd">        The optical background power added to the detector signals.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    AssertionError</span>
+<span class="sd">        If the number of detectors provided is not exactly two, or if both detectors share the same name.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -537,44 +562,91 @@
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;For now, FlowCytometer can only take two detectors for the analysis.&#39;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Both detectors cannot have the same name&#39;</span>
 
-<div class="viewcode-block" id="FlowCytometer.simulate_pulse">
-<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.simulate_pulse">[docs]</a>
-    <span class="k">def</span> <span class="nf">simulate_pulse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="FlowCytometer.run_coupling_analysis">
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.run_coupling_analysis">[docs]</a>
+    <span class="k">def</span> <span class="nf">run_coupling_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Simulates the signal pulses for the FSC and SSC channels by generating Gaussian pulses for</span>
-<span class="sd">        each particle event and distributing them across the detectors.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting pulse simulation.&quot;</span><span class="p">)</span>
+<span class="sd">        Computes and assigns the optical coupling power for each particle-detection event.</span>
 
-        <span class="n">columns</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span>
-            <span class="p">[[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Centers&#39;</span><span class="p">,</span> <span class="s1">&#39;Heights&#39;</span><span class="p">]]</span>
-        <span class="p">)</span>
+<span class="sd">        This method evaluates the coupling between the scatterers in the flow cell and the detectors</span>
+<span class="sd">        using the specified detection mechanism. The computed coupling power is stored in the </span>
+<span class="sd">        `scatterer_collection` dataframe under detector-specific columns.</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">pulse_dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+<span class="sd">        Updates</span>
+<span class="sd">        -------</span>
+<span class="sd">        scatterer_collection.dataframe : pandas.DataFrame</span>
+<span class="sd">            Adds columns for each detector, labeled as &quot;detector: &lt;detector_name&gt;&quot;, containing the computed</span>
+<span class="sd">            coupling power for all particle events.</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_pulse_parameters</span><span class="p">()</span>
-
-        <span class="n">_widths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Widths&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-        <span class="n">_centers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If an invalid coupling mechanism is specified during initialization.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="n">detection_mechanism</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_detection_mechanism</span><span class="p">()</span>
 
-        <span class="c1"># Initialize the detectors</span>
         <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
-            <span class="n">detector</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span>
-            <span class="n">detector</span><span class="o">.</span><span class="n">init_raw_signal</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">run_time</span><span class="p">)</span>
-
-        <span class="c1"># Fetch the coupling power for each scatterer</span>
-        <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
-            <span class="n">coupling_power</span> <span class="o">=</span> <span class="n">detection_mechanism</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">coupling_power</span> <span class="o">=</span> <span class="n">detection_mechanism</span><span class="p">(</span>
                 <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
                 <span class="n">detector</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
                 <span class="n">scatterer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span>
             <span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;CouplingPower&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">coupling_power</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">coupling_power</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;detector: &quot;</span> <span class="o">+</span> <span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coupling_power</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">coupling_power</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_pulse_parameters</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="FlowCytometer.initialize_signal">
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.initialize_signal">[docs]</a>
+    <span class="k">def</span> <span class="nf">initialize_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the raw signal for each detector based on the source and flow cell configuration.</span>
+
+<span class="sd">        This method prepares the detectors for signal capture by associating each detector with the</span>
+<span class="sd">        light source and generating a time-dependent raw signal placeholder.</span>
+
+<span class="sd">        Effects</span>
+<span class="sd">        -------</span>
+<span class="sd">        Each detector&#39;s `raw_signal` attribute is initialized with time-dependent values</span>
+<span class="sd">        based on the flow cell&#39;s runtime.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="c1"># Initialize the detectors</span>
+        <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
+            <span class="n">detector</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span>
+            <span class="n">detector</span><span class="o">.</span><span class="n">init_raw_signal</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">run_time</span><span class="p">)</span>     </div>
+
+
+<div class="viewcode-block" id="FlowCytometer.simulate_pulse">
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.simulate_pulse">[docs]</a>
+    <span class="k">def</span> <span class="nf">simulate_pulse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simulates the generation of optical signal pulses for each particle event.</span>
+
+<span class="sd">        This method calculates Gaussian signal pulses based on particle positions, coupling power, and</span>
+<span class="sd">        widths. It adds the generated pulses, background power, and noise components (thermal and dark current)</span>
+<span class="sd">        to each detector&#39;s raw signal.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - Adds Gaussian pulses to each detector&#39;s `raw_signal`.</span>
+<span class="sd">        - Includes noise and background power in the simulated signals.</span>
+<span class="sd">        - Updates detector dataframes with captured signal information.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the scatterer collection lacks required data columns (&#39;Widths&#39;, &#39;Time&#39;).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting pulse simulation.&quot;</span><span class="p">)</span>
+
+        <span class="n">_widths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Widths&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">_centers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
         <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
+            <span class="n">_coupling_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;detector: &quot;</span> <span class="o">+</span> <span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
             <span class="c1"># Generate noise components</span>
             <span class="n">detector</span><span class="o">.</span><span class="n">_add_thermal_noise_to_raw_signal</span><span class="p">()</span>
 
@@ -587,7 +659,7 @@
             <span class="n">widths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">_widths</span><span class="o">.</span><span class="n">numpy_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">_widths</span><span class="o">.</span><span class="n">units</span>
 
             <span class="c1"># Compute the Gaussian for each height, center, and width using broadcasting</span>
-            <span class="n">power_gaussians</span> <span class="o">=</span> <span class="n">coupling_power</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span> <span class="p">(</span><span class="n">time_grid</span> <span class="o">-</span> <span class="n">centers</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">widths</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="n">power_gaussians</span> <span class="o">=</span> <span class="n">_coupling_power</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span> <span class="p">(</span><span class="n">time_grid</span> <span class="o">-</span> <span class="n">centers</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">widths</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
 
             <span class="n">total_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">power_gaussians</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">background_power</span>
 
@@ -601,8 +673,22 @@
 
     <span class="k">def</span> <span class="nf">_log_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SimulationLogger</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Logs key statistics about the simulated pulse events for each detector using tabulate for better formatting.</span>
-<span class="sd">        Includes total events, average time between events, gfirst and last event times, and minimum time between events.</span>
+<span class="sd">        Logs and displays key statistics about the simulated events.</span>
+
+<span class="sd">        This includes metrics such as:</span>
+<span class="sd">        - Total number of events processed.</span>
+<span class="sd">        - Average time between events.</span>
+<span class="sd">        - First and last event times.</span>
+<span class="sd">        - Minimum time intervals between events.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SimulationLogger</span>
+<span class="sd">            An instance of the logger containing all recorded statistics.</span>
+
+<span class="sd">        Effects</span>
+<span class="sd">        -------</span>
+<span class="sd">        Outputs formatted tables to the console or log file, depending on the logger&#39;s configuration.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">SimulationLogger</span><span class="p">(</span><span class="n">cytometer</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
@@ -612,12 +698,24 @@
 
     <span class="k">def</span> <span class="nf">_get_detection_mechanism</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generates coupling factors for the scatterer sizes based on the selected coupling mechanism.</span>
+<span class="sd">        Retrieves the detection mechanism function for signal coupling based on the selected method.</span>
+
+<span class="sd">        Supported Coupling Mechanisms</span>
+<span class="sd">        -----------------------------</span>
+<span class="sd">        - &#39;mie&#39;: Mie scattering.</span>
+<span class="sd">        - &#39;rayleigh&#39;: Rayleigh scattering.</span>
+<span class="sd">        - &#39;uniform&#39;: Uniform scattering.</span>
+<span class="sd">        - &#39;empirical&#39;: Empirical (data-driven) scattering.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Callable</span>
-<span class="sd">            The generated coupling factors for the scatterer sizes.</span>
+<span class="sd">            A function that computes the detected signal for scatterer sizes and particle distributions.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If an unsupported coupling mechanism is specified.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">FlowCyPy</span> <span class="kn">import</span> <span class="n">coupling_mechanism</span>
 
@@ -636,15 +734,24 @@
 
     <span class="k">def</span> <span class="nf">_generate_pulse_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generates random parameters for a Gaussian pulse, including the center and width.</span>
+<span class="sd">        Generates and assigns random Gaussian pulse parameters for each particle event.</span>
 
-<span class="sd">        Returns</span>
+<span class="sd">        The generated parameters include:</span>
+<span class="sd">        - Centers: The time at which each pulse occurs.</span>
+<span class="sd">        - Widths: The standard deviation (spread) of each pulse in seconds.</span>
+
+<span class="sd">        Effects</span>
 <span class="sd">        -------</span>
-<span class="sd">        center : np.ndarray</span>
-<span class="sd">            The center of the pulse in time.</span>
-<span class="sd">        width : np.ndarray</span>
-<span class="sd">            The width of the pulse (standard deviation of the Gaussian, in seconds).</span>
+<span class="sd">        scatterer_collection.dataframe : pandas.DataFrame</span>
+<span class="sd">            Adds a &#39;Widths&#39; column with computed pulse widths for each particle.</span>
+<span class="sd">            Uses the flow speed and beam waist to calculate pulse widths.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span>
+            <span class="p">[[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;Centers&#39;</span><span class="p">,</span> <span class="s1">&#39;Heights&#39;</span><span class="p">]]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pulse_dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+                
         <span class="bp">self</span><span class="o">.</span><span class="n">pulse_dataframe</span><span class="p">[</span><span class="s1">&#39;Centers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span>
 
         <span class="n">widths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">waist</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">flow_speed</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">n_events</span><span class="p">)</span>
@@ -653,8 +760,23 @@
 
 <div class="viewcode-block" id="FlowCytometer.plot">
 <a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.plot">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_size</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">add_peak_locator</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots the signals generated for each detector channel.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figure_size</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">add_peak_locator</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Visualizes the raw signals for all detector channels along with the scatterer distribution.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        figure_size : tuple, optional</span>
+<span class="sd">            Dimensions of the generated plot (default: (10, 6)).</span>
+<span class="sd">        add_peak_locator : bool, optional</span>
+<span class="sd">            If True, adds visual markers for detected signal peaks (default: False).</span>
+
+<span class="sd">        Effects</span>
+<span class="sd">        -------</span>
+<span class="sd">        Displays a multi-panel plot showing:</span>
+<span class="sd">        - Raw signals for each detector channel.</span>
+<span class="sd">        - Scatterer distribution along the time axis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Plotting the signal for the different channels.&quot;</span><span class="p">)</span>
 
         <span class="n">n_detectors</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">)</span>
@@ -672,16 +794,68 @@
         <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 
-        <span class="c1"># Display the plot</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+        <span class="k">if</span> <span class="n">show</span><span class="p">:</span> <span class="c1"># Display the plot</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>       </div>
+
+
+<div class="viewcode-block" id="FlowCytometer.plot_coupling_density">
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.plot_coupling_density">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_coupling_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots the density distribution of optical coupling in the FSC and SSC channels.</span>
+
+<span class="sd">        This method generates a joint plot showing the relationship between the signals from</span>
+<span class="sd">        the forward scatter (&#39;detector: forward&#39;) and side scatter (&#39;detector: side&#39;) detectors.</span>
+<span class="sd">        The plot is color-coded by particle population and can optionally display axes on a logarithmic scale.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        log_scale : bool, optional</span>
+<span class="sd">            If True, applies a logarithmic scale to both the x and y axes of the plot (default: False).</span>
+<span class="sd">        show : bool, optional</span>
+<span class="sd">            If True, displays the plot immediately. If False, the plot is created but not displayed,</span>
+<span class="sd">            allowing for further customization or saving externally (default: True).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">mps</span><span class="p">):</span>
+            <span class="n">joint_plot</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="p">,</span>
+                <span class="n">y</span><span class="o">=</span><span class="s1">&#39;detector: side&#39;</span><span class="p">,</span>
+                <span class="n">x</span><span class="o">=</span><span class="s1">&#39;detector: forward&#39;</span><span class="p">,</span>
+                <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;Population&quot;</span><span class="p">,</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+            <span class="p">)</span>
+
+
+        <span class="k">if</span> <span class="n">log_scale</span><span class="p">:</span>
+            <span class="n">joint_plot</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+            <span class="n">joint_plot</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>    
+
+        <span class="k">if</span> <span class="n">show</span><span class="p">:</span> <span class="c1"># Display the plot</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>            </div>
 
 
 <div class="viewcode-block" id="FlowCytometer.add_detector">
 <a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.add_detector">[docs]</a>
     <span class="k">def</span> <span class="nf">add_detector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Detector</span><span class="p">:</span>
-        <span class="n">detector</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span>
-            <span class="o">**</span><span class="n">kwargs</span>
-        <span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dynamically adds a new detector to the system configuration.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        **kwargs : dict</span>
+<span class="sd">            Keyword arguments passed to the `Detector` constructor.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Detector</span>
+<span class="sd">            The newly added detector instance.</span>
+
+<span class="sd">        Effects</span>
+<span class="sd">        -------</span>
+<span class="sd">        - Appends the created detector to the `detectors` list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="n">detector</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">detector</span><span class="p">)</span>
 
@@ -723,7 +897,7 @@
 
   <p class="copyright">
     
-      © Copyright 2024-2024, Martin Poinsinet de Sivry-Houle.
+      © Copyright 2024-2025, Martin Poinsinet de Sivry-Houle.
       <br/>
     
   </p>

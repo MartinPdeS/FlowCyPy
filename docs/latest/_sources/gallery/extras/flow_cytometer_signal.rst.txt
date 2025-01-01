@@ -31,7 +31,7 @@ Steps:
 3. Simulate the flow cytometer signals.
 4. Visualize and analyze the signals from FSC and SSC detectors.
 
-.. GENERATED FROM PYTHON SOURCE LINES 15-116
+.. GENERATED FROM PYTHON SOURCE LINES 15-120
 
 .. code-block:: Python
 
@@ -124,6 +124,10 @@ Steps:
     # Step 7: Simulate flow cytometer signals
     # ---------------------------------------
     # Simulate the signals for both detectors (FSC and SSC) as particles pass through the laser beam.
+    cytometer.run_coupling_analysis()
+
+    cytometer.initialize_signal()
+
     cytometer.simulate_pulse()
 
     # Step 8: Display the properties of the simulation
@@ -164,7 +168,7 @@ Steps:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 117-120
+.. GENERATED FROM PYTHON SOURCE LINES 121-124
 
 The above plot shows the raw simulated signals for Forward Scatter (FSC) and
 Side Scatter (SSC) channels. These signals provide insights into particle size
@@ -173,7 +177,7 @@ and complexity and can be further analyzed for feature extraction, such as peak 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.366 seconds)
+   **Total running time of the script:** (0 minutes 3.365 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_flow_cytometer_signal.py:

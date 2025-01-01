@@ -65,7 +65,7 @@ Workflow Summary:
 
 Step 1: Laser GaussianBeam Configuration
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-103
+.. GENERATED FROM PYTHON SOURCE LINES 36-107
 
 .. code-block:: Python
 
@@ -131,6 +131,10 @@ Step 1: Laser GaussianBeam Configuration
     )
 
     # Run the flow cytometry simulation
+    cytometer.run_coupling_analysis()
+
+    cytometer.initialize_signal()
+
     cytometer.simulate_pulse()
 
     # Visualize the scatter signals from both detectors
@@ -160,12 +164,12 @@ Step 1: Laser GaussianBeam Configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-106
+.. GENERATED FROM PYTHON SOURCE LINES 108-110
 
 Step 5: Analyzing Pulse Signals
 Configure peak finding algorithm
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-127
+.. GENERATED FROM PYTHON SOURCE LINES 110-131
 
 .. code-block:: Python
 
@@ -205,7 +209,7 @@ Configure peak finding algorithm
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.893 seconds)
+   **Total running time of the script:** (0 minutes 4.054 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_3_populations.py:

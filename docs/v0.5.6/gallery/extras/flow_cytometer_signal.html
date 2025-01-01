@@ -623,6 +623,10 @@ using FlowCyPy and visualize the results.</p>
 <span class="c1"># Step 7: Simulate flow cytometer signals</span>
 <span class="c1"># ---------------------------------------</span>
 <span class="c1"># Simulate the signals for both detectors (FSC and SSC) as particles pass through the laser beam.</span>
+<span class="n">cytometer</span><span class="o">.</span><span class="n">run_coupling_analysis</span><span class="p">()</span>
+
+<span class="n">cytometer</span><span class="o">.</span><span class="n">initialize_signal</span><span class="p">()</span>
+
 <span class="n">cytometer</span><span class="o">.</span><span class="n">simulate_pulse</span><span class="p">()</span>
 
 <span class="c1"># Step 8: Display the properties of the simulation</span>
@@ -651,7 +655,7 @@ using FlowCyPy and visualize the results.</p>
 <p>The above plot shows the raw simulated signals for Forward Scatter (FSC) and
 Side Scatter (SSC) channels. These signals provide insights into particle size
 and complexity and can be further analyzed for feature extraction, such as peak height and width.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.366 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.365 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-flow-cytometer-signal-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/45fd446fca2aadc7449b6542217db601/flow_cytometer_signal.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">flow_cytometer_signal.ipynb</span></code></a></p>
@@ -715,7 +719,7 @@ and complexity and can be further analyzed for feature extraction, such as peak 
 
   <p class="copyright">
     
-      © Copyright 2024-2024, Martin Poinsinet de Sivry-Houle.
+      © Copyright 2024-2025, Martin Poinsinet de Sivry-Houle.
       <br/>
     
   </p>

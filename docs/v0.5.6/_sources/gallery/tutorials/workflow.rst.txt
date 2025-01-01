@@ -241,7 +241,7 @@ and particles follows Mie theory:
 .. math::
     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-154
+.. GENERATED FROM PYTHON SOURCE LINES 142-159
 
 .. code-block:: Python
 
@@ -254,7 +254,12 @@ and particles follows Mie theory:
         background_power=0.001 * units.milliwatt
     )
 
+    cytometer.run_coupling_analysis()
+
+    cytometer.initialize_signal()
+
     cytometer.simulate_pulse()
+
     cytometer.plot()  # Visualize signals from detectors
 
 
@@ -269,14 +274,14 @@ and particles follows Mie theory:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 155-159
+.. GENERATED FROM PYTHON SOURCE LINES 160-164
 
 Step 7: Analyze Detected Signals
 --------------------------------
 The MovingAverage algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 159-176
+.. GENERATED FROM PYTHON SOURCE LINES 164-181
 
 .. code-block:: Python
 
@@ -304,14 +309,14 @@ window size and threshold.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 177-181
+.. GENERATED FROM PYTHON SOURCE LINES 182-186
 
 Step 8: Visualize Coincidence and Density Plot
 ----------------------------------------------
 Coincidence analysis checks for simultaneous detection events across detectors, which are plotted
 as a 2D density graph to illustrate signal relationships between FSC and SSC.
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-184
+.. GENERATED FROM PYTHON SOURCE LINES 186-189
 
 .. code-block:: Python
 
@@ -333,7 +338,7 @@ as a 2D density graph to illustrate signal relationships between FSC and SSC.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.185 seconds)
+   **Total running time of the script:** (0 minutes 3.230 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

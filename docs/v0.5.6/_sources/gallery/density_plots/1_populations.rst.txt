@@ -32,7 +32,7 @@ Workflow Summary:
 3. Run the Experiment: Simulate the flow cytometry experiment.
 4. Data Analysis: Analyze the pulse signals and generate a 2D density plot of the scattering intensities.
 
-.. GENERATED FROM PYTHON SOURCE LINES 16-106
+.. GENERATED FROM PYTHON SOURCE LINES 16-110
 
 .. code-block:: Python
 
@@ -121,6 +121,10 @@ Workflow Summary:
 
 
     # Run the flow cytometry simulation
+    cytometer.run_coupling_analysis()
+
+    cytometer.initialize_signal()
+
     cytometer.simulate_pulse()
 
     # Visualize the scatter signals from both detectors
@@ -150,12 +154,12 @@ Workflow Summary:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-109
+.. GENERATED FROM PYTHON SOURCE LINES 111-113
 
 Step 5: Analyzing Pulse Signals
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-124
+.. GENERATED FROM PYTHON SOURCE LINES 113-128
 
 .. code-block:: Python
 
@@ -181,13 +185,13 @@ Step 5: Analyzing Pulse Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 125-128
+.. GENERATED FROM PYTHON SOURCE LINES 129-132
 
 Step 6: Coincidence Data and 2D Density Plot
 --------------------------------------------
 Extract coincidence data within a defined margin
 
-.. GENERATED FROM PYTHON SOURCE LINES 128-132
+.. GENERATED FROM PYTHON SOURCE LINES 132-136
 
 .. code-block:: Python
 
@@ -210,7 +214,7 @@ Extract coincidence data within a defined margin
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.890 seconds)
+   **Total running time of the script:** (0 minutes 3.002 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_1_populations.py:

@@ -62,7 +62,7 @@ Steps:
 
 Step 1: Set up the Laser GaussianBeam
 
-.. GENERATED FROM PYTHON SOURCE LINES 33-107
+.. GENERATED FROM PYTHON SOURCE LINES 33-111
 
 .. code-block:: Python
 
@@ -135,6 +135,10 @@ Step 1: Set up the Laser GaussianBeam
     )
 
     # Run the simulation of pulse signals
+    cytometer.run_coupling_analysis()
+
+    cytometer.initialize_signal()
+
     cytometer.simulate_pulse()
 
     # Plot the results from both detectors
@@ -200,11 +204,11 @@ Step 1: Set up the Laser GaussianBeam
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-109
+.. GENERATED FROM PYTHON SOURCE LINES 112-113
 
 Step 5: Analyzing Pulse Signals
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-125
+.. GENERATED FROM PYTHON SOURCE LINES 113-129
 
 .. code-block:: Python
 
@@ -236,11 +240,11 @@ Step 5: Analyzing Pulse Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 126-127
+.. GENERATED FROM PYTHON SOURCE LINES 130-131
 
 Step 8: Extract and Plot Coincidence Data
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-131
+.. GENERATED FROM PYTHON SOURCE LINES 131-135
 
 .. code-block:: Python
 
@@ -263,7 +267,7 @@ Step 8: Extract and Plot Coincidence Data
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.108 seconds)
+   **Total running time of the script:** (0 minutes 6.247 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_2_populations.py:
