@@ -50,18 +50,19 @@ scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)
 
 population_0 = Population(
     name='EV',
+    particle_count=1e+9 * particle / milliliter,
     size=distribution.RosinRammler(characteristic_size=50 * nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.39 * RIU, std_dev=0.05 * RIU)
 )
 
 population_1 = Population(
     name='LP',
+    particle_count=1e+9 * particle / milliliter,
     size=distribution.RosinRammler(characteristic_size=200 * nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.45 * RIU, std_dev=0.05 * RIU)
 )
 
-scatterer.add_population(population_0, particle_count=1e+9 * particle / milliliter)
-scatterer.add_population(population_1, particle_count=1e+9 * particle / milliliter)
+scatterer.add_population(population_0, population_1)
 
 flow_cell.initialize(scatterer_collection=scatterer)
 

@@ -36,13 +36,11 @@ def population(flow_cell):
         std_dev=0.01 * RIU
     )
     population = Population(
+        particle_count=1.8e11 * particle / milliliter,
         size=size_dist,
         refractive_index=refractive_index_dist,
         name="Test Population"
     )
-
-    population.particle_count = ParticleCount(value=1.8e11 * particle / milliliter)
-
 
     scatterer_collection = ScattererCollection(
         medium_refractive_index=1.33 * RIU,

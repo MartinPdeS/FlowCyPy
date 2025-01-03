@@ -130,7 +130,7 @@ class ScattererCollection(PropertiesReport):
 
         logger.log_properties(table_format="fancy_grid")
 
-    def add_population(self, population: Population, particle_count: ParticleCount) -> 'ScattererCollection':
+    def add_population(self, *population: Population) -> 'ScattererCollection':
         """
         Adds a population to the ScattererCollection instance with the specified attributes.
 
@@ -142,8 +142,6 @@ class ScattererCollection(PropertiesReport):
             The size distribution of the population.
         refractive_index : BaseDistribution
             The refractive index distribution of the population.
-        particle_count : ParticleCount
-            The concentration or number of particle of the population. Must have the dimensionality of 'particles per liter'.
 
         Returns
         -------
@@ -155,9 +153,7 @@ class ScattererCollection(PropertiesReport):
         ValueError
             If the concentration does not have the expected dimensionality.
         """
-        population.particle_count = ParticleCount(particle_count)
-
-        self.populations.append(population)
+        self.populations.extend(population)
         return population
 
     def _add_population(self, name: str, size: BaseDistribution, refractive_index: BaseDistribution, concentration: Quantity) -> 'ScattererCollection':
@@ -300,4 +296,4 @@ class ScattererCollection(PropertiesReport):
 
     def dilute(self, factor: float) -> None:
         for population in self.populations:
-            population.concentration /= factor
+            population.dilute(factor)

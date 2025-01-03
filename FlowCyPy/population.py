@@ -38,13 +38,14 @@ class Population(PropertiesReport):
     name: str
     refractive_index: Union[distribution.Base, Quantity]
     size: Union[distribution.Base, Quantity]
-    particle_count: ParticleCount = field(init=False)
+    particle_count: ParticleCount | Quantity
 
     def __post_init__(self):
         """
         Automatically converts all Quantity attributes to their base SI units (i.e., without any prefixes).
         This strips units like millimeter to meter, kilogram to gram, etc.
         """
+        self.particle_count = ParticleCount(self.particle_count)
         # Convert all Quantity attributes to base SI units (without any prefixes)
         for attr_name, attr_value in vars(self).items():
             if isinstance(attr_value, Quantity):
@@ -131,5 +132,8 @@ class Population(PropertiesReport):
             return value
 
         raise TypeError(f"suze must be of type Quantity or distribution.Base, but got {type(value)}")
+    
+    def dilute(self, factor: float) -> None:
+        self.particle_count /= factor
 
 from FlowCyPy.populations_instances import *  # noqa F403

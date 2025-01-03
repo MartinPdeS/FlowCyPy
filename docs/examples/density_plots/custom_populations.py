@@ -54,19 +54,20 @@ scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium re
 # Define populations with size distribution and refractive index
 population_0 = Population(
     name='Pop 0',
+    particle_count=3e+8 * particle / milliliter,
     size=distribution.RosinRammler(characteristic_size=100 * nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.39 * RIU, std_dev=0.02 * RIU)
 )
 
 population_1 = Population(
     name='Pop 1',
+    particle_count=3e+8 * particle / milliliter,
     size=distribution.Delta(position=200 * nanometer),
     refractive_index=distribution.Normal(mean=1.39 * RIU, std_dev=0.02 * RIU)
 )
 
 # Define populations with size distribution and refractive index
-scatterer.add_population(population_0, particle_count=3e+8 * particle / milliliter)
-scatterer.add_population(population_1, particle_count=3e+8 * particle / milliliter)
+scatterer.add_population(population_0, population_1)
 
 flow_cell.initialize(scatterer_collection=scatterer)  # Link populations to flow cell
 scatterer._log_properties()                # Display population properties

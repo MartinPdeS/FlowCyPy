@@ -34,6 +34,7 @@ def normal_ri_distribution():
 def normal_population(normal_size_distribution, normal_ri_distribution):
     """Fixture for creating a Population."""
     return Population(
+        particle_count=1e+10 * particle / milliliter,
         size=normal_size_distribution,
         refractive_index=normal_ri_distribution,
         name="Default population"
@@ -67,7 +68,7 @@ def detector():
 @pytest.fixture
 def scatterer(normal_population, default_flow_cell):
     scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)
-    scatterer.add_population(normal_population, particle_count=1e+10 * particle / milliliter)
+    scatterer.add_population(normal_population)
     default_flow_cell.initialize(scatterer_collection=scatterer)
     return scatterer
 
