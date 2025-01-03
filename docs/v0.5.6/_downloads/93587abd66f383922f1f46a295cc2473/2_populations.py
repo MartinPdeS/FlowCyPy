@@ -47,8 +47,11 @@ flow_cell = FlowCell(
 # Step 3: Create Populations (Extracellular Vesicles and Liposomes)
 scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
 
-scatterer.add_population(Exosome, particle_count=3e+8 * particle / milliliter)
-scatterer.add_population(HDL, particle_count=3e+8 * particle / milliliter)
+exosome = Exosome(particle_count=3e8 * particle / milliliter)
+hdl = HDL(particle_count=5e9 * particle / milliliter)
+
+scatterer.add_population(exosome)
+scatterer.add_population(hdl)
 
 # Initialize scatterer and link it to the flow cell
 flow_cell.initialize(scatterer_collection=scatterer)

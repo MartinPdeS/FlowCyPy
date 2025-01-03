@@ -573,10 +573,14 @@ to generate a 2D density plot of scattering intensities.</p>
 <span class="c1"># Initialize scatterer with a medium refractive index</span>
 <span class="n">scatterer</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>  <span class="c1"># Medium refractive index of 1.33 (water)</span>
 
+<span class="n">exosome</span> <span class="o">=</span> <span class="n">Exosome</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">10e+8</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
+<span class="n">hdl</span> <span class="o">=</span> <span class="n">HDL</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">10e+8</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
+<span class="n">ldl</span> <span class="o">=</span> <span class="n">LDL</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">10e+8</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
+
 <span class="c1"># Define populations with size distribution and refractive index</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">Exosome</span><span class="p">,</span> <span class="n">particle_count</span><span class="o">=</span><span class="mf">10e+8</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">HDL</span><span class="p">,</span> <span class="n">particle_count</span><span class="o">=</span><span class="mf">10e+8</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">LDL</span><span class="p">,</span> <span class="n">particle_count</span><span class="o">=</span><span class="mf">10e+8</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
+<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">exosome</span><span class="p">)</span>
+<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">hdl</span><span class="p">)</span>
+<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">ldl</span><span class="p">)</span>
 
 <span class="n">flow_cell</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer</span><span class="p">)</span>   <span class="c1"># Link populations to flow cell</span>
 <span class="n">scatterer</span><span class="o">.</span><span class="n">_log_properties</span><span class="p">()</span>               <span class="c1"># Display population properties</span>
@@ -656,7 +660,7 @@ Configure peak finding algorithm</p>
 <span class="n">analyzer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_3_populations_003.png" srcset="../../_images/sphx_glr_3_populations_003.png" alt="3 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.054 seconds)</p>
+<img src="../../_images/sphx_glr_3_populations_003.png" srcset="../../_images/sphx_glr_3_populations_003.png" alt="3 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.048 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-density-plots-3-populations-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/7a980bfc099fc5af620c87b55ac64cb4/3_populations.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">3_populations.ipynb</span></code></a></p>

@@ -32,7 +32,7 @@ Workflow Summary:
 3. Run the Experiment: Simulate the flow cytometry experiment.
 4. Data Analysis: Analyze the pulse signals and generate a 2D density plot of the scattering intensities.
 
-.. GENERATED FROM PYTHON SOURCE LINES 16-110
+.. GENERATED FROM PYTHON SOURCE LINES 16-111
 
 .. code-block:: Python
 
@@ -76,7 +76,8 @@ Workflow Summary:
     scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
 
     # Define populations with size distribution and refractive index
-    scatterer.add_population(Exosome, particle_count=5e9 * particle / milliliter)
+    exosome = Exosome(particle_count=5e9 * particle / milliliter)
+    scatterer.add_population(exosome)
 
     flow_cell.initialize(scatterer_collection=scatterer)  # Link populations to flow cell
     scatterer._log_properties()               # Display population properties
@@ -154,12 +155,12 @@ Workflow Summary:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-113
+.. GENERATED FROM PYTHON SOURCE LINES 112-114
 
 Step 5: Analyzing Pulse Signals
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-128
+.. GENERATED FROM PYTHON SOURCE LINES 114-129
 
 .. code-block:: Python
 
@@ -185,13 +186,13 @@ Step 5: Analyzing Pulse Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 129-132
+.. GENERATED FROM PYTHON SOURCE LINES 130-133
 
 Step 6: Coincidence Data and 2D Density Plot
 --------------------------------------------
 Extract coincidence data within a defined margin
 
-.. GENERATED FROM PYTHON SOURCE LINES 132-136
+.. GENERATED FROM PYTHON SOURCE LINES 133-137
 
 .. code-block:: Python
 
@@ -214,7 +215,7 @@ Extract coincidence data within a defined margin
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.002 seconds)
+   **Total running time of the script:** (0 minutes 2.878 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_1_populations.py:

@@ -65,7 +65,7 @@ Workflow Summary:
 
 Step 1: Laser GaussianBeam Configuration
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-107
+.. GENERATED FROM PYTHON SOURCE LINES 36-111
 
 .. code-block:: Python
 
@@ -87,10 +87,14 @@ Step 1: Laser GaussianBeam Configuration
     # Initialize scatterer with a medium refractive index
     scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
 
+    exosome = Exosome(particle_count=10e+8 * particle / milliliter)
+    hdl = HDL(particle_count=10e+8 * particle / milliliter)
+    ldl = LDL(particle_count=10e+8 * particle / milliliter)
+
     # Define populations with size distribution and refractive index
-    scatterer.add_population(Exosome, particle_count=10e+8 * particle / milliliter)
-    scatterer.add_population(HDL, particle_count=10e+8 * particle / milliliter)
-    scatterer.add_population(LDL, particle_count=10e+8 * particle / milliliter)
+    scatterer.add_population(exosome)
+    scatterer.add_population(hdl)
+    scatterer.add_population(ldl)
 
     flow_cell.initialize(scatterer_collection=scatterer)   # Link populations to flow cell
     scatterer._log_properties()               # Display population properties
@@ -164,12 +168,12 @@ Step 1: Laser GaussianBeam Configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-110
+.. GENERATED FROM PYTHON SOURCE LINES 112-114
 
 Step 5: Analyzing Pulse Signals
 Configure peak finding algorithm
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-131
+.. GENERATED FROM PYTHON SOURCE LINES 114-135
 
 .. code-block:: Python
 
@@ -209,7 +213,7 @@ Configure peak finding algorithm
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.054 seconds)
+   **Total running time of the script:** (0 minutes 4.048 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_3_populations.py:

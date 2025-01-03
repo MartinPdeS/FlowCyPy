@@ -520,13 +520,14 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">refractive_index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
     <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
-    <span class="n">particle_count</span><span class="p">:</span> <span class="n">ParticleCount</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">particle_count</span><span class="p">:</span> <span class="n">ParticleCount</span> <span class="o">|</span> <span class="n">Quantity</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Automatically converts all Quantity attributes to their base SI units (i.e., without any prefixes).</span>
 <span class="sd">        This strips units like millimeter to meter, kilogram to gram, etc.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">=</span> <span class="n">ParticleCount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span><span class="p">)</span>
         <span class="c1"># Convert all Quantity attributes to base SI units (without any prefixes)</span>
         <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
@@ -612,7 +613,13 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">value</span>
 
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;suze must be of type Quantity or distribution.Base, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;suze must be of type Quantity or distribution.Base, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="Population.dilute">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.Population.dilute">[docs]</a>
+    <span class="k">def</span> <span class="nf">dilute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">/=</span> <span class="n">factor</span></div>
+</div>
 
 
 <span class="kn">from</span> <span class="nn">FlowCyPy.populations_instances</span> <span class="kn">import</span> <span class="o">*</span>  <span class="c1"># noqa F403</span>

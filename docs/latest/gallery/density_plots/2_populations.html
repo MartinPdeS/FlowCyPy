@@ -569,8 +569,11 @@ analyzes pulse signals from two detectors, and generates a 2D density plot of th
 <span class="c1"># Step 3: Create Populations (Extracellular Vesicles and Liposomes)</span>
 <span class="n">scatterer</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>  <span class="c1"># Medium refractive index: 1.33</span>
 
-<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">Exosome</span><span class="p">,</span> <span class="n">particle_count</span><span class="o">=</span><span class="mf">3e+8</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">HDL</span><span class="p">,</span> <span class="n">particle_count</span><span class="o">=</span><span class="mf">3e+8</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
+<span class="n">exosome</span> <span class="o">=</span> <span class="n">Exosome</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">3e8</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
+<span class="n">hdl</span> <span class="o">=</span> <span class="n">HDL</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
+
+<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">exosome</span><span class="p">)</span>
+<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">hdl</span><span class="p">)</span>
 
 <span class="c1"># Initialize scatterer and link it to the flow cell</span>
 <span class="n">flow_cell</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer</span><span class="p">)</span>
@@ -692,7 +695,7 @@ Detector [forward] Properties
 <span class="n">analyzer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Plot with a linear scale (log_plot=False)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_2_populations_004.png" srcset="../../_images/sphx_glr_2_populations_004.png" alt="2 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.247 seconds)</p>
+<img src="../../_images/sphx_glr_2_populations_004.png" srcset="../../_images/sphx_glr_2_populations_004.png" alt="2 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 8.376 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-density-plots-2-populations-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/07ecafb66464397f8456d156b722f249/2_populations.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">2_populations.ipynb</span></code></a></p>

@@ -154,7 +154,7 @@ given by:
 .. math::
     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-102
+.. GENERATED FROM PYTHON SOURCE LINES 86-101
 
 .. code-block:: Python
 
@@ -164,11 +164,10 @@ given by:
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
+    exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
+
     # Add an Exosome population
-    scatterer_collection.add_population(
-        Exosome,
-        particle_count=5e9 * units.particle / units.milliliter  # Particle concentration
-    )
+    scatterer_collection.add_population(exosome)
 
     # Initialize the scatterer with the flow cell
     flow_cell.initialize(scatterer_collection=scatterer_collection) 
@@ -186,14 +185,14 @@ given by:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 103-107
+.. GENERATED FROM PYTHON SOURCE LINES 102-106
 
 Step 5: Define Detectors
 ------------------------
 Detectors measure light intensity. Parameters like responsitivity define the conversion of optical
 power to electronic signals, and saturation level represents the maximum signal they can handle.
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-134
+.. GENERATED FROM PYTHON SOURCE LINES 106-133
 
 .. code-block:: Python
 
@@ -231,7 +230,7 @@ power to electronic signals, and saturation level represents the maximum signal 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 135-142
+.. GENERATED FROM PYTHON SOURCE LINES 134-141
 
 Step 6: Simulate Flow Cytometry Experiment
 ------------------------------------------
@@ -241,7 +240,7 @@ and particles follows Mie theory:
 .. math::
     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-159
+.. GENERATED FROM PYTHON SOURCE LINES 141-158
 
 .. code-block:: Python
 
@@ -274,14 +273,14 @@ and particles follows Mie theory:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 160-164
+.. GENERATED FROM PYTHON SOURCE LINES 159-163
 
 Step 7: Analyze Detected Signals
 --------------------------------
 The MovingAverage algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 164-181
+.. GENERATED FROM PYTHON SOURCE LINES 163-180
 
 .. code-block:: Python
 
@@ -309,14 +308,14 @@ window size and threshold.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 182-186
+.. GENERATED FROM PYTHON SOURCE LINES 181-185
 
 Step 8: Visualize Coincidence and Density Plot
 ----------------------------------------------
 Coincidence analysis checks for simultaneous detection events across detectors, which are plotted
 as a 2D density graph to illustrate signal relationships between FSC and SSC.
 
-.. GENERATED FROM PYTHON SOURCE LINES 186-189
+.. GENERATED FROM PYTHON SOURCE LINES 185-188
 
 .. code-block:: Python
 
@@ -338,7 +337,7 @@ as a 2D density graph to illustrate signal relationships between FSC and SSC.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.230 seconds)
+   **Total running time of the script:** (0 minutes 3.191 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

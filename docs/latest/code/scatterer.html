@@ -529,7 +529,7 @@ indices based on a list of provided distributions (e.g., Normal, LogNormal, Unif
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.add_population">
-<span class="sig-name descname"><span class="pre">add_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_count</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.add_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.add_population" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">population</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.add_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.add_population" title="Link to this definition">#</a></dt>
 <dd><p>Adds a population to the ScattererCollection instance with the specified attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -537,7 +537,6 @@ indices based on a list of provided distributions (e.g., Normal, LogNormal, Unif
 <li><p><strong>name</strong> (<em>str</em>) – The name of the population.</p></li>
 <li><p><strong>size</strong> (<em>BaseDistribution</em>) – The size distribution of the population.</p></li>
 <li><p><strong>refractive_index</strong> (<em>BaseDistribution</em>) – The refractive index distribution of the population.</p></li>
-<li><p><strong>particle_count</strong> (<em>ParticleCount</em>) – The concentration or number of particle of the population. Must have the dimensionality of ‘particles per liter’.</p></li>
 <li><p><strong>population</strong> (<a class="reference internal" href="#FlowCyPy.population.Population" title="FlowCyPy.population.Population"><em>Population</em></a>)</p></li>
 </ul>
 </dd>
@@ -657,7 +656,7 @@ The plot uses the specified matplotlib style (<cite>mps</cite>) for consistent s
 
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.population.Population">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refractive_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Population" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refractive_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_count</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Population" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PropertiesReport</span></code></p>
 <p>A class representing a population of scatterers in a flow cytometry setup.</p>
 <dl class="field-list simple">
@@ -670,9 +669,22 @@ The plot uses the specified matplotlib style (<cite>mps</cite>) for consistent s
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.population.Population.dilute">
+<span class="sig-name descname"><span class="pre">dilute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Population.dilute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Population.dilute" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>factor</strong> (<em>float</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.population.Population.particle_count">
-<span class="sig-name descname"><span class="pre">particle_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ParticleCount</span></em><a class="headerlink" href="#FlowCyPy.population.Population.particle_count" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">particle_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ParticleCount</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.population.Population.particle_count" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -713,6 +725,7 @@ The plot uses the specified matplotlib style (<cite>mps</cite>) for consistent s
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population"><code class="docutils literal notranslate"><span class="pre">Population</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population.dilute"><code class="docutils literal notranslate"><span class="pre">Population.dilute()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population.particle_count"><code class="docutils literal notranslate"><span class="pre">Population.particle_count</span></code></a></li>
 </ul>
 </li>

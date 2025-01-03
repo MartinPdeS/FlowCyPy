@@ -53,7 +53,8 @@ flow_cell = FlowCell(
 scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
 
 # Define populations with size distribution and refractive index
-scatterer.add_population(Exosome, particle_count=5e9 * particle / milliliter)
+exosome = Exosome(particle_count=5e9 * particle / milliliter)
+scatterer.add_population(exosome)
 
 flow_cell.initialize(scatterer_collection=scatterer)  # Link populations to flow cell
 scatterer._log_properties()               # Display population properties

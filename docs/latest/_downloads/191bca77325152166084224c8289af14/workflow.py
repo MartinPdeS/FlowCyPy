@@ -89,11 +89,10 @@ from FlowCyPy.population import Exosome
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
+exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
+
 # Add an Exosome population
-scatterer_collection.add_population(
-    Exosome,
-    particle_count=5e9 * units.particle / units.milliliter  # Particle concentration
-)
+scatterer_collection.add_population(exosome)
 
 # Initialize the scatterer with the flow cell
 flow_cell.initialize(scatterer_collection=scatterer_collection) 
