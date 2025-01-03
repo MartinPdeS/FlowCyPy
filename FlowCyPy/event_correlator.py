@@ -8,7 +8,6 @@ from FlowCyPy.units import second
 import warnings
 from FlowCyPy.cytometer import FlowCytometer
 from FlowCyPy.logger import EventCorrelatorLogger
-from FlowCyPy.report import Report
 
 
 class EventCorrelator:
@@ -224,21 +223,3 @@ class EventCorrelator:
 
             if show:
                 plt.show()
-
-    def generate_report(self, filename: str) -> None:
-        """
-        Generates a detailed report summarizing the analysis, including peak features
-        and detected events.
-
-        Parameters
-        ----------
-        filename : str
-            The filename where the report will be saved.
-        """
-        report = Report(
-            flow_cell=self.cytometer.scatterer.flow_cell,
-            scatterer=self.cytometer.scatterer,
-            analyzer=self
-        )
-
-        report.generate_report()

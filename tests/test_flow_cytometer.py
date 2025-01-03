@@ -85,6 +85,7 @@ def default_ri_distribution():
 @pytest.fixture
 def default_population(default_size_distribution, default_ri_distribution):
     return Population(
+        particle_count=1.8e+5 * particle / milliliter,
         size=default_size_distribution,
         refractive_index=default_ri_distribution,
         name="Default population"
@@ -94,7 +95,7 @@ def default_population(default_size_distribution, default_ri_distribution):
 @pytest.fixture
 def default_scatterer(flow_cell, default_population):
     scatterer = ScattererCollection()
-    scatterer.add_population(default_population, particle_count=1.8e+5 * particle / milliliter)
+    scatterer.add_population(default_population)
     return scatterer
 
 

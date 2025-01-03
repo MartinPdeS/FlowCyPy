@@ -45,6 +45,7 @@ def test_generate_distribution_size(distribution, default_flow_cell):
     )
 
     population_0 = Population(
+        particle_count=CONCENTRATION,
         size=distribution,
         refractive_index=ri_distribution,
         name="Default population"
@@ -53,7 +54,7 @@ def test_generate_distribution_size(distribution, default_flow_cell):
     # Create the ScattererCollection Distribution object with the chosen distribution
     scatterer = ScattererCollection()
 
-    scatterer.add_population(population_0, particle_count=CONCENTRATION)
+    scatterer.add_population(population_0)
 
     default_flow_cell.initialize(scatterer_collection=scatterer)
 
@@ -99,6 +100,7 @@ def test_generate_longitudinal_positions(default_flow_cell, distribution):
     )
 
     population_0 = Population(
+        particle_count=CONCENTRATION,
         size=distribution,
         refractive_index=ri_distribution,
         name="Default population"
@@ -106,7 +108,7 @@ def test_generate_longitudinal_positions(default_flow_cell, distribution):
 
     scatterer = ScattererCollection()
 
-    scatterer.add_population(population_0, particle_count=CONCENTRATION)
+    scatterer.add_population(population_0)
 
     default_flow_cell.initialize(scatterer_collection=scatterer)
 
@@ -134,6 +136,7 @@ def test_plot_positions(mock_show, default_flow_cell, distribution):
     )
 
     population_0 = Population(
+        particle_count=CONCENTRATION,
         size=distribution,
         refractive_index=ri_distribution,
         name="Default population"
@@ -141,13 +144,38 @@ def test_plot_positions(mock_show, default_flow_cell, distribution):
 
     scatterer = ScattererCollection()
 
-    scatterer.add_population(population_0, particle_count=CONCENTRATION)
+    scatterer.add_population(population_0)
 
     default_flow_cell.initialize(scatterer_collection=scatterer)
 
     scatterer.plot()
 
     plt.close()
+
+@pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__)
+def test_extra(distribution):
+    """Test the generation of longitudinal positions based on Poisson process."""
+    ri_distribution = dist.Normal(
+        mean=1.4 * refractive_index_unit,
+        std_dev=0.01 * refractive_index_unit
+    )
+
+    population_0 = Population(
+        particle_count=CONCENTRATION,
+        size=distribution,
+        refractive_index=ri_distribution,
+        name="Default population"
+    )
+
+    scatterer = ScattererCollection()
+
+    scatterer.add_population(population_0)
+
+    # scatterer.dilute(factor=2)
+
+    print('flag 0', population_0.particle_count.concentration.to(particle / milliliter).magnitude, CONCENTRATION.to(particle / milliliter).magnitude)
+
+    assert np.isclose(population_0.particle_count.concentration, CONCENTRATION), "Dilution mechanism does not return expected results"
 
 
 if __name__ == '__main__':

@@ -27,14 +27,17 @@ class ParticleCount:
         ValueError
             If the input value does not have the expected dimensionality.
         """
+        if isinstance(value, ParticleCount):
+            self = value
+            return
+         
         if value.check(particle):
             # Fixed number of particles
             self.num_particles = value.to(particle)
-            self.concentration = None
+            
         elif value.check(particle / liter):
             # Concentration of particles
             self.concentration = value.to(particle / liter)
-            self.num_particles = None
         else:
             raise ValueError(
                 "Value must have dimensions of either 'particles' or 'particles per unit volume'."
@@ -61,10 +64,10 @@ class ParticleCount:
         """
         flow_volume = flow_area * flow_speed * run_time
 
-        if self.num_particles is not None:
-            return self.num_particles
-        elif self.concentration is not None:
+        if hasattr(self, 'concentration'):
             return (self.concentration * flow_volume).to(particle)
+        elif hasattr(self, 'num_particles'):
+            return self.num_particles
         else:
             raise ValueError("Either a number of particles or a concentration must be defined.")
 
@@ -87,7 +90,7 @@ class ParticleCount:
         Quantity
             The particle flux in particles per second (particle/second).
         """
-        if self.concentration is None:
+        if hasattr(self, 'num_particles'):
             return self.num_particles / run_time
 
         flow_volume_per_second = (flow_speed * flow_area).to(liter / second)
@@ -95,8 +98,19 @@ class ParticleCount:
         return particle_flux
 
     def __repr__(self):
-        if self.num_particles is not None:
-            return f"{self.num_particles}"
-        elif self.concentration is not None:
+        if hasattr(self, 'concentration'):
             return f"{self.concentration}"
-        return "Undefined"
+        else:
+            return f"{self.num_particles}"
+    
+    def __truediv__(self, factor: float):
+        if hasattr(self, 'concentration'):
+            self.concentration /= factor
+        else:
+            self.num_particles /= factor
+
+    def __mul__(self, factor: float):
+        if hasattr(self, 'concentration'):
+            self.concentration *= factor
+        else:
+            self.num_particles *= factor            
