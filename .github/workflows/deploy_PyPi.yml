@@ -1,0 +1,20 @@
+name: Deploy to PyPi
+
+on:
+  push:
+    branches: [ "master" ]
+    tags:
+      - '*'
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+    contents: write
+
+jobs:
+  pure_package:
+    uses: MartinPdeS/MPSActions/.github/workflows/publish_pure_package_to_PyPi.yml@master
+    with:
+      python-version: "3.11"
+    secrets:
+      PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}

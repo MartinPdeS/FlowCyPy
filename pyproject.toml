@@ -1,0 +1,103 @@
+[build-system]
+requires = ["setuptools>=40.8.0", "wheel", "setuptools_scm[toml]>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "FlowCyPy"
+dynamic = ["version"]
+description = "A package for flow-cytometry simulations."
+license = { file = "LICENSE" }
+readme = "README.rst"
+requires-python = ">=3.10"
+authors = [{ name = "Martin Poinsinet de Sivry-Houle", email = "martin.poinsinet.de.sivry@gmail.com" }]
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Development Status :: 3 - Alpha",
+    "Topic :: Scientific/Engineering :: Physics",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Science/Research"
+]
+
+keywords = ["refracive index", "optics", "microbeads", "Mie scattering"]
+
+dependencies = [
+    'pandas ~=2.2',
+    'pint-pandas ~=0.6',
+    'reportlab ~=4.2',
+    'seaborn ~=0.13',
+    "pydantic ~=2.9",
+    'tabulate ~=0.9',
+    "numpy >=1.26,<3.0",
+    'pint ~=0.24',
+    "scipy ~=1.14",
+    'PyMieSim',
+    'MPSPlots',
+]
+
+[project.urls]
+Homepage = "https://github.com/MartinPdeS/FlowCyPy"
+Documentation = "https://martinpdes.github.io/FlowCyPy/"
+Repository = "https://github.com/MartinPdeS/FlowCyPy.git"
+
+
+[tool.setuptools]
+packages = ["FlowCyPy"]
+
+[tool.setuptools_scm]
+write_to = "FlowCyPy/_version.py"
+version_scheme = "only-version"
+local_scheme = "no-local-version"
+
+
+
+[project.optional-dependencies]
+testing = [
+    "pytest>=0.6",
+    "pytest-cov>=2.0",
+    "pytest-json-report ==1.5.0",
+    "coverage==7.6.10"
+]
+
+documentation = [
+    "numpydoc ==1.8.0",
+    "sphinx >=5.1.1",
+    "sphinx-rtd-theme ==3.0.2",
+    "sphinx-gallery ==0.18.0",
+    "pydata-sphinx-theme ==0.16.1",
+]
+
+dev = [
+    "flake8 ==7.1.1",
+]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+xfail_strict = true
+log_cli_level = "INFO"
+testpaths = [
+    "tests/*",
+]
+addopts = [
+    '-v',
+    '-rA',
+    '-rw',
+    '--cov=FlowCyPy',
+    '--cov-report=html',
+    '--cov-report=term'
+]
+
+[tool.coverage.run]
+source = ['FlowCyPy']
+omit = [
+    '*/__init__.py',
+    '*/_version.py',
+    '*/directories.py',
+]
+branch = true
+relative_files = true
+
+
+[tool.doc8]
+ignore = ["D001"]
