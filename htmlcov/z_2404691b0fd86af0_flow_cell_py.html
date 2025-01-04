@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_2404691b0fd86af0_helper_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-01-03 14:57 +0000
+            created at 2025-01-04 16:52 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -294,14 +294,14 @@
     <p class="pln"><span class="n"><a id="t210" href="#t210">210</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t211" href="#t211">211</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t212" href="#t212">212</a></span><span class="t">        <span class="com"># Generate linearly spaced time values across the flow cell runtime</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t213" href="#t213">213</a></span><span class="t">        <span class="nam">linear_spacing</span> <span class="op">=</span> <span class="nam">numpy</span><span class="op">.</span><span class="nam">linspace</span><span class="op">(</span><span class="num">0</span><span class="op">,</span> <span class="nam">self</span><span class="op">.</span><span class="nam">run_time</span><span class="op">,</span> <span class="nam">self</span><span class="op">.</span><span class="nam">n_events</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t213" href="#t213">213</a></span><span class="t">        <span class="nam">linear_spacing</span> <span class="op">=</span> <span class="nam">numpy</span><span class="op">.</span><span class="nam">linspace</span><span class="op">(</span><span class="num">0</span><span class="op">,</span> <span class="nam">self</span><span class="op">.</span><span class="nam">run_time</span><span class="op">,</span> <span class="nam">self</span><span class="op">.</span><span class="nam">scatterer_collection</span><span class="op">.</span><span class="nam">n_events</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t214" href="#t214">214</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t215" href="#t215">215</a></span><span class="t">        <span class="com"># Optionally randomize the linear spacing</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t216" href="#t216">216</a></span><span class="t">        <span class="key">if</span> <span class="key">not</span> <span class="nam">sequential_population</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t217" href="#t217">217</a></span><span class="t">            <span class="nam">numpy</span><span class="op">.</span><span class="nam">random</span><span class="op">.</span><span class="nam">shuffle</span><span class="op">(</span><span class="nam">linear_spacing</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t218" href="#t218">218</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t219" href="#t219">219</a></span><span class="t">        <span class="com"># Assign the linearly spaced or randomized times to the scatterer DataFrame</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t220" href="#t220">220</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">scatterer_collectionscatterer</span><span class="op">.</span><span class="nam">dataframe</span><span class="op">.</span><span class="nam">Time</span> <span class="op">=</span> <span class="nam">PintArray</span><span class="op">(</span><span class="nam">linear_spacing</span><span class="op">,</span> <span class="nam">dtype</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">scatterer_collection</span><span class="op">.</span><span class="nam">dataframe</span><span class="op">.</span><span class="nam">Time</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">units</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t220" href="#t220">220</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">scatterer_collection</span><span class="op">.</span><span class="nam">dataframe</span><span class="op">.</span><span class="nam">Time</span> <span class="op">=</span> <span class="nam">PintArray</span><span class="op">(</span><span class="nam">linear_spacing</span><span class="op">,</span> <span class="nam">dtype</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">scatterer_collection</span><span class="op">.</span><span class="nam">dataframe</span><span class="op">.</span><span class="nam">Time</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">units</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t221" href="#t221">221</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t222" href="#t222">222</a></span><span class="t">    <span class="key">def</span> <span class="nam">_generate_longitudinal_positions</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">population</span><span class="op">:</span> <span class="nam">Population</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t223" href="#t223">223</a></span><span class="t">        <span class="str">r"""</span>&nbsp;</span><span class="r"></span></p>
@@ -386,7 +386,7 @@
             <a class="nav" href="z_2404691b0fd86af0_helper_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-01-03 14:57 +0000
+            created at 2025-01-04 16:52 +0000
         </p>
     </div>
 </footer>
