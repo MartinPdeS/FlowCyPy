@@ -1,3 +1,8 @@
+"""
+Study on limit of detection
+===========================
+"""
+
 import numpy as np
 from FlowCyPy import FlowCytometer, ScattererCollection, EventCorrelator, Detector, GaussianBeam, FlowCell
 from FlowCyPy import peak_locator
