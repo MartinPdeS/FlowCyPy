@@ -71,7 +71,7 @@ scatterer.add_population(ev)
 flow_cell.initialize(scatterer_collection=scatterer)
 
 # Plot the scatterer distribution
-scatterer.plot.signals()
+scatterer.plot()
 
 # Step 5: Define the detector
 # ---------------------------
@@ -119,7 +119,7 @@ cytometer.simulate_pulse()
 cytometer._log_statistics()
 
 # Plot the simulated signals for the detector.
-cytometer.plot()
+cytometer.plot.signals()
 
 """
 Summary:
