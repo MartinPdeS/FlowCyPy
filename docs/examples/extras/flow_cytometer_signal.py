@@ -116,7 +116,7 @@ cytometer._log_statistics()
 # Step 9: Visualize the generated signals
 # ---------------------------------------
 # Plot the simulated signals for both FSC and SSC detectors.
-cytometer.plot()
+cytometer.plot.signals()
 
 # %%
 #
