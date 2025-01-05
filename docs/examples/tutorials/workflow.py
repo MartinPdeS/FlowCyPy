@@ -36,7 +36,7 @@ from FlowCyPy import NoiseSetting
 NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = False
 NoiseSetting.include_thermal_noise = False
-NoiseSetting.include_dark_current = False
+NoiseSetting.include_dark_current_noise = False
 
 np.random.seed(3)  # Ensure reproducibility
 
