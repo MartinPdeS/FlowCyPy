@@ -71,7 +71,7 @@ scatterer.add_population(ev)
 flow_cell.initialize(scatterer_collection=scatterer)
 
 # Plot the scatterer distribution
-scatterer.plot()
+scatterer.plot.signals()
 
 # Step 5: Define the detector
 # ---------------------------
