@@ -19,6 +19,7 @@ Workflow:
 from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
 from FlowCyPy import distribution
 from FlowCyPy.population import Population
+from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.units import nanometer, millisecond, meter, micrometer, second, RIU, milliliter, particle, millivolt, watt, megahertz, degree, ampere, milliwatt, AU
 
 # %%
@@ -77,14 +78,18 @@ scatterer.plot()
 # ---------------------------
 # The detector captures the scattered light. It is positioned at 90 degrees relative to the incident light beam
 # and configured with a numerical aperture of 0.4 and responsitivity of 1.
+signal_digitizer = SignalDigitizer(
+    bit_depth=1024,
+    saturation_levels='auto',
+    sampling_freq=1 * megahertz,        # Sampling frequency: 1 MHz
+)
+
 detector_0 = Detector(
     phi_angle=90 * degree,              # Detector angle: 90 degrees (Side Scatter)
     numerical_aperture=0.4 * AU,        # Numerical aperture of the detector
     name='first detector',              # Detector name
     responsitivity=1 * ampere / watt,   # Responsitivity of the detector (light to signal conversion efficiency)
-    sampling_freq=1 * megahertz,        # Sampling frequency: 10,000 Hz
-    saturation_level=40 * millivolt,    # Saturation level: Large enough to avoid saturation
-    n_bins='14bit'                      # Number of bins for signal discretization: 1024
+    signal_digitizer=signal_digitizer
 )
 
 detector_1 = Detector(
@@ -92,9 +97,7 @@ detector_1 = Detector(
     numerical_aperture=0.4 * AU,        # Numerical aperture of the detector
     name='second detector',             # Detector name
     responsitivity=1 * ampere / watt,   # Responsitivity of the detector (light to signal conversion efficiency)
-    sampling_freq=2 * megahertz,        # Sampling frequency: 10,000 Hz
-    saturation_level=40 * millivolt,    # Saturation level: Large enough to avoid saturation
-    n_bins='14bit',                     # Number of bins for signal discretization: 1024
+    signal_digitizer=signal_digitizer
 )
 
 # Step 6: Simulate Flow Cytometer Signals

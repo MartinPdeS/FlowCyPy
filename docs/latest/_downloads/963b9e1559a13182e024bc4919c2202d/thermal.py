@@ -15,6 +15,7 @@ of the detector.
 from FlowCyPy.detector import Detector
 from FlowCyPy.units import watt, ohm, ampere, second, hertz, degree, AU, kelvin
 import matplotlib.pyplot as plt
+from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import NoiseSetting
 
 # Configure Noise Settings
@@ -27,6 +28,12 @@ NoiseSetting.include_RIN_noise = False
 # Define simulation parameters
 temperatures = [50, 500]  # Temperatures in Kelvin
 
+signal_digitizer = SignalDigitizer(
+    bit_depth='14bit',
+    saturation_levels='auto',
+    sampling_freq=1e6 * hertz,
+)
+
 # Initialize the plot
 figure, (ax, ax1) = plt.subplots(2, 1, figsize=(10, 4))
 
@@ -38,17 +45,19 @@ for temperature in temperatures:
         responsitivity=1 * ampere / watt,
         resistance=50 * ohm,
         numerical_aperture=0.2 * AU,
-        sampling_freq=1e6 * hertz,
         phi_angle=0 * degree,
-        temperature=temperature * kelvin
+        temperature=temperature * kelvin,
+        signal_digitizer=signal_digitizer
     )
     detector.init_raw_signal(run_time=500e-6 * second)
 
     # Add thermal noise to the raw signal
     detector._add_thermal_noise_to_raw_signal()
 
+    detector.capture_signal()
+
     # Plot the raw signal on the top subplot
-    detector.plot(ax=ax, add_raw=True, add_captured=False, show=False)
+    detector.plot(ax=ax, show=False)
 
     # Plot the histogram of the raw signal on the bottom subplot
     ax1.hist(detector.dataframe['RawSignal'], alpha=0.5, label=f"{detector.name} K", bins=50)

@@ -11,6 +11,7 @@ along with their distributions.
 import matplotlib.pyplot as plt
 from FlowCyPy.detector import Detector
 from FlowCyPy.units import watt, ohm, ampere, second, hertz, degree, AU, kelvin
+from FlowCyPy.signal_digitizer import SignalDigitizer
 
 from FlowCyPy import NoiseSetting
 
@@ -26,6 +27,13 @@ dark_currents = [1e-9 * ampere, 5e-9 * ampere, 1e-8 * ampere]  # Dark current le
 # Create a figure for signal visualization
 fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
 
+signal_digitizer = SignalDigitizer(
+    bit_depth='14bit',
+    saturation_levels='auto',
+    sampling_freq=1e6 * hertz,        # Sampling frequency
+
+)
+
 # Loop over the dark current levels
 for dark_current in dark_currents:
     # Initialize the detector
@@ -34,9 +42,9 @@ for dark_current in dark_currents:
         responsitivity=1 * ampere / watt,  # Responsitivity (current per power)
         resistance=50 * ohm,              # Load resistance
         numerical_aperture=0.2 * AU,      # Numerical aperture
-        sampling_freq=1e6 * hertz,        # Sampling frequency
         phi_angle=0 * degree,             # Detector orientation angle
         temperature=300 * kelvin,         # Detector temperature
+        signal_digitizer=signal_digitizer,
         dark_current=dark_current         # Dark current level
     )
 
@@ -46,8 +54,10 @@ for dark_current in dark_currents:
     # Add dark current noise to the raw signal
     detector._add_dark_current_noise_to_raw_signal()
 
+    detector.capture_signal()
+
     # Plot the raw signal on the first axis
-    detector.plot(ax=ax_signal, add_raw=True, add_captured=False, show=False)
+    detector.plot(ax=ax_signal, show=False)
 
     # Plot the histogram of the raw signal
     ax_hist.hist(detector.dataframe['RawSignal'], bins=50, alpha=0.6, label=detector.name)

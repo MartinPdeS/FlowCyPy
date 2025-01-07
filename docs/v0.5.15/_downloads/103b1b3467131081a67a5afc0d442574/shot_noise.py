@@ -11,6 +11,7 @@ and their distributions.
 import matplotlib.pyplot as plt
 from FlowCyPy.detector import Detector
 from FlowCyPy.units import watt, ohm, ampere, second, hertz, degree, AU
+from FlowCyPy.signal_digitizer import SignalDigitizer
 
 from FlowCyPy import NoiseSetting
 
@@ -23,6 +24,12 @@ NoiseSetting.include_RIN_noise = False
 # Define optical power levels
 optical_powers = [1e-9 * watt, 5e-9 * watt, 1e-8 * watt]  # Powers in watts
 
+signal_digitizer = SignalDigitizer(
+    bit_depth='14bit',
+    saturation_levels='auto',
+    sampling_freq=1e6 * hertz,        # Sampling frequency
+)
+
 # Create a figure for signal visualization
 fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
 
@@ -34,7 +41,7 @@ for optical_power in optical_powers:
         responsitivity=1 * ampere / watt,  # Responsitivity (current per power)
         resistance=50 * ohm,              # Load resistance
         numerical_aperture=0.2 * AU,      # Numerical aperture
-        sampling_freq=1e6 * hertz,        # Sampling frequency
+        signal_digitizer=signal_digitizer,
         phi_angle=0 * degree              # Detector orientation angle
     )
 
@@ -44,8 +51,10 @@ for optical_power in optical_powers:
     # Add optical power to the raw signal
     detector._add_optical_power_to_raw_signal(optical_power=optical_power)
 
+    detector.capture_signal()
+
     # Plot the raw signal on the first axis
-    detector.plot(ax=ax_signal, add_raw=True, add_captured=False, show=False)
+    detector.plot(ax=ax_signal, show=False)
 
     # Plot the histogram of the raw signal
     ax_hist.hist(detector.dataframe['RawSignal'], bins=50, alpha=0.6, label=detector.name)

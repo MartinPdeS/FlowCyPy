@@ -192,23 +192,28 @@ Step 5: Define Detectors
 Detectors measure light intensity. Parameters like responsitivity define the conversion of optical
 power to electronic signals, and saturation level represents the maximum signal they can handle.
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-133
+.. GENERATED FROM PYTHON SOURCE LINES 106-136
 
 .. code-block:: Python
 
 
     from FlowCyPy.detector import Detector
+    from FlowCyPy.signal_digitizer import SignalDigitizer
+
+    signal_digitizer = SignalDigitizer(
+        bit_depth='14bit',
+        saturation_levels='auto',
+        sampling_freq=60 * units.megahertz,
+    )
 
     detector_0 = Detector(
         name='forward',
         phi_angle=0 * units.degree,                  # Forward scatter angle
         numerical_aperture=1.2 * units.AU,
         responsitivity=1 * units.ampere / units.watt,
-        sampling_freq=60 * units.megahertz,
-        saturation_level=10000 * units.microvolt,
+        signal_digitizer=signal_digitizer,
         resistance=50 * units.ohm,
-        temperature=300 * units.kelvin,
-        n_bins='14bit'
+        temperature=300 * units.kelvin
     )
 
     detector_1 = Detector(
@@ -216,11 +221,9 @@ power to electronic signals, and saturation level represents the maximum signal 
         phi_angle=90 * units.degree,                 # Side scatter angle
         numerical_aperture=1.2 * units.AU,
         responsitivity=1 * units.ampere / units.watt,
-        sampling_freq=60 * units.megahertz,
-        saturation_level=10000 * units.microvolt,
+        signal_digitizer=signal_digitizer,
         resistance=50 * units.ohm,
         temperature=300 * units.kelvin,
-        n_bins='14bit'
     )
 
 
@@ -230,7 +233,7 @@ power to electronic signals, and saturation level represents the maximum signal 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 134-141
+.. GENERATED FROM PYTHON SOURCE LINES 137-144
 
 Step 6: Simulate Flow Cytometry Experiment
 ------------------------------------------
@@ -240,7 +243,7 @@ and particles follows Mie theory:
 .. math::
     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
 
-.. GENERATED FROM PYTHON SOURCE LINES 141-158
+.. GENERATED FROM PYTHON SOURCE LINES 144-161
 
 .. code-block:: Python
 
@@ -273,14 +276,14 @@ and particles follows Mie theory:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 159-163
+.. GENERATED FROM PYTHON SOURCE LINES 162-166
 
 Step 7: Analyze Detected Signals
 --------------------------------
 The MovingAverage algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 163-180
+.. GENERATED FROM PYTHON SOURCE LINES 166-183
 
 .. code-block:: Python
 
@@ -308,14 +311,14 @@ window size and threshold.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-185
+.. GENERATED FROM PYTHON SOURCE LINES 184-188
 
 Step 8: Visualize Coincidence and Density Plot
 ----------------------------------------------
 Coincidence analysis checks for simultaneous detection events across detectors, which are plotted
 as a 2D density graph to illustrate signal relationships between FSC and SSC.
 
-.. GENERATED FROM PYTHON SOURCE LINES 185-188
+.. GENERATED FROM PYTHON SOURCE LINES 188-191
 
 .. code-block:: Python
 
@@ -337,7 +340,7 @@ as a 2D density graph to illustrate signal relationships between FSC and SSC.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.879 seconds)
+   **Total running time of the script:** (0 minutes 2.320 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

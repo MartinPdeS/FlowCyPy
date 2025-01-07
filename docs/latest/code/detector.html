@@ -513,7 +513,7 @@
 <p>Classes for modeling the signal detection process in flow cytometry.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sampling_freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma_angle=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'degree')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling=&lt;Quantity(100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'dimensionless')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">responsitivity=&lt;Quantity(1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ampere</span> <span class="pre">/</span> <span class="pre">watt')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_level=&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'volt')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_shift=&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'volt')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saturation_level=&lt;Quantity(inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'volt')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_current=&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ampere')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resistance=&lt;Quantity(50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ohm')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature=&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'kelvin')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bins=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_digitizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma_angle=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'degree')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling=&lt;Quantity(100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'dimensionless')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">responsitivity=&lt;Quantity(1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ampere</span> <span class="pre">/</span> <span class="pre">watt')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_shift=&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'volt')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_current=&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ampere')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resistance=&lt;Quantity(50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ohm')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature=&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'kelvin')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PropertiesReport</span></code></p>
 <p>A class representing a signal detector used in flow cytometry.</p>
 <p>This class models a photodetector, simulating signal acquisition, noise addition, and signal processing
@@ -522,27 +522,19 @@ for analysis.  It can optionally simulate different noise sources: shot noise, t
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – The name or identifier of the detector.</p></li>
-<li><p><strong>sampling_freq</strong> (<em>Quantity</em>) – The sampling frequency of the detector in hertz.</p></li>
 <li><p><strong>phi_angle</strong> (<em>Quantity</em>) – The detection angle in degrees.</p></li>
 <li><p><strong>numerical_aperture</strong> (<em>Quantity</em>) – The numerical aperture of the detector, a unitless value.</p></li>
 <li><p><strong>responsitivity</strong> (<em>Quantity</em>) – Detector’s responsivity, default is 1 volt per watt.</p></li>
-<li><p><strong>noise_level</strong> (<em>Quantity</em>) – The base noise level added to the signal, default is 0 volts.</p></li>
 <li><p><strong>baseline_shift</strong> (<em>Quantity</em>) – The baseline shift applied to the signal, default is 0 volts.</p></li>
-<li><p><strong>saturation_level</strong> (<em>Quantity</em>) – The maximum signal level in volts before saturation, default is infinity.</p></li>
 <li><p><strong>dark_current</strong> (<em>Quantity</em>) – The dark current of the detector, default is 0 amperes.</p></li>
 <li><p><strong>resistance</strong> (<em>Quantity</em>) – Resistance of the detector, used for thermal noise simulation.</p></li>
 <li><p><strong>temperature</strong> (<em>Quantity</em>) – Temperature of the detector in Kelvin, used for thermal noise simulation.</p></li>
-<li><p><strong>n_bins</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>str</em><em>]</em>) – The number of discretization bins or bit-depth (e.g., ‘12bit’).</p></li>
+<li><p><strong>signal_digitizer</strong> (<em>SignalDigitizer</em>)</p></li>
 <li><p><strong>gamma_angle</strong> (<em>Quantity</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>sampling</strong> (<em>Quantity</em><em> | </em><em>None</em>)</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="py property">
-<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.bandwidth">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bandwidth</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.bandwidth" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector.baseline_shift">
 <span class="sig-name descname"><span class="pre">baseline_shift</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(0.0,</span> <span class="pre">'volt')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.baseline_shift" title="Link to this definition">#</a></dt>
@@ -620,6 +612,42 @@ This parameter is interpreted using the <cite>interpret_mode_of_interest</cite> 
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.plot_raw">
+<span class="sig-name descname"><span class="pre">plot_raw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figure_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.detector.Detector.plot_raw" title="Link to this definition">#</a></dt>
+<dd><p>A wrapped version of the plotting function that provides additional functionality for creating
+and managing plots.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> (<em>object</em>) – The instance of the class calling this method.</p></li>
+<li><p><strong>ax</strong> (<em>plt.Axes</em><em>, </em><em>optional</em>) – A matplotlib Axes object to draw the plot on. If None, a new figure and axes are created.
+Default is None.</p></li>
+<li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display the plot. If False, the plot will not be shown but can still be saved
+or returned. Default is True.</p></li>
+<li><p><strong>mode_of_interest</strong> (<em>str</em><em>, </em><em>optional</em>) – Specifies the mode of interest for the plot. If ‘all’, all available modes will be plotted.
+This parameter is interpreted using the <cite>interpret_mode_of_interest</cite> function. Default is ‘all’.</p></li>
+<li><p><strong>save_filename</strong> (<em>str</em><em>, </em><em>optional</em>) – A file path to save the figure. If None, the figure will not be saved. Default is None.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional keyword arguments passed to the decorated function.</p></li>
+<li><p><strong>figure_size</strong> (<em>tuple</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The matplotlib Figure object created or used for the plot.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>plt.Figure</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If no <cite>ax</cite> is provided, a new figure and axes are created using the style context <cite>mps</cite>.</p></li>
+<li><p>The legend is only added if there are labels to display.</p></li>
+<li><p>If <cite>save_filename</cite> is specified, the figure is saved to the given path.</p></li>
+<li><p>The plot is shown if <cite>show</cite> is set to True.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector.print_properties">
 <span class="sig-name descname"><span class="pre">print_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.print_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.print_properties" title="Link to this definition">#</a></dt>
 <dd><p>Prints specific properties of the Detector instance, such as coupling factor and medium refractive index.
@@ -662,6 +690,11 @@ and extracts peak features such as height, width, and area.</p>
 </ul>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.signal_digitizer">
+<span class="sig-name descname"><span class="pre">signal_digitizer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SignalDigitizer</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.signal_digitizer" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -690,13 +723,14 @@ and extracts peak features such as height, width, and area.</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector"><code class="docutils literal notranslate"><span class="pre">Detector</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.bandwidth"><code class="docutils literal notranslate"><span class="pre">Detector.bandwidth</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.baseline_shift"><code class="docutils literal notranslate"><span class="pre">Detector.baseline_shift</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.capture_signal"><code class="docutils literal notranslate"><span class="pre">Detector.capture_signal()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.init_raw_signal"><code class="docutils literal notranslate"><span class="pre">Detector.init_raw_signal()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.plot"><code class="docutils literal notranslate"><span class="pre">Detector.plot()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.plot_raw"><code class="docutils literal notranslate"><span class="pre">Detector.plot_raw()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.print_properties"><code class="docutils literal notranslate"><span class="pre">Detector.print_properties()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.set_peak_locator"><code class="docutils literal notranslate"><span class="pre">Detector.set_peak_locator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.signal_digitizer"><code class="docutils literal notranslate"><span class="pre">Detector.signal_digitizer</span></code></a></li>
 </ul>
 </li>
 </ul>

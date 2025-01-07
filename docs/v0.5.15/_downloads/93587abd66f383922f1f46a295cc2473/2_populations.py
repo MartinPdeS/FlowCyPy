@@ -17,9 +17,10 @@ import numpy as np
 from FlowCyPy import FlowCytometer, ScattererCollection, EventCorrelator, Detector, GaussianBeam, FlowCell
 from FlowCyPy import peak_locator
 from FlowCyPy.units import particle, milliliter, nanometer, RIU, second, micrometer, millisecond, meter
-from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliampere, megahertz, microvolt
+from FlowCyPy.units import degree, watt, ampere, ohm, kelvin, milliampere, megahertz, microvolt
 from FlowCyPy.units import microsecond
 from FlowCyPy.units import milliwatt, AU
+from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import NoiseSetting
 from FlowCyPy.population import Exosome, HDL
 
@@ -65,14 +66,19 @@ source.print_properties()  # Print the laser source properties
 # %%
 # Step 5: Configure Detectors
 # Side scatter detector
+signal_digitizer = SignalDigitizer(
+    bit_depth='14bit',
+    saturation_levels=16_000 * microvolt,
+    sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
+
+)
+
 detector_0 = Detector(
     name='side',                             # Detector name: Side scatter detector
     phi_angle=90 * degree,                   # Angle: 90 degrees (Side Scatter)
     numerical_aperture=.2 * AU,             # Numerical aperture: 1.2
     responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
-    sampling_freq=60 * megahertz,            # Sampling frequency: 60 MHz
-    saturation_level=0.04 * millivolt,          # Saturation level: 2 millivolts
-    # n_bins='16bit',                          # Number of bins: 14-bit resolution
+    signal_digitizer=signal_digitizer,
     resistance=50 * ohm,                     # Detector resistance: 50 ohms
     dark_current=0.1 * milliampere,          # Dark current: 0.1 milliamps
     temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
@@ -84,9 +90,7 @@ detector_1 = Detector(
     phi_angle=0 * degree,                    # Angle: 0 degrees (Forward Scatter)
     numerical_aperture=.2 * AU,             # Numerical aperture: 1.2
     responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
-    sampling_freq=60 * megahertz,            # Sampling frequency: 60 MHz
-    saturation_level=0.04 * millivolt,          # Saturation level: 2 millivolts
-    # n_bins='16bit',                          # Number of bins: 14-bit resolution
+    signal_digitizer=signal_digitizer,
     resistance=50 * ohm,                     # Detector resistance: 50 ohms
     dark_current=0.1 * milliampere,          # Dark current: 0.1 milliamps
     temperature=300 * kelvin                 # Operating temperature: 300 Kelvin

@@ -31,7 +31,7 @@ Workflow Summary:
 3. Run the Experiment: Simulate the flow cytometry experiment.
 4. Data Analysis: Analyze the pulse signals and generate a 2D density plot of the scattering intensities.
 
-.. GENERATED FROM PYTHON SOURCE LINES 15-34
+.. GENERATED FROM PYTHON SOURCE LINES 15-35
 
 .. code-block:: Python
 
@@ -49,6 +49,7 @@ Workflow Summary:
     from FlowCyPy import EventCorrelator, peak_locator
     from FlowCyPy import GaussianBeam
     from FlowCyPy import NoiseSetting
+    from FlowCyPy.signal_digitizer import SignalDigitizer
 
     NoiseSetting.include_noises = False
 
@@ -61,11 +62,11 @@ Workflow Summary:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 35-36
+.. GENERATED FROM PYTHON SOURCE LINES 36-37
 
 Step 1: Laser GaussianBeam Configuration
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-76
+.. GENERATED FROM PYTHON SOURCE LINES 37-78
 
 .. code-block:: Python
 
@@ -112,6 +113,7 @@ Step 1: Laser GaussianBeam Configuration
 
 
 
+
 .. image-sg:: /gallery/density_plots/images/sphx_glr_custom_populations_001.png
    :alt: custom populations
    :srcset: /gallery/density_plots/images/sphx_glr_custom_populations_001.png
@@ -121,24 +123,29 @@ Step 1: Laser GaussianBeam Configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 77-80
+.. GENERATED FROM PYTHON SOURCE LINES 79-82
 
 Step 4: Simulating the Flow Cytometry Experiment
 Initialize the cytometer and configure detectors
 Add forward scatter detector
 
-.. GENERATED FROM PYTHON SOURCE LINES 80-121
+.. GENERATED FROM PYTHON SOURCE LINES 82-126
 
 .. code-block:: Python
+
+    signal_digitizer = SignalDigitizer(
+        bit_depth='14bit',
+        saturation_levels=16_000 * microvolt,
+        sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
+
+    )
 
     detector_0 = Detector(
         name='forward',                         # Detector name: Forward scatter
         phi_angle=0 * degree,                   # Detector angle: 0 degrees (forward scatter)
         numerical_aperture=.2 * AU,             # Detector numerical aperture: 1.2
         responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
-        sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
-        noise_level=0.0 * volt,                 # Noise level: 0 V
-        saturation_level=1600 * microvolt,      # Saturation level: 5000 mV (detector capacity)
+        signal_digitizer=signal_digitizer,
         resistance=150 * ohm,                   # Resistance: 1 ohm
         temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
     )
@@ -149,9 +156,7 @@ Add forward scatter detector
         phi_angle=90 * degree,                  # Detector angle: 90 degrees (side scatter)
         numerical_aperture=.2 * AU,             # Detector numerical aperture: 1.2
         responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
-        sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
-        noise_level=0.0 * volt,                 # Noise level: 0 V
-        saturation_level=1600 * microvolt,      # Saturation level: 5 V (detector capacity)
+        signal_digitizer=signal_digitizer,
         resistance=150 * ohm,                   # Resistance: 1 ohm
         temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
     )
@@ -184,12 +189,12 @@ Add forward scatter detector
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 122-124
+.. GENERATED FROM PYTHON SOURCE LINES 127-129
 
 Step 5: Analyzing Pulse Signals
 Configure peak finding algorithm
 
-.. GENERATED FROM PYTHON SOURCE LINES 124-145
+.. GENERATED FROM PYTHON SOURCE LINES 129-150
 
 .. code-block:: Python
 
@@ -229,7 +234,7 @@ Configure peak finding algorithm
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.530 seconds)
+   **Total running time of the script:** (0 minutes 2.483 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_custom_populations.py:

@@ -105,17 +105,22 @@ scatterer_collection.plot()  # Visualize the particle population
 # power to electronic signals, and saturation level represents the maximum signal they can handle.
 
 from FlowCyPy.detector import Detector
+from FlowCyPy.signal_digitizer import SignalDigitizer
+
+signal_digitizer = SignalDigitizer(
+    bit_depth='14bit',
+    saturation_levels='auto',
+    sampling_freq=60 * units.megahertz,
+)
 
 detector_0 = Detector(
     name='forward',
     phi_angle=0 * units.degree,                  # Forward scatter angle
     numerical_aperture=1.2 * units.AU,
     responsitivity=1 * units.ampere / units.watt,
-    sampling_freq=60 * units.megahertz,
-    saturation_level=10000 * units.microvolt,
+    signal_digitizer=signal_digitizer,
     resistance=50 * units.ohm,
-    temperature=300 * units.kelvin,
-    n_bins='14bit'
+    temperature=300 * units.kelvin
 )
 
 detector_1 = Detector(
@@ -123,11 +128,9 @@ detector_1 = Detector(
     phi_angle=90 * units.degree,                 # Side scatter angle
     numerical_aperture=1.2 * units.AU,
     responsitivity=1 * units.ampere / units.watt,
-    sampling_freq=60 * units.megahertz,
-    saturation_level=10000 * units.microvolt,
+    signal_digitizer=signal_digitizer,
     resistance=50 * units.ohm,
     temperature=300 * units.kelvin,
-    n_bins='14bit'
 )
 
 # %%

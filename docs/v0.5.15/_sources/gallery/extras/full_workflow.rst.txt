@@ -36,13 +36,14 @@ Workflow:
 
 Step 1: Import necessary modules from FlowCyPy
 
-.. GENERATED FROM PYTHON SOURCE LINES 19-24
+.. GENERATED FROM PYTHON SOURCE LINES 19-25
 
 .. code-block:: Python
 
     from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
     from FlowCyPy import distribution
     from FlowCyPy.population import Population
+    from FlowCyPy.signal_digitizer import SignalDigitizer
     from FlowCyPy.units import nanometer, millisecond, meter, micrometer, second, RIU, milliliter, particle, millivolt, watt, megahertz, degree, ampere, milliwatt, AU
 
 
@@ -52,13 +53,13 @@ Step 1: Import necessary modules from FlowCyPy
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 25-28
+.. GENERATED FROM PYTHON SOURCE LINES 26-29
 
 Step 2: Define the laser source
 -------------------------------
 Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and a numerical aperture of 0.3.
 
-.. GENERATED FROM PYTHON SOURCE LINES 28-34
+.. GENERATED FROM PYTHON SOURCE LINES 29-35
 
 .. code-block:: Python
 
@@ -75,13 +76,13 @@ Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 35-38
+.. GENERATED FROM PYTHON SOURCE LINES 36-39
 
 Step 3: Define flow parameters
 ------------------------------
 Set the flow speed to 80 micrometers per second and a flow area of 1 square micrometer, with a total simulation time of 1 second.
 
-.. GENERATED FROM PYTHON SOURCE LINES 38-45
+.. GENERATED FROM PYTHON SOURCE LINES 39-46
 
 .. code-block:: Python
 
@@ -99,14 +100,14 @@ Set the flow speed to 80 micrometers per second and a flow area of 1 square micr
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 46-50
+.. GENERATED FROM PYTHON SOURCE LINES 47-51
 
 Step 4: Define the particle size distribution
 ---------------------------------------------
 Use a normal size distribution with a mean size of 200 nanometers and a standard deviation of 10 nanometers.
 This represents the population of scatterers (particles) that will interact with the laser source.
 
-.. GENERATED FROM PYTHON SOURCE LINES 50-115
+.. GENERATED FROM PYTHON SOURCE LINES 51-118
 
 .. code-block:: Python
 
@@ -140,14 +141,18 @@ This represents the population of scatterers (particles) that will interact with
     # ---------------------------
     # The detector captures the scattered light. It is positioned at 90 degrees relative to the incident light beam
     # and configured with a numerical aperture of 0.4 and responsitivity of 1.
+    signal_digitizer = SignalDigitizer(
+        bit_depth=1024,
+        saturation_levels='auto',
+        sampling_freq=1 * megahertz,        # Sampling frequency: 1 MHz
+    )
+
     detector_0 = Detector(
         phi_angle=90 * degree,              # Detector angle: 90 degrees (Side Scatter)
         numerical_aperture=0.4 * AU,        # Numerical aperture of the detector
         name='first detector',              # Detector name
         responsitivity=1 * ampere / watt,   # Responsitivity of the detector (light to signal conversion efficiency)
-        sampling_freq=1 * megahertz,        # Sampling frequency: 10,000 Hz
-        saturation_level=40 * millivolt,    # Saturation level: Large enough to avoid saturation
-        n_bins='14bit'                      # Number of bins for signal discretization: 1024
+        signal_digitizer=signal_digitizer
     )
 
     detector_1 = Detector(
@@ -155,9 +160,7 @@ This represents the population of scatterers (particles) that will interact with
         numerical_aperture=0.4 * AU,        # Numerical aperture of the detector
         name='second detector',             # Detector name
         responsitivity=1 * ampere / watt,   # Responsitivity of the detector (light to signal conversion efficiency)
-        sampling_freq=2 * megahertz,        # Sampling frequency: 10,000 Hz
-        saturation_level=40 * millivolt,    # Saturation level: Large enough to avoid saturation
-        n_bins='14bit',                     # Number of bins for signal discretization: 1024
+        signal_digitizer=signal_digitizer
     )
 
     # Step 6: Simulate Flow Cytometer Signals
@@ -187,13 +190,13 @@ This represents the population of scatterers (particles) that will interact with
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 116-119
+.. GENERATED FROM PYTHON SOURCE LINES 119-122
 
 Step 7: Analyze and Visualize Results
 -------------------------------------
 Display the properties of the simulated cytometer setup, including flow speed and laser power.
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-130
+.. GENERATED FROM PYTHON SOURCE LINES 122-133
 
 .. code-block:: Python
 
@@ -229,7 +232,7 @@ Display the properties of the simulated cytometer setup, including flow speed an
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.799 seconds)
+   **Total running time of the script:** (0 minutes 3.308 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_full_workflow.py:
