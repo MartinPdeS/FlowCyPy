@@ -22,9 +22,10 @@ from FlowCyPy.units import meter, micrometer, millisecond, second, degree
 from FlowCyPy import ScattererCollection
 from FlowCyPy.units import particle, milliliter, nanometer, RIU, AU, milliwatt
 from FlowCyPy import FlowCytometer
-from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, microvolt, microsecond
+from FlowCyPy.units import ohm, megahertz, ampere, kelvin, watt, microvolt, microsecond
 from FlowCyPy.detector import Detector
 from FlowCyPy import EventCorrelator, peak_locator
+from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import GaussianBeam
 from FlowCyPy import NoiseSetting
 from FlowCyPy.population import Exosome
@@ -62,17 +63,20 @@ scatterer.plot()                         # Visualize the population distribution
 
 # %%
 # Add forward scatter detector
+signal_digitizer = SignalDigitizer(
+    bit_depth='14bit',
+    saturation_levels=16_000 * microvolt,
+    sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
+)
+
 detector_0 = Detector(
     name='forward',                         # Detector name: Forward scatter
     phi_angle=0 * degree,                   # Detector angle: 0 degrees (forward scatter)
     numerical_aperture=1.2 * AU,            # Detector numerical aperture: 1.2
     responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
-    sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
-    noise_level=0.0 * volt,                 # Noise level: 0 V
-    saturation_level=10000 * microvolt,     # Saturation level: 10 mV (detector capacity)
+    signal_digitizer=signal_digitizer,
     resistance=50 * ohm,                    # Resistance: 50 ohm
     temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
-    n_bins='14bit'                          # Discretization bins: 14-bit resolution
 )
 
 # Add side scatter detector
@@ -81,12 +85,9 @@ detector_1 = Detector(
     phi_angle=90 * degree,                  # Detector angle: 90 degrees (side scatter)
     numerical_aperture=1.2 * AU,            # Detector numerical aperture: 1.2
     responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
-    sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
-    noise_level=0.0 * volt,                 # Noise level: 0 V
-    saturation_level=10000 * microvolt,     # Saturation level: 10 mV (detector capacity)
+    signal_digitizer=signal_digitizer,
     resistance=50 * ohm,                    # Resistance: 50 ohm
     temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
-    n_bins='14bit'                          # Discretization bins: 14-bit resolution
 )
 
 

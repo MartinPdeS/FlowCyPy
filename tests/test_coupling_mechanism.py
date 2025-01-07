@@ -6,6 +6,7 @@ from FlowCyPy.coupling_mechanism.rayleigh import compute_detected_signal
 from FlowCyPy.units import micrometer, refractive_index_unit
 from FlowCyPy.population import Population
 from FlowCyPy.source import GaussianBeam
+from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.units import (
     volt, watt, meter, hertz, particle, RIU, degree, ampere,
     nanometer, milliwatt, second, millisecond, AU, milliliter
@@ -52,16 +53,19 @@ def default_flow_cell():
 
 @pytest.fixture
 def detector():
+    signal_digitizer = SignalDigitizer(
+        sampling_freq=1e4 * hertz,           # Sampling frequency: 10,000 Hz
+        bit_depth=1024,
+        saturation_levels=1e30 * volt
+    )
+
     return Detector(
         phi_angle=90 * degree,
         numerical_aperture=0.1 * AU,
         name='first detector',
         responsitivity=1.0 * ampere / watt,  # Responsitivity of the detector
-        sampling_freq=1e4 * hertz,           # Sampling frequency: 10,000 Hz
-        noise_level=1e-2 * volt,             # Signal noise level: 1 millivolts
+        signal_digitizer=signal_digitizer,
         baseline_shift=0.01 * volt,          # Signal noise level: 0.5 volts
-        saturation_level=1e30 * volt,        # Signal saturation at 1000 volts
-        n_bins=1024                          # Discretization bins: 1024
     )
 
 
@@ -113,10 +117,9 @@ def test_detector_properties(detector):
     """
     assert detector.numerical_aperture == 0.1 * AU, f"Expected detector numerical aperture to be 0.1, but got {detector.numerical_aperture}."
     assert detector.responsitivity == 1.0 * ampere / watt, f"Expected detector responsitivity to be 1.0, but got {detector.responsitivity}."
-    assert detector.sampling_freq == 1e4 * hertz, f"Expected acquisition frequency to be 10,000 Hz, but got {detector.acquisition_frequency}."
-    assert detector.noise_level == 1e-2 * volt, f"Expected noise level to be 0.01, but got {detector.noise_level}."
-    assert detector.saturation_level == 1e30 * volt, f"Expected saturation level to be 1e30, but got {detector.saturation_level}."
-    assert detector.n_bins == 1024, f"Expected 1024 bins, but got {detector.n_bins}."
+    assert detector.signal_digitizer.sampling_freq == 1e4 * hertz, f"Expected acquisition frequency to be 10,000 Hz, but got {detector.acquisition_frequency}."
+    assert detector.signal_digitizer.saturation_levels == 1e30 * volt, f"Expected saturation level to be 1e30, but got {detector.saturation_level}."
+    assert detector.signal_digitizer.bit_depth == 1024, f"Expected 1024 bins, but got {detector.signal_digitizer.bit_depth}."
 
 
 def test_source_properties(source):

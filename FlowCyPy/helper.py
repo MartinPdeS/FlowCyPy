@@ -70,10 +70,6 @@ def plot_helper(function: Callable) -> Callable:
 
         _, labels = ax.get_legend_handles_labels()
 
-        # Only add a legend if there are labels
-        if labels:
-            ax.legend()
-
         if save_filename:
             figure.savefig(save_filename)
 

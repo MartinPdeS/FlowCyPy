@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, FlowCell
+from FlowCyPy.signal_digitizer import SignalDigitizer
 import matplotlib.pyplot as plt
 from unittest.mock import patch
 from FlowCyPy import distribution
@@ -26,27 +27,36 @@ from FlowCyPy.units import (
 
 @pytest.fixture
 def default_detector_0():
+    signal_digitizer = SignalDigitizer(
+        bit_depth=1024,
+        saturation_levels='auto',
+        sampling_freq=1e5 * hertz
+    )
+
     return Detector(
         name='default',
         numerical_aperture=1 * AU,
         phi_angle=90 * degree,
         responsitivity=1 * ampere / watt,
-        sampling_freq=1e5 * hertz,
+        signal_digitizer=signal_digitizer
     )
 
 
 @pytest.fixture
 def default_detector_1():
+    signal_digitizer = SignalDigitizer(
+        bit_depth=1024,
+        saturation_levels='auto',
+        sampling_freq=1e5 * hertz,
+    )
+
     return Detector(
         name='default_bis',
         numerical_aperture=1 * AU,
         phi_angle=90 * degree,
         responsitivity=1 * ampere / watt,
-        sampling_freq=1e5 * hertz,
-        noise_level=0 * volt,
-        saturation_level=1 * millivolt,
         baseline_shift=0.0 * volt,
-        n_bins='12bit',
+        signal_digitizer=signal_digitizer
     )
 
 

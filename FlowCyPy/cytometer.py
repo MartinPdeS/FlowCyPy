@@ -318,20 +318,32 @@ class FlowCytometer:
             scatterer_collection = self.cytometer.scatterer_collection
             detectors = self.cytometer.detectors
 
+            signal_unit = detectors[0].dataframe['Signal'].max().to_compact().units
+            time_unit = detectors[0].dataframe['Time'].max().to_compact().units
+
             n_detectors = len(detectors)
 
             with plt.style.context(mps):
                 _, axes = plt.subplots(ncols=1, nrows=n_detectors + 1, figsize=figure_size, sharex=True, sharey=True, gridspec_kw={'height_ratios': [1, 1, 0.4]})
 
-            time_unit, signal_unit = detectors[0].plot(ax=axes[0], show=False, add_peak_locator=add_peak_locator)
-            detectors[1].plot(ax=axes[1], show=False, time_unit=time_unit, signal_unit=signal_unit, add_peak_locator=add_peak_locator)
+            lines = detectors[0].plot(
+                ax=axes[0],
+                show=False,
+                signal_unit=signal_unit,
+                time_unit=time_unit,
+                add_peak_locator=add_peak_locator
+            )
+
+            lines = detectors[1].plot(
+                ax=axes[1],
+                show=False,
+                time_unit=time_unit,
+                signal_unit=signal_unit,
+                add_peak_locator=add_peak_locator
+            )
 
             axes[-1].get_yaxis().set_visible(False)
             scatterer_collection.add_to_ax(axes[-1])
-
-            # Add legends to each subplot
-            for ax in axes:
-                ax.legend()
 
             if show: # Display the plot
                 plt.show()

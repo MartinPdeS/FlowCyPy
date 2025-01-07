@@ -3,6 +3,7 @@ import numpy as np
 from FlowCyPy.detector import Detector
 from FlowCyPy.units import watt, ohm, kelvin, ampere, second, hertz, degree, AU, volt
 from FlowCyPy.physical_constant import PhysicalConstant
+from FlowCyPy.signal_digitizer import SignalDigitizer
 
 TOLERANCE = 0.05  # Allowable error margin (5%)
 
@@ -25,6 +26,12 @@ def test_shot_noise():
     sampling_freq = 1e6 * hertz  # Sampling frequency
     run_time = 500e-6 * second  # Signal duration
 
+    signal_digitizer = SignalDigitizer(
+        bit_depth=1024,
+        saturation_levels='auto',
+        sampling_freq=sampling_freq
+    )
+
     # Initialize Detector
     detector = Detector(
         responsitivity=1 * ampere / watt,  # Responsitivity (current per power)
@@ -32,8 +39,8 @@ def test_shot_noise():
         numerical_aperture=0.2 * AU,
         temperature=300 * kelvin,
         dark_current=1e-12 * ampere,
-        sampling_freq=sampling_freq,
         phi_angle=0 * degree,
+        signal_digitizer=signal_digitizer
     )
     detector.init_raw_signal(run_time=run_time)
 
@@ -42,7 +49,7 @@ def test_shot_noise():
     # Step 1: Compute Equivalent Shot Noise in Voltage
     photo_current = optical_power * detector.responsitivity
 
-    expected_std = np.sqrt(2 * PhysicalConstant.e * detector.bandwidth * photo_current) * detector.resistance # Shot noise current std
+    expected_std = np.sqrt(2 * PhysicalConstant.e * detector.signal_digitizer.bandwidth * photo_current) * detector.resistance # Shot noise current std
 
     expected_voltage_std = expected_std.to(volt)
 
@@ -65,6 +72,12 @@ def test_thermal_noise():
     sampling_freq = 1e6 * hertz  # Sampling frequency
     run_time = 500e-6 * second  # Signal duration
 
+    signal_digitizer = SignalDigitizer(
+        bit_depth=1024,
+        saturation_levels='auto',
+        sampling_freq=sampling_freq,
+    )
+
     # Initialize Detector
     detector = Detector(
         responsitivity=1 * ampere / watt,  # Responsitivity (not used here but required)
@@ -72,8 +85,8 @@ def test_thermal_noise():
         numerical_aperture=0.2 * AU,
         temperature=temperature,
         dark_current=0 * ampere,
-        sampling_freq=sampling_freq,
         phi_angle=0 * degree,
+        signal_digitizer=signal_digitizer
     )
     detector.init_raw_signal(run_time=run_time)
 
@@ -81,7 +94,7 @@ def test_thermal_noise():
     noise = detector._add_thermal_noise_to_raw_signal()  # Capture returned noise
 
     # Step 1: Compute Theoretical Thermal Noise in Voltage
-    bandwidth = detector.bandwidth  # Bandwidth in Hz
+    bandwidth = detector.signal_digitizer.bandwidth  # Bandwidth in Hz
     k_B = PhysicalConstant.kb  # Boltzmann constant in J/K
 
     # Thermal noise voltage std (Nyquist formula)
@@ -106,6 +119,12 @@ def test_dark_current_noise():
     sampling_freq = 1e6 * hertz  # Sampling frequency
     run_time = 500e-6 * second  # Signal duration
 
+    signal_digitizer = SignalDigitizer(
+        bit_depth=1024,
+        saturation_levels='auto',
+        sampling_freq=sampling_freq,
+    )
+
     # Initialize Detector
     detector = Detector(
         responsitivity=1 * ampere / watt,  # Responsitivity (not used here but required)
@@ -113,8 +132,8 @@ def test_dark_current_noise():
         numerical_aperture=0.2 * AU,
         temperature=0 * kelvin,
         dark_current=dark_current,
-        sampling_freq=sampling_freq,
         phi_angle=0 * degree,
+        signal_digitizer=signal_digitizer
     )
     detector.init_raw_signal(run_time=run_time)
 
@@ -122,7 +141,7 @@ def test_dark_current_noise():
     noise = detector._add_dark_current_noise_to_raw_signal()  # Capture returned noise
 
     # Step 1: Compute Theoretical Dark Current Noise in Voltage
-    bandwidth = detector.bandwidth  # Bandwidth in Hz
+    bandwidth = detector.signal_digitizer.bandwidth  # Bandwidth in Hz
     e = PhysicalConstant.e  # Elementary charge in C
 
     # Dark current noise current std

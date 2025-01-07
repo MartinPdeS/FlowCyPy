@@ -16,6 +16,7 @@ Steps:
 # Step 1: Import the necessary libraries
 from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
 from FlowCyPy import distribution, Population
+from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.units import (
     RIU, milliliter, particle, nanometer, degree, microvolt, AU,
     megahertz, milliwatt, micrometer, millisecond, meter, second
@@ -72,22 +73,24 @@ scatterer._log_properties()
 # ----------------------------
 # Two detectors are used: Forward Scatter (FSC) and Side Scatter (SSC). Each detector is configured
 # with its own numerical aperture, responsitivity, noise level, and acquisition frequency.
+signal_digitizer = SignalDigitizer(
+    bit_depth=1024,
+    saturation_levels='auto',
+    sampling_freq=10 * megahertz,           # Sampling frequency: 10 MHz
+)
+
 detector_fsc = Detector(
     name='FSC',                         # Forward Scatter detector
     numerical_aperture=1.2 * AU,        # Numerical aperture: 0.2
     phi_angle=0 * degree,               # Angle: 180 degrees for forward scatter
-    sampling_freq=10 * megahertz,       # Sampling frequency: 10 MHz
-    saturation_level=1000 * microvolt,  # Saturation level: 10 volts
-    n_bins='14bit',                     # Number of discretization bins: 512
+    signal_digitizer=signal_digitizer
 )
 
 detector_ssc = Detector(
     name='SSC',                         # Side Scatter detector
     numerical_aperture=1.2 * AU,        # Numerical aperture: 0.2
     phi_angle=90 * degree,              # Angle: 90 degrees for side scatter
-    sampling_freq=10 * megahertz,       # Sampling frequency: 10 MHz
-    saturation_level=1000 * microvolt,  # Saturation level: 10 volts
-    n_bins='14bit',                     # Number of discretization bins: 1024
+    signal_digitizer=signal_digitizer
 )
 
 # Step 6: Create a FlowCytometer instance

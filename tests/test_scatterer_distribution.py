@@ -118,7 +118,6 @@ def test_generate_longitudinal_positions(default_flow_cell, distribution):
 
     # Assert that longitudinal positions are increasing (since they are cumulative)
     for population in scatterer.populations:
-        print(population.dataframe['Position'])
         assert np.all(np.diff(population.dataframe['Position']) >= 0 * meter), "Longitudinal positions are not monotonically increasing."
 
     # Assert that no positions are negative

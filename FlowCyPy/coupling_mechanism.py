@@ -181,7 +181,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: Sca
         return np.array([]) * watt
 
     total_size = len(size_list)
-    amplitude_with_rin = apply_rin_noise(source, total_size, detector.signal_digitizer.bandwidth)
+    amplitude_with_rin = apply_rin_noise(source, total_size, detector.bandwidth)
 
     pms_source = PlaneWave(
         wavelength=np.ones(total_size) * source.wavelength,

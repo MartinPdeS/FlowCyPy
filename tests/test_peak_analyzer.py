@@ -8,6 +8,7 @@ from FlowCyPy import EventCorrelator, FlowCytometer, Detector, ScattererCollecti
 from FlowCyPy.units import second, volt, hertz, watt, degree, micrometer, meter, particle, milliliter, ampere, AU, RIU
 from FlowCyPy.population import Population
 from FlowCyPy.flow_cell import FlowCell
+from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.utils import generate_dummy_detector
 
 # Seed for reproducibility
@@ -69,16 +70,19 @@ def default_scatterer(flow_cell, default_population):
 def default_detector():
     """Creates a default detector with common properties."""
     def create_detector(name):
+        signal_digitizer = SignalDigitizer(
+            bit_depth=1024,
+            saturation_levels='auto',
+            sampling_freq=1e5 * hertz,
+        )
+
         return Detector(
             name=name,
             numerical_aperture=1 * AU,
             phi_angle=0 * degree,
             responsitivity=1 * ampere / watt,
-            sampling_freq=1e5 * hertz,
-            noise_level=0 * volt,
-            saturation_level=1 * volt,
             baseline_shift=0.0 * volt,
-            n_bins='12bit',
+            signal_digitizer=signal_digitizer
         )
     return create_detector
 

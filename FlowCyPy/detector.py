@@ -15,6 +15,7 @@ from FlowCyPy.helper import plot_helper
 from FlowCyPy.peak_locator import BasePeakLocator
 import logging
 from copy import copy
+from FlowCyPy.signal_digitizer import SignalDigitizer
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -36,79 +37,34 @@ class Detector(PropertiesReport):
     ----------
     name : str
         The name or identifier of the detector.
-    sampling_freq : Quantity
-        The sampling frequency of the detector in hertz.
     phi_angle : Quantity
         The detection angle in degrees.
     numerical_aperture : Quantity
         The numerical aperture of the detector, a unitless value.
     responsitivity : Quantity
         Detector's responsivity, default is 1 volt per watt.
-    noise_level : Quantity
-        The base noise level added to the signal, default is 0 volts.
     baseline_shift : Quantity
         The baseline shift applied to the signal, default is 0 volts.
-    saturation_level : Quantity
-        The maximum signal level in volts before saturation, default is infinity.
     dark_current : Quantity
         The dark current of the detector, default is 0 amperes.
     resistance : Quantity
         Resistance of the detector, used for thermal noise simulation.
     temperature : Quantity
         Temperature of the detector in Kelvin, used for thermal noise simulation.
-    n_bins : Union[int, str]
-        The number of discretization bins or bit-depth (e.g., '12bit').
     """
-    sampling_freq: Quantity
     phi_angle: Quantity
     numerical_aperture: Quantity
+    signal_digitizer: SignalDigitizer
 
     gamma_angle: Optional[Quantity] = Quantity(0, degree)
     sampling: Optional[Quantity] = 100 * AU
     responsitivity: Optional[Quantity] = Quantity(1, ampere / watt)
-    noise_level: Optional[Quantity] = Quantity(0.0, volt)
     baseline_shift: Optional[Quantity] = Quantity(0.0, volt)
-    saturation_level: Optional[Quantity] = Quantity(np.inf, volt)
     dark_current: Optional[Quantity] = Quantity(0.0, ampere)  # Dark current
     resistance: Optional[Quantity] = Quantity(50.0, 'ohm')  # Resistance for thermal noise
     temperature: Optional[Quantity] = Quantity(0.0, 'kelvin')  # Temperature for thermal noise
-    n_bins: Optional[Union[int, str]] = None
     name: Optional[str] = None
 
-    @cached_property
-    def bandwidth(self) -> Quantity:
-        return self.sampling_freq / 2
-        """
-        Automatically calculates the bandwidth based on the sampling frequency.
-
-        Returns
-        -------
-        Quantity
-            The bandwidth of the detector, which is half the sampling frequency (Nyquist limit).
-        """
-        return self.sampling_freq / 2
-
-    @field_validator('sampling_freq')
-    def _validate_sampling_freq(cls, value):
-        """
-        Validates that the sampling frequency is provided in hertz.
-
-        Parameters
-        ----------
-        value : Quantity
-            The sampling frequency to validate.
-
-        Returns
-        -------
-        Quantity
-            The validated sampling frequency.
-
-        Raises:
-            ValueError: If the sampling frequency is not in hertz.
-        """
-        if not value.check('Hz'):
-            raise ValueError(f"sampling_freq must be in hertz, but got {value.units}")
-        return value
 
     @field_validator('phi_angle', 'gamma_angle')
     def _validate_angles(cls, value):
@@ -152,7 +108,7 @@ class Detector(PropertiesReport):
             raise ValueError(f"Responsitivity must be in ampere per watt, but got {value.units}")
         return value
 
-    @field_validator('noise_level', 'baseline_shift', 'saturation_level')
+    @field_validator('baseline_shift')
     def _validate_voltage_attributes(cls, value):
         """
         Validates that noise level, baseline shift, and saturation level are all in volts.
@@ -181,24 +137,11 @@ class Detector(PropertiesReport):
         if self.name is None:
             self.name = str(id(self))
 
-        self._process_n_bins()
-
     def _convert_attr_to_SI(self) -> None:
         # Convert all Quantity attributes to base SI units (without any prefixes)
         for attr_name, attr_value in vars(self).items():
             if isinstance(attr_value, Quantity):
                 setattr(self, attr_name, attr_value.to_base_units())
-
-    def _process_n_bins(self) -> None:
-        r"""
-        Processes the `n_bins` attribute to ensure it is an integer representing the number of bins.
-
-        If `n_bins` is provided as a bit-depth string (e.g., '12bit'), it converts it to an integer number of bins.
-        If no valid `n_bins` is provided, a default of 100 bins is used.
-        """
-        if isinstance(self.n_bins, str):
-            bit_depth = int(self.n_bins.rstrip('bit'))
-            self.n_bins = 2 ** bit_depth
 
     def _add_thermal_noise_to_raw_signal(self) -> np.ndarray:
         r"""
@@ -223,7 +166,7 @@ class Detector(PropertiesReport):
             return
 
         noise_std = np.sqrt(
-            4 * PhysicalConstant.kb * self.temperature * self.resistance * self.bandwidth
+            4 * PhysicalConstant.kb * self.temperature * self.resistance * self.signal_digitizer.bandwidth
         )
 
         thermal_noise = np.random.normal(0, noise_std.to(volt).magnitude, size=len(self.dataframe)) * volt
@@ -255,7 +198,7 @@ class Detector(PropertiesReport):
             return
 
         dark_current_std = np.sqrt(
-            2 * 1.602176634e-19 * coulomb * self.dark_current * self.bandwidth
+            2 * 1.602176634e-19 * coulomb * self.dark_current * self.signal_digitizer.bandwidth
         )
 
         dark_current_noise = np.random.normal(0, dark_current_std.to(ampere).magnitude, size=len(self.dataframe)) * ampere
@@ -317,7 +260,7 @@ class Detector(PropertiesReport):
         I_photon = self.responsitivity * optical_power
 
         # Step 2: Compute the shot noise current for each time point using vectorization
-        i_shot = 2 * PhysicalConstant.e * I_photon * self.bandwidth
+        i_shot = 2 * PhysicalConstant.e * I_photon * self.signal_digitizer.bandwidth
 
         I_shot = np.sqrt(i_shot)
 
@@ -352,7 +295,7 @@ class Detector(PropertiesReport):
             - \( R_{\text{ph}} \) is the responsivity in amperes per watt.
         """
         self.run_time = run_time
-        time_points = int(self.sampling_freq * run_time)
+        time_points = int(self.signal_digitizer.sampling_freq * run_time)
         time = np.linspace(0, run_time, time_points)
 
         self.dataframe = pd.DataFrame(
@@ -369,62 +312,16 @@ class Detector(PropertiesReport):
         """
         self.dataframe['Signal'] = self.dataframe['RawSignal']
 
-        self._apply_baseline_and_noise()
-        self._apply_saturation()
-        self._discretize_signal()
-
-        self.is_saturated = True if np.any(self.dataframe.Signal == self.saturation_level.to(volt).magnitude) else False
-
-    def _apply_baseline_and_noise(self) -> None:
-        """
-        Adds baseline shift and base noise to the raw signal.
-        """
-        w0 = np.pi / 2 / second
-        baseline = self.baseline_shift * np.sin(w0 * self.dataframe.Time)
-
-        # Scale noise level by the square root of the bandwidth
-        noise_scaling = np.sqrt(self.bandwidth.to('Hz').magnitude)
-        noise = self.noise_level * noise_scaling * np.random.normal(size=len(self.dataframe))
-
-        self.dataframe.Signal += baseline + noise
-
-    def _apply_saturation(self) -> None:
-        """
-        Applies a saturation limit to the signal.
-
-        Signal values that exceed the saturation level are clipped to the maximum allowed value.
-        """
-        clipped = np.clip(self.dataframe.Signal, 0 * volt, self.saturation_level)
-        self.dataframe.Signal = pint_pandas.PintArray(clipped, clipped.units)
-
-    def _discretize_signal(self) -> None:
-        """
-        Discretizes the processed signal into a specified number of bins.
-
-        The signal is mapped to discrete levels, depending on the number of bins (derived from `n_bins`).
-        """
-
-        if self.n_bins is not None:
-            max_level = self.saturation_level if not np.isinf(self.saturation_level) else self.dataframe.Signal.max()
-
-            bins = np.linspace(0 * max_level, max_level, self.n_bins)
-
-            digitized = np.digitize(
-                x=self.dataframe.Signal.pint.to(volt).pint.magnitude,
-                bins=bins.to(volt).magnitude
-            ) - 1
-            self.dataframe.Signal = pint_pandas.PintArray(bins[digitized], volt)
+        self.dataframe['DigitizedSignal'], self.is_saturated = self.signal_digitizer.discretize_signal(self.dataframe['Signal'])
 
     @plot_helper
     def plot(
         self,
-        color: str = None,
         ax: Optional[plt.Axes] = None,
         time_unit: Optional[Union[str, Quantity]] = None,
         signal_unit: Optional[Union[str, Quantity]] = None,
-        add_captured: bool = True,
         add_peak_locator: bool = False,
-        add_raw: bool = False
+        color: str = None,
     ) -> tuple[Quantity, Quantity]:
         """
         Visualizes the signal and optional components (peaks, raw signal) over time.
@@ -434,20 +331,14 @@ class Detector(PropertiesReport):
 
         Parameters
         ----------
-        color : str, optional
-            Color for the processed signal line. Default is 'C0' (default Matplotlib color cycle).
         ax : matplotlib.axes.Axes, optional
             An existing Matplotlib Axes object to plot on. If None, a new Axes will be created.
         time_unit : str or Quantity, optional
             Desired unit for the time axis. If None, defaults to the most compact unit of the `Time` column.
         signal_unit : str or Quantity, optional
             Desired unit for the signal axis. If None, defaults to the most compact unit of the `Signal` column.
-        add_captured : bool, optional
-            If True, overlays the captured signal data on the plot. Default is True.
         add_peak_locator : bool, optional
             If True, adds the detected peaks (if available) to the plot. Default is False.
-        add_raw : bool, optional
-            If True, overlays the raw signal data on the plot. Default is False.
 
         Returns
         -------
@@ -461,93 +352,84 @@ class Detector(PropertiesReport):
         - Warnings are logged if peak locator data is unavailable when `add_peak_locator` is True.
         """
         # Set default units if not provided
-        signal_unit = signal_unit or self.dataframe.Signal.max().to_compact().units
-        time_unit = time_unit or self.dataframe.Time.max().to_compact().units
+        signal_unit = signal_unit or self.dataframe['Signal'].max().to_compact().units
+        time_unit = time_unit or self.dataframe['Time'].max().to_compact().units
+
+        x = self.dataframe['Time'].pint.to(time_unit)
 
         # Plot captured signal
-        if add_captured:
-            self._add_captured_signal_to_ax(ax=ax, time_unit=time_unit, signal_unit=signal_unit, color=color)
+        if not hasattr(self.dataframe, 'Signal'):
+            logging.warning("The detector does not have a captured signal. Please run .capture_signal() method first.")
+
+        ax.step(x, self.dataframe['DigitizedSignal'], color=color, linestyle='-', label=f'{self.name} [Digitized]', linewidth=2)
+        ax.legend(loc='upper left')
 
         # Overlay peak locator positions, if requested
         if add_peak_locator:
-            self._add_peak_locator_to_ax(ax=ax, time_unit=time_unit, signal_unit=signal_unit)
+            if not hasattr(self, 'algorithm'):
+                logging.warning("The detector does not have a peak locator algorithm. Peaks cannot be plotted.")
+            else:
+                self.algorithm._add_to_ax(ax=ax, signal_unit=signal_unit, time_unit=time_unit)
 
-        # Overlay raw signal, if requested
-        if add_raw:
-            self._add_raw_signal_to_ax(ax=ax, time_unit=time_unit, signal_unit=signal_unit)
+        # Customize labels
+        ax.set_xlabel(f"Time [{time_unit:P}]")
+        ax.set_ylabel(f"{self.name} [bin]")
 
+    @plot_helper
+    def plot_raw(
+        self,
+        ax: Optional[plt.Axes] = None,
+        time_unit: Optional[Union[str, Quantity]] = None,
+        signal_unit: Optional[Union[str, Quantity]] = None,
+        add_peak_locator: bool = False
+    ) -> None:
+        """
+        Visualizes the signal and optional components (peaks, raw signal) over time.
+
+        This method generates a customizable plot of the processed signal as a function of time.
+        Additional components like raw signals and detected peaks can also be overlaid.
+
+        Parameters
+        ----------
+        ax : matplotlib.axes.Axes, optional
+            An existing Matplotlib Axes object to plot on. If None, a new Axes will be created.
+        time_unit : str or Quantity, optional
+            Desired unit for the time axis. If None, defaults to the most compact unit of the `Time` column.
+        signal_unit : str or Quantity, optional
+            Desired unit for the signal axis. If None, defaults to the most compact unit of the `Signal` column.
+        add_peak_locator : bool, optional
+            If True, adds the detected peaks (if available) to the plot. Default is False.
+
+        Returns
+        -------
+        tuple[Quantity, Quantity]
+            A tuple containing the units used for the time and signal axes, respectively.
+
+        Notes
+        -----
+        - The `Time` and `Signal` data are automatically converted to the specified units for consistency.
+        - If no `ax` is provided, a new figure and axis will be generated.
+        - Warnings are logged if peak locator data is unavailable when `add_peak_locator` is True.
+        """
+        # Set default units if not provided
+        signal_unit = signal_unit or self.dataframe['Signal'].max().to_compact().units
+        time_unit = time_unit or self.dataframe['Time'].max().to_compact().units
+
+        x = self.dataframe['Time'].pint.to(time_unit)
+
+        ax.plot(x, self.dataframe['Signal'].pint.to(signal_unit), color='C1', linestyle='--', label=f'{self.name}: Raw', linewidth=1)
+        ax.legend(loc='upper right')
+
+        # Overlay peak locator positions, if requested
+        if add_peak_locator:
+            if not hasattr(self, 'algorithm'):
+                logging.warning("The detector does not have a peak locator algorithm. Peaks cannot be plotted.")
+
+            self.algorithm._add_to_ax(ax=ax, signal_unit=signal_unit, time_unit=time_unit)
 
         # Customize labels
         ax.set_xlabel(f"Time [{time_unit:P}]")
         ax.set_ylabel(f"{self.name} [{signal_unit:P}]")
-        ax.legend()
-
-        return time_unit, signal_unit
-
-    def _add_peak_locator_to_ax(self, ax: plt.Axes, time_unit: Quantity, signal_unit: Quantity) -> None:
-        """
-        Adds peak positions detected by the algorithm to the plot.
-
-        Parameters
-        ----------
-        ax : matplotlib.axes.Axes
-            The axis object to plot on.
-        time_unit : Quantity
-            Unit for the time axis.
-        signal_unit : Quantity
-            Unit for the signal axis.
-        """
-        if not hasattr(self, 'algorithm'):
-            logging.warning("The detector does not have a peak locator algorithm. Peaks cannot be plotted.")
-            return
-
-        self.algorithm._add_to_ax(ax=ax, signal_unit=signal_unit, time_unit=time_unit)
-
-    def _add_captured_signal_to_ax(self, ax: plt.Axes, time_unit: Quantity, signal_unit: Quantity, color: str = None) -> None:
-        """
-        Adds the processed (captured) signal to the plot.
-
-        Parameters
-        ----------
-        ax : matplotlib.axes.Axes
-            The axis object to plot on.
-        time_unit : Quantity
-            Unit for the time axis.
-        signal_unit : Quantity
-            Unit for the signal axis.
-        color : str
-            Color for the signal line.
-        """
-        if not hasattr(self.dataframe, 'Signal'):
-            logging.warning("The detector does not have a captured signal. Please run .capture_signal() method first.")
-            return
-
-        x = self.dataframe['Time'].pint.to(time_unit)
-        y = self.dataframe['Signal'].pint.to(signal_unit)
-        ax.plot(x, y, color=color, label='Processed Signal')
-
-    def _add_raw_signal_to_ax(self, ax: plt.Axes, time_unit: Quantity, signal_unit: Quantity, color: str = None) -> None:
-        """
-        Adds the raw signal to the plot.
-
-        Parameters
-        ----------
-        ax : matplotlib.axes.Axes
-            The axis object to plot on.
-        time_unit : Quantity
-            Unit for the time axis.
-        signal_unit : Quantity
-            Unit for the signal axis.
-        color : str
-            Color for the raw signal line.
-        """
-        if not hasattr(self.dataframe, 'RawSignal'):
-            logging.warning("The detector does not have a captured signal. Please run .init_raw_signal(run_time) method first.")
-            return
-
-        x = self.dataframe['Time'].pint.to(time_unit)
-        y = self.dataframe['RawSignal'].pint.to(signal_unit)
-        ax.plot(x, y, color=color, linestyle='--', label=f'{self.name}: Raw Signal')
 
     def set_peak_locator(self, algorithm: BasePeakLocator, compute_peak_area: bool = True) -> None:
         """
@@ -601,16 +483,16 @@ class Detector(PropertiesReport):
 
         """
         _dict = {
-            'Sampling frequency': self.sampling_freq,
+            'Sampling frequency': self.signal_digitizer.sampling_freq,
             'Phi angle': self.phi_angle,
             'Gamma angle': self.gamma_angle,
             'Numerical aperture': self.numerical_aperture,
             'Responsitivity': self.responsitivity,
-            'Saturation Level': self.saturation_level,
+            'Saturation Level': self.signal_digitizer.saturation_levels,
             'Dark Current': self.dark_current,
             'Resistance': self.resistance,
             'Temperature': self.temperature,
-            'N Bins': self.n_bins
+            'N Bins': self.signal_digitizer.bit_depth
         }
 
         super(Detector, self).print_properties(**_dict)

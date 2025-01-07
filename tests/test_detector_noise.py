@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from FlowCyPy import Detector
+from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.units import (
     ampere, watt, hertz, ohm, kelvin, volt, microsecond, degree, AU
 )
@@ -9,13 +10,19 @@ from FlowCyPy.units import (
 @pytest.fixture
 def default_detector_shot_noise():
     """Fixture to create a default detector with shot noise enabled."""
+    signal_digitizer = SignalDigitizer(
+        bit_depth=1024,
+        saturation_levels=1e30 * volt,
+        sampling_freq=1e6 * hertz,  # High sampling frequency to test shot noise
+    )
+
     detector = Detector(
         name='shot_noise_detector',
         numerical_aperture=1 * AU,
         phi_angle=90 * degree,
         responsitivity=1 * ampere / watt,  # Responsivity in A/W
-        sampling_freq=1e6 * hertz,  # High sampling frequency to test shot noise
         resistance=50 * ohm,
+        signal_digitizer=signal_digitizer,
         temperature=300 * kelvin,
     )
     detector.init_raw_signal(run_time=1 * microsecond)
@@ -26,14 +33,20 @@ def default_detector_shot_noise():
 @pytest.fixture
 def default_detector_thermal_noise():
     """Fixture to create a default detector with thermal noise enabled."""
+    signal_digitizer = SignalDigitizer(
+        bit_depth=1024,
+        saturation_levels=1e30 * volt,
+        sampling_freq=1e6 * hertz,  # High sampling frequency
+    )
+
     detector = Detector(
         name='thermal_noise_detector',
         numerical_aperture=1 * AU,
         phi_angle=90 * degree,
         responsitivity=1 * ampere / watt,  # Responsivity in A/W
-        sampling_freq=1e6 * hertz,  # High sampling frequency
         resistance=50 * ohm,  # Resistance for thermal noise
         temperature=300 * kelvin,  # Typical room temperature
+        signal_digitizer=signal_digitizer,
     )
 
     detector.init_raw_signal(run_time=1 * microsecond)
@@ -44,14 +57,20 @@ def default_detector_thermal_noise():
 @pytest.fixture
 def default_detector_dark_current():
     """Fixture to create a default detector with dark current noise enabled."""
+    signal_digitizer = SignalDigitizer(
+        bit_depth=1024,
+        saturation_levels=1e30 * volt,
+        sampling_freq=1e6 * hertz,  # High sampling frequency
+    )
+
     detector = Detector(
         name='dark_current_noise_detector',
         numerical_aperture=1 * AU,
         phi_angle=90 * degree,
         responsitivity=1 * ampere / watt,  # Responsivity in A/W
-        sampling_freq=1e6 * hertz,  # High sampling frequency
         dark_current=10e-2 * ampere,  # Dark current of 10 nA
         temperature=300 * kelvin,
+        signal_digitizer=signal_digitizer,
     )
 
     detector.init_raw_signal(run_time=1 * microsecond)
