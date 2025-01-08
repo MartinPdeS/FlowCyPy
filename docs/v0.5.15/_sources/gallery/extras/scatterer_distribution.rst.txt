@@ -34,7 +34,23 @@ Steps in the Workflow:
 4. Simulate the flow cytometry experiment.
 5. Visualize the scattering intensity in a 2D hexbin plot.
 
-.. GENERATED FROM PYTHON SOURCE LINES 18-64
+.. GENERATED FROM PYTHON SOURCE LINES 18-59
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    '\nSummary:\n--------\nThis script defines a flow cytometer simulation, sets up the particle size and refractive index distributions,\nand visualizes the scatterer distribution in a 2D density plot. It provides insight into the scattering properties\nof two different particle populations.\n'
+
+
+
+
+
+|
 
 .. code-block:: Python
 
@@ -48,17 +64,8 @@ Steps in the Workflow:
     # Set random seed for reproducibility
     np.random.seed(20)
 
-    # Step 1: Define Flow Parameters
-    # ------------------------------
-    # The flow speed is set to 7.56 meters per second, with a flow area of 10 micrometers squared, and
-    # the total simulation time is 0.1 milliseconds.
-    flow_cell = FlowCell(
-        flow_speed=7.56 * meter / second,      # Flow speed: 7.56 meters per second
-        flow_area=(10 * micrometer) ** 2,      # Flow area: 10 micrometers squared
-        run_time=0.1 * millisecond           # Total simulation time: 0.1 milliseconds
-    )
 
-    # Step 2: Define Particle Size and Refractive Index Distributions
+    # Step 1: Define Particle Size and Refractive Index Distributions
     # ---------------------------------------------------------------
     # Two particle populations are defined with different sizes and refractive indices.
     scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)
@@ -79,32 +86,7 @@ Steps in the Workflow:
 
     scatterer.add_population(population_0, population_1)
 
-    flow_cell.initialize(scatterer_collection=scatterer)
 
-    # Plot and visualize the scatterer distribution.
-    scatterer.plot()
-
-
-
-
-.. image-sg:: /gallery/extras/images/sphx_glr_scatterer_distribution_001.png
-   :alt: scatterer distribution
-   :srcset: /gallery/extras/images/sphx_glr_scatterer_distribution_001.png
-   :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 65-66
-
-Display the properties of the scatterer distribution.
-
-.. GENERATED FROM PYTHON SOURCE LINES 66-75
-
-.. code-block:: Python
-
-    scatterer._log_properties()
 
     """
     Summary:
@@ -115,21 +97,9 @@ Display the properties of the scatterer distribution.
     """
 
 
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    '\nSummary:\n--------\nThis script defines a flow cytometer simulation, sets up the particle size and refractive index distributions,\nand visualizes the scatterer distribution in a 2D density plot. It provides insight into the scattering properties\nof two different particle populations.\n'
-
-
-
-
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.883 seconds)
+   **Total running time of the script:** (0 minutes 0.001 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_scatterer_distribution.py:

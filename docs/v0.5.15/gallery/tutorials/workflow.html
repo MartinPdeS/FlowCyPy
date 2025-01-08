@@ -591,7 +591,6 @@ passing through the cross-sectional area is calculated as:</p>
     <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
     <span class="n">flow_speed</span><span class="o">=</span><span class="mf">7.56</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>  <span class="c1"># Flow speed</span>
     <span class="n">flow_area</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>       <span class="c1"># Cross-sectional area</span>
-    <span class="n">run_time</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span>              <span class="c1"># Simulation duration</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -613,11 +612,13 @@ given by:</p>
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">exosome</span><span class="p">)</span>
 
 <span class="c1"># Initialize the scatterer with the flow cell</span>
-<span class="n">flow_cell</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">)</span>
-<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>  <span class="c1"># Visualize the particle population</span>
+<span class="c1"># scatterer_collection.plot(sampling=300 * units.particle)  # Visualize the particle population</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="workflow" class = "sphx-glr-single-img"/></section>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(Population(name=&#39;Exosome&#39;, refractive_index=Normal(1.390 RIU, 0.020 RIU), size=RR(70.000 nm, 2.000), particle_count=5000000000000.001 particle/l),)
+</pre></div>
+</div>
+</section>
 <section id="step-5-define-detectors">
 <h2>Step 5: Define Detectors<a class="headerlink" href="#step-5-define-detectors" title="Link to this heading">#</a></h2>
 <p>Detectors measure light intensity. Parameters like responsitivity define the conversion of optical
@@ -662,53 +663,55 @@ and particles follows Mie theory:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span>
 
 <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
+    <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">],</span>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>
     <span class="n">background_power</span><span class="o">=</span><span class="mf">0.001</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span>
 <span class="p">)</span>
 
-<span class="n">cytometer</span><span class="o">.</span><span class="n">run_coupling_analysis</span><span class="p">()</span>
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_continous_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.03</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 
-<span class="n">cytometer</span><span class="o">.</span><span class="n">initialize_signal</span><span class="p">()</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>  <span class="c1"># Visualize signals from detectors</span>
 
-<span class="n">cytometer</span><span class="o">.</span><span class="n">simulate_pulse</span><span class="p">()</span>
-
-<span class="n">cytometer</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>  <span class="c1"># Visualize signals from detectors</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">coupling_distribution</span><span class="p">(</span><span class="n">equal_limits</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Visualize signals from detectors</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_002.png" srcset="../../_images/sphx_glr_workflow_002.png" alt="workflow" class = "sphx-glr-single-img"/></section>
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="workflow" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_workflow_002.png" srcset="../../_images/sphx_glr_workflow_002.png" alt="workflow" class = "sphx-glr-multi-img"/></li>
+</ul>
+</section>
 <section id="step-7-analyze-detected-signals">
 <h2>Step 7: Analyze Detected Signals<a class="headerlink" href="#step-7-analyze-detected-signals" title="Link to this heading">#</a></h2>
-<p>The MovingAverage algorithm detects peaks in signals by analyzing local maxima within a defined
-window size and threshold.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventCorrelator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">peak_locator</span>
+<p># The MovingAverage algorithm detects peaks in signals by analyzing local maxima within a defined
+# window size and threshold.
+from FlowCyPy import EventCorrelator
+from FlowCyPy import peak_locator</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># algorithm = peak_locator.MovingAverage(</span>
+<span class="c1">#     threshold=10 * units.microvolt,</span>
+<span class="c1">#     window_size=1 * units.microsecond,</span>
+<span class="c1">#     min_peak_distance=0.3 * units.microsecond</span>
+<span class="c1"># )</span>
 
-<span class="n">algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">MovingAverage</span><span class="p">(</span>
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microvolt</span><span class="p">,</span>
-    <span class="n">window_size</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microsecond</span><span class="p">,</span>
-    <span class="n">min_peak_distance</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microsecond</span>
-<span class="p">)</span>
+<span class="c1"># # Assign peak detection algorithm to detectors</span>
+<span class="c1"># detector_0.set_peak_locator(algorithm)</span>
+<span class="c1"># detector_1.set_peak_locator(algorithm)</span>
 
-<span class="c1"># Assign peak detection algorithm to detectors</span>
-<span class="n">detector_0</span><span class="o">.</span><span class="n">set_peak_locator</span><span class="p">(</span><span class="n">algorithm</span><span class="p">)</span>
-<span class="n">detector_1</span><span class="o">.</span><span class="n">set_peak_locator</span><span class="p">(</span><span class="n">algorithm</span><span class="p">)</span>
+<span class="c1"># # Analyze signal data</span>
+<span class="c1"># analyzer = EventCorrelator(cytometer=cytometer)</span>
+<span class="c1"># analyzer.run_analysis(compute_peak_area=False)</span>
 
-<span class="c1"># Analyze signal data</span>
-<span class="n">analyzer</span> <span class="o">=</span> <span class="n">EventCorrelator</span><span class="p">(</span><span class="n">cytometer</span><span class="o">=</span><span class="n">cytometer</span><span class="p">)</span>
-<span class="n">analyzer</span><span class="o">.</span><span class="n">run_analysis</span><span class="p">(</span><span class="n">compute_peak_area</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="c1"># # %%</span>
+<span class="c1"># # Step 8: Visualize Coincidence and Density Plot</span>
+<span class="c1"># # ----------------------------------------------</span>
+<span class="c1"># # Coincidence analysis checks for simultaneous detection events across detectors, which are plotted</span>
+<span class="c1"># # as a 2D density graph to illustrate signal relationships between FSC and SSC.</span>
+
+<span class="c1"># analyzer.get_coincidence(margin=1e-9 * units.microsecond)  # Extract coincidences</span>
+<span class="c1"># analyzer.plot(log_plot=False)  # Generate a 2D density plot</span>
 </pre></div>
 </div>
-</section>
-<section id="step-8-visualize-coincidence-and-density-plot">
-<h2>Step 8: Visualize Coincidence and Density Plot<a class="headerlink" href="#step-8-visualize-coincidence-and-density-plot" title="Link to this heading">#</a></h2>
-<p>Coincidence analysis checks for simultaneous detection events across detectors, which are plotted
-as a 2D density graph to illustrate signal relationships between FSC and SSC.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">analyzer</span><span class="o">.</span><span class="n">get_coincidence</span><span class="p">(</span><span class="n">margin</span><span class="o">=</span><span class="mf">1e-9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span>  <span class="c1"># Extract coincidences</span>
-<span class="n">analyzer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Generate a 2D density plot</span>
-</pre></div>
-</div>
-<img src="../../_images/sphx_glr_workflow_003.png" srcset="../../_images/sphx_glr_workflow_003.png" alt="workflow" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.320 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.999 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/67e0cd555ca79f8bdb69184b227f40a4/workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow.ipynb</span></code></a></p>
@@ -756,7 +759,6 @@ as a 2D density graph to illustrate signal relationships between FSC and SSC.</p
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-define-detectors">Step 5: Define Detectors</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-simulate-flow-cytometry-experiment">Step 6: Simulate Flow Cytometry Experiment</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-analyze-detected-signals">Step 7: Analyze Detected Signals</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-8-visualize-coincidence-and-density-plot">Step 8: Visualize Coincidence and Density Plot</a></li>
 </ul>
   </nav></div>
 

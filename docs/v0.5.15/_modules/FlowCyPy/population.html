@@ -481,13 +481,14 @@
 <span></span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">field</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">particle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">PropertiesReport</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PyMieSim.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">meter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.particle_count</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParticleCount</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pint_pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">PintArray</span>
 
 
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -533,29 +534,6 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
                 <span class="c1"># Convert the quantity to its base unit (strip prefix)</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">())</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;concentration&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_concentration</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validates that the concentration is expressed in units of inverse volume.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        value : Quantity</span>
-<span class="sd">            The concentration to validate.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
-<span class="sd">            The validated concentration.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">            ValueError: If the concentration is not expressed in units of inverse volume.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;particles / [length]**3&#39;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;concentration must be in units of particles per volume (e.g., particles/m^3), but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span>
 
     <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;refractive_index&#39;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_refractive_index</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -614,12 +592,34 @@
             <span class="k">return</span> <span class="n">value</span>
 
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;suze must be of type Quantity or distribution.Base, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    
+
 <div class="viewcode-block" id="Population.dilute">
 <a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.Population.dilute">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">dilute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">/=</span> <span class="n">factor</span></div>
-</div>
+
+
+<div class="viewcode-block" id="Population.generate_sampling">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.Population.generate_sampling">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+
+        <span class="n">ri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">size</span><span class="p">,</span> <span class="n">ri</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+
+        <span class="n">ri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Size&#39;</span><span class="p">,</span> <span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">])</span>
+
+        <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">size</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+        <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">ri</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ri</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dataframe</span></div>
 
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.populations_instances</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>  <span class="c1"># noqa F403</span>

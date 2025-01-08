@@ -482,6 +482,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">meter</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">particle</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PyMieSim.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tabulate</span><span class="w"> </span><span class="kn">import</span> <span class="n">tabulate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
@@ -516,12 +517,10 @@
 <span class="sd">        The speed of the flow in meters per second (m/s).</span>
 <span class="sd">    flow_area : Quantity</span>
 <span class="sd">        The cross-sectional area of the flow tube in square meters (m²).</span>
-<span class="sd">    run_time : Quantity</span>
-<span class="sd">        The total duration of the flow simulation in seconds.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">flow_speed</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">flow_area</span><span class="p">:</span> <span class="n">Quantity</span>
-    <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span>
+    <span class="n">scheme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;poisson&#39;</span>
 
     <span class="n">source</span><span class="p">:</span> <span class="n">BaseBeam</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -529,31 +528,12 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize units for flow parameters.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flow_speed</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_speed</span><span class="p">,</span> <span class="n">meter</span> <span class="o">/</span> <span class="n">second</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flow_area</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_area</span><span class="p">,</span> <span class="n">meter</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">run_time</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_time</span><span class="p">,</span> <span class="n">second</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_area</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_speed</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_time</span>
+<div class="viewcode-block" id="FlowCell.get_volume">
+<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.FlowCell.get_volume">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_area</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_speed</span> <span class="o">*</span> <span class="n">run_time</span></div>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;flow_speed&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_flow_speed</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validates that the flow speed is provided in meter per second.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        value : Quantity</span>
-<span class="sd">            The flow speed to validate.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
-<span class="sd">            The flow speed frequency.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If the flow speed is not in meter per second.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">meter</span> <span class="o">/</span> <span class="n">second</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;flow_speed must be in meter per second, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span>
 
     <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;flow_area&#39;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_flow_area</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -577,143 +557,66 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;flow_area must be in meter ** 2, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;run_time&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_run_time</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="FlowCell.get_population_sampling">
+<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.FlowCell.get_population_sampling">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_population_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">scatterer_collection</span><span class="p">:</span> <span class="n">ScattererCollection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]:</span>
+        <span class="n">population_sampling</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">particle_count</span><span class="o">.</span><span class="n">calculate_number_of_events</span><span class="p">(</span>
+                <span class="n">flow_area</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_area</span><span class="p">,</span>
+                <span class="n">flow_speed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_speed</span><span class="p">,</span>
+                <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span>
+            <span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">populations</span>
+        <span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">population_sampling</span></div>
+
+
+<div class="viewcode-block" id="FlowCell.generate_event_dataframe">
+<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.FlowCell.generate_event_dataframe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_event_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Population</span><span class="p">],</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validates that the total time is provided in second.</span>
+<span class="sd">        Generates a DataFrame of event times for each population based on the specified scheme.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        value : Quantity</span>
-<span class="sd">            The total time to validate.</span>
+<span class="sd">        populations : List[Population]</span>
+<span class="sd">            A list of populations for which to generate event times.</span>
+<span class="sd">        run_time : Quantity</span>
+<span class="sd">            The total duration of the experiment.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
-<span class="sd">            The validated total time.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If the total time is not in second.</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            A MultiIndex DataFrame with event times for each population.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">second</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;run_time must be in second, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span>
+        <span class="c1"># Generate individual DataFrames for each population</span>
+        <span class="n">population_event_frames</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_generate_poisson_events</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="n">populations</span>
+        <span class="p">]</span>
 
-<div class="viewcode-block" id="FlowCell.print_properties">
-<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.FlowCell.print_properties">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">print_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Print the core properties of the flow and particle interactions in the flow cytometer.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Flow Properties&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_properties</span><span class="p">(),</span> <span class="n">headers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Property&quot;</span><span class="p">,</span> <span class="s2">&quot;Value&quot;</span><span class="p">],</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s2">&quot;grid&quot;</span><span class="p">))</span></div>
+        <span class="c1"># Combine the DataFrames with population names as keys</span>
+        <span class="n">event_dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">population_event_frames</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="n">pop</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">])</span>
+        <span class="n">event_dataframe</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Population&quot;</span><span class="p">,</span> <span class="s2">&quot;Index&quot;</span><span class="p">]</span>
 
+        <span class="c1"># Handle the scheme for event timing</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;uniform-random&#39;</span><span class="p">,</span> <span class="s1">&#39;uniform-sequential&#39;</span><span class="p">]:</span>
+            <span class="n">total_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">event_dataframe</span><span class="p">)</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">run_time</span><span class="o">.</span><span class="n">units</span>
+            <span class="n">end_time</span> <span class="o">=</span> <span class="n">run_time</span>
+            <span class="n">time_interval</span> <span class="o">=</span> <span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_events</span>
+            <span class="n">evenly_spaced_times</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">total_events</span><span class="p">)</span> <span class="o">*</span> <span class="n">time_interval</span>
 
-<div class="viewcode-block" id="FlowCell.get_properties">
-<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.FlowCell.get_properties">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="p">[</span><span class="s1">&#39;Flow Speed&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_speed</span><span class="si">:</span><span class="s2">.2f~#P</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
-            <span class="p">[</span><span class="s1">&#39;Flow Area&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_area</span><span class="si">:</span><span class="s2">.2f~#P</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
-            <span class="p">[</span><span class="s1">&#39;Total Time&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">run_time</span><span class="si">:</span><span class="s2">.2f~#P</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
-        <span class="p">]</span></div>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;uniform-random&#39;</span><span class="p">:</span>
+                <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">evenly_spaced_times</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>  <span class="c1"># Shuffle times for random spacing</span>
 
+            <span class="c1"># Assign the computed times to the DataFrame</span>
+            <span class="n">event_dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">evenly_spaced_times</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">))</span>
 
-    <span class="c1"># def initialize(self, scatterer: Population | ScattererCollection) -&gt; None:</span>
-    <span class="c1">#     if isinstance(scatterer, Population):</span>
-    <span class="c1">#         return self._initialize_population(scatterer)</span>
-
-    <span class="c1">#     elif isinstance(scatterer, ScattererCollection):</span>
-    <span class="c1">#         return self._initialize_scatterer_collection(scatterer)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="n">Population</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">population</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-
-        <span class="n">population</span><span class="o">.</span><span class="n">n_events</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">particle_count</span><span class="o">.</span><span class="n">calculate_number_of_events</span><span class="p">(</span>
-            <span class="n">flow_area</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_area</span><span class="p">,</span>
-            <span class="n">flow_speed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_speed</span><span class="p">,</span>
-            <span class="n">run_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_time</span>
-        <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_longitudinal_positions</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
-
-        <span class="n">size</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">n_events</span><span class="p">)</span>
-        <span class="n">population</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">size</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
-
-        <span class="n">ri</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">n_events</span><span class="p">)</span>
-        <span class="n">population</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">ri</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ri</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
-
-<div class="viewcode-block" id="FlowCell.initialize">
-<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.FlowCell.initialize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scatterer_collection</span><span class="p">:</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">size_units</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;micrometer&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes particle size, refractive index, and medium refractive index distributions.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        scatterer : Scatterer</span>
-<span class="sd">            An instance of the Scatterer class that describes the scatterer collection being used.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">scatterer_collection</span>
-
-        <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_population</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
-            <span class="n">population</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Size</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Size</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">size_units</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">populations</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">dataframe</span> <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">populations</span><span class="p">],</span>
-                <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">populations</span><span class="p">],</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Population&#39;</span><span class="p">,</span> <span class="s1">&#39;Index&#39;</span><span class="p">]</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dtypes</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">&#39;Time&#39;</span><span class="p">:</span> <span class="n">PintType</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">),</span>            <span class="c1"># Time column with seconds unit</span>
-                <span class="s1">&#39;Position&#39;</span><span class="p">:</span> <span class="n">PintType</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">),</span>         <span class="c1"># Position column with meters unit</span>
-                <span class="s1">&#39;Size&#39;</span><span class="p">:</span> <span class="n">PintType</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">),</span>             <span class="c1"># Size column with micrometers unit</span>
-                <span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">:</span> <span class="n">PintType</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">)</span>   <span class="c1"># Dimensionless unit for refractive index</span>
-            <span class="p">}</span>
-
-            <span class="n">multi_index</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">([],</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Population&quot;</span><span class="p">,</span> <span class="s2">&quot;Index&quot;</span><span class="p">])</span>
-
-            <span class="c1"># Create an empty DataFrame with specified column types and a multi-index</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="n">pandas</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">dtypes</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
-                <span class="n">index</span><span class="o">=</span><span class="n">multi_index</span>
-            <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">n_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">event_dataframe</span></div>
 
 
-<div class="viewcode-block" id="FlowCell.distribute_time_linearly">
-<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.FlowCell.distribute_time_linearly">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">distribute_time_linearly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequential_population</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Distributes particle arrival times linearly across the total runtime of the flow cell.</span>
-
-<span class="sd">        Optionally randomizes the order of times for all populations to simulate non-sequential particle arrivals.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        sequential_population : bool, optional</span>
-<span class="sd">            If `True`, organize the order of arrival times across all populations (default is `False`).</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Generate linearly spaced time values across the flow cell runtime</span>
-        <span class="n">linear_spacing</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">n_events</span><span class="p">)</span>
-
-        <span class="c1"># Optionally randomize the linear spacing</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">sequential_population</span><span class="p">:</span>
-            <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">linear_spacing</span><span class="p">)</span>
-
-        <span class="c1"># Assign the linearly spaced or randomized times to the scatterer DataFrame</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">linear_spacing</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span><span class="p">)</span></div>
-
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_longitudinal_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="n">Population</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_poisson_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="n">Population</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate particle arrival times over the entire experiment duration based on a Poisson process.</span>
 
@@ -757,11 +660,12 @@
         <span class="n">particle_flux</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">particle_count</span><span class="o">.</span><span class="n">compute_particle_flux</span><span class="p">(</span>
             <span class="n">flow_speed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_speed</span><span class="p">,</span>
             <span class="n">flow_area</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_area</span><span class="p">,</span>
-            <span class="n">run_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_time</span>
+            <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span>
         <span class="p">)</span>
 
         <span class="c1"># Step 2: Calculate the expected number of particles over the entire experiment</span>
-        <span class="n">expected_particles</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">n_events</span>
+        <span class="n">expected_particles</span> <span class="o">=</span> <span class="n">particle_flux</span> <span class="o">*</span> <span class="n">run_time</span>
+        <span class="c1"># expected_particles = population.n_events</span>
 
         <span class="c1"># Step 3: Generate inter-arrival times (exponentially distributed)</span>
         <span class="n">inter_arrival_times</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span>
@@ -773,20 +677,16 @@
         <span class="n">arrival_times</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">inter_arrival_times</span><span class="p">)</span>
 
         <span class="c1"># Step 5: Limit the arrival times to the total experiment duration</span>
-        <span class="n">arrival_times</span> <span class="o">=</span> <span class="n">arrival_times</span><span class="p">[</span><span class="n">arrival_times</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_time</span><span class="p">]</span>
+        <span class="n">arrival_times</span> <span class="o">=</span> <span class="n">arrival_times</span><span class="p">[</span><span class="n">arrival_times</span> <span class="o">&lt;=</span> <span class="n">run_time</span><span class="p">]</span>
 
-        <span class="n">time</span> <span class="o">=</span> <span class="n">arrival_times</span><span class="p">[</span><span class="n">arrival_times</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_time</span><span class="p">]</span>
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
 
-        <span class="n">population</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+        <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">arrival_times</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">arrival_times</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
 
-        <span class="n">position</span> <span class="o">=</span> <span class="n">arrival_times</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_speed</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Population has been initialized with 0 events.&quot;</span><span class="p">)</span>
 
-        <span class="n">population</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Position&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">position</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
-
-        <span class="n">population</span><span class="o">.</span><span class="n">n_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrival_times</span><span class="p">)</span> <span class="o">*</span> <span class="n">particle</span>
-
-        <span class="k">if</span> <span class="n">population</span><span class="o">.</span><span class="n">n_events</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Population has been initialized with 0 events.&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">dataframe</span></div>
 
 </pre></div>
 

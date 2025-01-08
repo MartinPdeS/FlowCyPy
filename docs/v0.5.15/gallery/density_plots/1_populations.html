@@ -571,22 +571,20 @@ to generate a 2D density plot of scattering intensities.</p>
     <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
     <span class="n">flow_speed</span><span class="o">=</span><span class="mf">7.56</span> <span class="o">*</span> <span class="n">meter</span> <span class="o">/</span> <span class="n">second</span><span class="p">,</span>        <span class="c1"># Flow speed: 7.56 m/s</span>
     <span class="n">flow_area</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">micrometer</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>        <span class="c1"># Flow area: 10 x 10 µm²</span>
-    <span class="n">run_time</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">millisecond</span>               <span class="c1"># Simulation run time: 0.5 ms</span>
 <span class="p">)</span>
 
 <span class="c1"># Initialize scatterer with a medium refractive index</span>
-<span class="n">scatterer</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>  <span class="c1"># Medium refractive index of 1.33 (water)</span>
+<span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>  <span class="c1"># Medium refractive index of 1.33 (water)</span>
 
 <span class="c1"># Define populations with size distribution and refractive index</span>
 <span class="n">exosome</span> <span class="o">=</span> <span class="n">Exosome</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">exosome</span><span class="p">)</span>
-
-<span class="n">flow_cell</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer</span><span class="p">)</span>  <span class="c1"># Link populations to flow cell</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">_log_properties</span><span class="p">()</span>               <span class="c1"># Display population properties</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>                         <span class="c1"># Visualize the population distributions</span>
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">exosome</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_1_populations_001.png" srcset="../../_images/sphx_glr_1_populations_001.png" alt="1 populations" class = "sphx-glr-single-img"/><p>Add forward scatter detector</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(Population(name=&#39;Exosome&#39;, refractive_index=Normal(1.390 RIU, 0.020 RIU), size=RR(70.000 nm, 2.000), particle_count=5000000000000.001 particle/l),)
+</pre></div>
+</div>
+<p>Add forward scatter detector</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>
     <span class="n">saturation_levels</span><span class="o">=</span><span class="mi">16_000</span> <span class="o">*</span> <span class="n">microvolt</span><span class="p">,</span>
@@ -618,6 +616,7 @@ to generate a 2D density plot of scattering intensities.</p>
 <span class="c1"># Step 4: Simulating the Flow Cytometry Experiment</span>
 <span class="c1"># ------------------------------------------------</span>
 <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
+    <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">],</span>
     <span class="n">background_power</span><span class="o">=</span><span class="mf">0.001</span> <span class="o">*</span> <span class="n">milliwatt</span>
@@ -625,17 +624,13 @@ to generate a 2D density plot of scattering intensities.</p>
 
 
 <span class="c1"># Run the flow cytometry simulation</span>
-<span class="n">cytometer</span><span class="o">.</span><span class="n">run_coupling_analysis</span><span class="p">()</span>
-
-<span class="n">cytometer</span><span class="o">.</span><span class="n">initialize_signal</span><span class="p">()</span>
-
-<span class="n">cytometer</span><span class="o">.</span><span class="n">simulate_pulse</span><span class="p">()</span>
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_continous_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">millisecond</span><span class="p">)</span>
 
 <span class="c1"># Visualize the scatter signals from both detectors</span>
-<span class="n">cytometer</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_1_populations_002.png" srcset="../../_images/sphx_glr_1_populations_002.png" alt="1 populations" class = "sphx-glr-single-img"/><section id="step-5-analyzing-pulse-signals">
+<img src="../../_images/sphx_glr_1_populations_001.png" srcset="../../_images/sphx_glr_1_populations_001.png" alt="1 populations" class = "sphx-glr-single-img"/><section id="step-5-analyzing-pulse-signals">
 <h2>Step 5: Analyzing Pulse Signals<a class="headerlink" href="#step-5-analyzing-pulse-signals" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">MovingAverage</span><span class="p">(</span>
     <span class="n">threshold</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">microvolt</span><span class="p">,</span>           <span class="c1"># Signal threshold: 0.1 mV</span>
@@ -663,7 +658,7 @@ to generate a 2D density plot of scattering intensities.</p>
 <span class="n">analyzer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_1_populations_003.png" srcset="../../_images/sphx_glr_1_populations_003.png" alt="1 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.349 seconds)</p>
+<img src="../../_images/sphx_glr_1_populations_002.png" srcset="../../_images/sphx_glr_1_populations_002.png" alt="1 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.819 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-density-plots-1-populations-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/8182ce70349c788bb9f874a196561c48/1_populations.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">1_populations.ipynb</span></code></a></p>

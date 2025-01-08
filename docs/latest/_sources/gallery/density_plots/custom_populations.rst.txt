@@ -45,7 +45,7 @@ Workflow Summary:
     from FlowCyPy import FlowCytometer
     from FlowCyPy import Population, distribution
     from FlowCyPy.detector import Detector
-    from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, microsecond, microvolt
+    from FlowCyPy.units import ohm, megahertz, ampere, kelvin, watt, microsecond, microvolt
     from FlowCyPy import EventCorrelator, peak_locator
     from FlowCyPy import GaussianBeam
     from FlowCyPy import NoiseSetting
@@ -66,7 +66,7 @@ Workflow Summary:
 
 Step 1: Laser GaussianBeam Configuration
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-78
+.. GENERATED FROM PYTHON SOURCE LINES 37-74
 
 .. code-block:: Python
 
@@ -81,12 +81,12 @@ Step 1: Laser GaussianBeam Configuration
         source=source,
         flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
         flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
-        run_time=0.2 * millisecond               # Simulation run time: 0.5 ms
+        scheme='uniform-random'
     )
 
     # Step 2: Defining Particle Populations
     # Initialize scatterer with a medium refractive index
-    scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
+    scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
 
     # Define populations with size distribution and refractive index
     population_0 = Population(
@@ -104,32 +104,29 @@ Step 1: Laser GaussianBeam Configuration
     )
 
     # Define populations with size distribution and refractive index
-    scatterer.add_population(population_0, population_1)
-
-    flow_cell.initialize(scatterer_collection=scatterer)  # Link populations to flow cell
-    scatterer._log_properties()                # Display population properties
-    scatterer.plot()                           # Visualize the population distributions
+    scatterer_collection.add_population(population_0, population_1)
 
 
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_custom_populations_001.png
-   :alt: custom populations
-   :srcset: /gallery/density_plots/images/sphx_glr_custom_populations_001.png
-   :class: sphx-glr-single-img
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    (Population(name='Pop 0', refractive_index=Normal(1.390 RIU, 0.020 RIU), size=RR(100.000 nm, 4.500), particle_count=300000000000.00006 particle/l), Population(name='Pop 1', refractive_index=Normal(1.390 RIU, 0.020 RIU), size=Delta(200.000 nm), particle_count=300000000000.00006 particle/l))
 
 
 
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 79-82
+.. GENERATED FROM PYTHON SOURCE LINES 75-78
 
 Step 4: Simulating the Flow Cytometry Experiment
 Initialize the cytometer and configure detectors
 Add forward scatter detector
 
-.. GENERATED FROM PYTHON SOURCE LINES 82-126
+.. GENERATED FROM PYTHON SOURCE LINES 78-120
 
 .. code-block:: Python
 
@@ -163,38 +160,43 @@ Add forward scatter detector
 
 
     cytometer = FlowCytometer(
+        scatterer_collection=scatterer_collection,
         detectors=[detector_0, detector_1],
         flow_cell=flow_cell
     )
 
     # Run the flow cytometry simulation
-    cytometer.run_coupling_analysis()
-
-    cytometer.initialize_signal()
-
-    cytometer.simulate_pulse()
+    experiment = cytometer.get_continous_acquisition(run_time=0.2 * millisecond)
 
     # Visualize the scatter signals from both detectors
-    cytometer.plot.signals()
+    experiment.plot.signals()
 
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_custom_populations_002.png
+
+.. image-sg:: /gallery/density_plots/images/sphx_glr_custom_populations_001.png
    :alt: custom populations
-   :srcset: /gallery/density_plots/images/sphx_glr_custom_populations_002.png
+   :srcset: /gallery/density_plots/images/sphx_glr_custom_populations_001.png
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/pandas/core/arrays/numeric.py:163: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
+      values = np.asarray(values)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-129
+
+.. GENERATED FROM PYTHON SOURCE LINES 121-123
 
 Step 5: Analyzing Pulse Signals
 Configure peak finding algorithm
 
-.. GENERATED FROM PYTHON SOURCE LINES 129-150
+.. GENERATED FROM PYTHON SOURCE LINES 123-144
 
 .. code-block:: Python
 
@@ -222,9 +224,9 @@ Configure peak finding algorithm
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_custom_populations_003.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_custom_populations_002.png
    :alt: custom populations
-   :srcset: /gallery/density_plots/images/sphx_glr_custom_populations_003.png
+   :srcset: /gallery/density_plots/images/sphx_glr_custom_populations_002.png
    :class: sphx-glr-single-img
 
 
@@ -234,7 +236,7 @@ Configure peak finding algorithm
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.483 seconds)
+   **Total running time of the script:** (0 minutes 1.891 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_custom_populations.py:

@@ -35,7 +35,7 @@ signal_digitizer = SignalDigitizer(
 )
 
 # Initialize the plot
-figure, (ax, ax1) = plt.subplots(2, 1, figsize=(10, 4))
+figure, (ax_signal, ax1) = plt.subplots(2, 1, figsize=(10, 4))
 
 # Simulate thermal noise for different temperatures
 for temperature in temperatures:
@@ -49,22 +49,25 @@ for temperature in temperatures:
         temperature=temperature * kelvin,
         signal_digitizer=signal_digitizer
     )
-    detector.init_raw_signal(run_time=500e-6 * second)
+    dataframe = detector.get_initialized_signal(run_time=200e-6 * second)
 
     # Add thermal noise to the raw signal
-    detector._add_thermal_noise_to_raw_signal()
+    detector._add_thermal_noise_to_raw_signal(dataframe['Signal'])
 
-    detector.capture_signal()
+    detector.capture_signal(dataframe['Signal'])
 
-    # Plot the raw signal on the top subplot
-    detector.plot(ax=ax, show=False)
+    # Plot the raw signal on the first axis
+    ax_signal.step(
+        dataframe.index,
+        dataframe.Signal.pint.quantity.magnitude
+    )
 
     # Plot the histogram of the raw signal on the bottom subplot
-    ax1.hist(detector.dataframe['RawSignal'], alpha=0.5, label=f"{detector.name} K", bins=50)
+    ax1.hist(dataframe['Signal'], alpha=0.5, label=f"{detector.name} K", bins=50)
 
 # Add legends and show the plot
 ax1.legend(title="Temperature")
-ax.set_title("Raw Signal with Thermal Noise")
+ax_signal.set_title("Raw Signal with Thermal Noise")
 ax1.set_title("Histogram of Raw Signal")
 plt.tight_layout()
 plt.show()

@@ -482,11 +482,11 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">AU</span><span class="p">,</span> <span class="n">volt</span><span class="p">,</span> <span class="n">watt</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">coulomb</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">AU</span><span class="p">,</span> <span class="n">volt</span><span class="p">,</span> <span class="n">watt</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">coulomb</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">meter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">PropertiesReport</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pint_pandas</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.physical_constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysicalConstant</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PyMieSim.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
@@ -625,7 +625,39 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">())</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_thermal_noise_to_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">xs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Detector.get_initialized_signal">
+<a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector.get_initialized_signal">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_initialized_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the raw signal for each detector based on the source and flow cell configuration.</span>
+
+<span class="sd">        This method prepares the detectors for signal capture by associating each detector with the</span>
+<span class="sd">        light source and generating a time-dependent raw signal placeholder.</span>
+
+<span class="sd">        Effects</span>
+<span class="sd">        -------</span>
+<span class="sd">        Each detector&#39;s `raw_signal` attribute is initialized with time-dependent values</span>
+<span class="sd">        based on the flow cell&#39;s runtime.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time_points</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">sampling_freq</span> <span class="o">*</span> <span class="n">run_time</span><span class="p">)</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">run_time</span><span class="p">,</span> <span class="n">time_points</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">Time</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">),</span>
+                <span class="n">RawSignal</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">volt</span><span class="p">),</span>
+                <span class="n">Signal</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">volt</span><span class="p">),</span>
+                <span class="n">DigitizedSignal</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_thermal_noise_to_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates thermal noise (Johnson-Nyquist noise) based on temperature, resistance, and bandwidth.</span>
 
@@ -651,13 +683,13 @@
             <span class="mi">4</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">kb</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">bandwidth</span>
         <span class="p">)</span>
 
-        <span class="n">thermal_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">noise_std</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">volt</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">))</span> <span class="o">*</span> <span class="n">volt</span>
+        <span class="n">thermal_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">noise_std</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">volt</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span> <span class="o">*</span> <span class="n">volt</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RawSignal&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">thermal_noise</span>
+        <span class="n">signal</span> <span class="o">+=</span> <span class="n">thermal_noise</span>
 
         <span class="k">return</span> <span class="n">thermal_noise</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_dark_current_noise_to_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_dark_current_noise_to_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates dark current noise (shot noise from dark current).</span>
 
@@ -683,22 +715,21 @@
             <span class="mi">2</span> <span class="o">*</span> <span class="mf">1.602176634e-19</span> <span class="o">*</span> <span class="n">coulomb</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">bandwidth</span>
         <span class="p">)</span>
 
-        <span class="n">dark_current_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dark_current_std</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ampere</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">))</span> <span class="o">*</span> <span class="n">ampere</span>
+        <span class="n">dark_current_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dark_current_std</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ampere</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span> <span class="o">*</span> <span class="n">ampere</span>
 
         <span class="n">dark_voltage_noise</span> <span class="o">=</span> <span class="n">dark_current_noise</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RawSignal&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">dark_voltage_noise</span>
+        <span class="n">signal</span> <span class="o">+=</span> <span class="n">dark_voltage_noise</span>
 
         <span class="k">return</span> <span class="n">dark_voltage_noise</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_optical_power_to_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optical_power</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_optical_power_to_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">optical_power</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Simulates photon shot noise based on the given optical power and detector bandwidth, and returns</span>
-<span class="sd">        the corresponding voltage noise due to photon shot noise.</span>
+<span class="sd">        Simulates photon shot noise based on the given optical power and detector bandwidth, and adds</span>
+<span class="sd">        the corresponding voltage noise to the raw signal.</span>
 
 <span class="sd">        Photon shot noise arises from the random and discrete arrival of photons at the detector. The noise</span>
-<span class="sd">        follows Poisson statistics, and the standard deviation of the shot noise depends on the photon flux</span>
-<span class="sd">        and the detector bandwidth. The result is a voltage noise that models these fluctuations.</span>
+<span class="sd">        follows Poisson statistics. This method computes the photon shot noise and adds it to the raw signal.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -718,150 +749,58 @@
 <span class="sd">            where:</span>
 <span class="sd">                - \( P_{\text{opt}} \) is the optical power (W),</span>
 <span class="sd">                - \( E_{\text{photon}} = \frac{h \cdot c}{\lambda} \) is the energy of a photon (J),</span>
-<span class="sd">                - \( h \) is Planck&#39;s constant \(6.626 \times 10^{-34}\, \text{J} \cdot \text{s}\),</span>
-<span class="sd">                - \( c \) is the speed of light \(3 \times 10^8 \, \text{m/s}\),</span>
+<span class="sd">                - \( h \) is Planck&#39;s constant (\(6.626 \times 10^{-34}\, \text{J} \cdot \text{s}\)),</span>
+<span class="sd">                - \( c \) is the speed of light (\(3 \times 10^8 \, \text{m/s}\)),</span>
 <span class="sd">                - \( \lambda \) is the wavelength of the incident light.</span>
 
-<span class="sd">            - The standard deviation of the current noise due to photon shot noise is:</span>
+<span class="sd">            - The photocurrent is computed as:</span>
 <span class="sd">            \[</span>
-<span class="sd">                \sigma_{I_{\text{shot}}} = \sqrt{2 \cdot e \cdot I_{\text{photon}} \cdot B}</span>
+<span class="sd">                I_{\text{photon}} = R_{\text{det}} \cdot N_{\text{photon}}</span>
 <span class="sd">            \]</span>
 <span class="sd">            where:</span>
-<span class="sd">                - \( I_{\text{photon}} \) is the photocurrent generated by the incident optical power (A),</span>
-<span class="sd">                - \( e \) is the elementary charge \(1.602 \times 10^{-19} \, \text{C}\),</span>
-<span class="sd">                - \( B \) is the bandwidth of the detector (Hz).</span>
+<span class="sd">                - \( R_{\text{det}} \) is the detector responsivity (A/W).</span>
 
-<span class="sd">            - The voltage shot noise \( \sigma_{V_{\text{shot}}} \) is then given by Ohm&#39;s law:</span>
+<span class="sd">            - The voltage shot noise is then given by:</span>
 <span class="sd">            \[</span>
-<span class="sd">            \sigma_{V_{\text{shot}}} = \sigma_{I_{\text{shot}}} \cdot R_{\text{load}}</span>
+<span class="sd">            V_{\text{shot}} = I_{\text{photon}} \cdot R_{\text{load}}</span>
 <span class="sd">            \]</span>
 <span class="sd">            where:</span>
-<span class="sd">                - \( R_{\text{load}} \) is the load resistance of the detector (ohms).</span>
+<span class="sd">                - \( R_{\text{load}} \) is the load resistance of the detector (Ohms).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Step 1: Compute the photocurrent for all time points at once using vectorization</span>
-        <span class="n">I_photon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">responsitivity</span> <span class="o">*</span> <span class="n">optical_power</span>
+        <span class="c1"># Step 1: Compute photon energy</span>
+        <span class="n">energy_photon</span> <span class="o">=</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">c</span> <span class="o">/</span> <span class="n">wavelength</span>  <span class="c1"># Photon energy (J)</span>
 
-        <span class="c1"># Step 2: Compute the shot noise current for each time point using vectorization</span>
-        <span class="n">i_shot</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">e</span> <span class="o">*</span> <span class="n">I_photon</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">bandwidth</span>
+        <span class="c1"># Step 2: Compute mean photon count per sampling interval</span>
+        <span class="n">photon_rate</span> <span class="o">=</span> <span class="n">optical_power</span> <span class="o">/</span> <span class="n">energy_photon</span>  <span class="c1"># Photon rate (photons/s)</span>
 
-        <span class="n">I_shot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">i_shot</span><span class="p">)</span>
+        <span class="n">sampling_interval</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">sampling_freq</span>  <span class="c1"># Sampling interval (s)</span>
+        <span class="n">mean_photon_count</span> <span class="o">=</span> <span class="n">photon_rate</span> <span class="o">*</span> <span class="n">sampling_interval</span>  <span class="c1"># Mean photons per sample</span>
 
-        <span class="c1"># Step 3: Convert shot noise current to shot noise voltage using vectorization</span>
-        <span class="n">V_shot</span> <span class="o">=</span> <span class="n">I_shot</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>
+        <span class="c1"># Step 3: Simulate photon arrivals using Poisson statistics</span>
+        <span class="n">photon_counts_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">mean_photon_count</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span>
 
-        <span class="c1"># Step 4: Generate Gaussian noise for each time point with standard deviation V_shot</span>
-        <span class="n">noise_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">V_shot</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">volt</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RawSignal&#39;</span><span class="p">]))</span> <span class="o">*</span> <span class="n">volt</span>
+        <span class="c1"># Step 4: Convert photon counts to photocurrent</span>
+        <span class="n">photon_power_distribution</span> <span class="o">=</span> <span class="n">photon_counts_distribution</span> <span class="o">*</span> <span class="n">energy_photon</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">sampling_freq</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RawSignal&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">optical_power</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">responsitivity</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>
+        <span class="n">photocurrent_distribution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">responsitivity</span> <span class="o">*</span> <span class="n">photon_power_distribution</span>  <span class="c1"># Current (A)</span>
+        <span class="c1"># Step 5: Convert photocurrent to shot noise voltage</span>
+        <span class="n">shot_noise_voltage_distribution</span> <span class="o">=</span> <span class="n">photocurrent_distribution</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>  <span class="c1"># Voltage (V)</span>
 
-        <span class="k">if</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="ow">and</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RawSignal&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">noise_signal</span>
+        <span class="c1"># Step 6: Add shot noise voltage to the raw signal</span>
+        <span class="n">signal</span> <span class="o">+=</span> <span class="n">shot_noise_voltage_distribution</span>
 
-        <span class="k">return</span> <span class="n">noise_signal</span>
-
-<div class="viewcode-block" id="Detector.init_raw_signal">
-<a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector.init_raw_signal">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">init_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes the raw signal and time arrays for the detector and generates optional noise.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        run_time : Quantity</span>
-<span class="sd">            The total duration of the signal to simulate (in seconds).</span>
-
-<span class="sd">        The photocurrent is calculated as:</span>
-<span class="sd">        \[</span>
-<span class="sd">            I_{\text{ph}} = P_{\text{opt}} \times R_{\text{ph}}</span>
-<span class="sd">        \]</span>
-<span class="sd">        Where:</span>
-<span class="sd">            - \( P_{\text{opt}} \) is the optical power,</span>
-<span class="sd">            - \( R_{\text{ph}} \) is the responsivity in amperes per watt.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">run_time</span> <span class="o">=</span> <span class="n">run_time</span>
-        <span class="n">time_points</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">sampling_freq</span> <span class="o">*</span> <span class="n">run_time</span><span class="p">)</span>
-        <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">run_time</span><span class="p">,</span> <span class="n">time_points</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">Time</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">second</span><span class="p">),</span>
-                <span class="n">RawSignal</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">volt</span><span class="p">),</span>
-                <span class="n">Signal</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">volt</span><span class="p">)</span>
-            <span class="p">)</span>
-        <span class="p">)</span></div>
-
+        <span class="k">return</span> <span class="n">shot_noise_voltage_distribution</span>
 
 <div class="viewcode-block" id="Detector.capture_signal">
 <a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector.capture_signal">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">capture_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">capture_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes and captures the final signal by applying noise, baseline shifts, and saturation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RawSignal&#39;</span><span class="p">]</span>
+        <span class="n">digitized_signal</span><span class="p">,</span> <span class="n">is_saturated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">discretize_signal</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;DigitizedSignal&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_saturated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">discretize_signal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">])</span></div>
+        <span class="k">return</span> <span class="n">digitized_signal</span><span class="p">,</span> <span class="n">is_saturated</span></div>
 
-
-    <span class="nd">@plot_helper</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">time_unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">signal_unit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">add_peak_locator</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Quantity</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Visualizes the signal and optional components (peaks, raw signal) over time.</span>
-
-<span class="sd">        This method generates a customizable plot of the processed signal as a function of time.</span>
-<span class="sd">        Additional components like raw signals and detected peaks can also be overlaid.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        ax : matplotlib.axes.Axes, optional</span>
-<span class="sd">            An existing Matplotlib Axes object to plot on. If None, a new Axes will be created.</span>
-<span class="sd">        time_unit : str or Quantity, optional</span>
-<span class="sd">            Desired unit for the time axis. If None, defaults to the most compact unit of the `Time` column.</span>
-<span class="sd">        signal_unit : str or Quantity, optional</span>
-<span class="sd">            Desired unit for the signal axis. If None, defaults to the most compact unit of the `Signal` column.</span>
-<span class="sd">        add_peak_locator : bool, optional</span>
-<span class="sd">            If True, adds the detected peaks (if available) to the plot. Default is False.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        tuple[Quantity, Quantity]</span>
-<span class="sd">            A tuple containing the units used for the time and signal axes, respectively.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        - The `Time` and `Signal` data are automatically converted to the specified units for consistency.</span>
-<span class="sd">        - If no `ax` is provided, a new figure and axis will be generated.</span>
-<span class="sd">        - Warnings are logged if peak locator data is unavailable when `add_peak_locator` is True.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Set default units if not provided</span>
-        <span class="n">signal_unit</span> <span class="o">=</span> <span class="n">signal_unit</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="o">.</span><span class="n">units</span>
-        <span class="n">time_unit</span> <span class="o">=</span> <span class="n">time_unit</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="o">.</span><span class="n">units</span>
-
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">time_unit</span><span class="p">)</span>
-
-        <span class="c1"># Plot captured signal</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">,</span> <span class="s1">&#39;Signal&#39;</span><span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;The detector does not have a captured signal. Please run .capture_signal() method first.&quot;</span><span class="p">)</span>
-
-        <span class="n">ax</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;DigitizedSignal&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> [Digitized]&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
-
-        <span class="c1"># Overlay peak locator positions, if requested</span>
-        <span class="k">if</span> <span class="n">add_peak_locator</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;algorithm&#39;</span><span class="p">):</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;The detector does not have a peak locator algorithm. Peaks cannot be plotted.&quot;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">_add_to_ax</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">signal_unit</span><span class="o">=</span><span class="n">signal_unit</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="n">time_unit</span><span class="p">)</span>
-
-        <span class="c1"># Customize labels</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time [</span><span class="si">{</span><span class="n">time_unit</span><span class="si">:</span><span class="s2">P</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> [bin]&quot;</span><span class="p">)</span>
 
     <span class="nd">@plot_helper</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot_raw</span><span class="p">(</span>

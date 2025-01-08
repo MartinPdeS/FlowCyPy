@@ -18,7 +18,7 @@ from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam,
 from FlowCyPy import distribution, Population
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.units import (
-    RIU, milliliter, particle, nanometer, degree, microvolt, AU,
+    RIU, milliliter, particle, nanometer, degree, AU,
     megahertz, milliwatt, micrometer, millisecond, meter, second
 )
 
@@ -38,16 +38,13 @@ flow_cell = FlowCell(
     source=source,
     flow_speed=7.56 * meter / second,        # Flow speed: 7.56 meters per second
     flow_area=(20 * micrometer) ** 2,        # Flow area: 10 x 10 micrometers
-    run_time=0.5 * millisecond             # Total simulation time: 0.3 milliseconds
 )
-
-flow_cell.print_properties()
 
 # Step 4: Define the particle size distribution
 # ---------------------------------------------
 # We define a normal distribution for particle sizes with a mean of 200 nm, standard deviation of 10 nm,
 # and a refractive index of 1.39 with a small variation of 0.01.
-scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)
+scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)
 
 population_0 = Population(
     name='EV',
@@ -63,11 +60,7 @@ population_1 = Population(
     refractive_index=distribution.Normal(mean=1.45 * RIU, std_dev=0.05 * RIU)
 )
 
-scatterer.add_population(population_0, population_1)
-
-flow_cell.initialize(scatterer_collection=scatterer)
-
-scatterer._log_properties()
+scatterer_collection.add_population(population_0, population_1)
 
 # Step 5: Set up the detectors
 # ----------------------------
@@ -98,6 +91,7 @@ detector_ssc = Detector(
 # The flow cytometer is configured with the source, scatterer distribution, and detectors.
 # The 'mie' coupling mechanism models how the particles interact with the laser beam.
 cytometer = FlowCytometer(
+    scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,  # Particle size distribution
     detectors=[detector_fsc, detector_ssc],  # Detectors: FSC and SSC
 )
@@ -105,21 +99,11 @@ cytometer = FlowCytometer(
 # Step 7: Simulate flow cytometer signals
 # ---------------------------------------
 # Simulate the signals for both detectors (FSC and SSC) as particles pass through the laser beam.
-cytometer.run_coupling_analysis()
+# Run the flow cytometry simulation
+experiment = cytometer.get_continous_acquisition(run_time=0.2 * millisecond)
 
-cytometer.initialize_signal()
-
-cytometer.simulate_pulse()
-
-# Step 8: Display the properties of the simulation
-# ------------------------------------------------
-# Print the properties of the simulation setup to better understand flow speed, particle density, and source power.
-cytometer._log_statistics()
-
-# Step 9: Visualize the generated signals
-# ---------------------------------------
-# Plot the simulated signals for both FSC and SSC detectors.
-cytometer.plot.signals()
+# Visualize the scatter signals from both detectors
+experiment.plot.signals()
 
 # %%
 #

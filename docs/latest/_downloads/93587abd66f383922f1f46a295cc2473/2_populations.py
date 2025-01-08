@@ -42,7 +42,6 @@ flow_cell = FlowCell(
     source=source,
     flow_speed=7.56 * meter / second,      # Flow speed: 7.56 meters per second
     flow_area=(10 * micrometer) ** 2,      # Flow area: 10 x 10 micrometers
-    run_time=.2 * millisecond             # Total simulation time: 0.3 milliseconds
 )
 
 # Step 3: Create Populations (Extracellular Vesicles and Liposomes)
@@ -54,21 +53,13 @@ hdl = HDL(particle_count=5e9 * particle / milliliter)
 scatterer.add_population(exosome)
 scatterer.add_population(hdl)
 
-# Initialize scatterer and link it to the flow cell
-flow_cell.initialize(scatterer_collection=scatterer)
-
-# Print and plot properties of the populations
-scatterer._log_properties()
-scatterer.plot()
-
-source.print_properties()  # Print the laser source properties
 
 # %%
 # Step 5: Configure Detectors
 # Side scatter detector
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
-    saturation_levels=16_000 * microvolt,
+    saturation_levels='auto',
     sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
 
 )
@@ -96,25 +87,23 @@ detector_1 = Detector(
     temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
 )
 
-
-detector_1.print_properties()  # Print the properties of the forward scatter detector
-
 # Step 6: Simulate Flow Cytometry Experiment
 cytometer = FlowCytometer(                      # Laser source used in the experiment
+    scatterer_collection=scatterer,
     flow_cell=flow_cell,                     # Populations used in the experiment
     background_power=0.0 * milliwatt,
     detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
 )
 
 # Run the simulation of pulse signals
-cytometer.run_coupling_analysis()
-
-cytometer.initialize_signal()
-
-cytometer.simulate_pulse()
+experiment = cytometer.get_continous_acquisition(run_time=0.2 * millisecond)
 
 # Plot the results from both detectors
-cytometer.plot.signals()
+experiment.plot.scatterer()
+
+experiment.logger.scatterer()
+
+experiment.logger.detector()
 
 # %%
 # Step 5: Analyzing Pulse Signals
@@ -127,8 +116,6 @@ algorithm = peak_locator.MovingAverage(
 detector_0.set_peak_locator(algorithm)
 detector_1.set_peak_locator(algorithm)
 
-cytometer.plot.signals(add_peak_locator=True)
-
 analyzer = EventCorrelator(cytometer=cytometer)
 
 # Run the pulse signal analysis without computing peak area
@@ -136,7 +123,7 @@ analyzer.run_analysis(compute_peak_area=False)
 
 # %%
 # Step 8: Extract and Plot Coincidence Data
-analyzer.get_coincidence(margin=0.1 * microsecond)  # Coincidence data with 0.1 µs margin
+analyzer.get_coincidence(margin=0.01 * microsecond)  # Coincidence data with 0.1 µs margin
 
 # Plot the 2D density plot of scattering intensities
 analyzer.plot(log_plot=False)  # Plot with a linear scale (log_plot=False)

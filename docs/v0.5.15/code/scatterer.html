@@ -552,20 +552,6 @@ indices based on a list of provided distributions (e.g., Normal, LogNormal, Unif
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.add_to_ax">
-<span class="sig-name descname"><span class="pre">add_to_ax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">axes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.add_to_ax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.add_to_ax" title="Link to this definition">#</a></dt>
-<dd><p>Adds vertical lines representing events for each population to the provided axes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>*axes</strong> (<em>matplotlib.axes.Axes</em>) – One or more matplotlib axes to which the vertical lines will be added.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.concentrations">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">concentrations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Quantity</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#FlowCyPy.ScattererCollection.concentrations" title="Link to this definition">#</a></dt>
@@ -583,49 +569,49 @@ indices based on a list of provided distributions (e.g., Normal, LogNormal, Unif
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.dilute">
 <span class="sig-name descname"><span class="pre">dilute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.dilute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.dilute" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>factor</strong> (<em>float</em>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth_adjust</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_palette</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.plot" title="Link to this definition">#</a></dt>
-<dd><p>Visualizes the joint distribution of scatterer sizes and refractive indices using a Seaborn jointplot.</p>
+<dd><p>Dilutes the populations in the flow cytometry system by a given factor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em><em>, </em><em>optional</em>) – Existing matplotlib axes to plot on. If <cite>None</cite>, a new figure and axes are created. Default is <cite>None</cite>.</p></li>
-<li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, displays the plot after creation. Default is <cite>True</cite>.</p></li>
-<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – Transparency level for the scatter plot points, ranging from 0 (fully transparent) to 1 (fully opaque). Default is 0.8.</p></li>
-<li><p><strong>bandwidth_adjust</strong> (<em>float</em><em>, </em><em>optional</em>) – Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Higher values produce smoother density estimates. Default is 1.</p></li>
-<li><p><strong>log_plot</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, applies a logarithmic scale to both axes of the joint plot and their marginal distributions. Default is <cite>False</cite>.</p></li>
-<li><p><strong>color_palette</strong> (<em>str</em><em> or </em><em>dict</em><em>, </em><em>optional</em>) – The color palette to use for the hue in the scatterplot. Can be a seaborn palette name
-(e.g., ‘viridis’, ‘coolwarm’) or a dictionary mapping hue levels to specific colors. Default is None.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>factor</strong> (<em>float</em>) – The dilution factor to apply to each population. For example, a factor
+of 0.5 reduces the population density by half.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>This function does not return any value. It either displays the plot (if <cite>show=True</cite>) or simply creates it for later use.</p>
+<dd class="field-even"><p>The method modifies the populations in place.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This method resets the index of the internal dataframe and extracts units from the ‘Size’ column.
-The plot uses the specified matplotlib style (<cite>mps</cite>) for consistent styling.</p>
+<ul class="simple">
+<li><p>This method iterates over all populations in the system and applies the</p></li>
+</ul>
+<p><cite>dilute</cite> method of each population.
+- The specific implementation of how a population is diluted depends on
+the <cite>dilute</cite> method defined in the <cite>population</cite> object.</p>
+<p class="rubric">Examples</p>
+<p>Dilute all populations by 50%:
+&gt;&gt;&gt; system.dilute(0.5)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.print_properties">
-<span class="sig-name descname"><span class="pre">print_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.print_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.print_properties" title="Link to this definition">#</a></dt>
-<dd><p>Prints specific properties of the ScattererCollection instance, such as coupling factor and medium refractive index.</p>
+<dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.fill_dataframe_with_sampling">
+<span class="sig-name descname"><span class="pre">fill_dataframe_with_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scatterer_dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.fill_dataframe_with_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.fill_dataframe_with_sampling" title="Link to this definition">#</a></dt>
+<dd><p>Fills a DataFrame with size and refractive index sampling data for each population.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scatterer_dataframe</strong> (<em>pd.DataFrame</em>) – A DataFrame indexed by population names (first level) and containing the
+following columns: <cite>‘Size’</cite>: To be filled with particle size data. <cite>‘RefractiveIndex’</cite>:
+To be filled with refractive index data. The DataFrame must already have the required structure.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>None</em> – The method modifies the <cite>scatterer_dataframe</cite> in place, adding size and
+refractive index sampling data.</p></li>
+<li><p><em>After filling, the DataFrame will be populated with size and refractive index data.</em></p></li>
+</ul>
+</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
 </dd>
@@ -633,21 +619,29 @@ The plot uses the specified matplotlib style (<cite>mps</cite>) for consistent s
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.remove_population">
-<span class="sig-name descname"><span class="pre">remove_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.remove_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.remove_population" title="Link to this definition">#</a></dt>
-<dd><p>Removes a population from the ScattererCollection instance by name.</p>
+<dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.get_population_dataframe">
+<span class="sig-name descname"><span class="pre">get_population_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_sampling</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.get_population_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.get_population_dataframe" title="Link to this definition">#</a></dt>
+<dd><p>Generate a DataFrame by sampling particles from populations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – The name of the population to remove.</p>
+<dd class="field-odd"><p><strong>total_sampling</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – Total number of samples to draw, distributed across populations based on their ratios.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The ScattererCollection instance (to support chaining).</p>
+<dd class="field-even"><p>A MultiIndex DataFrame containing the sampled data from all populations. The first
+index level indicates the population name, and the second level indexes the sampled data.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#FlowCyPy.ScattererCollection" title="FlowCyPy.ScattererCollection">ScattererCollection</a></p>
+<dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If the population with the specified name does not exist.</p>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.get_population_ratios">
+<span class="sig-name descname"><span class="pre">get_population_ratios</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.get_population_ratios"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.get_population_ratios" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -678,6 +672,19 @@ The plot uses the specified matplotlib style (<cite>mps</cite>) for consistent s
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.population.Population.generate_sampling">
+<span class="sig-name descname"><span class="pre">generate_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sampling</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Population.generate_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Population.generate_sampling" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sampling</strong> (<em>Quantity</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -716,16 +723,16 @@ The plot uses the specified matplotlib style (<cite>mps</cite>) for consistent s
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection"><code class="docutils literal notranslate"><span class="pre">ScattererCollection</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.add_population"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.add_population()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.add_to_ax"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.add_to_ax()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.concentrations"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.concentrations</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.dilute"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.dilute()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.plot"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.plot()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.print_properties"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.print_properties()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.remove_population"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.remove_population()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.fill_dataframe_with_sampling"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.fill_dataframe_with_sampling()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.get_population_dataframe"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.get_population_dataframe()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.get_population_ratios"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.get_population_ratios()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population"><code class="docutils literal notranslate"><span class="pre">Population</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population.dilute"><code class="docutils literal notranslate"><span class="pre">Population.dilute()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population.generate_sampling"><code class="docutils literal notranslate"><span class="pre">Population.generate_sampling()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population.particle_count"><code class="docutils literal notranslate"><span class="pre">Population.particle_count</span></code></a></li>
 </ul>
 </li>

@@ -63,7 +63,7 @@ Steps:
 
 Step 1: Set up the Laser GaussianBeam
 
-.. GENERATED FROM PYTHON SOURCE LINES 34-66
+.. GENERATED FROM PYTHON SOURCE LINES 34-57
 
 .. code-block:: Python
 
@@ -78,7 +78,6 @@ Step 1: Set up the Laser GaussianBeam
         source=source,
         flow_speed=7.56 * meter / second,      # Flow speed: 7.56 meters per second
         flow_area=(10 * micrometer) ** 2,      # Flow area: 10 x 10 micrometers
-        run_time=.2 * millisecond             # Total simulation time: 0.3 milliseconds
     )
 
     # Step 3: Create Populations (Extracellular Vesicles and Liposomes)
@@ -90,22 +89,9 @@ Step 1: Set up the Laser GaussianBeam
     scatterer.add_population(exosome)
     scatterer.add_population(hdl)
 
-    # Initialize scatterer and link it to the flow cell
-    flow_cell.initialize(scatterer_collection=scatterer)
-
-    # Print and plot properties of the populations
-    scatterer._log_properties()
-    scatterer.plot()
-
-    source.print_properties()  # Print the laser source properties
 
 
 
-
-.. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_001.png
-   :alt: 2 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_2_populations_001.png
-   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
@@ -113,27 +99,22 @@ Step 1: Set up the Laser GaussianBeam
  .. code-block:: none
 
 
-    GaussianBeam [] Properties
-    +------------+---------+
-    | Property   | Value   |
-    +============+=========+
-    +------------+---------+
+    (Population(name='HDL', refractive_index=Normal(1.330 RIU, 0.010 RIU), size=RR(10.000 nm, 3.500), particle_count=5000000000000.001 particle/l),)
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 67-69
+.. GENERATED FROM PYTHON SOURCE LINES 58-60
 
 Step 5: Configure Detectors
 Side scatter detector
 
-.. GENERATED FROM PYTHON SOURCE LINES 69-119
+.. GENERATED FROM PYTHON SOURCE LINES 60-108
 
 .. code-block:: Python
 
     signal_digitizer = SignalDigitizer(
         bit_depth='14bit',
-        saturation_levels=16_000 * microvolt,
+        saturation_levels='auto',
         sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
 
     )
@@ -161,73 +142,41 @@ Side scatter detector
         temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
     )
 
-
-    detector_1.print_properties()  # Print the properties of the forward scatter detector
-
     # Step 6: Simulate Flow Cytometry Experiment
     cytometer = FlowCytometer(                      # Laser source used in the experiment
+        scatterer_collection=scatterer,
         flow_cell=flow_cell,                     # Populations used in the experiment
         background_power=0.0 * milliwatt,
         detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
     )
 
     # Run the simulation of pulse signals
-    cytometer.run_coupling_analysis()
-
-    cytometer.initialize_signal()
-
-    cytometer.simulate_pulse()
+    experiment = cytometer.get_continous_acquisition(run_time=0.2 * millisecond)
 
     # Plot the results from both detectors
-    cytometer.plot.signals()
+    experiment.plot.scatterer()
+
+    experiment.logger.scatterer()
+
+    experiment.logger.detector()
 
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_002.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_001.png
    :alt: 2 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_2_populations_002.png
+   :srcset: /gallery/density_plots/images/sphx_glr_2_populations_001.png
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    Detector [forward] Properties
-    +--------------------+----------+
-    | Property           | Value    |
-    +====================+==========+
-    | Sampling frequency | 60.0 MHz |
-    +--------------------+----------+
-    | Phi angle          | 0.0 deg  |
-    +--------------------+----------+
-    | Gamma angle        | 0.0 deg  |
-    +--------------------+----------+
-    | Numerical aperture | 0.2      |
-    +--------------------+----------+
-    | Responsitivity     | 1.0 A/W  |
-    +--------------------+----------+
-    | Saturation Level   | 16.0 mV  |
-    +--------------------+----------+
-    | Dark Current       | 100.0 µA |
-    +--------------------+----------+
-    | Resistance         | 50.0 Ω   |
-    +--------------------+----------+
-    | Temperature        | 300.0 K  |
-    +--------------------+----------+
-    | N Bins             | 16384    |
-    +--------------------+----------+
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 120-121
+.. GENERATED FROM PYTHON SOURCE LINES 109-110
 
 Step 5: Analyzing Pulse Signals
 
-.. GENERATED FROM PYTHON SOURCE LINES 121-137
+.. GENERATED FROM PYTHON SOURCE LINES 110-124
 
 .. code-block:: Python
 
@@ -240,8 +189,6 @@ Step 5: Analyzing Pulse Signals
     detector_0.set_peak_locator(algorithm)
     detector_1.set_peak_locator(algorithm)
 
-    cytometer.plot.signals(add_peak_locator=True)
-
     analyzer = EventCorrelator(cytometer=cytometer)
 
     # Run the pulse signal analysis without computing peak area
@@ -250,33 +197,28 @@ Step 5: Analyzing Pulse Signals
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_003.png
-   :alt: 2 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_2_populations_003.png
-   :class: sphx-glr-single-img
 
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 138-139
+.. GENERATED FROM PYTHON SOURCE LINES 125-126
 
 Step 8: Extract and Plot Coincidence Data
 
-.. GENERATED FROM PYTHON SOURCE LINES 139-143
+.. GENERATED FROM PYTHON SOURCE LINES 126-130
 
 .. code-block:: Python
 
-    analyzer.get_coincidence(margin=0.1 * microsecond)  # Coincidence data with 0.1 µs margin
+    analyzer.get_coincidence(margin=0.01 * microsecond)  # Coincidence data with 0.1 µs margin
 
     # Plot the 2D density plot of scattering intensities
     analyzer.plot(log_plot=False)  # Plot with a linear scale (log_plot=False)
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_004.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_002.png
    :alt: 2 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_2_populations_004.png
+   :srcset: /gallery/density_plots/images/sphx_glr_2_populations_002.png
    :class: sphx-glr-single-img
 
 
@@ -286,7 +228,7 @@ Step 8: Extract and Plot Coincidence Data
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.155 seconds)
+   **Total running time of the script:** (0 minutes 2.486 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_2_populations.py:

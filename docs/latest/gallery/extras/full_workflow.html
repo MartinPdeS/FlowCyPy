@@ -544,7 +544,7 @@ provide insights into the physical properties of particles passing through the l
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Population</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">millisecond</span><span class="p">,</span> <span class="n">meter</span><span class="p">,</span> <span class="n">micrometer</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">milliliter</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">millivolt</span><span class="p">,</span> <span class="n">watt</span><span class="p">,</span> <span class="n">megahertz</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">milliwatt</span><span class="p">,</span> <span class="n">AU</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">millisecond</span><span class="p">,</span> <span class="n">meter</span><span class="p">,</span> <span class="n">micrometer</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">milliliter</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">watt</span><span class="p">,</span> <span class="n">megahertz</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">milliwatt</span><span class="p">,</span> <span class="n">AU</span>
 </pre></div>
 </div>
 </section>
@@ -566,7 +566,6 @@ provide insights into the physical properties of particles passing through the l
     <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
     <span class="n">flow_speed</span><span class="o">=</span><span class="mf">7.56</span> <span class="o">*</span> <span class="n">meter</span> <span class="o">/</span> <span class="n">second</span><span class="p">,</span>        <span class="c1"># Flow speed: 7.56 meters per second</span>
     <span class="n">flow_area</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span> <span class="o">*</span> <span class="n">micrometer</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>        <span class="c1"># Flow area: 10 x 10 micrometers</span>
-    <span class="n">run_time</span><span class="o">=</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">millisecond</span>             <span class="c1"># Total simulation time: 0.3 milliseconds</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -592,14 +591,10 @@ This represents the population of scatterers (particles) that will interact with
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EV&#39;</span>                   <span class="c1"># Name of the particle population: Extracellular Vesicles (EV)</span>
 <span class="p">)</span>
 
-<span class="n">scatterer</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">()</span>
+<span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">()</span>
 
-<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span>
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span>
 
-<span class="n">flow_cell</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer</span><span class="p">)</span>
-
-<span class="c1"># Plot the scatterer distribution</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
 <span class="c1"># Step 5: Define the detector</span>
 <span class="c1"># ---------------------------</span>
@@ -631,26 +626,19 @@ This represents the population of scatterers (particles) that will interact with
 <span class="c1"># ---------------------------------------</span>
 <span class="c1"># Create a FlowCytometer instance to simulate the signals generated as particles pass through the laser beam.</span>
 <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
+    <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>                <span class="c1"># Particle size distribution</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">]</span>  <span class="c1"># List of detectors used in the simulation</span>
 <span class="p">)</span>
 
-<span class="c1"># Simulate the pulse signals generated from the interaction between particles and the laser.</span>
-<span class="n">cytometer</span><span class="o">.</span><span class="n">run_coupling_analysis</span><span class="p">()</span>
+<span class="c1"># Run the flow cytometry simulation</span>
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_continous_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">millisecond</span><span class="p">)</span>
 
-<span class="n">cytometer</span><span class="o">.</span><span class="n">initialize_signal</span><span class="p">()</span>
+<span class="c1"># Visualize the scatter signals from both detectors</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>
 
-<span class="n">cytometer</span><span class="o">.</span><span class="n">simulate_pulse</span><span class="p">()</span>
-</pre></div>
-</div>
-<img src="../../_images/sphx_glr_full_workflow_001.png" srcset="../../_images/sphx_glr_full_workflow_001.png" alt="full workflow" class = "sphx-glr-single-img"/></section>
-<section id="step-7-analyze-and-visualize-results">
-<h2>Step 7: Analyze and Visualize Results<a class="headerlink" href="#step-7-analyze-and-visualize-results" title="Link to this heading">#</a></h2>
-<p>Display the properties of the simulated cytometer setup, including flow speed and laser power.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">cytometer</span><span class="o">.</span><span class="n">_log_statistics</span><span class="p">()</span>
-
-<span class="c1"># Plot the simulated signals for the detector.</span>
-<span class="n">cytometer</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">scatterer</span><span class="p">()</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">detector</span><span class="p">()</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Summary:</span>
@@ -660,10 +648,10 @@ This represents the population of scatterers (particles) that will interact with
 <span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_full_workflow_002.png" srcset="../../_images/sphx_glr_full_workflow_002.png" alt="full workflow" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;\nSummary:\n--------\nThis script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,\nand extracts important features. The process is visualized through signal plots, and key properties are displayed.\n&#39;
+<img src="../../_images/sphx_glr_full_workflow_001.png" srcset="../../_images/sphx_glr_full_workflow_001.png" alt="full workflow" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;\nSummary:\n--------\nThis script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,\nand extracts important features. The process is visualized through signal plots, and key properties are displayed.\n&#39;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.308 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.871 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-full-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/7765c7c9dfbad7ed6be152008ccfca41/full_workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">full_workflow.ipynb</span></code></a></p>
@@ -706,7 +694,6 @@ This represents the population of scatterers (particles) that will interact with
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-define-the-laser-source">Step 2: Define the laser source</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-define-flow-parameters">Step 3: Define flow parameters</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-define-the-particle-size-distribution">Step 4: Define the particle size distribution</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-analyze-and-visualize-results">Step 7: Analyze and Visualize Results</a></li>
 </ul>
   </nav></div>
 

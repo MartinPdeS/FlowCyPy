@@ -540,6 +540,12 @@ detected by two detectors (Forward Scatter and Side Scatter) and visualizes the 
 <li><p>Simulate the flow cytometry experiment.</p></li>
 <li><p>Visualize the scattering intensity in a 2D hexbin plot.</p></li>
 </ol>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;\nSummary:\n--------\nThis script defines a flow cytometer simulation, sets up the particle size and refractive index distributions,\nand visualizes the scatterer distribution in a 2D density plot. It provides insight into the scattering properties\nof two different particle populations.\n&#39;
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import necessary libraries and modules</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">FlowCell</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span><span class="p">,</span> <span class="n">Population</span>
@@ -549,17 +555,8 @@ detected by two detectors (Forward Scatter and Side Scatter) and visualizes the 
 <span class="c1"># Set random seed for reproducibility</span>
 <a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
 
-<span class="c1"># Step 1: Define Flow Parameters</span>
-<span class="c1"># ------------------------------</span>
-<span class="c1"># The flow speed is set to 7.56 meters per second, with a flow area of 10 micrometers squared, and</span>
-<span class="c1"># the total simulation time is 0.1 milliseconds.</span>
-<span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
-    <span class="n">flow_speed</span><span class="o">=</span><span class="mf">7.56</span> <span class="o">*</span> <span class="n">meter</span> <span class="o">/</span> <span class="n">second</span><span class="p">,</span>      <span class="c1"># Flow speed: 7.56 meters per second</span>
-    <span class="n">flow_area</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">micrometer</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>      <span class="c1"># Flow area: 10 micrometers squared</span>
-    <span class="n">run_time</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">millisecond</span>           <span class="c1"># Total simulation time: 0.1 milliseconds</span>
-<span class="p">)</span>
 
-<span class="c1"># Step 2: Define Particle Size and Refractive Index Distributions</span>
+<span class="c1"># Step 1: Define Particle Size and Refractive Index Distributions</span>
 <span class="c1"># ---------------------------------------------------------------</span>
 <span class="c1"># Two particle populations are defined with different sizes and refractive indices.</span>
 <span class="n">scatterer</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
@@ -580,14 +577,7 @@ detected by two detectors (Forward Scatter and Side Scatter) and visualizes the 
 
 <span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population_0</span><span class="p">,</span> <span class="n">population_1</span><span class="p">)</span>
 
-<span class="n">flow_cell</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer</span><span class="p">)</span>
 
-<span class="c1"># Plot and visualize the scatterer distribution.</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-</pre></div>
-</div>
-<img src="../../_images/sphx_glr_scatterer_distribution_001.png" srcset="../../_images/sphx_glr_scatterer_distribution_001.png" alt="scatterer distribution" class = "sphx-glr-single-img"/><p>Display the properties of the scatterer distribution.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">scatterer</span><span class="o">.</span><span class="n">_log_properties</span><span class="p">()</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Summary:</span>
@@ -598,10 +588,7 @@ detected by two detectors (Forward Scatter and Side Scatter) and visualizes the 
 <span class="sd">&quot;&quot;&quot;</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;\nSummary:\n--------\nThis script defines a flow cytometer simulation, sets up the particle size and refractive index distributions,\nand visualizes the scatterer distribution in a 2D density plot. It provides insight into the scattering properties\nof two different particle populations.\n&#39;
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.883 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.001 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-scatterer-distribution-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/2feeb5621a24cc8e6e422b0ec7e47b6c/scatterer_distribution.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">scatterer_distribution.ipynb</span></code></a></p>

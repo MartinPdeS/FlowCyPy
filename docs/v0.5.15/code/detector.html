@@ -542,32 +542,11 @@ for analysis.  It can optionally simulate different noise sources: shot noise, t
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector.capture_signal">
-<span class="sig-name descname"><span class="pre">capture_signal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.capture_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.capture_signal" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">capture_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.capture_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.capture_signal" title="Link to this definition">#</a></dt>
 <dd><p>Processes and captures the final signal by applying noise, baseline shifts, and saturation.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.init_raw_signal">
-<span class="sig-name descname"><span class="pre">init_raw_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.init_raw_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.init_raw_signal" title="Link to this definition">#</a></dt>
-<dd><p>Initializes the raw signal and time arrays for the detector and generates optional noise.</p>
-<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>run_time</strong> (<em>Quantity</em>) – The total duration of the signal to simulate (in seconds).</p></li>
-<li><p><strong>as</strong> (<em>The photocurrent is calculated</em>)</p></li>
-<li><p><strong>[</strong> – I_{text{ph}} = P_{text{opt}} times R_{text{ph}}</p></li>
-<li><p><strong>]</strong></p></li>
-<li><p><strong>Where</strong> – <ul>
-<li><p>( P_{text{opt}} ) is the optical power,</p></li>
-<li><p>( R_{text{ph}} ) is the responsivity in amperes per watt.</p></li>
-</ul>
-</p></li>
-</ul>
+<dd class="field-odd"><p><strong>signal</strong> (<em>Series</em>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -575,40 +554,30 @@ for analysis.  It can optionally simulate different noise sources: shot noise, t
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.dataframe">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dataframe</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.dataframe" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figure_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.detector.Detector.plot" title="Link to this definition">#</a></dt>
-<dd><p>A wrapped version of the plotting function that provides additional functionality for creating
-and managing plots.</p>
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.get_initialized_signal">
+<span class="sig-name descname"><span class="pre">get_initialized_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.get_initialized_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.get_initialized_signal" title="Link to this definition">#</a></dt>
+<dd><p>Initializes the raw signal for each detector based on the source and flow cell configuration.</p>
+<p>This method prepares the detectors for signal capture by associating each detector with the
+light source and generating a time-dependent raw signal placeholder.</p>
+<section id="effects">
+<h2>Effects<a class="headerlink" href="#effects" title="Link to this heading">#</a></h2>
+<p>Each detector’s <cite>raw_signal</cite> attribute is initialized with time-dependent values
+based on the flow cell’s runtime.</p>
+</section>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>self</strong> (<em>object</em>) – The instance of the class calling this method.</p></li>
-<li><p><strong>ax</strong> (<em>plt.Axes</em><em>, </em><em>optional</em>) – A matplotlib Axes object to draw the plot on. If None, a new figure and axes are created.
-Default is None.</p></li>
-<li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display the plot. If False, the plot will not be shown but can still be saved
-or returned. Default is True.</p></li>
-<li><p><strong>mode_of_interest</strong> (<em>str</em><em>, </em><em>optional</em>) – Specifies the mode of interest for the plot. If ‘all’, all available modes will be plotted.
-This parameter is interpreted using the <cite>interpret_mode_of_interest</cite> function. Default is ‘all’.</p></li>
-<li><p><strong>save_filename</strong> (<em>str</em><em>, </em><em>optional</em>) – A file path to save the figure. If None, the figure will not be saved. Default is None.</p></li>
-<li><p><strong>**kwargs</strong> (<em>dict</em>) – Additional keyword arguments passed to the decorated function.</p></li>
-<li><p><strong>figure_size</strong> (<em>tuple</em>)</p></li>
-</ul>
+<dd class="field-odd"><p><strong>run_time</strong> (<em>Quantity</em>)</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The matplotlib Figure object created or used for the plot.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>plt.Figure</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>DataFrame</em></p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>If no <cite>ax</cite> is provided, a new figure and axes are created using the style context <cite>mps</cite>.</p></li>
-<li><p>The legend is only added if there are labels to display.</p></li>
-<li><p>If <cite>save_filename</cite> is specified, the figure is saved to the given path.</p></li>
-<li><p>The plot is shown if <cite>show</cite> is set to True.</p></li>
-</ul>
 </dd></dl>
 
 <dl class="py method">
@@ -725,8 +694,8 @@ and extracts peak features such as height, width, and area.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector"><code class="docutils literal notranslate"><span class="pre">Detector</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.baseline_shift"><code class="docutils literal notranslate"><span class="pre">Detector.baseline_shift</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.capture_signal"><code class="docutils literal notranslate"><span class="pre">Detector.capture_signal()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.init_raw_signal"><code class="docutils literal notranslate"><span class="pre">Detector.init_raw_signal()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.plot"><code class="docutils literal notranslate"><span class="pre">Detector.plot()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.dataframe"><code class="docutils literal notranslate"><span class="pre">Detector.dataframe</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.get_initialized_signal"><code class="docutils literal notranslate"><span class="pre">Detector.get_initialized_signal()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.plot_raw"><code class="docutils literal notranslate"><span class="pre">Detector.plot_raw()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.print_properties"><code class="docutils literal notranslate"><span class="pre">Detector.print_properties()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.set_peak_locator"><code class="docutils literal notranslate"><span class="pre">Detector.set_peak_locator()</span></code></a></li>

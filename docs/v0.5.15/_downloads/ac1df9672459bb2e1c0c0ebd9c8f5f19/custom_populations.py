@@ -22,7 +22,7 @@ from FlowCyPy.units import particle, milliliter, nanometer, RIU, milliwatt, AU
 from FlowCyPy import FlowCytometer
 from FlowCyPy import Population, distribution
 from FlowCyPy.detector import Detector
-from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, microsecond, microvolt
+from FlowCyPy.units import ohm, megahertz, ampere, kelvin, watt, microsecond, microvolt
 from FlowCyPy import EventCorrelator, peak_locator
 from FlowCyPy import GaussianBeam
 from FlowCyPy import NoiseSetting
@@ -45,12 +45,12 @@ flow_cell = FlowCell(
     source=source,
     flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
     flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
-    run_time=0.2 * millisecond               # Simulation run time: 0.5 ms
+    scheme='uniform-random'
 )
 
 # Step 2: Defining Particle Populations
 # Initialize scatterer with a medium refractive index
-scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
+scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
 
 # Define populations with size distribution and refractive index
 population_0 = Population(
@@ -68,11 +68,7 @@ population_1 = Population(
 )
 
 # Define populations with size distribution and refractive index
-scatterer.add_population(population_0, population_1)
-
-flow_cell.initialize(scatterer_collection=scatterer)  # Link populations to flow cell
-scatterer._log_properties()                # Display population properties
-scatterer.plot()                           # Visualize the population distributions
+scatterer_collection.add_population(population_0, population_1)
 
 
 # %%
@@ -109,19 +105,17 @@ detector_1 = Detector(
 
 
 cytometer = FlowCytometer(
+    scatterer_collection=scatterer_collection,
     detectors=[detector_0, detector_1],
     flow_cell=flow_cell
 )
 
 # Run the flow cytometry simulation
-cytometer.run_coupling_analysis()
-
-cytometer.initialize_signal()
-
-cytometer.simulate_pulse()
+experiment = cytometer.get_continous_acquisition(run_time=0.2 * millisecond)
 
 # Visualize the scatter signals from both detectors
-cytometer.plot.signals()
+experiment.plot.signals()
+
 
 # %%
 # Step 5: Analyzing Pulse Signals

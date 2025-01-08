@@ -20,7 +20,7 @@ from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam,
 from FlowCyPy import distribution
 from FlowCyPy.population import Population
 from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy.units import nanometer, millisecond, meter, micrometer, second, RIU, milliliter, particle, millivolt, watt, megahertz, degree, ampere, milliwatt, AU
+from FlowCyPy.units import nanometer, millisecond, meter, micrometer, second, RIU, milliliter, particle, watt, megahertz, degree, ampere, milliwatt, AU
 
 # %%
 # Step 2: Define the laser source
@@ -40,7 +40,6 @@ flow_cell = FlowCell(
     source=source,
     flow_speed=7.56 * meter / second,        # Flow speed: 7.56 meters per second
     flow_area=(20 * micrometer) ** 2,        # Flow area: 10 x 10 micrometers
-    run_time=0.5 * millisecond             # Total simulation time: 0.3 milliseconds
 )
 
 # %%
@@ -65,14 +64,10 @@ ev = Population(
     name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
 )
 
-scatterer = ScattererCollection()
+scatterer_collection = ScattererCollection()
 
-scatterer.add_population(ev)
+scatterer_collection.add_population(ev)
 
-flow_cell.initialize(scatterer_collection=scatterer)
-
-# Plot the scatterer distribution
-scatterer.plot()
 
 # Step 5: Define the detector
 # ---------------------------
@@ -104,25 +99,19 @@ detector_1 = Detector(
 # ---------------------------------------
 # Create a FlowCytometer instance to simulate the signals generated as particles pass through the laser beam.
 cytometer = FlowCytometer(
+    scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,                # Particle size distribution
     detectors=[detector_0, detector_1]  # List of detectors used in the simulation
 )
 
-# Simulate the pulse signals generated from the interaction between particles and the laser.
-cytometer.run_coupling_analysis()
+# Run the flow cytometry simulation
+experiment = cytometer.get_continous_acquisition(run_time=0.2 * millisecond)
 
-cytometer.initialize_signal()
+# Visualize the scatter signals from both detectors
+experiment.plot.signals()
 
-cytometer.simulate_pulse()
-
-# %%
-# Step 7: Analyze and Visualize Results
-# -------------------------------------
-# Display the properties of the simulated cytometer setup, including flow speed and laser power.
-cytometer._log_statistics()
-
-# Plot the simulated signals for the detector.
-cytometer.plot.signals()
+experiment.logger.scatterer()
+experiment.logger.detector()
 
 """
 Summary:

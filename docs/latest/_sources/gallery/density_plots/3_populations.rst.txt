@@ -66,7 +66,7 @@ Workflow Summary:
 
 Step 1: Laser GaussianBeam Configuration
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-68
+.. GENERATED FROM PYTHON SOURCE LINES 37-61
 
 .. code-block:: Python
 
@@ -81,51 +81,45 @@ Step 1: Laser GaussianBeam Configuration
         source=source,
         flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
         flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
-        run_time=0.2 * millisecond               # Simulation run time: 0.5 ms
     )
 
     # Step 2: Defining Particle Populations
     # Initialize scatterer with a medium refractive index
-    scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
+    scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
 
     exosome = Exosome(particle_count=10e+8 * particle / milliliter)
     hdl = HDL(particle_count=10e+8 * particle / milliliter)
     ldl = LDL(particle_count=10e+8 * particle / milliliter)
 
     # Define populations with size distribution and refractive index
-    scatterer.add_population(exosome)
-    scatterer.add_population(hdl)
-    scatterer.add_population(ldl)
-
-    flow_cell.initialize(scatterer_collection=scatterer)   # Link populations to flow cell
-    scatterer._log_properties()               # Display population properties
-    scatterer.plot()                           # Visualize the population distributions
-
-
-
-
-.. image-sg:: /gallery/density_plots/images/sphx_glr_3_populations_001.png
-   :alt: 3 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_3_populations_001.png
-   :class: sphx-glr-single-img
+    scatterer_collection.add_population(exosome, hdl, ldl)
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 69-72
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    (Population(name='Exosome', refractive_index=Normal(1.390 RIU, 0.020 RIU), size=RR(70.000 nm, 2.000), particle_count=1000000000000.0001 particle/l), Population(name='HDL', refractive_index=Normal(1.330 RIU, 0.010 RIU), size=RR(10.000 nm, 3.500), particle_count=1000000000000.0001 particle/l), Population(name='LDL', refractive_index=Normal(1.350 RIU, 0.020 RIU), size=RR(20.000 nm, 3.000), particle_count=1000000000000.0001 particle/l))
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 62-65
 
 Step 4: Simulating the Flow Cytometry Experiment
 Initialize the cytometer and configure detectors
 Add forward scatter detector
 
-.. GENERATED FROM PYTHON SOURCE LINES 72-116
+.. GENERATED FROM PYTHON SOURCE LINES 65-106
 
 .. code-block:: Python
 
     signal_digitizer = SignalDigitizer(
         bit_depth='14bit',
-        saturation_levels=16_000 * microvolt,
+        saturation_levels='auto',
         sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
 
     )
@@ -153,38 +147,35 @@ Add forward scatter detector
 
 
     cytometer = FlowCytometer(
+        scatterer_collection=scatterer_collection,
         detectors=[detector_0, detector_1],
         flow_cell=flow_cell
     )
 
     # Run the flow cytometry simulation
-    cytometer.run_coupling_analysis()
-
-    cytometer.initialize_signal()
-
-    cytometer.simulate_pulse()
+    experiment = cytometer.get_continous_acquisition(run_time=0.2 * millisecond)
 
     # Visualize the scatter signals from both detectors
-    cytometer.plot.signals()
+    experiment.plot.signals()
 
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_3_populations_002.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_3_populations_001.png
    :alt: 3 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_3_populations_002.png
+   :srcset: /gallery/density_plots/images/sphx_glr_3_populations_001.png
    :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 117-119
+.. GENERATED FROM PYTHON SOURCE LINES 107-109
 
 Step 5: Analyzing Pulse Signals
 Configure peak finding algorithm
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-140
+.. GENERATED FROM PYTHON SOURCE LINES 109-130
 
 .. code-block:: Python
 
@@ -212,9 +203,9 @@ Configure peak finding algorithm
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_3_populations_003.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_3_populations_002.png
    :alt: 3 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_3_populations_003.png
+   :srcset: /gallery/density_plots/images/sphx_glr_3_populations_002.png
    :class: sphx-glr-single-img
 
 
@@ -224,7 +215,7 @@ Configure peak finding algorithm
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.044 seconds)
+   **Total running time of the script:** (0 minutes 2.103 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_3_populations.py:

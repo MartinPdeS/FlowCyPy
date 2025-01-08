@@ -479,17 +479,16 @@
                   
   <h1>Source code for FlowCyPy.scatterer_collection</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">MPSPlots.styles</span><span class="w"> </span><span class="kn">import</span> <span class="n">mps</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">liter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Population</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">PropertiesReport</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.distribution</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span> <span class="k">as</span> <span class="n">BaseDistribution</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererLogger</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.particle_count</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParticleCount</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pint_pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">PintArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CouplingModel</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -523,100 +522,52 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">coupling_model</span> <span class="o">=</span> <span class="n">coupling_model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="ScattererCollection.plot">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.plot">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">bandwidth_adjust</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">log_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">color_palette</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="ScattererCollection.get_population_ratios">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.get_population_ratios">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_population_ratios</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+        <span class="n">total_concentration</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">particle_count</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="p">[(</span><span class="n">p</span><span class="o">.</span><span class="n">particle_count</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="n">total_concentration</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ScattererCollection.get_population_dataframe">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.get_population_dataframe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_population_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_sampling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Visualizes the joint distribution of scatterer sizes and refractive indices using a Seaborn jointplot.</span>
+<span class="sd">        Generate a DataFrame by sampling particles from populations.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        ax : matplotlib.axes.Axes, optional</span>
-<span class="sd">            Existing matplotlib axes to plot on. If `None`, a new figure and axes are created. Default is `None`.</span>
-<span class="sd">        show : bool, optional</span>
-<span class="sd">            If `True`, displays the plot after creation. Default is `True`.</span>
-<span class="sd">        alpha : float, optional</span>
-<span class="sd">            Transparency level for the scatter plot points, ranging from 0 (fully transparent) to 1 (fully opaque). Default is 0.8.</span>
-<span class="sd">        bandwidth_adjust : float, optional</span>
-<span class="sd">            Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Higher values produce smoother density estimates. Default is 1.</span>
-<span class="sd">        log_plot : bool, optional</span>
-<span class="sd">            If `True`, applies a logarithmic scale to both axes of the joint plot and their marginal distributions. Default is `False`.</span>
-<span class="sd">        color_palette : str or dict, optional</span>
-<span class="sd">            The color palette to use for the hue in the scatterplot. Can be a seaborn palette name</span>
-<span class="sd">            (e.g., &#39;viridis&#39;, &#39;coolwarm&#39;) or a dictionary mapping hue levels to specific colors. Default is None.</span>
+<span class="sd">        total_sampling : Quantity, optional</span>
+<span class="sd">            Total number of samples to draw, distributed across populations based on their ratios.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        None</span>
-<span class="sd">            This function does not return any value. It either displays the plot (if `show=True`) or simply creates it for later use.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        This method resets the index of the internal dataframe and extracts units from the &#39;Size&#39; column.</span>
-<span class="sd">        The plot uses the specified matplotlib style (`mps`) for consistent styling.</span>
-
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            A MultiIndex DataFrame containing the sampled data from all populations. The first</span>
+<span class="sd">            index level indicates the population name, and the second level indexes the sampled data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">df_reset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="n">ratios</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_population_ratios</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_reset</span><span class="o">.</span><span class="n">Time</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span>
+        <span class="n">sampling_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ratio</span> <span class="o">*</span> <span class="n">total_sampling</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="k">for</span> <span class="n">ratio</span> <span class="ow">in</span> <span class="n">ratios</span><span class="p">]</span>
 
-        <span class="n">x_unit</span> <span class="o">=</span> <span class="n">df_reset</span><span class="p">[</span><span class="s1">&#39;Size&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span>
+        <span class="n">population_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">]</span>
 
-        <span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">mps</span><span class="p">):</span>
-            <span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_reset</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;Size&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">,</span>
-                <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;Population&#39;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">color_palette</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;scatter&#39;</span><span class="p">,</span>
-                <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">marginal_kws</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">bw_adjust</span><span class="o">=</span><span class="n">bandwidth_adjust</span><span class="p">)</span>
-            <span class="p">)</span>
+        <span class="c1"># Create tuples for the MultiIndex</span>
+        <span class="n">multi_index_tuples</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">pop_name</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">pop_name</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">population_names</span><span class="p">,</span> <span class="n">sampling_list</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="p">]</span>
 
-        <span class="n">g</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Size [</span><span class="si">{</span><span class="n">x_unit</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="c1"># Create the MultiIndex</span>
+        <span class="n">multi_index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="n">multi_index_tuples</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Population&quot;</span><span class="p">,</span> <span class="s2">&quot;Index&quot;</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="n">log_plot</span><span class="p">:</span>
-            <span class="n">g</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
-            <span class="n">g</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
-            <span class="n">g</span><span class="o">.</span><span class="n">ax_marg_x</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
-            <span class="n">g</span><span class="o">.</span><span class="n">ax_marg_y</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+        <span class="c1"># Initialize an empty DataFrame with the MultiIndex</span>
+        <span class="n">scatterer_dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">multi_index</span><span class="p">)</span>
 
-        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fill_dataframe_with_sampling</span><span class="p">(</span><span class="n">scatterer_dataframe</span><span class="o">=</span><span class="n">scatterer_dataframe</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">scatterer_dataframe</span></div>
 
-
-<div class="viewcode-block" id="ScattererCollection.print_properties">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.print_properties">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">print_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Prints specific properties of the ScattererCollection instance, such as coupling factor and medium refractive index.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">min_delta_position</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">diff</span><span class="p">())</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span>
-        <span class="n">mean_delta_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span>
-
-        <span class="n">_dict</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;coupling factor&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">coupling_model</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-            <span class="s1">&#39;medium refractive index&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">medium_refractive_index</span><span class="p">,</span>
-            <span class="s1">&#39;minimum time between events&#39;</span><span class="p">:</span> <span class="n">min_delta_position</span><span class="p">,</span>
-            <span class="s1">&#39;average time between events&#39;</span><span class="p">:</span> <span class="n">mean_delta_position</span>
-        <span class="p">}</span>
-
-        <span class="nb">super</span><span class="p">(</span><span class="n">ScattererCollection</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">print_properties</span><span class="p">(</span><span class="o">**</span><span class="n">_dict</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
-            <span class="n">population</span><span class="o">.</span><span class="n">_log_properties</span><span class="p">()</span></div>
-
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_log_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Logs key properties of the ScattererCollection instance in a formatted table, including its name,</span>
-<span class="sd">        refractive index, size, concentration, and number of events.</span>
-
-<span class="sd">        The results are displayed in a formatted table using `tabulate` for clarity.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Gather properties</span>
-        <span class="n">logger</span> <span class="o">=</span> <span class="n">ScattererLogger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
-        <span class="n">logger</span><span class="o">.</span><span class="n">log_properties</span><span class="p">(</span><span class="n">table_format</span><span class="o">=</span><span class="s2">&quot;fancy_grid&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ScattererCollection.add_population">
 <a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.add_population">[docs]</a>
@@ -687,63 +638,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">population</span>
 
-<div class="viewcode-block" id="ScattererCollection.remove_population">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.remove_population">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">remove_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;ScattererCollection&#39;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Removes a population from the ScattererCollection instance by name.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        name : str</span>
-<span class="sd">            The name of the population to remove.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        ScattererCollection</span>
-<span class="sd">            The ScattererCollection instance (to support chaining).</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        ValueError</span>
-<span class="sd">            If the population with the specified name does not exist.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">population_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">population_names</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Population &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; not found in ScattererCollection.&quot;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">populations</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">name</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
-
-
-<div class="viewcode-block" id="ScattererCollection.add_to_ax">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.add_to_ax">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_to_ax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">axes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adds vertical lines representing events for each population to the provided axes.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        *axes : matplotlib.axes.Axes</span>
-<span class="sd">            One or more matplotlib axes to which the vertical lines will be added.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">vlines_color_palette</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">&#39;Set2&#39;</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">population_name</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)):</span>
-            <span class="n">vlines_color</span> <span class="o">=</span> <span class="n">vlines_color_palette</span><span class="p">(</span><span class="n">index</span> <span class="o">%</span> <span class="mi">8</span><span class="p">)</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span>
-            <span class="n">units</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="o">.</span><span class="n">units</span>
-            <span class="n">x</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">vlines</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xaxis_transform</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="n">vlines_color</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">population_name</span><span class="p">)</span>
-
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Time [</span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s1">]&#39;</span><span class="p">)</span></div>
-
-
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">concentrations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -794,8 +688,65 @@
 <div class="viewcode-block" id="ScattererCollection.dilute">
 <a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.dilute">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">dilute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dilutes the populations in the flow cytometry system by a given factor.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        factor : float</span>
+<span class="sd">            The dilution factor to apply to each population. For example, a factor</span>
+<span class="sd">            of 0.5 reduces the population density by half.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">            The method modifies the populations in place.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">            - This method iterates over all populations in the system and applies the</span>
+<span class="sd">            `dilute` method of each population.</span>
+<span class="sd">            - The specific implementation of how a population is diluted depends on</span>
+<span class="sd">            the `dilute` method defined in the `population` object.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Dilute all populations by 50%:</span>
+<span class="sd">        &gt;&gt;&gt; system.dilute(0.5)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
             <span class="n">population</span><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ScattererCollection.fill_dataframe_with_sampling">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.fill_dataframe_with_sampling">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fill_dataframe_with_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scatterer_dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fills a DataFrame with size and refractive index sampling data for each population.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        scatterer_dataframe : pd.DataFrame</span>
+<span class="sd">            A DataFrame indexed by population names (first level) and containing the</span>
+<span class="sd">            following columns: `&#39;Size&#39;`: To be filled with particle size data. `&#39;RefractiveIndex&#39;`:</span>
+<span class="sd">            To be filled with refractive index data. The DataFrame must already have the required structure.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">            The method modifies the `scatterer_dataframe` in place, adding size and</span>
+<span class="sd">            refractive index sampling data.</span>
+
+<span class="sd">        After filling, the DataFrame will be populated with size and refractive index data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
+            <span class="n">sub_dataframe</span> <span class="o">=</span> <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">xs</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">sampling</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_dataframe</span><span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span>
+
+            <span class="n">size</span><span class="p">,</span> <span class="n">ri</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">generate_sampling</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+
+            <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">size</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">ri</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ri</span><span class="o">.</span><span class="n">units</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

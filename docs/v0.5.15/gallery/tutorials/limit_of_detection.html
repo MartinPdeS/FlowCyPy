@@ -532,41 +532,6 @@ to download the full example code.</p>
 <li><img src="../../_images/sphx_glr_limit_of_detection_001.png" srcset="../../_images/sphx_glr_limit_of_detection_001.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_limit_of_detection_002.png" srcset="../../_images/sphx_glr_limit_of_detection_002.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
 </ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>GaussianBeam [] Properties
-+------------+---------+
-| Property   | Value   |
-+============+=========+
-+------------+---------+
-
-Detector [forward] Properties
-+--------------------+----------+
-| Property           | Value    |
-+====================+==========+
-| Sampling frequency | 60.0 MHz |
-+--------------------+----------+
-| Phi angle          | 0.0 deg  |
-+--------------------+----------+
-| Gamma angle        | 0.0 deg  |
-+--------------------+----------+
-| Numerical aperture | 0.2      |
-+--------------------+----------+
-| Responsitivity     | 1.0 A/W  |
-+--------------------+----------+
-| Saturation Level   | auto     |
-+--------------------+----------+
-| Dark Current       | 10.0 µA  |
-+--------------------+----------+
-| Resistance         | 13.0 kΩ  |
-+--------------------+----------+
-| Temperature        | 300.0 K  |
-+--------------------+----------+
-| N Bins             | 16384    |
-+--------------------+----------+
-</pre></div>
-</div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">EventCorrelator</span><span class="p">,</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">GaussianBeam</span><span class="p">,</span> <span class="n">FlowCell</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">peak_locator</span>
@@ -581,9 +546,9 @@ Detector [forward] Properties
 
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_RIN_noise</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_RIN_noise</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_dark_current_noise</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_thermal_noise</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_thermal_noise</span> <span class="o">=</span> <span class="kc">False</span>
 
 <a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 
@@ -597,10 +562,9 @@ Detector [forward] Properties
     <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
     <span class="n">flow_speed</span><span class="o">=</span><span class="mf">7.56</span> <span class="o">*</span> <span class="n">meter</span> <span class="o">/</span> <span class="n">second</span><span class="p">,</span>      <span class="c1"># Flow speed: 7.56 meters per second</span>
     <span class="n">flow_area</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">micrometer</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>      <span class="c1"># Flow area: 10 x 10 micrometers</span>
-    <span class="n">run_time</span><span class="o">=</span><span class="mf">.2</span> <span class="o">*</span> <span class="n">millisecond</span>             <span class="c1"># Total simulation time: 0.3 milliseconds</span>
 <span class="p">)</span>
 
-<span class="n">scatterer</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>  <span class="c1"># Medium refractive index: 1.33</span>
+<span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>  <span class="c1"># Medium refractive index: 1.33</span>
 
 
 
@@ -613,15 +577,7 @@ Detector [forward] Properties
         <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="mf">1.39</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
-
-<span class="n">flow_cell</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer</span><span class="p">)</span>
-
-<span class="n">flow_cell</span><span class="o">.</span><span class="n">distribute_time_linearly</span><span class="p">(</span><span class="n">sequential_population</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="n">scatterer</span><span class="o">.</span><span class="n">_log_properties</span><span class="p">()</span>
-
-<span class="n">source</span><span class="o">.</span><span class="n">print_properties</span><span class="p">()</span>  <span class="c1"># Print the laser source properties</span>
+    <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
 
 <span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>
@@ -651,20 +607,18 @@ Detector [forward] Properties
     <span class="n">temperature</span><span class="o">=</span><span class="mi">300</span> <span class="o">*</span> <span class="n">kelvin</span>                 <span class="c1"># Operating temperature: 300 Kelvin</span>
 <span class="p">)</span>
 
-
-<span class="n">detector_1</span><span class="o">.</span><span class="n">print_properties</span><span class="p">()</span>  <span class="c1"># Print the properties of the forward scatter detector</span>
-
-<span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>                      <span class="c1"># Laser source used in the experiment</span>
+<span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
+    <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>                     <span class="c1"># Populations used in the experiment</span>
     <span class="n">background_power</span><span class="o">=</span><span class="mf">0.0</span> <span class="o">*</span> <span class="n">milliwatt</span><span class="p">,</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">]</span>       <span class="c1"># List of detectors: Side scatter and Forward scatter</span>
 <span class="p">)</span>
 
-<span class="n">cytometer</span><span class="o">.</span><span class="n">run_coupling_analysis</span><span class="p">()</span>
+<span class="c1"># Run the flow cytometry simulation</span>
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_continous_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">millisecond</span><span class="p">)</span>
 
-<span class="n">cytometer</span><span class="o">.</span><span class="n">initialize_signal</span><span class="p">()</span>
-
-<span class="n">cytometer</span><span class="o">.</span><span class="n">simulate_pulse</span><span class="p">()</span>
+<span class="c1"># Visualize the scatter signals from both detectors</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>
 
 <span class="n">algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">MovingAverage</span><span class="p">(</span>
     <span class="n">threshold</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">microvolt</span><span class="p">,</span>            <span class="c1"># Signal threshold: 0.1 mV</span>
@@ -675,8 +629,6 @@ Detector [forward] Properties
 <span class="n">detector_0</span><span class="o">.</span><span class="n">set_peak_locator</span><span class="p">(</span><span class="n">algorithm</span><span class="p">)</span>
 <span class="n">detector_1</span><span class="o">.</span><span class="n">set_peak_locator</span><span class="p">(</span><span class="n">algorithm</span><span class="p">)</span>
 
-<span class="n">cytometer</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">signals</span><span class="p">(</span><span class="n">add_peak_locator</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
 <span class="n">analyzer</span> <span class="o">=</span> <span class="n">EventCorrelator</span><span class="p">(</span><span class="n">cytometer</span><span class="o">=</span><span class="n">cytometer</span><span class="p">)</span>
 
 <span class="n">analyzer</span><span class="o">.</span><span class="n">run_analysis</span><span class="p">(</span><span class="n">compute_peak_area</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -686,7 +638,7 @@ Detector [forward] Properties
 <span class="n">analyzer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.677 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.083 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-limit-of-detection-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc141053ca87c293e1689882fb19bce1/limit_of_detection.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">limit_of_detection.ipynb</span></code></a></p>

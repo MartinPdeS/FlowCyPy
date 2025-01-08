@@ -49,18 +49,21 @@ for dark_current in dark_currents:
     )
 
     # Initialize the raw signal
-    detector.init_raw_signal(run_time=200e-6 * second)
+    dataframe = detector.get_initialized_signal(run_time=200e-6 * second)
 
     # Add dark current noise to the raw signal
-    detector._add_dark_current_noise_to_raw_signal()
+    detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])
 
-    detector.capture_signal()
+    detector.capture_signal(dataframe['Signal'])
 
     # Plot the raw signal on the first axis
-    detector.plot(ax=ax_signal, show=False)
+    ax_signal.step(
+        dataframe.index,
+        dataframe.Signal.pint.quantity.magnitude
+    )
 
     # Plot the histogram of the raw signal
-    ax_hist.hist(detector.dataframe['RawSignal'], bins=50, alpha=0.6, label=detector.name)
+    ax_hist.hist(dataframe['Signal'], bins=50, alpha=0.6, label=detector.name)
 
 # Customize the axes
 ax_signal.set_title("Raw Signals with Different Dark Current Levels")

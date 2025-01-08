@@ -25,7 +25,7 @@ This example illustrates the impact of varying dark current levels on a flow cyt
 The detector is initialized, dark current noise is applied, and the resulting signals are visualized
 along with their distributions.
 
-.. GENERATED FROM PYTHON SOURCE LINES 10-78
+.. GENERATED FROM PYTHON SOURCE LINES 10-81
 
 
 
@@ -35,8 +35,19 @@ along with their distributions.
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/dark_current.py:71: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+      ax_signal.legend()
 
 
+
+
+
+
+|
 
 .. code-block:: Python
 
@@ -82,18 +93,21 @@ along with their distributions.
         )
 
         # Initialize the raw signal
-        detector.init_raw_signal(run_time=200e-6 * second)
+        dataframe = detector.get_initialized_signal(run_time=200e-6 * second)
 
         # Add dark current noise to the raw signal
-        detector._add_dark_current_noise_to_raw_signal()
+        detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])
 
-        detector.capture_signal()
+        detector.capture_signal(dataframe['Signal'])
 
         # Plot the raw signal on the first axis
-        detector.plot(ax=ax_signal, show=False)
+        ax_signal.step(
+            dataframe.index,
+            dataframe.Signal.pint.quantity.magnitude
+        )
 
         # Plot the histogram of the raw signal
-        ax_hist.hist(detector.dataframe['RawSignal'], bins=50, alpha=0.6, label=detector.name)
+        ax_hist.hist(dataframe['Signal'], bins=50, alpha=0.6, label=detector.name)
 
     # Customize the axes
     ax_signal.set_title("Raw Signals with Different Dark Current Levels")
@@ -112,7 +126,7 @@ along with their distributions.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.594 seconds)
+   **Total running time of the script:** (0 minutes 0.555 seconds)
 
 
 .. _sphx_glr_download_gallery_noise_sources_dark_current.py:

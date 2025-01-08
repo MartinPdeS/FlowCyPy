@@ -32,7 +32,7 @@ Workflow Summary:
 3. Run the Experiment: Simulate the flow cytometry experiment.
 4. Data Analysis: Analyze the pulse signals and generate a 2D density plot of the scattering intensities.
 
-.. GENERATED FROM PYTHON SOURCE LINES 16-64
+.. GENERATED FROM PYTHON SOURCE LINES 16-59
 
 .. code-block:: Python
 
@@ -70,37 +70,33 @@ Workflow Summary:
         source=source,
         flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
         flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
-        run_time=0.1 * millisecond               # Simulation run time: 0.5 ms
     )
 
     # Initialize scatterer with a medium refractive index
-    scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
+    scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
 
     # Define populations with size distribution and refractive index
     exosome = Exosome(particle_count=5e9 * particle / milliliter)
-    scatterer.add_population(exosome)
-
-    flow_cell.initialize(scatterer_collection=scatterer)  # Link populations to flow cell
-    scatterer._log_properties()               # Display population properties
-    scatterer.plot()                         # Visualize the population distributions
-
-
-
-
-.. image-sg:: /gallery/density_plots/images/sphx_glr_1_populations_001.png
-   :alt: 1 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_1_populations_001.png
-   :class: sphx-glr-single-img
+    scatterer_collection.add_population(exosome)
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-66
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    (Population(name='Exosome', refractive_index=Normal(1.390 RIU, 0.020 RIU), size=RR(70.000 nm, 2.000), particle_count=5000000000000.001 particle/l),)
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 60-61
 
 Add forward scatter detector
 
-.. GENERATED FROM PYTHON SOURCE LINES 66-113
+.. GENERATED FROM PYTHON SOURCE LINES 61-105
 
 .. code-block:: Python
 
@@ -135,6 +131,7 @@ Add forward scatter detector
     # Step 4: Simulating the Flow Cytometry Experiment
     # ------------------------------------------------
     cytometer = FlowCytometer(
+        scatterer_collection=scatterer_collection,
         flow_cell=flow_cell,
         detectors=[detector_0, detector_1],
         background_power=0.001 * milliwatt
@@ -142,33 +139,29 @@ Add forward scatter detector
 
 
     # Run the flow cytometry simulation
-    cytometer.run_coupling_analysis()
-
-    cytometer.initialize_signal()
-
-    cytometer.simulate_pulse()
+    experiment = cytometer.get_continous_acquisition(run_time=0.2 * millisecond)
 
     # Visualize the scatter signals from both detectors
-    cytometer.plot.signals()
+    experiment.plot.signals()
 
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_1_populations_002.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_1_populations_001.png
    :alt: 1 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_1_populations_002.png
+   :srcset: /gallery/density_plots/images/sphx_glr_1_populations_001.png
    :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 114-116
+.. GENERATED FROM PYTHON SOURCE LINES 106-108
 
 Step 5: Analyzing Pulse Signals
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 116-131
+.. GENERATED FROM PYTHON SOURCE LINES 108-123
 
 .. code-block:: Python
 
@@ -194,13 +187,13 @@ Step 5: Analyzing Pulse Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 132-135
+.. GENERATED FROM PYTHON SOURCE LINES 124-127
 
 Step 6: Coincidence Data and 2D Density Plot
 --------------------------------------------
 Extract coincidence data within a defined margin
 
-.. GENERATED FROM PYTHON SOURCE LINES 135-139
+.. GENERATED FROM PYTHON SOURCE LINES 127-131
 
 .. code-block:: Python
 
@@ -211,9 +204,9 @@ Extract coincidence data within a defined margin
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_1_populations_003.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_1_populations_002.png
    :alt: 1 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_1_populations_003.png
+   :srcset: /gallery/density_plots/images/sphx_glr_1_populations_002.png
    :class: sphx-glr-single-img
 
 
@@ -223,7 +216,7 @@ Extract coincidence data within a defined margin
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.349 seconds)
+   **Total running time of the script:** (0 minutes 2.819 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_1_populations.py:

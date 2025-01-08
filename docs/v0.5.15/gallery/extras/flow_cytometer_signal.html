@@ -541,7 +541,7 @@ using FlowCyPy and visualize the results.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span><span class="p">,</span> <span class="n">Population</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">RIU</span><span class="p">,</span> <span class="n">milliliter</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">microvolt</span><span class="p">,</span> <span class="n">AU</span><span class="p">,</span>
+    <span class="n">RIU</span><span class="p">,</span> <span class="n">milliliter</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">AU</span><span class="p">,</span>
     <span class="n">megahertz</span><span class="p">,</span> <span class="n">milliwatt</span><span class="p">,</span> <span class="n">micrometer</span><span class="p">,</span> <span class="n">millisecond</span><span class="p">,</span> <span class="n">meter</span><span class="p">,</span> <span class="n">second</span>
 <span class="p">)</span>
 
@@ -561,16 +561,13 @@ using FlowCyPy and visualize the results.</p>
     <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
     <span class="n">flow_speed</span><span class="o">=</span><span class="mf">7.56</span> <span class="o">*</span> <span class="n">meter</span> <span class="o">/</span> <span class="n">second</span><span class="p">,</span>        <span class="c1"># Flow speed: 7.56 meters per second</span>
     <span class="n">flow_area</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span> <span class="o">*</span> <span class="n">micrometer</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>        <span class="c1"># Flow area: 10 x 10 micrometers</span>
-    <span class="n">run_time</span><span class="o">=</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">millisecond</span>             <span class="c1"># Total simulation time: 0.3 milliseconds</span>
 <span class="p">)</span>
-
-<span class="n">flow_cell</span><span class="o">.</span><span class="n">print_properties</span><span class="p">()</span>
 
 <span class="c1"># Step 4: Define the particle size distribution</span>
 <span class="c1"># ---------------------------------------------</span>
 <span class="c1"># We define a normal distribution for particle sizes with a mean of 200 nm, standard deviation of 10 nm,</span>
 <span class="c1"># and a refractive index of 1.39 with a small variation of 0.01.</span>
-<span class="n">scatterer</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
+<span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
 
 <span class="n">population_0</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EV&#39;</span><span class="p">,</span>
@@ -586,11 +583,7 @@ using FlowCyPy and visualize the results.</p>
     <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">1.45</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.05</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
 <span class="p">)</span>
 
-<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population_0</span><span class="p">,</span> <span class="n">population_1</span><span class="p">)</span>
-
-<span class="n">flow_cell</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer</span><span class="p">)</span>
-
-<span class="n">scatterer</span><span class="o">.</span><span class="n">_log_properties</span><span class="p">()</span>
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population_0</span><span class="p">,</span> <span class="n">population_1</span><span class="p">)</span>
 
 <span class="c1"># Step 5: Set up the detectors</span>
 <span class="c1"># ----------------------------</span>
@@ -621,6 +614,7 @@ using FlowCyPy and visualize the results.</p>
 <span class="c1"># The flow cytometer is configured with the source, scatterer distribution, and detectors.</span>
 <span class="c1"># The &#39;mie&#39; coupling mechanism models how the particles interact with the laser beam.</span>
 <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
+    <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>  <span class="c1"># Particle size distribution</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_fsc</span><span class="p">,</span> <span class="n">detector_ssc</span><span class="p">],</span>  <span class="c1"># Detectors: FSC and SSC</span>
 <span class="p">)</span>
@@ -628,39 +622,17 @@ using FlowCyPy and visualize the results.</p>
 <span class="c1"># Step 7: Simulate flow cytometer signals</span>
 <span class="c1"># ---------------------------------------</span>
 <span class="c1"># Simulate the signals for both detectors (FSC and SSC) as particles pass through the laser beam.</span>
-<span class="n">cytometer</span><span class="o">.</span><span class="n">run_coupling_analysis</span><span class="p">()</span>
+<span class="c1"># Run the flow cytometry simulation</span>
+<span class="n">experiment</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_continous_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">millisecond</span><span class="p">)</span>
 
-<span class="n">cytometer</span><span class="o">.</span><span class="n">initialize_signal</span><span class="p">()</span>
-
-<span class="n">cytometer</span><span class="o">.</span><span class="n">simulate_pulse</span><span class="p">()</span>
-
-<span class="c1"># Step 8: Display the properties of the simulation</span>
-<span class="c1"># ------------------------------------------------</span>
-<span class="c1"># Print the properties of the simulation setup to better understand flow speed, particle density, and source power.</span>
-<span class="n">cytometer</span><span class="o">.</span><span class="n">_log_statistics</span><span class="p">()</span>
-
-<span class="c1"># Step 9: Visualize the generated signals</span>
-<span class="c1"># ---------------------------------------</span>
-<span class="c1"># Plot the simulated signals for both FSC and SSC detectors.</span>
-<span class="n">cytometer</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>
+<span class="c1"># Visualize the scatter signals from both detectors</span>
+<span class="n">experiment</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_flow_cytometer_signal_001.png" srcset="../../_images/sphx_glr_flow_cytometer_signal_001.png" alt="flow cytometer signal" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Flow Properties
-+------------+------------+
-| Property   | Value      |
-+============+============+
-| Flow Speed | 7.56 m/s   |
-+------------+------------+
-| Flow Area  | 400.00 µm² |
-+------------+------------+
-| Total Time | 500.00 µs  |
-+------------+------------+
-</pre></div>
-</div>
-<p>The above plot shows the raw simulated signals for Forward Scatter (FSC) and
+<img src="../../_images/sphx_glr_flow_cytometer_signal_001.png" srcset="../../_images/sphx_glr_flow_cytometer_signal_001.png" alt="flow cytometer signal" class = "sphx-glr-single-img"/><p>The above plot shows the raw simulated signals for Forward Scatter (FSC) and
 Side Scatter (SSC) channels. These signals provide insights into particle size
 and complexity and can be further analyzed for feature extraction, such as peak height and width.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.874 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.124 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-flow-cytometer-signal-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/45fd446fca2aadc7449b6542217db601/flow_cytometer_signal.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">flow_cytometer_signal.ipynb</span></code></a></p>
