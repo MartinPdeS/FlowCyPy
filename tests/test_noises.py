@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from FlowCyPy.detector import Detector
-from FlowCyPy.units import watt, ohm, kelvin, ampere, second, hertz, degree, AU, volt
+from FlowCyPy.units import watt, ohm, kelvin, ampere, second, hertz, degree, AU, volt, nanometer
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy.signal_digitizer import SignalDigitizer
 
@@ -42,9 +42,13 @@ def test_shot_noise():
         phi_angle=0 * degree,
         signal_digitizer=signal_digitizer
     )
-    detector.init_raw_signal(run_time=run_time)
+    dataframe = detector.get_initialized_signal(run_time=run_time)
 
-    noise = detector._add_optical_power_to_raw_signal(optical_power)  # Capture returned noise
+    noise = detector._add_optical_power_to_raw_signal(
+        optical_power=optical_power,
+        wavelength=1550 * nanometer,
+        signal=dataframe['Signal']
+    )  # Capture returned noise
 
     # Step 1: Compute Equivalent Shot Noise in Voltage
     photo_current = optical_power * detector.responsitivity
@@ -88,10 +92,10 @@ def test_thermal_noise():
         phi_angle=0 * degree,
         signal_digitizer=signal_digitizer
     )
-    detector.init_raw_signal(run_time=run_time)
+    dataframe = detector.get_initialized_signal(run_time=run_time)
 
     # Generate thermal noise
-    noise = detector._add_thermal_noise_to_raw_signal()  # Capture returned noise
+    noise = detector._add_thermal_noise_to_raw_signal(signal=dataframe['Signal'])  # Capture returned noise
 
     # Step 1: Compute Theoretical Thermal Noise in Voltage
     bandwidth = detector.signal_digitizer.bandwidth  # Bandwidth in Hz
@@ -135,10 +139,10 @@ def test_dark_current_noise():
         phi_angle=0 * degree,
         signal_digitizer=signal_digitizer
     )
-    detector.init_raw_signal(run_time=run_time)
+    dataframe = detector.get_initialized_signal(run_time=run_time)
 
     # Generate dark current noise
-    noise = detector._add_dark_current_noise_to_raw_signal()  # Capture returned noise
+    noise = detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])  # Capture returned noise
 
     # Step 1: Compute Theoretical Dark Current Noise in Voltage
     bandwidth = detector.signal_digitizer.bandwidth  # Bandwidth in Hz

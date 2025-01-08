@@ -10,7 +10,7 @@ and their distributions.
 
 import matplotlib.pyplot as plt
 from FlowCyPy.detector import Detector
-from FlowCyPy.units import watt, ohm, ampere, second, hertz, degree, AU
+from FlowCyPy.units import watt, ohm, ampere, second, hertz, degree, AU, nanometer
 from FlowCyPy.signal_digitizer import SignalDigitizer
 
 from FlowCyPy import NoiseSetting
@@ -46,18 +46,25 @@ for optical_power in optical_powers:
     )
 
     # Initialize the raw signal
-    detector.init_raw_signal(run_time=200e-6 * second)
+    dataframe = detector.get_initialized_signal(run_time=200e-6 * second)
 
     # Add optical power to the raw signal
-    detector._add_optical_power_to_raw_signal(optical_power=optical_power)
+    detector._add_optical_power_to_raw_signal(
+        signal=dataframe['Signal'],
+        optical_power=optical_power,
+        wavelength=1550 * nanometer
+    )
 
-    detector.capture_signal()
+    detector.capture_signal(dataframe['Signal'])
 
     # Plot the raw signal on the first axis
-    detector.plot(ax=ax_signal, show=False)
+    ax_signal.step(
+        dataframe.index,
+        dataframe.Signal.pint.quantity.magnitude
+    )
 
     # Plot the histogram of the raw signal
-    ax_hist.hist(detector.dataframe['RawSignal'], bins=50, alpha=0.6, label=detector.name)
+    ax_hist.hist(dataframe['Signal'], bins=50, alpha=0.6, label=detector.name)
 
 # Customize the axes
 ax_signal.set_title("Raw Signals at Different Optical Powers")

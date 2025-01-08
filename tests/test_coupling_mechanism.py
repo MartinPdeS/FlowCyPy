@@ -47,7 +47,6 @@ def default_flow_cell():
     return FlowCell(
         flow_speed=0.1 * meter / second,
         flow_area=(10 * micrometer) ** 2,
-        run_time=1 * millisecond,
     )
 
 
@@ -70,10 +69,9 @@ def detector():
 
 
 @pytest.fixture
-def scatterer(normal_population, default_flow_cell):
+def scatterer_collection(normal_population, default_flow_cell):
     scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)
     scatterer.add_population(normal_population)
-    default_flow_cell.initialize(scatterer_collection=scatterer)
     return scatterer
 
 
@@ -86,25 +84,40 @@ def source():
     )
 
 
-def test_generate_scatterer_size(scatterer):
+def test_generate_scatterer_size(scatterer_collection, default_flow_cell):
     """
     Test if the sizes are generated correctly in the ScattererCollection.
     """
-    sizes = scatterer.dataframe['Size']
+    scatterer_dataframe = default_flow_cell.generate_event_dataframe(
+        scatterer_collection.populations,
+        run_time=0.001 * second
+    )
+
+    scatterer_collection.fill_dataframe_with_sampling(scatterer_dataframe)
+
+    sizes = scatterer_dataframe['Size']
 
     assert sizes is not None, "ScattererCollection sizes should be generated."
     assert len(sizes) > 0, f"Expected 10 scatterer sizes, but got {len(sizes)}."
     assert sizes.values.numpy_data.min() > 0, f"Expected all sizes to be positive, but got a minimum size of {sizes.magnitude.min()}."
 
 
-def test_rayleigh_mechanism_output(detector, scatterer, source):
+def test_rayleigh_mechanism_output(detector, scatterer_collection, source, default_flow_cell):
     """
     Test the detected power output of the Rayleigh scattering mechanism.
     """
+    scatterer_dataframe = default_flow_cell.generate_event_dataframe(
+        scatterer_collection.populations,
+        run_time=0.001 * second
+    )
+
+    scatterer_collection.fill_dataframe_with_sampling(scatterer_dataframe)
+
     detected_power = compute_detected_signal(
         source=source,
         detector=detector,
-        scatterer=scatterer
+        scatterer_dataframe=scatterer_dataframe,
+        medium_refractive_index=1.33 * refractive_index_unit
     )
 
     assert detected_power is not None, "Detected power should not be None."

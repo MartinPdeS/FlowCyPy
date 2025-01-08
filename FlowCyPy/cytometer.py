@@ -3,23 +3,21 @@
 
 import logging
 import numpy as np
-import matplotlib.pyplot as plt
 from typing import List, Callable, Optional
 from MPSPlots.styles import mps
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.detector import Detector
 import pandas as pd
 import pint_pandas
+from FlowCyPy import units
 from FlowCyPy.units import Quantity, milliwatt
-from FlowCyPy.logger import SimulationLogger
-import seaborn as sns
+from FlowCyPy.experiment import Experiment
 
 # Set up logging configuration
 logging.basicConfig(
     level=logging.INFO,
     format='%(levelname)s - %(message)s'
 )
-
 
 class FlowCytometer:
     """
@@ -65,23 +63,26 @@ class FlowCytometer:
     """
     def __init__(
             self,
+            scatterer_collection: object,
             flow_cell: FlowCell,
             detectors: List[Detector],
             coupling_mechanism: Optional[str] = 'mie',
             background_power: Optional[Quantity] = 0 * milliwatt):
 
+        self.scatterer_collection = scatterer_collection
         self.flow_cell = flow_cell
-        self.scatterer_collection = flow_cell.scatterer_collection
         self.source = flow_cell.source
         self.detectors = detectors
         self.coupling_mechanism = coupling_mechanism
         self.background_power = background_power
-        self.plot = self.PlotInterface(self)
 
         assert len(self.detectors) == 2, 'For now, FlowCytometer can only take two detectors for the analysis.'
         assert self.detectors[0].name != self.detectors[1].name, 'Both detectors cannot have the same name'
 
-    def run_coupling_analysis(self) -> None:
+        for detector in detectors:
+            detector.cytometer = self
+
+    def run_coupling_analysis(self, scatterer_dataframe: pd.DataFrame) -> None:
         """
         Computes and assigns the optical coupling power for each particle-detection event.
 
@@ -106,14 +107,39 @@ class FlowCytometer:
             self.coupling_power = detection_mechanism(
                 source=self.source,
                 detector=detector,
-                scatterer=self.scatterer_collection
+                scatterer_dataframe=scatterer_dataframe,
+                medium_refractive_index=self.scatterer_collection.medium_refractive_index
             )
 
-            self.scatterer_collection.dataframe["detector: " + detector.name] = pint_pandas.PintArray(self.coupling_power, dtype=self.coupling_power.units)
+            scatterer_dataframe["detector: " + detector.name] = pint_pandas.PintArray(self.coupling_power, dtype=self.coupling_power.units)
 
-        self._generate_pulse_parameters()
+    def _generate_pulse_parameters(self, scatterer_dataframe: pd.DataFrame) -> None:
+        """
+        Generates and assigns random Gaussian pulse parameters for each particle event.
 
-    def initialize_signal(self) -> None:
+        The generated parameters include:
+        - Centers: The time at which each pulse occurs.
+        - Widths: The standard deviation (spread) of each pulse in seconds.
+
+        Effects
+        -------
+        scatterer_collection.dataframe : pandas.DataFrame
+            Adds a 'Widths' column with computed pulse widths for each particle.
+            Uses the flow speed and beam waist to calculate pulse widths.
+        """
+        columns = pd.MultiIndex.from_product(
+            [[p.name for p in self.detectors], ['Centers', 'Heights']]
+        )
+
+        self.pulse_dataframe = pd.DataFrame(columns=columns)
+
+        self.pulse_dataframe['Centers'] = scatterer_dataframe['Time']
+
+        widths = self.source.waist / self.flow_cell.flow_speed * np.ones(len(scatterer_dataframe))
+
+        scatterer_dataframe['Widths'] = pint_pandas.PintArray(widths, dtype=widths.units)
+
+    def initialize_signal(self, run_time: Quantity) -> None:
         """
         Initializes the raw signal for each detector based on the source and flow cell configuration.
 
@@ -126,12 +152,19 @@ class FlowCytometer:
         based on the flow cell's runtime.
 
         """
+        dataframes = []
+
         # Initialize the detectors
         for detector in self.detectors:
-            detector.source = self.source
-            detector.init_raw_signal(run_time=self.flow_cell.run_time)
+            dataframe = detector.get_initialized_signal(run_time=run_time)
 
-    def simulate_pulse(self) -> None:
+            dataframes.append(dataframe)
+
+        self.dataframe = pd.concat(dataframes, keys=[d.name for d in self.detectors])
+
+        self.dataframe.index.names = ["Detector", "Index"]
+
+    def get_continous_acquisition(self, run_time: Quantity) -> None:
         """
         Simulates the generation of optical signal pulses for each particle event.
 
@@ -150,24 +183,41 @@ class FlowCytometer:
         ValueError
             If the scatterer collection lacks required data columns ('Widths', 'Time').
         """
-        logging.debug("Starting pulse simulation.")
+        if not run_time.check('second'):
+            raise ValueError(f"flow_speed must be in meter per second, but got {run_time.units}")
 
-        _widths = self.scatterer_collection.dataframe['Widths'].values
-        _centers = self.scatterer_collection.dataframe['Time'].values
+        self.initialize_signal(run_time=run_time)
+
+        scatterer_dataframe = self.flow_cell.generate_event_dataframe(self.scatterer_collection.populations, run_time=run_time)
+
+        self.scatterer_collection.fill_dataframe_with_sampling(scatterer_dataframe)
+
+        self.run_coupling_analysis(scatterer_dataframe)
+
+        self._generate_pulse_parameters(scatterer_dataframe)
+
+        self.scatterer_collection.dataframe = scatterer_dataframe
+
+        _widths = scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude
+        _centers = scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude
 
         for detector in self.detectors:
-            _coupling_power = self.scatterer_collection.dataframe["detector: " + detector.name].values
+            _coupling_power = scatterer_dataframe["detector: " + detector.name].values
+
+            detector_signal = self.dataframe.xs(detector.name)['Signal']
 
             # Generate noise components
-            detector._add_thermal_noise_to_raw_signal()
+            detector._add_thermal_noise_to_raw_signal(signal=detector_signal)
 
-            detector._add_dark_current_noise_to_raw_signal()
+            detector._add_dark_current_noise_to_raw_signal(signal=detector_signal)
 
             # Broadcast the time array to the shape of (number of signals, len(detector.time))
-            time_grid = np.expand_dims(detector.dataframe.Time.values.numpy_data, axis=0) * _centers.units
+            time = self.dataframe.xs(detector.name)['Time'].pint.magnitude
 
-            centers = np.expand_dims(_centers.numpy_data, axis=1) * _centers.units
-            widths = np.expand_dims(_widths.numpy_data, axis=1) * _widths.units
+            time_grid = np.expand_dims(time, axis=0) * units.second
+
+            centers = np.expand_dims(_centers, axis=1) * units.second
+            widths = np.expand_dims(_widths, axis=1) * units.second
 
             # Compute the Gaussian for each height, center, and width using broadcasting
             power_gaussians = _coupling_power[:, np.newaxis] * np.exp(- (time_grid - centers) ** 2 / (2 * widths ** 2))
@@ -175,36 +225,25 @@ class FlowCytometer:
             total_power = np.sum(power_gaussians, axis=0) + self.background_power
 
             # Sum all the Gaussians and add them to the detector.raw_signal
-            detector._add_optical_power_to_raw_signal(optical_power=total_power)
+            detector._add_optical_power_to_raw_signal(
+                signal=detector_signal,
+                optical_power=total_power,
+                wavelength=self.flow_cell.source.wavelength
+            )
 
-            detector.capture_signal()
+            digitized_signal, is_saturated = detector.capture_signal(signal=detector_signal)
 
-        self._log_statistics()
+            self.dataframe.loc[detector.name, 'DigitizedSignal'] = digitized_signal
 
-    def _log_statistics(self) -> SimulationLogger:
-        """
-        Logs and displays key statistics about the simulated events.
+            detector.is_saturated = is_saturated
 
-        This includes metrics such as:
-        - Total number of events processed.
-        - Average time between events.
-        - First and last event times.
-        - Minimum time intervals between events.
+        experiment = Experiment(
+            run_time=run_time,
+            scatterer_dataframe=scatterer_dataframe,
+            detector_dataframe=self.dataframe
+        )
 
-        Returns
-        -------
-        SimulationLogger
-            An instance of the logger containing all recorded statistics.
-
-        Effects
-        -------
-        Outputs formatted tables to the console or log file, depending on the logger's configuration.
-        """
-        logger = SimulationLogger(cytometer=self)
-
-        logger.log_statistics(include_totals=True, table_format="fancy_grid")
-
-        return logger
+        return experiment
 
     def _get_detection_mechanism(self) -> Callable:
         """
@@ -242,32 +281,6 @@ class FlowCytometer:
             case _:
                 raise ValueError("Invalid coupling mechanism. Choose 'rayleigh' or 'uniform'.")
 
-    def _generate_pulse_parameters(self) -> None:
-        """
-        Generates and assigns random Gaussian pulse parameters for each particle event.
-
-        The generated parameters include:
-        - Centers: The time at which each pulse occurs.
-        - Widths: The standard deviation (spread) of each pulse in seconds.
-
-        Effects
-        -------
-        scatterer_collection.dataframe : pandas.DataFrame
-            Adds a 'Widths' column with computed pulse widths for each particle.
-            Uses the flow speed and beam waist to calculate pulse widths.
-        """
-        columns = pd.MultiIndex.from_product(
-            [[p.name for p in self.detectors], ['Centers', 'Heights']]
-        )
-
-        self.pulse_dataframe = pd.DataFrame(columns=columns)
-
-        self.pulse_dataframe['Centers'] = self.scatterer_collection.dataframe['Time']
-
-        widths = self.source.waist / self.flow_cell.flow_speed * np.ones(self.scatterer_collection.n_events)
-
-        self.scatterer_collection.dataframe['Widths'] = pint_pandas.PintArray(widths, dtype=widths.units)
-
     def add_detector(self, **kwargs) -> Detector:
         """
         Dynamically adds a new detector to the system configuration.
@@ -292,117 +305,3 @@ class FlowCytometer:
 
         return detector
 
-    class PlotInterface:
-        def __init__(self, cytometer):
-            self.cytometer = cytometer
-
-        def signals(self, figure_size: tuple = (10, 6), add_peak_locator: bool = False, show: bool = True) -> None:
-            """
-            Visualizes the raw signals for all detector channels along with the scatterer distribution.
-
-            Parameters
-            ----------
-            figure_size : tuple, optional
-                Dimensions of the generated plot (default: (10, 6)).
-            add_peak_locator : bool, optional
-                If True, adds visual markers for detected signal peaks (default: False).
-
-            Effects
-            -------
-            Displays a multi-panel plot showing:
-            - Raw signals for each detector channel.
-            - Scatterer distribution along the time axis.
-            """
-            logging.info("Plotting the signal for the different channels.")
-
-            scatterer_collection = self.cytometer.scatterer_collection
-            detectors = self.cytometer.detectors
-
-            signal_unit = detectors[0].dataframe['Signal'].max().to_compact().units
-            time_unit = detectors[0].dataframe['Time'].max().to_compact().units
-
-            n_detectors = len(detectors)
-
-            with plt.style.context(mps):
-                _, axes = plt.subplots(ncols=1, nrows=n_detectors + 1, figsize=figure_size, sharex=True, sharey=True, gridspec_kw={'height_ratios': [1, 1, 0.4]})
-
-            lines = detectors[0].plot(
-                ax=axes[0],
-                show=False,
-                signal_unit=signal_unit,
-                time_unit=time_unit,
-                add_peak_locator=add_peak_locator
-            )
-
-            lines = detectors[1].plot(
-                ax=axes[1],
-                show=False,
-                time_unit=time_unit,
-                signal_unit=signal_unit,
-                add_peak_locator=add_peak_locator
-            )
-
-            axes[-1].get_yaxis().set_visible(False)
-            scatterer_collection.add_to_ax(axes[-1])
-
-            if show: # Display the plot
-                plt.show()
-
-        def coupling_distribution(self, log_scale: bool = False, show: bool = True, equal_limits: bool = False, save_path: str = None) -> None:
-            """
-            Plots the density distribution of optical coupling in the FSC and SSC channels.
-
-            This method generates a joint plot showing the relationship between the signals from
-            the forward scatter ('detector: forward') and side scatter ('detector: side') detectors.
-            The plot is color-coded by particle population and can optionally display axes on a logarithmic scale.
-
-            Parameters
-            ----------
-            log_scale : bool, optional
-                If True, applies a logarithmic scale to both the x and y axes of the plot (default: False).
-            show : bool, optional
-                If True, displays the plot immediately. If False, the plot is created but not displayed,
-                allowing for further customization or saving externally (default: True).
-            equal_limits : bool, optional
-                If True, sets the same limits for both the x and y axes based on the maximum range
-                across both axes. If False, the limits are set automatically based on the data (default: False).
-
-            """
-            scatterer_collection = self.cytometer.scatterer_collection
-            detector_0, detector_1 = self.cytometer.detectors
-
-            with plt.style.context(mps):
-                joint_plot = sns.jointplot(
-                    data=scatterer_collection.dataframe,
-                    x=f'detector: {detector_0.name}',
-                    y=f'detector: {detector_1.name}',
-                    hue="Population",
-                    alpha=0.8,
-                )
-
-            if log_scale:
-                joint_plot.ax_joint.set_xscale('log')
-                joint_plot.ax_joint.set_yscale('log')
-
-            if equal_limits:
-                # Get data limits
-                x_data = scatterer_collection.dataframe[f'detector: {detector_0.name}']
-                y_data = scatterer_collection.dataframe[f'detector: {detector_1.name}']
-
-                x_min, x_max = x_data.min(), x_data.max()
-                y_min, y_max = y_data.min(), y_data.max()
-
-                # Find the overall min and max
-                overall_min = min(x_min, y_min)
-                overall_max = max(x_max, y_max)
-
-                # Set equal limits
-                joint_plot.ax_joint.set_xlim(overall_min, overall_max)
-                joint_plot.ax_joint.set_ylim(overall_min, overall_max)
-
-            if save_path:
-                joint_plot.figure.savefig(save_path, dpi=300, bbox_inches='tight')
-                print(f"Plot saved to {save_path}")
-
-            if show:  # Display the plot
-                plt.show()

@@ -25,17 +25,8 @@ import numpy as np
 # Set random seed for reproducibility
 np.random.seed(20)
 
-# Step 1: Define Flow Parameters
-# ------------------------------
-# The flow speed is set to 7.56 meters per second, with a flow area of 10 micrometers squared, and
-# the total simulation time is 0.1 milliseconds.
-flow_cell = FlowCell(
-    flow_speed=7.56 * meter / second,      # Flow speed: 7.56 meters per second
-    flow_area=(10 * micrometer) ** 2,      # Flow area: 10 micrometers squared
-    run_time=0.1 * millisecond           # Total simulation time: 0.1 milliseconds
-)
 
-# Step 2: Define Particle Size and Refractive Index Distributions
+# Step 1: Define Particle Size and Refractive Index Distributions
 # ---------------------------------------------------------------
 # Two particle populations are defined with different sizes and refractive indices.
 scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)
@@ -56,14 +47,7 @@ population_1 = Population(
 
 scatterer.add_population(population_0, population_1)
 
-flow_cell.initialize(scatterer_collection=scatterer)
 
-# Plot and visualize the scatterer distribution.
-scatterer.plot()
-
-# %%
-# Display the properties of the scatterer distribution.
-scatterer._log_properties()
 
 """
 Summary:

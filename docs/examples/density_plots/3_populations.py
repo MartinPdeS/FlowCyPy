@@ -45,25 +45,18 @@ flow_cell = FlowCell(
     source=source,
     flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
     flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
-    run_time=0.2 * millisecond               # Simulation run time: 0.5 ms
 )
 
 # Step 2: Defining Particle Populations
 # Initialize scatterer with a medium refractive index
-scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
+scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
 
 exosome = Exosome(particle_count=10e+8 * particle / milliliter)
 hdl = HDL(particle_count=10e+8 * particle / milliliter)
 ldl = LDL(particle_count=10e+8 * particle / milliliter)
 
 # Define populations with size distribution and refractive index
-scatterer.add_population(exosome)
-scatterer.add_population(hdl)
-scatterer.add_population(ldl)
-
-flow_cell.initialize(scatterer_collection=scatterer)   # Link populations to flow cell
-scatterer._log_properties()               # Display population properties
-scatterer.plot()                           # Visualize the population distributions
+scatterer_collection.add_population(exosome, hdl, ldl)
 
 # %%
 # Step 4: Simulating the Flow Cytometry Experiment
@@ -71,7 +64,7 @@ scatterer.plot()                           # Visualize the population distributi
 # Add forward scatter detector
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
-    saturation_levels=16_000 * microvolt,
+    saturation_levels='auto',
     sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
 
 )
@@ -99,19 +92,16 @@ detector_1 = Detector(
 
 
 cytometer = FlowCytometer(
+    scatterer_collection=scatterer_collection,
     detectors=[detector_0, detector_1],
     flow_cell=flow_cell
 )
 
 # Run the flow cytometry simulation
-cytometer.run_coupling_analysis()
-
-cytometer.initialize_signal()
-
-cytometer.simulate_pulse()
+experiment = cytometer.get_continous_acquisition(run_time=0.2 * millisecond)
 
 # Visualize the scatter signals from both detectors
-cytometer.plot.signals()
+experiment.plot.signals()
 
 # %%
 # Step 5: Analyzing Pulse Signals

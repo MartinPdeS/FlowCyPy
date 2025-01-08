@@ -2,6 +2,7 @@ from typing import List
 from FlowCyPy.units import meter, second, particle
 
 from PyMieSim.units import Quantity
+import pandas as pd
 from tabulate import tabulate
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
@@ -34,12 +35,10 @@ class FlowCell(object):
         The speed of the flow in meters per second (m/s).
     flow_area : Quantity
         The cross-sectional area of the flow tube in square meters (m²).
-    run_time : Quantity
-        The total duration of the flow simulation in seconds.
     """
     flow_speed: Quantity
     flow_area: Quantity
-    run_time: Quantity
+    scheme: str = 'poisson'
 
     source: BaseBeam = None
 
@@ -47,31 +46,9 @@ class FlowCell(object):
         """Initialize units for flow parameters."""
         self.flow_speed = Quantity(self.flow_speed, meter / second)
         self.flow_area = Quantity(self.flow_area, meter ** 2)
-        self.run_time = Quantity(self.run_time, second)
 
-        self.volume = self.flow_area * self.flow_speed * self.run_time
-
-    @field_validator('flow_speed')
-    def _validate_flow_speed(cls, value):
-        """
-        Validates that the flow speed is provided in meter per second.
-
-        Parameters
-        ----------
-        value : Quantity
-            The flow speed to validate.
-
-        Returns
-        -------
-        Quantity
-            The flow speed frequency.
-
-        Raises:
-            ValueError: If the flow speed is not in meter per second.
-        """
-        if not value.check(meter / second):
-            raise ValueError(f"flow_speed must be in meter per second, but got {value.units}")
-        return value
+    def get_volume(self, run_time: Quantity) -> Quantity:
+        return self.flow_area * self.flow_speed * run_time
 
     @field_validator('flow_area')
     def _validate_flow_area(cls, value):
@@ -95,131 +72,60 @@ class FlowCell(object):
             raise ValueError(f"flow_area must be in meter ** 2, but got {value.units}")
         return value
 
-    @field_validator('run_time')
-    def _validate_run_time(cls, value):
+    def get_population_sampling(self, run_time: Quantity, scatterer_collection: ScattererCollection) -> list[Quantity]:
+        population_sampling = [
+            p.particle_count.calculate_number_of_events(
+                flow_area=self.flow_area,
+                flow_speed=self.flow_speed,
+                run_time=run_time
+            ) for p in scatterer_collection.populations
+        ]
+
+        return population_sampling
+
+    def generate_event_dataframe(self, populations: List[Population], run_time: Quantity) -> pd.DataFrame:
         """
-        Validates that the total time is provided in second.
+        Generates a DataFrame of event times for each population based on the specified scheme.
 
         Parameters
         ----------
-        value : Quantity
-            The total time to validate.
+        populations : List[Population]
+            A list of populations for which to generate event times.
+        run_time : Quantity
+            The total duration of the experiment.
 
         Returns
         -------
-        Quantity
-            The validated total time.
-
-        Raises:
-            ValueError: If the total time is not in second.
+        pd.DataFrame
+            A MultiIndex DataFrame with event times for each population.
         """
-        if not value.check(second):
-            raise ValueError(f"run_time must be in second, but got {value.units}")
-        return value
-
-    def print_properties(self) -> None:
-        """
-        Print the core properties of the flow and particle interactions in the flow cytometer.
-        """
-        print("\nFlow Properties")
-        print(tabulate(self.get_properties(), headers=["Property", "Value"], tablefmt="grid"))
-
-    def get_properties(self) -> List[List[str]]:
-        return [
-            ['Flow Speed', f"{self.flow_speed:.2f~#P}"],
-            ['Flow Area', f"{self.flow_area:.2f~#P}"],
-            ['Total Time', f"{self.run_time:.2f~#P}"]
+        # Generate individual DataFrames for each population
+        population_event_frames = [
+            self._generate_poisson_events(population=population, run_time=run_time)
+            for population in populations
         ]
 
-    # def initialize(self, scatterer: Population | ScattererCollection) -> None:
-    #     if isinstance(scatterer, Population):
-    #         return self._initialize_population(scatterer)
+        # Combine the DataFrames with population names as keys
+        event_dataframe = pd.concat(population_event_frames, keys=[pop.name for pop in populations])
+        event_dataframe.index.names = ["Population", "Index"]
 
-    #     elif isinstance(scatterer, ScattererCollection):
-    #         return self._initialize_scatterer_collection(scatterer)
+        # Handle the scheme for event timing
+        if self.scheme.lower() in ['uniform-random', 'uniform-sequential']:
+            total_events = len(event_dataframe)
+            start_time = 0 * run_time.units
+            end_time = run_time
+            time_interval = (end_time - start_time) / total_events
+            evenly_spaced_times = numpy.arange(0, total_events) * time_interval
 
-    def _initialize_population(self, population: Population) -> None:
-        population.dataframe = pandas.DataFrame()
+            if self.scheme.lower() == 'uniform-random':
+                numpy.random.shuffle(evenly_spaced_times.magnitude)  # Shuffle times for random spacing
 
-        population.n_events = population.particle_count.calculate_number_of_events(
-            flow_area=self.flow_area,
-            flow_speed=self.flow_speed,
-            run_time=self.run_time
-        )
+            # Assign the computed times to the DataFrame
+            event_dataframe['Time'] = PintArray(evenly_spaced_times.to('second'))
 
-        self._generate_longitudinal_positions(population)
+        return event_dataframe
 
-        size = population.size.generate(population.n_events)
-        population.dataframe['Size'] = PintArray(size, dtype=size.units)
-
-        ri = population.refractive_index.generate(population.n_events)
-        population.dataframe['RefractiveIndex'] = PintArray(ri, dtype=ri.units)
-
-    def initialize(self, scatterer_collection: ScattererCollection, size_units: str = 'micrometer') -> None:
-        """
-        Initializes particle size, refractive index, and medium refractive index distributions.
-
-        Parameters
-        ----------
-        scatterer : Scatterer
-            An instance of the Scatterer class that describes the scatterer collection being used.
-
-        """
-        self.scatterer_collection = scatterer_collection
-
-        for population in self.scatterer_collection.populations:
-            self._initialize_population(population)
-            population.dataframe.Size = population.dataframe.Size.pint.to(size_units)
-
-        if len(self.scatterer_collection.populations) != 0:
-            self.scatterer_collection.dataframe = pandas.concat(
-                [population.dataframe for population in self.scatterer_collection.populations],
-                axis=0,
-                keys=[population.name for population in self.scatterer_collection.populations],
-            )
-            self.scatterer_collection.dataframe.index.names = ['Population', 'Index']
-
-        else:
-            dtypes = {
-                'Time': PintType('second'),            # Time column with seconds unit
-                'Position': PintType('meter'),         # Position column with meters unit
-                'Size': PintType('meter'),             # Size column with micrometers unit
-                'RefractiveIndex': PintType('meter')   # Dimensionless unit for refractive index
-            }
-
-            multi_index = pandas.MultiIndex.from_tuples([], names=["Population", "Index"])
-
-            # Create an empty DataFrame with specified column types and a multi-index
-            self.scatterer_collection.dataframe = pandas.DataFrame(
-                {col: pandas.Series(dtype=dtype) for col, dtype in dtypes.items()},
-                index=multi_index
-            )
-
-        self.scatterer_collection.n_events = len(self.scatterer_collection.dataframe)
-
-    def distribute_time_linearly(self, sequential_population: bool = False) -> None:
-        """
-        Distributes particle arrival times linearly across the total runtime of the flow cell.
-
-        Optionally randomizes the order of times for all populations to simulate non-sequential particle arrivals.
-
-        Parameters
-        ----------
-        sequential_population : bool, optional
-            If `True`, organize the order of arrival times across all populations (default is `False`).
-
-        """
-        # Generate linearly spaced time values across the flow cell runtime
-        linear_spacing = numpy.linspace(0, self.run_time, self.scatterer_collection.n_events)
-
-        # Optionally randomize the linear spacing
-        if not sequential_population:
-            numpy.random.shuffle(linear_spacing)
-
-        # Assign the linearly spaced or randomized times to the scatterer DataFrame
-        self.scatterer_collection.dataframe.Time = PintArray(linear_spacing, dtype=self.scatterer_collection.dataframe.Time.pint.units)
-
-    def _generate_longitudinal_positions(self, population: Population) -> None:
+    def _generate_poisson_events(self, run_time: Quantity, population: Population) -> pd.DataFrame:
         r"""
         Generate particle arrival times over the entire experiment duration based on a Poisson process.
 
@@ -263,11 +169,12 @@ class FlowCell(object):
         particle_flux = population.particle_count.compute_particle_flux(
             flow_speed=self.flow_speed,
             flow_area=self.flow_area,
-            run_time=self.run_time
+            run_time=run_time
         )
 
         # Step 2: Calculate the expected number of particles over the entire experiment
-        expected_particles = population.n_events
+        expected_particles = particle_flux * run_time
+        # expected_particles = population.n_events
 
         # Step 3: Generate inter-arrival times (exponentially distributed)
         inter_arrival_times = numpy.random.exponential(
@@ -279,17 +186,13 @@ class FlowCell(object):
         arrival_times = numpy.cumsum(inter_arrival_times)
 
         # Step 5: Limit the arrival times to the total experiment duration
-        arrival_times = arrival_times[arrival_times <= self.run_time]
+        arrival_times = arrival_times[arrival_times <= run_time]
 
-        time = arrival_times[arrival_times <= self.run_time]
+        dataframe = pd.DataFrame()
 
-        population.dataframe['Time'] = PintArray(time, dtype=time.units)
+        dataframe['Time'] = PintArray(arrival_times, dtype=arrival_times.units)
 
-        position = arrival_times * self.flow_speed
-
-        population.dataframe['Position'] = PintArray(position, dtype=position.units)
-
-        population.n_events = len(arrival_times) * particle
-
-        if population.n_events == 0:
+        if len(dataframe) == 0:
             warnings.warn("Population has been initialized with 0 events.")
+
+        return dataframe

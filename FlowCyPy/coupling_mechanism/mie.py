@@ -5,8 +5,10 @@ from PyMieSim.experiment.scatterer import Sphere as PMS_SPHERE
 from PyMieSim.experiment.source import PlaneWave
 from PyMieSim.experiment.detector import Photodiode as PMS_PHOTODIODE
 from PyMieSim.experiment import Setup
-from PyMieSim.units import degree, watt, AU, hertz
+from PyMieSim.units import Quantity, degree, watt, AU, hertz
 from FlowCyPy.noises import NoiseSetting
+import pandas as pd
+
 
 
 def apply_rin_noise(source: BaseBeam, total_size: int, bandwidth: float) -> np.ndarray:
@@ -94,7 +96,7 @@ def apply_rin_noise(source: BaseBeam, total_size: int, bandwidth: float) -> np.n
     return amplitude_with_rin
 
 
-def initialize_scatterer(scatterer: ScattererCollection, source: PlaneWave) -> PMS_SPHERE:
+def initialize_scatterer(scatterer_dataframe: pd.DataFrame, source: PlaneWave, medium_refractive_index: Quantity) -> PMS_SPHERE:
     """
     Initializes the scatterer object for the PyMieSim experiment.
 
@@ -110,8 +112,8 @@ def initialize_scatterer(scatterer: ScattererCollection, source: PlaneWave) -> P
     PMS_SPHERE
         Initialized scatterer for the experiment.
     """
-    size_list = scatterer.dataframe['Size'].values
-    ri_list = scatterer.dataframe['RefractiveIndex'].values
+    size_list = scatterer_dataframe['Size'].values
+    ri_list = scatterer_dataframe['RefractiveIndex'].values
 
     if len(size_list) == 0:
         raise ValueError("ScattererCollection size list is empty.")
@@ -122,7 +124,7 @@ def initialize_scatterer(scatterer: ScattererCollection, source: PlaneWave) -> P
     return PMS_SPHERE(
         diameter=size_list,
         property=ri_list,
-        medium_property=np.ones(len(size_list)) * scatterer.medium_refractive_index,
+        medium_property=np.ones(len(size_list)) * medium_refractive_index,
         source=source
     )
 
@@ -155,7 +157,7 @@ def initialize_detector(detector: Detector, total_size: int) -> PMS_PHOTODIODE:
     )
 
 
-def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: ScattererCollection, tolerance: float = 1e-5) -> np.ndarray:
+def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
     """
     Computes the detected signal by analyzing the scattering properties of particles.
 
@@ -175,7 +177,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: Sca
     np.ndarray
         Array of coupling values for each particle, based on the detected signal.
     """
-    size_list = scatterer.dataframe['Size'].values
+    size_list = scatterer_dataframe['Size'].values
 
     if len(size_list) == 0:
         return np.array([]) * watt
@@ -189,7 +191,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: Sca
         amplitude=amplitude_with_rin
     )
 
-    pms_scatterer = initialize_scatterer(scatterer, pms_source)
+    pms_scatterer = initialize_scatterer(scatterer_dataframe, pms_source, medium_refractive_index)
     pms_detector = initialize_detector(detector, total_size)
 
     # Configure the detector

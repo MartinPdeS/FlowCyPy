@@ -3,7 +3,7 @@ import pytest
 from FlowCyPy import Detector
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.units import (
-    ampere, watt, hertz, ohm, kelvin, volt, microsecond, degree, AU
+    ampere, watt, hertz, ohm, kelvin, volt, microsecond, degree, AU, nanometer
 )
 
 
@@ -25,7 +25,6 @@ def default_detector_shot_noise():
         signal_digitizer=signal_digitizer,
         temperature=300 * kelvin,
     )
-    detector.init_raw_signal(run_time=1 * microsecond)
 
     return detector
 
@@ -49,8 +48,6 @@ def default_detector_thermal_noise():
         signal_digitizer=signal_digitizer,
     )
 
-    detector.init_raw_signal(run_time=1 * microsecond)
-
     return detector
 
 
@@ -73,19 +70,23 @@ def default_detector_dark_current():
         signal_digitizer=signal_digitizer,
     )
 
-    detector.init_raw_signal(run_time=1 * microsecond)
-
     return detector
 
 
 def test_shot_noise_generation(default_detector_shot_noise):
     """Test that shot noise is generated and not zero for a detector."""
     # Generate photon shot noise
-    default_detector_shot_noise.init_raw_signal(run_time=100 * microsecond)
+    detector = default_detector_shot_noise
 
-    test_optical_power = np.linspace(1e-3, 3e-3, len(default_detector_shot_noise.dataframe)) * watt
+    dataframe = detector.get_initialized_signal(run_time=100 * microsecond)
 
-    shot_noise = default_detector_shot_noise._add_optical_power_to_raw_signal(optical_power=test_optical_power)
+    optical_power = np.linspace(1e-3, 3e-3, len(dataframe)) * watt
+
+    shot_noise = detector._add_optical_power_to_raw_signal(
+        signal=dataframe['Signal'],
+        optical_power=optical_power,
+        wavelength=1550 * nanometer
+    )
 
     # # Assert that the shot noise is generated and is not zero
     assert np.std(shot_noise) > 0 * volt, "Shot noise variance is zero, indicating no noise generated."
@@ -94,11 +95,13 @@ def test_shot_noise_generation(default_detector_shot_noise):
 def test_thermal_noise_generation(default_detector_thermal_noise):
     """Test that thermal noise is generated and not zero for a detector."""
     # Initialize the raw signal
-    default_detector_thermal_noise.init_raw_signal(run_time=100 * microsecond)
+    detector = default_detector_thermal_noise
 
-    thermal_noise = default_detector_thermal_noise._add_thermal_noise_to_raw_signal()
+    dataframe = detector.get_initialized_signal(run_time=100 * microsecond)
+
+    thermal_noise = detector._add_thermal_noise_to_raw_signal(dataframe['Signal'])
     # Generate thermal noise and capture signal
-    default_detector_thermal_noise.capture_signal()
+    detector.capture_signal(dataframe['Signal'])
 
     # Assert that thermal noise is added to the signal
     assert np.std(thermal_noise) > 0 * volt, "Thermal noise variance is zero, indicating no noise generated."
@@ -107,12 +110,14 @@ def test_thermal_noise_generation(default_detector_thermal_noise):
 def test_dark_current_noise_generation(default_detector_dark_current):
     """Test that dark current noise is generated and not zero for a detector."""
     # Initialize the raw signal
-    default_detector_dark_current.init_raw_signal(run_time=100 * microsecond)
+    detector = default_detector_dark_current
 
-    dark_current_noise = default_detector_dark_current._add_dark_current_noise_to_raw_signal()
+    dataframe = detector.get_initialized_signal(run_time=100 * microsecond)
+
+    dark_current_noise = detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])
 
     # Generate dark current noise and capture signal
-    default_detector_dark_current.capture_signal()
+    detector.capture_signal(dataframe['Signal'])
 
     # Assert that dark current noise is added to the signal
     assert np.std(dark_current_noise) > 0 * volt, "Dark current noise variance is zero, indicating no noise generated."
@@ -121,17 +126,16 @@ def test_dark_current_noise_generation(default_detector_dark_current):
 def test_combined_noise_generation(default_detector_shot_noise):
     """Test that combined noises are generated for the detector."""
     # Initialize the raw signal with shot noise enabled
-    default_detector_shot_noise.init_raw_signal(run_time=100 * microsecond)
+    detector = default_detector_shot_noise
 
-    default_detector_shot_noise._add_thermal_noise_to_raw_signal()
+    dataframe = detector.get_initialized_signal(run_time=100 * microsecond)
 
-    default_detector_shot_noise._add_dark_current_noise_to_raw_signal()
+    detector._add_thermal_noise_to_raw_signal(dataframe['Signal'])
 
-    # Capture the signal and add noise
-    default_detector_shot_noise.capture_signal()
+    detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])
 
     # Assert that the signal contains noise (not zero)
-    assert np.std(default_detector_shot_noise.dataframe.RawSignal) > 0 * volt, "Noise variance is zero, indicating no noise added to signal."
+    assert np.std(dataframe.Signal) > 0 * volt, "Noise variance is zero, indicating no noise added to signal."
 
 
 if __name__ == '__main__':

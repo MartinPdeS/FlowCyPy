@@ -17,9 +17,9 @@ from FlowCyPy.population import Exosome, HDL
 
 NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
-NoiseSetting.include_RIN_noise = True
+NoiseSetting.include_RIN_noise = False
 NoiseSetting.include_dark_current_noise = False
-NoiseSetting.include_thermal_noise = True
+NoiseSetting.include_thermal_noise = False
 
 np.random.seed(3)
 
@@ -33,10 +33,9 @@ flow_cell = FlowCell(
     source=source,
     flow_speed=7.56 * meter / second,      # Flow speed: 7.56 meters per second
     flow_area=(10 * micrometer) ** 2,      # Flow area: 10 x 10 micrometers
-    run_time=.2 * millisecond             # Total simulation time: 0.3 milliseconds
 )
 
-scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
+scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
 
 
 
@@ -49,15 +48,7 @@ for size in [150, 100, 50, 30]:
         refractive_index=distribution.Delta(position=1.39 * RIU)
     )
 
-    scatterer.add_population(population)
-
-flow_cell.initialize(scatterer_collection=scatterer)
-
-flow_cell.distribute_time_linearly(sequential_population=True)
-
-scatterer._log_properties()
-
-source.print_properties()  # Print the laser source properties
+    scatterer_collection.add_population(population)
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
@@ -87,20 +78,18 @@ detector_1 = Detector(
     temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
 )
 
-
-detector_1.print_properties()  # Print the properties of the forward scatter detector
-
-cytometer = FlowCytometer(                      # Laser source used in the experiment
+cytometer = FlowCytometer(
+    scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,                     # Populations used in the experiment
     background_power=0.0 * milliwatt,
     detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
 )
 
-cytometer.run_coupling_analysis()
+# Run the flow cytometry simulation
+experiment = cytometer.get_continous_acquisition(run_time=0.2 * millisecond)
 
-cytometer.initialize_signal()
-
-cytometer.simulate_pulse()
+# Visualize the scatter signals from both detectors
+experiment.plot.signals()
 
 algorithm = peak_locator.MovingAverage(
     threshold=200 * microvolt,            # Signal threshold: 0.1 mV
@@ -110,8 +99,6 @@ algorithm = peak_locator.MovingAverage(
 
 detector_0.set_peak_locator(algorithm)
 detector_1.set_peak_locator(algorithm)
-
-cytometer.plot.signals(add_peak_locator=False)
 
 analyzer = EventCorrelator(cytometer=cytometer)
 

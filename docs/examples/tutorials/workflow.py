@@ -71,7 +71,6 @@ flow_cell = FlowCell(
     source=source,
     flow_speed=7.56 * units.meter / units.second,  # Flow speed
     flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
-    run_time=0.1 * units.millisecond              # Simulation duration
 )
 
 
@@ -95,8 +94,7 @@ exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
 scatterer_collection.add_population(exosome)
 
 # Initialize the scatterer with the flow cell
-flow_cell.initialize(scatterer_collection=scatterer_collection)
-scatterer_collection.plot()  # Visualize the particle population
+# scatterer_collection.plot(sampling=300 * units.particle)  # Visualize the particle population
 
 # %%
 # Step 5: Define Detectors
@@ -145,46 +143,45 @@ detector_1 = Detector(
 from FlowCyPy import FlowCytometer
 
 cytometer = FlowCytometer(
+    scatterer_collection=scatterer_collection,
     detectors=[detector_0, detector_1],
     flow_cell=flow_cell,
     background_power=0.001 * units.milliwatt
 )
 
-cytometer.run_coupling_analysis()
+experiment = cytometer.get_continous_acquisition(run_time=0.03 * units.millisecond)
 
-cytometer.initialize_signal()
+experiment.plot.signals()  # Visualize signals from detectors
 
-cytometer.simulate_pulse()
-
-cytometer.plot.signals()  # Visualize signals from detectors
+experiment.plot.coupling_distribution(equal_limits=True)  # Visualize signals from detectors
 
 # %%
 # Step 7: Analyze Detected Signals
 # --------------------------------
-# The MovingAverage algorithm detects peaks in signals by analyzing local maxima within a defined
-# window size and threshold.
-from FlowCyPy import EventCorrelator
-from FlowCyPy import peak_locator
+# # The MovingAverage algorithm detects peaks in signals by analyzing local maxima within a defined
+# # window size and threshold.
+# from FlowCyPy import EventCorrelator
+# from FlowCyPy import peak_locator
 
-algorithm = peak_locator.MovingAverage(
-    threshold=10 * units.microvolt,
-    window_size=1 * units.microsecond,
-    min_peak_distance=0.3 * units.microsecond
-)
+# algorithm = peak_locator.MovingAverage(
+#     threshold=10 * units.microvolt,
+#     window_size=1 * units.microsecond,
+#     min_peak_distance=0.3 * units.microsecond
+# )
 
-# Assign peak detection algorithm to detectors
-detector_0.set_peak_locator(algorithm)
-detector_1.set_peak_locator(algorithm)
+# # Assign peak detection algorithm to detectors
+# detector_0.set_peak_locator(algorithm)
+# detector_1.set_peak_locator(algorithm)
 
-# Analyze signal data
-analyzer = EventCorrelator(cytometer=cytometer)
-analyzer.run_analysis(compute_peak_area=False)
+# # Analyze signal data
+# analyzer = EventCorrelator(cytometer=cytometer)
+# analyzer.run_analysis(compute_peak_area=False)
 
-# %%
-# Step 8: Visualize Coincidence and Density Plot
-# ----------------------------------------------
-# Coincidence analysis checks for simultaneous detection events across detectors, which are plotted
-# as a 2D density graph to illustrate signal relationships between FSC and SSC.
+# # %%
+# # Step 8: Visualize Coincidence and Density Plot
+# # ----------------------------------------------
+# # Coincidence analysis checks for simultaneous detection events across detectors, which are plotted
+# # as a 2D density graph to illustrate signal relationships between FSC and SSC.
 
-analyzer.get_coincidence(margin=1e-9 * units.microsecond)  # Extract coincidences
-analyzer.plot(log_plot=False)  # Generate a 2D density plot
+# analyzer.get_coincidence(margin=1e-9 * units.microsecond)  # Extract coincidences
+# analyzer.plot(log_plot=False)  # Generate a 2D density plot

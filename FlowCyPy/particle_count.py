@@ -1,6 +1,5 @@
 from FlowCyPy.units import Quantity, particle, liter, second
 
-
 class ParticleCount:
     """
     A class to represent the quantity of particles in a flow, which can be defined
@@ -30,11 +29,11 @@ class ParticleCount:
         if isinstance(value, ParticleCount):
             self = value
             return
-         
+
         if value.check(particle):
             # Fixed number of particles
             self.num_particles = value.to(particle)
-            
+
         elif value.check(particle / liter):
             # Concentration of particles
             self.concentration = value.to(particle / liter)
@@ -102,7 +101,7 @@ class ParticleCount:
             return f"{self.concentration}"
         else:
             return f"{self.num_particles}"
-    
+
     def __truediv__(self, factor: float):
         if hasattr(self, 'concentration'):
             self.concentration /= factor
@@ -113,4 +112,12 @@ class ParticleCount:
         if hasattr(self, 'concentration'):
             self.concentration *= factor
         else:
-            self.num_particles *= factor            
+            self.num_particles *= factor
+
+    @property
+    def value(self):
+        if hasattr(self, 'concentration'):
+            return self.concentration
+        else:
+            return self.num_particles
+

@@ -19,18 +19,18 @@ from FlowCyPy import NoiseSetting
 
 NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
-NoiseSetting.include_dark_current_noise = True
-NoiseSetting.include_thermal_noise = True
-NoiseSetting.include_RIN_noise = True
+NoiseSetting.include_dark_current_noise = False
+NoiseSetting.include_thermal_noise = False
+NoiseSetting.include_RIN_noise = False
 
 # Define optical power levels
 # optical_powers = [1e-12 * watt, 1e-9 * watt, 5e-9 * watt, 1e-8 * watt]  # Powers in watts
-optical_powers = [1e-10 * watt, 1e-5 * watt]  # Powers in watts
+optical_powers = [0.3e-11 * watt, 1e-8 * watt]  # Powers in watts
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
-    sampling_freq=6 * megahertz,           # Sampling frequency: 60 MHz
+    sampling_freq=2 * megahertz,           # Sampling frequency: 60 MHz
 )
 
 # Create a figure for signal visualization
@@ -51,7 +51,7 @@ for optical_power in optical_powers:
     )
 
     # Initialize the raw signal
-    detector.init_raw_signal(run_time=3000e-6 * second)
+    detector.init_raw_signal(run_time=30000e-6 * second)
 
     # Add optical power to the raw signal
     detector._add_optical_power_to_raw_signal(optical_power=optical_power)

@@ -2,10 +2,11 @@
 import numpy as np
 from FlowCyPy import ScattererCollection, Detector
 from FlowCyPy.source import BaseBeam
-from FlowCyPy.units import meter
+from FlowCyPy.units import meter, Quantity
+import pandas as pd
 
 
-def compute_scattering_cross_section(scatterer: ScattererCollection, source: BaseBeam, detector: Detector) -> np.ndarray:
+def compute_scattering_cross_section(scatterer_dataframe: pd.DataFrame, source: BaseBeam, detector: Detector) -> np.ndarray:
     r"""
     Computes the Rayleigh scattering cross-section for a spherical particle with angle dependency.
 
@@ -40,9 +41,8 @@ def compute_scattering_cross_section(scatterer: ScattererCollection, source: Bas
     np.ndarray
         The angle-dependent Rayleigh scattering cross-section (in square meters, m²).
     """
-
-    size_list = scatterer.dataframe['Size'].pint.to(meter).values.numpy_data
-    ri_list = scatterer.dataframe['RefractiveIndex'].values.numpy_data
+    size_list = scatterer_dataframe['Size'].pint.to(meter).values.numpy_data
+    ri_list = scatterer_dataframe['RefractiveIndex'].values.numpy_data
 
     # Extract properties
     wavelength = source.wavelength
@@ -63,7 +63,8 @@ def compute_scattering_cross_section(scatterer: ScattererCollection, source: Bas
     return cross_section.magnitude * meter**2
 
 
-def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: ScattererCollection) -> float:
+# def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: ScattererCollection) -> float:
+def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
     r"""
     Computes the power detected by a detector from a Rayleigh scattering event.
 
@@ -98,7 +99,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: Sca
     """
     scattering_cross_section = compute_scattering_cross_section(
         source=source,
-        scatterer=scatterer,
+        scatterer_dataframe=scatterer_dataframe,
         detector=detector
     )
 

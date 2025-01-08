@@ -18,7 +18,7 @@ from FlowCyPy.units import (
     micrometer,
     particle,
     nanometer,
-    millivolt,
+    millisecond,
     milliliter,
     ampere,
     AU
@@ -72,7 +72,6 @@ def flow_cell():
         source=source,
         flow_speed=0.2 * meter / second,
         flow_area=(1e-6 * meter * meter),
-        run_time=1e-3 * second,
     )
 
 
@@ -111,51 +110,41 @@ def default_scatterer(flow_cell, default_population):
 
 def test_flow_cytometer_simulation(default_detector_0, default_detector_1, default_scatterer, flow_cell):
     """Test the simulation of flow cytometer signals."""
-    flow_cell.initialize(scatterer_collection=default_scatterer)
-
     cytometer = FlowCytometer(
+        scatterer_collection=default_scatterer,
         detectors=[default_detector_0, default_detector_1],
         flow_cell=flow_cell,
         coupling_mechanism='mie'
     )
 
-    cytometer.run_coupling_analysis()
-
-    cytometer.initialize_signal()
-
-    cytometer.simulate_pulse()
+    experiment = cytometer.get_continous_acquisition(run_time=0.2 * millisecond)
 
     # Check that the signals are not all zeros (pulses should add non-zero values)
-    assert not np.all(default_detector_0.dataframe.Signal == 0 * volt), "FSC signal is all zeros."
-    assert not np.all(default_detector_0.dataframe.Signal == 0 * volt), "SSC signal is all zeros."
+    assert not np.all(experiment.detector_dataframe.Signal == 0 * volt), "FSC signal is all zeros."
+    assert not np.all(experiment.detector_dataframe.Signal == 0 * volt), "SSC signal is all zeros."
 
     # Check that the noise has been added to the signal
-    assert np.std(default_detector_1.dataframe.Signal) > 0 * volt, "FSC signal variance is zero, indicating no noise added."
-    assert np.std(default_detector_1.dataframe.Signal) > 0 * volt, "SSC signal variance is zero, indicating no noise added."
+    assert np.std(experiment.detector_dataframe.Signal) > 0 * volt, "FSC signal variance is zero, indicating no noise added."
+    assert np.std(experiment.detector_dataframe.Signal) > 0 * volt, "SSC signal variance is zero, indicating no noise added."
 
 
 @patch('matplotlib.pyplot.show')
 def test_flow_cytometer_plot(mock_show, default_detector_0, default_detector_1, default_scatterer, flow_cell):
     """Test the plotting of flow cytometer signals."""
-    flow_cell.initialize(scatterer_collection=default_scatterer)
-
     cytometer = FlowCytometer(
+        scatterer_collection=default_scatterer,
         detectors=[default_detector_0, default_detector_1],
         flow_cell=flow_cell,
         coupling_mechanism='uniform'
     )
 
-    cytometer.run_coupling_analysis()
+    experiment = cytometer.get_continous_acquisition(run_time=0.2 * millisecond)
 
-    cytometer.initialize_signal()
-
-    cytometer.simulate_pulse()
-
-    cytometer.plot.signals()
+    experiment.plot.signals()
 
     plt.close()
 
-    cytometer._log_statistics()
+    experiment.logger.scatterer()
 
 
 if __name__ == '__main__':

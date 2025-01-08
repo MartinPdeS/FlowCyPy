@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 from typing import Optional, Union
 import matplotlib.pyplot as plt
-from FlowCyPy.units import AU, volt, watt, degree, second, ampere, coulomb
+from FlowCyPy import units
+from FlowCyPy.units import AU, volt, watt, degree, ampere, coulomb, particle, meter
 from FlowCyPy.utils import PropertiesReport
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-from functools import cached_property
 import pint_pandas
 from FlowCyPy.physical_constant import PhysicalConstant
 from PyMieSim.units import Quantity
@@ -143,7 +143,36 @@ class Detector(PropertiesReport):
             if isinstance(attr_value, Quantity):
                 setattr(self, attr_name, attr_value.to_base_units())
 
-    def _add_thermal_noise_to_raw_signal(self) -> np.ndarray:
+    @property
+    def dataframe(self) -> pd.DataFrame:
+        return self.cytometer.dataframe.xs(self.name)
+
+    def get_initialized_signal(self, run_time: Quantity) -> pd.DataFrame:
+        """
+        Initializes the raw signal for each detector based on the source and flow cell configuration.
+
+        This method prepares the detectors for signal capture by associating each detector with the
+        light source and generating a time-dependent raw signal placeholder.
+
+        Effects
+        -------
+        Each detector's `raw_signal` attribute is initialized with time-dependent values
+        based on the flow cell's runtime.
+
+        """
+        time_points = int(self.signal_digitizer.sampling_freq * run_time)
+        time = np.linspace(0, run_time, time_points)
+
+        return pd.DataFrame(
+            data=dict(
+                Time=pint_pandas.PintArray(time, dtype=units.second),
+                RawSignal=pint_pandas.PintArray(np.zeros_like(time), dtype=units.volt),
+                Signal=pint_pandas.PintArray(np.zeros_like(time), dtype=units.volt),
+                DigitizedSignal=np.zeros_like(time)
+            )
+        )
+
+    def _add_thermal_noise_to_raw_signal(self, signal: pd.Series) -> np.ndarray:
         r"""
         Generates thermal noise (Johnson-Nyquist noise) based on temperature, resistance, and bandwidth.
 
@@ -169,13 +198,13 @@ class Detector(PropertiesReport):
             4 * PhysicalConstant.kb * self.temperature * self.resistance * self.signal_digitizer.bandwidth
         )
 
-        thermal_noise = np.random.normal(0, noise_std.to(volt).magnitude, size=len(self.dataframe)) * volt
+        thermal_noise = np.random.normal(0, noise_std.to(volt).magnitude, size=len(signal)) * volt
 
-        self.dataframe['RawSignal'] += thermal_noise
+        signal += thermal_noise
 
         return thermal_noise
 
-    def _add_dark_current_noise_to_raw_signal(self) -> np.ndarray:
+    def _add_dark_current_noise_to_raw_signal(self, signal: pd.Series) -> np.ndarray:
         r"""
         Generates dark current noise (shot noise from dark current).
 
@@ -201,22 +230,21 @@ class Detector(PropertiesReport):
             2 * 1.602176634e-19 * coulomb * self.dark_current * self.signal_digitizer.bandwidth
         )
 
-        dark_current_noise = np.random.normal(0, dark_current_std.to(ampere).magnitude, size=len(self.dataframe)) * ampere
+        dark_current_noise = np.random.normal(0, dark_current_std.to(ampere).magnitude, size=len(signal)) * ampere
 
         dark_voltage_noise = dark_current_noise * self.resistance
 
-        self.dataframe['RawSignal'] += dark_voltage_noise
+        signal += dark_voltage_noise
 
         return dark_voltage_noise
 
-    def _add_optical_power_to_raw_signal(self, optical_power: Quantity) -> None:
+    def _add_optical_power_to_raw_signal(self, signal: pd.Series, optical_power: Quantity, wavelength: Quantity) -> None:
         r"""
-        Simulates photon shot noise based on the given optical power and detector bandwidth, and returns
-        the corresponding voltage noise due to photon shot noise.
+        Simulates photon shot noise based on the given optical power and detector bandwidth, and adds
+        the corresponding voltage noise to the raw signal.
 
         Photon shot noise arises from the random and discrete arrival of photons at the detector. The noise
-        follows Poisson statistics, and the standard deviation of the shot noise depends on the photon flux
-        and the detector bandwidth. The result is a voltage noise that models these fluctuations.
+        follows Poisson statistics. This method computes the photon shot noise and adds it to the raw signal.
 
         Parameters
         ----------
@@ -236,144 +264,55 @@ class Detector(PropertiesReport):
             where:
                 - \( P_{\text{opt}} \) is the optical power (W),
                 - \( E_{\text{photon}} = \frac{h \cdot c}{\lambda} \) is the energy of a photon (J),
-                - \( h \) is Planck's constant \(6.626 \times 10^{-34}\, \text{J} \cdot \text{s}\),
-                - \( c \) is the speed of light \(3 \times 10^8 \, \text{m/s}\),
+                - \( h \) is Planck's constant (\(6.626 \times 10^{-34}\, \text{J} \cdot \text{s}\)),
+                - \( c \) is the speed of light (\(3 \times 10^8 \, \text{m/s}\)),
                 - \( \lambda \) is the wavelength of the incident light.
 
-            - The standard deviation of the current noise due to photon shot noise is:
+            - The photocurrent is computed as:
             \[
-                \sigma_{I_{\text{shot}}} = \sqrt{2 \cdot e \cdot I_{\text{photon}} \cdot B}
+                I_{\text{photon}} = R_{\text{det}} \cdot N_{\text{photon}}
             \]
             where:
-                - \( I_{\text{photon}} \) is the photocurrent generated by the incident optical power (A),
-                - \( e \) is the elementary charge \(1.602 \times 10^{-19} \, \text{C}\),
-                - \( B \) is the bandwidth of the detector (Hz).
+                - \( R_{\text{det}} \) is the detector responsivity (A/W).
 
-            - The voltage shot noise \( \sigma_{V_{\text{shot}}} \) is then given by Ohm's law:
+            - The voltage shot noise is then given by:
             \[
-            \sigma_{V_{\text{shot}}} = \sigma_{I_{\text{shot}}} \cdot R_{\text{load}}
+            V_{\text{shot}} = I_{\text{photon}} \cdot R_{\text{load}}
             \]
             where:
-                - \( R_{\text{load}} \) is the load resistance of the detector (ohms).
+                - \( R_{\text{load}} \) is the load resistance of the detector (Ohms).
         """
-        # Step 1: Compute the photocurrent for all time points at once using vectorization
-        I_photon = self.responsitivity * optical_power
+        # Step 1: Compute photon energy
+        energy_photon = PhysicalConstant.h * PhysicalConstant.c / wavelength  # Photon energy (J)
 
-        # Step 2: Compute the shot noise current for each time point using vectorization
-        i_shot = 2 * PhysicalConstant.e * I_photon * self.signal_digitizer.bandwidth
+        # Step 2: Compute mean photon count per sampling interval
+        photon_rate = optical_power / energy_photon  # Photon rate (photons/s)
 
-        I_shot = np.sqrt(i_shot)
+        sampling_interval = 1 / self.signal_digitizer.sampling_freq  # Sampling interval (s)
+        mean_photon_count = photon_rate * sampling_interval  # Mean photons per sample
 
-        # Step 3: Convert shot noise current to shot noise voltage using vectorization
-        V_shot = I_shot * self.resistance
+        # Step 3: Simulate photon arrivals using Poisson statistics
+        photon_counts_distribution = np.random.poisson(mean_photon_count.to('').magnitude, size=len(signal))
 
-        # Step 4: Generate Gaussian noise for each time point with standard deviation V_shot
-        noise_signal = np.random.normal(0, V_shot.to(volt).magnitude, len(self.dataframe['RawSignal'])) * volt
+        # Step 4: Convert photon counts to photocurrent
+        photon_power_distribution = photon_counts_distribution * energy_photon * self.signal_digitizer.sampling_freq
 
-        self.dataframe['RawSignal'] += optical_power * self.responsitivity * self.resistance
+        photocurrent_distribution = self.responsitivity * photon_power_distribution  # Current (A)
+        # Step 5: Convert photocurrent to shot noise voltage
+        shot_noise_voltage_distribution = photocurrent_distribution * self.resistance  # Voltage (V)
 
-        if NoiseSetting.include_shot_noise and NoiseSetting.include_noises:
-            self.dataframe['RawSignal'] += noise_signal
+        # Step 6: Add shot noise voltage to the raw signal
+        signal += shot_noise_voltage_distribution
 
-        return noise_signal
+        return shot_noise_voltage_distribution
 
-    def init_raw_signal(self, run_time: Quantity) -> None:
-        r"""
-        Initializes the raw signal and time arrays for the detector and generates optional noise.
-
-        Parameters
-        ----------
-        run_time : Quantity
-            The total duration of the signal to simulate (in seconds).
-
-        The photocurrent is calculated as:
-        \[
-            I_{\text{ph}} = P_{\text{opt}} \times R_{\text{ph}}
-        \]
-        Where:
-            - \( P_{\text{opt}} \) is the optical power,
-            - \( R_{\text{ph}} \) is the responsivity in amperes per watt.
-        """
-        self.run_time = run_time
-        time_points = int(self.signal_digitizer.sampling_freq * run_time)
-        time = np.linspace(0, run_time, time_points)
-
-        self.dataframe = pd.DataFrame(
-            data=dict(
-                Time=pint_pandas.PintArray(time, dtype=second),
-                RawSignal=pint_pandas.PintArray(np.zeros_like(time), dtype=volt),
-                Signal=pint_pandas.PintArray(np.zeros_like(time), dtype=volt)
-            )
-        )
-
-    def capture_signal(self) -> None:
+    def capture_signal(self, signal: pd.Series) -> None:
         """
         Processes and captures the final signal by applying noise, baseline shifts, and saturation.
         """
-        self.dataframe['Signal'] = self.dataframe['RawSignal']
+        digitized_signal, is_saturated = self.signal_digitizer.discretize_signal(signal)
 
-        self.dataframe['DigitizedSignal'], self.is_saturated = self.signal_digitizer.discretize_signal(self.dataframe['Signal'])
-
-    @plot_helper
-    def plot(
-        self,
-        ax: Optional[plt.Axes] = None,
-        time_unit: Optional[Union[str, Quantity]] = None,
-        signal_unit: Optional[Union[str, Quantity]] = None,
-        add_peak_locator: bool = False,
-        color: str = None,
-    ) -> tuple[Quantity, Quantity]:
-        """
-        Visualizes the signal and optional components (peaks, raw signal) over time.
-
-        This method generates a customizable plot of the processed signal as a function of time.
-        Additional components like raw signals and detected peaks can also be overlaid.
-
-        Parameters
-        ----------
-        ax : matplotlib.axes.Axes, optional
-            An existing Matplotlib Axes object to plot on. If None, a new Axes will be created.
-        time_unit : str or Quantity, optional
-            Desired unit for the time axis. If None, defaults to the most compact unit of the `Time` column.
-        signal_unit : str or Quantity, optional
-            Desired unit for the signal axis. If None, defaults to the most compact unit of the `Signal` column.
-        add_peak_locator : bool, optional
-            If True, adds the detected peaks (if available) to the plot. Default is False.
-
-        Returns
-        -------
-        tuple[Quantity, Quantity]
-            A tuple containing the units used for the time and signal axes, respectively.
-
-        Notes
-        -----
-        - The `Time` and `Signal` data are automatically converted to the specified units for consistency.
-        - If no `ax` is provided, a new figure and axis will be generated.
-        - Warnings are logged if peak locator data is unavailable when `add_peak_locator` is True.
-        """
-        # Set default units if not provided
-        signal_unit = signal_unit or self.dataframe['Signal'].max().to_compact().units
-        time_unit = time_unit or self.dataframe['Time'].max().to_compact().units
-
-        x = self.dataframe['Time'].pint.to(time_unit)
-
-        # Plot captured signal
-        if not hasattr(self.dataframe, 'Signal'):
-            logging.warning("The detector does not have a captured signal. Please run .capture_signal() method first.")
-
-        ax.step(x, self.dataframe['DigitizedSignal'], color=color, linestyle='-', label=f'{self.name} [Digitized]', linewidth=2)
-        ax.legend(loc='upper left')
-
-        # Overlay peak locator positions, if requested
-        if add_peak_locator:
-            if not hasattr(self, 'algorithm'):
-                logging.warning("The detector does not have a peak locator algorithm. Peaks cannot be plotted.")
-            else:
-                self.algorithm._add_to_ax(ax=ax, signal_unit=signal_unit, time_unit=time_unit)
-
-        # Customize labels
-        ax.set_xlabel(f"Time [{time_unit:P}]")
-        ax.set_ylabel(f"{self.name} [bin]")
+        return digitized_signal, is_saturated
 
     @plot_helper
     def plot_raw(

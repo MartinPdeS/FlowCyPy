@@ -3,7 +3,7 @@ from FlowCyPy import ScattererCollection, Detector, ureg
 from FlowCyPy.source import BaseBeam
 
 
-def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: ScattererCollection) -> np.ndarray:
+def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: ScattererCollection, medium_refractive_index) -> np.ndarray:
     r"""
     Computes the power detected by a detector from a uniform distribution.
 
@@ -36,4 +36,4 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer: Sca
     float
         The power detected by the detector (in watts, W).
     """
-    return np.ones(len(scatterer.dataframe)) * ureg.watt
+    return np.ones(len(scatterer_dataframe)) * ureg.watt

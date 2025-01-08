@@ -1,13 +1,14 @@
 
 from typing import Union
 from FlowCyPy import distribution
-from dataclasses import field
+import pandas as pd
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-from FlowCyPy.units import particle
+from FlowCyPy import units
 from FlowCyPy.utils import PropertiesReport
 from PyMieSim.units import Quantity, RIU, meter
 from FlowCyPy.particle_count import ParticleCount
+from pint_pandas import PintArray
 
 
 config_dict = dict(
@@ -51,29 +52,6 @@ class Population(PropertiesReport):
             if isinstance(attr_value, Quantity):
                 # Convert the quantity to its base unit (strip prefix)
                 setattr(self, attr_name, attr_value.to_base_units())
-
-    @field_validator('concentration')
-    def _validate_concentration(cls, value):
-        """
-        Validates that the concentration is expressed in units of inverse volume.
-
-        Parameters
-        ----------
-        value : Quantity
-            The concentration to validate.
-
-        Returns
-        -------
-        Quantity
-            The validated concentration.
-
-        Raises
-        ------
-            ValueError: If the concentration is not expressed in units of inverse volume.
-        """
-        if not value.check('particles / [length]**3'):
-            raise ValueError(f"concentration must be in units of particles per volume (e.g., particles/m^3), but got {value.units}")
-        return value
 
     @field_validator('refractive_index')
     def _validate_refractive_index(cls, value):
@@ -132,8 +110,27 @@ class Population(PropertiesReport):
             return value
 
         raise TypeError(f"suze must be of type Quantity or distribution.Base, but got {type(value)}")
-    
+
     def dilute(self, factor: float) -> None:
         self.particle_count /= factor
+
+    def generate_sampling(self, sampling: Quantity) -> tuple:
+        size = self.size.generate(sampling)
+
+        ri = self.refractive_index.generate(sampling)
+
+        return size, ri
+
+    def _get_sampling(self, sampling: int) -> pd.DataFrame:
+        size = self.size.generate(sampling)
+
+        ri = self.refractive_index.generate(sampling)
+
+        dataframe = pd.DataFrame(columns=['Size', 'RefractiveIndex'])
+
+        dataframe['Size'] = PintArray(size, dtype=size.units)
+        dataframe['RefractiveIndex'] = PintArray(ri, dtype=ri.units)
+
+        return dataframe
 
 from FlowCyPy.populations_instances import *  # noqa F403
