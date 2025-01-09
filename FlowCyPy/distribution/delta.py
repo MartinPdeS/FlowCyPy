@@ -1,4 +1,3 @@
-
 from FlowCyPy.distribution.base_class import Base, config_dict
 import numpy as np
 from typing import Tuple
@@ -9,9 +8,9 @@ from pydantic.dataclasses import dataclass
 @dataclass(config=config_dict)
 class Delta(Base):
     r"""
-    Represents a delta-like distribution for particle sizes.
+    Represents a delta Dirac distribution for particle sizes.
 
-    In a delta distribution, all particle sizes are the same, representing a delta function:
+    In a delta Dirac distribution, all particle sizes are the same, represented by the Dirac delta function:
 
     .. math::
         f(x) = \delta(x - x_0)
@@ -23,8 +22,6 @@ class Delta(Base):
     ----------
     position : Quantity
         The particle size for the delta distribution in meters.
-    scale_factor : float, optional
-        A scaling factor applied to the PDF (not the sizes).
     """
 
     position: Quantity
@@ -33,7 +30,7 @@ class Delta(Base):
     def __post_init__(self):
         self._main_units = self.position.units
 
-    def generate(self, n_samples: int) -> np.ndarray:
+    def generate(self, n_samples: int) -> Quantity:
         r"""
         Generates a singular distribution of scatterer sizes.
 
@@ -46,34 +43,64 @@ class Delta(Base):
 
         Returns
         -------
-        np.ndarray
+        Quantity
             An array of identical scatterer sizes in meters.
         """
-        return np.ones(n_samples.magnitude) * self.position.magnitude * self._main_units
+        return np.ones(n_samples) * self.position.magnitude * self._main_units
 
-    def get_pdf(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        r"""
-        Returns the x-values and the scaled PDF values for the singular distribution.
-
-        The PDF is represented as a delta-like function centered at `position`.
+    def _generate_default_x(self, x_min_factor: float = 0.9, x_max_factor: float = 1.1, n_points: int = 100) -> Quantity:
+        """
+        Generates a default range of x-values around the `position`.
 
         Parameters
         ----------
-        x : np.ndarray
-            The input x-values (particle sizes) over which to compute the PDF.
+        x_min_factor : float, optional
+            Factor for the minimum x-value relative to the `position`. Default is 0.9 (90% of the position).
+        x_max_factor : float, optional
+            Factor for the maximum x-value relative to the `position`. Default is 1.1 (110% of the position).
+        n_points : int, optional
+            Number of points in the generated range. Default is 100.
 
         Returns
         -------
-        Tuple[np.ndarray, np.ndarray]
+        Quantity
+            A range of x-values with appropriate units.
+        """
+        if x_min_factor >= x_max_factor:
+            raise ValueError("x_min_factor must be less than x_max_factor.")
+        if n_points < 2:
+            raise ValueError("n_points must be at least 2.")
+
+        x_min = self.position.magnitude * x_min_factor
+        x_max = self.position.magnitude * x_max_factor
+        return np.linspace(x_min, x_max, n_points) * self.position.units
+
+    def get_pdf(self, x_min_factor: float = 0.99, x_max_factor: float = 1.01, n_points: int = 21) -> Tuple[Quantity, np.ndarray]:
+        r"""
+        Returns the x-values and the scaled PDF values for the singular distribution.
+
+        If `x` is not provided, a default range of x-values is generated around the `position`.
+
+        Parameters
+        ----------
+        x : Quantity, optional
+            The input x-values (particle sizes) over which to compute the PDF. If not provided, a range
+            is generated automatically.
+
+        Returns
+        -------
+        Tuple[Quantity, np.ndarray]
             The input x-values and the corresponding scaled PDF values.
         """
+        x = self._generate_default_x(x_min_factor=x_min_factor, x_max_factor=x_max_factor, n_points=n_points)
+
         common_units = x.units
+        pdf = np.zeros_like(x.magnitude)
 
-        pdf = np.zeros_like(x)
-
-        idx = (np.abs(x.magnitude - self.position.to(common_units).magnitude)).argmin()  # Delta-like function for singular value
-        pdf[idx] = 1.0
+        # Find the closest x-value to the delta position
+        idx = (np.abs(x.magnitude - self.position.to(common_units).magnitude)).argmin()
+        pdf[idx] = 1.0  # Dirac delta spike at the closest x-value
         return x, pdf
 
     def __repr__(self) -> str:
-        return f"Delta({self.position:.3f~P})"
+        return f"Delta(position={self.position:.3f~P})"

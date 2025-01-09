@@ -7,6 +7,10 @@ from FlowCyPy.utils import PropertiesReport
 from FlowCyPy.distribution import Base as BaseDistribution
 from typing import Optional, List
 from pint_pandas import PintArray
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.colors import LinearSegmentedColormap
 from enum import Enum
 from FlowCyPy import units
 
@@ -105,46 +109,6 @@ class ScattererCollection(PropertiesReport):
             If the concentration does not have the expected dimensionality.
         """
         self.populations.extend(population)
-        return population
-
-    def _add_population(self, name: str, size: BaseDistribution, refractive_index: BaseDistribution, concentration: Quantity) -> 'ScattererCollection':
-        """
-        Adds a population to the ScattererCollection instance with the specified attributes.
-
-        Parameters
-        ----------
-        name : str
-            The name of the population.
-        size : BaseDistribution
-            The size distribution of the population.
-        refractive_index : BaseDistribution
-            The refractive index distribution of the population.
-        concentration : Quantity
-            The concentration of the population. Must have the dimensionality of 'particles per liter'.
-
-        Returns
-        -------
-        ScattererCollection
-            The ScattererCollection instance (to support chaining).
-
-        Raises
-        ------
-        ValueError
-            If the concentration does not have the expected dimensionality.
-        """
-        if concentration.dimensionality != (particle / liter).dimensionality:
-            raise ValueError(
-                f"Invalid concentration dimensionality: {concentration.dimensionality}. Expected dimensionality is 'particles per liter' or similar."
-            )
-
-        population = Population(
-            name=name,
-            size=size,
-            refractive_index=refractive_index,
-            concentration=concentration
-        )
-
-        self.populations.append(population)
         return population
 
     @property
@@ -251,3 +215,78 @@ class ScattererCollection(PropertiesReport):
 
             scatterer_dataframe.loc[population.name, 'Size'] = PintArray(size, dtype=size.units)
             scatterer_dataframe.loc[population.name, 'RefractiveIndex'] = PintArray(ri, dtype=ri.units)
+
+    def plot(self, n_points: int = 100) -> None:
+        """
+        Visualizes the joint and marginal distributions of size and refractive index
+        for multiple populations in the scatterer collection.
+
+        This method creates a joint plot using `sns.JointGrid`, where:
+        - The joint area displays filled contours representing the PDF values of size and refractive index.
+        - The marginal areas display the size and refractive index PDFs as filled plots.
+
+        Each population is plotted with a distinct color using a transparent colormap for the joint area.
+
+        Parameters
+        ----------
+        n_points : int, optional
+            The number of points used to compute the size and refractive index PDFs. Default is 100.
+            Increasing this value results in smoother distributions but increases computation time.
+
+        Notes
+        -----
+        - The joint area uses a transparent colormap, transitioning from fully transparent
+        to fully opaque for better visualization of overlapping populations.
+        - Marginal plots show semi-transparent filled curves for clarity.
+
+        Example
+        -------
+        >>> scatterer_collection.plot(n_points=200)
+
+        This will generate a plot with 200 points in the PDFs for size and refractive index.
+        """
+        def create_transparent_colormap(base_color):
+            """
+            Create a colormap that transitions from transparent to a specified base color.
+            """
+            return LinearSegmentedColormap.from_list(
+                "transparent_colormap",
+                [(base_color[0], base_color[1], base_color[2], 0),  # Fully transparent
+                (base_color[0], base_color[1], base_color[2], 1)],  # Fully opaque
+                N=256
+            )
+
+        # Create a JointGrid for visualization
+        with plt.style.context(mps):
+            grid = sns.JointGrid()
+
+        for index, population in enumerate(self.populations):
+            # Get size and refractive index PDFs
+            size, size_pdf = population.size.get_pdf(n_points=n_points)
+            ri, ri_pdf = population.refractive_index.get_pdf(n_points=n_points)
+
+            # Create a grid of size and ri values
+            X, Y = np.meshgrid(size, ri)
+            Z = np.outer(ri_pdf, size_pdf)  # Compute the PDF values on the grid
+
+            # Create a transparent colormap for this population
+            base_color = sns.color_palette()[index]
+            transparent_cmap = create_transparent_colormap(base_color)
+
+            # Plot the joint area as a filled contour plot
+            grid.ax_joint.contourf(
+                X, Y, Z, levels=10, cmap=transparent_cmap, extend="min"
+            )
+
+            # Plot the marginal distributions
+            grid.ax_marg_x.fill_between(size.magnitude, size_pdf, color=f"C{index}", alpha=0.5)
+            grid.ax_marg_y.fill_betweenx(ri.magnitude, ri_pdf, color=f"C{index}", alpha=0.5)
+
+        # Set axis labels
+        grid.ax_joint.set_xlabel(f"Size [{size.units}]")
+        grid.ax_joint.set_ylabel(f"Refractive Index [{ri.units}]")
+
+        plt.tight_layout()
+
+        # Show the plot
+        plt.show()

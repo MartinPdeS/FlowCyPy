@@ -21,12 +21,10 @@ class Uniform(Base):
 
     Parameters
     ----------
-    lower_bound : float
+    lower_bound : Quantity
         The lower bound for particle sizes in meters.
-    upper_bound : float
+    upper_bound : Quantity
         The upper bound for particle sizes in meters.
-    scale_factor : float, optional
-        A scaling factor applied to the PDF (not the sizes).
     """
 
     lower_bound: Quantity
@@ -34,7 +32,29 @@ class Uniform(Base):
     _name = 'Uniform'
 
     def __post_init__(self):
-        self._main_units = self.lower_bound.units
+        self.lower_bound = self.lower_bound.to(self.upper_bound.units)
+
+    def _generate_default_x(self, n_points: int = 100) -> Quantity:
+        """
+        Generates a default range of x-values for the uniform distribution.
+
+        Parameters
+        ----------
+        n_points : int, optional
+            Number of points in the generated range. Default is 100.
+
+        Returns
+        -------
+        Quantity
+            A range of x-values with appropriate units.
+        """
+        if n_points < 2:
+            raise ValueError("n_points must be at least 2.")
+
+        x_min = self.lower_bound.magnitude / 1.1
+        x_max = self.upper_bound.magnitude * 1.1
+
+        return np.linspace(x_min, x_max, n_points) * self.lower_bound.units
 
     def generate(self, n_samples: Quantity) -> Quantity:
         """
@@ -44,36 +64,42 @@ class Uniform(Base):
 
         Parameters
         ----------
-        n_samples : Quantity
+        n_samples : int
             The number of particle sizes to generate.
 
         Returns
         -------
-        np.ndarray
+        Quantity
             An array of scatterer sizes in meters.
         """
         return np.random.uniform(
-            self.lower_bound.to(self._main_units).magnitude,
-            self.upper_bound.to(self._main_units).magnitude,
+            self.lower_bound.magnitude,
+            self.upper_bound.magnitude,
             n_samples.magnitude
-        ) * self._main_units
+        ) * self.lower_bound.units
 
-    def get_pdf(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    def get_pdf(self, x: Quantity = None, n_points: int = 100) -> Tuple[Quantity, np.ndarray]:
         """
-        Returns the x-values and the scaled PDF values for the uniform distribution.
+        Returns the x-values and the PDF values for the uniform distribution.
 
-        The `scale_factor` is applied to the PDF, not the generated sizes.
+        If `x` is not provided, a default range of x-values is generated.
 
         Parameters
         ----------
-        x : np.ndarray
-            The input x-values (particle sizes) over which to compute the PDF.
+        x : Quantity, optional
+            The input x-values (particle sizes) over which to compute the PDF. If not provided,
+            a range is automatically generated.
+        n_points : int, optional
+            Number of points in the generated range if `x` is not provided. Default is 100.
 
         Returns
         -------
-        Tuple[np.ndarray, np.ndarray]
-            The input x-values and the corresponding scaled PDF values.
+        Tuple[Quantity, np.ndarray]
+            The input x-values and the corresponding PDF values.
         """
+        if x is None:
+            x = self._generate_default_x(n_points=n_points)
+
         common_unit = self.lower_bound.units
 
         pdf = uniform.pdf(
@@ -85,4 +111,4 @@ class Uniform(Base):
         return x, pdf
 
     def __repr__(self) -> str:
-        return f"Uniform({self.lower_bound:.3f~P}, {self.upper_bound:.3f~P})"
+        return f"Uniform(lower_bound={self.lower_bound:.3f~P}, upper_bound={self.upper_bound:.3f~P})"

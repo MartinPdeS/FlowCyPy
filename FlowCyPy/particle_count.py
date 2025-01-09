@@ -108,11 +108,15 @@ class ParticleCount:
         else:
             self.num_particles /= factor
 
+        return self
+
     def __mul__(self, factor: float):
         if hasattr(self, 'concentration'):
             self.concentration *= factor
         else:
             self.num_particles *= factor
+
+        return self
 
     @property
     def value(self):
