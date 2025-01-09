@@ -31,11 +31,20 @@ class Normal(Base):
 
     mean: Quantity
     std_dev: Quantity
-    _name = 'Normal'
 
-    def __post_init__(self):
-        self.std_dev = self.std_dev.to(self.mean.units)
+    @property
+    def _units(self) -> Quantity:
+        return self.mean.units
 
+    @property
+    def _mean(self) -> Quantity:
+        return self.mean.to(self._units)
+
+    @property
+    def _std_dev(self) -> Quantity:
+        return self.std_dev.to(self._units)
+
+    @Base.pre_generate
     def generate(self, n_samples: int) -> np.ndarray:
         """
         Generates a normal distribution of scatterer sizes.
@@ -53,12 +62,12 @@ class Normal(Base):
             An array of scatterer sizes in meters.
         """
         return np.random.normal(
-            loc=self.mean.magnitude,
-            scale=self.std_dev.magnitude,
-            size=int(n_samples.magnitude)
-        ) * self.mean.units
+            loc=self._mean.magnitude,
+            scale=self._std_dev.magnitude,
+            size=n_samples
+        )
 
-    def _generate_default_x(self, x_min: float = -3, x_max: float = 3, n_points: int = 20) -> np.ndarray:
+    def _generate_default_x(self, x_min: float = -3, x_max: float = 3, n_samples: int = 20) -> np.ndarray:
         """
         Generates a range of x-values based on the mean and standard deviation.
 
@@ -68,7 +77,7 @@ class Normal(Base):
             Factor for the minimum x-value as a multiple of the standard deviation from the mean. Default is -3.
         x_max : float, optional
             Factor for the maximum x-value as a multiple of the standard deviation from the mean. Default is 3.
-        n_points : int, optional
+        n_samples : int, optional
             Number of points in the generated range. Default is 500.
 
         Returns
@@ -78,16 +87,14 @@ class Normal(Base):
         """
         if x_min >= x_max:
             raise ValueError("x_min must be less than x_max.")
-        if n_points < 2:
-            raise ValueError("n_points must be at least 2.")
 
-        mu = self.mean.magnitude
-        sigma = self.std_dev.magnitude
+        mu = self._mean.magnitude
+        sigma = self._std_dev.magnitude
         x_min_value = mu + x_min * sigma
         x_max_value = mu + x_max * sigma
-        return np.linspace(x_min_value, x_max_value, n_points) * self.mean.units
+        return np.linspace(x_min_value, x_max_value, n_samples) * self._units
 
-    def get_pdf(self, x: np.ndarray = None, x_min: float = -3, x_max: float = 3, n_points: int = 20) -> Tuple[np.ndarray, np.ndarray]:
+    def get_pdf(self, x: np.ndarray = None, x_min: float = -3, x_max: float = 3, n_samples: int = 20) -> Tuple[np.ndarray, np.ndarray]:
         """
         Returns the x-values and the scaled PDF values for the normal distribution.
 
@@ -99,7 +106,7 @@ class Normal(Base):
             Factor for the minimum x-value as a multiple of the standard deviation from the mean. Default is -3.
         x_max : float, optional
             Factor for the maximum x-value as a multiple of the standard deviation from the mean. Default is 3.
-        n_points : int, optional
+        n_samples : int, optional
             Number of points in the generated range. Default is 500.
 
         Returns
@@ -107,14 +114,12 @@ class Normal(Base):
         Tuple[np.ndarray, np.ndarray]
             The input x-values and the corresponding PDF values.
         """
-        if x is None:
-            x = self._generate_default_x(x_min=x_min, x_max=x_max, n_points=n_points)
+        x = self._generate_default_x(x_min=x_min, x_max=x_max, n_samples=n_samples)
 
-        common_units = x.units
         pdf = norm.pdf(
             x.magnitude,
-            loc=self.mean.to(common_units).magnitude,
-            scale=self.std_dev.to(common_units).magnitude
+            loc=self.mean.magnitude,
+            scale=self.std_dev.magnitude
         )
 
         return x, pdf

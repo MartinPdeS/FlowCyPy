@@ -28,7 +28,7 @@ distributions = [
 
 @patch('matplotlib.pyplot.show')
 @pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__.__name__)
-def test_number_of_samples(mock_show, distribution, n_samples, x_values):
+def test_number_of_samples(mock_show, distribution, n_samples):
     """Test the generate method of the Distribution class."""
 
     # Generate particle sizes
@@ -41,10 +41,10 @@ def test_number_of_samples(mock_show, distribution, n_samples, x_values):
     assert np.all(sizes > 0), f"{distribution.__class__.__name__}: Generated sizes should all be positive."
 
     # Get the PDF and assert it returns values
-    x, pdf = distribution.get_pdf(x_values)
+    x, pdf = distribution.get_pdf()
 
     # Assert PDF has the same shape as input x_values
-    assert pdf.shape == x_values.shape, f"{distribution.__class__.__name__}: PDF output shape mismatch."
+    assert pdf.shape == x.shape, f"{distribution.__class__.__name__}: PDF output shape mismatch."
 
     # Assert PDF values are non-negative
     assert np.all(pdf >= 0), f"{distribution.__class__.__name__}: PDF should return non-negative values."
@@ -58,11 +58,11 @@ def test_number_of_samples(mock_show, distribution, n_samples, x_values):
     plt.close()
 
 
-def test_uniform_properties(x_values):
+def test_uniform_properties():
     """Test boundary conditions in the PDF generation."""
     distribution = distributions[2]
 
-    x, pdf = distribution.get_pdf(x_values)
+    x, pdf = distribution.get_pdf()
 
     # Check if the PDF at the lower boundary is reasonable
     assert pdf[0] >= 0, f"{distribution.__class__.__name__}: PDF at the lower boundary (x_min) should be non-negative."

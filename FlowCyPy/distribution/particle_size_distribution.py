@@ -34,12 +34,13 @@ class RosinRammler(Base):
 
     characteristic_size: Quantity
     spread: float
-    _name = 'Rosin-Rammler'
 
-    def __post_init__(self):
-        pass
+    @property
+    def _units(self) -> Quantity:
+        return self.characteristic_size.units
 
-    def generate(self, n_samples: Quantity) -> Quantity:
+    @Base.pre_generate
+    def generate(self, n_samples: int) -> Quantity:
         """
         Generates a particle size distribution based on the Rosin-Rammler model.
 
@@ -53,25 +54,17 @@ class RosinRammler(Base):
         Quantity
             An array of particle sizes in meters (or other units).
         """
-        # Validate inputs
-        if not isinstance(n_samples, Quantity) or not n_samples.check("particle"):
-            raise ValueError("n_samples must be a dimensionless Quantity.")
-        if self.spread <= 0:
-            raise ValueError("Spread parameter must be greater than zero.")
-
         # Convert characteristic size to main units
         d = self.characteristic_size.magnitude
 
         # Generate uniform random samples in [0, 1)
-        u = np.random.uniform(size=n_samples.magnitude)
+        u = np.random.uniform(size=n_samples)
         u = np.clip(u, 1e-10, 1 - 1e-10)  # Avoid numerical issues
 
         # Apply inverse CDF of Rosin-Rammler distribution
-        sizes = d * (-np.log(1 - u))**(1 / self.spread)
+        return d * (-np.log(1 - u))**(1 / self.spread)
 
-        return sizes * self.characteristic_size.units
-
-    def _generate_default_x(self, x_min: float, x_max: float, n_points: int = 20) -> np.ndarray:
+    def _generate_default_x(self, x_min: float, x_max: float, n_samples: int = 20) -> np.ndarray:
         """
         Generates a default range for x-values based on the characteristic size
         and spread of the Rosin-Rammler distribution.
@@ -82,7 +75,7 @@ class RosinRammler(Base):
             Factor for the minimum x-value as a fraction of the characteristic size.
         x_max : float
             Factor for the maximum x-value as a multiple of the characteristic size.
-        n_points : int, optional
+        n_samples : int, optional
             Number of points in the generated range. Default is 500.
 
         Returns
@@ -94,15 +87,13 @@ class RosinRammler(Base):
             raise ValueError("x_min must be greater than 0.")
         if x_max <= x_min:
             raise ValueError("x_max must be greater than x_min.")
-        if n_points < 2:
-            raise ValueError("n_points must be at least 2.")
 
         d = self.characteristic_size.magnitude  # Characteristic size in base units
         x_min = d * x_min  # Scale x_min by characteristic size
         x_max = d * x_max  # Scale x_max by characteristic size
-        return np.linspace(x_min, x_max, n_points) * self.characteristic_size.units
+        return np.linspace(x_min, x_max, n_samples) * self._units
 
-    def get_pdf(self, x_min: float = 0.01, x_max: float = 2, n_points: int = 20) -> Tuple[np.ndarray, np.ndarray]:
+    def get_pdf(self, x_min: float = 0.01, x_max: float = 2, n_samples: int = 20) -> Tuple[np.ndarray, np.ndarray]:
         r"""
         Returns the x-values and the scaled PDF values for the particle size distribution.
 
@@ -117,7 +108,7 @@ class RosinRammler(Base):
             Factor for the minimum x-value as a fraction of the characteristic size. Default is 0.01.
         x_max : float, optional
             Factor for the maximum x-value as a multiple of the characteristic size. Default is 5.
-        n_points : int, optional
+        n_samples : int, optional
             Number of points in the generated range. Default is 500.
 
         Returns
@@ -126,7 +117,7 @@ class RosinRammler(Base):
             The input x-values and the corresponding scaled PDF values.
         """
         # Generate x-values based on user-defined or default parameters
-        x = self._generate_default_x(x_min=x_min, x_max=x_max, n_points=n_points)
+        x = self._generate_default_x(x_min=x_min, x_max=x_max, n_samples=n_samples)
 
         common_units = x.units
         d = self.characteristic_size.to(common_units).magnitude
@@ -136,7 +127,6 @@ class RosinRammler(Base):
         pdf = (k / d) * (x.magnitude / d)**(k - 1) * np.exp(-(x.magnitude / d)**k)
 
         return x, pdf
-
 
     def __repr__(self) -> str:
         return f"RR({self.characteristic_size:.3f~P}, {self.spread:.3f})"

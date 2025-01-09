@@ -22,38 +22,46 @@ class Weibull(Base):
 
     shape: Quantity
     scale: Quantity
-    _name = 'Weibull'
 
-    def __post_init__(self):
-        self.scale = self.scale.to(self.shape.units)
+    @property
+    def _units(self) -> Quantity:
+        return self.shape.units
 
-    def _generate_default_x(self, n_points: int = 100, x_min_factor: float = 0.01, x_max_factor: float = 5) -> Quantity:
+    @property
+    def _shape(self) -> Quantity:
+        return self.shape.to(self._units)
+
+    @property
+    def _scale(self) -> Quantity:
+        return self.scale.to(self._units)
+
+    def _generate_default_x(self, n_samples: int, x_min_factor: float, x_max_factor: float) -> Quantity:
         """
         Generates a default range of x-values for the Weibull distribution.
 
         Parameters
         ----------
-        n_points : int, optional
-            Number of points in the generated range. Default is 100.
+        n_samples : int, optional
+            Number of points in the generated range.
         x_min_factor : float, optional
-            Factor for the minimum x-value relative to the scale parameter. Default is 0.01.
+            Factor for the minimum x-value relative to the scale parameter.
         x_max_factor : float, optional
-            Factor for the maximum x-value relative to the scale parameter. Default is 5.
+            Factor for the maximum x-value relative to the scale parameter.
 
         Returns
         -------
         Quantity
             A range of x-values with appropriate units.
         """
-        if n_points < 2:
-            raise ValueError("n_points must be at least 2.")
+
         if x_min_factor <= 0:
             raise ValueError("x_min_factor must be greater than 0.")
 
         x_min = self.scale.magnitude * x_min_factor
         x_max = self.scale.magnitude * x_max_factor
-        return np.linspace(x_min, x_max, n_points) * self.scale.units
+        return np.linspace(x_min, x_max, n_samples) * self.scale.units
 
+    @Base.pre_generate
     def generate(self, n_samples: int) -> Quantity:
         """
         Generates a Weibull distribution of scatterer sizes.
@@ -71,9 +79,9 @@ class Weibull(Base):
         return np.random.weibull(
             self.shape.magnitude,
             size=n_samples
-        ) * self.shape.units
+        )
 
-    def get_pdf(self, x: Quantity = None, n_points: int = 100) -> Tuple[Quantity, np.ndarray]:
+    def get_pdf(self, n_samples: int = 100) -> Tuple[Quantity, np.ndarray]:
         """
         Returns the x-values and the PDF values for the Weibull distribution.
 
@@ -91,8 +99,7 @@ class Weibull(Base):
         Tuple[Quantity, np.ndarray]
             The input x-values and the corresponding PDF values.
         """
-        if x is None:
-            x = self._generate_default_x(n_points=n_points)
+        x = self._generate_default_x(n_samples=n_samples)
 
         common_units = self.scale.units
         scale_magnitude = self.scale.to(common_units).magnitude

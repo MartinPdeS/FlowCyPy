@@ -4,7 +4,7 @@ import pandas as pd
 from FlowCyPy.units import Quantity, RIU, particle, liter
 from FlowCyPy.population import Population
 from FlowCyPy.utils import PropertiesReport
-from FlowCyPy.distribution import Base as BaseDistribution
+import matplotlib.patches as mpatches
 from typing import Optional, List
 from pint_pandas import PintArray
 import seaborn as sns
@@ -175,10 +175,9 @@ class ScattererCollection(PropertiesReport):
 
         Notes
         -----
-            - This method iterates over all populations in the system and applies the
-            `dilute` method of each population.
-            - The specific implementation of how a population is diluted depends on
-            the `dilute` method defined in the `population` object.
+
+            - This method iterates over all populations in the system and applies the `dilute` method of each population.
+            - The specific implementation of how a population is diluted depends on the `dilute` method defined in the `population` object.
 
         Examples
         --------
@@ -222,8 +221,9 @@ class ScattererCollection(PropertiesReport):
         for multiple populations in the scatterer collection.
 
         This method creates a joint plot using `sns.JointGrid`, where:
-        - The joint area displays filled contours representing the PDF values of size and refractive index.
-        - The marginal areas display the size and refractive index PDFs as filled plots.
+
+            - The joint area displays filled contours representing the PDF values of size and refractive index.
+            - The marginal areas display the size and refractive index PDFs as filled plots.
 
         Each population is plotted with a distinct color using a transparent colormap for the joint area.
 
@@ -235,15 +235,14 @@ class ScattererCollection(PropertiesReport):
 
         Notes
         -----
-        - The joint area uses a transparent colormap, transitioning from fully transparent
-        to fully opaque for better visualization of overlapping populations.
-        - Marginal plots show semi-transparent filled curves for clarity.
+
+            - The joint area uses a transparent colormap, transitioning from fully transparent to fully opaque for better visualization of overlapping populations.
+            - Marginal plots show semi-transparent filled curves for clarity.
 
         Example
         -------
         >>> scatterer_collection.plot(n_points=200)
 
-        This will generate a plot with 200 points in the PDFs for size and refractive index.
         """
         def create_transparent_colormap(base_color):
             """
@@ -260,10 +259,13 @@ class ScattererCollection(PropertiesReport):
         with plt.style.context(mps):
             grid = sns.JointGrid()
 
+        # Initialize a list to store legend handles
+        legend_handles = []
+
         for index, population in enumerate(self.populations):
             # Get size and refractive index PDFs
-            size, size_pdf = population.size.get_pdf(n_points=n_points)
-            ri, ri_pdf = population.refractive_index.get_pdf(n_points=n_points)
+            size, size_pdf = population.size.get_pdf(n_samples=n_points)
+            ri, ri_pdf = population.refractive_index.get_pdf(n_samples=n_points)
 
             # Create a grid of size and ri values
             X, Y = np.meshgrid(size, ri)
@@ -275,14 +277,19 @@ class ScattererCollection(PropertiesReport):
 
             # Plot the joint area as a filled contour plot
             grid.ax_joint.contourf(
-                X, Y, Z, levels=10, cmap=transparent_cmap, extend="min"
+                X, Y, Z, levels=10, cmap=transparent_cmap, extend="min", label=population.name
             )
+
+            legend_handles.append(mpatches.Patch(color=base_color, label=population.name))
+
 
             # Plot the marginal distributions
             grid.ax_marg_x.fill_between(size.magnitude, size_pdf, color=f"C{index}", alpha=0.5)
             grid.ax_marg_y.fill_betweenx(ri.magnitude, ri_pdf, color=f"C{index}", alpha=0.5)
 
         # Set axis labels
+        grid.ax_joint.legend(handles=legend_handles, title="Populations")
+
         grid.ax_joint.set_xlabel(f"Size [{size.units}]")
         grid.ax_joint.set_ylabel(f"Refractive Index [{ri.units}]")
 

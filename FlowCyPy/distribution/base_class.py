@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Callable
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 from FlowCyPy.units import particle, Quantity
@@ -55,7 +55,7 @@ class Base:
 
             ax.set(
                 title='Distribution',
-                xlabel=f'Distributed parameter [{self._main_units}]',
+                xlabel=f'Distributed parameter [{self._units}]',
                 ylabel='Probability Density Function (PDF)'
             )
 
@@ -63,3 +63,17 @@ class Base:
 
     def __str__(self) -> str:
         return self.__repr__()
+
+    def pre_generate(function: Callable) -> Callable:
+        def wrapper(self, n_samples: Quantity):
+
+            # Validate inputs
+            if not isinstance(n_samples, Quantity) or not n_samples.check("particle"):
+                raise ValueError("n_sample must be a dimensionless Quantity.")
+
+            if n_samples.magnitude < 2:
+                raise ValueError("n_samples must be at least 2.")
+
+            return function(self=self, n_samples=n_samples.magnitude) * self._units
+
+        return wrapper
