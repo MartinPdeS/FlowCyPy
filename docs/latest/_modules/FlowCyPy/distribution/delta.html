@@ -478,8 +478,7 @@
                 <article class="bd-article">
                   
   <h1>Source code for FlowCyPy.distribution.delta</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.distribution.base_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">config_dict</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.distribution.base_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">config_dict</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PyMieSim.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
@@ -491,9 +490,9 @@
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Delta</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a delta-like distribution for particle sizes.</span>
+<span class="sd">    Represents a delta Dirac distribution for particle sizes.</span>
 
-<span class="sd">    In a delta distribution, all particle sizes are the same, representing a delta function:</span>
+<span class="sd">    In a delta Dirac distribution, all particle sizes are the same, represented by the Dirac delta function:</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        f(x) = \delta(x - x_0)</span>
@@ -505,19 +504,19 @@
 <span class="sd">    ----------</span>
 <span class="sd">    position : Quantity</span>
 <span class="sd">        The particle size for the delta distribution in meters.</span>
-<span class="sd">    scale_factor : float, optional</span>
-<span class="sd">        A scaling factor applied to the PDF (not the sizes).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">position</span><span class="p">:</span> <span class="n">Quantity</span>
-    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;Delta&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">units</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_main_units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">units</span>
 
-<div class="viewcode-block" id="Delta.generate">
-<a class="viewcode-back" href="../../../code/distributions.html#FlowCyPy.distribution.Delta.generate">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="nd">@Base</span><span class="o">.</span><span class="n">pre_generate</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates a singular distribution of scatterer sizes.</span>
 
@@ -530,41 +529,64 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        np.ndarray</span>
+<span class="sd">        Quantity</span>
 <span class="sd">            An array of identical scatterer sizes in meters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_samples</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_units</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">magnitude</span>
 
-
-<div class="viewcode-block" id="Delta.get_pdf">
-<a class="viewcode-back" href="../../../code/distributions.html#FlowCyPy.distribution.Delta.get_pdf">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_pdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the x-values and the scaled PDF values for the singular distribution.</span>
-
-<span class="sd">        The PDF is represented as a delta-like function centered at `position`.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_default_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_min_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">x_max_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.1</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a default range of x-values around the `position`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        x : np.ndarray</span>
-<span class="sd">            The input x-values (particle sizes) over which to compute the PDF.</span>
+<span class="sd">        x_min_factor : float, optional</span>
+<span class="sd">            Factor for the minimum x-value relative to the `position`. Default is 0.9 (90% of the position).</span>
+<span class="sd">        x_max_factor : float, optional</span>
+<span class="sd">            Factor for the maximum x-value relative to the `position`. Default is 1.1 (110% of the position).</span>
+<span class="sd">        n_samples : int, optional</span>
+<span class="sd">            Number of points in the generated range. Default is 100.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Tuple[np.ndarray, np.ndarray]</span>
+<span class="sd">        Quantity</span>
+<span class="sd">            A range of x-values with appropriate units.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">x_min_factor</span> <span class="o">&gt;=</span> <span class="n">x_max_factor</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x_min_factor must be less than x_max_factor.&quot;</span><span class="p">)</span>
+
+        <span class="n">x_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">*</span> <span class="n">x_min_factor</span>
+        <span class="n">x_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">*</span> <span class="n">x_max_factor</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">units</span>
+
+<div class="viewcode-block" id="Delta.get_pdf">
+<a class="viewcode-back" href="../../../code/distributions.html#FlowCyPy.distribution.Delta.get_pdf">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_pdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_min_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.99</span><span class="p">,</span> <span class="n">x_max_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.01</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">21</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Quantity</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the x-values and the scaled PDF values for the singular distribution.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Tuple[Quantity, np.ndarray]</span>
 <span class="sd">            The input x-values and the corresponding scaled PDF values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_default_x</span><span class="p">(</span>
+            <span class="n">x_min_factor</span><span class="o">=</span><span class="n">x_min_factor</span><span class="p">,</span>
+            <span class="n">x_max_factor</span><span class="o">=</span><span class="n">x_max_factor</span><span class="p">,</span>
+            <span class="n">n_samples</span><span class="o">=</span><span class="n">n_samples</span>
+        <span class="p">)</span>
+
         <span class="n">common_units</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">units</span>
+        <span class="n">pdf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
 
-        <span class="n">pdf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-
-        <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">common_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">))</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>  <span class="c1"># Delta-like function for singular value</span>
-        <span class="n">pdf</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="c1"># Find the closest x-value to the delta position</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">common_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">))</span><span class="o">.</span><span class="n">argmin</span><span class="p">()</span>
+        <span class="n">pdf</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Dirac delta spike at the closest x-value</span>
         <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">pdf</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Delta(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="si">:</span><span class="s2">.3f~P</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Delta(position=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="si">:</span><span class="s2">.3f~P</span><span class="si">}</span><span class="s2">)&quot;</span></div>
 
 </pre></div>
 

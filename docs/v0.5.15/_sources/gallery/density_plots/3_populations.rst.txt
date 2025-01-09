@@ -66,7 +66,7 @@ Workflow Summary:
 
 Step 1: Laser GaussianBeam Configuration
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-61
+.. GENERATED FROM PYTHON SOURCE LINES 37-63
 
 .. code-block:: Python
 
@@ -94,26 +94,34 @@ Step 1: Laser GaussianBeam Configuration
     # Define populations with size distribution and refractive index
     scatterer_collection.add_population(exosome, hdl, ldl)
 
+    scatterer_collection.plot()
 
 
+
+
+.. image-sg:: /gallery/density_plots/images/sphx_glr_3_populations_001.png
+   :alt: 3 populations
+   :srcset: /gallery/density_plots/images/sphx_glr_3_populations_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/scatterer_collection.py:279: UserWarning: The following kwargs were not used by contour: 'label'
+      grid.ax_joint.contourf(
 
-    (Population(name='Exosome', refractive_index=Normal(1.390 RIU, 0.020 RIU), size=RR(70.000 nm, 2.000), particle_count=1000000000000.0001 particle/l), Population(name='HDL', refractive_index=Normal(1.330 RIU, 0.010 RIU), size=RR(10.000 nm, 3.500), particle_count=1000000000000.0001 particle/l), Population(name='LDL', refractive_index=Normal(1.350 RIU, 0.020 RIU), size=RR(20.000 nm, 3.000), particle_count=1000000000000.0001 particle/l))
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 62-65
+.. GENERATED FROM PYTHON SOURCE LINES 64-67
 
 Step 4: Simulating the Flow Cytometry Experiment
 Initialize the cytometer and configure detectors
 Add forward scatter detector
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-106
+.. GENERATED FROM PYTHON SOURCE LINES 67-108
 
 .. code-block:: Python
 
@@ -161,21 +169,21 @@ Add forward scatter detector
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_3_populations_001.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_3_populations_002.png
    :alt: 3 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_3_populations_001.png
+   :srcset: /gallery/density_plots/images/sphx_glr_3_populations_002.png
    :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-109
+.. GENERATED FROM PYTHON SOURCE LINES 109-111
 
 Step 5: Analyzing Pulse Signals
 Configure peak finding algorithm
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-130
+.. GENERATED FROM PYTHON SOURCE LINES 111-132
 
 .. code-block:: Python
 
@@ -203,9 +211,9 @@ Configure peak finding algorithm
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_3_populations_002.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_3_populations_003.png
    :alt: 3 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_3_populations_002.png
+   :srcset: /gallery/density_plots/images/sphx_glr_3_populations_003.png
    :class: sphx-glr-single-img
 
 
@@ -215,7 +223,7 @@ Configure peak finding algorithm
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.103 seconds)
+   **Total running time of the script:** (0 minutes 2.831 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_3_populations.py:

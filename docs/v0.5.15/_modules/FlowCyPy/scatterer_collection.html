@@ -484,9 +484,13 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">liter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Population</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">PropertiesReport</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.distribution</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span> <span class="k">as</span> <span class="n">BaseDistribution</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpatches</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pint_pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">PintArray</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearSegmentedColormap</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 
@@ -598,46 +602,6 @@
         <span class="k">return</span> <span class="n">population</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">refractive_index</span><span class="p">:</span> <span class="n">BaseDistribution</span><span class="p">,</span> <span class="n">concentration</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;ScattererCollection&#39;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adds a population to the ScattererCollection instance with the specified attributes.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        name : str</span>
-<span class="sd">            The name of the population.</span>
-<span class="sd">        size : BaseDistribution</span>
-<span class="sd">            The size distribution of the population.</span>
-<span class="sd">        refractive_index : BaseDistribution</span>
-<span class="sd">            The refractive index distribution of the population.</span>
-<span class="sd">        concentration : Quantity</span>
-<span class="sd">            The concentration of the population. Must have the dimensionality of &#39;particles per liter&#39;.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        ScattererCollection</span>
-<span class="sd">            The ScattererCollection instance (to support chaining).</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        ValueError</span>
-<span class="sd">            If the concentration does not have the expected dimensionality.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">concentration</span><span class="o">.</span><span class="n">dimensionality</span> <span class="o">!=</span> <span class="p">(</span><span class="n">particle</span> <span class="o">/</span> <span class="n">liter</span><span class="p">)</span><span class="o">.</span><span class="n">dimensionality</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Invalid concentration dimensionality: </span><span class="si">{</span><span class="n">concentration</span><span class="o">.</span><span class="n">dimensionality</span><span class="si">}</span><span class="s2">. Expected dimensionality is &#39;particles per liter&#39; or similar.&quot;</span>
-            <span class="p">)</span>
-
-        <span class="n">population</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
-            <span class="n">refractive_index</span><span class="o">=</span><span class="n">refractive_index</span><span class="p">,</span>
-            <span class="n">concentration</span><span class="o">=</span><span class="n">concentration</span>
-        <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">population</span>
-
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">concentrations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -704,10 +668,9 @@
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">            - This method iterates over all populations in the system and applies the</span>
-<span class="sd">            `dilute` method of each population.</span>
-<span class="sd">            - The specific implementation of how a population is diluted depends on</span>
-<span class="sd">            the `dilute` method defined in the `population` object.</span>
+
+<span class="sd">            - This method iterates over all populations in the system and applies the `dilute` method of each population.</span>
+<span class="sd">            - The specific implementation of how a population is diluted depends on the `dilute` method defined in the `population` object.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -747,6 +710,92 @@
 
             <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">size</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
             <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">ri</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ri</span><span class="o">.</span><span class="n">units</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ScattererCollection.plot">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.plot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_points</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Visualizes the joint and marginal distributions of size and refractive index</span>
+<span class="sd">        for multiple populations in the scatterer collection.</span>
+
+<span class="sd">        This method creates a joint plot using `sns.JointGrid`, where:</span>
+
+<span class="sd">            - The joint area displays filled contours representing the PDF values of size and refractive index.</span>
+<span class="sd">            - The marginal areas display the size and refractive index PDFs as filled plots.</span>
+
+<span class="sd">        Each population is plotted with a distinct color using a transparent colormap for the joint area.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_points : int, optional</span>
+<span class="sd">            The number of points used to compute the size and refractive index PDFs. Default is 100.</span>
+<span class="sd">            Increasing this value results in smoother distributions but increases computation time.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+
+<span class="sd">            - The joint area uses a transparent colormap, transitioning from fully transparent to fully opaque for better visualization of overlapping populations.</span>
+<span class="sd">            - Marginal plots show semi-transparent filled curves for clarity.</span>
+
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; scatterer_collection.plot(n_points=200)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">create_transparent_colormap</span><span class="p">(</span><span class="n">base_color</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Create a colormap that transitions from transparent to a specified base color.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span>
+                <span class="s2">&quot;transparent_colormap&quot;</span><span class="p">,</span>
+                <span class="p">[(</span><span class="n">base_color</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">base_color</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">base_color</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">),</span>  <span class="c1"># Fully transparent</span>
+                <span class="p">(</span><span class="n">base_color</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">base_color</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">base_color</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">1</span><span class="p">)],</span>  <span class="c1"># Fully opaque</span>
+                <span class="n">N</span><span class="o">=</span><span class="mi">256</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Create a JointGrid for visualization</span>
+        <span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">mps</span><span class="p">):</span>
+            <span class="n">grid</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">JointGrid</span><span class="p">()</span>
+
+        <span class="c1"># Initialize a list to store legend handles</span>
+        <span class="n">legend_handles</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">population</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">):</span>
+            <span class="c1"># Get size and refractive index PDFs</span>
+            <span class="n">size</span><span class="p">,</span> <span class="n">size_pdf</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">get_pdf</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_points</span><span class="p">)</span>
+            <span class="n">ri</span><span class="p">,</span> <span class="n">ri_pdf</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">refractive_index</span><span class="o">.</span><span class="n">get_pdf</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_points</span><span class="p">)</span>
+
+            <span class="c1"># Create a grid of size and ri values</span>
+            <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">ri</span><span class="p">)</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">ri_pdf</span><span class="p">,</span> <span class="n">size_pdf</span><span class="p">)</span>  <span class="c1"># Compute the PDF values on the grid</span>
+
+            <span class="c1"># Create a transparent colormap for this population</span>
+            <span class="n">base_color</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">()[</span><span class="n">index</span><span class="p">]</span>
+            <span class="n">transparent_cmap</span> <span class="o">=</span> <span class="n">create_transparent_colormap</span><span class="p">(</span><span class="n">base_color</span><span class="p">)</span>
+
+            <span class="c1"># Plot the joint area as a filled contour plot</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">transparent_cmap</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">population</span><span class="o">.</span><span class="n">name</span>
+            <span class="p">)</span>
+
+            <span class="n">legend_handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mpatches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">base_color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+
+            <span class="c1"># Plot the marginal distributions</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">ax_marg_x</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">size</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">size_pdf</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;C</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">grid</span><span class="o">.</span><span class="n">ax_marg_y</span><span class="o">.</span><span class="n">fill_betweenx</span><span class="p">(</span><span class="n">ri</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">ri_pdf</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;C</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="c1"># Set axis labels</span>
+        <span class="n">grid</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">legend_handles</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Populations&quot;</span><span class="p">)</span>
+
+        <span class="n">grid</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Size [</span><span class="si">{</span><span class="n">size</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+        <span class="n">grid</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Refractive Index [</span><span class="si">{</span><span class="n">ri</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+
+        <span class="c1"># Show the plot</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 </div>
 
 </pre></div>

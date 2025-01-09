@@ -58,6 +58,8 @@ ldl = LDL(particle_count=10e+8 * particle / milliliter)
 # Define populations with size distribution and refractive index
 scatterer_collection.add_population(exosome, hdl, ldl)
 
+scatterer_collection.plot()
+
 # %%
 # Step 4: Simulating the Flow Cytometry Experiment
 # Initialize the cytometer and configure detectors

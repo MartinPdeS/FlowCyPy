@@ -45,14 +45,15 @@ flow_cell = FlowCell(
 )
 
 # Step 3: Create Populations (Extracellular Vesicles and Liposomes)
-scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
+scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
 
 exosome = Exosome(particle_count=3e8 * particle / milliliter)
 hdl = HDL(particle_count=5e9 * particle / milliliter)
 
-scatterer.add_population(exosome)
-scatterer.add_population(hdl)
+scatterer_collection.add_population(exosome)
+scatterer_collection.add_population(hdl)
 
+scatterer_collection.plot()
 
 # %%
 # Step 5: Configure Detectors
@@ -89,7 +90,7 @@ detector_1 = Detector(
 
 # Step 6: Simulate Flow Cytometry Experiment
 cytometer = FlowCytometer(                      # Laser source used in the experiment
-    scatterer_collection=scatterer,
+    scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,                     # Populations used in the experiment
     background_power=0.0 * milliwatt,
     detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter

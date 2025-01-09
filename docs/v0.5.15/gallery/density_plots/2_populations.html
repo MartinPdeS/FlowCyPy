@@ -568,16 +568,19 @@ analyzes pulse signals from two detectors, and generates a 2D density plot of th
 <span class="p">)</span>
 
 <span class="c1"># Step 3: Create Populations (Extracellular Vesicles and Liposomes)</span>
-<span class="n">scatterer</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>  <span class="c1"># Medium refractive index: 1.33</span>
+<span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>  <span class="c1"># Medium refractive index: 1.33</span>
 
 <span class="n">exosome</span> <span class="o">=</span> <span class="n">Exosome</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">3e8</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
 <span class="n">hdl</span> <span class="o">=</span> <span class="n">HDL</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
 
-<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">exosome</span><span class="p">)</span>
-<span class="n">scatterer</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">hdl</span><span class="p">)</span>
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">exosome</span><span class="p">)</span>
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">hdl</span><span class="p">)</span>
+
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(Population(name=&#39;HDL&#39;, refractive_index=Normal(1.330 RIU, 0.010 RIU), size=RR(10.000 nm, 3.500), particle_count=5000000000000.001 particle/l),)
+<img src="../../_images/sphx_glr_2_populations_001.png" srcset="../../_images/sphx_glr_2_populations_001.png" alt="2 populations" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/scatterer_collection.py:279: UserWarning: The following kwargs were not used by contour: &#39;label&#39;
+  grid.ax_joint.contourf(
 </pre></div>
 </div>
 <p>Step 5: Configure Detectors
@@ -614,7 +617,7 @@ Side scatter detector</p>
 
 <span class="c1"># Step 6: Simulate Flow Cytometry Experiment</span>
 <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>                      <span class="c1"># Laser source used in the experiment</span>
-    <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer</span><span class="p">,</span>
+    <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>                     <span class="c1"># Populations used in the experiment</span>
     <span class="n">background_power</span><span class="o">=</span><span class="mf">0.0</span> <span class="o">*</span> <span class="n">milliwatt</span><span class="p">,</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">]</span>       <span class="c1"># List of detectors: Side scatter and Forward scatter</span>
@@ -631,7 +634,7 @@ Side scatter detector</p>
 <span class="n">experiment</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">detector</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_2_populations_001.png" srcset="../../_images/sphx_glr_2_populations_001.png" alt="2 populations" class = "sphx-glr-single-img"/><p>Step 5: Analyzing Pulse Signals</p>
+<img src="../../_images/sphx_glr_2_populations_002.png" srcset="../../_images/sphx_glr_2_populations_002.png" alt="2 populations" class = "sphx-glr-single-img"/><p>Step 5: Analyzing Pulse Signals</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">MovingAverage</span><span class="p">(</span>
     <span class="n">threshold</span><span class="o">=</span><span class="mf">0.1e-20</span> <span class="o">*</span> <span class="n">microvolt</span><span class="p">,</span>       <span class="c1"># Signal threshold: 0.1 mV</span>
     <span class="n">window_size</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">microsecond</span><span class="p">,</span>         <span class="c1"># Moving average window size: 1 µs</span>
@@ -654,7 +657,7 @@ Side scatter detector</p>
 <span class="n">analyzer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Plot with a linear scale (log_plot=False)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_2_populations_002.png" srcset="../../_images/sphx_glr_2_populations_002.png" alt="2 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.486 seconds)</p>
+<img src="../../_images/sphx_glr_2_populations_003.png" srcset="../../_images/sphx_glr_2_populations_003.png" alt="2 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.999 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-density-plots-2-populations-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/07ecafb66464397f8456d156b722f249/2_populations.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">2_populations.ipynb</span></code></a></p>

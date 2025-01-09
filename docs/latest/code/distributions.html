@@ -540,33 +540,30 @@
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Normal.generate">
-<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/normal.html#Normal.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Normal.generate" title="Link to this definition">#</a></dt>
-<dd><p>Generates a normal distribution of scatterer sizes.</p>
-<p>The generated sizes are based on the normal distribution’s mean and standard deviation.</p>
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.distribution.Normal.generate" title="Link to this definition">#</a></dt>
+<dd><p>Generate a distribution of scatterer sizes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_samples</strong> (<em>int</em>) – The number of particle sizes to generate.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An array of scatterer sizes in meters.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Normal.get_pdf">
-<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/normal.html#Normal.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Normal.get_pdf" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/normal.html#Normal.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Normal.get_pdf" title="Link to this definition">#</a></dt>
 <dd><p>Returns the x-values and the scaled PDF values for the normal distribution.</p>
-<p>The <cite>scale_factor</cite> is applied to the PDF, not the generated sizes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<em>np.ndarray</em>) – The input x-values (particle sizes) over which to compute the PDF.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – The input x-values (particle sizes) over which to compute the PDF. If not provided, a range is generated.</p></li>
+<li><p><strong>x_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the minimum x-value as a multiple of the standard deviation from the mean. Default is -3.</p></li>
+<li><p><strong>x_max</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the maximum x-value as a multiple of the standard deviation from the mean. Default is 3.</p></li>
+<li><p><strong>n_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points in the generated range. Default is 500.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The input x-values and the corresponding scaled PDF values.</p>
+<dd class="field-even"><p>The input x-values and the corresponding PDF values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray]</p>
@@ -614,32 +611,29 @@
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal.generate">
-<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/lognormal.html#LogNormal.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.generate" title="Link to this definition">#</a></dt>
-<dd><p>Generates a log-normal distribution of scatterer sizes.</p>
-<p>The generated sizes follow a log-normal distribution, where the logarithm of the sizes is normally distributed.</p>
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.generate" title="Link to this definition">#</a></dt>
+<dd><p>Generate a distribution of scatterer sizes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>) – The number of particle sizes to generate.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An array of scatterer sizes in meters.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Quantity</p>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal.get_pdf">
-<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/lognormal.html#LogNormal.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.get_pdf" title="Link to this definition">#</a></dt>
-<dd><p>Returns the x-values and the scaled PDF values for the log-normal distribution.</p>
+<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/lognormal.html#LogNormal.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.get_pdf" title="Link to this definition">#</a></dt>
+<dd><p>Returns the x-values and the PDF values for the log-normal distribution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<em>np.ndarray</em>) – The input x-values (particle sizes) over which to compute the PDF.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the minimum x-value as a multiple of the mean. Default is 0.01.</p></li>
+<li><p><strong>x_max</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the maximum x-value as a multiple of the mean. Default is 5.</p></li>
+<li><p><strong>n_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points in the generated range. Default is 500.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The input x-values and the corresponding scaled PDF values.</p>
+<dd class="field-even"><p>The input x-values and the corresponding PDF values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray]</p>
@@ -699,31 +693,29 @@ powders or granular materials.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.generate">
-<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/particle_size_distribution.html#RosinRammler.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.generate" title="Link to this definition">#</a></dt>
-<dd><p>Generates a particle size distribution based on the Rosin-Rammler model.</p>
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.generate" title="Link to this definition">#</a></dt>
+<dd><p>Generate a distribution of scatterer sizes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>) – The number of particle sizes to generate (dimensionless).</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An array of particle sizes in meters (or other units).</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Quantity</p>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.get_pdf">
-<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/particle_size_distribution.html#RosinRammler.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.get_pdf" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/particle_size_distribution.html#RosinRammler.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.get_pdf" title="Link to this definition">#</a></dt>
 <dd><p>Returns the x-values and the scaled PDF values for the particle size distribution.</p>
 <p>The PDF for the Rosin-Rammler distribution is derived from the CDF:</p>
 <div class="math notranslate nohighlight">
 \[f(x) = \frac{k}{d} \left( \frac{x}{d} \right)^{k-1} \exp \left( - \left( \frac{x}{d} \right)^k \right)\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<em>np.ndarray</em>) – The input x-values (particle sizes) over which to compute the PDF.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the minimum x-value as a fraction of the characteristic size. Default is 0.01.</p></li>
+<li><p><strong>x_max</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the maximum x-value as a multiple of the characteristic size. Default is 5.</p></li>
+<li><p><strong>n_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points in the generated range. Default is 500.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The input x-values and the corresponding scaled PDF values.</p>
@@ -758,40 +750,38 @@ powders or granular materials.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>shape</strong> (<em>Quantity</em>) – The shape parameter (k), controls the skewness of the distribution.</p></li>
 <li><p><strong>scale</strong> (<em>Quantity</em>) – The scale parameter (λ), controls the spread of the distribution.</p></li>
-<li><p><strong>scale_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – A scaling factor applied to the PDF (not the sizes).</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Weibull.generate">
-<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/weibull.html#Weibull.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Weibull.generate" title="Link to this definition">#</a></dt>
-<dd><p>Generates a Weibull distribution of scatterer sizes.</p>
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.distribution.Weibull.generate" title="Link to this definition">#</a></dt>
+<dd><p>Generate a distribution of scatterer sizes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_samples</strong> (<em>int</em>) – The number of particle sizes to generate.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An array of particle sizes in meters.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Weibull.get_pdf">
-<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/weibull.html#Weibull.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Weibull.get_pdf" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/weibull.html#Weibull.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Weibull.get_pdf" title="Link to this definition">#</a></dt>
 <dd><p>Returns the x-values and the PDF values for the Weibull distribution.</p>
+<p>If <cite>x</cite> is not provided, a default range of x-values is generated.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<em>np.ndarray</em>) – The input x-values (particle sizes) over which to compute the PDF.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The input x-values (particle sizes) over which to compute the PDF. If not provided, a range is generated.</p></li>
+<li><p><strong>n_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points in the generated range if <cite>x</cite> is not provided. Default is 100.</p></li>
+<li><p><strong>n_samples</strong> (<em>int</em>)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The input x-values and the corresponding PDF values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray]</p>
+<dd class="field-odd"><p>Tuple[Quantity, np.ndarray]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -818,52 +808,45 @@ powders or granular materials.</p>
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Delta">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Delta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/delta.html#Delta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Delta" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
-<p>Represents a delta-like distribution for particle sizes.</p>
-<p>In a delta distribution, all particle sizes are the same, representing a delta function:</p>
+<p>Represents a delta Dirac distribution for particle sizes.</p>
+<p>In a delta Dirac distribution, all particle sizes are the same, represented by the Dirac delta function:</p>
 <div class="math notranslate nohighlight">
 \[f(x) = \delta(x - x_0)\]</div>
 <p>where:
 - <span class="math notranslate nohighlight">\(x_0\)</span> is the singular particle size.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>position</strong> (<em>Quantity</em>) – The particle size for the delta distribution in meters.</p></li>
-<li><p><strong>scale_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – A scaling factor applied to the PDF (not the sizes).</p></li>
-</ul>
+<dd class="field-odd"><p><strong>position</strong> (<em>Quantity</em>) – The particle size for the delta distribution in meters.</p>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Delta.generate">
-<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/delta.html#Delta.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Delta.generate" title="Link to this definition">#</a></dt>
-<dd><p>Generates a singular distribution of scatterer sizes.</p>
-<p>All sizes generated will be exactly the same as <cite>position</cite>.</p>
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.distribution.Delta.generate" title="Link to this definition">#</a></dt>
+<dd><p>Generate a distribution of scatterer sizes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_samples</strong> (<em>int</em>) – The number of particle sizes to generate.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An array of identical scatterer sizes in meters.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Delta.get_pdf">
-<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/delta.html#Delta.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Delta.get_pdf" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_min_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">21</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/delta.html#Delta.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Delta.get_pdf" title="Link to this definition">#</a></dt>
 <dd><p>Returns the x-values and the scaled PDF values for the singular distribution.</p>
-<p>The PDF is represented as a delta-like function centered at <cite>position</cite>.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The input x-values and the corresponding scaled PDF values.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple[Quantity, np.ndarray]</p>
+</dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<em>np.ndarray</em>) – The input x-values (particle sizes) over which to compute the PDF.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The input x-values and the corresponding scaled PDF values.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray]</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_min_factor</strong> (<em>float</em>)</p></li>
+<li><p><strong>x_max_factor</strong> (<em>float</em>)</p></li>
+<li><p><strong>n_samples</strong> (<em>int</em>)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -895,44 +878,36 @@ powders or granular materials.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lower_bound</strong> (<em>float</em>) – The lower bound for particle sizes in meters.</p></li>
-<li><p><strong>upper_bound</strong> (<em>float</em>) – The upper bound for particle sizes in meters.</p></li>
-<li><p><strong>scale_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – A scaling factor applied to the PDF (not the sizes).</p></li>
+<li><p><strong>lower_bound</strong> (<em>Quantity</em>) – The lower bound for particle sizes in meters.</p></li>
+<li><p><strong>upper_bound</strong> (<em>Quantity</em>) – The upper bound for particle sizes in meters.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Uniform.generate">
-<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/uniform.html#Uniform.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Uniform.generate" title="Link to this definition">#</a></dt>
-<dd><p>Generates a uniform distribution of scatterer sizes.</p>
-<p>The generated sizes are uniformly distributed between the specified <cite>lower_bound</cite> and <cite>upper_bound</cite>.</p>
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.distribution.Uniform.generate" title="Link to this definition">#</a></dt>
+<dd><p>Generate a distribution of scatterer sizes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>) – The number of particle sizes to generate.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An array of scatterer sizes in meters.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>np.ndarray</p>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Uniform.get_pdf">
-<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/uniform.html#Uniform.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Uniform.get_pdf" title="Link to this definition">#</a></dt>
-<dd><p>Returns the x-values and the scaled PDF values for the uniform distribution.</p>
-<p>The <cite>scale_factor</cite> is applied to the PDF, not the generated sizes.</p>
+<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/uniform.html#Uniform.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Uniform.get_pdf" title="Link to this definition">#</a></dt>
+<dd><p>Returns the x-values and the PDF values for the uniform distribution.</p>
+<p>If <cite>x</cite> is not provided, a default range of x-values is generated.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<em>np.ndarray</em>) – The input x-values (particle sizes) over which to compute the PDF.</p>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points in the generated range if <cite>x</cite> is not provided. Default is 100.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The input x-values and the corresponding scaled PDF values.</p>
+<dd class="field-even"><p>The input x-values and the corresponding PDF values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray]</p>
+<dd class="field-odd"><p>Tuple[Quantity, np.ndarray]</p>
 </dd>
 </dl>
 </dd></dl>

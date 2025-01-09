@@ -63,7 +63,7 @@ Steps:
 
 Step 1: Set up the Laser GaussianBeam
 
-.. GENERATED FROM PYTHON SOURCE LINES 34-57
+.. GENERATED FROM PYTHON SOURCE LINES 34-58
 
 .. code-block:: Python
 
@@ -81,34 +81,41 @@ Step 1: Set up the Laser GaussianBeam
     )
 
     # Step 3: Create Populations (Extracellular Vesicles and Liposomes)
-    scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
+    scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
 
     exosome = Exosome(particle_count=3e8 * particle / milliliter)
     hdl = HDL(particle_count=5e9 * particle / milliliter)
 
-    scatterer.add_population(exosome)
-    scatterer.add_population(hdl)
+    scatterer_collection.add_population(exosome)
+    scatterer_collection.add_population(hdl)
+
+    scatterer_collection.plot()
 
 
 
 
+.. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_001.png
+   :alt: 2 populations
+   :srcset: /gallery/density_plots/images/sphx_glr_2_populations_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/scatterer_collection.py:279: UserWarning: The following kwargs were not used by contour: 'label'
+      grid.ax_joint.contourf(
 
-    (Population(name='HDL', refractive_index=Normal(1.330 RIU, 0.010 RIU), size=RR(10.000 nm, 3.500), particle_count=5000000000000.001 particle/l),)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 58-60
+.. GENERATED FROM PYTHON SOURCE LINES 59-61
 
 Step 5: Configure Detectors
 Side scatter detector
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-108
+.. GENERATED FROM PYTHON SOURCE LINES 61-109
 
 .. code-block:: Python
 
@@ -144,7 +151,7 @@ Side scatter detector
 
     # Step 6: Simulate Flow Cytometry Experiment
     cytometer = FlowCytometer(                      # Laser source used in the experiment
-        scatterer_collection=scatterer,
+        scatterer_collection=scatterer_collection,
         flow_cell=flow_cell,                     # Populations used in the experiment
         background_power=0.0 * milliwatt,
         detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
@@ -163,20 +170,20 @@ Side scatter detector
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_001.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_002.png
    :alt: 2 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_2_populations_001.png
+   :srcset: /gallery/density_plots/images/sphx_glr_2_populations_002.png
    :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-110
+.. GENERATED FROM PYTHON SOURCE LINES 110-111
 
 Step 5: Analyzing Pulse Signals
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-124
+.. GENERATED FROM PYTHON SOURCE LINES 111-125
 
 .. code-block:: Python
 
@@ -201,11 +208,11 @@ Step 5: Analyzing Pulse Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 125-126
+.. GENERATED FROM PYTHON SOURCE LINES 126-127
 
 Step 8: Extract and Plot Coincidence Data
 
-.. GENERATED FROM PYTHON SOURCE LINES 126-130
+.. GENERATED FROM PYTHON SOURCE LINES 127-131
 
 .. code-block:: Python
 
@@ -216,9 +223,9 @@ Step 8: Extract and Plot Coincidence Data
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_002.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_2_populations_003.png
    :alt: 2 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_2_populations_002.png
+   :srcset: /gallery/density_plots/images/sphx_glr_2_populations_003.png
    :class: sphx-glr-single-img
 
 
@@ -228,7 +235,7 @@ Step 8: Extract and Plot Coincidence Data
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.486 seconds)
+   **Total running time of the script:** (0 minutes 2.999 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_2_populations.py:

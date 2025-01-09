@@ -580,9 +580,12 @@ to generate a 2D density plot of scattering intensities.</p>
 
 <span class="c1"># Define populations with size distribution and refractive index</span>
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">exosome</span><span class="p">,</span> <span class="n">hdl</span><span class="p">,</span> <span class="n">ldl</span><span class="p">)</span>
+
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(Population(name=&#39;Exosome&#39;, refractive_index=Normal(1.390 RIU, 0.020 RIU), size=RR(70.000 nm, 2.000), particle_count=1000000000000.0001 particle/l), Population(name=&#39;HDL&#39;, refractive_index=Normal(1.330 RIU, 0.010 RIU), size=RR(10.000 nm, 3.500), particle_count=1000000000000.0001 particle/l), Population(name=&#39;LDL&#39;, refractive_index=Normal(1.350 RIU, 0.020 RIU), size=RR(20.000 nm, 3.000), particle_count=1000000000000.0001 particle/l))
+<img src="../../_images/sphx_glr_3_populations_001.png" srcset="../../_images/sphx_glr_3_populations_001.png" alt="3 populations" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/scatterer_collection.py:279: UserWarning: The following kwargs were not used by contour: &#39;label&#39;
+  grid.ax_joint.contourf(
 </pre></div>
 </div>
 <p>Step 4: Simulating the Flow Cytometry Experiment
@@ -630,7 +633,7 @@ Add forward scatter detector</p>
 <span class="n">experiment</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_3_populations_001.png" srcset="../../_images/sphx_glr_3_populations_001.png" alt="3 populations" class = "sphx-glr-single-img"/><p>Step 5: Analyzing Pulse Signals
+<img src="../../_images/sphx_glr_3_populations_002.png" srcset="../../_images/sphx_glr_3_populations_002.png" alt="3 populations" class = "sphx-glr-single-img"/><p>Step 5: Analyzing Pulse Signals
 Configure peak finding algorithm</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">MovingAverage</span><span class="p">(</span>
     <span class="n">threshold</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">microvolt</span><span class="p">,</span>           <span class="c1"># Signal threshold: 0.1 mV</span>
@@ -655,7 +658,7 @@ Configure peak finding algorithm</p>
 <span class="n">analyzer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_3_populations_002.png" srcset="../../_images/sphx_glr_3_populations_002.png" alt="3 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.103 seconds)</p>
+<img src="../../_images/sphx_glr_3_populations_003.png" srcset="../../_images/sphx_glr_3_populations_003.png" alt="3 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.831 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-density-plots-3-populations-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/7a980bfc099fc5af620c87b55ac64cb4/3_populations.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">3_populations.ipynb</span></code></a></p>

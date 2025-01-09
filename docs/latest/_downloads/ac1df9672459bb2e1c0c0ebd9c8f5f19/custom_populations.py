@@ -70,6 +70,8 @@ population_1 = Population(
 # Define populations with size distribution and refractive index
 scatterer_collection.add_population(population_0, population_1)
 
+scatterer_collection.plot()
+
 
 # %%
 # Step 4: Simulating the Flow Cytometry Experiment

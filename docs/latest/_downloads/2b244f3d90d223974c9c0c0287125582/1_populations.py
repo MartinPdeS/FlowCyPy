@@ -56,6 +56,8 @@ scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)  
 exosome = Exosome(particle_count=5e9 * particle / milliliter)
 scatterer_collection.add_population(exosome)
 
+scatterer_collection.plot()
+
 # %%
 # Add forward scatter detector
 signal_digitizer = SignalDigitizer(

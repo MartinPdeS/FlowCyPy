@@ -579,9 +579,12 @@ to generate a 2D density plot of scattering intensities.</p>
 <span class="c1"># Define populations with size distribution and refractive index</span>
 <span class="n">exosome</span> <span class="o">=</span> <span class="n">Exosome</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">)</span>
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">exosome</span><span class="p">)</span>
+
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>(Population(name=&#39;Exosome&#39;, refractive_index=Normal(1.390 RIU, 0.020 RIU), size=RR(70.000 nm, 2.000), particle_count=5000000000000.001 particle/l),)
+<img src="../../_images/sphx_glr_1_populations_001.png" srcset="../../_images/sphx_glr_1_populations_001.png" alt="1 populations" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/scatterer_collection.py:279: UserWarning: The following kwargs were not used by contour: &#39;label&#39;
+  grid.ax_joint.contourf(
 </pre></div>
 </div>
 <p>Add forward scatter detector</p>
@@ -630,7 +633,7 @@ to generate a 2D density plot of scattering intensities.</p>
 <span class="n">experiment</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_1_populations_001.png" srcset="../../_images/sphx_glr_1_populations_001.png" alt="1 populations" class = "sphx-glr-single-img"/><section id="step-5-analyzing-pulse-signals">
+<img src="../../_images/sphx_glr_1_populations_002.png" srcset="../../_images/sphx_glr_1_populations_002.png" alt="1 populations" class = "sphx-glr-single-img"/><section id="step-5-analyzing-pulse-signals">
 <h2>Step 5: Analyzing Pulse Signals<a class="headerlink" href="#step-5-analyzing-pulse-signals" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">MovingAverage</span><span class="p">(</span>
     <span class="n">threshold</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">microvolt</span><span class="p">,</span>           <span class="c1"># Signal threshold: 0.1 mV</span>
@@ -658,7 +661,7 @@ to generate a 2D density plot of scattering intensities.</p>
 <span class="n">analyzer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">log_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_1_populations_002.png" srcset="../../_images/sphx_glr_1_populations_002.png" alt="1 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.819 seconds)</p>
+<img src="../../_images/sphx_glr_1_populations_003.png" srcset="../../_images/sphx_glr_1_populations_003.png" alt="1 populations" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.364 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-density-plots-1-populations-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/8182ce70349c788bb9f874a196561c48/1_populations.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">1_populations.ipynb</span></code></a></p>

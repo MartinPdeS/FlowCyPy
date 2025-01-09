@@ -66,7 +66,7 @@ Workflow Summary:
 
 Step 1: Laser GaussianBeam Configuration
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-74
+.. GENERATED FROM PYTHON SOURCE LINES 37-76
 
 .. code-block:: Python
 
@@ -106,27 +106,35 @@ Step 1: Laser GaussianBeam Configuration
     # Define populations with size distribution and refractive index
     scatterer_collection.add_population(population_0, population_1)
 
+    scatterer_collection.plot()
 
 
 
+
+
+.. image-sg:: /gallery/density_plots/images/sphx_glr_custom_populations_001.png
+   :alt: custom populations
+   :srcset: /gallery/density_plots/images/sphx_glr_custom_populations_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/scatterer_collection.py:279: UserWarning: The following kwargs were not used by contour: 'label'
+      grid.ax_joint.contourf(
 
-    (Population(name='Pop 0', refractive_index=Normal(1.390 RIU, 0.020 RIU), size=RR(100.000 nm, 4.500), particle_count=300000000000.00006 particle/l), Population(name='Pop 1', refractive_index=Normal(1.390 RIU, 0.020 RIU), size=Delta(200.000 nm), particle_count=300000000000.00006 particle/l))
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 75-78
+.. GENERATED FROM PYTHON SOURCE LINES 77-80
 
 Step 4: Simulating the Flow Cytometry Experiment
 Initialize the cytometer and configure detectors
 Add forward scatter detector
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-120
+.. GENERATED FROM PYTHON SOURCE LINES 80-122
 
 .. code-block:: Python
 
@@ -175,9 +183,9 @@ Add forward scatter detector
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_custom_populations_001.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_custom_populations_002.png
    :alt: custom populations
-   :srcset: /gallery/density_plots/images/sphx_glr_custom_populations_001.png
+   :srcset: /gallery/density_plots/images/sphx_glr_custom_populations_002.png
    :class: sphx-glr-single-img
 
 
@@ -191,12 +199,12 @@ Add forward scatter detector
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 121-123
+.. GENERATED FROM PYTHON SOURCE LINES 123-125
 
 Step 5: Analyzing Pulse Signals
 Configure peak finding algorithm
 
-.. GENERATED FROM PYTHON SOURCE LINES 123-144
+.. GENERATED FROM PYTHON SOURCE LINES 125-146
 
 .. code-block:: Python
 
@@ -224,9 +232,9 @@ Configure peak finding algorithm
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_custom_populations_002.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_custom_populations_003.png
    :alt: custom populations
-   :srcset: /gallery/density_plots/images/sphx_glr_custom_populations_002.png
+   :srcset: /gallery/density_plots/images/sphx_glr_custom_populations_003.png
    :class: sphx-glr-single-img
 
 
@@ -236,7 +244,7 @@ Configure peak finding algorithm
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.891 seconds)
+   **Total running time of the script:** (0 minutes 2.561 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_custom_populations.py:

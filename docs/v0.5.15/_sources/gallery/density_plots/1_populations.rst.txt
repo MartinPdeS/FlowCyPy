@@ -32,7 +32,7 @@ Workflow Summary:
 3. Run the Experiment: Simulate the flow cytometry experiment.
 4. Data Analysis: Analyze the pulse signals and generate a 2D density plot of the scattering intensities.
 
-.. GENERATED FROM PYTHON SOURCE LINES 16-59
+.. GENERATED FROM PYTHON SOURCE LINES 16-61
 
 .. code-block:: Python
 
@@ -79,24 +79,32 @@ Workflow Summary:
     exosome = Exosome(particle_count=5e9 * particle / milliliter)
     scatterer_collection.add_population(exosome)
 
+    scatterer_collection.plot()
 
 
+
+
+.. image-sg:: /gallery/density_plots/images/sphx_glr_1_populations_001.png
+   :alt: 1 populations
+   :srcset: /gallery/density_plots/images/sphx_glr_1_populations_001.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/scatterer_collection.py:279: UserWarning: The following kwargs were not used by contour: 'label'
+      grid.ax_joint.contourf(
 
-    (Population(name='Exosome', refractive_index=Normal(1.390 RIU, 0.020 RIU), size=RR(70.000 nm, 2.000), particle_count=5000000000000.001 particle/l),)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-61
+.. GENERATED FROM PYTHON SOURCE LINES 62-63
 
 Add forward scatter detector
 
-.. GENERATED FROM PYTHON SOURCE LINES 61-105
+.. GENERATED FROM PYTHON SOURCE LINES 63-107
 
 .. code-block:: Python
 
@@ -147,21 +155,21 @@ Add forward scatter detector
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_1_populations_001.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_1_populations_002.png
    :alt: 1 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_1_populations_001.png
+   :srcset: /gallery/density_plots/images/sphx_glr_1_populations_002.png
    :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-108
+.. GENERATED FROM PYTHON SOURCE LINES 108-110
 
 Step 5: Analyzing Pulse Signals
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-123
+.. GENERATED FROM PYTHON SOURCE LINES 110-125
 
 .. code-block:: Python
 
@@ -187,13 +195,13 @@ Step 5: Analyzing Pulse Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 124-127
+.. GENERATED FROM PYTHON SOURCE LINES 126-129
 
 Step 6: Coincidence Data and 2D Density Plot
 --------------------------------------------
 Extract coincidence data within a defined margin
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-131
+.. GENERATED FROM PYTHON SOURCE LINES 129-133
 
 .. code-block:: Python
 
@@ -204,9 +212,9 @@ Extract coincidence data within a defined margin
 
 
 
-.. image-sg:: /gallery/density_plots/images/sphx_glr_1_populations_002.png
+.. image-sg:: /gallery/density_plots/images/sphx_glr_1_populations_003.png
    :alt: 1 populations
-   :srcset: /gallery/density_plots/images/sphx_glr_1_populations_002.png
+   :srcset: /gallery/density_plots/images/sphx_glr_1_populations_003.png
    :class: sphx-glr-single-img
 
 
@@ -216,7 +224,7 @@ Extract coincidence data within a defined margin
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.819 seconds)
+   **Total running time of the script:** (0 minutes 3.364 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_1_populations.py:
