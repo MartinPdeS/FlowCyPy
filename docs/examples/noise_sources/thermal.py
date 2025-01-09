@@ -1,6 +1,6 @@
 """
-Thermal Noise Simulation in a Flow Cytometer Detector
-=====================================================
+Thermal Noise
+=============
 
 This example demonstrates how thermal noise influences the raw signal in a flow cytometer detector.
 We simulate thermal noise for detectors at two different temperatures and compare the resulting

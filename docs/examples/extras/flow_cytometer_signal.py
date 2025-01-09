@@ -1,6 +1,6 @@
 """
-Simulating Flow Cytometer Signals with Rayleigh Scattering
-==========================================================
+Generating Signal
+=================
 
 This script simulates signals from a flow cytometer using Rayleigh scattering to model the interaction
 of particles with a laser beam. It demonstrates how to generate Forward Scatter (FSC) and Side Scatter (SSC) signals

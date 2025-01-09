@@ -1,6 +1,6 @@
 """
-Flow Cytometry Simulation: Scattering Intensities with One Population
-======================================================================
+Workflow
+========
 
 This tutorial demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library.
 The simulation involves configuring a flow setup, defining a single population of particles, and

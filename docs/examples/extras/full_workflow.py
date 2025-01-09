@@ -1,6 +1,6 @@
 """
-Simulating and Analyzing Flow Cytometer Signals
-===============================================
+WorkFlow
+========
 
 This script simulates flow cytometer signals using the `FlowCytometer` class and analyzes the results using
 the `PulseAnalyzer` class from the FlowCyPy library. The signals generated (forward scatter and side scatter)

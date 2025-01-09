@@ -1,6 +1,6 @@
 """
-Flow Cytometry Simulation [2 populations] Density Plot of Scattering Intensities
-================================================================================
+2 populations
+=============
 
 This example simulates a flow cytometer experiment using the FlowCyPy library,
 analyzes pulse signals from two detectors, and generates a 2D density plot of the scattering intensities.

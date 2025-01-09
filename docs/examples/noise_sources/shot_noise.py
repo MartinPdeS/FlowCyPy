@@ -1,6 +1,6 @@
 """
-Effect of Optical Power on Detector Signal
-==========================================
+Shot noise
+==========
 
 This example demonstrates the effect of different optical power levels on a flow cytometer detector.
 We initialize the detector, apply varying optical power levels, and visualize the resulting signals

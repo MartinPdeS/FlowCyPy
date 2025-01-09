@@ -1,6 +1,6 @@
 """
-Particle Size Distribution Visualization
-========================================
+Particle Distribution
+=====================
 
 This script demonstrates how to visualize various particle size distributions from the FlowCyPy library.
 It generates and plots particle sizes based on different statistical distributions, such as Normal, LogNormal, Weibull, and more.

@@ -1,6 +1,6 @@
 """
-Effect of Dark Current Noise on Detector Signal
-===============================================
+Dark Current
+============
 
 This example illustrates the impact of varying dark current levels on a flow cytometer detector signal.
 The detector is initialized, dark current noise is applied, and the resulting signals are visualized

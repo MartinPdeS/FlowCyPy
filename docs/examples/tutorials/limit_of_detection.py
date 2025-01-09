@@ -1,6 +1,6 @@
 """
-Study on limit of detection
-===========================
+Limit of detection
+==================
 """
 
 import numpy as np

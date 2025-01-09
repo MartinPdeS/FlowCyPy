@@ -1,6 +1,6 @@
 """
-Flow Cytometry Simulation and 2D Hexbin Plot of Scattering Intensities
-======================================================================
+Scatterer Collection
+====================
 
 This script simulates a flow cytometer using the FlowCyPy library. It models light scattering from particles
 detected by two detectors (Forward Scatter and Side Scatter) and visualizes the scattering intensities in a 2D hexbin plot.
@@ -29,7 +29,7 @@ np.random.seed(20)
 # Step 1: Define Particle Size and Refractive Index Distributions
 # ---------------------------------------------------------------
 # Two particle populations are defined with different sizes and refractive indices.
-scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)
+scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)
 
 population_0 = Population(
     name='EV',
@@ -45,9 +45,9 @@ population_1 = Population(
     refractive_index=distribution.Normal(mean=1.45 * RIU, std_dev=0.05 * RIU)
 )
 
-scatterer.add_population(population_0, population_1)
+scatterer_collection.add_population(population_0, population_1)
 
-
+scatterer_collection.plot()
 
 """
 Summary:

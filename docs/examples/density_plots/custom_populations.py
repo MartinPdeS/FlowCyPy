@@ -1,6 +1,6 @@
 """
-Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities
-======================================================================================
+Custom populations
+==================
 
 This example demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library.
 The simulation includes two populations of particles, and we analyze pulse signals from two detectors
