@@ -650,9 +650,7 @@
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
             <span class="n">data</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
                 <span class="n">Time</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">),</span>
-                <span class="n">RawSignal</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">volt</span><span class="p">),</span>
                 <span class="n">Signal</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">volt</span><span class="p">),</span>
-                <span class="n">DigitizedSignal</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="p">)</span></div>
 
@@ -767,29 +765,34 @@
 <span class="sd">            where:</span>
 <span class="sd">                - \( R_{\text{load}} \) is the load resistance of the detector (Ohms).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Step 1: Compute photon energy</span>
-        <span class="n">energy_photon</span> <span class="o">=</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">c</span> <span class="o">/</span> <span class="n">wavelength</span>  <span class="c1"># Photon energy (J)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+            <span class="n">signal</span> <span class="o">+=</span> <span class="n">optical_power</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">responsitivity</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>
+            <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="c1"># Step 2: Compute mean photon count per sampling interval</span>
-        <span class="n">photon_rate</span> <span class="o">=</span> <span class="n">optical_power</span> <span class="o">/</span> <span class="n">energy_photon</span>  <span class="c1"># Photon rate (photons/s)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Step 1: Compute photon energy</span>
+            <span class="n">energy_photon</span> <span class="o">=</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">c</span> <span class="o">/</span> <span class="n">wavelength</span>  <span class="c1"># Photon energy (J)</span>
 
-        <span class="n">sampling_interval</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">sampling_freq</span>  <span class="c1"># Sampling interval (s)</span>
-        <span class="n">mean_photon_count</span> <span class="o">=</span> <span class="n">photon_rate</span> <span class="o">*</span> <span class="n">sampling_interval</span>  <span class="c1"># Mean photons per sample</span>
+            <span class="c1"># Step 2: Compute mean photon count per sampling interval</span>
+            <span class="n">photon_rate</span> <span class="o">=</span> <span class="n">optical_power</span> <span class="o">/</span> <span class="n">energy_photon</span>  <span class="c1"># Photon rate (photons/s)</span>
 
-        <span class="c1"># Step 3: Simulate photon arrivals using Poisson statistics</span>
-        <span class="n">photon_counts_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">mean_photon_count</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span>
+            <span class="n">sampling_interval</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">sampling_freq</span>  <span class="c1"># Sampling interval (s)</span>
+            <span class="n">mean_photon_count</span> <span class="o">=</span> <span class="n">photon_rate</span> <span class="o">*</span> <span class="n">sampling_interval</span>  <span class="c1"># Mean photons per sample</span>
 
-        <span class="c1"># Step 4: Convert photon counts to photocurrent</span>
-        <span class="n">photon_power_distribution</span> <span class="o">=</span> <span class="n">photon_counts_distribution</span> <span class="o">*</span> <span class="n">energy_photon</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">sampling_freq</span>
+            <span class="c1"># Step 3: Simulate photon arrivals using Poisson statistics</span>
+            <span class="n">photon_counts_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">mean_photon_count</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span>
 
-        <span class="n">photocurrent_distribution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">responsitivity</span> <span class="o">*</span> <span class="n">photon_power_distribution</span>  <span class="c1"># Current (A)</span>
-        <span class="c1"># Step 5: Convert photocurrent to shot noise voltage</span>
-        <span class="n">shot_noise_voltage_distribution</span> <span class="o">=</span> <span class="n">photocurrent_distribution</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>  <span class="c1"># Voltage (V)</span>
+            <span class="c1"># Step 4: Convert photon counts to photocurrent</span>
+            <span class="n">photon_power_distribution</span> <span class="o">=</span> <span class="n">photon_counts_distribution</span> <span class="o">*</span> <span class="n">energy_photon</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">sampling_freq</span>
 
-        <span class="c1"># Step 6: Add shot noise voltage to the raw signal</span>
-        <span class="n">signal</span> <span class="o">+=</span> <span class="n">shot_noise_voltage_distribution</span>
+            <span class="n">photocurrent_distribution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">responsitivity</span> <span class="o">*</span> <span class="n">photon_power_distribution</span>  <span class="c1"># Current (A)</span>
+            <span class="c1"># Step 5: Convert photocurrent to shot noise voltage</span>
+            <span class="n">shot_noise_voltage_distribution</span> <span class="o">=</span> <span class="n">photocurrent_distribution</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>  <span class="c1"># Voltage (V)</span>
 
-        <span class="k">return</span> <span class="n">shot_noise_voltage_distribution</span>
+            <span class="c1"># Step 6: Add shot noise voltage to the raw signal</span>
+            <span class="n">signal</span> <span class="o">+=</span> <span class="n">shot_noise_voltage_distribution</span>
+
+            <span class="k">return</span> <span class="n">shot_noise_voltage_distribution</span>
 
 <div class="viewcode-block" id="Detector.capture_signal">
 <a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector.capture_signal">[docs]</a>

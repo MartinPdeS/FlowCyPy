@@ -703,6 +703,11 @@
 <span class="sd">        After filling, the DataFrame will be populated with size and refractive index data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
+            <span class="c1"># Check if population.name is in the dataframe&#39;s index</span>
+            <span class="k">if</span> <span class="n">population</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+                <span class="k">continue</span>  <span class="c1"># Skip this iteration if population.name is not present</span>
+
+            <span class="c1"># Safely access the sub-dataframe and proceed</span>
             <span class="n">sub_dataframe</span> <span class="o">=</span> <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">xs</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="n">sampling</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_dataframe</span><span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span>
 
@@ -776,7 +781,7 @@
 
             <span class="c1"># Plot the joint area as a filled contour plot</span>
             <span class="n">grid</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span>
-                <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">transparent_cmap</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">population</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">transparent_cmap</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="s2">&quot;min&quot;</span>
             <span class="p">)</span>
 
             <span class="n">legend_handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mpatches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">base_color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>

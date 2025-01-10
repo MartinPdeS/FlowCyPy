@@ -90,13 +90,6 @@ Workflow Summary:
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/scatterer_collection.py:279: UserWarning: The following kwargs were not used by contour: 'label'
-      grid.ax_joint.contourf(
-
 
 
 
@@ -224,7 +217,7 @@ Extract coincidence data within a defined margin
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.294 seconds)
+   **Total running time of the script:** (0 minutes 5.440 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_1_populations.py:

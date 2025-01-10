@@ -100,13 +100,6 @@ Step 1: Set up the Laser GaussianBeam
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/scatterer_collection.py:279: UserWarning: The following kwargs were not used by contour: 'label'
-      grid.ax_joint.contourf(
-
 
 
 
@@ -235,7 +228,7 @@ Step 8: Extract and Plot Coincidence Data
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.995 seconds)
+   **Total running time of the script:** (0 minutes 4.981 seconds)
 
 
 .. _sphx_glr_download_gallery_density_plots_2_populations.py:
