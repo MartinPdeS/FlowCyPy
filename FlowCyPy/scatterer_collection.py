@@ -207,6 +207,11 @@ class ScattererCollection(PropertiesReport):
         After filling, the DataFrame will be populated with size and refractive index data.
         """
         for population in self.populations:
+            # Check if population.name is in the dataframe's index
+            if population.name not in scatterer_dataframe.index:
+                continue  # Skip this iteration if population.name is not present
+
+            # Safely access the sub-dataframe and proceed
             sub_dataframe = scatterer_dataframe.xs(population.name)
             sampling = len(sub_dataframe) * units.particle
 
@@ -277,7 +282,7 @@ class ScattererCollection(PropertiesReport):
 
             # Plot the joint area as a filled contour plot
             grid.ax_joint.contourf(
-                X, Y, Z, levels=10, cmap=transparent_cmap, extend="min", label=population.name
+                X, Y, Z, levels=10, cmap=transparent_cmap, extend="min"
             )
 
             legend_handles.append(mpatches.Patch(color=base_color, label=population.name))

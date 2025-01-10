@@ -5,7 +5,9 @@ from scipy.signal import find_peaks
 from FlowCyPy.peak_locator.base_class import BasePeakLocator
 import pandas as pd
 import pint_pandas
-from FlowCyPy.units import Quantity, microsecond
+from FlowCyPy.units import Quantity
+from pint_pandas import PintArray
+from typing import Tuple, Callable
 
 
 @dataclass
@@ -27,10 +29,10 @@ class MovingAverage(BasePeakLocator):
 
     """
 
-    threshold: Quantity = None
-    window_size: Quantity = Quantity(1, microsecond)
+    threshold: Quantity
+    window_size: Quantity
     min_peak_distance: Quantity = None
-    rel_height: float = 0.8
+    rel_height: float = 0.1
 
     def init_data(self, dataframe: pd.DataFrame) -> None:
         """
@@ -112,3 +114,53 @@ class MovingAverage(BasePeakLocator):
 
         # Plot the signal threshold line
         ax.axhline(y=self.threshold.to(signal_unit).magnitude, color='black', linestyle='--', label='Threshold', lw=1)
+
+
+    def format_input(function: Callable) -> Callable:
+        def wrapper(self, dataframe: pd.DataFrame, y: str, x: str = None):
+            x = dataframe[x] if x is not None else dataframe.index
+
+            new_dataframe = pd.DataFrame(
+                data=dict(
+                    x=x, y=dataframe[y]
+                )
+            )
+
+            return function(self=self, dataframe=new_dataframe)
+
+        return wrapper
+
+
+    @format_input
+    def process_data(self, dataframe: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        dt = dataframe.x[1] - dataframe.x[0]
+
+        window_size_samples = int(np.ceil(self.window_size / dt))
+
+
+        y_units = dataframe['y'].pint.units
+        x_units = dataframe['x'].pint.units
+
+        moving_avg = dataframe['y'].rolling(window=window_size_samples, center=True, min_periods=1).mean()
+
+        dataframe['MovingAverage'] = PintArray(moving_avg, y_units)
+
+        dataframe['Difference'] = dataframe['y'] - dataframe['MovingAverage']
+
+        peak_indices, meta = find_peaks(
+            x=dataframe['Difference'],
+            height=self.threshold.to(dataframe['Difference'].pint.units).magnitude,
+            distance=window_size_samples,
+            rel_height=0.1,
+            width=1
+        )
+
+        peak_dataframe = pd.DataFrame(
+            dict(
+                PeakPosition=dataframe['x'][peak_indices],
+                PeakHeight=PintArray(meta['peak_heights'], y_units),
+                PeakWidth=PintArray(meta['widths'], x_units),
+            )
+        )
+
+        return dataframe, peak_dataframe

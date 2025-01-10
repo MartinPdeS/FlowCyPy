@@ -166,9 +166,7 @@ class Detector(PropertiesReport):
         return pd.DataFrame(
             data=dict(
                 Time=pint_pandas.PintArray(time, dtype=units.second),
-                RawSignal=pint_pandas.PintArray(np.zeros_like(time), dtype=units.volt),
                 Signal=pint_pandas.PintArray(np.zeros_like(time), dtype=units.volt),
-                DigitizedSignal=np.zeros_like(time)
             )
         )
 
@@ -282,29 +280,34 @@ class Detector(PropertiesReport):
             where:
                 - \( R_{\text{load}} \) is the load resistance of the detector (Ohms).
         """
-        # Step 1: Compute photon energy
-        energy_photon = PhysicalConstant.h * PhysicalConstant.c / wavelength  # Photon energy (J)
+        if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
+            signal += optical_power * self.responsitivity * self.resistance
+            return None
 
-        # Step 2: Compute mean photon count per sampling interval
-        photon_rate = optical_power / energy_photon  # Photon rate (photons/s)
+        else:
+            # Step 1: Compute photon energy
+            energy_photon = PhysicalConstant.h * PhysicalConstant.c / wavelength  # Photon energy (J)
 
-        sampling_interval = 1 / self.signal_digitizer.sampling_freq  # Sampling interval (s)
-        mean_photon_count = photon_rate * sampling_interval  # Mean photons per sample
+            # Step 2: Compute mean photon count per sampling interval
+            photon_rate = optical_power / energy_photon  # Photon rate (photons/s)
 
-        # Step 3: Simulate photon arrivals using Poisson statistics
-        photon_counts_distribution = np.random.poisson(mean_photon_count.to('').magnitude, size=len(signal))
+            sampling_interval = 1 / self.signal_digitizer.sampling_freq  # Sampling interval (s)
+            mean_photon_count = photon_rate * sampling_interval  # Mean photons per sample
 
-        # Step 4: Convert photon counts to photocurrent
-        photon_power_distribution = photon_counts_distribution * energy_photon * self.signal_digitizer.sampling_freq
+            # Step 3: Simulate photon arrivals using Poisson statistics
+            photon_counts_distribution = np.random.poisson(mean_photon_count.to('').magnitude, size=len(signal))
 
-        photocurrent_distribution = self.responsitivity * photon_power_distribution  # Current (A)
-        # Step 5: Convert photocurrent to shot noise voltage
-        shot_noise_voltage_distribution = photocurrent_distribution * self.resistance  # Voltage (V)
+            # Step 4: Convert photon counts to photocurrent
+            photon_power_distribution = photon_counts_distribution * energy_photon * self.signal_digitizer.sampling_freq
 
-        # Step 6: Add shot noise voltage to the raw signal
-        signal += shot_noise_voltage_distribution
+            photocurrent_distribution = self.responsitivity * photon_power_distribution  # Current (A)
+            # Step 5: Convert photocurrent to shot noise voltage
+            shot_noise_voltage_distribution = photocurrent_distribution * self.resistance  # Voltage (V)
 
-        return shot_noise_voltage_distribution
+            # Step 6: Add shot noise voltage to the raw signal
+            signal += shot_noise_voltage_distribution
+
+            return shot_noise_voltage_distribution
 
     def capture_signal(self, signal: pd.Series) -> None:
         """

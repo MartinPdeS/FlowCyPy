@@ -71,8 +71,8 @@ class Base:
             if not isinstance(n_samples, Quantity) or not n_samples.check("particle"):
                 raise ValueError("n_sample must be a dimensionless Quantity.")
 
-            if n_samples.magnitude < 2:
-                raise ValueError("n_samples must be at least 2.")
+            # if n_samples.magnitude < 2:
+            #     raise ValueError("n_samples must be at least 2.")
 
             return function(self=self, n_samples=n_samples.magnitude) * self._units
 
