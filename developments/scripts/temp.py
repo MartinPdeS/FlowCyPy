@@ -111,7 +111,15 @@ triggered_acquisition = cytometer.get_triggered_acquisition(
 )
 
 
-triggered_acquisition.plot()
+# triggered_acquisition.plot.signals()
+
+triggered_acquisition.detect_peaks()
+
+triggered_acquisition.plot.peaks()
+
+# print(triggered_acquisition.dataframe)
 # print(data.xs('forward').Signal.plot())
 # Plot the results from both detectors
 # experiment.plot.scatterer()
+
+

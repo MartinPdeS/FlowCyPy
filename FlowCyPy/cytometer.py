@@ -12,7 +12,8 @@ import pint_pandas
 from FlowCyPy import units
 from FlowCyPy.units import Quantity, milliwatt
 from pint_pandas import PintArray
-from FlowCyPy.experiment import ContinuousAcquisition, TriggeredAcquisition
+from FlowCyPy.continuous_acquisition import ContinuousAcquisition
+from FlowCyPy.triggered_acquisition import TriggeredAcquisition
 
 
 # Set up logging configuration

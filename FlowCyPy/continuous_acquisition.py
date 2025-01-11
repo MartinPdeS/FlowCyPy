@@ -6,7 +6,6 @@ from FlowCyPy.units import Quantity
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tabulate import tabulate
-from dataclasses import dataclass
 
 
 class ContinuousAcquisition:
@@ -397,101 +396,4 @@ class ContinuousAcquisition:
 
             if show:
                 plt.show()
-
-
-
-
-@dataclass
-class TriggeredAcquisition:
-    """
-    A class for analyzing triggered signal acquisition data.
-
-    Attributes
-    ----------
-    data : pd.DataFrame
-        Multi-index DataFrame with detector and segment as levels,
-        containing time and signal columns.
-    """
-    data: pd.DataFrame
-
-    def plot(self, num_segments: int = 5) -> None:
-        """
-        Plots the first few segments of signal data for each detector using subplots.
-
-        Parameters
-        ----------
-        num_segments : int, optional
-            Number of segments to plot for each detector, by default 5.
-        """
-        # Get unique detectors
-        detectors = self.data.index.get_level_values('Detector').unique()
-        num_detectors = len(detectors)
-
-        with plt.style.context(mps):
-            # Create subplots
-            fig, axes = plt.subplots(
-                num_detectors, 1,
-                figsize=(10, 3 * num_detectors),
-                sharex=True, sharey=True,
-                constrained_layout=True
-            )
-
-        # Ensure axes is iterable for single detector case
-        if num_detectors == 1:
-            axes = [axes]
-
-        # Plot each detector
-        for ax, detector_name in zip(axes, detectors):
-            detector_data = self.data.loc[detector_name]
-
-            for segment_id, segment_data in detector_data.groupby(level='SegmentID'):
-                if segment_id >= num_segments:
-                    break
-                ax.step(segment_data['Time'], segment_data['Signal'], label=f"Segment {segment_id}")
-
-            # Add title and grid
-            ax.grid(True)
-            ax.legend()
-
-        # Global plot adjustments
-        fig.suptitle("Triggered Signal Segments", fontsize=16, y=1.02)
-        axes[-1].set_xlabel("Time", fontsize=12)
-        for ax in axes:
-            ax.set_ylabel(f"Signal {detector_name}", fontsize=12)
-
-        plt.tight_layout()
-        plt.show()
-
-    def compute_statistics(self) -> pd.DataFrame:
-        """
-        Computes basic statistics (mean, std, min, max) for each segment.
-
-        Returns
-        -------
-        pd.DataFrame
-            A DataFrame containing the statistics for each detector and segment.
-        """
-        stats = self.data.groupby(level=['Detector', 'SegmentID'])['Signal'].agg(['mean', 'std', 'min', 'max'])
-        return stats
-
-    def log_summary(self) -> None:
-        """
-        Prints a summary of the data to the console.
-
-        Prints:
-        - Number of detectors.
-        - Number of segments.
-        - Segment statistics (mean, std, min, max).
-        """
-        num_detectors = self.data.index.get_level_values('Detector').nunique()
-        num_segments = len(self.data.index.get_level_values('SegmentID').unique())
-
-        print("Triggered Acquisition Analysis Summary")
-        print("--------------------------------------")
-        print(f"Number of Detectors: {num_detectors}")
-        print(f"Number of Segments: {num_segments}\n")
-
-        print("Segment Statistics:")
-        stats = self.compute_statistics()
-        print(stats)
 
