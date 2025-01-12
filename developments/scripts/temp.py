@@ -57,7 +57,7 @@ hdl = HDL(particle_count=5e9 * particle / milliliter)
 scatterer_collection.add_population(exosome)
 # scatterer_collection.add_population(hdl)
 
-# scatterer_collection.plot()
+scatterer_collection.plot()
 
 # %%
 # Step 5: Configure Detectors
@@ -107,13 +107,14 @@ triggered_acquisition = cytometer.get_triggered_acquisition(
     pre_buffer=64,
     post_buffer=64,
     trigger_detector_name='forward',
-    maximum_number_of_triggers=4
+    max_triggers=30
 )
 
 
 # triggered_acquisition.plot.signals()
 
 triggered_acquisition.detect_peaks()
+# triggered_acquisition.plot.signals()
 
 triggered_acquisition.plot.statistiques(
     x_detector='side',

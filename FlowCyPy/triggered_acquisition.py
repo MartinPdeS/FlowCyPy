@@ -62,22 +62,20 @@ class TriggeredAcquisition:
         segments = []
         for detector_name in self.continuous_dataframe.index.get_level_values('Detector').unique():
             detector_data = self.continuous_dataframe.xs(detector_name)
-            time, signal = detector_data['Time'], detector_data['Signal']
+            time, signal = detector_data['Time'], detector_data['DigitizedSignal']
 
+            for idx, (start, end) in enumerate(zip(start_indices, end_indices)):
 
-
-            for i, (start, end) in enumerate(zip(start_indices, end_indices)):
-                print(detector_name, i)
+                # print(detector_name, idx)
                 segment = pd.DataFrame({
                     'Time': time[start:end + 1],
                     'Signal': signal[start:end + 1],
                     'Detector': detector_name,
-                    'SegmentID': i
+                    'ID': idx
                 })
                 segments.append(segment)
 
-        self.triggered_dataframe = pd.concat(segments).set_index(['Detector', 'SegmentID'])
-
+        self.triggered_dataframe = pd.concat(segments).set_index(['Detector', 'ID'])
 
     def get_acquisition(self, detector_name: str, acquisition_id: int) -> pd.DataFrame:
         """Retrieve specific acquisition data."""
@@ -91,19 +89,23 @@ class TriggeredAcquisition:
             signal = segment['Signal'].values
             time = segment['Time'].values
             peaks, properties = find_peaks(signal)
+
+            peaks = [peaks[0]]
             return pd.DataFrame({
                 "Time": time[peaks],
                 "Height": signal[peaks],
                 **{k: v for k, v in properties.items()}
             })
 
-        results = self.triggered_dataframe.groupby(level=['Detector', 'SegmentID']).apply(process_segment)
-        results.index.names = ['Detector', 'SegmentID', 'Peak']
+        results = self.triggered_dataframe.groupby(level=['Detector', 'ID']).apply(process_segment)
+        results.index.names = ['Detector', 'ID', 'Peak']
         self.peaks_dataframe = results
+
+        print(results)
 
     def compute_statistics(self) -> pd.DataFrame:
         """Compute statistics for each segment."""
-        return self.triggered_dataframe.groupby(level=['Detector', 'SegmentID'])['Signal'].agg(['mean', 'std', 'min', 'max'])
+        return self.triggered_dataframe.groupby(level=['Detector'])['Signal'].agg(['mean', 'std', 'min', 'max'])
 
     def log_summary(self) -> None:
         """Log summary statistics of the acquisition analysis."""
@@ -158,7 +160,7 @@ class TriggeredAcquisition:
             for ax, (detector_name, group) in zip(axes, self.acquisition.triggered_dataframe.groupby(level=['Detector'])):
                 ax.set_ylabel(f"Detector: {detector_name}")
 
-                for _, sub_group in group.groupby(level=['SegmentID']):
+                for _, sub_group in group.groupby(level=['ID']):
                     ax.step(sub_group.Time, sub_group.Signal)
 
             for ax, (_, group) in zip(axes, self.acquisition.peaks_dataframe.groupby(level=['Detector'])):
@@ -166,7 +168,7 @@ class TriggeredAcquisition:
 
             plt.show()
 
-        def statistiques(self, x_detector: str, y_detector: str, signal: str = 'Height', scatter: bool = True, bandwidth_adjust: float = 0.8) -> None:
+        def statistiques(self, x_detector: str, y_detector: str, signal: str = 'Height', bandwidth_adjust: float = 0.8) -> None:
             """
             Plot the joint KDE distribution of the specified signal between two detectors using seaborn,
             optionally overlaying scatter points.
@@ -179,18 +181,14 @@ class TriggeredAcquisition:
                 Name of the detector to use for the y-axis.
             signal : str, optional
                 The signal column to plot, by default 'Height'.
-            scatter : bool, optional
-                Whether to overlay scatter points on the KDE plot, by default True.
             bandwidth_adjust : float, optional
                 Bandwidth adjustment factor for KDE, by default 0.8.
             """
-
-            # Prepare data for plotting
-            peak_data = self.acquisition.peaks_dataframe.reset_index()
+            _peak_data = self.acquisition.peaks_dataframe[signal].unstack('Detector').droplevel('Peak', axis=0)
 
             # Filter to only include rows for the specified detectors
-            x_data = peak_data[peak_data['Detector'] == x_detector][signal]
-            y_data = peak_data[peak_data['Detector'] == y_detector][signal]
+            x_data = _peak_data[x_detector]
+            y_data = _peak_data[y_detector]
 
 
             x_units = x_data.max().to_compact().units
@@ -201,7 +199,6 @@ class TriggeredAcquisition:
 
             print(x_data)
             print(y_data)
-
 
             with plt.style.context(mps):
                 # Create joint KDE plot with scatter points overlay

@@ -176,7 +176,7 @@ class FlowCytometer:
         custom_trigger: np.ndarray = None,
         pre_buffer: int = 64,
         post_buffer: int = 64,
-        maximum_number_of_triggers: int = None,
+        max_triggers: int = None,
     ) -> pd.DataFrame:
         """
         Extracts thresholded signal segments based on a trigger detector or custom trigger array
@@ -197,7 +197,7 @@ class FlowCytometer:
             Number of points to include before each threshold crossing, by default 64.
         post_buffer : int, optional
             Number of points to include after each threshold crossing, by default 64.
-        maximum_number_of_triggers : int, optional
+        max_triggers : int, optional
             The maximum number of triggers to process. If None, all triggers will be processed.
 
         Returns
@@ -224,7 +224,7 @@ class FlowCytometer:
             custom_trigger=custom_trigger,
             pre_buffer=pre_buffer,
             post_buffer=post_buffer,
-            max_triggers=maximum_number_of_triggers
+            max_triggers=max_triggers
         )
 
         return triggered_acquisition
