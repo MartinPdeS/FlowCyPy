@@ -1,211 +1,227 @@
-
 from MPSPlots.styles import mps
-import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
+from FlowCyPy import units
 import pandas as pd
+import seaborn as sns
 
 
 class TriggeredAcquisition:
     """
-    A class for analyzing triggered signal acquisition data.
+    A streamlined class for analyzing triggered signal acquisition data.
 
     Attributes
     ----------
     data : pd.DataFrame
-        Multi-index DataFrame with detector and segment as levels,
+        Multi-index DataFrame with levels 'Detector' and 'SegmentID',
         containing time and signal columns.
     """
-    def __init__(self, dataframe: pd.DataFrame) -> None:
-        self.dataframe = dataframe
 
+    def __init__(self, dataframe: pd.DataFrame) -> None:
+        self.continuous_dataframe = dataframe
         self.plot = self.PlotInterface(self)
 
+    @property
+    def n_detectors(self) -> int:
+        return len(self.triggered_dataframe.index.get_level_values('Detector').unique())
 
-    def get_acquisition(self, detector_name: str, acquisition_id: int) -> pd.DataFrame:
-        return self.dataframe.loc[detector_name, acquisition_id]
-
-    def detect_peaks(self) -> pd.DataFrame:
+    def run(self,
+            threshold: units.Quantity,
+            trigger_detector_name: str = None,
+            custom_trigger: np.ndarray = None,
+            pre_buffer: int = 64,
+            post_buffer: int = 64,
+            max_triggers: int = None) -> None:
         """
-        Detect peaks for all segments of all detectors in a MultiIndex DataFrame using vectorized operations.
-        The output is a MultiIndex DataFrame matching the structure of the input.
+        Executes the triggered acquisition analysis.
 
         Parameters
         ----------
-        df : pd.DataFrame
-            A MultiIndex DataFrame with levels ['Detector', 'SegmentID'].
-        signal_column : str
-            The name of the column containing the signal data to analyze.
-
-        Returns
-        -------
-        pd.DataFrame
-            A MultiIndex DataFrame containing peak indices and their corresponding properties
-            for each detector and segment.
+        threshold : units.Quantity
+            Trigger threshold value.
+        trigger_detector_name : str, optional
+            Detector used for triggering, by default None.
+        custom_trigger : np.ndarray, optional
+            Custom trigger array, by default None.
+        pre_buffer : int, optional
+            Points before trigger, by default 64.
+        post_buffer : int, optional
+            Points after trigger, by default 64.
+        max_triggers : int, optional
+            Maximum number of triggers to process, by default None.
         """
-        df = self.dataframe
+        start_indices, end_indices = self._get_trigger_indices(
+            threshold, trigger_detector_name, custom_trigger, pre_buffer, post_buffer
+        )
 
+        if max_triggers is not None:
+            start_indices = start_indices[:max_triggers]
+            end_indices = end_indices[:max_triggers]
+
+        segments = []
+        for detector_name in self.continuous_dataframe.index.get_level_values('Detector').unique():
+            detector_data = self.continuous_dataframe.xs(detector_name)
+            time, signal = detector_data['Time'], detector_data['Signal']
+
+
+
+            for i, (start, end) in enumerate(zip(start_indices, end_indices)):
+                print(detector_name, i)
+                segment = pd.DataFrame({
+                    'Time': time[start:end + 1],
+                    'Signal': signal[start:end + 1],
+                    'Detector': detector_name,
+                    'SegmentID': i
+                })
+                segments.append(segment)
+
+        self.triggered_dataframe = pd.concat(segments).set_index(['Detector', 'SegmentID'])
+
+
+    def get_acquisition(self, detector_name: str, acquisition_id: int) -> pd.DataFrame:
+        """Retrieve specific acquisition data."""
+        return self.triggered_dataframe.loc[detector_name, acquisition_id]
+
+    def detect_peaks(self) -> None:
+        """
+        Detects peaks for each segment and stores results in a DataFrame.
+        """
         def process_segment(segment):
             signal = segment['Signal'].values
             time = segment['Time'].values
-            peak_indices, peak_properties = find_peaks(signal)
-            segment_results = pd.DataFrame({
-                "PeakIndex": time[peak_indices],
-                "PeakHeight": signal[peak_indices],
-                **{key: values for key, values in peak_properties.items()}
+            peaks, properties = find_peaks(signal)
+            return pd.DataFrame({
+                "Time": time[peaks],
+                "Height": signal[peaks],
+                **{k: v for k, v in properties.items()}
             })
-            return segment_results
 
-        # Apply peak detection to each group (Detector, SegmentID)
-        results = df.groupby(level=["Detector", "SegmentID"], group_keys=True).apply(process_segment)
-
-        # Ensure the output has a MultiIndex
-        results.index.names = ["Detector", "SegmentID", "Peak"]
-
+        results = self.triggered_dataframe.groupby(level=['Detector', 'SegmentID']).apply(process_segment)
+        results.index.names = ['Detector', 'SegmentID', 'Peak']
         self.peaks_dataframe = results
 
+    def compute_statistics(self) -> pd.DataFrame:
+        """Compute statistics for each segment."""
+        return self.triggered_dataframe.groupby(level=['Detector', 'SegmentID'])['Signal'].agg(['mean', 'std', 'min', 'max'])
+
+    def log_summary(self) -> None:
+        """Log summary statistics of the acquisition analysis."""
+        print("Triggered Acquisition Analysis Summary")
+        print("--------------------------------------")
+        print(f"Detectors: {self.triggered_dataframe.index.get_level_values('Detector').nunique()}")
+        print(f"Segments: {len(self.triggered_dataframe.index.get_level_values('SegmentID').unique())}")
+        print(self.compute_statistics())
+
+    def _get_trigger_indices(
+            self,
+            threshold: units.Quantity,
+            trigger_detector_name: str = None,
+            custom_trigger: np.ndarray = None, pre_buffer: int = 64,
+            post_buffer: int = 64) -> tuple[np.ndarray, np.ndarray]:
+        """
+        Calculate start and end indices for triggered segments.
+        """
+        if custom_trigger is not None:
+            if len(custom_trigger) != len(self.continuous_dataframe.xs(self.detectors[0].name)['Signal']):
+                raise ValueError("Custom trigger length must match signal length.")
+            trigger_signal = custom_trigger
+        else:
+            if trigger_detector_name not in self.continuous_dataframe.index.get_level_values('Detector').unique():
+                raise ValueError(f"Detector '{trigger_detector_name}' not found.")
+            signal = self.continuous_dataframe.xs(trigger_detector_name)['Signal']
+            trigger_signal = signal > threshold.to(signal.pint.units)
+
+        crossings = np.where(np.diff(trigger_signal.astype(int)) == 1)[0]
+        start_indices = np.clip(crossings - pre_buffer, 0, len(trigger_signal) - 1)
+        end_indices = np.clip(crossings + post_buffer, 0, len(trigger_signal) - 1)
+
+        return start_indices, end_indices
+
     class PlotInterface:
-        """
-        A nested class for handling visualization and plotting.
+        """Handles visualization of acquisition data."""
 
-        Methods
-        -------
-        signals(figure_size=(10, 6), add_peak_locator=False, show=True)
-            Visualizes raw signals for detector channels and scatterer distributions.
-        coupling_distribution(log_scale=False, show=True, equal_limits=False, save_path=None)
-            Plots the density distribution of optical coupling between two detector channels.
-        """
+        def __init__(self, acquisition: "TriggeredAcquisition"):
+            self.acquisition = acquisition
 
-        def __init__(self, experiment: "Experiment"):
-            self.experiment = experiment
-            self.dataframe = self.experiment.dataframe
-
-        def signals(self, num_segments: int = 5) -> None:
-            """
-            Plots the first few segments of signal data for each detector using subplots.
-
-            Parameters
-            ----------
-            num_segments : int, optional
-                Number of segments to plot for each detector, by default 5.
-            """
-            # Get unique detectors
-            detectors = self.dataframe.index.get_level_values('Detector').unique()
-            num_detectors = len(detectors)
-
+        def signals(self) -> None:
+            """Plot detected peaks on signal segments."""
             with plt.style.context(mps):
-                # Create subplots
-                fig, axes = plt.subplots(
-                    num_detectors, 1,
-                    figsize=(10, 3 * num_detectors),
-                    sharex=True, sharey=True,
+                _, axes = plt.subplots(
+                    nrows=self.acquisition.n_detectors,
+                    ncols=1,
+                    figsize=(10, 6),
+                    sharex=True,
                     constrained_layout=True
                 )
 
-            # Ensure axes is iterable for single detector case
-            if num_detectors == 1:
-                axes = [axes]
+            for ax, (detector_name, group) in zip(axes, self.acquisition.triggered_dataframe.groupby(level=['Detector'])):
+                ax.set_ylabel(f"Detector: {detector_name}")
 
-            # Plot each detector
-            for ax, detector_name in zip(axes, detectors):
-                detector_data = self.dataframe.loc[detector_name]
+                for _, sub_group in group.groupby(level=['SegmentID']):
+                    ax.step(sub_group.Time, sub_group.Signal)
 
-                for segment_id, segment_data in detector_data.groupby(level='SegmentID'):
-                    if segment_id >= num_segments:
-                        break
-                    ax.step(segment_data['Time'], segment_data['Signal'], label=f"Segment {segment_id}")
+            for ax, (_, group) in zip(axes, self.acquisition.peaks_dataframe.groupby(level=['Detector'])):
+                ax.scatter(group['Time'], group['Height'], color='C1')
 
-                # Add title and grid
-                ax.grid(True)
-                ax.legend()
-
-            # Global plot adjustments
-            fig.suptitle("Triggered Signal Segments", fontsize=16, y=1.02)
-            axes[-1].set_xlabel("Time", fontsize=12)
-            for ax in axes:
-                ax.set_ylabel(f"Signal {detector_name}", fontsize=12)
-
-            plt.tight_layout()
             plt.show()
 
-        def peaks(self, figsize: tuple = (10, 6)) -> None:
+        def statistiques(self, x_detector: str, y_detector: str, signal: str = 'Height', scatter: bool = True, bandwidth_adjust: float = 0.8) -> None:
             """
-            Plots the signal and highlights the detected peaks for each detector.
+            Plot the joint KDE distribution of the specified signal between two detectors using seaborn,
+            optionally overlaying scatter points.
 
             Parameters
             ----------
-            figsize : tuple, optional
-                The size of the figure for the entire plot. Default is (10, 6).
-
-            Returns
-            -------
-            None
-                Displays the plots for each detector.
+            x_detector : str
+                Name of the detector to use for the x-axis.
+            y_detector : str
+                Name of the detector to use for the y-axis.
+            signal : str, optional
+                The signal column to plot, by default 'Height'.
+            scatter : bool, optional
+                Whether to overlay scatter points on the KDE plot, by default True.
+            bandwidth_adjust : float, optional
+                Bandwidth adjustment factor for KDE, by default 0.8.
             """
-            # Get the unique detectors
-            detectors = self.dataframe.index.get_level_values("Detector").unique()
 
-            # Create subplots
-            fig, axes = plt.subplots(len(detectors), 1, figsize=figsize, sharex=True, constrained_layout=True)
+            # Prepare data for plotting
+            peak_data = self.acquisition.peaks_dataframe.reset_index()
 
-            # Ensure axes is iterable for a single detector case
-            axes = axes if len(detectors) > 1 else [axes]
+            # Filter to only include rows for the specified detectors
+            x_data = peak_data[peak_data['Detector'] == x_detector][signal]
+            y_data = peak_data[peak_data['Detector'] == y_detector][signal]
 
-            # Plot each detector's data
-            for ax, detector in zip(axes, detectors):
-                # Filter data for the current detector
-                detector_data = self.dataframe.loc[detector]
 
-                # Plot each segment within the detector
-                for segment_id, segment_data in detector_data.groupby(level="SegmentID"):
-                    peaks = self.experiment.peaks_dataframe.loc[(detector, segment_id)]
+            x_units = x_data.max().to_compact().units
+            y_units = y_data.max().to_compact().units
 
-                    # Plot signal
-                    ax.step(segment_data["Time"], segment_data["Signal"], color='C0')
+            x_data = x_data.pint.to(x_units)
+            y_data = y_data.pint.to(y_units)
 
-                    # Plot peaks
-                    if not peaks.empty:
-                        ax.scatter(peaks["PeakIndex"], peaks["PeakHeight"], color="red")
+            print(x_data)
+            print(y_data)
 
-                # Customize subplot
-                ax.set_title(f"Detector: {detector}")
-                ax.set_xlabel("Time")
-                ax.set_ylabel("Signal")
-                ax.grid(True)
 
-            # Show the plot
+            with plt.style.context(mps):
+                # Create joint KDE plot with scatter points overlay
+                grid = sns.jointplot(
+                    x=x_data,
+                    y=y_data,
+                    kind='kde',
+                    fill=True,
+                    cmap="Blues",
+                    joint_kws={'bw_adjust': bandwidth_adjust, 'alpha': 0.7}
+                )
+
+            grid.ax_joint.scatter(
+                x_data,
+                y_data,
+                color='C1',
+                alpha=0.6,
+            )
+
+            grid.set_axis_labels(f"{signal} ({x_detector}) [{x_units}]", f"{signal} ({y_detector}) [{y_units}]", fontsize=12)
+            plt.tight_layout()
             plt.show()
-
-    def compute_statistics(self) -> pd.DataFrame:
-        """
-        Computes basic statistics (mean, std, min, max) for each segment.
-
-        Returns
-        -------
-        pd.DataFrame
-            A DataFrame containing the statistics for each detector and segment.
-        """
-        stats = self.data.groupby(level=['Detector', 'SegmentID'])['Signal'].agg(['mean', 'std', 'min', 'max'])
-        return stats
-
-    def log_summary(self) -> None:
-        """
-        Prints a summary of the data to the console.
-
-        Prints:
-        - Number of detectors.
-        - Number of segments.
-        - Segment statistics (mean, std, min, max).
-        """
-        num_detectors = self.data.index.get_level_values('Detector').nunique()
-        num_segments = len(self.data.index.get_level_values('SegmentID').unique())
-
-        print("Triggered Acquisition Analysis Summary")
-        print("--------------------------------------")
-        print(f"Number of Detectors: {num_detectors}")
-        print(f"Number of Segments: {num_segments}\n")
-
-        print("Segment Statistics:")
-        stats = self.compute_statistics()
-        print(stats)
 

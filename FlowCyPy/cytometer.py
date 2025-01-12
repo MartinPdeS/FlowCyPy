@@ -168,66 +168,6 @@ class FlowCytometer:
 
         self.dataframe.index.names = ["Detector", "Index"]
 
-    def get_trigger_indices(
-        self,
-        threshold: Quantity,
-        trigger_detector_name: str = None,
-        custom_trigger: np.ndarray = None,
-        pre_buffer: int = 64,
-        post_buffer: int = 64
-    ) -> tuple[np.ndarray, np.ndarray]:
-        """
-        Computes the start and end indices of segments based on the trigger condition.
-
-        Parameters
-        ----------
-        threshold : Quantity
-            The signal value threshold for the trigger detector.
-        trigger_detector_name : str, optional
-            The name of the detector to be used as the triggering system. Ignored if `custom_trigger` is provided.
-        custom_trigger : np.ndarray, optional
-            A custom boolean trigger array indicating where the signal should be extracted.
-            Must have the same length as the acquisition time.
-        pre_buffer : int, optional
-            Number of points to include before each threshold crossing, by default 64.
-        post_buffer : int, optional
-            Number of points to include after each threshold crossing, by default 64.
-
-        Returns
-        -------
-        tuple[np.ndarray, np.ndarray]
-            Two arrays: `start_indices` and `end_indices` for the triggered segments.
-
-        Raises
-        ------
-        ValueError
-            If the `custom_trigger` array is invalid or the specified trigger detector is not found.
-        """
-        if custom_trigger is not None:
-            # Validate custom trigger
-            if len(custom_trigger) != len(self.dataframe.xs(self.detectors[0].name)['Signal'].pint.magnitude):
-                raise ValueError("Custom trigger array length must match the acquisition signal length.")
-            trigger_signal = custom_trigger
-        else:
-            # Use trigger detector
-            if trigger_detector_name not in [detector.name for detector in self.detectors]:
-                raise ValueError(f"Trigger detector '{trigger_detector_name}' not found.")
-
-            trigger_signal = self.dataframe.xs(trigger_detector_name)['Signal']
-            trigger_units = self.dataframe.xs(trigger_detector_name)['Signal'].pint.units
-
-            trigger_signal = trigger_signal > threshold.to(trigger_units)
-
-
-        # Identify threshold crossings
-        crossing_indices = np.where(np.diff(trigger_signal.astype(int)) == 1)[0]
-
-        # Compute start and end indices using pre-buffer and post-buffer
-        start_indices = np.clip(crossing_indices - pre_buffer, 0, len(trigger_signal) - 1)
-        end_indices = np.clip(crossing_indices + post_buffer, 0, len(trigger_signal) - 1)
-
-        return start_indices, end_indices
-
     def get_triggered_acquisition(
         self,
         run_time: Quantity,
@@ -274,40 +214,20 @@ class FlowCytometer:
         # Ensure the acquisition data is generated
         self.get_continous_acquisition(run_time)
 
-        # Get trigger indices
-        start_indices, end_indices = self.get_trigger_indices(
-            threshold, trigger_detector_name, custom_trigger, pre_buffer, post_buffer
+        continuous_dataframe = self.dataframe
+
+        triggered_acquisition = TriggeredAcquisition(continuous_dataframe)
+
+        triggered_acquisition.run(
+            threshold=threshold,
+            trigger_detector_name=trigger_detector_name,
+            custom_trigger=custom_trigger,
+            pre_buffer=pre_buffer,
+            post_buffer=post_buffer,
+            max_triggers=maximum_number_of_triggers
         )
 
-        # Limit the number of triggers if specified
-        if maximum_number_of_triggers is not None:
-            start_indices = start_indices[:maximum_number_of_triggers]
-            end_indices = end_indices[:maximum_number_of_triggers]
-
-        # List to store data for concatenation
-        all_segments = []
-
-        # Process each detector using the trigger segments
-        for detector in self.detectors:
-            signal = self.dataframe.xs(detector.name)['Signal'].pint.magnitude
-            time = self.dataframe.xs(detector.name)['Time'].pint.magnitude
-
-            for i, (start, end) in enumerate(zip(start_indices, end_indices)):
-                segment = pd.DataFrame({
-                    'Time': time[start:end + 1],
-                    'Signal': signal[start:end + 1]
-                })
-                segment['Detector'] = detector.name
-                segment['SegmentID'] = i
-                all_segments.append(segment)
-
-        # Concatenate all segments into a single DataFrame
-        result = pd.concat(all_segments, ignore_index=True)
-
-        # Set Multi-Index with Detector and SegmentID
-        result = result.set_index(['Detector', 'SegmentID'])
-
-        return TriggeredAcquisition(result)
+        return triggered_acquisition
 
     def get_continous_acquisition(self, run_time: Quantity) -> None:
         """

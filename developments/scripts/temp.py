@@ -107,7 +107,7 @@ triggered_acquisition = cytometer.get_triggered_acquisition(
     pre_buffer=64,
     post_buffer=64,
     trigger_detector_name='forward',
-    maximum_number_of_triggers=10
+    maximum_number_of_triggers=4
 )
 
 
@@ -115,7 +115,10 @@ triggered_acquisition = cytometer.get_triggered_acquisition(
 
 triggered_acquisition.detect_peaks()
 
-triggered_acquisition.plot.peaks()
+triggered_acquisition.plot.statistiques(
+    x_detector='side',
+    y_detector='forward'
+)
 
 # print(triggered_acquisition.dataframe)
 # print(data.xs('forward').Signal.plot())
