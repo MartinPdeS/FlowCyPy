@@ -14,6 +14,7 @@ from FlowCyPy.units import Quantity, milliwatt
 from pint_pandas import PintArray
 from FlowCyPy.continuous_acquisition import ContinuousAcquisition
 from FlowCyPy.triggered_acquisition import TriggeredAcquisition
+from FlowCyPy.signal_digitizer import SignalDigitizer
 
 
 # Set up logging configuration
@@ -69,6 +70,7 @@ class FlowCytometer:
             self,
             scatterer_collection: object,
             flow_cell: FlowCell,
+            signal_digitizer: SignalDigitizer,
             detectors: List[Detector],
             coupling_mechanism: Optional[str] = 'mie',
             background_power: Optional[Quantity] = 0 * milliwatt):
@@ -77,6 +79,7 @@ class FlowCytometer:
         self.flow_cell = flow_cell
         self.source = flow_cell.source
         self.detectors = detectors
+        self.signal_digitizer = signal_digitizer
         self.coupling_mechanism = coupling_mechanism
         self.background_power = background_power
 
@@ -160,7 +163,7 @@ class FlowCytometer:
 
         # Initialize the detectors
         for detector in self.detectors:
-            dataframe = detector.get_initialized_signal(run_time=run_time)
+            dataframe = detector.get_initialized_signal(run_time=run_time, signal_digitizer=self.signal_digitizer)
 
             dataframes.append(dataframe)
 
@@ -173,7 +176,6 @@ class FlowCytometer:
         run_time: Quantity,
         threshold: Quantity,
         trigger_detector_name: str = None,
-        custom_trigger: np.ndarray = None,
         pre_buffer: int = 64,
         post_buffer: int = 64,
         max_triggers: int = None,
@@ -190,9 +192,6 @@ class FlowCytometer:
             The signal value threshold for the trigger detector.
         trigger_detector_name : str, optional
             The name of the detector to be used as the triggering system. Ignored if `custom_trigger` is provided.
-        custom_trigger : np.ndarray, optional
-            A custom boolean trigger array indicating where the signal should be extracted.
-            Must have the same length as the acquisition time.
         pre_buffer : int, optional
             Number of points to include before each threshold crossing, by default 64.
         post_buffer : int, optional
@@ -214,14 +213,17 @@ class FlowCytometer:
         # Ensure the acquisition data is generated
         self.get_continous_acquisition(run_time)
 
-        continuous_dataframe = self.dataframe
+        triggered_acquisition = TriggeredAcquisition(
+            continuous_acquisition=self.dataframe,
+            scatterer_dataframe=self.scatterer_dataframe
+        )
 
-        triggered_acquisition = TriggeredAcquisition(continuous_dataframe)
+        self.signal_digitizer = self.detectors[0].signal_digitizer
+        triggered_acquisition.signal_digitizer = self.signal_digitizer
 
         triggered_acquisition.run(
             threshold=threshold,
             trigger_detector_name=trigger_detector_name,
-            custom_trigger=custom_trigger,
             pre_buffer=pre_buffer,
             post_buffer=post_buffer,
             max_triggers=max_triggers
@@ -307,7 +309,7 @@ class FlowCytometer:
             scatterer_dataframe=scatterer_dataframe,
             detector_dataframe=self.dataframe
         )
-
+        self.scatterer_dataframe = scatterer_dataframe
         return experiment
 
     def _get_detection_mechanism(self) -> Callable:

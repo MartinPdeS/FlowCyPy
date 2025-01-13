@@ -41,6 +41,10 @@ class ContinuousAcquisition:
         self.plot = self.PlotInterface(self)
         self.logger = self.LoggerInterface(self)
 
+    @property
+    def n_detectors(self) -> int:
+        return len(self.detector_dataframe.index.get_level_values('Detector').unique())
+
     class LoggerInterface:
         """
         A nested class for logging statistical information about the experiment.
@@ -230,10 +234,10 @@ class ContinuousAcquisition:
             Plots the density distribution of optical coupling between two detector channels.
         """
 
-        def __init__(self, experiment: "Experiment"):
-            self.experiment = experiment
+        def __init__(self, acquisition: "Experiment"):
+            self.acquisition = acquisition
 
-        def signals(self, figure_size: tuple = (10, 6), add_peak_locator: bool = False, show: bool = True) -> None:
+        def signals(self, figure_size: tuple = (10, 6), scatterer_collection: object = None, show: bool = True) -> None:
             """
             Visualizes raw signals for all detector channels and the scatterer distribution.
 
@@ -246,45 +250,42 @@ class ContinuousAcquisition:
             show : bool, optional
                 Displays the plot immediately if True (default: True).
             """
-            df = self.experiment.detector_dataframe
-            n_detectors = len(df.index.levels[0])
+            n_plots = self.acquisition.n_detectors + 1
 
-            time_units = df.Time.max().to_compact().units
+            time_units = self.acquisition.detector_dataframe.Time.max().to_compact().units
 
             with plt.style.context(mps):
                 fig, axes = plt.subplots(
                     ncols=1,
-                    nrows=n_detectors + 1,
+                    nrows=n_plots,
                     figsize=figure_size,
                     sharex=True,
-                    gridspec_kw={"height_ratios": [1] * n_detectors + [0.4]}
+                    height_ratios=[1] * (n_plots - 1) + [0.5],
                 )
 
-            for ax, (name, group) in zip(axes[:-1], df.groupby("Detector")):
+            for ax, (detector_name, group) in zip(axes[:-1], self.acquisition.detector_dataframe.groupby("Detector")):
                 ax.step(group["Time"].pint.to(time_units), group["DigitizedSignal"], label="Digitized Signal")
-                ax.set_ylabel(name)
+                ax.set_ylabel(f"Detector: {detector_name}")
 
-            scatter_df = self.experiment.scatterer_dataframe
-            palette = plt.get_cmap("Set2")
+            self._add_event_to_ax(ax=axes[-1], x_units=time_units)
 
-            for idx, (population_name, group) in enumerate(scatter_df.groupby("Population")):
-                x = group["Time"]
-
-                axes[-1].vlines(
-                    x=x.pint.to(time_units),
-                    ymin=0,
-                    ymax=1,
-                    transform=axes[-1].get_xaxis_transform(),
-                    color=palette(idx % 8),
-                    linestyle="--",
-                    lw=1.5,
-                    label=population_name
-                )
-                axes[-1].set_xlabel(f"Time [{time_units}]")
-                axes[-1].get_yaxis().set_visible(False)
-
+            axes[-1].set_xlabel(f"Time [{time_units}]")
             if show:
                 plt.show()
+
+        def _add_event_to_ax(self, ax: plt.Axes, x_units: Quantity, palette: str = 'tab10') -> None:
+            unique_populations = self.acquisition.scatterer_dataframe.index.get_level_values('Population').unique()
+            color_mapping = dict(zip(unique_populations, sns.color_palette(palette, len(unique_populations))))
+
+            for population_name, group in self.acquisition.scatterer_dataframe.groupby('Population'):
+                x = group.Time.pint.to(x_units)
+                color = color_mapping[population_name]
+                ax.vlines(x, ymin=0, ymax=1, transform=ax.get_xaxis_transform(), label=population_name, color=color)
+
+            ax.tick_params(axis='y', left=False, labelleft=False)
+
+            ax.get_yaxis().set_visible(False)
+            plt.legend()
 
         def coupling_distribution(self, log_scale: bool = False, show: bool = True, equal_limits: bool = False, save_path: str = None) -> None:
             """
@@ -363,9 +364,7 @@ class ContinuousAcquisition:
             The plot uses the specified matplotlib style (`mps`) for consistent styling.
 
             """
-            df = self.experiment.scatterer_dataframe
-
-            df_reset = df.reset_index()
+            df_reset = self.acquisition.scatterer_dataframe.reset_index()
 
             if len(df_reset) == 1:
                 return

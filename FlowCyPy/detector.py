@@ -43,8 +43,6 @@ class Detector(PropertiesReport):
         The numerical aperture of the detector, a unitless value.
     responsitivity : Quantity
         Detector's responsivity, default is 1 volt per watt.
-    baseline_shift : Quantity
-        The baseline shift applied to the signal, default is 0 volts.
     dark_current : Quantity
         The dark current of the detector, default is 0 amperes.
     resistance : Quantity
@@ -54,7 +52,6 @@ class Detector(PropertiesReport):
     """
     phi_angle: Quantity
     numerical_aperture: Quantity
-    signal_digitizer: SignalDigitizer
 
     gamma_angle: Optional[Quantity] = Quantity(0, degree)
     sampling: Optional[Quantity] = 100 * AU
@@ -147,7 +144,7 @@ class Detector(PropertiesReport):
     def dataframe(self) -> pd.DataFrame:
         return self.cytometer.dataframe.xs(self.name)
 
-    def get_initialized_signal(self, run_time: Quantity) -> pd.DataFrame:
+    def get_initialized_signal(self, signal_digitizer: SignalDigitizer, run_time: Quantity) -> pd.DataFrame:
         """
         Initializes the raw signal for each detector based on the source and flow cell configuration.
 
@@ -160,6 +157,7 @@ class Detector(PropertiesReport):
         based on the flow cell's runtime.
 
         """
+        self.signal_digitizer = signal_digitizer
         time_points = int(self.signal_digitizer.sampling_freq * run_time)
         time = np.linspace(0, run_time, time_points)
 

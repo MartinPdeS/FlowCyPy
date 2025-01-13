@@ -1,43 +1,34 @@
-import os
-import pandas as pd
 import matplotlib.pyplot as plt
-from pathlib import Path
 
-def plot_csv(file_path: str, n_points: int) -> None:
-    """
-    Load a CSV file and plot its data.
-    
-    Args:
-        file_path (str): Path to the CSV file.
-    """
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    
-    try:
-        # Load the CSV file
-        data = pd.read_csv(Path(base_dir) / file_path, header=None)[:n_points]
+# Create a figure and a primary axis
+fig, ax1 = plt.subplots()
 
-        print(data)
+# Plot data on the primary axis
+x = [1, 2, 3, 4, 5]
+y1 = [10, 20, 30, 40, 50]
+ax1.plot(x, y1, 'b-', label="Primary Axis")
+ax1.set_xlabel("X-axis")
+ax1.set_ylabel("Primary Axis (y1)", color='b')
 
-        # Check if the file is empty
-        if data.empty:
-            print(f"The file '{file_path}' is empty.")
-            return
+# Create a secondary axis
+ax2 = ax1.twinx()
 
-        # Plot each column
-        for column in data.columns:
-            plt.plot(data.index, data[column], label=f"Column {column}")
+# Define the scaling factor
+scale_factor = 2
+ax2.set_ylabel(f"Secondary Axis (y1 * {scale_factor})", color='r')
 
-        # Configure the plot
-        plt.xlabel("Index")
-        plt.ylabel("Value")
-        plt.title(f"Plot of {file_path}")
-        plt.legend()
-        plt.grid(True)
+# Function to update the secondary axis based on primary axis limits
+def update_secondary_axis(ax1, ax2, scale_factor):
+    """Synchronize ax2 with ax1."""
+    y1_min, y1_max = ax1.get_ylim()  # Get limits from primary axis
+    ax2.set_ylim(y1_min * scale_factor, y1_max * scale_factor)  # Scale limits
+    ax2.figure.canvas.draw_idle()  # Redraw the figure
 
-        # Show the plot
-        plt.show()
+# Attach the update function to the primary axis limits
+ax1.callbacks.connect('ylim_changed', lambda ax: update_secondary_axis(ax1, ax2, scale_factor))
 
-    except Exception as e:
-        print(f"An error occurred while processing the file: {e}")
+# Initial sync of secondary axis
+update_secondary_axis(ax1, ax2, scale_factor)
 
-plot_csv(file_path="../data/dataset_0/0_A.csv", n_points=500)
+# Show the plot
+plt.show()

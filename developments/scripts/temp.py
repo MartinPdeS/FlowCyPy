@@ -22,7 +22,7 @@ from FlowCyPy.units import microsecond
 from FlowCyPy.units import milliwatt, AU
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import NoiseSetting
-from FlowCyPy.population import Exosome, HDL
+from FlowCyPy.population import Exosome, HDL, LDL
 
 NoiseSetting.include_noises = False
 NoiseSetting.include_shot_noise = False
@@ -51,13 +51,13 @@ flow_cell = FlowCell(
 # Step 3: Create Populations (Extracellular Vesicles and Liposomes)
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
 
-exosome = Exosome(particle_count=3e8 * particle / milliliter)
-hdl = HDL(particle_count=5e9 * particle / milliliter)
+exosome = Exosome(particle_count=30 * particle)
+hdl = LDL(particle_count=30 * particle)
 
 scatterer_collection.add_population(exosome)
-# scatterer_collection.add_population(hdl)
+scatterer_collection.add_population(hdl)
 
-scatterer_collection.plot()
+# scatterer_collection.plot()
 
 # %%
 # Step 5: Configure Detectors
@@ -74,7 +74,6 @@ detector_0 = Detector(
     phi_angle=90 * degree,                   # Angle: 90 degrees (Side Scatter)
     numerical_aperture=.2 * AU,             # Numerical aperture: 1.2
     responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
-    signal_digitizer=signal_digitizer,
     resistance=1500 * ohm,                     # Detector resistance: 50 ohms
     dark_current=0.1 * milliampere,          # Dark current: 0.1 milliamps
     temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
@@ -86,7 +85,6 @@ detector_1 = Detector(
     phi_angle=0 * degree,                    # Angle: 0 degrees (Forward Scatter)
     numerical_aperture=.2 * AU,             # Numerical aperture: 1.2
     responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
-    signal_digitizer=signal_digitizer,
     resistance=1500 * ohm,                     # Detector resistance: 50 ohms
     dark_current=0.1 * milliampere,          # Dark current: 0.1 milliamps
     temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
@@ -95,6 +93,7 @@ detector_1 = Detector(
 # Step 6: Simulate Flow Cytometry Experiment
 cytometer = FlowCytometer(                      # Laser source used in the experiment
     scatterer_collection=scatterer_collection,
+    signal_digitizer=signal_digitizer,
     flow_cell=flow_cell,                     # Populations used in the experiment
     background_power=0.0 * milliwatt,
     detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
@@ -103,18 +102,20 @@ cytometer = FlowCytometer(                      # Laser source used in the exper
 # Run the simulation of pulse signals
 triggered_acquisition = cytometer.get_triggered_acquisition(
     run_time=0.2 * millisecond,
-    threshold=0.00001 * millivolt,
+    threshold=0.01 * millivolt,
     pre_buffer=64,
     post_buffer=64,
     trigger_detector_name='forward',
-    max_triggers=30
+    max_triggers=100
 )
 
 
 # triggered_acquisition.plot.signals()
 
 triggered_acquisition.detect_peaks()
-# triggered_acquisition.plot.signals()
+triggered_acquisition.plot.signals(
+    # scatterer_collection=scatterer_collection
+)
 
 triggered_acquisition.plot.statistiques(
     x_detector='side',

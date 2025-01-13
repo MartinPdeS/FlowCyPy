@@ -164,7 +164,7 @@ class SignalDigitizer:
             max_level.to(signal.pint.units).magnitude,
             self.bit_depth
         )
-
+        self.digitization_ratio = abs(max_level - min_level) / self.bit_depth
         # Digitize the signal
         digitized = np.digitize(signal.pint.magnitude, bins, right=True)
 
