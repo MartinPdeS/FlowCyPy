@@ -84,25 +84,23 @@ flow_cell = FlowCell(
 #     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
 
 from FlowCyPy import ScattererCollection
-from FlowCyPy.population import Exosome, LDL, Population, distribution
+from FlowCyPy.population import Exosome, Population, distribution
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
 exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
 
-ldl = LDL(particle_count=5e9 * units.particle / units.milliliter)
-
 custom_population = Population(
     name='Pop 0',
-    particle_count=3e+8 * units.particle / units.milliliter,
-    size=distribution.RosinRammler(characteristic_size=100 * units.nanometer, spread=4.5),
-    refractive_index=distribution.Normal(mean=1.39 * units.RIU, std_dev=0.02 * units.RIU)
+    particle_count=5e9 * units.particle / units.milliliter,
+    size=distribution.RosinRammler(characteristic_size=150 * units.nanometer, spread=30),
+    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
 )
 
 # Add an Exosome population
-scatterer_collection.add_population(exosome, ldl, custom_population)
+scatterer_collection.add_population(exosome, custom_population)
 
-scatterer_collection.dilute(factor=4)
+scatterer_collection.dilute(factor=16)
 
 # Initialize the scatterer with the flow cell
 scatterer_collection.plot()  # Visualize the particle population
@@ -118,8 +116,7 @@ from FlowCyPy.signal_digitizer import SignalDigitizer
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
-    # saturation_levels='auto',
-    saturation_levels=[0 * units.volt, 20 * units.millivolt],
+    saturation_levels='auto',
     sampling_freq=60 * units.megahertz,
 )
 
@@ -166,7 +163,10 @@ experiment = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 experiment.plot.scatterer()
 
 
-experiment.plot.coupling_distribution()
+experiment.plot.coupling_distribution(
+    x_detector='side',
+    y_detector='forward'
+)
 
 # Visualize the scatter signals from both detectors
 experiment.plot.signals()
@@ -177,7 +177,7 @@ experiment.plot.signals()
 # The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 # window size and threshold.
 experiment.run_triggering(
-    threshold=3 * units.millivolt,
+    threshold=0.2 * units.millivolt,
     trigger_detector_name='forward',
     max_triggers=35,
     pre_buffer=64,
@@ -191,11 +191,22 @@ experiment.plot.peaks(
     y_detector='forward'
 )
 
-
+# %%
+# Step 8: Classifying the collected dataset
 from FlowCyPy.classifier import KmeansClassifier
 # %%
 classifier = KmeansClassifier(
     dataframe=experiment.data.peaks
 )
 
-classifier.run()
+df = classifier.run(
+    number_of_cluster=2,
+    features=['Height'],
+    detectors=['side', 'forward']
+)
+
+
+classifier.plot(
+    x_detector='side',
+    y_detector='forward'
+)

@@ -117,7 +117,7 @@ class FlowCytometer:
                 medium_refractive_index=self.scatterer_collection.medium_refractive_index
             )
 
-            scatterer_dataframe["detector: " + detector.name] = pint_pandas.PintArray(self.coupling_power, dtype=self.coupling_power.units)
+            scatterer_dataframe[detector.name] = pint_pandas.PintArray(self.coupling_power, dtype=self.coupling_power.units)
 
     def _generate_pulse_parameters(self, scatterer_dataframe: pd.DataFrame) -> None:
         """
@@ -208,7 +208,7 @@ class FlowCytometer:
         _centers = scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude
 
         for detector in self.detectors:
-            _coupling_power = scatterer_dataframe["detector: " + detector.name].values
+            _coupling_power = scatterer_dataframe[detector.name].values
 
             detector_signal = self.dataframe.xs(detector.name)['Signal']
 

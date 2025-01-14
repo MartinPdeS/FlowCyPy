@@ -169,7 +169,10 @@ experiment = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 # experiment.plot.scatterer()
 
 
-experiment.plot.coupling_distribution()
+experiment.plot.coupling_distribution(
+    x_detector='side',
+    y_detector='forward'
+)
 
 # Visualize the scatter signals from both detectors
 # experiment.plot.signals()
@@ -194,7 +197,6 @@ experiment.plot.trigger()
 #     y_detector='forward'
 # )
 
-
 from FlowCyPy.classifier import KmeansClassifier
 # %%
 classifier = KmeansClassifier(
@@ -207,15 +209,8 @@ df = classifier.run(
     detectors=['side', 'forward']
 )
 
-import seaborn as sns
-import matplotlib.pyplot as plt
 
-
-sns.jointplot(
-    data=df,
-    x='side',
-    hue='Label',
-    y='forward'
+classifier.plot(
+    x_detector='side',
+    y_detector='forward'
 )
-
-plt.show()

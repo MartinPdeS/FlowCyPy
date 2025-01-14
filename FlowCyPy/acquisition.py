@@ -433,7 +433,7 @@ class Acquisition:
 
             ax.legend()
 
-        def coupling_distribution(self, log_scale: bool = False, show: bool = True, equal_limits: bool = False, save_path: str = None) -> None:
+        def coupling_distribution(self, x_detector: str, y_detector: str, log_scale: bool = False, show: bool = True, equal_limits: bool = False, save_path: str = None) -> None:
             """
             Plots the density distribution of optical coupling between two detector channels.
 
@@ -449,28 +449,29 @@ class Acquisition:
                 Saves the plot to the specified path if provided.
             """
             df = self.acquisition.data.scatterer
-            detector_names = self.acquisition.data.continuous.index.levels[0]
+
+            x_units = df[x_detector].max().to_compact().units
+            y_units = df[y_detector].max().to_compact().units
+            x = df[x_detector].pint.to(x_units)
+            y = df[y_detector].pint.to(y_units)
 
             with plt.style.context(mps):
-                joint_plot = sns.jointplot(
-                    data=df,
-                    x=f"detector: {detector_names[0]}",
-                    y=f"detector: {detector_names[1]}",
-                    hue="Population",
-                    alpha=0.8
-                )
+                joint_plot = sns.jointplot(data=df, x=x, y=y, hue="Population", alpha=0.8)
 
             if log_scale:
                 joint_plot.ax_joint.set_xscale("log")
                 joint_plot.ax_joint.set_yscale("log")
 
             if equal_limits:
-                x_data = df[f"detector: {detector_names[0]}"]
-                y_data = df[f"detector: {detector_names[1]}"]
-                min_limit = min(x_data.min(), y_data.min())
-                max_limit = max(x_data.max(), y_data.max())
+                min_limit = min(x.min(), y.min())
+                max_limit = max(x.max(), y.max())
                 joint_plot.ax_joint.set_xlim(min_limit, max_limit)
                 joint_plot.ax_joint.set_ylim(min_limit, max_limit)
+
+            joint_plot.ax_joint.set_xlabel(f"Signal {x_detector} [{x_units}]")
+            joint_plot.ax_joint.set_ylabel(f"Signal {y_detector} [{y_units}]")
+
+            plt.tight_layout()
 
             if save_path:
                 joint_plot.figure.savefig(save_path, dpi=300, bbox_inches="tight")

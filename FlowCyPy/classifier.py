@@ -2,7 +2,9 @@ from sklearn.cluster import KMeans
 from sklearn.cluster import DBSCAN
 import pandas as pd
 from typing import List, Dict, Tuple
-
+import seaborn as sns
+import matplotlib.pyplot as plt
+from MPSPlots.styles import mps
 
 class BaseClassifier:
     def filter_dataframe(self, features: list, detectors: list = None) -> object:
@@ -77,7 +79,20 @@ class KmeansClassifier(BaseClassifier):
 
         sub_dataframe['Label'] = kmeans.fit_predict(sub_dataframe)
 
+        self.sub_dataframe = sub_dataframe
+
         return sub_dataframe
+
+    def plot(self, x_detector: str, y_detector: str) -> None:
+        with plt.style.context(mps):
+            sns.jointplot(
+                data=self.sub_dataframe,
+                x=x_detector,
+                hue='Label',
+                y=y_detector
+            )
+
+        plt.show()
 
 class DBScanClassifier(BaseClassifier):
     def __init__(self, dataframe: object) -> None:
