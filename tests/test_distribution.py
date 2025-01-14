@@ -1,8 +1,8 @@
 import pytest
 import numpy as np
 from FlowCyPy import distribution as dist
-from FlowCyPy.units import nanometer, micrometer, particle
 from unittest.mock import patch
+from FlowCyPy import units
 import matplotlib.pyplot as plt
 
 
@@ -14,15 +14,15 @@ def n_samples():
 
 @pytest.fixture
 def x_values():
-    return np.linspace(0.01, 1, 1000) * micrometer
+    return np.linspace(0.01, 1, 1000) * units.micrometer
 
 
 # Parametrize different distributions
 distributions = [
-    dist.Normal(mean=1.0 * micrometer, std_dev=1.0 * nanometer),
-    dist.LogNormal(mean=1.0 * micrometer, std_dev=0.01 * micrometer),
-    dist.Uniform(lower_bound=0.5 * micrometer, upper_bound=1.5 * micrometer),
-    dist.Delta(position=1 * micrometer),
+    dist.Normal(mean=1.0 * units.micrometer, std_dev=1.0 * units.nanometer),
+    dist.LogNormal(mean=1.0 * units.micrometer, std_dev=0.01 * units.micrometer),
+    dist.Uniform(lower_bound=0.5 * units.micrometer, upper_bound=1.5 * units.micrometer),
+    dist.Delta(position=1 * units.micrometer),
 ]
 
 
@@ -32,7 +32,7 @@ def test_number_of_samples(mock_show, distribution, n_samples):
     """Test the generate method of the Distribution class."""
 
     # Generate particle sizes
-    sizes = distribution.generate(n_samples * particle)
+    sizes = distribution.generate(n_samples * units.particle)
 
     # Assert the shape is correct
     assert sizes.shape == (n_samples,), f"{distribution.__class__.__name__}: Generated size array has incorrect shape."
@@ -76,7 +76,7 @@ def test_uniform_properties():
 def test_normal_properties():
     """Test specific properties of certain distributions."""
     distribution = distributions[0]
-    sizes = distribution.generate(100 * particle)
+    sizes = distribution.generate(100 * units.particle)
 
     # Test for NormalDistribution: Check that the mean is approximately correct
     mean_size = np.mean(sizes)
@@ -87,7 +87,7 @@ def test_normal_properties():
 def test_lognormal_properties():
     """Test specific properties of certain distributions."""
     distribution = distributions[1]
-    sizes = distribution.generate(4000 * particle)
+    sizes = distribution.generate(4000 * units.particle)
 
     # Test for LogNormalDistribution: Check that the standard deviation is approximately correct
     std_dev_size = np.std(sizes)

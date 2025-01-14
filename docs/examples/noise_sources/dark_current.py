@@ -10,7 +10,7 @@ along with their distributions.
 
 import matplotlib.pyplot as plt
 from FlowCyPy.detector import Detector
-from FlowCyPy.units import watt, ohm, ampere, second, hertz, degree, AU, kelvin
+from FlowCyPy import units
 from FlowCyPy.signal_digitizer import SignalDigitizer
 
 from FlowCyPy import NoiseSetting
@@ -22,7 +22,7 @@ NoiseSetting.include_thermal_noise = False
 NoiseSetting.include_RIN_noise = False
 
 # Define dark current levels
-dark_currents = [1e-9 * ampere, 5e-9 * ampere, 1e-8 * ampere]  # Dark current levels in amperes
+dark_currents = [1e-9 * units.ampere, 5e-9 * units.ampere, 1e-8 * units.ampere]  # Dark current levels in amperes
 
 # Create a figure for signal visualization
 fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
@@ -30,7 +30,7 @@ fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
-    sampling_freq=1e6 * hertz,        # Sampling frequency
+    sampling_freq=1e6 * units.hertz,        # Sampling frequency
 
 )
 
@@ -39,17 +39,16 @@ for dark_current in dark_currents:
     # Initialize the detector
     detector = Detector(
         name=f"{dark_current.magnitude:.1e} A",
-        responsitivity=1 * ampere / watt,  # Responsitivity (current per power)
-        resistance=50 * ohm,              # Load resistance
-        numerical_aperture=0.2 * AU,      # Numerical aperture
-        phi_angle=0 * degree,             # Detector orientation angle
-        temperature=300 * kelvin,         # Detector temperature
-        signal_digitizer=signal_digitizer,
+        responsitivity=1 * units.ampere / units.watt,  # Responsitivity (current per power)
+        resistance=50 * units.ohm,              # Load resistance
+        numerical_aperture=0.2 * units.AU,      # Numerical aperture
+        phi_angle=0 * units.degree,             # Detector orientation angle
+        temperature=300 * units.kelvin,         # Detector temperature
         dark_current=dark_current         # Dark current level
     )
 
     # Initialize the raw signal
-    dataframe = detector.get_initialized_signal(run_time=200e-6 * second)
+    dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second, signal_digitizer=signal_digitizer)
 
     # Add dark current noise to the raw signal
     detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])

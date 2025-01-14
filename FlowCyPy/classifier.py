@@ -27,20 +27,11 @@ class BaseClassifier:
             If no matching features are found for the given detectors and features.
         """
         # Determine detectors to use
+
         if detectors is None:
             detectors = self.dataframe.columns.get_level_values(0).unique().tolist()
 
-        # Build the list of selected columns
-        selected_features = [
-            (detector, feature) for detector in detectors for feature in features
-            if (detector, feature) in self.dataframe.columns
-        ]
-
-        if not selected_features:
-            raise ValueError("No matching features found for the given detectors and features.")
-
-        # Return the filtered DataFrame
-        return self.dataframe[selected_features]
+        return self.dataframe.loc[detectors, features]
 
 
 class KmeansClassifier(BaseClassifier):
@@ -56,9 +47,7 @@ class KmeansClassifier(BaseClassifier):
         self.dataframe = dataframe
         self.dataframe['Label'] = 0  # Initialize labels as 0
 
-
-
-    def run(self, number_of_cluster: int, features: list = ['Heights'], detectors: list = None, random_state: int = 42) -> None:
+    def run(self, number_of_cluster: int, features: list = ['Height'], detectors: list = None, random_state: int = 42) -> None:
         """
         Run KMeans clustering on the selected features and detectors.
 
@@ -74,15 +63,21 @@ class KmeansClassifier(BaseClassifier):
             Random state for KMeans, by default 42.
         """
         # Filter the DataFrame
-        X = self.filter_dataframe(features=features, detectors=detectors)
+        sub_dataframe = self.filter_dataframe(features=features, detectors=detectors)
+        sub_dataframe = sub_dataframe.unstack('Detector')
 
         # Ensure data is dequantified if it uses Pint quantities
-        if hasattr(X, 'pint'):
-            X = X.pint.dequantify()
+        if hasattr(sub_dataframe, 'pint'):
+            sub_dataframe = sub_dataframe.pint.dequantify().droplevel('unit', axis=1)
+
+        sub_dataframe = sub_dataframe.droplevel(0, axis=1)
 
         # Run KMeans
         kmeans = KMeans(n_clusters=number_of_cluster, random_state=random_state)
-        self.dataframe['Label'] = kmeans.fit_predict(X)
+
+        sub_dataframe['Label'] = kmeans.fit_predict(sub_dataframe)
+
+        return sub_dataframe
 
 class DBScanClassifier(BaseClassifier):
     def __init__(self, dataframe: object) -> None:
@@ -113,18 +108,20 @@ class DBScanClassifier(BaseClassifier):
             List of detectors to use. If None, use all detectors.
         """
         # Filter the DataFrame
-        X = self.filter_dataframe(features=features, detectors=detectors)
+        sub_dataframe = self.filter_dataframe(features=features, detectors=detectors)
 
         # Ensure data is dequantified if it uses Pint quantities
-        if hasattr(X, 'pint'):
-            X = X.pint.dequantify()
+        if hasattr(sub_dataframe, 'pint'):
+            sub_dataframe = sub_dataframe.pint.dequantify()
 
         # Handle missing values (if necessary)
-        X = X.fillna(0).to_numpy()
+        sub_dataframe = sub_dataframe.fillna(0).to_numpy()
 
         # Run DBSCAN
         dbscan = DBSCAN(eps=eps, min_samples=min_samples)
-        self.dataframe['Label'] = dbscan.fit_predict(X)
+        sub_dataframe['Label'] = dbscan.fit_predict(sub_dataframe)
+
+        return sub_dataframe
 
 
 class RangeClassifier:

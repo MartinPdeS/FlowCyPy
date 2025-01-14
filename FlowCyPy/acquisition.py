@@ -2,13 +2,21 @@ import logging
 from typing import Optional, Union, List
 from MPSPlots.styles import mps
 import pandas as pd
+import numpy as np
+from FlowCyPy import units
 from FlowCyPy.units import Quantity
+from scipy.signal import find_peaks
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tabulate import tabulate
+import warnings
+
+class DataAccessor:
+    def __init__(self, outer):
+        self._outer = outer
 
 
-class ContinuousAcquisition:
+class Acquisition:
     """
     Represents a flow cytometry experiment, including runtime, dataframes, logging, and visualization.
 
@@ -35,15 +43,151 @@ class ContinuousAcquisition:
         detector_dataframe : pd.DataFrame
             DataFrame with detector signal data.
         """
+        self.data = DataAccessor(self)
+        self.data.continuous = detector_dataframe
+        self.data.scatterer = scatterer_dataframe
+
         self.run_time = run_time
-        self.scatterer_dataframe = scatterer_dataframe
-        self.detector_dataframe = detector_dataframe
         self.plot = self.PlotInterface(self)
         self.logger = self.LoggerInterface(self)
 
     @property
     def n_detectors(self) -> int:
-        return len(self.detector_dataframe.index.get_level_values('Detector').unique())
+        return len(self.data.continuous.index.get_level_values('Detector').unique())
+
+    def detect_peaks(self, multi_peak_strategy: str = 'max') -> None:
+        """
+        Detects peaks for each segment and stores results in a DataFrame.
+
+        Parameters
+        ----------
+        multi_peak_strategy : str, optional
+            Strategy for handling multiple peaks in a segment. Options are:
+            - 'mean': Take the average of the peaks in the segment.
+            - 'max': Take the maximum peak in the segment.
+            - 'sum': Sum all peaks in the segment.
+            - 'discard': Remove entries with multiple peaks.
+            - 'keep': Keep all peaks without aggregation.
+            Default is 'mean'.
+        """
+        if multi_peak_strategy not in {'max', }:
+            raise ValueError("Invalid multi_peak_strategy. Choose from 'max'.")
+
+        def process_segment(segment):
+            signal = segment['DigitizedSignal'].values
+            time = segment['Time'].values
+            peaks, properties = find_peaks(signal)
+
+            return pd.DataFrame({
+                "SegmentID": segment.name[1],
+                "Detector": segment.name[0],
+                "Height": signal[peaks],
+                "Time": time[peaks],
+                **{k: v for k, v in properties.items()}
+            })
+
+        # Process peaks for each group
+        results = self.data.triggered.groupby(level=['Detector', 'SegmentID']).apply(process_segment)
+        results = results.reset_index(drop=True)
+
+        # Check for multiple peaks and issue a warning
+        peak_counts = results.groupby(['Detector', 'SegmentID']).size()
+        multiple_peak_segments = peak_counts[peak_counts > 1]
+        if not multiple_peak_segments.empty:
+            warnings.warn(
+                f"Multiple peaks detected in the following segments: {multiple_peak_segments.index.tolist()}",
+                UserWarning
+            )
+
+        _temp = results.reset_index()[['Detector', 'SegmentID', 'Height']].pint.dequantify().droplevel('unit', axis=1)
+
+        self.data.peaks = (
+            results.reset_index()
+            .loc[_temp.groupby(['Detector', 'SegmentID'])['Height'].idxmax()]
+            .set_index(['Detector', 'SegmentID'])
+        )
+
+    def _get_trigger_indices(
+            self,
+            threshold: units.Quantity,
+            trigger_detector_name: str = None,
+            pre_buffer: int = 64,
+            post_buffer: int = 64) -> tuple[np.ndarray, np.ndarray]:
+        """
+        Calculate start and end indices for triggered segments.
+        """
+        if trigger_detector_name not in self.data.continuous.index.get_level_values('Detector').unique():
+            raise ValueError(f"Detector '{trigger_detector_name}' not found.")
+
+        signal = self.data.continuous.xs(trigger_detector_name)['Signal']
+        trigger_signal = signal > threshold.to(signal.pint.units)
+
+        crossings = np.where(np.diff(trigger_signal.astype(int)) == 1)[0]
+        start_indices = np.clip(crossings - pre_buffer, 0, len(trigger_signal) - 1)
+        end_indices = np.clip(crossings + post_buffer, 0, len(trigger_signal) - 1)
+
+        return start_indices, end_indices
+
+    def run_triggering(self,
+            threshold: units.Quantity,
+            trigger_detector_name: str,
+            pre_buffer: int = 64,
+            post_buffer: int = 64,
+            max_triggers: int = None) -> None:
+        """
+        Executes the triggered acquisition analysis.
+
+        Parameters
+        ----------
+        threshold : units.Quantity
+            Trigger threshold value.
+        trigger_detector_name : str, optional
+            Detector used for triggering, by default None.
+        custom_trigger : np.ndarray, optional
+            Custom trigger array, by default None.
+        pre_buffer : int, optional
+            Points before trigger, by default 64.
+        post_buffer : int, optional
+            Points after trigger, by default 64.
+        max_triggers : int, optional
+            Maximum number of triggers to process, by default None.
+        """
+        self.threshold = threshold
+        self.trigger_detector_name = trigger_detector_name
+        start_indices, end_indices = self._get_trigger_indices(
+            threshold, trigger_detector_name, pre_buffer, post_buffer
+        )
+
+        if max_triggers is not None:
+            start_indices = start_indices[:max_triggers]
+            end_indices = end_indices[:max_triggers]
+
+        segments = []
+        for detector_name in self.data.continuous.index.get_level_values('Detector').unique():
+            detector_data = self.data.continuous.xs(detector_name)
+            time, digitized, signal = detector_data['Time'], detector_data['DigitizedSignal'],  detector_data['Signal']
+
+
+            for idx, (start, end) in enumerate(zip(start_indices, end_indices)):
+
+                segment = pd.DataFrame({
+                    'Time': time[start:end + 1],
+                    'DigitizedSignal': digitized[start:end + 1],
+                    'Signal': signal[start:end + 1],
+                    'Detector': detector_name,
+                    'SegmentID': idx
+                })
+                segments.append(segment)
+
+        if len(segments) !=0:
+            self.data.triggered = pd.concat(segments).set_index(['Detector', 'SegmentID'])
+        else:
+            warnings.warn(
+                f"No signal were triggered during the run time, try changing the threshold. Signal min-max value is: {self.data.continuous['Signal'].min().to_compact()}, {self.data.continuous['Signal'].max().to_compact()}",
+                UserWarning
+            )
+
+        self.detect_peaks()
 
     class LoggerInterface:
         """
@@ -57,7 +201,7 @@ class ContinuousAcquisition:
             Logs statistics about the detector signals.
         """
 
-        def __init__(self, experiment: "Experiment"):
+        def __init__(self, experiment: object):
             self.experiment = experiment
 
         def scatterer(self, table_format: str = "grid") -> None:
@@ -81,7 +225,7 @@ class ContinuousAcquisition:
             # Collect general population data
             general_table_data = [
                 self._get_population_properties(population)
-                for population in self.experiment.scatterer_dataframe.groupby("Population")
+                for population in self.experiment.data.scatterer.groupby("Population")
             ]
             general_headers = [
                 "Name",
@@ -158,7 +302,7 @@ class ContinuousAcquisition:
             logging.info("\n=== Detector Signal Statistics ===")
 
             # Compute statistics for each detector
-            df = self.experiment.detector_dataframe
+            df = self.experiment.data.continuous
             table_data = [
                 self._get_detector_stats(detector_name, df.xs(detector_name, level="Detector"))
                 for detector_name in df.index.levels[0]
@@ -234,7 +378,7 @@ class ContinuousAcquisition:
             Plots the density distribution of optical coupling between two detector channels.
         """
 
-        def __init__(self, acquisition: "Experiment"):
+        def __init__(self, acquisition: object):
             self.acquisition = acquisition
 
         def signals(self, figure_size: tuple = (10, 6), scatterer_collection: object = None, show: bool = True) -> None:
@@ -252,7 +396,7 @@ class ContinuousAcquisition:
             """
             n_plots = self.acquisition.n_detectors + 1
 
-            time_units = self.acquisition.detector_dataframe.Time.max().to_compact().units
+            time_units = self.acquisition.data.continuous.Time.max().to_compact().units
 
             with plt.style.context(mps):
                 fig, axes = plt.subplots(
@@ -263,29 +407,31 @@ class ContinuousAcquisition:
                     height_ratios=[1] * (n_plots - 1) + [0.5],
                 )
 
-            for ax, (detector_name, group) in zip(axes[:-1], self.acquisition.detector_dataframe.groupby("Detector")):
+            for ax, (detector_name, group) in zip(axes[:-1], self.acquisition.data.continuous.groupby("Detector")):
                 ax.step(group["Time"].pint.to(time_units), group["DigitizedSignal"], label="Digitized Signal")
                 ax.set_ylabel(f"Detector: {detector_name}")
 
-            self._add_event_to_ax(ax=axes[-1], x_units=time_units)
+            self._add_event_to_ax(ax=axes[-1], time_units=time_units)
 
             axes[-1].set_xlabel(f"Time [{time_units}]")
             if show:
                 plt.show()
 
-        def _add_event_to_ax(self, ax: plt.Axes, x_units: Quantity, palette: str = 'tab10') -> None:
-            unique_populations = self.acquisition.scatterer_dataframe.index.get_level_values('Population').unique()
+        def _add_event_to_ax(self, ax: plt.Axes, time_units: units.Quantity, palette: str = 'tab10') -> None:
+            unique_populations = self.acquisition.data.scatterer.index.get_level_values('Population').unique()
             color_mapping = dict(zip(unique_populations, sns.color_palette(palette, len(unique_populations))))
 
-            for population_name, group in self.acquisition.scatterer_dataframe.groupby('Population'):
-                x = group.Time.pint.to(x_units)
+            for population_name, group in self.acquisition.data.scatterer.groupby('Population'):
+                x = group.Time.pint.to(time_units)
                 color = color_mapping[population_name]
                 ax.vlines(x, ymin=0, ymax=1, transform=ax.get_xaxis_transform(), label=population_name, color=color)
 
             ax.tick_params(axis='y', left=False, labelleft=False)
 
             ax.get_yaxis().set_visible(False)
-            plt.legend()
+            ax.set_xlabel(f"Time [{time_units}]")
+
+            ax.legend()
 
         def coupling_distribution(self, log_scale: bool = False, show: bool = True, equal_limits: bool = False, save_path: str = None) -> None:
             """
@@ -302,8 +448,8 @@ class ContinuousAcquisition:
             save_path : str, optional
                 Saves the plot to the specified path if provided.
             """
-            df = self.experiment.scatterer_dataframe
-            detector_names = self.experiment.detector_dataframe.index.levels[0]
+            df = self.acquisition.data.scatterer
+            detector_names = self.acquisition.data.continuous.index.levels[0]
 
             with plt.style.context(mps):
                 joint_plot = sns.jointplot(
@@ -364,7 +510,7 @@ class ContinuousAcquisition:
             The plot uses the specified matplotlib style (`mps`) for consistent styling.
 
             """
-            df_reset = self.acquisition.scatterer_dataframe.reset_index()
+            df_reset = self.acquisition.data.scatterer.reset_index()
 
             if len(df_reset) == 1:
                 return
@@ -396,3 +542,104 @@ class ContinuousAcquisition:
             if show:
                 plt.show()
 
+        def peaks(self, x_detector: str, y_detector: str, signal: str = 'Height', bandwidth_adjust: float = 0.8) -> None:
+            """
+            Plot the joint KDE distribution of the specified signal between two detectors using seaborn,
+            optionally overlaying scatter points.
+
+            Parameters
+            ----------
+            x_detector : str
+                Name of the detector to use for the x-axis.
+            y_detector : str
+                Name of the detector to use for the y-axis.
+            signal : str, optional
+                The signal column to plot, by default 'Height'.
+            bandwidth_adjust : float, optional
+                Bandwidth adjustment factor for KDE, by default 0.8.
+            """
+            # Filter to only include rows for the specified detectors
+            x_data = self.acquisition.data.peaks.loc[x_detector, signal]
+            y_data = self.acquisition.data.peaks.loc[y_detector, signal]
+
+            x_units = x_data.max().to_compact().units
+            y_units = y_data.max().to_compact().units
+
+            x_data = x_data.pint.to(x_units)
+            y_data = y_data.pint.to(y_units)
+
+            with plt.style.context(mps):
+                # Create joint KDE plot with scatter points overlay
+                grid = sns.jointplot(
+                    x=x_data,
+                    y=y_data,
+                    kind='kde',
+                    fill=True,
+                    cmap="Blues",
+                    joint_kws={'bw_adjust': bandwidth_adjust, 'alpha': 0.7}
+                )
+
+            grid.ax_joint.scatter(
+                x_data,
+                y_data,
+                color='C1',
+                alpha=0.6,
+            )
+
+            grid.set_axis_labels(f"{signal} ({x_detector}) [{x_units}]", f"{signal} ({y_detector}) [{y_units}]", fontsize=12)
+            plt.tight_layout()
+            plt.show()
+
+        def trigger(self, show: bool = True) -> None:
+            """Plot detected peaks on signal segments."""
+            n_plots = self.acquisition.n_detectors + 1
+            with plt.style.context(mps):
+                _, axes = plt.subplots(
+                    nrows=n_plots,
+                    ncols=1,
+                    height_ratios=[1] * (n_plots - 1) + [0.5],
+                    figsize=(10, 6),
+                    sharex=True,
+                    # sharey=True,
+                    constrained_layout=True
+                )
+
+            time_units = self.acquisition.data.triggered['Time'].max().to_compact().units
+
+
+
+            for ax, (detector_name, group) in zip(axes, self.acquisition.data.triggered.groupby(level=['Detector'])):
+                ax.set_ylabel(f"Detector: {detector_name}")
+                ax2 = ax.twinx()
+
+                detector = self.get_detector(detector_name)
+
+                for _, sub_group in group.groupby(level=['SegmentID']):
+                    x = sub_group['Time'].pint.to(time_units)
+                    digitized = sub_group['DigitizedSignal']
+                    signal_units = sub_group['Signal'].max().to_compact().units
+                    signal = sub_group['Signal'].pint.to(signal_units)
+                    ax.step(x, digitized, where='mid')
+                    ax2.plot(x, signal)
+
+                    ax.set_ylim([0, self.acquisition.signal_digitizer._bit_depth])
+                    ax2.set_ylim(detector._saturation_levels)
+
+                    if detector_name == self.acquisition.trigger_detector_name:
+                        ax2.axhline(y=self.acquisition.threshold.to(signal_units))
+
+
+            for ax, (detector_name, group) in zip(axes, self.acquisition.data.peaks.groupby(level=['Detector'], axis=0)):
+                x = group['Time'].pint.to(time_units)
+                y = group['Height']
+                ax.scatter(x, y, color='C1')
+
+            self._add_event_to_ax(ax=axes[-1], time_units=time_units)
+
+            if show:
+                plt.show()
+
+        def get_detector(self, name: str):
+            for detector in self.acquisition.detectors:
+                if detector.name == name:
+                    return detector

@@ -12,8 +12,7 @@ import pint_pandas
 from FlowCyPy import units
 from FlowCyPy.units import Quantity, milliwatt
 from pint_pandas import PintArray
-from FlowCyPy.continuous_acquisition import ContinuousAcquisition
-from FlowCyPy.triggered_acquisition import TriggeredAcquisition
+from FlowCyPy.acquisition import Acquisition
 from FlowCyPy.signal_digitizer import SignalDigitizer
 
 
@@ -171,67 +170,7 @@ class FlowCytometer:
 
         self.dataframe.index.names = ["Detector", "Index"]
 
-    def get_triggered_acquisition(
-        self,
-        run_time: Quantity,
-        threshold: Quantity,
-        trigger_detector_name: str = None,
-        pre_buffer: int = 64,
-        post_buffer: int = 64,
-        max_triggers: int = None,
-    ) -> pd.DataFrame:
-        """
-        Extracts thresholded signal segments based on a trigger detector or custom trigger array
-        and returns them in a multi-index DataFrame.
-
-        Parameters
-        ----------
-        run_time : Quantity
-            The duration of the simulation (must be in seconds).
-        threshold : Quantity
-            The signal value threshold for the trigger detector.
-        trigger_detector_name : str, optional
-            The name of the detector to be used as the triggering system. Ignored if `custom_trigger` is provided.
-        pre_buffer : int, optional
-            Number of points to include before each threshold crossing, by default 64.
-        post_buffer : int, optional
-            Number of points to include after each threshold crossing, by default 64.
-        max_triggers : int, optional
-            The maximum number of triggers to process. If None, all triggers will be processed.
-
-        Returns
-        -------
-        pd.DataFrame
-            A multi-index DataFrame with the first level as the detector name and the second level as the segment ID.
-            Includes columns for time and signal.
-
-        Raises
-        ------
-        ValueError
-            If `run_time` is not in seconds, the trigger detector is not found, or the `custom_trigger` array is invalid.
-        """
-        # Ensure the acquisition data is generated
-        self.get_continous_acquisition(run_time)
-
-        triggered_acquisition = TriggeredAcquisition(
-            continuous_acquisition=self.dataframe,
-            scatterer_dataframe=self.scatterer_dataframe
-        )
-
-        self.signal_digitizer = self.detectors[0].signal_digitizer
-        triggered_acquisition.signal_digitizer = self.signal_digitizer
-
-        triggered_acquisition.run(
-            threshold=threshold,
-            trigger_detector_name=trigger_detector_name,
-            pre_buffer=pre_buffer,
-            post_buffer=post_buffer,
-            max_triggers=max_triggers
-        )
-
-        return triggered_acquisition
-
-    def get_continous_acquisition(self, run_time: Quantity) -> None:
+    def get_acquisition(self, run_time: Quantity) -> None:
         """
         Simulates the generation of optical signal pulses for each particle event.
 
@@ -298,18 +237,19 @@ class FlowCytometer:
                 wavelength=self.flow_cell.source.wavelength
             )
 
-            digitized_signal, _ = detector.capture_signal(signal=detector_signal)
+            digitized_signal = detector.capture_signal(signal=detector_signal)
 
             self.dataframe.loc[detector.name, 'Signal'] = PintArray(detector_signal, detector_signal.pint.units)
 
             self.dataframe.loc[detector.name, 'DigitizedSignal'] = PintArray(digitized_signal, units.bit_bins)
 
-        experiment = ContinuousAcquisition(
+        experiment = Acquisition(
             run_time=run_time,
             scatterer_dataframe=scatterer_dataframe,
             detector_dataframe=self.dataframe
         )
-        self.scatterer_dataframe = scatterer_dataframe
+        experiment.signal_digitizer = self.signal_digitizer
+        experiment.detectors = self.detectors
         return experiment
 
     def _get_detection_mechanism(self) -> Callable:

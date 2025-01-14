@@ -158,6 +158,7 @@ class Detector(PropertiesReport):
 
         """
         self.signal_digitizer = signal_digitizer
+
         time_points = int(self.signal_digitizer.sampling_freq * run_time)
         time = np.linspace(0, run_time, time_points)
 
@@ -311,9 +312,30 @@ class Detector(PropertiesReport):
         """
         Processes and captures the final signal by applying noise, baseline shifts, and saturation.
         """
-        digitized_signal, is_saturated = self.signal_digitizer.discretize_signal(signal)
+        if self.signal_digitizer.saturation_levels == 'auto':
+            min_level, max_level = signal.min(), signal.max()
+        elif isinstance(self.signal_digitizer.saturation_levels, tuple) and len(self.signal_digitizer.saturation_levels) == 2:
+            min_level, max_level = self.signal_digitizer.saturation_levels
+        else:
+            raise ValueError("saturation_levels must be 'auto' or a tuple of two Quantities.")
 
-        return digitized_signal, is_saturated
+        self._saturation_levels = min_level, max_level
+        # Generate bins for discretization
+        bins = np.linspace(
+            min_level.to(signal.pint.units).magnitude,
+            max_level.to(signal.pint.units).magnitude,
+            self.signal_digitizer._bit_depth
+        )
+
+        digitized_signal = np.digitize(signal.pint.magnitude, bins, right=True)
+
+        self.is_saturated = np.any((signal < min_level) | (signal > max_level))
+
+        # Throw a warning if saturated
+        if self.is_saturated:
+            logging.info("Signal values have been clipped to the saturation boundaries.")
+
+        return digitized_signal
 
     @plot_helper
     def plot_raw(
@@ -415,24 +437,3 @@ class Detector(PropertiesReport):
         # Log the result of peak detection
         peak_count = len(self.algorithm.peak_properties) if hasattr(self.algorithm, 'peak_properties') else 0
         logging.info(f"Detector {self.name}: Detected {peak_count} peaks.")
-
-    def print_properties(self) -> None:
-        """
-        Prints specific properties of the Detector instance, such as coupling factor and medium refractive index.
-        This method calls the parent class method to handle the actual property printing logic.
-
-        """
-        _dict = {
-            'Sampling frequency': self.signal_digitizer.sampling_freq,
-            'Phi angle': self.phi_angle,
-            'Gamma angle': self.gamma_angle,
-            'Numerical aperture': self.numerical_aperture,
-            'Responsitivity': self.responsitivity,
-            'Saturation Level': self.signal_digitizer.saturation_levels,
-            'Dark Current': self.dark_current,
-            'Resistance': self.resistance,
-            'Temperature': self.temperature,
-            'N Bins': self.signal_digitizer.bit_depth
-        }
-
-        super(Detector, self).print_properties(**_dict)

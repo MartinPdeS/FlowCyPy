@@ -3,22 +3,17 @@ import numpy as np
 from FlowCyPy import ScattererCollection, Detector, FlowCell
 from FlowCyPy import distribution
 from FlowCyPy.coupling_mechanism.rayleigh import compute_detected_signal
-from FlowCyPy.units import micrometer, refractive_index_unit
 from FlowCyPy.population import Population
 from FlowCyPy.source import GaussianBeam
 from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy.units import (
-    volt, watt, meter, hertz, particle, RIU, degree, ampere,
-    nanometer, milliwatt, second, millisecond, AU, milliliter
-)
-
+from FlowCyPy import units
 
 @pytest.fixture
 def normal_size_distribution():
     """Fixture for creating a distribution.Normal."""
     return distribution.Normal(
-        mean=1.0 * micrometer,
-        std_dev=0.1 * micrometer,
+        mean=1.0 * units.micrometer,
+        std_dev=0.1 * units.micrometer,
     )
 
 
@@ -26,8 +21,8 @@ def normal_size_distribution():
 def normal_ri_distribution():
     """Fixture for creating a distribution.Normal."""
     return distribution.Normal(
-        mean=1.5 * refractive_index_unit,
-        std_dev=0.1 * refractive_index_unit,
+        mean=1.5 * units.RIU,
+        std_dev=0.1 * units.RIU,
     )
 
 
@@ -35,7 +30,7 @@ def normal_ri_distribution():
 def normal_population(normal_size_distribution, normal_ri_distribution):
     """Fixture for creating a Population."""
     return Population(
-        particle_count=1e+10 * particle / milliliter,
+        particle_count=1e+10 * units.particle / units.milliliter,
         size=normal_size_distribution,
         refractive_index=normal_ri_distribution,
         name="Default population"
@@ -45,32 +40,32 @@ def normal_population(normal_size_distribution, normal_ri_distribution):
 @pytest.fixture
 def default_flow_cell():
     return FlowCell(
-        flow_speed=0.1 * meter / second,
-        flow_area=(10 * micrometer) ** 2,
+        flow_speed=0.1 * units.meter / units.second,
+        flow_area=(10 * units.micrometer) ** 2,
     )
 
+@pytest.fixture
+def signal_digitizer():
+    return SignalDigitizer(
+        sampling_freq=1e4 * units.hertz,           # Sampling frequency: 10,000 Hz
+        bit_depth=1024,
+        saturation_levels=1e30 * units.volt
+    )
 
 @pytest.fixture
 def detector():
-    signal_digitizer = SignalDigitizer(
-        sampling_freq=1e4 * hertz,           # Sampling frequency: 10,000 Hz
-        bit_depth=1024,
-        saturation_levels=1e30 * volt
-    )
-
     return Detector(
-        phi_angle=90 * degree,
-        numerical_aperture=0.1 * AU,
+        phi_angle=90 * units.degree,
+        numerical_aperture=0.1 * units.AU,
         name='first detector',
-        responsitivity=1.0 * ampere / watt,  # Responsitivity of the detector
-        signal_digitizer=signal_digitizer,
-        baseline_shift=0.01 * volt,          # Signal noise level: 0.5 volts
+        responsitivity=1.0 * units.ampere / units.watt,  # Responsitivity of the detector
+        baseline_shift=0.01 * units.volt,          # Signal noise level: 0.5 volts
     )
 
 
 @pytest.fixture
-def scatterer_collection(normal_population, default_flow_cell):
-    scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)
+def scatterer_collection(normal_population):
+    scatterer = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
     scatterer.add_population(normal_population)
     return scatterer
 
@@ -78,9 +73,9 @@ def scatterer_collection(normal_population, default_flow_cell):
 @pytest.fixture
 def source():
     return GaussianBeam(
-        numerical_aperture=0.2 * AU,
-        wavelength=1550 * nanometer,    # Wavelength of the laser source: 1550 nm
-        optical_power=200 * milliwatt,   # Optical power of the laser source: 200 milliwatt
+        numerical_aperture=0.2 * units.AU,
+        wavelength=1550 * units.nanometer,    # Wavelength of the laser source: 1550 nm
+        optical_power=200 * units.milliwatt,   # Optical power of the laser source: 200 milliwatt
     )
 
 
@@ -90,7 +85,7 @@ def test_generate_scatterer_size(scatterer_collection, default_flow_cell):
     """
     scatterer_dataframe = default_flow_cell.generate_event_dataframe(
         scatterer_collection.populations,
-        run_time=0.001 * second
+        run_time=0.001 * units.second
     )
 
     scatterer_collection.fill_dataframe_with_sampling(scatterer_dataframe)
@@ -108,7 +103,7 @@ def test_rayleigh_mechanism_output(detector, scatterer_collection, source, defau
     """
     scatterer_dataframe = default_flow_cell.generate_event_dataframe(
         scatterer_collection.populations,
-        run_time=0.001 * second
+        run_time=0.001 * units.second
     )
 
     scatterer_collection.fill_dataframe_with_sampling(scatterer_dataframe)
@@ -117,31 +112,37 @@ def test_rayleigh_mechanism_output(detector, scatterer_collection, source, defau
         source=source,
         detector=detector,
         scatterer_dataframe=scatterer_dataframe,
-        medium_refractive_index=1.33 * refractive_index_unit
+        medium_refractive_index=1.33 * units.RIU
     )
 
     assert detected_power is not None, "Detected power should not be None."
     assert np.all(detected_power > 0), f"Expected detected power to be positive, but got {detected_power}."
+
+def test_digitizer_properties(signal_digitizer):
+    """
+    Test the detector's properties and ensure they are correctly initialized.
+    """
+    assert signal_digitizer.sampling_freq == 1e4 * units.hertz, f"Expected acquisition frequency to be 10,000 Hz, but got {detector.acquisition_frequency}."
+    assert signal_digitizer.saturation_levels == 1e30 * units.volt, f"Expected saturation level to be 1e30, but got {detector.saturation_level}."
+    assert signal_digitizer.bit_depth == 1024, f"Expected 1024 bins, but got {detector.signal_digitizer.bit_depth}."
+
 
 
 def test_detector_properties(detector):
     """
     Test the detector's properties and ensure they are correctly initialized.
     """
-    assert detector.numerical_aperture == 0.1 * AU, f"Expected detector numerical aperture to be 0.1, but got {detector.numerical_aperture}."
-    assert detector.responsitivity == 1.0 * ampere / watt, f"Expected detector responsitivity to be 1.0, but got {detector.responsitivity}."
-    assert detector.signal_digitizer.sampling_freq == 1e4 * hertz, f"Expected acquisition frequency to be 10,000 Hz, but got {detector.acquisition_frequency}."
-    assert detector.signal_digitizer.saturation_levels == 1e30 * volt, f"Expected saturation level to be 1e30, but got {detector.saturation_level}."
-    assert detector.signal_digitizer.bit_depth == 1024, f"Expected 1024 bins, but got {detector.signal_digitizer.bit_depth}."
+    assert detector.numerical_aperture == 0.1 * units.AU, f"Expected detector numerical aperture to be 0.1, but got {detector.numerical_aperture}."
+    assert detector.responsitivity == 1.0 * units.ampere / units.watt, f"Expected detector responsitivity to be 1.0, but got {detector.responsitivity}."
 
 
 def test_source_properties(source):
     """
     Test the properties of the light source to ensure they are correctly set.
     """
-    assert source.numerical_aperture == 0.2 * AU, f"Expected source numerical aperture to be 0.2, but got {source.numerical_aperture}."
-    assert source.wavelength == 1550 * nanometer, f"Expected source wavelength to be 1550 nm (1.55e-6 m), but got {source.wavelength}."
-    assert source.optical_power == 200e-3 * watt, f"Expected source optical power to be 200 mW, but got {source.optical_power}."
+    assert source.numerical_aperture == 0.2 * units.AU, f"Expected source numerical aperture to be 0.2, but got {source.numerical_aperture}."
+    assert source.wavelength == 1550 * units.nanometer, f"Expected source wavelength to be 1550 nm (1.55e-6 m), but got {source.wavelength}."
+    assert source.optical_power == 200e-3 * units.watt, f"Expected source optical power to be 200 mW, but got {source.optical_power}."
 
 
 if __name__ == '__main__':

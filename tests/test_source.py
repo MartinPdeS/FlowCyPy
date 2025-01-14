@@ -1,5 +1,5 @@
 import pytest
-from PyMieSim.units import watt, meter, degree, volt, AU
+from FlowCyPy import units
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy.source import GaussianBeam, AstigmaticGaussianBeam
 
@@ -9,10 +9,10 @@ def test_GaussianBeam_initialization():
     Test the initialization and calculations of the GaussianBeam class.
     """
     # Define test parameters for a basic Gaussian beam
-    optical_power = 1 * watt  # 1 W power
-    wavelength = 532e-9 * meter  # 532 nm (green laser)
-    numerical_aperture = 0.1 * AU  # Small numerical aperture
-    polarization = 0 * degree  # Linear polarization
+    optical_power = 1 * units.watt  # 1 W power
+    wavelength = 532e-9 * units.meter  # 532 nm (green laser)
+    numerical_aperture = 0.1 * units.AU  # Small numerical aperture
+    polarization = 0 * units.degree  # Linear polarization
 
     # Initialize the GaussianBeam object
     beam = GaussianBeam(
@@ -25,11 +25,11 @@ def test_GaussianBeam_initialization():
     # Assert waist calculation is correct
     expected_waist = beam.wavelength / (PhysicalConstant.pi * beam.numerical_aperture)
     assert beam.waist.units == expected_waist.units, "Waist should have correct units"
-    assert abs(beam.waist - expected_waist) < 1e-12 * meter, "Calculated waist does not match expected value"
+    assert abs(beam.waist - expected_waist) < 1e-12 * units.meter, "Calculated waist does not match expected value"
 
     # Assert electric field amplitude is calculated correctly
     amplitude = beam.calculate_field_amplitude_at_focus()
-    assert amplitude.units == volt / meter, "Amplitude should be in volts per meter"
+    assert amplitude.units == units.volt / units.meter, "Amplitude should be in volts per meter"
     assert amplitude > 0, "Amplitude should be positive"
 
 
@@ -38,11 +38,11 @@ def test_astigmatic_gaussian_beam_initialization():
     Test the initialization and calculations of the AstigmaticGaussianBeam class.
     """
     # Define test parameters for an astigmatic beam
-    optical_power = 1 * watt  # 1 W power
-    wavelength = 532e-9 * meter  # 532 nm (green laser)
-    numerical_aperture_x = 0.15 * AU  # NA in x-direction
-    numerical_aperture_y = 0.1 * AU  # NA in y-direction
-    polarization = 0 * degree  # Linear polarization
+    optical_power = 1 * units.watt  # 1 W power
+    wavelength = 532e-9 * units.meter  # 532 nm (green laser)
+    numerical_aperture_x = 0.15 * units.AU  # NA in x-direction
+    numerical_aperture_y = 0.1 * units.AU  # NA in y-direction
+    polarization = 0 * units.degree  # Linear polarization
 
     # Initialize the AstigmaticGaussianBeam object
     beam = AstigmaticGaussianBeam(
@@ -59,24 +59,24 @@ def test_astigmatic_gaussian_beam_initialization():
 
     # Assert that the calculated waists match the expected values
     assert beam.waist_x.units == expected_waist_x.units, "Waist_x should have correct units"
-    assert abs(beam.waist_x - expected_waist_x) < 1e-12 * meter, "Calculated waist_x does not match expected value"
+    assert abs(beam.waist_x - expected_waist_x) < 1e-12 * units.meter, "Calculated waist_x does not match expected value"
 
     assert beam.waist_y.units == expected_waist_y.units, "Waist_y should have correct units"
 
-    assert abs(beam.waist_y - expected_waist_y) < 1e-12 * meter, "Calculated waist_y does not match expected value"
+    assert abs(beam.waist_y - expected_waist_y) < 1e-12 * units.meter, "Calculated waist_y does not match expected value"
 
     # Assert electric field amplitude at focus is calculated correctly
     amplitude = beam.calculate_field_amplitude_at_focus()
 
-    assert amplitude.units == volt / meter, "Amplitude should be in volts per meter"
+    assert amplitude.units == units.volt / units.meter, "Amplitude should be in volts per meter"
     assert amplitude > 0, "Amplitude should be positive"
 
 
 def test_validate_astygmatic_equal_gaussian():
-    optical_power = 1 * watt  # 1 W power
-    wavelength = 532e-9 * meter  # 532 nm (green laser)
-    numerical_aperture = 0.15 * AU  # NA in x-direction
-    polarization = 0 * degree  # Linear polarization
+    optical_power = 1 * units.watt  # 1 W power
+    wavelength = 532e-9 * units.meter  # 532 nm (green laser)
+    numerical_aperture = 0.15 * units.AU  # NA in x-direction
+    polarization = 0 * units.degree  # Linear polarization
 
     # Initialize the AstigmaticGaussianBeam object
     beam_0 = AstigmaticGaussianBeam(
@@ -101,20 +101,20 @@ def test_invalid_units():
     """
     Test that invalid units raise appropriate validation errors.
     """
-    optical_power = 1 * watt  # Valid power
-    wavelength = 532e-9 * meter  # Valid wavelength
-    numerical_aperture_y = 0.1 * AU  # Valid NA
+    optical_power = 1 * units.watt  # Valid power
+    wavelength = 532e-9 * units.meter  # Valid wavelength
+    numerical_aperture_y = 0.1 * units.AU  # Valid NA
 
     # Attempt to create GaussianBeam with invalid wavelength unit
     with pytest.raises(ValueError):
-        GaussianBeam(optical_power=optical_power, wavelength=532 * watt, numerical_aperture=0.1, polarization=0 * degree)
+        GaussianBeam(optical_power=optical_power, wavelength=532 * units.watt, numerical_aperture=0.1, polarization=0 * units.degree)
 
     # Attempt to create AstigmaticGaussianBeam with invalid numerical aperture units
     with pytest.raises(ValueError):
         AstigmaticGaussianBeam(
             optical_power=optical_power,
             wavelength=wavelength,
-            numerical_aperture_x=-0.1 * AU,  # Invalid NA (negative)
+            numerical_aperture_x=-0.1 * units.AU,  # Invalid NA (negative)
             numerical_aperture_y=numerical_aperture_y
         )
 

@@ -4,16 +4,12 @@ Limit of detection
 """
 
 import numpy as np
-from FlowCyPy import FlowCytometer, ScattererCollection, EventCorrelator, Detector, GaussianBeam, FlowCell
-from FlowCyPy import peak_locator
-from FlowCyPy.units import particle, nanometer, RIU, second, micrometer, millisecond, meter
-from FlowCyPy.units import degree, watt, ampere, millivolt, ohm, kelvin, milliampere, megahertz, microvolt
-from FlowCyPy.units import microsecond
-from FlowCyPy.units import milliwatt, AU
+from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
+from FlowCyPy import units
 from FlowCyPy import NoiseSetting
 from FlowCyPy import Population, distribution
 from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy.population import Exosome, HDL
+
 
 NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
@@ -24,28 +20,26 @@ NoiseSetting.include_thermal_noise = False
 np.random.seed(3)
 
 source = GaussianBeam(
-    numerical_aperture=0.3 * AU,             # Numerical aperture of the laser: 0.3
-    wavelength=488 * nanometer,              # Laser wavelength: 800 nanometers
-    optical_power=100 * milliwatt             # Laser optical power: 10 milliwatts
+    numerical_aperture=0.3 * units.AU,             # Numerical aperture of the laser: 0.3
+    wavelength=488 * units.nanometer,              # Laser wavelength: 800 nanometers
+    optical_power=100 * units.milliwatt             # Laser optical power: 10 milliwatts
 )
 
 flow_cell = FlowCell(
     source=source,
-    flow_speed=7.56 * meter / second,      # Flow speed: 7.56 meters per second
-    flow_area=(10 * micrometer) ** 2,      # Flow area: 10 x 10 micrometers
+    flow_speed=7.56 * units.meter / units.second,      # Flow speed: 7.56 meters per second
+    flow_area=(10 * units.micrometer) ** 2,      # Flow area: 10 x 10 micrometers
 )
 
-scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index: 1.33
-
-
+scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)  # Medium refractive index: 1.33
 
 for size in [150, 100, 50, 30]:
 
     population = Population(
         name=f'{size} nanometer',
-        particle_count=20 * particle,
-        size=distribution.Delta(position=size * nanometer),
-        refractive_index=distribution.Delta(position=1.39 * RIU)
+        particle_count=20 * units.particle,
+        size=distribution.Delta(position=size * units.nanometer),
+        refractive_index=distribution.Delta(position=1.39 * units.RIU)
     )
 
     scatterer_collection.add_population(population)
@@ -53,57 +47,54 @@ for size in [150, 100, 50, 30]:
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
-    sampling_freq=60 * megahertz,            # Sampling frequency: 60 MHz
+    sampling_freq=60 * units.megahertz,            # Sampling frequency: 60 MHz
 )
 
 detector_0 = Detector(
     name='side',                             # Detector name: Side scatter detector
-    phi_angle=90 * degree,                   # Angle: 90 degrees (Side Scatter)
-    numerical_aperture=.2 * AU,             # Numerical aperture: 1.2
-    responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
-    signal_digitizer=signal_digitizer,
-    resistance=13000 * ohm,                     # Detector resistance: 50 ohms
-    dark_current=0.01 * milliampere,          # Dark current: 0.1 milliamps
-    temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
+    phi_angle=90 * units.degree,                   # Angle: 90 degrees (Side Scatter)
+    numerical_aperture=.2 * units.AU,             # Numerical aperture: 1.2
+    responsitivity=1 * units.ampere / units.watt,        # Responsitivity: 1 ampere per watt
+    resistance=13000 * units.ohm,                     # Detector resistance: 50 ohms
+    dark_current=0.01 * units.milliampere,          # Dark current: 0.1 milliamps
+    temperature=300 * units.kelvin                 # Operating temperature: 300 Kelvin
 )
 
 detector_1 = Detector(
     name='forward',                          # Detector name: Forward scatter detector
-    phi_angle=0 * degree,                    # Angle: 0 degrees (Forward Scatter)
-    numerical_aperture=.2 * AU,             # Numerical aperture: 1.2
-    responsitivity=1 * ampere / watt,        # Responsitivity: 1 ampere per watt
-    signal_digitizer=signal_digitizer,
-    resistance=13000 * ohm,                     # Detector resistance: 50 ohms
-    dark_current=0.01 * milliampere,          # Dark current: 0.1 milliamps
-    temperature=300 * kelvin                 # Operating temperature: 300 Kelvin
+    phi_angle=0 * units.degree,                    # Angle: 0 degrees (Forward Scatter)
+    numerical_aperture=.2 * units.AU,             # Numerical aperture: 1.2
+    responsitivity=1 * units.ampere / units.watt,        # Responsitivity: 1 ampere per watt
+    resistance=13000 * units.ohm,                     # Detector resistance: 50 ohms
+    dark_current=0.01 * units.milliampere,          # Dark current: 0.1 milliamps
+    temperature=300 * units.kelvin                 # Operating temperature: 300 Kelvin
 )
 
 cytometer = FlowCytometer(
+    signal_digitizer=signal_digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,                     # Populations used in the experiment
-    background_power=0.0 * milliwatt,
+    background_power=0.0 * units.milliwatt,
     detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
 )
 
 # Run the flow cytometry simulation
-experiment = cytometer.get_continous_acquisition(run_time=0.2 * millisecond)
+experiment = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
 # Visualize the scatter signals from both detectors
 experiment.plot.signals()
 
-algorithm = peak_locator.MovingAverage(
-    threshold=200 * microvolt,            # Signal threshold: 0.1 mV
-    window_size=1 * microsecond,         # Moving average window size: 1 µs
-    min_peak_distance=0.1 * microsecond  # Minimum distance between peaks: 0.3 µs
+experiment.run_triggering(
+    threshold=3 * units.millivolt,
+    trigger_detector_name='forward',
+    max_triggers=15,
+    pre_buffer=64,
+    post_buffer=64
 )
 
-detector_0.set_peak_locator(algorithm)
-detector_1.set_peak_locator(algorithm)
+experiment.plot.trigger()
 
-analyzer = EventCorrelator(cytometer=cytometer)
-
-analyzer.run_analysis(compute_peak_area=False)
-
-analyzer.get_coincidence(margin=0.01 * microsecond)
-
-analyzer.plot(log_plot=False)
+experiment.plot.peaks(
+    x_detector='side',
+    y_detector='forward'
+)

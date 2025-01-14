@@ -25,6 +25,7 @@ requirements:
     - numpy ~=1.26
     - pint ~=0.24
     - scipy ~=1.14
+    - scikit-learn
     - martinpdes::pymiesim
     - martinpdes::mpsplots
 

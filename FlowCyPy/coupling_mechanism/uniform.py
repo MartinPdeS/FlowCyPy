@@ -1,5 +1,6 @@
 import numpy as np
-from FlowCyPy import ScattererCollection, Detector, ureg
+from FlowCyPy import ScattererCollection, Detector
+from FlowCyPy.units import ureg
 from FlowCyPy.source import BaseBeam
 
 

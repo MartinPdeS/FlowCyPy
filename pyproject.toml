@@ -34,6 +34,7 @@ dependencies = [
     "scipy ~=1.14",
     'PyMieSim',
     'MPSPlots',
+    'scikit-learn'
 ]
 
 [project.urls]

@@ -84,17 +84,28 @@ flow_cell = FlowCell(
 #     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
 
 from FlowCyPy import ScattererCollection
-from FlowCyPy.population import Exosome
+from FlowCyPy.population import Exosome, LDL, Population, distribution
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
 exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
 
+ldl = LDL(particle_count=5e9 * units.particle / units.milliliter)
+
+custom_population = Population(
+    name='Pop 0',
+    particle_count=3e+8 * units.particle / units.milliliter,
+    size=distribution.RosinRammler(characteristic_size=100 * units.nanometer, spread=4.5),
+    refractive_index=distribution.Normal(mean=1.39 * units.RIU, std_dev=0.02 * units.RIU)
+)
+
 # Add an Exosome population
-scatterer_collection.add_population(exosome)
+scatterer_collection.add_population(exosome, ldl, custom_population)
+
+scatterer_collection.dilute(factor=4)
 
 # Initialize the scatterer with the flow cell
-# scatterer_collection.plot(sampling=300 * units.particle)  # Visualize the particle population
+scatterer_collection.plot()  # Visualize the particle population
 
 # %%
 # Step 5: Define Detectors
@@ -107,7 +118,8 @@ from FlowCyPy.signal_digitizer import SignalDigitizer
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
-    saturation_levels='auto',
+    # saturation_levels='auto',
+    saturation_levels=[0 * units.volt, 20 * units.millivolt],
     sampling_freq=60 * units.megahertz,
 )
 
@@ -116,7 +128,6 @@ detector_0 = Detector(
     phi_angle=0 * units.degree,                  # Forward scatter angle
     numerical_aperture=1.2 * units.AU,
     responsitivity=1 * units.ampere / units.watt,
-    signal_digitizer=signal_digitizer,
     resistance=50 * units.ohm,
     temperature=300 * units.kelvin
 )
@@ -126,7 +137,6 @@ detector_1 = Detector(
     phi_angle=90 * units.degree,                 # Side scatter angle
     numerical_aperture=1.2 * units.AU,
     responsitivity=1 * units.ampere / units.watt,
-    signal_digitizer=signal_digitizer,
     resistance=50 * units.ohm,
     temperature=300 * units.kelvin,
 )
@@ -144,44 +154,48 @@ from FlowCyPy import FlowCytometer
 
 cytometer = FlowCytometer(
     scatterer_collection=scatterer_collection,
+    signal_digitizer=signal_digitizer,
     detectors=[detector_0, detector_1],
     flow_cell=flow_cell,
     background_power=0.001 * units.milliwatt
 )
 
-experiment = cytometer.get_continous_acquisition(run_time=0.03 * units.millisecond)
+# Run the flow cytometry simulation
+experiment = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-experiment.plot.signals()  # Visualize signals from detectors
+experiment.plot.scatterer()
 
-experiment.plot.coupling_distribution(equal_limits=True)  # Visualize signals from detectors
+
+experiment.plot.coupling_distribution()
+
+# Visualize the scatter signals from both detectors
+experiment.plot.signals()
 
 # %%
 # Step 7: Analyze Detected Signals
 # --------------------------------
-# # The MovingAverage algorithm detects peaks in signals by analyzing local maxima within a defined
-# # window size and threshold.
-# from FlowCyPy import EventCorrelator
-# from FlowCyPy import peak_locator
+# The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
+# window size and threshold.
+experiment.run_triggering(
+    threshold=3 * units.millivolt,
+    trigger_detector_name='forward',
+    max_triggers=35,
+    pre_buffer=64,
+    post_buffer=64
+)
 
-# algorithm = peak_locator.MovingAverage(
-#     threshold=10 * units.microvolt,
-#     window_size=1 * units.microsecond,
-#     min_peak_distance=0.3 * units.microsecond
-# )
+experiment.plot.trigger()
 
-# # Assign peak detection algorithm to detectors
-# detector_0.set_peak_locator(algorithm)
-# detector_1.set_peak_locator(algorithm)
+experiment.plot.peaks(
+    x_detector='side',
+    y_detector='forward'
+)
 
-# # Analyze signal data
-# analyzer = EventCorrelator(cytometer=cytometer)
-# analyzer.run_analysis(compute_peak_area=False)
 
-# # %%
-# # Step 8: Visualize Coincidence and Density Plot
-# # ----------------------------------------------
-# # Coincidence analysis checks for simultaneous detection events across detectors, which are plotted
-# # as a 2D density graph to illustrate signal relationships between FSC and SSC.
+from FlowCyPy.classifier import KmeansClassifier
+# %%
+classifier = KmeansClassifier(
+    dataframe=experiment.data.peaks
+)
 
-# analyzer.get_coincidence(margin=1e-9 * units.microsecond)  # Extract coincidences
-# analyzer.plot(log_plot=False)  # Generate a 2D density plot
+classifier.run()

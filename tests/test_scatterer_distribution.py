@@ -6,12 +6,10 @@ from FlowCyPy import ScattererCollection
 from FlowCyPy import distribution as dist
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Population
-from FlowCyPy.units import (
-    micrometer, meter, refractive_index_unit, nanometer, milliliter, particle, millisecond, second
-)
+from FlowCyPy import units
 
 
-CONCENTRATION = 3e+5 * particle / milliliter
+CONCENTRATION = 3e+5 * units.particle / units.milliliter
 
 
 # Fixtures to set up a default Flow and Distributions
@@ -19,17 +17,17 @@ CONCENTRATION = 3e+5 * particle / milliliter
 def default_flow_cell():
     """Fixture for creating a default Flow object."""
     return FlowCell(
-        flow_speed=80e-3 * meter / second,
-        flow_area=1e-6 * meter ** 2,
+        flow_speed=80e-3 * units.meter / units.second,
+        flow_area=1e-6 * units.meter ** 2,
     )
 
 
 # Parametrize different distributions
 distributions = [
-    dist.Normal(mean=1.0 * micrometer, std_dev=100.0 * nanometer),
-    dist.LogNormal(mean=1.0 * micrometer, std_dev=0.01 * micrometer),
-    dist.Uniform(lower_bound=0.5 * micrometer, upper_bound=1.5 * micrometer),
-    dist.RosinRammler(characteristic_size=0.5 * micrometer, spread=1.5),
+    dist.Normal(mean=1.0 * units.micrometer, std_dev=100.0 * units.nanometer),
+    dist.LogNormal(mean=1.0 * units.micrometer, std_dev=0.01 * units.micrometer),
+    dist.Uniform(lower_bound=0.5 * units.micrometer, upper_bound=1.5 * units.micrometer),
+    dist.RosinRammler(characteristic_size=0.5 * units.micrometer, spread=1.5),
 ]
 
 
@@ -39,8 +37,8 @@ def test_generate_distribution_size(distribution, default_flow_cell):
     # Get the distribution from the fixtures
 
     ri_distribution = dist.Normal(
-        mean=1.4 * refractive_index_unit,
-        std_dev=0.01 * refractive_index_unit
+        mean=1.4 * units.RIU,
+        std_dev=0.01 * units.RIU
     )
 
     population_0 = Population(
@@ -57,7 +55,7 @@ def test_generate_distribution_size(distribution, default_flow_cell):
 
     dataframe = default_flow_cell.generate_event_dataframe(
         scatterer_collection.populations,
-        run_time=100e-4 * second
+        run_time=100e-4 * units.second
     )
 
     # # Check that sizes were generated and are positive
@@ -80,7 +78,7 @@ def test_generate_distribution_size(distribution, default_flow_cell):
         )
 
     elif isinstance(distribution, dist.LogNormal):
-        assert np.all(dataframe['Size'] > 0 * meter), "Lognormal distribution generated non-positive sizes."
+        assert np.all(dataframe['Size'] > 0 * units.meter), "Lognormal distribution generated non-positive sizes."
 
     elif isinstance(distribution, dist.Uniform):
         lower_bound = distribution.lower_bound
@@ -102,8 +100,8 @@ def test_generate_distribution_size(distribution, default_flow_cell):
 def test_generate_longitudinal_positions(default_flow_cell, distribution):
     """Test the generation of longitudinal positions based on Poisson process."""
     ri_distribution = dist.Normal(
-        mean=1.4 * refractive_index_unit,
-        std_dev=0.01 * refractive_index_unit
+        mean=1.4 * units.RIU,
+        std_dev=0.01 * units.RIU
     )
 
     population_0 = Population(
@@ -119,7 +117,7 @@ def test_generate_longitudinal_positions(default_flow_cell, distribution):
 
     dataframe = default_flow_cell.generate_event_dataframe(
         scatterer_collection.populations,
-        run_time=100e-4 * second
+        run_time=100e-4 * units.second
     )
 
     # Assert correct shape of generated longitudinal positions
@@ -128,20 +126,20 @@ def test_generate_longitudinal_positions(default_flow_cell, distribution):
 
     # Assert that longitudinal positions are increasing (since they are cumulative)
     for _, group in dataframe.groupby('Population'):
-        assert np.all(np.diff(group['Time']) >= 0 * second), "Longitudinal positions are not monotonically increasing."
+        assert np.all(np.diff(group['Time']) >= 0 * units.second), "Longitudinal positions are not monotonically increasing."
 
     # Assert that no positions are negative
     for _, group in dataframe.groupby('Population'):
-        assert np.all(group['Time'] >= 0 * second), "Some longitudinal positions are negative."
+        assert np.all(group['Time'] >= 0 * units.second), "Some longitudinal positions are negative."
 
 
 @patch('matplotlib.pyplot.show')
 @pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__)
-def test_plot_positions(mock_show, default_flow_cell, distribution):
+def test_plot_positions(mock_show, distribution):
     """Test the plotting of longitudinal positions."""
     ri_distribution = dist.Normal(
-        mean=1.4 * refractive_index_unit,
-        std_dev=0.01 * refractive_index_unit
+        mean=1.4 * units.RIU,
+        std_dev=0.01 * units.RIU
     )
 
     population_0 = Population(
@@ -163,8 +161,8 @@ def test_plot_positions(mock_show, default_flow_cell, distribution):
 def test_extra(distribution):
     """Test the generation of longitudinal positions based on Poisson process."""
     ri_distribution = dist.Normal(
-        mean=1.4 * refractive_index_unit,
-        std_dev=0.01 * refractive_index_unit
+        mean=1.4 * units.RIU,
+        std_dev=0.01 * units.RIU
     )
 
     population_0 = Population(
@@ -174,13 +172,9 @@ def test_extra(distribution):
         name="Default population"
     )
 
-
-
     scatterer = ScattererCollection()
 
     scatterer.add_population(population_0)
-
-    print(population_0.particle_count)
 
     scatterer.dilute(factor=2)
 

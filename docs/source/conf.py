@@ -63,7 +63,7 @@ def reset_mpl(gallery_conf, fname):
 
 
 examples_files = [
-    'tutorials', 'density_plots', 'noise_sources', 'extras'
+    'tutorials', 'noise_sources', 'extras'
 ]
 
 sphinx_gallery_conf = {
