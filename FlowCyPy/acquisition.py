@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from tabulate import tabulate
 import warnings
-from FlowCyPy.detector import Detector
 
 class DataAccessor:
     def __init__(self, outer):
@@ -45,14 +44,14 @@ class Acquisition:
             DataFrame with detector signal data.
         """
         self.cytometer = cytometer
-        self.data = DataAccessor(self)
-        self.data.continuous = detector_dataframe
-        self.data.scatterer = scatterer_dataframe
 
-        self.run_time = run_time
+        self.data = DataAccessor(self)
         self.plot = self.PlotInterface(self)
         self.logger = self.LoggerInterface(self)
 
+        self.data.continuous = detector_dataframe
+        self.data.scatterer = scatterer_dataframe
+        self.run_time = run_time
 
     @property
     def n_detectors(self) -> int:
@@ -79,7 +78,7 @@ class Acquisition:
         def process_segment(segment):
             signal = segment['DigitizedSignal'].values
             time = segment['Time'].values
-            peaks, properties = find_peaks(signal)
+            peaks, properties = find_peaks(signal, width=1)
 
             return pd.DataFrame({
                 "SegmentID": segment.name[1],
