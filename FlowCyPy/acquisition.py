@@ -576,12 +576,6 @@ class Acquisition:
             x_units = x_data.max().to_compact().units
             y_units = y_data.max().to_compact().units
 
-            print('----------------------------')
-
-            print(x_data)
-            print(x_units)
-            print('----------------------------')
-
             x_data = x_data.pint.to(x_units)
             y_data = y_data.pint.to(y_units)
 
