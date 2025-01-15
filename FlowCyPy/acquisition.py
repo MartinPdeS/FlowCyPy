@@ -191,6 +191,26 @@ class Acquisition:
 
         self.detect_peaks()
 
+    def classify_dataset(self, classifier: object, features: List[str], detectors: list[str]) -> None:
+        self.data.peaks = self.data.peaks.unstack('Detector')
+        self.classifier = classifier
+
+        self.classifier.run(
+            dataframe=self.data.peaks,
+            features=features,
+            detectors=detectors
+        )
+
+        with plt.style.context(mps):
+            sns.jointplot(
+                data=self.data.peaks,
+                x=('Height', 'side'),
+                y=('Height', 'forward'),
+                hue='Label',
+            )
+
+        plt.show()
+
     class LoggerInterface:
         """
         A nested class for logging statistical information about the experiment.
@@ -645,6 +665,45 @@ class Acquisition:
 
             if show:
                 plt.show()
+
+        def classifier(self, feature: str, x_detector: str, y_detector: str) -> None:
+            """
+            Visualize the classification of peaks using a scatter plot.
+
+            Parameters
+            ----------
+            feature : str
+                The feature to classify (e.g., 'Height', 'Width', 'Area').
+            x_detector : str
+                The detector to use for the x-axis.
+            y_detector : str
+                The detector to use for the y-axis.
+
+            Raises
+            ------
+            ValueError
+                If the 'Label' column is missing in the data, suggesting that
+                the `classify_dataset` method must be called first.
+            """
+            # Check if 'Label' exists in the dataset
+            if 'Label' not in self.data.peaks.columns:
+                raise ValueError(
+                    "The 'Label' column is missing. Ensure the dataset has been classified "
+                    "by calling the `classify_dataset` method before using `classifier`."
+                )
+
+            # Set the plotting style
+            with plt.style.context(mps):
+                # Generate a scatter plot using seaborn's jointplot
+                sns.jointplot(
+                    data=self.data.peaks,
+                    x=(feature, x_detector),
+                    y=(feature, y_detector),
+                    hue='Label',
+                )
+
+            # Display the plot
+            plt.show()
 
         def get_detector(self, name: str):
             for detector in self.acquisition.cytometer.detectors:

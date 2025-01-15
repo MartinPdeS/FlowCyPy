@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 
 class BaseClassifier:
-    def filter_dataframe(self, features: list, detectors: list = None) -> object:
+    def filter_dataframe(self, dataframe: pd.DataFrame, features: list, detectors: list = None) -> object:
         """
         Filter the DataFrame based on the selected features and detectors.
 
@@ -31,13 +31,13 @@ class BaseClassifier:
         # Determine detectors to use
 
         if detectors is None:
-            detectors = self.dataframe.columns.get_level_values(0).unique().tolist()
+            detectors = dataframe.columns.get_level_values(0).unique().tolist()
 
-        return self.dataframe.loc[detectors, features]
+        return dataframe.loc[:, (features, detectors)]
 
 
 class KmeansClassifier(BaseClassifier):
-    def __init__(self, dataframe: object) -> None:
+    def __init__(self, number_of_cluster: int) -> None:
         """
         Initialize the Classifier.
 
@@ -46,42 +46,44 @@ class KmeansClassifier(BaseClassifier):
         dataframe : DataFrame
             The input dataframe with multi-index columns.
         """
-        self.dataframe = dataframe
-        self.dataframe['Label'] = 0  # Initialize labels as 0
+        self.number_of_cluster = number_of_cluster
+        # self.dataframe = dataframe
+        # self.dataframe['Label'] = 0  # Initialize labels as 0
 
-    def run(self, number_of_cluster: int, features: list = ['Height'], detectors: list = None, random_state: int = 42) -> None:
+    def run(self, dataframe: pd.DataFrame, features: list = ['Height'], detectors: list = None, random_state: int = 42) -> pd.DataFrame:
         """
         Run KMeans clustering on the selected features and detectors.
 
         Parameters
         ----------
-        number_of_cluster : int
-            Number of clusters for KMeans.
+        dataframe : pd.DataFrame
+            The input DataFrame with multi-index (e.g., by 'Detector').
         features : list
-            List of features to use for clustering. Options include 'Heights', 'Widths', 'Areas'.
+            List of features to use for clustering. Options include 'Height', 'Width', 'Area'.
         detectors : list, optional
             List of detectors to use. If None, use all detectors.
         random_state : int, optional
             Random state for KMeans, by default 42.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with clustering labels added.
         """
         # Filter the DataFrame
-        sub_dataframe = self.filter_dataframe(features=features, detectors=detectors)
-        sub_dataframe = sub_dataframe.unstack('Detector')
+        sub_dataframe = self.filter_dataframe(dataframe=dataframe, features=features, detectors=detectors)
 
         # Ensure data is dequantified if it uses Pint quantities
         if hasattr(sub_dataframe, 'pint'):
             sub_dataframe = sub_dataframe.pint.dequantify().droplevel('unit', axis=1)
 
-        sub_dataframe = sub_dataframe.droplevel(0, axis=1)
-
         # Run KMeans
-        kmeans = KMeans(n_clusters=number_of_cluster, random_state=random_state)
+        kmeans = KMeans(n_clusters=self.number_of_cluster, random_state=random_state)
+        labels = kmeans.fit_predict(sub_dataframe)
 
-        sub_dataframe['Label'] = kmeans.fit_predict(sub_dataframe)
+        dataframe['Label'] = labels
 
-        self.sub_dataframe = sub_dataframe
-
-        return sub_dataframe
+        return labels
 
     def plot(self, x_detector: str, y_detector: str) -> None:
         with plt.style.context(mps):

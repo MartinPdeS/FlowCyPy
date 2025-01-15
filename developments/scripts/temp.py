@@ -23,19 +23,30 @@ Overview:
 
 import numpy as np
 from FlowCyPy import units
-from FlowCyPy import ScattererCollection
-from FlowCyPy.population import Exosome, Population, distribution
+
+
+# %%
+# Step 1: Configure Noise Settings
+# ---------------------------------
+# Noise settings are configured to simulate real-world imperfections. In this example, we include noise
+# globally but exclude specific types, such as shot noise and thermal noise.
+
 from FlowCyPy import NoiseSetting
-from FlowCyPy.detector import Detector
-from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy import FlowCell
 
 NoiseSetting.include_noises = True
-NoiseSetting.include_shot_noise = False
-NoiseSetting.include_thermal_noise = False
-NoiseSetting.include_dark_current_noise = False
+NoiseSetting.include_shot_noise = True
+NoiseSetting.include_thermal_noise = True
+NoiseSetting.include_dark_current_noise = True
+NoiseSetting.include_RIN_noise = True
 
 np.random.seed(3)  # Ensure reproducibility
+
+
+# %%
+# Step 2: Configure the Laser Source
+# ----------------------------------
+# The laser source generates light that interacts with the particles. Its parameters, like numerical
+# aperture and wavelength, affect how light scatters, governed by Mie theory.
 
 from FlowCyPy import GaussianBeam
 
@@ -46,11 +57,18 @@ source = GaussianBeam(
 )
 
 
+
+from FlowCyPy import FlowCell
+
 flow_cell = FlowCell(
     source=source,
     flow_speed=7.56 * units.meter / units.second,  # Flow speed
     flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
 )
+
+
+from FlowCyPy import ScattererCollection
+from FlowCyPy.population import Exosome, Population, distribution
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
@@ -67,6 +85,10 @@ custom_population = Population(
 scatterer_collection.add_population(exosome, custom_population)
 
 scatterer_collection.dilute(factor=16)
+
+
+from FlowCyPy.detector import Detector
+from FlowCyPy.signal_digitizer import SignalDigitizer
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
@@ -106,6 +128,7 @@ cytometer = FlowCytometer(
 experiment = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
 
+
 experiment.run_triggering(
     threshold=0.2 * units.millivolt,
     trigger_detector_name='forward',
@@ -114,14 +137,16 @@ experiment.run_triggering(
     post_buffer=64
 )
 
+from FlowCyPy.classifier import KmeansClassifier
+
+classifier = KmeansClassifier(number_of_cluster=2)
+
+experiment.classify_dataset(
+    classifier=classifier,
+    features=['Height', 'widths'],
+    detectors=['side', 'forward']
+)
 
 
-x_data = experiment.data.peaks.loc['side', 'Height']
-y_data = experiment.data.peaks.loc['forward', 'Height']
-
-x_units = x_data.max().to_compact().units
-y_units = y_data.max().to_compact().units
-
-# x_data = x_data.pint.to('second')
-y_data = y_data.pint.to(y_units)
+experiment.plot.classifier()
 
