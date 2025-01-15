@@ -123,7 +123,7 @@ class RosinRammler(Base):
         _x = x.magnitude
         d = self.characteristic_size.to(self._units).magnitude
         k = self.spread
-        # k = 2.5
+
         # Rosin-Rammler PDF formula
         pdf = (k / d) * (_x / d)**(k - 1) * np.exp(-(_x / d)**k)
 
