@@ -205,6 +205,7 @@ df = classifier.run(
     detectors=['side', 'forward']
 )
 
+
 classifier.plot(
     x_detector='side',
     y_detector='forward'

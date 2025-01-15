@@ -573,26 +573,12 @@ class Acquisition:
             x_data = self.acquisition.data.peaks.loc[x_detector, signal]
             y_data = self.acquisition.data.peaks.loc[y_detector, signal]
 
-            x_units = x_data.max().to_compact().units
-            y_units = y_data.max().to_compact().units
-
-            print('----------------------------')
-
-            print(x_data)
-            print(x_units)
-            print('----------------------------')
-
-            x_data = x_data.pint.to(x_units)
-            y_data = y_data.pint.to(y_units)
+            x_units = x_data.pint.units
+            y_units = y_data.pint.units
 
             with plt.style.context(mps):
                 # Create joint KDE plot with scatter points overlay
-                grid = sns.jointplot(
-                    x=x_data,
-                    y=y_data,
-                    kind='kde',
-                    fill=True,
-                    cmap="Blues",
+                grid = sns.jointplot(x=x_data, y=y_data, kind='kde', fill=True, cmap="Blues",
                     joint_kws={'bw_adjust': bandwidth_adjust, 'alpha': 0.7}
                 )
 
