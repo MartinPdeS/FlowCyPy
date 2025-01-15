@@ -204,4 +204,8 @@ experiment.classify_dataset(
 )
 
 
-experiment.plot.classifier()
+experiment.plot.classifier(
+    feature='Height',
+    x_detector='forward',
+    y_detector='side'
+)

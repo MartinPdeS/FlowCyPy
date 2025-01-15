@@ -201,16 +201,6 @@ class Acquisition:
             detectors=detectors
         )
 
-        with plt.style.context(mps):
-            sns.jointplot(
-                data=self.data.peaks,
-                x=('Height', 'side'),
-                y=('Height', 'forward'),
-                hue='Label',
-            )
-
-        plt.show()
-
     class LoggerInterface:
         """
         A nested class for logging statistical information about the experiment.
@@ -686,7 +676,7 @@ class Acquisition:
                 the `classify_dataset` method must be called first.
             """
             # Check if 'Label' exists in the dataset
-            if 'Label' not in self.data.peaks.columns:
+            if 'Label' not in self.acquisition.data.peaks.columns:
                 raise ValueError(
                     "The 'Label' column is missing. Ensure the dataset has been classified "
                     "by calling the `classify_dataset` method before using `classifier`."
@@ -696,7 +686,7 @@ class Acquisition:
             with plt.style.context(mps):
                 # Generate a scatter plot using seaborn's jointplot
                 sns.jointplot(
-                    data=self.data.peaks,
+                    data=self.acquisition.data.peaks,
                     x=(feature, x_detector),
                     y=(feature, y_detector),
                     hue='Label',
