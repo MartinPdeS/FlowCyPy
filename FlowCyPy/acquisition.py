@@ -576,6 +576,12 @@ class Acquisition:
             x_units = x_data.max().to_compact().units
             y_units = y_data.max().to_compact().units
 
+            print('----------------------------')
+
+            print(x_data)
+            print(x_units)
+            print('----------------------------')
+
             x_data = x_data.pint.to(x_units)
             y_data = y_data.pint.to(y_units)
 
@@ -590,12 +596,7 @@ class Acquisition:
                     joint_kws={'bw_adjust': bandwidth_adjust, 'alpha': 0.7}
                 )
 
-            grid.ax_joint.scatter(
-                x_data,
-                y_data,
-                color='C1',
-                alpha=0.6,
-            )
+            grid.ax_joint.scatter(x_data, y_data, color='C1', alpha=0.6)
 
             grid.set_axis_labels(f"{signal} ({x_detector}) [{x_units}]", f"{signal} ({y_detector}) [{y_units}]", fontsize=12)
             plt.tight_layout()
