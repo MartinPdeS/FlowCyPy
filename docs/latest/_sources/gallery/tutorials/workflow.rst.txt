@@ -286,14 +286,14 @@ and particles follows Mie theory:
     *
 
       .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
-         :alt: workflow
+         :alt: Scatterer sampling distribution
          :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
          :class: sphx-glr-multi-img
 
     *
 
       .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_003.png
-         :alt: workflow
+         :alt: Theoretical coupling distribution
          :srcset: /gallery/tutorials/images/sphx_glr_workflow_003.png
          :class: sphx-glr-multi-img
 
@@ -350,7 +350,7 @@ window size and threshold.
     *
 
       .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_006.png
-         :alt: workflow
+         :alt: Peaks properties
          :srcset: /gallery/tutorials/images/sphx_glr_workflow_006.png
          :class: sphx-glr-multi-img
 
@@ -359,9 +359,10 @@ window size and threshold.
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/acquisition.py:99: UserWarning: Multiple peaks detected in the following segments: [('forward', 2), ('forward', 3), ('forward', 4), ('forward', 9), ('forward', 11), ('forward', 12), ('forward', 13), ('forward', 15), ('forward', 16), ('forward', 17), ('forward', 18), ('forward', 21), ('forward', 24), ('forward', 26), ('forward', 29), ('forward', 31), ('forward', 32), ('forward', 34), ('side', 2), ('side', 3), ('side', 4), ('side', 9), ('side', 11), ('side', 12), ('side', 13), ('side', 15), ('side', 16), ('side', 17), ('side', 18), ('side', 21), ('side', 24), ('side', 26), ('side', 29), ('side', 31), ('side', 32), ('side', 34)]
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/acquisition.py:100: UserWarning: Multiple peaks detected in the following segments: [('forward', 1), ('forward', 2), ('forward', 6), ('forward', 8), ('forward', 9), ('forward', 11), ('forward', 12), ('forward', 14), ('forward', 17), ('forward', 18), ('forward', 20), ('forward', 21), ('forward', 25), ('forward', 26), ('forward', 27), ('forward', 30), ('forward', 31), ('side', 1), ('side', 2), ('side', 6), ('side', 8), ('side', 9), ('side', 11), ('side', 12), ('side', 14), ('side', 17), ('side', 18), ('side', 20), ('side', 21), ('side', 25), ('side', 26), ('side', 27), ('side', 30), ('side', 31)]
       warnings.warn(
 
+    <seaborn.axisgrid.JointGrid object at 0x7f9e014a0190>
 
 
 
@@ -392,18 +393,24 @@ Step 8: Classifying the collected dataset
 
 
 .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_007.png
-   :alt: workflow
+   :alt: Event classification
    :srcset: /gallery/tutorials/images/sphx_glr_workflow_007.png
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <seaborn.axisgrid.JointGrid object at 0x7f9e01c28c90>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.764 seconds)
+   **Total running time of the script:** (0 minutes 8.932 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

@@ -45,7 +45,7 @@ Limit of detection
     *
 
       .. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
-         :alt: limit of detection
+         :alt: Peaks properties
          :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
          :class: sphx-glr-multi-img
 
@@ -54,9 +54,10 @@ Limit of detection
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/acquisition.py:99: UserWarning: Multiple peaks detected in the following segments: [('forward', 0), ('forward', 1), ('forward', 2), ('forward', 3), ('forward', 4), ('forward', 6), ('forward', 7), ('forward', 8), ('forward', 9), ('forward', 10), ('forward', 11), ('forward', 12), ('forward', 14), ('side', 0), ('side', 1), ('side', 2), ('side', 3), ('side', 4), ('side', 6), ('side', 7), ('side', 8), ('side', 9), ('side', 10), ('side', 11), ('side', 12), ('side', 14)]
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/acquisition.py:100: UserWarning: Multiple peaks detected in the following segments: [('forward', 0), ('forward', 1), ('forward', 2), ('forward', 3), ('forward', 4), ('forward', 6), ('forward', 7), ('forward', 8), ('forward', 9), ('forward', 11), ('forward', 12), ('forward', 13), ('forward', 14), ('side', 0), ('side', 1), ('side', 2), ('side', 3), ('side', 4), ('side', 6), ('side', 7), ('side', 8), ('side', 9), ('side', 11), ('side', 12), ('side', 13), ('side', 14)]
       warnings.warn(
 
+    <seaborn.axisgrid.JointGrid object at 0x7f9e01cb81d0>
 
 
 
@@ -166,7 +167,7 @@ Limit of detection
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.876 seconds)
+   **Total running time of the script:** (0 minutes 6.611 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:
