@@ -13,7 +13,7 @@ of the detector.
 """
 
 from FlowCyPy.detector import Detector
-from FlowCyPy.units import watt, ohm, ampere, second, hertz, degree, AU, kelvin
+from FlowCyPy import units
 import matplotlib.pyplot as plt
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import NoiseSetting
@@ -31,7 +31,7 @@ temperatures = [50, 500]  # Temperatures in Kelvin
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
-    sampling_freq=1e6 * hertz,
+    sampling_freq=1e6 * units.hertz,
 )
 
 # Initialize the plot
@@ -42,14 +42,13 @@ for temperature in temperatures:
     # Initialize Detector
     detector = Detector(
         name=str(temperature),
-        responsitivity=1 * ampere / watt,
-        resistance=50 * ohm,
-        numerical_aperture=0.2 * AU,
-        phi_angle=0 * degree,
-        temperature=temperature * kelvin,
-        signal_digitizer=signal_digitizer
+        responsitivity=1 * units.ampere / units.watt,
+        resistance=50 * units.ohm,
+        numerical_aperture=0.2 * units.AU,
+        phi_angle=0 * units.degree,
+        temperature=temperature * units.kelvin,
     )
-    dataframe = detector.get_initialized_signal(run_time=200e-6 * second)
+    dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second, signal_digitizer=signal_digitizer)
 
     # Add thermal noise to the raw signal
     detector._add_thermal_noise_to_raw_signal(dataframe['Signal'])

@@ -492,8 +492,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">milliwatt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pint_pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">PintArray</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.continuous_acquisition</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContinuousAcquisition</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.triggered_acquisition</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriggeredAcquisition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.acquisition</span><span class="w"> </span><span class="kn">import</span> <span class="n">Acquisition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
 
 
 <span class="c1"># Set up logging configuration</span>
@@ -551,6 +551,7 @@
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">scatterer_collection</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
             <span class="n">flow_cell</span><span class="p">:</span> <span class="n">FlowCell</span><span class="p">,</span>
+            <span class="n">signal_digitizer</span><span class="p">:</span> <span class="n">SignalDigitizer</span><span class="p">,</span>
             <span class="n">detectors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Detector</span><span class="p">],</span>
             <span class="n">coupling_mechanism</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;mie&#39;</span><span class="p">,</span>
             <span class="n">background_power</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">milliwatt</span><span class="p">):</span>
@@ -559,6 +560,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">flow_cell</span> <span class="o">=</span> <span class="n">flow_cell</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">flow_cell</span><span class="o">.</span><span class="n">source</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span> <span class="o">=</span> <span class="n">detectors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">signal_digitizer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">coupling_mechanism</span> <span class="o">=</span> <span class="n">coupling_mechanism</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">background_power</span> <span class="o">=</span> <span class="n">background_power</span>
 
@@ -599,7 +601,7 @@
                 <span class="n">medium_refractive_index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">medium_refractive_index</span>
             <span class="p">)</span>
 
-            <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s2">&quot;detector: &quot;</span> <span class="o">+</span> <span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coupling_power</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">coupling_power</span><span class="o">.</span><span class="n">units</span><span class="p">)</span></div>
+            <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coupling_power</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">coupling_power</span><span class="o">.</span><span class="n">units</span><span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_pulse_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scatterer_dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -647,7 +649,7 @@
 
         <span class="c1"># Initialize the detectors</span>
         <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
-            <span class="n">dataframe</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">get_initialized_signal</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
+            <span class="n">dataframe</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">get_initialized_signal</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span> <span class="n">signal_digitizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="p">)</span>
 
             <span class="n">dataframes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
 
@@ -656,73 +658,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Detector&quot;</span><span class="p">,</span> <span class="s2">&quot;Index&quot;</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="FlowCytometer.get_triggered_acquisition">
-<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.get_triggered_acquisition">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_triggered_acquisition</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span>
-        <span class="n">threshold</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span>
-        <span class="n">trigger_detector_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">custom_trigger</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">pre_buffer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
-        <span class="n">post_buffer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
-        <span class="n">max_triggers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Extracts thresholded signal segments based on a trigger detector or custom trigger array</span>
-<span class="sd">        and returns them in a multi-index DataFrame.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        run_time : Quantity</span>
-<span class="sd">            The duration of the simulation (must be in seconds).</span>
-<span class="sd">        threshold : Quantity</span>
-<span class="sd">            The signal value threshold for the trigger detector.</span>
-<span class="sd">        trigger_detector_name : str, optional</span>
-<span class="sd">            The name of the detector to be used as the triggering system. Ignored if `custom_trigger` is provided.</span>
-<span class="sd">        custom_trigger : np.ndarray, optional</span>
-<span class="sd">            A custom boolean trigger array indicating where the signal should be extracted.</span>
-<span class="sd">            Must have the same length as the acquisition time.</span>
-<span class="sd">        pre_buffer : int, optional</span>
-<span class="sd">            Number of points to include before each threshold crossing, by default 64.</span>
-<span class="sd">        post_buffer : int, optional</span>
-<span class="sd">            Number of points to include after each threshold crossing, by default 64.</span>
-<span class="sd">        max_triggers : int, optional</span>
-<span class="sd">            The maximum number of triggers to process. If None, all triggers will be processed.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        pd.DataFrame</span>
-<span class="sd">            A multi-index DataFrame with the first level as the detector name and the second level as the segment ID.</span>
-<span class="sd">            Includes columns for time and signal.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        ValueError</span>
-<span class="sd">            If `run_time` is not in seconds, the trigger detector is not found, or the `custom_trigger` array is invalid.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Ensure the acquisition data is generated</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">get_continous_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="p">)</span>
-
-        <span class="n">continuous_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span>
-
-        <span class="n">triggered_acquisition</span> <span class="o">=</span> <span class="n">TriggeredAcquisition</span><span class="p">(</span><span class="n">continuous_dataframe</span><span class="p">)</span>
-
-        <span class="n">triggered_acquisition</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-            <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
-            <span class="n">trigger_detector_name</span><span class="o">=</span><span class="n">trigger_detector_name</span><span class="p">,</span>
-            <span class="n">custom_trigger</span><span class="o">=</span><span class="n">custom_trigger</span><span class="p">,</span>
-            <span class="n">pre_buffer</span><span class="o">=</span><span class="n">pre_buffer</span><span class="p">,</span>
-            <span class="n">post_buffer</span><span class="o">=</span><span class="n">post_buffer</span><span class="p">,</span>
-            <span class="n">max_triggers</span><span class="o">=</span><span class="n">max_triggers</span>
-        <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">triggered_acquisition</span></div>
-
-
-<div class="viewcode-block" id="FlowCytometer.get_continous_acquisition">
-<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.get_continous_acquisition">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_continous_acquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="FlowCytometer.get_acquisition">
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.get_acquisition">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_acquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simulates the generation of optical signal pulses for each particle event.</span>
 
@@ -760,7 +698,7 @@
         <span class="n">_centers</span> <span class="o">=</span> <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span>
 
         <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
-            <span class="n">_coupling_power</span> <span class="o">=</span> <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s2">&quot;detector: &quot;</span> <span class="o">+</span> <span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">_coupling_power</span> <span class="o">=</span> <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
             <span class="n">detector_signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">xs</span><span class="p">(</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">)[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span>
 
@@ -789,13 +727,14 @@
                 <span class="n">wavelength</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">wavelength</span>
             <span class="p">)</span>
 
-            <span class="n">digitized_signal</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">capture_signal</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">detector_signal</span><span class="p">)</span>
+            <span class="n">digitized_signal</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">capture_signal</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">detector_signal</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">detector_signal</span><span class="p">,</span> <span class="n">detector_signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;DigitizedSignal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">digitized_signal</span><span class="p">,</span> <span class="n">units</span><span class="o">.</span><span class="n">bit_bins</span><span class="p">)</span>
 
-        <span class="n">experiment</span> <span class="o">=</span> <span class="n">ContinuousAcquisition</span><span class="p">(</span>
+        <span class="n">experiment</span> <span class="o">=</span> <span class="n">Acquisition</span><span class="p">(</span>
+            <span class="n">cytometer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span>
             <span class="n">scatterer_dataframe</span><span class="o">=</span><span class="n">scatterer_dataframe</span><span class="p">,</span>
             <span class="n">detector_dataframe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span>

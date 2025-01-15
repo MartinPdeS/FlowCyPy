@@ -433,18 +433,6 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/limit_of_detection.html">Limit of detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Workflow</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../density_plots/index.html">Examples: Density plots</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../density_plots/1_populations.html">1 populations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../density_plots/2_populations.html">2 populations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../density_plots/3_populations.html">3 populations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../density_plots/custom_populations.html">Custom populations</a></li>
-</ul>
-</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Noises</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="dark_current.html">Dark Current</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Shot noise</a></li>
@@ -454,8 +442,8 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../extras/index.html">Examples: extras</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../extras/distributions.html">Particle Distribution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../extras/flow_cytometer_signal.html">Generating Signal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/full_workflow.html">WorkFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../extras/scatterer_distribution.html">Scatterer Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extras/signal_acquisition.html">WorkFlow</a></li>
 </ul>
 </details></li>
 </ul>
@@ -531,7 +519,7 @@ to download the full example code.</p>
 <p>This example demonstrates the effect of different optical power levels on a flow cytometer detector.
 We initialize the detector, apply varying optical power levels, and visualize the resulting signals
 and their distributions.</p>
-<img src="../../_images/sphx_glr_shot_noise_001.png" srcset="../../_images/sphx_glr_shot_noise_001.png" alt="Raw Signals at Different Optical Powers, Histogram of Raw Signals" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/shot_noise.py:72: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+<img src="../../_images/sphx_glr_shot_noise_001.png" srcset="../../_images/sphx_glr_shot_noise_001.png" alt="Raw Signals at Different Optical Powers, Histogram of Raw Signals" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/shot_noise.py:71: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
   ax_signal.legend()
 </pre></div>
 </div>
@@ -540,7 +528,7 @@ and their distributions.</p>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">Detector</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">watt</span><span class="p">,</span> <span class="n">ohm</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">second</span><span class="p">,</span> <span class="n">hertz</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">AU</span><span class="p">,</span> <span class="n">nanometer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoiseSetting</span>
@@ -552,12 +540,12 @@ and their distributions.</p>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_RIN_noise</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="c1"># Define optical power levels</span>
-<span class="n">optical_powers</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1e-9</span> <span class="o">*</span> <span class="n">watt</span><span class="p">,</span> <span class="mf">5e-9</span> <span class="o">*</span> <span class="n">watt</span><span class="p">,</span> <span class="mf">1e-8</span> <span class="o">*</span> <span class="n">watt</span><span class="p">]</span>  <span class="c1"># Powers in watts</span>
+<span class="n">optical_powers</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1e-9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span> <span class="mf">5e-9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span> <span class="mf">1e-8</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">]</span>  <span class="c1"># Powers in watts</span>
 
 <span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>
     <span class="n">saturation_levels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
-    <span class="n">sampling_freq</span><span class="o">=</span><span class="mf">1e6</span> <span class="o">*</span> <span class="n">hertz</span><span class="p">,</span>        <span class="c1"># Sampling frequency</span>
+    <span class="n">sampling_freq</span><span class="o">=</span><span class="mf">1e6</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">hertz</span><span class="p">,</span>        <span class="c1"># Sampling frequency</span>
 <span class="p">)</span>
 
 <span class="c1"># Create a figure for signal visualization</span>
@@ -568,21 +556,20 @@ and their distributions.</p>
     <span class="c1"># Initialize the detector</span>
     <span class="n">detector</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">optical_power</span><span class="o">.</span><span class="n">magnitude</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2"> W&quot;</span><span class="p">,</span>
-        <span class="n">responsitivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ampere</span> <span class="o">/</span> <span class="n">watt</span><span class="p">,</span>  <span class="c1"># Responsitivity (current per power)</span>
-        <span class="n">resistance</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">ohm</span><span class="p">,</span>              <span class="c1"># Load resistance</span>
-        <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">AU</span><span class="p">,</span>      <span class="c1"># Numerical aperture</span>
-        <span class="n">signal_digitizer</span><span class="o">=</span><span class="n">signal_digitizer</span><span class="p">,</span>
-        <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">degree</span>              <span class="c1"># Detector orientation angle</span>
+        <span class="n">responsitivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>  <span class="c1"># Responsitivity (current per power)</span>
+        <span class="n">resistance</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ohm</span><span class="p">,</span>              <span class="c1"># Load resistance</span>
+        <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>      <span class="c1"># Numerical aperture</span>
+        <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span>              <span class="c1"># Detector orientation angle</span>
     <span class="p">)</span>
 
     <span class="c1"># Initialize the raw signal</span>
-    <span class="n">dataframe</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">get_initialized_signal</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">200e-6</span> <span class="o">*</span> <span class="n">second</span><span class="p">)</span>
+    <span class="n">dataframe</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">get_initialized_signal</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">200e-6</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">signal_digitizer</span><span class="o">=</span><span class="n">signal_digitizer</span><span class="p">)</span>
 
     <span class="c1"># Add optical power to the raw signal</span>
     <span class="n">detector</span><span class="o">.</span><span class="n">_add_optical_power_to_raw_signal</span><span class="p">(</span>
         <span class="n">signal</span><span class="o">=</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">],</span>
         <span class="n">optical_power</span><span class="o">=</span><span class="n">optical_power</span><span class="p">,</span>
-        <span class="n">wavelength</span><span class="o">=</span><span class="mi">1550</span> <span class="o">*</span> <span class="n">nanometer</span>
+        <span class="n">wavelength</span><span class="o">=</span><span class="mi">1550</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span>
     <span class="p">)</span>
 
     <span class="n">detector</span><span class="o">.</span><span class="n">capture_signal</span><span class="p">(</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">])</span>
@@ -611,7 +598,7 @@ and their distributions.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.538 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.498 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-noise-sources-shot-noise-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/0ed030493f46cf072d14cf8d5b0bb706/shot_noise.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">shot_noise.ipynb</span></code></a></p>

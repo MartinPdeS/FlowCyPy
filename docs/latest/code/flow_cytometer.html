@@ -58,7 +58,7 @@
     <link rel="icon" href="../_static/thumbnail.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Analysis Tools" href="analysis.html" />
+    <link rel="next" title="Distribution Classes" href="distributions.html" />
     <link rel="prev" title="Detectors" href="detector.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -439,7 +439,6 @@
 <li class="toctree-l2"><a class="reference internal" href="scatterer.html">Scatterers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="detector.html">Detectors</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">FlowCytometer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html">Analysis Tools</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="distributions.html">Distribution Classes</a></li>
@@ -513,7 +512,7 @@
 <p>Classes related to the overall configuration of a flow cytometry system.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCytometer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scatterer_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coupling_mechanism='mie'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_power=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'milliwatt')&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCytometer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scatterer_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_digitizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coupling_mechanism='mie'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_power=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'milliwatt')&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A simulation class for modeling flow cytometer signals, including Forward Scatter (FSC) and Side Scatter (SSC) channels.</p>
 <p>The FlowCytometer class integrates optical and flow dynamics to simulate signal generation in a flow cytometer.
@@ -529,6 +528,7 @@ particle event and noise modeling for accurate signal representation.</p>
 Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh’: Rayleigh scattering, ‘uniform’: Uniform signal coupling, ‘empirical’: Empirical data-driven coupling</p></li>
 <li><p><strong>background_power</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The background optical power added to the detector signal. Defaults to 0 milliwatts.</p></li>
 <li><p><strong>scatterer_collection</strong> (<em>object</em>)</p></li>
+<li><p><strong>signal_digitizer</strong> (<em>SignalDigitizer</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -606,6 +606,7 @@ Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh�
 <dd class="field-even"><ul class="simple">
 <li><p><strong>scatterer_collection</strong> (<em>object</em>)</p></li>
 <li><p><strong>flow_cell</strong> (<a class="reference internal" href="flow_cell.html#FlowCyPy.FlowCell" title="FlowCyPy.flow_cell.FlowCell"><em>FlowCell</em></a>)</p></li>
+<li><p><strong>signal_digitizer</strong> (<em>SignalDigitizer</em>)</p></li>
 <li><p><strong>detectors</strong> (<em>List</em><em>[</em><a class="reference internal" href="detector.html#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><em>Detector</em></a><em>]</em>)</p></li>
 <li><p><strong>coupling_mechanism</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>background_power</strong> (<em>Quantity</em><em> | </em><em>None</em>)</p></li>
@@ -639,8 +640,8 @@ Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh�
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.get_continous_acquisition">
-<span class="sig-name descname"><span class="pre">get_continous_acquisition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.get_continous_acquisition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.get_continous_acquisition" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.get_acquisition">
+<span class="sig-name descname"><span class="pre">get_acquisition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.get_acquisition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.get_acquisition" title="Link to this definition">#</a></dt>
 <dd><p>Simulates the generation of optical signal pulses for each particle event.</p>
 <p>This method calculates Gaussian signal pulses based on particle positions, coupling power, and
 widths. It adds the generated pulses, background power, and noise components (thermal and dark current)
@@ -660,37 +661,6 @@ to each detector’s raw signal.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.get_triggered_acquisition">
-<span class="sig-name descname"><span class="pre">get_triggered_acquisition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigger_detector_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_trigger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_buffer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_triggers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.get_triggered_acquisition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.get_triggered_acquisition" title="Link to this definition">#</a></dt>
-<dd><p>Extracts thresholded signal segments based on a trigger detector or custom trigger array
-and returns them in a multi-index DataFrame.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>run_time</strong> (<em>Quantity</em>) – The duration of the simulation (must be in seconds).</p></li>
-<li><p><strong>threshold</strong> (<em>Quantity</em>) – The signal value threshold for the trigger detector.</p></li>
-<li><p><strong>trigger_detector_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the detector to be used as the triggering system. Ignored if <cite>custom_trigger</cite> is provided.</p></li>
-<li><p><strong>custom_trigger</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – A custom boolean trigger array indicating where the signal should be extracted.
-Must have the same length as the acquisition time.</p></li>
-<li><p><strong>pre_buffer</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points to include before each threshold crossing, by default 64.</p></li>
-<li><p><strong>post_buffer</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points to include after each threshold crossing, by default 64.</p></li>
-<li><p><strong>max_triggers</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum number of triggers to process. If None, all triggers will be processed.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A multi-index DataFrame with the first level as the detector name and the second level as the segment ID.
-Includes columns for time and signal.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If <cite>run_time</cite> is not in seconds, the trigger detector is not found, or the <cite>custom_trigger</cite> array is invalid.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -781,8 +751,7 @@ coupling power for all particle events.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.coupling_mechanism"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.coupling_mechanism</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.background_power"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.background_power</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.add_detector"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.add_detector()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.get_continous_acquisition"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.get_continous_acquisition()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.get_triggered_acquisition"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.get_triggered_acquisition()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.get_acquisition"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.get_acquisition()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.initialize_signal"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.initialize_signal()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.run_coupling_analysis"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.run_coupling_analysis()</span></code></a></li>
 </ul>

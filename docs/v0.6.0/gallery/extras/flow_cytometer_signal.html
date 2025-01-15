@@ -58,7 +58,7 @@
     <link rel="icon" href="../../_static/thumbnail.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="WorkFlow" href="full_workflow.html" />
+    <link rel="next" title="Scatterer Collection" href="scatterer_distribution.html" />
     <link rel="prev" title="Particle Distribution" href="distributions.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -433,18 +433,6 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/limit_of_detection.html">Limit of detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Workflow</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../density_plots/index.html">Examples: Density plots</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../density_plots/1_populations.html">1 populations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../density_plots/2_populations.html">2 populations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../density_plots/3_populations.html">3 populations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../density_plots/custom_populations.html">Custom populations</a></li>
-</ul>
-</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../noise_sources/index.html">Examples: Noises</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/dark_current.html">Dark Current</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/shot_noise.html">Shot noise</a></li>
@@ -454,8 +442,8 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: extras</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="distributions.html">Particle Distribution</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Generating Signal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="full_workflow.html">WorkFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scatterer_distribution.html">Scatterer Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signal_acquisition.html">WorkFlow</a></li>
 </ul>
 </details></li>
 </ul>
@@ -540,18 +528,15 @@ using FlowCyPy and visualize the results.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">GaussianBeam</span><span class="p">,</span> <span class="n">FlowCell</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span><span class="p">,</span> <span class="n">Population</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">RIU</span><span class="p">,</span> <span class="n">milliliter</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">AU</span><span class="p">,</span>
-    <span class="n">megahertz</span><span class="p">,</span> <span class="n">milliwatt</span><span class="p">,</span> <span class="n">micrometer</span><span class="p">,</span> <span class="n">millisecond</span><span class="p">,</span> <span class="n">meter</span><span class="p">,</span> <span class="n">second</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 
 <span class="c1"># Step 2: Set up the light source</span>
 <span class="c1"># -------------------------------</span>
 <span class="c1"># A laser with a wavelength of 1550 nm, optical power of 2 mW, and a numerical aperture of 0.4 is used.</span>
 <span class="n">source</span> <span class="o">=</span> <span class="n">GaussianBeam</span><span class="p">(</span>
-    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">AU</span><span class="p">,</span>     <span class="c1"># Numerical aperture: 0.4</span>
-    <span class="n">wavelength</span><span class="o">=</span><span class="mi">1550</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span>     <span class="c1"># Wavelength: 1550 nm</span>
-    <span class="n">optical_power</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">milliwatt</span>    <span class="c1"># Optical power: 2 mW</span>
+    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>     <span class="c1"># Numerical aperture: 0.4</span>
+    <span class="n">wavelength</span><span class="o">=</span><span class="mi">1550</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>     <span class="c1"># Wavelength: 1550 nm</span>
+    <span class="n">optical_power</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span>    <span class="c1"># Optical power: 2 mW</span>
 <span class="p">)</span>
 
 <span class="c1"># Step 3: Define the flow parameters</span>
@@ -559,28 +544,28 @@ using FlowCyPy and visualize the results.</p>
 <span class="c1"># Flow speed is set to 80 micrometers per second, with a flow area of 1 square micrometer and a total simulation time of 1 second.</span>
 <span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
-    <span class="n">flow_speed</span><span class="o">=</span><span class="mf">7.56</span> <span class="o">*</span> <span class="n">meter</span> <span class="o">/</span> <span class="n">second</span><span class="p">,</span>        <span class="c1"># Flow speed: 7.56 meters per second</span>
-    <span class="n">flow_area</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span> <span class="o">*</span> <span class="n">micrometer</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>        <span class="c1"># Flow area: 10 x 10 micrometers</span>
+    <span class="n">flow_speed</span><span class="o">=</span><span class="mf">7.56</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>        <span class="c1"># Flow speed: 7.56 meters per second</span>
+    <span class="n">flow_area</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>        <span class="c1"># Flow area: 10 x 10 micrometers</span>
 <span class="p">)</span>
 
 <span class="c1"># Step 4: Define the particle size distribution</span>
 <span class="c1"># ---------------------------------------------</span>
 <span class="c1"># We define a normal distribution for particle sizes with a mean of 200 nm, standard deviation of 10 nm,</span>
 <span class="c1"># and a refractive index of 1.39 with a small variation of 0.01.</span>
-<span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
+<span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
 
 <span class="n">population_0</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EV&#39;</span><span class="p">,</span>
-    <span class="n">particle_count</span><span class="o">=</span><span class="mf">1e+9</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">,</span>
-    <span class="n">size</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="n">characteristic_size</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">4.5</span><span class="p">),</span>
-    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">1.39</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.05</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
+    <span class="n">particle_count</span><span class="o">=</span><span class="mf">1e+9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
+    <span class="n">size</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="n">characteristic_size</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">4.5</span><span class="p">),</span>
+    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">1.39</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.05</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
 <span class="p">)</span>
 
 <span class="n">population_1</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LP&#39;</span><span class="p">,</span>
-    <span class="n">particle_count</span><span class="o">=</span><span class="mf">1e+9</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">,</span>
-    <span class="n">size</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="n">characteristic_size</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">4.5</span><span class="p">),</span>
-    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">1.45</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.05</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
+    <span class="n">particle_count</span><span class="o">=</span><span class="mf">1e+9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
+    <span class="n">size</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="n">characteristic_size</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">4.5</span><span class="p">),</span>
+    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">1.45</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.05</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
 <span class="p">)</span>
 
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population_0</span><span class="p">,</span> <span class="n">population_1</span><span class="p">)</span>
@@ -592,21 +577,19 @@ using FlowCyPy and visualize the results.</p>
 <span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
     <span class="n">saturation_levels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
-    <span class="n">sampling_freq</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">megahertz</span><span class="p">,</span>           <span class="c1"># Sampling frequency: 10 MHz</span>
+    <span class="n">sampling_freq</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>           <span class="c1"># Sampling frequency: 10 MHz</span>
 <span class="p">)</span>
 
 <span class="n">detector_fsc</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;FSC&#39;</span><span class="p">,</span>                         <span class="c1"># Forward Scatter detector</span>
-    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.2</span> <span class="o">*</span> <span class="n">AU</span><span class="p">,</span>        <span class="c1"># Numerical aperture: 0.2</span>
-    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">degree</span><span class="p">,</span>               <span class="c1"># Angle: 180 degrees for forward scatter</span>
-    <span class="n">signal_digitizer</span><span class="o">=</span><span class="n">signal_digitizer</span>
+    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>        <span class="c1"># Numerical aperture: 0.2</span>
+    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>               <span class="c1"># Angle: 180 degrees for forward scatter</span>
 <span class="p">)</span>
 
 <span class="n">detector_ssc</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;SSC&#39;</span><span class="p">,</span>                         <span class="c1"># Side Scatter detector</span>
-    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.2</span> <span class="o">*</span> <span class="n">AU</span><span class="p">,</span>        <span class="c1"># Numerical aperture: 0.2</span>
-    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">degree</span><span class="p">,</span>              <span class="c1"># Angle: 90 degrees for side scatter</span>
-    <span class="n">signal_digitizer</span><span class="o">=</span><span class="n">signal_digitizer</span>
+    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>        <span class="c1"># Numerical aperture: 0.2</span>
+    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>              <span class="c1"># Angle: 90 degrees for side scatter</span>
 <span class="p">)</span>
 
 <span class="c1"># Step 6: Create a FlowCytometer instance</span>
@@ -614,6 +597,7 @@ using FlowCyPy and visualize the results.</p>
 <span class="c1"># The flow cytometer is configured with the source, scatterer distribution, and detectors.</span>
 <span class="c1"># The &#39;mie&#39; coupling mechanism models how the particles interact with the laser beam.</span>
 <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
+    <span class="n">signal_digitizer</span><span class="o">=</span><span class="n">signal_digitizer</span><span class="p">,</span>
     <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>  <span class="c1"># Particle size distribution</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_fsc</span><span class="p">,</span> <span class="n">detector_ssc</span><span class="p">],</span>  <span class="c1"># Detectors: FSC and SSC</span>
@@ -623,16 +607,16 @@ using FlowCyPy and visualize the results.</p>
 <span class="c1"># ---------------------------------------</span>
 <span class="c1"># Simulate the signals for both detectors (FSC and SSC) as particles pass through the laser beam.</span>
 <span class="c1"># Run the flow cytometry simulation</span>
-<span class="n">experiment</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_continous_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">millisecond</span><span class="p">)</span>
+<span class="n">acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 
 <span class="c1"># Visualize the scatter signals from both detectors</span>
-<span class="n">experiment</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>
+<span class="n">acquisition</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>
 </pre></div>
 </div>
 <img src="../../_images/sphx_glr_flow_cytometer_signal_001.png" srcset="../../_images/sphx_glr_flow_cytometer_signal_001.png" alt="flow cytometer signal" class = "sphx-glr-single-img"/><p>The above plot shows the raw simulated signals for Forward Scatter (FSC) and
 Side Scatter (SSC) channels. These signals provide insights into particle size
 and complexity and can be further analyzed for feature extraction, such as peak height and width.</p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.467 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.152 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-flow-cytometer-signal-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/45fd446fca2aadc7449b6542217db601/flow_cytometer_signal.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">flow_cytometer_signal.ipynb</span></code></a></p>

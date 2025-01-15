@@ -12,7 +12,6 @@ This section documents the main classes and methods available in the **FlowCyPy*
    ./scatterer.rst
    ./detector.rst
    ./flow_cytometer.rst
-   ./analysis.rst
 
 
 

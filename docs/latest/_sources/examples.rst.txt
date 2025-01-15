@@ -11,6 +11,5 @@ Explore our gallery of examples demonstrating the usage of FlowCyPy. These examp
     :titlesonly:
 
     /gallery/tutorials/index.rst
-    /gallery/density_plots/index.rst
     /gallery/noise_sources/index.rst
     /gallery/extras/index.rst
