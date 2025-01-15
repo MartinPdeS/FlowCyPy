@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from tabulate import tabulate
 import warnings
+from FlowCyPy.detector import Detector
 
 class DataAccessor:
     def __init__(self, outer):
@@ -30,7 +31,7 @@ class Acquisition:
         DataFrame containing detector signal data, indexed by detector and time.
     """
 
-    def __init__(self, run_time: Quantity, scatterer_dataframe: pd.DataFrame, detector_dataframe: pd.DataFrame):
+    def __init__(self, run_time: Quantity, cytometer: object, scatterer_dataframe: pd.DataFrame, detector_dataframe: pd.DataFrame):
         """
         Initializes the Experiment instance.
 
@@ -43,6 +44,7 @@ class Acquisition:
         detector_dataframe : pd.DataFrame
             DataFrame with detector signal data.
         """
+        self.cytometer = cytometer
         self.data = DataAccessor(self)
         self.data.continuous = detector_dataframe
         self.data.scatterer = scatterer_dataframe
@@ -50,6 +52,7 @@ class Acquisition:
         self.run_time = run_time
         self.plot = self.PlotInterface(self)
         self.logger = self.LoggerInterface(self)
+
 
     @property
     def n_detectors(self) -> int:
@@ -309,12 +312,10 @@ class Acquisition:
             ]
             headers = [
                 "Detector",
-                "Number of Events",
+                "Number of Acquisition",
                 "First Event Time",
                 "Last Event Time",
-                "Avg Time Between Events",
-                "Min Time Between Events",
-                "Mean Event Rate",
+                "Time Between Events",
             ]
 
             formatted_table = tabulate(table_data, headers=headers, tablefmt=table_format, floatfmt=".3f")
@@ -341,28 +342,19 @@ class Acquisition:
                 List of computed statistics: [detector_name, num_events, first_event_time,
                 last_event_time, avg_time_between_events, min_time_between_events, mean_event_rate].
             """
-            num_events = len(group["Time"])
+            num_acquisition = len(group["Time"])
             first_event_time = group["Time"].min()
             last_event_time = group["Time"].max()
 
-            if num_events > 1:
-                time_diffs = group["Time"].diff().dropna()
-                avg_time_between_events = time_diffs.mean()
-                min_time_between_events = time_diffs.min()
-            else:
-                avg_time_between_events = "N/A"
-                min_time_between_events = "N/A"
-
-            mean_event_rate = num_events / self.experiment.run_time
+            time_diffs = group["Time"].diff().dropna()
+            time_between_events = time_diffs.mean()
 
             return [
                 detector_name,
-                num_events,
+                num_acquisition,
                 first_event_time,
                 last_event_time,
-                avg_time_between_events,
-                min_time_between_events,
-                mean_event_rate,
+                time_between_events,
             ]
 
 
@@ -381,7 +373,7 @@ class Acquisition:
         def __init__(self, acquisition: object):
             self.acquisition = acquisition
 
-        def signals(self, figure_size: tuple = (10, 6), scatterer_collection: object = None, show: bool = True) -> None:
+        def signals(self, figure_size: tuple = (10, 6), show: bool = True) -> None:
             """
             Visualizes raw signals for all detector channels and the scatterer distribution.
 
@@ -408,8 +400,27 @@ class Acquisition:
                 )
 
             for ax, (detector_name, group) in zip(axes[:-1], self.acquisition.data.continuous.groupby("Detector")):
-                ax.step(group["Time"].pint.to(time_units), group["DigitizedSignal"], label="Digitized Signal")
-                ax.set_ylabel(f"Detector: {detector_name}")
+                detector = self.get_detector(detector_name)
+
+                ax.step(group["Time"].pint.to(time_units), group["DigitizedSignal"], label="Digitized Signal", where='mid')
+                ax.set_ylabel(detector_name)
+                ax.set_ylim([0, self.acquisition.cytometer.signal_digitizer._bit_depth])
+
+                ax2 = ax.twinx()
+                ax2_x = self.acquisition.data.continuous.loc[detector_name, 'Time']
+                ax2_y = self.acquisition.data.continuous.loc[detector_name, 'Signal']
+                ax2_y_units = ax2_y.max().to_compact().units
+                ax2.plot(
+                    ax2_x.pint.to(time_units),
+                    ax2_y.pint.to(ax2_y_units),
+                    color='black',
+                    linewidth=1,
+                    linestyle='-',
+                    label='Continuous signal',
+                    zorder=0,
+                )
+
+                ax2.set_ylim(detector._saturation_levels)
 
             self._add_event_to_ax(ax=axes[-1], time_units=time_units)
 
@@ -519,7 +530,7 @@ class Acquisition:
             x_unit = df_reset['Size'].pint.units
 
             with plt.style.context(mps):
-                g = sns.jointplot(
+                grid = sns.jointplot(
                     data=df_reset,
                     x='Size',
                     y='RefractiveIndex',
@@ -530,13 +541,13 @@ class Acquisition:
                     marginal_kws=dict(bw_adjust=bandwidth_adjust)
                 )
 
-            g.ax_joint.set_xlabel(f"Size [{x_unit}]")
+            grid.ax_joint.set_xlabel(f"Size [{x_unit}]")
 
             if log_scale:
-                g.ax_joint.set_xscale('log')
-                g.ax_joint.set_yscale('log')
-                g.ax_marg_x.set_xscale('log')
-                g.ax_marg_y.set_yscale('log')
+                grid.ax_joint.set_xscale('log')
+                grid.ax_joint.set_yscale('log')
+                grid.ax_marg_x.set_xscale('log')
+                grid.ax_marg_y.set_yscale('log')
 
             plt.tight_layout()
 
@@ -601,33 +612,42 @@ class Acquisition:
                     height_ratios=[1] * (n_plots - 1) + [0.5],
                     figsize=(10, 6),
                     sharex=True,
-                    # sharey=True,
                     constrained_layout=True
                 )
 
             time_units = self.acquisition.data.triggered['Time'].max().to_compact().units
 
-
-
             for ax, (detector_name, group) in zip(axes, self.acquisition.data.triggered.groupby(level=['Detector'])):
-                ax.set_ylabel(f"Detector: {detector_name}")
-                ax2 = ax.twinx()
-
                 detector = self.get_detector(detector_name)
+
+                ax.set_ylabel(detector_name)
 
                 for _, sub_group in group.groupby(level=['SegmentID']):
                     x = sub_group['Time'].pint.to(time_units)
                     digitized = sub_group['DigitizedSignal']
-                    signal_units = sub_group['Signal'].max().to_compact().units
-                    signal = sub_group['Signal'].pint.to(signal_units)
-                    ax.step(x, digitized, where='mid')
-                    ax2.plot(x, signal)
+                    ax.step(x, digitized, where='mid', linewidth=2)
+                    ax.set_ylim([0, self.acquisition.cytometer.signal_digitizer._bit_depth])
 
-                    ax.set_ylim([0, self.acquisition.signal_digitizer._bit_depth])
-                    ax2.set_ylim(detector._saturation_levels)
+                ax2 = ax.twinx()
+                ax2_x = self.acquisition.data.continuous.loc[detector_name, 'Time']
+                ax2_y = self.acquisition.data.continuous.loc[detector_name, 'Signal']
+                ax2_y_units = ax2_y.max().to_compact().units
+                ax2.plot(
+                    ax2_x.pint.to(time_units),
+                    ax2_y.pint.to(ax2_y_units),
+                    color='black',
+                    linewidth=1,
+                    linestyle='-',
+                    label='Continuous signal',
+                    zorder=0,
+                )
 
-                    if detector_name == self.acquisition.trigger_detector_name:
-                        ax2.axhline(y=self.acquisition.threshold.to(signal_units))
+                if detector_name == self.acquisition.trigger_detector_name:
+                    ax2.axhline(y=self.acquisition.threshold.to(ax2_y_units), color='black', linestyle='--', label='Trigger')
+
+                ax2.set_ylim(detector._saturation_levels)
+
+                ax2.legend()
 
 
             for ax, (detector_name, group) in zip(axes, self.acquisition.data.peaks.groupby(level=['Detector'], axis=0)):
@@ -641,6 +661,6 @@ class Acquisition:
                 plt.show()
 
         def get_detector(self, name: str):
-            for detector in self.acquisition.detectors:
+            for detector in self.acquisition.cytometer.detectors:
                 if detector.name == name:
                     return detector

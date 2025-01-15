@@ -20,16 +20,16 @@ from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam,
 from FlowCyPy import distribution
 from FlowCyPy.population import Population
 from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy.units import nanometer, millisecond, meter, micrometer, second, RIU, milliliter, particle, watt, megahertz, degree, ampere, milliwatt, AU
+from FlowCyPy import units
 
 # %%
 # Step 2: Define the laser source
 # -------------------------------
 # Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and a numerical aperture of 0.3.
 source = GaussianBeam(
-    numerical_aperture=0.3 * AU,  # Numerical aperture: 0.3
-    wavelength=800 * nanometer,   # Laser wavelength: 800 nm
-    optical_power=20 * milliwatt  # Optical power: 20 milliwatts
+    numerical_aperture=0.3 * units.AU,  # Numerical aperture: 0.3
+    wavelength=800 * units.nanometer,   # Laser wavelength: 800 nm
+    optical_power=20 * units.milliwatt  # Optical power: 20 milliwatts
 )
 
 # %%
@@ -38,8 +38,8 @@ source = GaussianBeam(
 # Set the flow speed to 80 micrometers per second and a flow area of 1 square micrometer, with a total simulation time of 1 second.
 flow_cell = FlowCell(
     source=source,
-    flow_speed=7.56 * meter / second,        # Flow speed: 7.56 meters per second
-    flow_area=(20 * micrometer) ** 2,        # Flow area: 10 x 10 micrometers
+    flow_speed=7.56 * units.meter / units.second,        # Flow speed: 7.56 meters per second
+    flow_area=(20 * units.micrometer) ** 2,        # Flow area: 10 x 10 micrometers
 )
 
 # %%
@@ -48,17 +48,17 @@ flow_cell = FlowCell(
 # Use a normal size distribution with a mean size of 200 nanometers and a standard deviation of 10 nanometers.
 # This represents the population of scatterers (particles) that will interact with the laser source.
 ev_size = distribution.Normal(
-    mean=200 * nanometer,       # Mean particle size: 200 nanometers
-    std_dev=10 * nanometer      # Standard deviation: 10 nanometers
+    mean=200 * units.nanometer,       # Mean particle size: 200 nanometers
+    std_dev=10 * units.nanometer      # Standard deviation: 10 nanometers
 )
 
 ev_ri = distribution.Normal(
-    mean=1.39 * RIU,    # Mean refractive index: 1.39
-    std_dev=0.01 * RIU  # Standard deviation: 0.01
+    mean=1.39 * units.RIU,    # Mean refractive index: 1.39
+    std_dev=0.01 * units.RIU  # Standard deviation: 0.01
 )
 
 ev = Population(
-    particle_count=1.8e+9 * particle / milliliter,
+    particle_count=1.8e+8 * units.particle / units.milliliter,
     size=ev_size,               # Particle size distribution
     refractive_index=ev_ri,     # Refractive index distribution
     name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
@@ -76,42 +76,41 @@ scatterer_collection.add_population(ev)
 signal_digitizer = SignalDigitizer(
     bit_depth=1024,
     saturation_levels='auto',
-    sampling_freq=1 * megahertz,        # Sampling frequency: 1 MHz
+    sampling_freq=1 * units.megahertz,        # Sampling frequency: 1 MHz
 )
 
 detector_0 = Detector(
-    phi_angle=90 * degree,              # Detector angle: 90 degrees (Side Scatter)
-    numerical_aperture=0.4 * AU,        # Numerical aperture of the detector
+    phi_angle=90 * units.degree,              # Detector angle: 90 degrees (Side Scatter)
+    numerical_aperture=0.4 * units.AU,        # Numerical aperture of the detector
     name='first detector',              # Detector name
-    responsitivity=1 * ampere / watt,   # Responsitivity of the detector (light to signal conversion efficiency)
-    signal_digitizer=signal_digitizer
+    responsitivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
 )
 
 detector_1 = Detector(
-    phi_angle=0 * degree,               # Detector angle: 90 degrees (Sid e Scatter)
-    numerical_aperture=0.4 * AU,        # Numerical aperture of the detector
+    phi_angle=0 * units.degree,               # Detector angle: 90 degrees (Sid e Scatter)
+    numerical_aperture=0.4 * units.AU,        # Numerical aperture of the detector
     name='second detector',             # Detector name
-    responsitivity=1 * ampere / watt,   # Responsitivity of the detector (light to signal conversion efficiency)
-    signal_digitizer=signal_digitizer
+    responsitivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
 )
 
 # Step 6: Simulate Flow Cytometer Signals
 # ---------------------------------------
 # Create a FlowCytometer instance to simulate the signals generated as particles pass through the laser beam.
 cytometer = FlowCytometer(
+    signal_digitizer=signal_digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,                # Particle size distribution
     detectors=[detector_0, detector_1]  # List of detectors used in the simulation
 )
 
 # Run the flow cytometry simulation
-experiment = cytometer.get_continous_acquisition(run_time=0.2 * millisecond)
+acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
 # Visualize the scatter signals from both detectors
-experiment.plot.signals()
+acquisition.plot.signals()
 
-experiment.logger.scatterer()
-experiment.logger.detector()
+acquisition.logger.scatterer()
+acquisition.logger.detector()
 
 """
 Summary:

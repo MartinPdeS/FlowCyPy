@@ -220,7 +220,7 @@ class ScattererCollection(PropertiesReport):
             scatterer_dataframe.loc[population.name, 'Size'] = PintArray(size, dtype=size.units)
             scatterer_dataframe.loc[population.name, 'RefractiveIndex'] = PintArray(ri, dtype=ri.units)
 
-    def plot(self, n_points: int = 100) -> None:
+    def plot(self, n_points: int = 200) -> None:
         """
         Visualizes the joint and marginal distributions of size and refractive index
         for multiple populations in the scatterer collection.
@@ -270,7 +270,9 @@ class ScattererCollection(PropertiesReport):
         for index, population in enumerate(self.populations):
             # Get size and refractive index PDFs
             size, size_pdf = population.size.get_pdf(n_samples=n_points)
+            size_pdf /= size_pdf.max()
             ri, ri_pdf = population.refractive_index.get_pdf(n_samples=n_points)
+            ri_pdf /= ri_pdf.max()
 
             # Create a grid of size and ri values
             X, Y = np.meshgrid(size, ri)

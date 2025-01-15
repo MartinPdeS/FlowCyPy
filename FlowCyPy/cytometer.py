@@ -244,12 +244,12 @@ class FlowCytometer:
             self.dataframe.loc[detector.name, 'DigitizedSignal'] = PintArray(digitized_signal, units.bit_bins)
 
         experiment = Acquisition(
+            cytometer=self,
             run_time=run_time,
             scatterer_dataframe=scatterer_dataframe,
             detector_dataframe=self.dataframe
         )
-        experiment.signal_digitizer = self.signal_digitizer
-        experiment.detectors = self.detectors
+
         return experiment
 
     def _get_detection_mechanism(self) -> Callable:
