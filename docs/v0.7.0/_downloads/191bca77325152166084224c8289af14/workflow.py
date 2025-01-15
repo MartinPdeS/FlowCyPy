@@ -194,19 +194,18 @@ experiment.plot.peaks(
 # %%
 # Step 8: Classifying the collected dataset
 from FlowCyPy.classifier import KmeansClassifier
-# %%
-classifier = KmeansClassifier(
-    dataframe=experiment.data.peaks
-)
 
-df = classifier.run(
-    number_of_cluster=2,
-    features=['Height'],
+classifier = KmeansClassifier(number_of_cluster=2)
+
+experiment.classify_dataset(
+    classifier=classifier,
+    features=['Height', 'widths'],
     detectors=['side', 'forward']
 )
 
 
-classifier.plot(
-    x_detector='side',
-    y_detector='forward'
+experiment.plot.classifier(
+    feature='Height',
+    x_detector='forward',
+    y_detector='side'
 )

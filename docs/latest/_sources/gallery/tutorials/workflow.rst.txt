@@ -369,38 +369,26 @@ window size and threshold.
 
 Step 8: Classifying the collected dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 196-197
+.. GENERATED FROM PYTHON SOURCE LINES 196-211
 
 .. code-block:: Python
 
     from FlowCyPy.classifier import KmeansClassifier
 
+    classifier = KmeansClassifier(number_of_cluster=2)
 
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 198-213
-
-.. code-block:: Python
-
-    classifier = KmeansClassifier(
-        dataframe=experiment.data.peaks
-    )
-
-    df = classifier.run(
-        number_of_cluster=2,
-        features=['Height'],
+    experiment.classify_dataset(
+        classifier=classifier,
+        features=['Height', 'widths'],
         detectors=['side', 'forward']
     )
 
 
-    classifier.plot(
-        x_detector='side',
-        y_detector='forward'
+    experiment.plot.classifier(
+        feature='Height',
+        x_detector='forward',
+        y_detector='side'
     )
-
 
 
 .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_007.png
@@ -415,7 +403,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.918 seconds)
+   **Total running time of the script:** (0 minutes 8.764 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:
