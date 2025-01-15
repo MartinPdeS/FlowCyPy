@@ -174,7 +174,6 @@ class FlowCell(object):
 
         # Step 2: Calculate the expected number of particles over the entire experiment
         expected_particles = particle_flux * run_time
-        # expected_particles = population.n_events
 
         # Step 3: Generate inter-arrival times (exponentially distributed)
         inter_arrival_times = numpy.random.exponential(

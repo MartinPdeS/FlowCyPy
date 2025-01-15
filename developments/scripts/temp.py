@@ -37,7 +37,6 @@ NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
 NoiseSetting.include_thermal_noise = True
 NoiseSetting.include_dark_current_noise = True
-NoiseSetting.include_RIN_noise = True
 
 np.random.seed(3)  # Ensure reproducibility
 
@@ -57,6 +56,14 @@ source = GaussianBeam(
 )
 
 
+# %%
+# Step 3: Set Up the Flow Cell
+# ----------------------------
+# The flow cell models the movement of particles in the cytometer. For example, the volume of fluid
+# passing through the cross-sectional area is calculated as:
+#
+# .. math::
+#     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
 
 from FlowCyPy import FlowCell
 
@@ -67,25 +74,50 @@ flow_cell = FlowCell(
 )
 
 
+# %%
+# Step 4: Define ScattererCollection and Population
+# -------------------------------------------------
+# The scatterer represents particles in the flow. The concentration of particles in the flow cell is
+# given by:
+#
+# .. math::
+#     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
+
 from FlowCyPy import ScattererCollection
 from FlowCyPy.population import Exosome, Population, distribution
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
-exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
-
-custom_population = Population(
-    name='Pop 0',
-    particle_count=5e9 * units.particle / units.milliliter,
-    size=distribution.RosinRammler(characteristic_size=150 * units.nanometer, spread=30),
+exosome = Population(
+    name='EV',
+    # particle_count=5e9 * units.particle / units.milliliter,
+    particle_count=10 * units.particle,
+    size=distribution.RosinRammler(characteristic_size=250 * units.nanometer, spread=2.5),
     refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
 )
 
+liposome = Population(
+    name='Liposome',
+    # particle_count=5e12 * units.particle / units.milliliter,
+    particle_count=200 * units.particle,
+    size=distribution.RosinRammler(characteristic_size=100 * units.nanometer, spread=2.5),
+    refractive_index=distribution.Normal(mean=1.39 * units.RIU, std_dev=0.002 * units.RIU)
+)
+
+
 # Add an Exosome population
-scatterer_collection.add_population(exosome, custom_population)
+scatterer_collection.add_population(exosome, liposome)
 
-scatterer_collection.dilute(factor=16)
+scatterer_collection.dilute(factor=1)
 
+# Initialize the scatterer with the flow cell
+scatterer_collection.plot()  # Visualize the particle population
+
+# %%
+# Step 5: Define Detectors
+# ------------------------
+# Detectors measure light intensity. Parameters like responsitivity define the conversion of optical
+# power to electronic signals, and saturation level represents the maximum signal they can handle.
 
 from FlowCyPy.detector import Detector
 from FlowCyPy.signal_digitizer import SignalDigitizer
@@ -114,6 +146,15 @@ detector_1 = Detector(
     temperature=300 * units.kelvin,
 )
 
+# %%
+# Step 6: Simulate Flow Cytometry Experiment
+# ------------------------------------------
+# The FlowCytometer combines all components to simulate scattering. The interaction between light
+# and particles follows Mie theory:
+#
+# .. math::
+#     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
+
 from FlowCyPy import FlowCytometer
 
 cytometer = FlowCytometer(
@@ -121,22 +162,45 @@ cytometer = FlowCytometer(
     signal_digitizer=signal_digitizer,
     detectors=[detector_0, detector_1],
     flow_cell=flow_cell,
-    background_power=0.001 * units.milliwatt
+    background_power=0.1 * units.milliwatt
 )
 
 # Run the flow cytometry simulation
 experiment = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
+experiment.plot.scatterer()
 
 
+experiment.plot.coupling_distribution(
+    x_detector='side',
+    y_detector='forward'
+)
+
+# Visualize the scatter signals from both detectors
+experiment.plot.signals()
+
+# %%
+# Step 7: Analyze Detected Signals
+# --------------------------------
+# The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
+# window size and threshold.
 experiment.run_triggering(
-    threshold=0.2 * units.millivolt,
+    threshold=5.4 * units.millivolt,
     trigger_detector_name='forward',
     max_triggers=35,
     pre_buffer=64,
     post_buffer=64
 )
 
+experiment.plot.trigger()
+
+experiment.plot.peaks(
+    x_detector='side',
+    y_detector='forward'
+)
+
+# %%
+# Step 8: Classifying the collected dataset
 from FlowCyPy.classifier import KmeansClassifier
 
 classifier = KmeansClassifier(number_of_cluster=2)
@@ -148,5 +212,8 @@ experiment.classify_dataset(
 )
 
 
-experiment.plot.classifier()
-
+experiment.plot.classifier(
+    feature='Height',
+    x_detector='forward',
+    y_detector='side'
+)

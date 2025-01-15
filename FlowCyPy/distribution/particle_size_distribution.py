@@ -64,7 +64,7 @@ class RosinRammler(Base):
         # Apply inverse CDF of Rosin-Rammler distribution
         return d * (-np.log(1 - u))**(1 / self.spread)
 
-    def _generate_default_x(self, x_min: float, x_max: float, n_samples: int = 20) -> np.ndarray:
+    def _generate_default_x(self, x_min: float, x_max: float, n_samples: int = 100) -> np.ndarray:
         """
         Generates a default range for x-values based on the characteristic size
         and spread of the Rosin-Rammler distribution.
@@ -93,7 +93,7 @@ class RosinRammler(Base):
         x_max = d * x_max  # Scale x_max by characteristic size
         return np.linspace(x_min, x_max, n_samples) * self._units
 
-    def get_pdf(self, x_min: float = 0.01, x_max: float = 2, n_samples: int = 20) -> Tuple[np.ndarray, np.ndarray]:
+    def get_pdf(self, x_min: float = 0.01, x_max: float = 4, n_samples: int = 100) -> Tuple[np.ndarray, np.ndarray]:
         r"""
         Returns the x-values and the scaled PDF values for the particle size distribution.
 
@@ -119,12 +119,13 @@ class RosinRammler(Base):
         # Generate x-values based on user-defined or default parameters
         x = self._generate_default_x(x_min=x_min, x_max=x_max, n_samples=n_samples)
 
-        common_units = x.units
-        d = self.characteristic_size.to(common_units).magnitude
+        x = x.to(self._units)
+        _x = x.magnitude
+        d = self.characteristic_size.to(self._units).magnitude
         k = self.spread
-
+        # k = 2.5
         # Rosin-Rammler PDF formula
-        pdf = (k / d) * (x.magnitude / d)**(k - 1) * np.exp(-(x.magnitude / d)**k)
+        pdf = (k / d) * (_x / d)**(k - 1) * np.exp(-(_x / d)**k)
 
         return x, pdf
 

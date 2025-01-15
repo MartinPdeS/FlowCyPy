@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from tabulate import tabulate
 import warnings
+from FlowCyPy import helper
 
 class DataAccessor:
     def __init__(self, outer):
@@ -110,13 +111,36 @@ class Acquisition:
         )
 
     def _get_trigger_indices(
-            self,
-            threshold: units.Quantity,
-            trigger_detector_name: str = None,
-            pre_buffer: int = 64,
-            post_buffer: int = 64) -> tuple[np.ndarray, np.ndarray]:
+        self,
+        threshold: units.Quantity,
+        trigger_detector_name: str = None,
+        pre_buffer: int = 64,
+        post_buffer: int = 64
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
-        Calculate start and end indices for triggered segments.
+        Calculate start and end indices for triggered segments, ensuring no retriggering
+        occurs during an active buffer period.
+
+        Parameters
+        ----------
+        threshold : units.Quantity
+            The threshold value for triggering.
+        trigger_detector_name : str, optional
+            The name of the detector to use for the triggering signal.
+        pre_buffer : int, optional
+            Number of samples to include before the trigger point.
+        post_buffer : int, optional
+            Number of samples to include after the trigger point.
+
+        Returns
+        -------
+        tuple[np.ndarray, np.ndarray]
+            The start and end indices of non-overlapping triggered segments.
+
+        Raises
+        ------
+        ValueError
+            If the specified detector is not found in the data.
         """
         if trigger_detector_name not in self.data.continuous.index.get_level_values('Detector').unique():
             raise ValueError(f"Detector '{trigger_detector_name}' not found.")
@@ -128,7 +152,18 @@ class Acquisition:
         start_indices = np.clip(crossings - pre_buffer, 0, len(trigger_signal) - 1)
         end_indices = np.clip(crossings + post_buffer, 0, len(trigger_signal) - 1)
 
-        return start_indices, end_indices
+        # Suppress retriggering within an active buffer period
+        suppressed_start_indices = []
+        suppressed_end_indices = []
+
+        last_end = -1
+        for start, end in zip(start_indices, end_indices):
+            if start > last_end:  # Ensure no overlap with the last active buffer
+                suppressed_start_indices.append(start)
+                suppressed_end_indices.append(end)
+                last_end = end  # Update the end of the current active buffer
+
+        return np.array(suppressed_start_indices), np.array(suppressed_end_indices)
 
     def run_triggering(self,
             threshold: units.Quantity,
@@ -453,7 +488,8 @@ class Acquisition:
 
             ax.legend()
 
-        def coupling_distribution(self, x_detector: str, y_detector: str, log_scale: bool = False, show: bool = True, equal_limits: bool = False, save_path: str = None) -> None:
+        @helper.plot_sns
+        def coupling_distribution(self, x_detector: str, y_detector: str, equal_limits: bool = False) -> None:
             """
             Plots the density distribution of optical coupling between two detector channels.
 
@@ -476,31 +512,17 @@ class Acquisition:
             y = df[y_detector].pint.to(y_units)
 
             with plt.style.context(mps):
-                joint_plot = sns.jointplot(data=df, x=x, y=y, hue="Population", alpha=0.8)
+                grid = sns.jointplot(data=df, x=x, y=y, hue="Population", alpha=0.8)
 
-            if log_scale:
-                joint_plot.ax_joint.set_xscale("log")
-                joint_plot.ax_joint.set_yscale("log")
+            grid.ax_joint.set_xlabel(f"Signal {x_detector} [{x_units}]")
+            grid.ax_joint.set_ylabel(f"Signal {y_detector} [{y_units}]")
 
-            if equal_limits:
-                min_limit = min(x.min(), y.min())
-                max_limit = max(x.max(), y.max())
-                joint_plot.ax_joint.set_xlim(min_limit, max_limit)
-                joint_plot.ax_joint.set_ylim(min_limit, max_limit)
+            grid.figure.suptitle("Theoretical coupling distribution")
 
-            joint_plot.ax_joint.set_xlabel(f"Signal {x_detector} [{x_units}]")
-            joint_plot.ax_joint.set_ylabel(f"Signal {y_detector} [{y_units}]")
+            return grid
 
-            plt.tight_layout()
-
-            if save_path:
-                joint_plot.figure.savefig(save_path, dpi=300, bbox_inches="tight")
-                logging.info(f"Plot saved to {save_path}")
-
-            if show:
-                plt.show()
-
-        def scatterer(self, show: bool = True, alpha: float = 0.8, bandwidth_adjust: float = 1, log_scale: bool = False, color_palette: Optional[Union[str, dict]] = None) -> None:
+        @helper.plot_sns
+        def scatterer(self, alpha: float = 0.8, bandwidth_adjust: float = 1, log_scale: bool = False, color_palette: Optional[Union[str, dict]] = None) -> None:
             """
             Visualizes the joint distribution of scatterer sizes and refractive indices using a Seaborn jointplot.
 
@@ -514,8 +536,6 @@ class Acquisition:
                 Transparency level for the scatter plot points, ranging from 0 (fully transparent) to 1 (fully opaque). Default is 0.8.
             bandwidth_adjust : float, optional
                 Bandwidth adjustment factor for the kernel density estimate of the marginal distributions. Higher values produce smoother density estimates. Default is 1.
-            log_scale : bool, optional
-                If `True`, applies a logarithmic scale to both axes of the joint plot and their marginal distributions. Default is `False`.
             color_palette : str or dict, optional
                 The color palette to use for the hue in the scatterplot. Can be a seaborn palette name
                 (e.g., 'viridis', 'coolwarm') or a dictionary mapping hue levels to specific colors. Default is None.
@@ -550,19 +570,13 @@ class Acquisition:
                     marginal_kws=dict(bw_adjust=bandwidth_adjust)
                 )
 
+            grid.figure.suptitle("Scatterer sampling distribution")
+
             grid.ax_joint.set_xlabel(f"Size [{x_unit}]")
 
-            if log_scale:
-                grid.ax_joint.set_xscale('log')
-                grid.ax_joint.set_yscale('log')
-                grid.ax_marg_x.set_xscale('log')
-                grid.ax_marg_y.set_yscale('log')
+            return grid
 
-            plt.tight_layout()
-
-            if show:
-                plt.show()
-
+        @helper.plot_sns
         def peaks(self, x_detector: str, y_detector: str, signal: str = 'Height', bandwidth_adjust: float = 0.8) -> None:
             """
             Plot the joint KDE distribution of the specified signal between two detectors using seaborn,
@@ -592,11 +606,12 @@ class Acquisition:
                     joint_kws={'bw_adjust': bandwidth_adjust, 'alpha': 0.7}
                 )
 
+            grid.figure.suptitle("Peaks properties")
             grid.ax_joint.scatter(x_data, y_data, color='C1', alpha=0.6)
 
             grid.set_axis_labels(f"{signal} ({x_detector}) [{x_units}]", f"{signal} ({y_detector}) [{y_units}]", fontsize=12)
-            plt.tight_layout()
-            plt.show()
+
+            return grid
 
         def trigger(self, show: bool = True) -> None:
             """Plot detected peaks on signal segments."""
@@ -656,6 +671,7 @@ class Acquisition:
             if show:
                 plt.show()
 
+        @helper.plot_sns
         def classifier(self, feature: str, x_detector: str, y_detector: str) -> None:
             """
             Visualize the classification of peaks using a scatter plot.
@@ -685,15 +701,16 @@ class Acquisition:
             # Set the plotting style
             with plt.style.context(mps):
                 # Generate a scatter plot using seaborn's jointplot
-                sns.jointplot(
+                grid = sns.jointplot(
                     data=self.acquisition.data.peaks,
                     x=(feature, x_detector),
                     y=(feature, y_detector),
                     hue='Label',
                 )
 
-            # Display the plot
-            plt.show()
+            grid.figure.suptitle('Event classification')
+
+            return grid
 
         def get_detector(self, name: str):
             for detector in self.acquisition.cytometer.detectors:
