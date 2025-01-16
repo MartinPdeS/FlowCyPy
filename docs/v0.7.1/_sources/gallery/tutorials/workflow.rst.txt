@@ -248,10 +248,9 @@ and particles follows Mie theory:
 .. math::
     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-174
+.. GENERATED FROM PYTHON SOURCE LINES 149-173
 
 .. code-block:: Python
-
 
     from FlowCyPy import FlowCytometer
 
@@ -308,14 +307,14 @@ and particles follows Mie theory:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 175-179
+.. GENERATED FROM PYTHON SOURCE LINES 174-178
 
 Step 7: Analyze Detected Signals
 --------------------------------
 The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 179-194
+.. GENERATED FROM PYTHON SOURCE LINES 178-193
 
 .. code-block:: Python
 
@@ -359,18 +358,18 @@ window size and threshold.
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/acquisition.py:100: UserWarning: Multiple peaks detected in the following segments: [('forward', 1), ('forward', 2), ('forward', 6), ('forward', 8), ('forward', 9), ('forward', 11), ('forward', 12), ('forward', 14), ('forward', 17), ('forward', 18), ('forward', 20), ('forward', 21), ('forward', 25), ('forward', 26), ('forward', 27), ('forward', 30), ('forward', 31), ('side', 1), ('side', 2), ('side', 6), ('side', 8), ('side', 9), ('side', 11), ('side', 12), ('side', 14), ('side', 17), ('side', 18), ('side', 20), ('side', 21), ('side', 25), ('side', 26), ('side', 27), ('side', 30), ('side', 31)]
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/acquisition.py:102: UserWarning: Multiple peaks detected in the following segments: [('forward', 1), ('forward', 2), ('forward', 6), ('forward', 8), ('forward', 9), ('forward', 11), ('forward', 12), ('forward', 14), ('forward', 17), ('forward', 18), ('forward', 20), ('forward', 21), ('forward', 25), ('forward', 26), ('forward', 27), ('forward', 30), ('forward', 31), ('side', 1), ('side', 2), ('side', 6), ('side', 8), ('side', 9), ('side', 11), ('side', 12), ('side', 14), ('side', 17), ('side', 18), ('side', 20), ('side', 21), ('side', 25), ('side', 26), ('side', 27), ('side', 30), ('side', 31)]
       warnings.warn(
 
-    <seaborn.axisgrid.JointGrid object at 0x7ff86ce6be10>
+    <seaborn.axisgrid.JointGrid object at 0x7f7f54ec0090>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 195-196
+.. GENERATED FROM PYTHON SOURCE LINES 194-195
 
 Step 8: Classifying the collected dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 196-211
+.. GENERATED FROM PYTHON SOURCE LINES 195-209
 
 .. code-block:: Python
 
@@ -383,7 +382,6 @@ Step 8: Classifying the collected dataset
         features=['Height', 'widths'],
         detectors=['side', 'forward']
     )
-
 
     experiment.plot.classifier(
         feature='Height',
@@ -403,14 +401,14 @@ Step 8: Classifying the collected dataset
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7ff86c3ebb50>
+    <seaborn.axisgrid.JointGrid object at 0x7f7f54438810>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 9.194 seconds)
+   **Total running time of the script:** (0 minutes 9.283 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

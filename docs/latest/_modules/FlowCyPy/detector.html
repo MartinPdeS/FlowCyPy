@@ -478,24 +478,24 @@
                 <article class="bd-article">
                   
   <h1>Source code for FlowCyPy.detector</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">AU</span><span class="p">,</span> <span class="n">volt</span><span class="p">,</span> <span class="n">watt</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">coulomb</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">meter</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">PropertiesReport</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pint_pandas</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.physical_constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysicalConstant</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">PyMieSim.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">AU</span><span class="p">,</span> <span class="n">volt</span><span class="p">,</span> <span class="n">watt</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">ampere</span><span class="p">,</span> <span class="n">coulomb</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.noises</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoiseSetting</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_helper</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.peak_locator</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePeakLocator</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.physical_constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysicalConstant</span>
 
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -508,7 +508,7 @@
 <div class="viewcode-block" id="Detector">
 <a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">unsafe_hash</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Detector</span><span class="p">(</span><span class="n">PropertiesReport</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Detector</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class representing a signal detector used in flow cytometry.</span>
 

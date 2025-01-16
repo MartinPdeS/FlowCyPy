@@ -478,16 +478,13 @@
                 <article class="bd-article">
                   
   <h1>Source code for FlowCyPy.source</h1><div class="highlight"><pre>
-<span></span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">meter</span><span class="p">,</span> <span class="n">joule</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">volt</span><span class="p">,</span> <span class="n">AU</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">PyMieSim.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">PropertiesReport</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.physical_constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysicalConstant</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.physical_constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysicalConstant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">meter</span><span class="p">,</span> <span class="n">joule</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">volt</span><span class="p">,</span> <span class="n">AU</span>
 
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -497,7 +494,7 @@
 <span class="p">)</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">BaseBeam</span><span class="p">(</span><span class="n">PropertiesReport</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseBeam</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mixin class providing unit validation for quantities used in optical sources.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

@@ -146,7 +146,6 @@ detector_1 = Detector(
 #
 # .. math::
 #     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
-
 from FlowCyPy import FlowCytometer
 
 cytometer = FlowCytometer(
@@ -202,7 +201,6 @@ experiment.classify_dataset(
     features=['Height', 'widths'],
     detectors=['side', 'forward']
 )
-
 
 experiment.plot.classifier(
     feature='Height',
