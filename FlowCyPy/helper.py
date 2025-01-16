@@ -65,7 +65,12 @@ def plot_sns(function: Callable) -> Callable:
         grid.figure.tight_layout()
 
         if equal_limits:
-            grid.ax_joint.axis('equal')
+            limits = [
+                min(grid.ax_joint.get_xlim()[0], grid.ax_joint.get_ylim()[0]),
+                max(grid.ax_joint.get_xlim()[1], grid.ax_joint.get_ylim()[1])
+            ]
+            grid.ax_joint.set_xlim(limits)
+            grid.ax_joint.set_ylim(limits)
 
         if log_scale:
             grid.ax_joint.set_xscale('log')

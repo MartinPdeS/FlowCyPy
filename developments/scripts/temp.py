@@ -89,13 +89,13 @@ from FlowCyPy.population import Exosome, Population, distribution
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
 
-for size in [100, 200]:
-    for ri in [1.39, 1.42, 1.48]:
+for size in [100, 125, 150, 200, 300, 400]:
+    for ri in [1.6]:
         population = Population(
             name=f'Population -- RI:{ri} -- Size: {size}',
-            particle_count=200 * units.particle,
-            size=distribution.RosinRammler(characteristic_size=size * units.nanometer, spread=50.5),
-            refractive_index=distribution.Normal(mean=ri * units.RIU, std_dev=0.00002 * units.RIU)
+            particle_count=20 * units.particle,
+            size=distribution.Normal(mean=size * units.nanometer, std_dev=5 * units.nanometer),
+            refractive_index=distribution.Normal(mean=ri * units.RIU, std_dev=0.00001 * units.RIU)
         )
 
         scatterer_collection.add_population(population)
@@ -153,18 +153,19 @@ cytometer = FlowCytometer(
 # Run the flow cytometry simulation
 experiment = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-experiment.plot.scatterer(show=False)
+# experiment.plot.scatterer(show=False)
 
 
 experiment.plot.coupling_distribution(
     x_detector='side',
     y_detector='forward',
     show=True,
-    # log_scale=True
+    # log_scale=True,
+    equal_limits=True
 )
 
 # Visualize the scatter signals from both detectors
-experiment.plot.signals()
+# experiment.plot.signals()
 
 # %%
 # Step 7: Analyze Detected Signals
@@ -172,7 +173,7 @@ experiment.plot.signals()
 # The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 # window size and threshold.
 experiment.run_triggering(
-    threshold=5.4 * units.millivolt,
+    threshold=5.2 * units.millivolt,
     trigger_detector_name='forward',
     max_triggers=35,
     pre_buffer=64,
