@@ -1,18 +1,18 @@
 from typing import List, Optional, Union
 from MPSPlots.styles import mps
 import pandas as pd
-from FlowCyPy.units import Quantity, RIU, particle, liter
-from FlowCyPy.population import Population
-from FlowCyPy.utils import PropertiesReport
+import numpy as np
 import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
+import seaborn as sns
 from typing import Optional, List
 from pint_pandas import PintArray
-import seaborn as sns
-import matplotlib.pyplot as plt
-import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
 from enum import Enum
+
 from FlowCyPy import units
+from FlowCyPy.units import Quantity, RIU, particle, liter
+from FlowCyPy.population import Population
 
 
 class CouplingModel(Enum):
@@ -21,7 +21,7 @@ class CouplingModel(Enum):
     UNIFORM = 'uniform'
 
 
-class ScattererCollection(PropertiesReport):
+class ScattererCollection():
     """
     Defines and manages the size and refractive index distributions of scatterers (particles)
     passing through a flow cytometer. This class generates random scatterer sizes and refractive

@@ -51,7 +51,7 @@ from FlowCyPy import GaussianBeam
 
 source = GaussianBeam(
     numerical_aperture=0.3 * units.AU,           # Numerical aperture
-    wavelength=200 * units.nanometer,           # Wavelength
+    wavelength=488 * units.nanometer,           # Wavelength
     optical_power=20 * units.milliwatt          # Optical power
 )
 
@@ -88,36 +88,21 @@ from FlowCyPy.population import Exosome, Population, distribution
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
-exosome = Population(
-    name='EV',
-    # particle_count=5e9 * units.particle / units.milliliter,
-    particle_count=10 * units.particle,
-    size=distribution.RosinRammler(characteristic_size=250 * units.nanometer, spread=2.5),
-    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
-)
 
-liposome = Population(
-    name='Liposome',
-    # particle_count=5e12 * units.particle / units.milliliter,
-    particle_count=200 * units.particle,
-    size=distribution.RosinRammler(characteristic_size=100 * units.nanometer, spread=2.5),
-    refractive_index=distribution.Normal(mean=1.39 * units.RIU, std_dev=0.002 * units.RIU)
-)
+for size in [100, 200]:
+    for ri in [1.39, 1.42, 1.48]:
+        population = Population(
+            name=f'Population -- RI:{ri} -- Size: {size}',
+            particle_count=200 * units.particle,
+            size=distribution.RosinRammler(characteristic_size=size * units.nanometer, spread=50.5),
+            refractive_index=distribution.Normal(mean=ri * units.RIU, std_dev=0.00002 * units.RIU)
+        )
+
+        scatterer_collection.add_population(population)
 
 
-# Add an Exosome population
-scatterer_collection.add_population(exosome, liposome)
 
 scatterer_collection.dilute(factor=1)
-
-# Initialize the scatterer with the flow cell
-scatterer_collection.plot()  # Visualize the particle population
-
-# %%
-# Step 5: Define Detectors
-# ------------------------
-# Detectors measure light intensity. Parameters like responsitivity define the conversion of optical
-# power to electronic signals, and saturation level represents the maximum signal they can handle.
 
 from FlowCyPy.detector import Detector
 from FlowCyPy.signal_digitizer import SignalDigitizer
@@ -168,12 +153,14 @@ cytometer = FlowCytometer(
 # Run the flow cytometry simulation
 experiment = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-experiment.plot.scatterer()
+experiment.plot.scatterer(show=False)
 
 
 experiment.plot.coupling_distribution(
     x_detector='side',
-    y_detector='forward'
+    y_detector='forward',
+    show=True,
+    # log_scale=True
 )
 
 # Visualize the scatter signals from both detectors

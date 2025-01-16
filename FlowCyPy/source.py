@@ -1,13 +1,10 @@
-
+import numpy as np
 from typing import Optional
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-from FlowCyPy.units import meter, joule, particle, degree, volt, AU
-from PyMieSim.units import Quantity
-from FlowCyPy.utils import PropertiesReport
-from FlowCyPy.physical_constant import PhysicalConstant
-import numpy as np
 
+from FlowCyPy.physical_constant import PhysicalConstant
+from FlowCyPy.units import Quantity, meter, joule, particle, degree, volt, AU
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -17,7 +14,7 @@ config_dict = dict(
 )
 
 
-class BaseBeam(PropertiesReport):
+class BaseBeam():
     """
     Mixin class providing unit validation for quantities used in optical sources.
     """

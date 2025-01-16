@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 
 
-
 def plot_sns(function: Callable) -> Callable:
     """
     A decorator that helps in plotting by wrapping a plotting function with additional functionality
@@ -66,10 +65,7 @@ def plot_sns(function: Callable) -> Callable:
         grid.figure.tight_layout()
 
         if equal_limits:
-            min_limit = min(x.min(), y.min())
-            max_limit = max(x.max(), y.max())
-            grid.ax_joint.set_xlim(min_limit, max_limit)
-            grid.ax_joint.set_ylim(min_limit, max_limit)
+            grid.ax_joint.axis('equal')
 
         if log_scale:
             grid.ax_joint.set_xscale('log')

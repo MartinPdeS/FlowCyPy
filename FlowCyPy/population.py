@@ -4,11 +4,10 @@ from FlowCyPy import distribution
 import pandas as pd
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-from FlowCyPy import units
-from FlowCyPy.utils import PropertiesReport
+from pint_pandas import PintArray
+
 from PyMieSim.units import Quantity, RIU, meter
 from FlowCyPy.particle_count import ParticleCount
-from pint_pandas import PintArray
 
 
 config_dict = dict(
@@ -20,7 +19,7 @@ config_dict = dict(
 
 
 @dataclass(config=config_dict)
-class Population(PropertiesReport):
+class Population():
     """
     A class representing a population of scatterers in a flow cytometry setup.
 

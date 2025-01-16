@@ -1,18 +1,16 @@
 from typing import List
-from FlowCyPy.units import meter, second, particle
+import numpy
+import warnings
 
-from PyMieSim.units import Quantity
 import pandas as pd
-from tabulate import tabulate
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-from pint_pandas import PintType, PintArray
+from pint_pandas import PintArray
+
 from FlowCyPy.source import BaseBeam
 from FlowCyPy.population import Population
 from FlowCyPy.scatterer_collection import ScattererCollection
-import pandas
-import numpy
-import warnings
+from FlowCyPy.units import meter, second, particle, Quantity
 
 config_dict = dict(
     arbitrary_types_allowed=True,

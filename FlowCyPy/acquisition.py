@@ -1,4 +1,5 @@
 import logging
+import warnings
 from typing import Optional, Union, List
 from MPSPlots.styles import mps
 import pandas as pd
@@ -9,8 +10,9 @@ from scipy.signal import find_peaks
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tabulate import tabulate
-import warnings
+
 from FlowCyPy import helper
+from FlowCyPy.classifier import BaseClassifier
 
 class DataAccessor:
     def __init__(self, outer):
@@ -172,22 +174,47 @@ class Acquisition:
             post_buffer: int = 64,
             max_triggers: int = None) -> None:
         """
-        Executes the triggered acquisition analysis.
+        Execute triggered acquisition analysis for signal data.
+
+        This method identifies segments of signal data based on a triggering threshold
+        and specified detector. It extracts segments of interest from the signal,
+        including a pre-trigger buffer and post-trigger buffer, and stores the results
+        in `self.data.triggered`.
 
         Parameters
         ----------
         threshold : units.Quantity
-            Trigger threshold value.
-        trigger_detector_name : str, optional
-            Detector used for triggering, by default None.
-        custom_trigger : np.ndarray, optional
-            Custom trigger array, by default None.
+            The threshold value for triggering. Only signal values exceeding this threshold
+            will be considered as trigger events.
+        trigger_detector_name : str
+            The name of the detector used for triggering. This determines which detector's
+            signal is analyzed for trigger events.
         pre_buffer : int, optional
-            Points before trigger, by default 64.
+            The number of points to include before the trigger point in each segment.
+            Default is 64.
         post_buffer : int, optional
-            Points after trigger, by default 64.
+            The number of points to include after the trigger point in each segment.
+            Default is 64.
         max_triggers : int, optional
-            Maximum number of triggers to process, by default None.
+            The maximum number of triggers to process. If None, all triggers will be processed.
+            Default is None.
+
+        Raises
+        ------
+        ValueError
+            If the specified `trigger_detector_name` is not found in the dataset.
+
+        Warnings
+        --------
+        UserWarning
+            If no triggers are detected for the specified threshold, the method raises a warning
+            indicating that no signals met the criteria.
+
+        Notes
+        -----
+        - Triggered segments are stored in `self.data.triggered` as a pandas DataFrame with a hierarchical index on `['Detector', 'SegmentID']`.
+        - This method modifies `self.data.triggered` in place.
+        - The peak detection function `self.detect_peaks` is automatically called at the end of this method to analyze triggered segments.
         """
         self.threshold = threshold
         self.trigger_detector_name = trigger_detector_name
@@ -226,7 +253,28 @@ class Acquisition:
 
         self.detect_peaks()
 
-    def classify_dataset(self, classifier: object, features: List[str], detectors: list[str]) -> None:
+    def classify_dataset(self, classifier: BaseClassifier, features: List[str], detectors: list[str]) -> None:
+        """
+        Classify the dataset using the specified classifier and features.
+
+        This method applies a classification algorithm to the dataset by first unstacking
+        the "Detector" level of the DataFrame's index. It then uses the provided classifier
+        object to classify the dataset based on the specified features and detectors.
+
+        Parameters
+        ----------
+        classifier : BaseClassifier
+            An object implementing a `run` method for classification.
+        features : List[str]
+            A list of column names corresponding to the features to be used for classification (e.g., 'Height', 'Width', 'Area').
+        detectors : list[str]
+            A list of detector names to filter the data before classification. Only data from these detectors will be included in the classification process.
+
+        Returns
+        -------
+        None
+            This method updates the `self.data.peaks` attribute in place with the classified data.
+        """
         self.data.peaks = self.data.peaks.unstack('Detector')
         self.classifier = classifier
 
@@ -489,7 +537,7 @@ class Acquisition:
             ax.legend()
 
         @helper.plot_sns
-        def coupling_distribution(self, x_detector: str, y_detector: str, equal_limits: bool = False) -> None:
+        def coupling_distribution(self, x_detector: str, y_detector: str, bandwidth_adjust: float = 1) -> None:
             """
             Plots the density distribution of optical coupling between two detector channels.
 
@@ -512,7 +560,7 @@ class Acquisition:
             y = df[y_detector].pint.to(y_units)
 
             with plt.style.context(mps):
-                grid = sns.jointplot(data=df, x=x, y=y, hue="Population", alpha=0.8)
+                grid = sns.jointplot(data=df, x=x, y=y, hue="Population", alpha=0.8, marginal_kws=dict(bw_adjust=bandwidth_adjust))
 
             grid.ax_joint.set_xlabel(f"Signal {x_detector} [{x_units}]")
             grid.ax_joint.set_ylabel(f"Signal {y_detector} [{y_units}]")
@@ -522,7 +570,7 @@ class Acquisition:
             return grid
 
         @helper.plot_sns
-        def scatterer(self, alpha: float = 0.8, bandwidth_adjust: float = 1, log_scale: bool = False, color_palette: Optional[Union[str, dict]] = None) -> None:
+        def scatterer(self, alpha: float = 0.8, bandwidth_adjust: float = 1, color_palette: Optional[Union[str, dict]] = None) -> None:
             """
             Visualizes the joint distribution of scatterer sizes and refractive indices using a Seaborn jointplot.
 
@@ -616,6 +664,7 @@ class Acquisition:
         def trigger(self, show: bool = True) -> None:
             """Plot detected peaks on signal segments."""
             n_plots = self.acquisition.n_detectors + 1
+
             with plt.style.context(mps):
                 _, axes = plt.subplots(
                     nrows=n_plots,
@@ -700,7 +749,6 @@ class Acquisition:
 
             # Set the plotting style
             with plt.style.context(mps):
-                # Generate a scatter plot using seaborn's jointplot
                 grid = sns.jointplot(
                     data=self.acquisition.data.peaks,
                     x=(feature, x_detector),

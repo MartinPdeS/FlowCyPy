@@ -1,21 +1,21 @@
+import logging
+from copy import copy
 import numpy as np
 import pandas as pd
 from typing import Optional, Union
 import matplotlib.pyplot as plt
-from FlowCyPy import units
-from FlowCyPy.units import AU, volt, watt, degree, ampere, coulomb, particle, meter
-from FlowCyPy.utils import PropertiesReport
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 import pint_pandas
-from FlowCyPy.physical_constant import PhysicalConstant
+
 from PyMieSim.units import Quantity
+from FlowCyPy import units
+from FlowCyPy.units import AU, volt, watt, degree, ampere, coulomb
 from FlowCyPy.noises import NoiseSetting
 from FlowCyPy.helper import plot_helper
 from FlowCyPy.peak_locator import BasePeakLocator
-import logging
-from copy import copy
 from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy.physical_constant import PhysicalConstant
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -26,7 +26,7 @@ config_dict = dict(
 
 
 @dataclass(config=config_dict, unsafe_hash=True)
-class Detector(PropertiesReport):
+class Detector():
     """
     A class representing a signal detector used in flow cytometry.
 

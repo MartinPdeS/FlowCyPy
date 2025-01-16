@@ -1,9 +1,7 @@
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 from typing import Union, Tuple
-import logging
-import numpy as np
-from FlowCyPy.units import Quantity, volt
+from FlowCyPy.units import Quantity
 
 config_dict = dict(
     arbitrary_types_allowed=True,

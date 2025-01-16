@@ -4,14 +4,13 @@
 import logging
 import numpy as np
 from typing import List, Callable, Optional
-from MPSPlots.styles import mps
-from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy.detector import Detector
 import pandas as pd
-import pint_pandas
+from pint_pandas import PintArray
+
 from FlowCyPy import units
 from FlowCyPy.units import Quantity, milliwatt
-from pint_pandas import PintArray
+from FlowCyPy.flow_cell import FlowCell
+from FlowCyPy.detector import Detector
 from FlowCyPy.acquisition import Acquisition
 from FlowCyPy.signal_digitizer import SignalDigitizer
 
@@ -117,7 +116,7 @@ class FlowCytometer:
                 medium_refractive_index=self.scatterer_collection.medium_refractive_index
             )
 
-            scatterer_dataframe[detector.name] = pint_pandas.PintArray(self.coupling_power, dtype=self.coupling_power.units)
+            scatterer_dataframe[detector.name] = PintArray(self.coupling_power, dtype=self.coupling_power.units)
 
     def _generate_pulse_parameters(self, scatterer_dataframe: pd.DataFrame) -> None:
         """
@@ -143,7 +142,7 @@ class FlowCytometer:
 
         widths = self.source.waist / self.flow_cell.flow_speed * np.ones(len(scatterer_dataframe))
 
-        scatterer_dataframe['Widths'] = pint_pandas.PintArray(widths, dtype=widths.units)
+        scatterer_dataframe['Widths'] = PintArray(widths, dtype=widths.units)
 
     def initialize_signal(self, run_time: Quantity) -> None:
         """
