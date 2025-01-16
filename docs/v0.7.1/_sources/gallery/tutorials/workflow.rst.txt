@@ -265,7 +265,7 @@ and particles follows Mie theory:
     # Run the flow cytometry simulation
     experiment = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-    experiment.plot.scatterer()
+    experiment.plot.scatterer(show=False)
 
 
     experiment.plot.coupling_distribution(
@@ -361,7 +361,7 @@ window size and threshold.
     /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/acquisition.py:102: UserWarning: Multiple peaks detected in the following segments: [('forward', 1), ('forward', 2), ('forward', 6), ('forward', 8), ('forward', 9), ('forward', 11), ('forward', 12), ('forward', 14), ('forward', 17), ('forward', 18), ('forward', 20), ('forward', 21), ('forward', 25), ('forward', 26), ('forward', 27), ('forward', 30), ('forward', 31), ('side', 1), ('side', 2), ('side', 6), ('side', 8), ('side', 9), ('side', 11), ('side', 12), ('side', 14), ('side', 17), ('side', 18), ('side', 20), ('side', 21), ('side', 25), ('side', 26), ('side', 27), ('side', 30), ('side', 31)]
       warnings.warn(
 
-    <seaborn.axisgrid.JointGrid object at 0x7f7f54ec0090>
+    <seaborn.axisgrid.JointGrid object at 0x7fadf9df7250>
 
 
 
@@ -401,14 +401,14 @@ Step 8: Classifying the collected dataset
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f7f54438810>
+    <seaborn.axisgrid.JointGrid object at 0x7fadf89f7250>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 9.283 seconds)
+   **Total running time of the script:** (0 minutes 8.712 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

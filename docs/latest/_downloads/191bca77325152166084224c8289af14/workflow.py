@@ -159,7 +159,7 @@ cytometer = FlowCytometer(
 # Run the flow cytometry simulation
 experiment = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-experiment.plot.scatterer()
+experiment.plot.scatterer(show=False)
 
 
 experiment.plot.coupling_distribution(
