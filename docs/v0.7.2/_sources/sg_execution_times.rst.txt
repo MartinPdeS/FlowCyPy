@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:25.352** total execution time for 9 files **from all galleries**:
+**00:25.959** total execution time for 9 files **from all galleries**:
 
 .. container::
 
@@ -33,29 +33,29 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_gallery_tutorials_workflow.py` (``../examples/tutorials/workflow.py``)
-     - 00:11.251
+     - 00:11.633
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_limit_of_detection.py` (``../examples/tutorials/limit_of_detection.py``)
-     - 00:06.692
+     - 00:06.962
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_flow_cytometer_signal.py` (``../examples/extras/flow_cytometer_signal.py``)
-     - 00:03.031
+     - 00:03.098
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_distributions.py` (``../examples/extras/distributions.py``)
-     - 00:01.563
+     - 00:01.574
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_signal_acquisition.py` (``../examples/extras/signal_acquisition.py``)
-     - 00:00.775
+     - 00:00.737
      - 0.0
    * - :ref:`sphx_glr_gallery_noise_sources_dark_current.py` (``../examples/noise_sources/dark_current.py``)
-     - 00:00.557
+     - 00:00.527
      - 0.0
    * - :ref:`sphx_glr_gallery_noise_sources_shot_noise.py` (``../examples/noise_sources/shot_noise.py``)
-     - 00:00.551
+     - 00:00.522
      - 0.0
    * - :ref:`sphx_glr_gallery_noise_sources_thermal.py` (``../examples/noise_sources/thermal.py``)
-     - 00:00.498
+     - 00:00.496
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_scatterer_distribution.py` (``../examples/extras/scatterer_distribution.py``)
-     - 00:00.433
+     - 00:00.411
      - 0.0

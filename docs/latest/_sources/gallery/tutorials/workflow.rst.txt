@@ -361,7 +361,7 @@ window size and threshold.
     /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/acquisition.py:102: UserWarning: Multiple peaks detected in the following segments: [('forward', 0), ('forward', 1), ('forward', 2), ('forward', 3), ('forward', 4), ('forward', 5), ('forward', 6), ('forward', 7), ('forward', 8), ('forward', 9), ('forward', 10), ('forward', 11), ('forward', 12), ('forward', 13), ('forward', 14), ('forward', 15), ('forward', 16), ('forward', 17), ('forward', 18), ('forward', 19), ('forward', 20), ('forward', 21), ('forward', 22), ('forward', 23), ('forward', 24), ('forward', 25), ('forward', 26), ('forward', 27), ('forward', 28), ('forward', 29), ('forward', 30), ('forward', 31), ('forward', 32), ('forward', 33), ('forward', 34), ('side', 0), ('side', 1), ('side', 2), ('side', 3), ('side', 4), ('side', 5), ('side', 6), ('side', 7), ('side', 8), ('side', 9), ('side', 10), ('side', 11), ('side', 12), ('side', 13), ('side', 14), ('side', 15), ('side', 16), ('side', 17), ('side', 18), ('side', 19), ('side', 20), ('side', 21), ('side', 22), ('side', 23), ('side', 24), ('side', 25), ('side', 26), ('side', 27), ('side', 28), ('side', 29), ('side', 30), ('side', 31), ('side', 32), ('side', 33), ('side', 34)]
       warnings.warn(
 
-    <seaborn.axisgrid.JointGrid object at 0x7f256f73d510>
+    <seaborn.axisgrid.JointGrid object at 0x7feaf4f391d0>
 
 
 
@@ -401,14 +401,14 @@ Step 8: Classifying the collected dataset
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f256c625490>
+    <seaborn.axisgrid.JointGrid object at 0x7feaf44b1050>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 11.251 seconds)
+   **Total running time of the script:** (0 minutes 11.633 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

@@ -56,7 +56,7 @@ Steps:
     # Flow speed is set to 80 micrometers per second, with a flow area of 1 square micrometer and a total simulation time of 1 second.
     flow_cell = FlowCell(
         source=source,
-        volume_flow=10 * units.microliter / units.second,        # Flow speed: 7.56 meters per second
+        volume_flow=10 * units.microliter / units.second,        # Flow speed: 10 microliter per second
         flow_area=(20 * units.micrometer) ** 2,        # Flow area: 10 x 10 micrometers
     )
 
@@ -145,7 +145,7 @@ and complexity and can be further analyzed for feature extraction, such as peak 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.031 seconds)
+   **Total running time of the script:** (0 minutes 3.098 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_flow_cytometer_signal.py:
