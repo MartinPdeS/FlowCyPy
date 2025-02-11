@@ -48,8 +48,8 @@ def flow_cell():
 
     return FlowCell(
         source=source,
-        flow_speed=0.2 * units.meter / units.second,
-        flow_area=(1e-6 * units.meter * units.meter),
+        volume_flow=10 * units.microliter / units.second,
+        flow_area=(10 * units.micrometer) ** 2,
     )
 
 
@@ -72,7 +72,7 @@ def default_ri_distribution():
 @pytest.fixture
 def default_population(default_size_distribution, default_ri_distribution):
     return Population(
-        particle_count=1.8e+5 * units.particle / units.milliliter,
+        particle_count=1e+9 * units.particle / units.milliliter,
         size=default_size_distribution,
         refractive_index=default_ri_distribution,
         name="Default population"
@@ -80,7 +80,7 @@ def default_population(default_size_distribution, default_ri_distribution):
 
 
 @pytest.fixture
-def default_scatterer(flow_cell, default_population):
+def default_scatterer(default_population):
     scatterer = ScattererCollection()
     scatterer.add_population(default_population)
     return scatterer

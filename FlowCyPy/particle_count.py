@@ -61,9 +61,10 @@ class ParticleCount:
         ValueError
             If no concentration is defined and the total number of particles cannot be calculated.
         """
-        flow_volume = flow_area * flow_speed * run_time
-
+        print('caluclate number of eecnts')
         if hasattr(self, 'concentration'):
+            flow_volume = flow_area * flow_speed * run_time
+            print('flow_volume', flow_volume)
             return (self.concentration * flow_volume).to(particle)
         elif hasattr(self, 'num_particles'):
             return self.num_particles

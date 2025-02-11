@@ -69,7 +69,7 @@ from FlowCyPy import FlowCell
 
 flow_cell = FlowCell(
     source=source,
-    flow_speed=7.56 * units.meter / units.second,  # Flow speed
+    volume_flow=10 * units.microliter / units.second,  # Flow volume
     flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
 )
 

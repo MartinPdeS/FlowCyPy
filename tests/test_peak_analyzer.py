@@ -26,7 +26,7 @@ def flow_cell():
 
     return FlowCell(
         source=source,
-        flow_speed=0.2 * units.meter / units.second,
+        volume_flow=10 * units.microliter / units.second,
         flow_area=1e-6 * units.meter * units.meter,
     )
 

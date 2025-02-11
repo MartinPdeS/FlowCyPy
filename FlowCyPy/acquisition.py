@@ -512,7 +512,7 @@ class Acquisition:
                     zorder=0,
                 )
 
-                ax2.set_ylim(detector._saturation_levels)
+                ax2.set_ylim(detector._saturation_levels if detector._saturation_levels[0] != detector._saturation_levels[1] else None)
 
             self._add_event_to_ax(ax=axes[-1], time_units=time_units)
 

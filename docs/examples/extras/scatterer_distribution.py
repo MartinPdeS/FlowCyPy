@@ -16,6 +16,7 @@ Steps in the Workflow:
 5. Visualize the scattering intensity in a 2D hexbin plot.
 """
 
+# %%
 # Import necessary libraries and modules
 from FlowCyPy import ScattererCollection, FlowCell
 from FlowCyPy import distribution, Population

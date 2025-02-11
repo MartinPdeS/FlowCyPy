@@ -40,7 +40,7 @@ def normal_population(normal_size_distribution, normal_ri_distribution):
 @pytest.fixture
 def default_flow_cell():
     return FlowCell(
-        flow_speed=0.1 * units.meter / units.second,
+        volume_flow=10 * units.microliter / units.second,
         flow_area=(10 * units.micrometer) ** 2,
     )
 

@@ -19,7 +19,7 @@ RUN_TIME = 100e-3 * units.second
 def flow_cell():
     """Fixture to create a FlowCell object for testing."""
     return FlowCell(
-        flow_speed=5 * units.micrometer / units.second,
+        volume_flow=1e-4 * units.microliter / units.second,
         flow_area=(10 * units.micrometer) ** 2,
     )
 
@@ -87,7 +87,7 @@ def test_invalid_flow_cell():
     """Test if providing invalid flow cell parameters raises an error."""
     with pytest.raises(ValueError):
         invalid_flow_cell = FlowCell(
-            flow_speed=0 * units.meter / units.second,  # Invalid flow speed
+            volume_flow=0 * units.microliter / units.second,  # Invalid flow speed
             flow_area=(10 * units.micrometer) ** 2,
             run_time=1 * units.second,
         )
