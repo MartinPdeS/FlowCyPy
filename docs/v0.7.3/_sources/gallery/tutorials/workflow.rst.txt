@@ -359,7 +359,7 @@ window size and threshold.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7fe944d67210>
+    <seaborn.axisgrid.JointGrid object at 0x7f2365816f90>
 
 
 
@@ -399,14 +399,14 @@ Step 8: Classifying the collected dataset
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7fe9429b1090>
+    <seaborn.axisgrid.JointGrid object at 0x7f2365e5bc10>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 11.235 seconds)
+   **Total running time of the script:** (0 minutes 11.302 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:
