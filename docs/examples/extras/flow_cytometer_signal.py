@@ -33,8 +33,8 @@ source = GaussianBeam(
 # Flow speed is set to 80 micrometers per second, with a flow area of 1 square micrometer and a total simulation time of 1 second.
 flow_cell = FlowCell(
     source=source,
-    volume_flow=10 * units.microliter / units.second,        # Flow speed: 10 microliter per second
-    flow_area=(20 * units.micrometer) ** 2,        # Flow area: 10 x 10 micrometers
+    volume_flow=10 * units.microliter / units.second, # Flow speed: 10 microliter per second
+    flow_area=(40 * units.micrometer) ** 2, # Flow area: 40 x 40 micrometers
 )
 
 # Step 4: Define the particle size distribution

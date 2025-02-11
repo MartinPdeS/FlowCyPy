@@ -12,7 +12,6 @@ from PyMieSim.units import Quantity
 from FlowCyPy import units
 from FlowCyPy.units import AU, volt, watt, degree, ampere, coulomb
 from FlowCyPy.noises import NoiseSetting
-from FlowCyPy.helper import plot_helper
 from FlowCyPy.peak_locator import BasePeakLocator
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.physical_constant import PhysicalConstant
@@ -336,62 +335,6 @@ class Detector():
             logging.info("Signal values have been clipped to the saturation boundaries.")
 
         return digitized_signal
-
-    @plot_helper
-    def plot_raw(
-        self,
-        ax: Optional[plt.Axes] = None,
-        time_unit: Optional[Union[str, Quantity]] = None,
-        signal_unit: Optional[Union[str, Quantity]] = None,
-        add_peak_locator: bool = False
-    ) -> None:
-        """
-        Visualizes the signal and optional components (peaks, raw signal) over time.
-
-        This method generates a customizable plot of the processed signal as a function of time.
-        Additional components like raw signals and detected peaks can also be overlaid.
-
-        Parameters
-        ----------
-        ax : matplotlib.axes.Axes, optional
-            An existing Matplotlib Axes object to plot on. If None, a new Axes will be created.
-        time_unit : str or Quantity, optional
-            Desired unit for the time axis. If None, defaults to the most compact unit of the `Time` column.
-        signal_unit : str or Quantity, optional
-            Desired unit for the signal axis. If None, defaults to the most compact unit of the `Signal` column.
-        add_peak_locator : bool, optional
-            If True, adds the detected peaks (if available) to the plot. Default is False.
-
-        Returns
-        -------
-        tuple[Quantity, Quantity]
-            A tuple containing the units used for the time and signal axes, respectively.
-
-        Notes
-        -----
-        - The `Time` and `Signal` data are automatically converted to the specified units for consistency.
-        - If no `ax` is provided, a new figure and axis will be generated.
-        - Warnings are logged if peak locator data is unavailable when `add_peak_locator` is True.
-        """
-        # Set default units if not provided
-        signal_unit = signal_unit or self.dataframe['Signal'].max().to_compact().units
-        time_unit = time_unit or self.dataframe['Time'].max().to_compact().units
-
-        x = self.dataframe['Time'].pint.to(time_unit)
-
-        ax.plot(x, self.dataframe['Signal'].pint.to(signal_unit), color='C1', linestyle='--', label=f'{self.name}: Raw', linewidth=1)
-        ax.legend(loc='upper right')
-
-        # Overlay peak locator positions, if requested
-        if add_peak_locator:
-            if not hasattr(self, 'algorithm'):
-                logging.warning("The detector does not have a peak locator algorithm. Peaks cannot be plotted.")
-
-            self.algorithm._add_to_ax(ax=ax, signal_unit=signal_unit, time_unit=time_unit)
-
-        # Customize labels
-        ax.set_xlabel(f"Time [{time_unit:P}]")
-        ax.set_ylabel(f"{self.name} [{signal_unit:P}]")
 
     def set_peak_locator(self, algorithm: BasePeakLocator, compute_peak_area: bool = True) -> None:
         """

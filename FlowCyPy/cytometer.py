@@ -119,28 +119,68 @@ class FlowCytometer:
             scatterer_dataframe[detector.name] = PintArray(self.coupling_power, dtype=self.coupling_power.units)
 
     def _generate_pulse_parameters(self, scatterer_dataframe: pd.DataFrame) -> None:
-        """
+        r"""
         Generates and assigns random Gaussian pulse parameters for each particle event.
 
-        The generated parameters include:
-        - Centers: The time at which each pulse occurs.
-        - Widths: The standard deviation (spread) of each pulse in seconds.
+        The pulse shape follows the Gaussian beam’s spatial intensity profile:
 
-        Effects
-        -------
-        scatterer_collection.dataframe : pandas.DataFrame
-            Adds a 'Widths' column with computed pulse widths for each particle.
-            Uses the flow speed and beam waist to calculate pulse widths.
+        .. math::
+
+            I(r) = I_0 \exp\left(-\frac{2r^2}{w_0^2}\right),
+
+        where :math:`w_0` is the beam waist (the :math:`1/e^2` radius of the intensity distribution).
+        This profile can be rewritten in standard Gaussian form:
+
+        .. math::
+
+            I(r) = I_0 \exp\left(-\frac{r^2}{2\sigma_x^2}\right),
+
+        which implies the spatial standard deviation:
+
+        .. math::
+
+            \sigma_x = \frac{w_0}{2}.
+
+        When a particle moves at a constant flow speed :math:`v`, the spatial coordinate :math:`r`
+        is related to time :math:`t` via :math:`r = v t`. Substituting this into the intensity profile
+        gives a temporal Gaussian:
+
+        .. math::
+
+            I(t) = I_0 \exp\left(-\frac{2 (v t)^2}{w_0^2}\right).
+
+        This is equivalent to a Gaussian in time:
+
+        .. math::
+
+            I(t) = I_0 \exp\left(-\frac{t^2}{2\sigma_t^2}\right),
+
+        so that the temporal standard deviation is:
+
+        .. math::
+
+            \sigma_t = \frac{\sigma_x}{v} = \frac{w_0}{2v}.
+
+        The full width at half maximum (FWHM) in time is then:
+
+        .. math::
+
+            \text{FWHM} = 2\sqrt{2 \ln2} \, \sigma_t = \frac{w_0}{v} \sqrt{2 \ln2}.
+
+        **Generated Parameters:**
+        - **Centers:** The time at which each pulse occurs (randomly determined).
+        - **Widths:** The pulse width (:math:`\sigma_t`) in seconds, computed as :math:`w_0 / (2 v)`.
+
+        **Effects**
+        -----------
+        Modifies `scatterer_dataframe` in place by adding:
+        - A `'Centers'` column with the pulse center times.
+        - A `'Widths'` column with the computed pulse widths.
         """
-        columns = pd.MultiIndex.from_product(
-            [[p.name for p in self.detectors], ['Centers', 'Heights']]
-        )
+        # Calculate the pulse width (standard deviation in time, σₜ) based on the beam waist and flow speed.
+        pulse_width = self.source.waist / (2 * self.flow_cell.flow_speed)
 
-        self.pulse_dataframe = pd.DataFrame(columns=columns)
-
-        self.pulse_dataframe['Centers'] = scatterer_dataframe['Time']
-
-        widths = self.source.waist / self.flow_cell.flow_speed * np.ones(len(scatterer_dataframe))
+        widths = pulse_width * np.ones(len(scatterer_dataframe))
 
         scatterer_dataframe['Widths'] = PintArray(widths, dtype=widths.units)
 
@@ -220,11 +260,11 @@ class FlowCytometer:
             time = self.dataframe.xs(detector.name)['Time'].pint.magnitude
 
             time_grid = np.expand_dims(time, axis=0) * units.second
-
             centers = np.expand_dims(_centers, axis=1) * units.second
             widths = np.expand_dims(_widths, axis=1) * units.second
 
             # Compute the Gaussian for each height, center, and width using broadcasting
+            # To be noted that widths is defined as: waist / (2 * flow_speed)
             power_gaussians = _coupling_power[:, np.newaxis] * np.exp(- (time_grid - centers) ** 2 / (2 * widths ** 2))
 
             total_power = np.sum(power_gaussians, axis=0) + self.background_power

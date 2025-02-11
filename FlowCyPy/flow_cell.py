@@ -11,6 +11,7 @@ from FlowCyPy.source import BaseBeam
 from FlowCyPy.population import Population
 from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy.units import meter, particle, Quantity
+from FlowCyPy import units
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -36,14 +37,14 @@ class FlowCell:
         The volumetric flow rate (in m³/s).
     flow_area : Quantity
         The cross-sectional area of the flow tube (in m²).
-    scheme : str, optional
+    event_scheme : str, optional
         The event timing scheme, by default 'poisson'.
     source : BaseBeam, optional
         An optional beam source.
     """
     volume_flow: Quantity
     flow_area: Quantity
-    scheme: str = 'poisson'
+    event_scheme: str = 'poisson'
     source: Optional[BaseBeam] = None
 
     # The flow_speed will be computed in __post_init__, so it's not provided at initialization.
@@ -96,16 +97,16 @@ class FlowCell:
         event_dataframe = pd.concat(population_event_frames, keys=[pop.name for pop in populations])
         event_dataframe.index.names = ["Population", "Index"]
 
-        if self.scheme.lower() in ['uniform-random', 'uniform-sequential']:
+        if self.event_scheme.lower() in ['uniform-random', 'uniform-sequential']:
             total_events = len(event_dataframe)
             start_time = 0 * run_time.units
             end_time = run_time
             time_interval = (end_time - start_time) / total_events
             evenly_spaced_times = numpy.arange(0, total_events) * time_interval
 
-            if self.scheme.lower() == 'uniform-random':
+            if self.event_scheme.lower() == 'uniform-random':
                 numpy.random.shuffle(evenly_spaced_times.magnitude)
-            event_dataframe['Time'] = PintArray(evenly_spaced_times.to('second'))
+            event_dataframe['Time'] = PintArray(evenly_spaced_times.to(units.second).magnitude, units.second)
         return event_dataframe
 
     def _generate_poisson_events(self, run_time: Quantity, population: Population) -> pd.DataFrame:

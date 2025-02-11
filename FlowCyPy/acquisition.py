@@ -96,13 +96,13 @@ class Acquisition:
         results = results.reset_index(drop=True)
 
         # Check for multiple peaks and issue a warning
-        peak_counts = results.groupby(['Detector', 'SegmentID']).size()
-        multiple_peak_segments = peak_counts[peak_counts > 1]
-        if not multiple_peak_segments.empty:
-            warnings.warn(
-                f"Multiple peaks detected in the following segments: {multiple_peak_segments.index.tolist()}",
-                UserWarning
-            )
+        # peak_counts = results.groupby(['Detector', 'SegmentID']).size()
+        # multiple_peak_segments = peak_counts[peak_counts > 1]
+        # if not multiple_peak_segments.empty:
+        #     warnings.warn(
+        #         f"Multiple peaks detected in the following segments: {multiple_peak_segments.index.tolist()}",
+        #         UserWarning
+        #     )
 
         _temp = results.reset_index()[['Detector', 'SegmentID', 'Height']].pint.dequantify().droplevel('unit', axis=1)
 
@@ -677,12 +677,12 @@ class Acquisition:
 
             time_units = self.acquisition.data.triggered['Time'].max().to_compact().units
 
-            for ax, (detector_name, group) in zip(axes, self.acquisition.data.triggered.groupby(level=['Detector'])):
+            for ax, (detector_name, group) in zip(axes, self.acquisition.data.triggered.groupby(level='Detector')):
                 detector = self.get_detector(detector_name)
 
                 ax.set_ylabel(detector_name)
 
-                for _, sub_group in group.groupby(level=['SegmentID']):
+                for _, sub_group in group.groupby(level='SegmentID'):
                     x = sub_group['Time'].pint.to(time_units)
                     digitized = sub_group['DigitizedSignal']
                     ax.step(x, digitized, where='mid', linewidth=2)
@@ -710,7 +710,7 @@ class Acquisition:
                 ax2.legend()
 
 
-            for ax, (detector_name, group) in zip(axes, self.acquisition.data.peaks.groupby(level=['Detector'], axis=0)):
+            for ax, (detector_name, group) in zip(axes, self.acquisition.data.peaks.groupby(level='Detector')):
                 x = group['Time'].pint.to(time_units)
                 y = group['Height']
                 ax.scatter(x, y, color='C1')

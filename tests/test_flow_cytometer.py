@@ -14,7 +14,7 @@ def default_digitizer():
     return SignalDigitizer(
         bit_depth=1024,
         saturation_levels='auto',
-        sampling_freq=1e5 * units.hertz,
+        sampling_freq=5e6 * units.hertz,
     )
 
 @pytest.fixture
@@ -48,8 +48,9 @@ def flow_cell():
 
     return FlowCell(
         source=source,
-        volume_flow=10 * units.microliter / units.second,
-        flow_area=(10 * units.micrometer) ** 2,
+        volume_flow=0.1 * units.microliter / units.second,
+        flow_area=(12 * units.micrometer) ** 2,
+        event_scheme='uniform-sequential'
     )
 
 
@@ -118,13 +119,30 @@ def test_flow_cytometer_plot(mock_show, default_detector_0, default_detector_1, 
         coupling_mechanism='uniform'
     )
 
-    experiment = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+    acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-    experiment.plot.signals()
+    acquisition.plot.signals()
 
     plt.close()
 
-    experiment.logger.scatterer()
+    acquisition.logger.scatterer()
+
+    acquisition.run_triggering(
+        threshold=3.0 * units.volt,
+        trigger_detector_name='default',
+        max_triggers=35,
+        pre_buffer=64,
+        post_buffer=64
+    )
+
+    acquisition.plot.trigger()
+
+    plt.close()
+
+    acquisition.plot.peaks(
+        x_detector='default',
+        y_detector='default_bis'
+    )
 
 
 if __name__ == '__main__':
