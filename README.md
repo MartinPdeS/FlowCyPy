@@ -4,14 +4,14 @@
 
 | Name                                                  |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |------------------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
-| FlowCyPy/acquisition.py                               |      232 |      130 |       44 |        2 |     40% |78-109, 147-168, 219-254, 278-281, 397-418, 437-444, 520->exit, 555-570, 602-625, 645-662, 666-721, 744-761, 764->exit |
+| FlowCyPy/acquisition.py                               |      228 |       47 |       42 |        7 |     78% |79, 148, 225->229, 249, 278-281, 397-418, 437-444, 520->exit, 555-570, 602-625, 720->exit, 744-761, 764->exit |
 | FlowCyPy/classifier.py                                |       44 |        0 |        8 |        4 |     92% |32->35, 74->78, 121->125, 172->176 |
 | FlowCyPy/coupling\_mechanism/empirical.py             |        9 |        4 |        0 |        0 |     56% |     39-47 |
 | FlowCyPy/coupling\_mechanism/mie.py                   |       43 |        2 |        6 |        3 |     90% |82->96, 119, 183 |
 | FlowCyPy/coupling\_mechanism/rayleigh.py              |       23 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/uniform.py               |        6 |        0 |        0 |        0 |    100% |           |
-| FlowCyPy/cytometer.py                                 |       88 |        9 |       18 |        3 |     87% |192, 280, 285-288, 308-312 |
-| FlowCyPy/detector.py                                  |      125 |       30 |       32 |        5 |     70% |85, 105, 127, 139-141, 145, 283-284, 320, 377-394, 425-439 |
+| FlowCyPy/cytometer.py                                 |       86 |        9 |       18 |        3 |     87% |232, 320, 325-328, 348-352 |
+| FlowCyPy/detector.py                                  |      111 |       19 |       28 |        5 |     77% |84, 104, 126, 138-140, 144, 282-283, 319, 368-382 |
 | FlowCyPy/distribution/base\_class.py                  |       27 |        4 |        2 |        1 |     83% |32, 36, 65, 72 |
 | FlowCyPy/distribution/delta.py                        |       31 |        2 |        2 |        1 |     91% |   74, 104 |
 | FlowCyPy/distribution/lognormal.py                    |       37 |        3 |        4 |        2 |     88% |90, 92, 124 |
@@ -19,8 +19,8 @@
 | FlowCyPy/distribution/particle\_size\_distribution.py |       37 |        3 |        4 |        2 |     88% |87, 89, 133 |
 | FlowCyPy/distribution/uniform.py                      |       34 |        1 |        0 |        0 |     97% |       117 |
 | FlowCyPy/distribution/weibull.py                      |       36 |       16 |        2 |        0 |     53% |28, 32, 36, 57-62, 79, 102-112, 115 |
-| FlowCyPy/flow\_cell.py                                |       55 |       12 |        8 |        3 |     73% |62, 69, 75, 100-108, 134 |
-| FlowCyPy/helper.py                                    |       36 |       27 |       14 |        0 |     18% |63-87, 148-165 |
+| FlowCyPy/flow\_cell.py                                |       56 |        5 |        8 |        3 |     88% |63, 70, 76, 108, 135 |
+| FlowCyPy/helper.py                                    |       22 |        8 |        8 |        4 |     60% |68-73, 76-79, 82, 84->87 |
 | FlowCyPy/noises.py                                    |       27 |       13 |        6 |        0 |     42% |3-5, 65-67, 77, 81-87 |
 | FlowCyPy/particle\_count.py                           |       45 |       22 |       20 |        6 |     45% |30-31, 35, 41, 64-72, 94, 101-104, 110, 115-120, 127 |
 | FlowCyPy/peak\_locator/base\_class.py                 |       48 |        8 |       12 |        5 |     75% |34, 37, 51, 84->87, 104, 107, 150-153 |
@@ -34,8 +34,8 @@
 | FlowCyPy/signal\_digitizer.py                         |       27 |        3 |        4 |        2 |     84% | 63-64, 87 |
 | FlowCyPy/source.py                                    |       72 |        7 |       18 |        6 |     86% |33, 38, 48, 51, 58, 61, 71 |
 | FlowCyPy/units.py                                     |       21 |        0 |        4 |        0 |    100% |           |
-| FlowCyPy/utils.py                                     |       49 |       13 |        8 |        2 |     70% |31, 35, 43, 81-95 |
-|                                             **TOTAL** | **1487** |  **373** |  **268** |   **60** | **70%** |           |
+| FlowCyPy/utils.py                                     |       33 |        3 |        6 |        2 |     87% |27, 31, 39 |
+|                                             **TOTAL** | **1438** |  **243** |  **254** |   **69** | **79%** |           |
 
 
 ## Setup coverage badge
