@@ -83,7 +83,7 @@ def test_generate_scatterer_size(scatterer_collection, default_flow_cell):
     """
     Test if the sizes are generated correctly in the ScattererCollection.
     """
-    scatterer_dataframe = default_flow_cell.generate_event_dataframe(
+    scatterer_dataframe = default_flow_cell._generate_event_dataframe(
         scatterer_collection.populations,
         run_time=0.001 * units.second
     )
@@ -101,7 +101,7 @@ def test_rayleigh_mechanism_output(detector, scatterer_collection, source, defau
     """
     Test the detected power output of the Rayleigh scattering mechanism.
     """
-    scatterer_dataframe = default_flow_cell.generate_event_dataframe(
+    scatterer_dataframe = default_flow_cell._generate_event_dataframe(
         scatterer_collection.populations,
         run_time=0.001 * units.second
     )

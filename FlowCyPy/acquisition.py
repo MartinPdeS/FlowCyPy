@@ -465,21 +465,32 @@ class Acquisition:
         def __init__(self, acquisition: object):
             self.acquisition = acquisition
 
-        def signals(self, figure_size: tuple = (10, 6), show: bool = True) -> None:
+        def signals(
+            self,
+            figure_size: tuple = (10, 6),
+            show: bool = True,
+            show_populations: str | List[str] = None,
+            save_filename: str = None
+        ) -> None:
             """
             Visualizes raw signals for all detector channels and the scatterer distribution.
 
             Parameters
             ----------
             figure_size : tuple, optional
-                Size of the plot (default: (10, 6)).
-            add_peak_locator : bool, optional
-                Adds peak location markers to the signals if True (default: False).
+                Size of the plot in inches (default: (10, 6)).
             show : bool, optional
-                Displays the plot immediately if True (default: True).
+                If True, displays the plot immediately (default: True).
+            show_populations : str or list of str, optional
+                List of population names to highlight in the event plot. If None, shows all populations.
+            save_filename : str, optional
+                If provided, saves the figure to the specified file.
             """
-            n_plots = self.acquisition.n_detectors + 1
+            # Handle `show_populations` default case
+            if show_populations is None:
+                show_populations = self.acquisition.data.scatterer.index.get_level_values('Population').unique()
 
+            n_plots = self.acquisition.n_detectors + 1  # One extra plot for events
             time_units = self.acquisition.data.continuous.Time.max().to_compact().units
 
             with plt.style.context(mps):
@@ -488,52 +499,99 @@ class Acquisition:
                     nrows=n_plots,
                     figsize=figure_size,
                     sharex=True,
-                    height_ratios=[1] * (n_plots - 1) + [0.5],
+                    height_ratios=[1] * (n_plots - 1) + [0.5]
                 )
 
+            # Plot digitized and continuous signals for each detector
             for ax, (detector_name, group) in zip(axes[:-1], self.acquisition.data.continuous.groupby("Detector")):
                 detector = self.get_detector(detector_name)
 
-                ax.step(group["Time"].pint.to(time_units), group["DigitizedSignal"], label="Digitized Signal", where='mid')
+                # Convert time and signal data to the appropriate units
+                time_data = group["Time"].pint.to(time_units)
+                digitized_signal = group["DigitizedSignal"]
+
+                # Plot digitized signal
+                ax.step(time_data, digitized_signal, label="Digitized Signal", where='mid')
                 ax.set_ylabel(detector_name)
                 ax.set_ylim([0, self.acquisition.cytometer.signal_digitizer._bit_depth])
 
+                # Twin axis for continuous signal
                 ax2 = ax.twinx()
-                ax2_x = self.acquisition.data.continuous.loc[detector_name, 'Time']
-                ax2_y = self.acquisition.data.continuous.loc[detector_name, 'Signal']
-                ax2_y_units = ax2_y.max().to_compact().units
-                ax2.plot(
-                    ax2_x.pint.to(time_units),
-                    ax2_y.pint.to(ax2_y_units),
-                    color='black',
-                    linewidth=1,
-                    linestyle='-',
-                    label='Continuous signal',
-                    zorder=0,
-                )
+                cont_time, cont_signal, cont_signal_units = self._get_continuous_signal(detector_name, time_units)
+                ax2.plot(cont_time, cont_signal, color='black', linewidth=1, linestyle='-', label='Continuous Signal', zorder=0)
 
-                ax2.set_ylim(detector._saturation_levels if detector._saturation_levels[0] != detector._saturation_levels[1] else None)
+                # Set y-limits for the continuous signal
+                if detector._saturation_levels[0] != detector._saturation_levels[1]:
+                    ax2.set_ylim(detector._saturation_levels)
 
-            self._add_event_to_ax(ax=axes[-1], time_units=time_units)
-
+            # Add event markers to the last subplot
+            self._add_event_to_ax(ax=axes[-1], time_units=time_units, show_populations=show_populations)
             axes[-1].set_xlabel(f"Time [{time_units}]")
+
+            # Save or show the figure
+            if save_filename:
+                fig.savefig(fname=save_filename)
             if show:
                 plt.show()
 
-        def _add_event_to_ax(self, ax: plt.Axes, time_units: units.Quantity, palette: str = 'tab10') -> None:
+
+        def _get_continuous_signal(self, detector_name: str, time_units: units.Quantity):
+            """
+            Retrieves and converts the continuous signal data for a given detector.
+
+            Parameters
+            ----------
+            detector_name : str
+                Name of the detector.
+            time_units : units.Quantity
+                Desired time units.
+
+            Returns
+            -------
+            tuple
+                (time array, signal array, signal units)
+            """
+            data = self.acquisition.data.continuous.loc[detector_name]
+            cont_time = data['Time'].pint.to(time_units)
+            cont_signal = data['Signal']
+            cont_signal_units = cont_signal.max().to_compact().units
+            return cont_time, cont_signal.pint.to(cont_signal_units), cont_signal_units
+
+        def _add_event_to_ax(
+            self,
+            ax: plt.Axes,
+            time_units: units.Quantity,
+            palette: str = 'tab10',
+            show_populations: str | List[str] = None
+        ) -> None:
+            """
+            Adds vertical markers for event occurrences in the scatterer data.
+
+            Parameters
+            ----------
+            ax : plt.Axes
+                The matplotlib axis to modify.
+            time_units : units.Quantity
+                Time units to use for plotting.
+            palette : str, optional
+                Color palette for different populations (default: 'tab10').
+            show_populations : str or list of str, optional
+                Populations to display. If None, all populations are shown.
+            """
+            # Get unique population names
             unique_populations = self.acquisition.data.scatterer.index.get_level_values('Population').unique()
             color_mapping = dict(zip(unique_populations, sns.color_palette(palette, len(unique_populations))))
 
             for population_name, group in self.acquisition.data.scatterer.groupby('Population'):
+                if show_populations is not None and population_name not in show_populations:
+                    continue
                 x = group.Time.pint.to(time_units)
                 color = color_mapping[population_name]
                 ax.vlines(x, ymin=0, ymax=1, transform=ax.get_xaxis_transform(), label=population_name, color=color)
 
             ax.tick_params(axis='y', left=False, labelleft=False)
-
             ax.get_yaxis().set_visible(False)
             ax.set_xlabel(f"Time [{time_units}]")
-
             ax.legend()
 
         @helper.plot_sns

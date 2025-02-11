@@ -12,6 +12,7 @@ from FlowCyPy.population import Population
 from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy.units import meter, particle, Quantity
 from FlowCyPy import units
+from FlowCyPy.helper import validate_units
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -19,6 +20,7 @@ config_dict = dict(
     slots=True,
     extra='forbid'
 )
+
 
 
 @dataclass(config=config_dict)
@@ -63,12 +65,14 @@ class FlowCell:
             raise ValueError(f"flow_area must be in meter ** 2, but got {value.units}")
         return value
 
+    @validate_units(run_time=units.second)
     def get_volume(self, run_time: Quantity) -> Quantity:
         """
         Computes the volume passing through the flow cell over the given run time.
         """
-        return self.flow_area * self.flow_speed * run_time
+        return (self.volume_flow * run_time).to_compact()
 
+    @validate_units(run_time=units.second)
     def get_population_sampling(self, run_time: Quantity, scatterer_collection: ScattererCollection) -> list[Quantity]:
         """
         Calculates the number of events (or particle counts) for each population based on the run time.
@@ -82,12 +86,11 @@ class FlowCell:
             for p in scatterer_collection.populations
         ]
 
-    def generate_event_dataframe(self, populations: List[Population], run_time: Quantity) -> pd.DataFrame:
+    def _generate_event_dataframe(self, populations: List[Population], run_time: Quantity) -> pd.DataFrame:
         """
         Generates a DataFrame of event times for each population based on the specified scheme.
         """
         # Generate individual DataFrames for each population
-
         population_event_frames = [
             self._generate_poisson_events(population=population, run_time=run_time)
             for population in populations

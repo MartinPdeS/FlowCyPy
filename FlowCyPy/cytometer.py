@@ -13,6 +13,7 @@ from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.detector import Detector
 from FlowCyPy.acquisition import Acquisition
 from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy.helper import validate_units
 
 
 # Set up logging configuration
@@ -87,7 +88,7 @@ class FlowCytometer:
         for detector in detectors:
             detector.cytometer = self
 
-    def run_coupling_analysis(self, scatterer_dataframe: pd.DataFrame) -> None:
+    def _run_coupling_analysis(self, scatterer_dataframe: pd.DataFrame) -> None:
         """
         Computes and assigns the optical coupling power for each particle-detection event.
 
@@ -184,7 +185,7 @@ class FlowCytometer:
 
         scatterer_dataframe['Widths'] = PintArray(widths, dtype=widths.units)
 
-    def initialize_signal(self, run_time: Quantity) -> None:
+    def _initialize_signal(self, run_time: Quantity) -> None:
         """
         Initializes the raw signal for each detector based on the source and flow cell configuration.
 
@@ -209,6 +210,7 @@ class FlowCytometer:
 
         self.dataframe.index.names = ["Detector", "Index"]
 
+    @validate_units(run_time=units.second)
     def get_acquisition(self, run_time: Quantity) -> None:
         """
         Simulates the generation of optical signal pulses for each particle event.
@@ -231,13 +233,13 @@ class FlowCytometer:
         if not run_time.check('second'):
             raise ValueError(f"flow_speed must be in meter per second, but got {run_time.units}")
 
-        self.initialize_signal(run_time=run_time)
+        self._initialize_signal(run_time=run_time)
 
-        scatterer_dataframe = self.flow_cell.generate_event_dataframe(self.scatterer_collection.populations, run_time=run_time)
+        scatterer_dataframe = self.flow_cell._generate_event_dataframe(self.scatterer_collection.populations, run_time=run_time)
 
         self.scatterer_collection.fill_dataframe_with_sampling(scatterer_dataframe)
 
-        self.run_coupling_analysis(scatterer_dataframe)
+        self._run_coupling_analysis(scatterer_dataframe)
 
         self._generate_pulse_parameters(scatterer_dataframe)
 

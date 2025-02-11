@@ -62,7 +62,7 @@ def scatterer_collection(populations):
 
 @pytest.fixture
 def population_dataframe(flow_cell, populations):
-    dataframe = flow_cell.generate_event_dataframe(populations, run_time=RUN_TIME)
+    dataframe = flow_cell._generate_event_dataframe(populations, run_time=RUN_TIME)
 
     return dataframe
 

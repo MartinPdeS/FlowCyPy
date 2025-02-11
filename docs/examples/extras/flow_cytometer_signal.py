@@ -45,19 +45,23 @@ scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.
 
 population_0 = Population(
     name='EV',
-    particle_count=1e+9 * units.particle / units.milliliter,
-    size=distribution.RosinRammler(characteristic_size=50 * units.nanometer, spread=4.5),
-    refractive_index=distribution.Normal(mean=1.39 * units.RIU, std_dev=0.05 * units.RIU)
+    # particle_count=1e+9 * units.particle / units.milliliter,
+    particle_count=10 * units.particle,
+    size=distribution.RosinRammler(characteristic_size=200 * units.nanometer, spread=4.5),
+    refractive_index=distribution.Normal(mean=1.42 * units.RIU, std_dev=0.05 * units.RIU)
 )
 
 population_1 = Population(
     name='LP',
-    particle_count=1e+9 * units.particle / units.milliliter,
-    size=distribution.RosinRammler(characteristic_size=200 * units.nanometer, spread=4.5),
-    refractive_index=distribution.Normal(mean=1.45 * units.RIU, std_dev=0.05 * units.RIU)
+    # particle_count=1e+9 * units.particle / units.milliliter,
+    particle_count=50_000 * units.particle,
+    size=distribution.RosinRammler(characteristic_size=100 * units.nanometer, spread=4.5),
+    refractive_index=distribution.Normal(mean=1.39 * units.RIU, std_dev=0.05 * units.RIU)
 )
 
-scatterer_collection.add_population(population_0, population_1)
+scatterer_collection.add_population(population_1, population_0)
+
+# scatterer_collection.dilute(100)
 
 # Step 5: Set up the detectors
 # ----------------------------
@@ -99,7 +103,7 @@ cytometer = FlowCytometer(
 acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
 # Visualize the scatter signals from both detectors
-acquisition.plot.signals()
+acquisition.plot.signals(show_populations=['EV'])
 
 # %%
 #

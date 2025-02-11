@@ -53,7 +53,7 @@ def test_generate_distribution_size(distribution, default_flow_cell):
 
     scatterer_collection.add_population(population_0)
 
-    dataframe = default_flow_cell.generate_event_dataframe(
+    dataframe = default_flow_cell._generate_event_dataframe(
         scatterer_collection.populations,
         run_time=100e-4 * units.second
     )
@@ -115,7 +115,7 @@ def test_generate_longitudinal_positions(default_flow_cell, distribution):
 
     scatterer_collection.add_population(population_0)
 
-    dataframe = default_flow_cell.generate_event_dataframe(
+    dataframe = default_flow_cell._generate_event_dataframe(
         scatterer_collection.populations,
         run_time=100e-4 * units.second
     )
