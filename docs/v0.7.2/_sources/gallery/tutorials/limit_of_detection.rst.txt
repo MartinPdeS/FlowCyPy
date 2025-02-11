@@ -57,7 +57,7 @@ Limit of detection
     /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/acquisition.py:102: UserWarning: Multiple peaks detected in the following segments: [('forward', 1), ('forward', 2), ('forward', 3), ('forward', 4), ('forward', 5), ('forward', 6), ('forward', 7), ('forward', 8), ('forward', 11), ('side', 1), ('side', 2), ('side', 3), ('side', 4), ('side', 5), ('side', 6), ('side', 7), ('side', 8), ('side', 11)]
       warnings.warn(
 
-    <seaborn.axisgrid.JointGrid object at 0x7fe8712c2690>
+    <seaborn.axisgrid.JointGrid object at 0x7fcdc7eab790>
 
 
 
@@ -167,7 +167,7 @@ Limit of detection
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.858 seconds)
+   **Total running time of the script:** (0 minutes 6.749 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:
