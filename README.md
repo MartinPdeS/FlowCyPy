@@ -4,14 +4,14 @@
 
 | Name                                                  |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |------------------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
-| FlowCyPy/acquisition.py                               |      240 |       49 |       50 |       11 |     77% |78, 147, 224->228, 248, 277-280, 396-417, 436-443, 489->492, 523->505, 532, 533->exit, 586, 612-627, 659-682, 777->exit, 801-818, 821->exit |
+| FlowCyPy/acquisition.py                               |      256 |       63 |       60 |       11 |     72% |79, 117-132, 169, 246->250, 270, 299-302, 418-439, 458-465, 511->514, 545->527, 554, 555->exit, 608, 634-649, 681-704, 799->exit, 823-840, 843->exit |
 | FlowCyPy/classifier.py                                |       44 |        0 |        8 |        4 |     92% |32->35, 74->78, 121->125, 172->176 |
 | FlowCyPy/coupling\_mechanism/empirical.py             |        9 |        4 |        0 |        0 |     56% |     39-47 |
 | FlowCyPy/coupling\_mechanism/mie.py                   |       43 |        2 |        6 |        3 |     90% |82->96, 119, 183 |
 | FlowCyPy/coupling\_mechanism/rayleigh.py              |       23 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/uniform.py               |        6 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/cytometer.py                                 |       88 |        9 |       18 |        3 |     87% |234, 322, 327-330, 350-354 |
-| FlowCyPy/detector.py                                  |      104 |       18 |       26 |        4 |     77% |82, 102, 114-116, 120, 258-259, 295, 344-358 |
+| FlowCyPy/detector.py                                  |      100 |       15 |       22 |        4 |     81% |82, 102, 114, 252-253, 289, 338-352 |
 | FlowCyPy/distribution/base\_class.py                  |       27 |        4 |        2 |        1 |     83% |32, 36, 65, 72 |
 | FlowCyPy/distribution/delta.py                        |       31 |        2 |        2 |        1 |     91% |   74, 104 |
 | FlowCyPy/distribution/lognormal.py                    |       37 |        3 |        4 |        2 |     88% |90, 92, 124 |
@@ -34,8 +34,8 @@
 | FlowCyPy/signal\_digitizer.py                         |       27 |        3 |        4 |        2 |     84% | 63-64, 87 |
 | FlowCyPy/source.py                                    |       72 |        7 |       18 |        6 |     86% |33, 38, 48, 51, 58, 61, 71 |
 | FlowCyPy/units.py                                     |       21 |        0 |        4 |        0 |    100% |           |
-| FlowCyPy/utils.py                                     |       33 |        3 |        6 |        2 |     87% |27, 31, 39 |
-|                                             **TOTAL** | **1468** |  **246** |  **268** |   **75** | **79%** |           |
+| FlowCyPy/utils.py                                     |       40 |        7 |        6 |        2 |     80% |28, 32, 40, 79-80, 84-85 |
+|                                             **TOTAL** | **1487** |  **261** |  **274** |   **75** | **78%** |           |
 
 
 ## Setup coverage badge
