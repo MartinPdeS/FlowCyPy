@@ -4,14 +4,14 @@
 
 | Name                                                  |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |------------------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
-| FlowCyPy/acquisition.py                               |      241 |       49 |       50 |       11 |     77% |79, 148, 225->229, 249, 278-281, 397-418, 437-444, 490->493, 524->506, 533, 534->exit, 587, 613-628, 660-683, 778->exit, 802-819, 822->exit |
+| FlowCyPy/acquisition.py                               |      240 |       49 |       50 |       11 |     77% |78, 147, 224->228, 248, 277-280, 396-417, 436-443, 489->492, 523->505, 532, 533->exit, 586, 612-627, 659-682, 777->exit, 801-818, 821->exit |
 | FlowCyPy/classifier.py                                |       44 |        0 |        8 |        4 |     92% |32->35, 74->78, 121->125, 172->176 |
 | FlowCyPy/coupling\_mechanism/empirical.py             |        9 |        4 |        0 |        0 |     56% |     39-47 |
 | FlowCyPy/coupling\_mechanism/mie.py                   |       43 |        2 |        6 |        3 |     90% |82->96, 119, 183 |
 | FlowCyPy/coupling\_mechanism/rayleigh.py              |       23 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/uniform.py               |        6 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/cytometer.py                                 |       88 |        9 |       18 |        3 |     87% |234, 322, 327-330, 350-354 |
-| FlowCyPy/detector.py                                  |      111 |       19 |       28 |        5 |     77% |84, 104, 126, 138-140, 144, 282-283, 319, 368-382 |
+| FlowCyPy/detector.py                                  |      104 |       18 |       26 |        4 |     77% |82, 102, 114-116, 120, 258-259, 295, 344-358 |
 | FlowCyPy/distribution/base\_class.py                  |       27 |        4 |        2 |        1 |     83% |32, 36, 65, 72 |
 | FlowCyPy/distribution/delta.py                        |       31 |        2 |        2 |        1 |     91% |   74, 104 |
 | FlowCyPy/distribution/lognormal.py                    |       37 |        3 |        4 |        2 |     88% |90, 92, 124 |
@@ -35,7 +35,7 @@
 | FlowCyPy/source.py                                    |       72 |        7 |       18 |        6 |     86% |33, 38, 48, 51, 58, 61, 71 |
 | FlowCyPy/units.py                                     |       21 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       33 |        3 |        6 |        2 |     87% |27, 31, 39 |
-|                                             **TOTAL** | **1476** |  **247** |  **270** |   **76** | **79%** |           |
+|                                             **TOTAL** | **1468** |  **246** |  **268** |   **75** | **79%** |           |
 
 
 ## Setup coverage badge
