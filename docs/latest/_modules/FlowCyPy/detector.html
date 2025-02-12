@@ -591,12 +591,6 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">__convert_attr_to_SI</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># Convert all Quantity attributes to base SI units (without any prefixes)</span>
-        <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">())</span>
-
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">xs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
