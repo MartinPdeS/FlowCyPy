@@ -41,7 +41,7 @@ class FlowCytometer:
     coupling_mechanism : str, optional
         The scattering mechanism used to couple the signal from the particles to the detectors.
         Supported mechanisms include: 'mie' (default): Mie scattering, 'rayleigh': Rayleigh scattering, 'uniform': Uniform signal coupling, 'empirical': Empirical data-driven coupling
-    background_power : Quantity, optional
+    background_power : units.watt, optional
         The background optical power added to the detector signal. Defaults to 0 milliwatts.
 
     Attributes
@@ -56,7 +56,7 @@ class FlowCytometer:
         The detectors used to collect and process signals from the scatterers.
     coupling_mechanism : str
         The selected mechanism for signal coupling.
-    background_power : Quantity
+    background_power : units.watt
         The optical background power added to the detector signals.
 
     Raises
@@ -72,7 +72,7 @@ class FlowCytometer:
             signal_digitizer: SignalDigitizer,
             detectors: List[Detector],
             coupling_mechanism: Optional[str] = 'mie',
-            background_power: Optional[Quantity] = 0 * milliwatt):
+            background_power: Optional[units.watt] = 0 * milliwatt):
 
         self.scatterer_collection = scatterer_collection
         self.flow_cell = flow_cell
@@ -185,7 +185,7 @@ class FlowCytometer:
 
         scatterer_dataframe['Widths'] = PintArray(widths, dtype=widths.units)
 
-    def _initialize_signal(self, run_time: Quantity) -> None:
+    def _initialize_signal(self, run_time: units.second) -> None:
         """
         Initializes the raw signal for each detector based on the source and flow cell configuration.
 
@@ -211,7 +211,7 @@ class FlowCytometer:
         self.dataframe.index.names = ["Detector", "Index"]
 
     @validate_units(run_time=units.second)
-    def get_acquisition(self, run_time: Quantity) -> None:
+    def get_acquisition(self, run_time: units.second) -> None:
         """
         Simulates the generation of optical signal pulses for each particle event.
 

@@ -2,8 +2,7 @@ import logging
 from copy import copy
 import numpy as np
 import pandas as pd
-from typing import Optional, Union
-import matplotlib.pyplot as plt
+from typing import Optional
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 import pint_pandas
@@ -55,7 +54,6 @@ class Detector():
     gamma_angle: Optional[Quantity] = Quantity(0, degree)
     sampling: Optional[Quantity] = 100 * AU
     responsitivity: Optional[Quantity] = Quantity(1, ampere / watt)
-    baseline_shift: Optional[Quantity] = Quantity(0.0, volt)
     dark_current: Optional[Quantity] = Quantity(0.0, ampere)  # Dark current
     resistance: Optional[Quantity] = Quantity(50.0, 'ohm')  # Resistance for thermal noise
     temperature: Optional[Quantity] = Quantity(0.0, 'kelvin')  # Temperature for thermal noise
@@ -104,28 +102,6 @@ class Detector():
             raise ValueError(f"Responsitivity must be in ampere per watt, but got {value.units}")
         return value
 
-    @field_validator('baseline_shift')
-    def _validate_voltage_attributes(cls, value):
-        """
-        Validates that noise level, baseline shift, and saturation level are all in volts.
-
-        Parameters
-        ----------
-        value : Quantity
-            The voltage attribute to validate (noise level, baseline shift, or saturation).
-
-        Returns
-        -------
-        Quantity
-            The validated voltage attribute.
-
-        Raises:
-            ValueError: If the attribute is not in volts.
-        """
-        if not value.check('volt'):
-            raise ValueError(f"Voltage attributes must be in volts, but got {value.units}")
-        return value
-
     def __post_init__(self) -> None:
         """
         Finalizes the initialization of the detector object and processes the number of bins.
@@ -133,7 +109,7 @@ class Detector():
         if self.name is None:
             self.name = str(id(self))
 
-    def _convert_attr_to_SI(self) -> None:
+    def __convert_attr_to_SI(self) -> None:
         # Convert all Quantity attributes to base SI units (without any prefixes)
         for attr_name, attr_value in vars(self).items():
             if isinstance(attr_value, Quantity):
@@ -309,7 +285,7 @@ class Detector():
 
     def capture_signal(self, signal: pd.Series) -> None:
         """
-        Processes and captures the final signal by applying noise, baseline shifts, and saturation.
+        Processes and captures the final signal by applying noise and saturation.
         """
         if self.signal_digitizer.saturation_levels == 'auto':
             min_level, max_level = signal.min(), signal.max()

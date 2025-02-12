@@ -59,7 +59,6 @@ def detector():
         numerical_aperture=0.1 * units.AU,
         name='first detector',
         responsitivity=1.0 * units.ampere / units.watt,  # Responsitivity of the detector
-        baseline_shift=0.01 * units.volt,          # Signal noise level: 0.5 volts
     )
 
 

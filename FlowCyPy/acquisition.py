@@ -5,7 +5,6 @@ from MPSPlots.styles import mps
 import pandas as pd
 import numpy as np
 from FlowCyPy import units
-from FlowCyPy.units import Quantity
 from scipy.signal import find_peaks
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -25,7 +24,7 @@ class Acquisition:
 
     Attributes
     ----------
-    run_time : Quantity
+    run_time : units.second
         Total runtime of the experiment.
     scatterer_dataframe : pd.DataFrame
         DataFrame containing scatterer data, indexed by population and time.
@@ -33,7 +32,7 @@ class Acquisition:
         DataFrame containing detector signal data, indexed by detector and time.
     """
 
-    def __init__(self, run_time: Quantity, cytometer: object, scatterer_dataframe: pd.DataFrame, detector_dataframe: pd.DataFrame):
+    def __init__(self, run_time: units.second, cytometer: object, scatterer_dataframe: pd.DataFrame, detector_dataframe: pd.DataFrame):
         """
         Initializes the Experiment instance.
 

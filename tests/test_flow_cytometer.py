@@ -34,7 +34,6 @@ def default_detector_1():
         numerical_aperture=1 * units.AU,
         phi_angle=90 * units.degree,
         responsitivity=1 * units.ampere / units.watt,
-        baseline_shift=0.0 * units.volt,
     )
 
 
