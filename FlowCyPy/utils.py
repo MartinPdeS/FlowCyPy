@@ -1,6 +1,7 @@
 import numpy as np
 from typing import List
 from FlowCyPy.units import second, volt, Quantity
+from scipy.signal import butter, filtfilt
 import pandas as pd
 import pint_pandas
 from FlowCyPy.peak_locator import BasePeakLocator
@@ -72,3 +73,13 @@ def generate_dummy_detector(time: np.ndarray, centers: List[float], heights: Lis
         signal += height * np.exp(-((time - center) ** 2) / (2 * sigma ** 2))
 
     return ProxyDetector(time=time, signal=signal)
+
+def bessel_lowpass_filter(data, cutoff_freq, fs, order=5):
+    """Applies a Bessel low-pass filter to the data."""
+    b, a = butter(order, cutoff_freq / (fs / 2), btype='low', analog=False, output='ba',  norm='phase')
+    return filtfilt(b, a, data, axis=0)
+
+def dc_highpass_filter(data, cutoff_freq, fs, order=1):
+    """Applies a high-pass filter to remove the DC component."""
+    b, a = butter(order, cutoff_freq / (fs / 2), btype='high', analog=False)
+    return filtfilt(b, a, data, axis=0)

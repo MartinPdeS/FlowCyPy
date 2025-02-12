@@ -109,12 +109,6 @@ class Detector():
         if self.name is None:
             self.name = str(id(self))
 
-    def __convert_attr_to_SI(self) -> None:
-        # Convert all Quantity attributes to base SI units (without any prefixes)
-        for attr_name, attr_value in vars(self).items():
-            if isinstance(attr_value, Quantity):
-                setattr(self, attr_name, attr_value.to_base_units())
-
     @property
     def dataframe(self) -> pd.DataFrame:
         return self.cytometer.dataframe.xs(self.name)

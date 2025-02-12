@@ -11,6 +11,7 @@ import seaborn as sns
 from tabulate import tabulate
 
 from FlowCyPy import helper
+from FlowCyPy.utils import bessel_lowpass_filter, dc_highpass_filter
 from FlowCyPy.classifier import BaseClassifier
 
 class DataAccessor:
@@ -110,6 +111,27 @@ class Acquisition:
             .loc[_temp.groupby(['Detector', 'SegmentID'])['Height'].idxmax()]
             .set_index(['Detector', 'SegmentID'])
         )
+
+    def process_data(self, cutoff_low: units.Quantity = None, cutoff_high: units.Quantity = None):
+        """Applies the Bessel low-pass and DC high-pass filters to each SegmentID separately."""
+        filtered_df = self.data.triggered.copy()  # Copy to avoid modifying the original
+        segment_ids = self.data.triggered.index.levels[1]  # Extract unique SegmentID values
+        fs = self.cytometer.signal_digitizer.sampling_freq
+
+        for segment_id in segment_ids:
+            for detector in self.data.triggered.index.levels[0]:  # Iterate through Detectors
+                col = (detector, segment_id)  # MultiIndex column tuple
+                if col in self.data.triggered:
+                    data = self.data.triggered[col].values
+                    if cutoff_low is not None:
+                        data = bessel_lowpass_filter(data, cutoff_low, fs)
+                    if cutoff_high is not None:
+                        data = dc_highpass_filter(data, cutoff_high, fs)
+                    filtered_df[col] = data  # Store filtered data
+
+        return filtered_df
+
+
 
     def _get_trigger_indices(
         self,
