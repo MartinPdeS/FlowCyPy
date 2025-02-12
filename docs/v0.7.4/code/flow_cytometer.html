@@ -526,7 +526,7 @@ particle event and noise modeling for accurate signal representation.</p>
 <li><p><strong>detectors</strong> (<em>List</em><em>[</em><a class="reference internal" href="detector.html#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><em>Detector</em></a><em>]</em>) – A list of <cite>Detector</cite> objects representing the detectors used to measure optical signals (e.g., FSC and SSC). Exactly two detectors must be provided.</p></li>
 <li><p><strong>coupling_mechanism</strong> (<em>str</em><em>, </em><em>optional</em>) – The scattering mechanism used to couple the signal from the particles to the detectors.
 Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh’: Rayleigh scattering, ‘uniform’: Uniform signal coupling, ‘empirical’: Empirical data-driven coupling</p></li>
-<li><p><strong>background_power</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The background optical power added to the detector signal. Defaults to 0 milliwatts.</p></li>
+<li><p><strong>background_power</strong> (<em>units.watt</em><em>, </em><em>optional</em>) – The background optical power added to the detector signal. Defaults to 0 milliwatts.</p></li>
 <li><p><strong>scatterer_collection</strong> (<em>object</em>)</p></li>
 <li><p><strong>signal_digitizer</strong> (<em>SignalDigitizer</em>)</p></li>
 </ul>
@@ -593,7 +593,7 @@ Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh�
 <dd><p>The optical background power added to the detector signals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Quantity</p>
+<dd class="field-odd"><p>units.watt</p>
 </dd>
 </dl>
 </dd></dl>
@@ -609,7 +609,7 @@ Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh�
 <li><p><strong>signal_digitizer</strong> (<em>SignalDigitizer</em>)</p></li>
 <li><p><strong>detectors</strong> (<em>List</em><em>[</em><a class="reference internal" href="detector.html#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><em>Detector</em></a><em>]</em>)</p></li>
 <li><p><strong>coupling_mechanism</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>background_power</strong> (<em>Quantity</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>background_power</strong> (<em>&lt;Unit</em><em>(</em><em>'watt'</em><em>)</em><em>&gt;</em><em> | </em><em>None</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -657,7 +657,7 @@ to each detector’s raw signal.</p>
 <dd class="field-odd"><p><strong>ValueError</strong> – If the scatterer collection lacks required data columns (‘Widths’, ‘Time’).</p>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>run_time</strong> (<em>Quantity</em>)</p>
+<dd class="field-even"><p><strong>run_time</strong> (<em>&lt;Unit</em><em>(</em><em>'second'</em><em>)</em><em>&gt;</em>)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>

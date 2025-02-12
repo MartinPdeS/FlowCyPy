@@ -482,8 +482,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pint_pandas</span>
@@ -537,7 +536,6 @@
     <span class="n">gamma_angle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span>
     <span class="n">sampling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">AU</span>
     <span class="n">responsitivity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ampere</span> <span class="o">/</span> <span class="n">watt</span><span class="p">)</span>
-    <span class="n">baseline_shift</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">volt</span><span class="p">)</span>
     <span class="n">dark_current</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">ampere</span><span class="p">)</span>  <span class="c1"># Dark current</span>
     <span class="n">resistance</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="s1">&#39;ohm&#39;</span><span class="p">)</span>  <span class="c1"># Resistance for thermal noise</span>
     <span class="n">temperature</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;kelvin&#39;</span><span class="p">)</span>  <span class="c1"># Temperature for thermal noise</span>
@@ -586,28 +584,6 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Responsitivity must be in ampere per watt, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;baseline_shift&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_voltage_attributes</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validates that noise level, baseline shift, and saturation level are all in volts.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        value : Quantity</span>
-<span class="sd">            The voltage attribute to validate (noise level, baseline shift, or saturation).</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
-<span class="sd">            The validated voltage attribute.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If the attribute is not in volts.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;volt&#39;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Voltage attributes must be in volts, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finalizes the initialization of the detector object and processes the number of bins.</span>
@@ -615,7 +591,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_attr_to_SI</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__convert_attr_to_SI</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Convert all Quantity attributes to base SI units (without any prefixes)</span>
         <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
@@ -796,7 +772,7 @@
 <a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector.capture_signal">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">capture_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Processes and captures the final signal by applying noise, baseline shifts, and saturation.</span>
+<span class="sd">        Processes and captures the final signal by applying noise and saturation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">saturation_levels</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
             <span class="n">min_level</span><span class="p">,</span> <span class="n">max_level</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">signal</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
