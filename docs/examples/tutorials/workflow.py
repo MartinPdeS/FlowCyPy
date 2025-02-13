@@ -69,7 +69,7 @@ from FlowCyPy import FlowCell
 
 flow_cell = FlowCell(
     source=source,
-    volume_flow=10 * units.microliter / units.second,  # Flow volume
+    volume_flow=1 * units.microliter / units.second,  # Flow volume
     flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
 )
 
@@ -157,25 +157,27 @@ cytometer = FlowCytometer(
 )
 
 # Run the flow cytometry simulation
-experiment = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-experiment.plot.scatterer(show=False)
+acquisition.scatterer.plot(
+    x='Size',
+    y='RefractiveIndex'
+)
 
-
-experiment.plot.coupling_distribution(
-    x_detector='side',
-    y_detector='forward'
+acquisition.scatterer.plot(
+    x='side',
+    y='forward'
 )
 
 # Visualize the scatter signals from both detectors
-experiment.plot.signals()
+acquisition.signal.plot()
 
 # %%
 # Step 7: Analyze Detected Signals
 # --------------------------------
 # The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 # window size and threshold.
-experiment.run_triggering(
+triggered_acquisition = acquisition.run_triggering(
     threshold=0.2 * units.millivolt,
     trigger_detector_name='forward',
     max_triggers=35,
@@ -183,9 +185,11 @@ experiment.run_triggering(
     post_buffer=64
 )
 
-experiment.plot.trigger()
+triggered_acquisition.signal.plot()
 
-experiment.plot.peaks(
+peaks = triggered_acquisition.detect_peaks()
+
+peaks.plot(
     x_detector='side',
     y_detector='forward'
 )
@@ -196,14 +200,14 @@ from FlowCyPy.classifier import KmeansClassifier
 
 classifier = KmeansClassifier(number_of_cluster=2)
 
-experiment.classify_dataset(
-    classifier=classifier,
+data = classifier.run(
+    dataframe=peaks.unstack('Detector'),
     features=['Height', 'widths'],
     detectors=['side', 'forward']
 )
 
-experiment.plot.classifier(
+data.plot(
     feature='Height',
-    x_detector='forward',
-    y_detector='side'
+    x_detector='side',
+    y_detector='forward'
 )

@@ -2,7 +2,7 @@ from sklearn.cluster import KMeans
 from sklearn.cluster import DBSCAN
 from sklearn.mixture import GaussianMixture
 import pandas as pd
-from typing import Dict, Tuple
+from FlowCyPy.dataframe_subclass import ClassifierDataFrame
 
 
 class BaseClassifier:
@@ -80,7 +80,7 @@ class KmeansClassifier(BaseClassifier):
 
         dataframe['Label'] = labels
 
-        return labels
+        return ClassifierDataFrame(dataframe)
 
 class GaussianMixtureClassifier(BaseClassifier):
     def __init__(self, number_of_components: int) -> None:
@@ -128,7 +128,7 @@ class GaussianMixtureClassifier(BaseClassifier):
         # Add labels to the original DataFrame
         dataframe['Label'] = labels
 
-        return labels
+        return ClassifierDataFrame(dataframe)
 
 class DBSCANClassifier(BaseClassifier):
     def __init__(self, epsilon: float = 0.5, min_samples: int = 5) -> None:
@@ -179,4 +179,4 @@ class DBSCANClassifier(BaseClassifier):
         # Add labels to the original DataFrame
         dataframe['Label'] = labels
 
-        return labels
+        return ClassifierDataFrame(dataframe)

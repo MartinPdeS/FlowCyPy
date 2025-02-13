@@ -13,6 +13,7 @@ from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy.units import meter, particle, Quantity
 from FlowCyPy import units
 from FlowCyPy.helper import validate_units
+from FlowCyPy.dataframe_subclass import ScattererDataFrame
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -110,7 +111,7 @@ class FlowCell:
             if self.event_scheme.lower() == 'uniform-random':
                 numpy.random.shuffle(evenly_spaced_times.magnitude)
             event_dataframe['Time'] = PintArray(evenly_spaced_times.to(units.second).magnitude, units.second)
-        return event_dataframe
+        return ScattererDataFrame(event_dataframe)
 
     def _generate_poisson_events(self, run_time: Quantity, population: Population) -> pd.DataFrame:
         """

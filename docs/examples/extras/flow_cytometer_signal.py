@@ -103,7 +103,7 @@ cytometer = FlowCytometer(
 acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
 # Visualize the scatter signals from both detectors
-acquisition.plot.signals(show_populations=['EV'])
+acquisition.signal.plot(filter_population=['EV'])
 
 # %%
 #

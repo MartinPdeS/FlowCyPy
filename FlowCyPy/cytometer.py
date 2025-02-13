@@ -14,6 +14,7 @@ from FlowCyPy.detector import Detector
 from FlowCyPy.acquisition import Acquisition
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.helper import validate_units
+from FlowCyPy.dataframe_subclass import ContinuousAcquisitionDataFrame
 
 
 # Set up logging configuration
@@ -206,9 +207,11 @@ class FlowCytometer:
 
             dataframes.append(dataframe)
 
-        self.dataframe = pd.concat(dataframes, keys=[d.name for d in self.detectors])
+        dataframe = pd.concat(dataframes, keys=[d.name for d in self.detectors])
 
-        self.dataframe.index.names = ["Detector", "Index"]
+        dataframe.index.names = ["Detector", "Index"]
+
+        return dataframe
 
     @validate_units(run_time=units.second)
     def get_acquisition(self, run_time: units.second) -> None:
@@ -233,7 +236,7 @@ class FlowCytometer:
         if not run_time.check('second'):
             raise ValueError(f"flow_speed must be in meter per second, but got {run_time.units}")
 
-        self._initialize_signal(run_time=run_time)
+        signal_dataframe = self._initialize_signal(run_time=run_time)
 
         scatterer_dataframe = self.flow_cell._generate_event_dataframe(self.scatterer_collection.populations, run_time=run_time)
 
@@ -251,7 +254,7 @@ class FlowCytometer:
         for detector in self.detectors:
             _coupling_power = scatterer_dataframe[detector.name].values
 
-            detector_signal = self.dataframe.xs(detector.name)['Signal']
+            detector_signal = signal_dataframe.xs(detector.name)['Signal']
 
             # Generate noise components
             detector._add_thermal_noise_to_raw_signal(signal=detector_signal)
@@ -259,7 +262,7 @@ class FlowCytometer:
             detector._add_dark_current_noise_to_raw_signal(signal=detector_signal)
 
             # Broadcast the time array to the shape of (number of signals, len(detector.time))
-            time = self.dataframe.xs(detector.name)['Time'].pint.magnitude
+            time = signal_dataframe.xs(detector.name)['Time'].pint.magnitude
 
             time_grid = np.expand_dims(time, axis=0) * units.second
             centers = np.expand_dims(_centers, axis=1) * units.second
@@ -280,15 +283,20 @@ class FlowCytometer:
 
             digitized_signal = detector.capture_signal(signal=detector_signal)
 
-            self.dataframe.loc[detector.name, 'Signal'] = PintArray(detector_signal, detector_signal.pint.units)
+            signal_dataframe.loc[detector.name, 'Signal'] = PintArray(detector_signal, detector_signal.pint.units)
 
-            self.dataframe.loc[detector.name, 'DigitizedSignal'] = PintArray(digitized_signal, units.bit_bins)
+            signal_dataframe.loc[detector.name, 'DigitizedSignal'] = PintArray(digitized_signal, units.bit_bins)
+
+        signal_dataframe = ContinuousAcquisitionDataFrame(signal_dataframe)
+        signal_dataframe.attrs['bit_depth'] = self.signal_digitizer._bit_depth
+        signal_dataframe.attrs['saturation_levels'] = {d.name: d._saturation_levels for d in self.detectors}
+        signal_dataframe.attrs['scatterer_dataframe'] = scatterer_dataframe
 
         experiment = Acquisition(
             cytometer=self,
             run_time=run_time,
             scatterer_dataframe=scatterer_dataframe,
-            detector_dataframe=self.dataframe
+            detector_dataframe=signal_dataframe
         )
 
         return experiment

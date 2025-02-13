@@ -96,15 +96,15 @@ def test_flow_cytometer_simulation(default_detector_0, default_detector_1, defau
         coupling_mechanism='mie'
     )
 
-    experiment = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+    acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
     # Check that the signals are not all zeros (pulses should add non-zero values)
-    assert not np.all(experiment.data.continuous.Signal == 0 * units.volt), "FSC signal is all zeros."
-    assert not np.all(experiment.data.continuous.Signal == 0 * units.volt), "SSC signal is all zeros."
+    assert not np.all(acquisition.signal['Signal'] == 0 * units.volt), "FSC signal is all zeros."
+    assert not np.all(acquisition.signal['Signal'] == 0 * units.volt), "SSC signal is all zeros."
 
     # Check that the noise has been added to the signal
-    assert np.std(experiment.data.continuous.Signal) > 0 * units.volt, "FSC signal variance is zero, indicating no noise added."
-    assert np.std(experiment.data.continuous.Signal) > 0 * units.volt, "SSC signal variance is zero, indicating no noise added."
+    assert np.std(acquisition.signal['Signal']) > 0 * units.volt, "FSC signal variance is zero, indicating no noise added."
+    assert np.std(acquisition.signal['Signal']) > 0 * units.volt, "SSC signal variance is zero, indicating no noise added."
 
 
 @patch('matplotlib.pyplot.show')
@@ -120,13 +120,13 @@ def test_flow_cytometer_plot(mock_show, default_detector_0, default_detector_1, 
 
     acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-    acquisition.plot.signals()
+    acquisition.signal.plot()
 
     plt.close()
 
     acquisition.logger.scatterer()
 
-    acquisition.run_triggering(
+    triggered_acquisition = acquisition.run_triggering(
         threshold=3.0 * units.volt,
         trigger_detector_name='default',
         max_triggers=35,
@@ -134,11 +134,13 @@ def test_flow_cytometer_plot(mock_show, default_detector_0, default_detector_1, 
         post_buffer=64
     )
 
-    acquisition.plot.trigger()
+    triggered_acquisition.signal.plot()
 
     plt.close()
 
-    acquisition.plot.peaks(
+    peaks = triggered_acquisition.detect_peaks()
+
+    peaks.plot(
         x_detector='default',
         y_detector='default_bis'
     )

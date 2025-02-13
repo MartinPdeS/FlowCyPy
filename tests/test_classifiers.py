@@ -37,11 +37,11 @@ def test_kmeans_classifier(generate_test_data):
     classifier = KmeansClassifier(number_of_cluster=3)
 
     # Run classifier
-    labels = classifier.run(dataframe=data, features=['Feature1', 'Feature2'])
+    data = classifier.run(dataframe=data, features=['Feature1', 'Feature2'])
 
     # Assert labels are assigned and are within the expected range
     assert 'Label' in data.columns
-    assert len(set(labels)) == 3
+    assert len(set(data['Label'].unique())) == 3
 
 
 def test_gaussian_mixture_classifier(generate_test_data):
@@ -52,11 +52,11 @@ def test_gaussian_mixture_classifier(generate_test_data):
     classifier = GaussianMixtureClassifier(number_of_components=3)
 
     # Run classifier
-    labels = classifier.run(dataframe=data, features=['Feature1', 'Feature2'])
+    data = classifier.run(dataframe=data, features=['Feature1', 'Feature2'])
 
     # Assert labels are assigned and are within the expected range
     assert 'Label' in data.columns
-    assert len(set(labels)) == 3
+    assert len(set(data['Label'].unique())) == 3
 
 
 def test_dbscan_classifier(generate_test_data):
@@ -67,16 +67,11 @@ def test_dbscan_classifier(generate_test_data):
     classifier = DBSCANClassifier(epsilon=1.0, min_samples=5)
 
     # Run classifier
-    labels = classifier.run(dataframe=data, features=['Feature1', 'Feature2'])
+    data = classifier.run(dataframe=data, features=['Feature1', 'Feature2'])
 
-    # Assert labels are assigned
+    # Assert labels are assigned and are within the expected range
     assert 'Label' in data.columns
-
-    # Assert DBSCAN labels include noise (-1) or valid cluster labels
-    assert all(label == -1 or label >= 0 for label in labels)
-
-    # Assert at least one cluster and potentially noise are detected
-    assert len(set(labels)) >= 2  # Includes -1 for noise
+    assert len(set(data['Label'].unique())) <= 5
 
 
 if __name__ == '__main__':

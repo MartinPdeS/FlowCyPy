@@ -28,7 +28,7 @@ source = GaussianBeam(
 flow_cell = FlowCell(
     source=source,
     volume_flow=10 * units.microliter / units.second,      # Flow volume speed: 10 microliter per second
-    flow_area=(10 * units.micrometer) ** 2,      # Flow area: 10 x 10 micrometers
+    flow_area=(60 * units.micrometer) ** 2,      # Flow area: 10 x 10 micrometers
 )
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)  # Medium refractive index: 1.33
@@ -79,12 +79,12 @@ cytometer = FlowCytometer(
 )
 
 # Run the flow cytometry simulation
-experiment = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
 # Visualize the scatter signals from both detectors
-experiment.plot.signals()
+acquisition.signal.plot()
 
-experiment.run_triggering(
+trigger_acquisition = acquisition.run_triggering(
     threshold=3 * units.millivolt,
     trigger_detector_name='forward',
     max_triggers=15,
@@ -92,9 +92,11 @@ experiment.run_triggering(
     post_buffer=64
 )
 
-experiment.plot.trigger()
+trigger_acquisition.signal.plot()
 
-experiment.plot.peaks(
+peaks = trigger_acquisition.detect_peaks()
+
+peaks.plot(
     x_detector='side',
     y_detector='forward'
 )
