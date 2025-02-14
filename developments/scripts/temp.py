@@ -110,5 +110,9 @@ triggered_acquisition = acquisition.run_triggering(
 )
 
 
+# triggered_acquisition.apply_filters(low_cutoff=10 * units.megahertz, high_cutoff=1 * units.megahertz)
+triggered_acquisition.apply_filters(high_cutoff=0.0001 * units.megahertz)
+
+triggered_acquisition.signal.plot()
 # triggered_acquisition.signal.plot()
-acquisition.scatterer.log()
+# acquisition.scatterer.log()

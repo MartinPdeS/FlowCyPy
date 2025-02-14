@@ -3,17 +3,44 @@ from FlowCyPy import units
 from scipy.signal import find_peaks
 from FlowCyPy.utils import bessel_lowpass_filter, dc_highpass_filter
 from FlowCyPy.dataframe_subclass import PeakDataFrame
-import logging
-from tabulate import tabulate
+import pint_pandas
 
-class TriggeredAcquisitions():
+class TriggeredAcquisitions:
+    """
+    A class for handling and processing triggered acquisition data,
+    including peak detection and signal filtering.
+    """
+
     def __init__(self, parent, dataframe: pd.DataFrame):
+        """
+        Initializes the TriggeredAcquisitions instance.
+
+        Parameters
+        ----------
+        parent : object
+            Parent object containing cytometer and detector metadata.
+        dataframe : pd.DataFrame
+            Dataframe containing the acquired signals.
+        """
         self.signal = dataframe
         self.parent = parent
 
         self.detect_peaks()
 
     def get_detector(self, name: str):
+        """
+        Retrieves a detector instance by name.
+
+        Parameters
+        ----------
+        name : str
+            Name of the detector to retrieve.
+
+        Returns
+        -------
+        object or None
+            Detector object if found, otherwise None.
+        """
         for detector in self.parent.cytometer.detectors:
             if detector.name == name:
                 return detector
@@ -26,15 +53,15 @@ class TriggeredAcquisitions():
         ----------
         multi_peak_strategy : str, optional
             Strategy for handling multiple peaks in a segment. Options are:
-            - 'mean': Take the average of the peaks in the segment.
             - 'max': Take the maximum peak in the segment.
+            - 'mean': Take the average of the peaks in the segment.
             - 'sum': Sum all peaks in the segment.
             - 'discard': Remove entries with multiple peaks.
             - 'keep': Keep all peaks without aggregation.
-            Default is 'mean'.
+            Default is 'max'.
         """
-        if multi_peak_strategy not in {'max', }:
-            raise ValueError("Invalid multi_peak_strategy. Choose from 'max'.")
+        if multi_peak_strategy not in {'max', 'mean', 'sum', 'discard', 'keep'}:
+            raise ValueError("Invalid multi_peak_strategy. Choose from 'max', 'mean', 'sum', 'discard', 'keep'.")
 
         def process_segment(segment):
             signal = segment['DigitizedSignal'].values
@@ -53,15 +80,7 @@ class TriggeredAcquisitions():
         results = self.signal.groupby(level=['Detector', 'SegmentID']).apply(process_segment)
         results = results.reset_index(drop=True)
 
-        # Check for multiple peaks and issue a warning
-        # peak_counts = results.groupby(['Detector', 'SegmentID']).size()
-        # multiple_peak_segments = peak_counts[peak_counts > 1]
-        # if not multiple_peak_segments.empty:
-        #     warnings.warn(
-        #         f"Multiple peaks detected in the following segments: {multiple_peak_segments.index.tolist()}",
-        #         UserWarning
-        #     )
-
+        # Process multi-peak strategies
         _temp = results.reset_index()[['Detector', 'SegmentID', 'Height']].pint.dequantify().droplevel('unit', axis=1)
 
         self.peaks = (
@@ -72,21 +91,108 @@ class TriggeredAcquisitions():
 
         return PeakDataFrame(self.peaks)
 
-    def process_data(self, cutoff_low: units.Quantity = None, cutoff_high: units.Quantity = None):
-        """Applies the Bessel low-pass and DC high-pass filters to each SegmentID separately."""
-        filtered_df = self.data.triggered.copy()  # Copy to avoid modifying the original
-        segment_ids = self.data.triggered.index.levels[1]  # Extract unique SegmentID values
-        fs = self.cytometer.signal_digitizer.sampling_freq
+    def apply_lowpass_filter(self, cutoff_freq: units.Quantity, order: int = 4) -> None:
+        """
+        Applies a Bessel low-pass filter to the signal data in-place.
 
-        for segment_id in segment_ids:
-            for detector in self.data.triggered.index.levels[0]:  # Iterate through Detectors
-                col = (detector, segment_id)  # MultiIndex column tuple
-                if col in self.data.triggered:
-                    data = self.data.triggered[col].values
-                    if cutoff_low is not None:
-                        data = bessel_lowpass_filter(data, cutoff_low, fs)
-                    if cutoff_high is not None:
-                        data = dc_highpass_filter(data, cutoff_high, fs)
-                    filtered_df[col] = data  # Store filtered data
+        Parameters
+        ----------
+        cutoff_freq : units.Quantity
+            The cutoff frequency for the low-pass filter (must have frequency units).
+        order : int, optional
+            The order of the Bessel filter, default is 4.
 
-        return filtered_df
+        Raises
+        ------
+        ValueError
+            If cutoff frequency is missing or exceeds Nyquist frequency.
+        TypeError
+            If signal data is not stored as a PintArray.
+        """
+        if cutoff_freq is None:
+            raise ValueError("Cutoff frequency must be specified for low-pass filtering.")
+
+        # Get sampling frequency and ensure it's in Hertz
+        fs = self.parent.cytometer.signal_digitizer.sampling_freq.to("hertz")
+        nyquist_freq = fs / 2
+
+        # Validate cutoff frequency
+        if cutoff_freq.to("hertz") >= nyquist_freq:
+            raise ValueError(f"Cutoff frequency ({cutoff_freq}) must be below the Nyquist frequency ({nyquist_freq}).")
+
+        # Ensure the signal column is a PintArray
+        if not isinstance(self.signal["DigitizedSignal"].array, pint_pandas.PintArray):
+            raise TypeError("Expected 'DigitizedSignal' to be a PintArray, but got a different type.")
+
+        # Iterate through each detector-segment pair and apply filtering
+        for (detector, segment_id), segment_data in self.signal.groupby(level=['Detector', 'SegmentID']):
+            filtered_values = bessel_lowpass_filter(
+                signal=segment_data["DigitizedSignal"].pint.quantity.magnitude,
+                cutoff=cutoff_freq,
+                sampling_rate=fs,
+                order=order
+            )
+
+            # Ensure values remain as a PintArray and keep original units
+            self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
+
+    def apply_highpass_filter(self, cutoff_freq: units.Quantity, order: int = 4) -> None:
+        """
+        Applies a DC high-pass filter to the signal data in-place.
+
+        Parameters
+        ----------
+        cutoff_freq : units.Quantity
+            The cutoff frequency for the high-pass filter (must have frequency units).
+        order : int, optional
+            The order of the high-pass filter, default is 4.
+
+        Raises
+        ------
+        ValueError
+            If cutoff frequency is missing or exceeds Nyquist frequency.
+        TypeError
+            If signal data is not stored as a PintArray.
+        """
+        if cutoff_freq is None:
+            raise ValueError("Cutoff frequency must be specified for high-pass filtering.")
+
+        # Get sampling frequency and ensure it's in Hertz
+        fs = self.parent.cytometer.signal_digitizer.sampling_freq.to("hertz")
+        nyquist_freq = fs / 2
+
+        # Validate cutoff frequency
+        if cutoff_freq.to("hertz") >= nyquist_freq:
+            raise ValueError(f"Cutoff frequency ({cutoff_freq}) must be below the Nyquist frequency ({nyquist_freq}).")
+
+        # Ensure the signal column is a PintArray
+        if not isinstance(self.signal["DigitizedSignal"].array, pint_pandas.PintArray):
+            raise TypeError("Expected 'DigitizedSignal' to be a PintArray, but got a different type.")
+
+        # Iterate through each detector-segment pair and apply filtering
+        for (detector, segment_id), segment_data in self.signal.groupby(level=['Detector', 'SegmentID']):
+            filtered_values = dc_highpass_filter(
+                signal=segment_data["DigitizedSignal"].pint.quantity.magnitude,
+                cutoff=cutoff_freq,
+                sampling_rate=fs,
+                order=order
+            )
+
+            # Ensure values remain as a PintArray and keep original units
+            self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
+
+    def apply_filters(self, low_cutoff: units.Quantity = None, high_cutoff: units.Quantity = None) -> None:
+        """
+        Applies low-pass and/or high-pass filters to the signal data in-place.
+
+        Parameters
+        ----------
+        low_cutoff : units.Quantity, optional
+            The cutoff frequency for the low-pass filter. If None, no low-pass filtering is applied.
+        high_cutoff : units.Quantity, optional
+            The cutoff frequency for the high-pass filter. If None, no high-pass filtering is applied.
+        """
+        if low_cutoff is not None:
+            self.apply_lowpass_filter(low_cutoff)
+        if high_cutoff is not None:
+            self.apply_highpass_filter(high_cutoff)
