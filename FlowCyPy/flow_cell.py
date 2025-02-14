@@ -111,7 +111,10 @@ class FlowCell:
             if self.event_scheme.lower() == 'uniform-random':
                 numpy.random.shuffle(evenly_spaced_times.magnitude)
             event_dataframe['Time'] = PintArray(evenly_spaced_times.to(units.second).magnitude, units.second)
-        return ScattererDataFrame(event_dataframe)
+
+        scatterer_dataframe = ScattererDataFrame(event_dataframe)
+        scatterer_dataframe.attrs['run_time'] = run_time
+        return scatterer_dataframe
 
     def _generate_poisson_events(self, run_time: Quantity, population: Population) -> pd.DataFrame:
         """

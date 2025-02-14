@@ -3,6 +3,8 @@ from FlowCyPy import units
 from scipy.signal import find_peaks
 from FlowCyPy.utils import bessel_lowpass_filter, dc_highpass_filter
 from FlowCyPy.dataframe_subclass import PeakDataFrame
+import logging
+from tabulate import tabulate
 
 class TriggeredAcquisitions():
     def __init__(self, parent, dataframe: pd.DataFrame):

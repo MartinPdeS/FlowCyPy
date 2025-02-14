@@ -5,6 +5,8 @@ import seaborn as sns
 from FlowCyPy import helper
 from MPSPlots.styles import mps
 from FlowCyPy import units
+import logging
+from tabulate import tabulate
 
 class ScattererDataFrame(pd.DataFrame):
     """
@@ -58,6 +60,83 @@ class ScattererDataFrame(pd.DataFrame):
         grid.ax_joint.set_ylabel(y_label)
 
         return grid
+
+    def log(self, table_format: str = "grid") -> None:
+        """
+        Logs detailed information about scatterer populations.
+
+        Parameters
+        ----------
+        table_format : str, optional
+            The format for the table display (default: 'grid').
+            Options include 'plain', 'github', 'grid', 'fancy_grid', etc.
+
+        Returns
+        -------
+        None
+            Logs scatterer population information, including refractive index, size, particle count,
+            number of events, and time statistics.
+        """
+        logging.info("\n=== Scatterer Population Properties ===")
+
+        # Collect general population data
+        general_table_data = [
+            self._get_population_properties(population)
+            for population in self.groupby("Population")
+        ]
+        general_headers = [
+            "Name",
+            "Refractive Index",
+            "Medium Refractive Index",
+            "Size",
+            "Particle Count",
+            "Number of Events",
+            "Min Time Between Events",
+            "Avg Time Between Events",
+        ]
+
+        formatted_general_table = tabulate(
+            general_table_data, headers=general_headers, tablefmt=table_format, floatfmt=".4f"
+        )
+        logging.info("\n" + formatted_general_table)
+
+    def _get_population_properties(self, population_group: tuple) -> List[Union[str, float]]:
+        """
+        Extracts key properties of a scatterer population for the general properties table.
+
+        Parameters
+        ----------
+        population_group : tuple
+            A tuple containing the population name and its corresponding DataFrame.
+
+        Returns
+        -------
+        list
+            List of scatterer properties: [name, refractive index, medium refractive index, size,
+            particle count, number of events, min time between events, avg time between events].
+        """
+        population_name, population_df = population_group
+
+        name = population_name
+        refractive_index = f"{population_df['RefractiveIndex'].mean():~P}"
+        medium_refractive_index = f"{self.attrs['run_time']:~P}"  # Replace with actual medium refractive index if stored elsewhere
+        size = f"{population_df['Size'].mean():~P}"
+        particle_count = len(population_df)
+        num_events = particle_count
+
+        min_delta_position = population_df["Time"].diff().abs().min()
+        avg_delta_position = population_df["Time"].diff().mean()
+
+        return [
+            name,
+            refractive_index,
+            medium_refractive_index,
+            size,
+            particle_count,
+            num_events,
+            min_delta_position,
+            avg_delta_position,
+        ]
 
 class ContinuousAcquisitionDataFrame(pd.DataFrame):
     """
@@ -212,6 +291,85 @@ class TriggeredAcquisitionDataFrame(pd.DataFrame):
 
         if show:
             plt.show()
+
+    def log(self, table_format: str = "grid", include_totals: bool = True) -> None:
+        """
+        Logs statistics about detector signals.
+
+        Parameters
+        ----------
+        table_format : str, optional
+            The format for the table display (default: 'grid').
+            Options include 'plain', 'github', 'grid', 'fancy_grid', etc.
+        include_totals : bool, optional
+            If True, logs the total number of events across all detectors (default: True).
+
+        Returns
+        -------
+        None
+            Logs details about detector signals, including event counts,
+            timing statistics, and mean event rates.
+        """
+        logging.info("\n=== Detector Signal Statistics ===")
+
+        # Compute statistics for each detector
+        if self.empty:
+            logging.warning("No data available for detectors.")
+            return
+
+        table_data = [
+            self._get_detector_stats(detector_name, self.xs(detector_name, level="Detector"))
+            for detector_name in self.index.get_level_values("Detector").unique()
+        ]
+        headers = [
+            "Detector",
+            "Number of Acquisition",
+            "First Event Time",
+            "Last Event Time",
+            "Time Between Events",
+        ]
+
+        formatted_table = tabulate(table_data, headers=headers, tablefmt=table_format, floatfmt=".3f")
+        logging.info("\n" + formatted_table)
+
+        if include_totals:
+            total_events = sum(stat[1] for stat in table_data)
+            logging.info(f"\nTotal number of events detected across all detectors: {total_events}")
+
+    def _get_detector_stats(self, detector_name: str, group: pd.DataFrame) -> list:
+        """
+        Computes statistics for a detector.
+
+        Parameters
+        ----------
+        detector_name : str
+            Name of the detector.
+        group : pd.DataFrame
+            DataFrame containing the detector data.
+
+        Returns
+        -------
+        list
+            List of computed statistics: [detector_name, num_events, first_event_time,
+            last_event_time, avg_time_between_events].
+        """
+        if group.empty:
+            return [detector_name, 0, None, None, None]
+
+        num_acquisition = len(group["Time"])
+        first_event_time = group["Time"].min()
+        last_event_time = group["Time"].max()
+
+        time_diffs = group["Time"].diff().dropna()
+        time_between_events = time_diffs.mean() if not time_diffs.empty else None
+
+        return [
+            detector_name,
+            num_acquisition,
+            first_event_time,
+            last_event_time,
+            time_between_events,
+        ]
 
 
 class ClassifierDataFrame(pd.DataFrame):

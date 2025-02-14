@@ -8,7 +8,7 @@ import pandas as pd
 from pint_pandas import PintArray
 
 from FlowCyPy import units
-from FlowCyPy.units import Quantity, milliwatt
+from FlowCyPy.units import milliwatt
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.detector import Detector
 from FlowCyPy.acquisition import Acquisition

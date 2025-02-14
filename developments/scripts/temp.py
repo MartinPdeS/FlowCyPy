@@ -33,6 +33,7 @@ from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import FlowCytometer
 
 
+
 NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = False
 NoiseSetting.include_thermal_noise = False
@@ -96,7 +97,7 @@ cytometer = FlowCytometer(
 )
 
 
-acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+acquisition = cytometer.get_acquisition(run_time=0.1 * units.millisecond)
 
 # acquisition.scatterer.plot(x='forward', y='side')
 
@@ -109,4 +110,5 @@ triggered_acquisition = acquisition.run_triggering(
 )
 
 
-triggered_acquisition.signal.plot()
+# triggered_acquisition.signal.plot()
+acquisition.scatterer.log()

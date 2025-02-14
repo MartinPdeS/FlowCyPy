@@ -124,7 +124,7 @@ def test_flow_cytometer_plot(mock_show, default_detector_0, default_detector_1, 
 
     plt.close()
 
-    acquisition.logger.scatterer()
+    acquisition.scatterer.log()
 
     triggered_acquisition = acquisition.run_triggering(
         threshold=3.0 * units.volt,
