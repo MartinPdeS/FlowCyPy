@@ -34,10 +34,10 @@
 | FlowCyPy/scatterer\_collection.py                     |       92 |       24 |       22 |        1 |     66% |48-50, 67-86, 124, 141-159, 212 |
 | FlowCyPy/signal\_digitizer.py                         |       27 |        3 |        4 |        2 |     84% | 63-64, 87 |
 | FlowCyPy/source.py                                    |       72 |        7 |       18 |        6 |     86% |33, 38, 48, 51, 58, 61, 71 |
-| FlowCyPy/triggered\_acquisition.py                    |       44 |       18 |       16 |        1 |     45% |17-19, 37, 77-92 |
+| FlowCyPy/triggered\_acquisition.py                    |       57 |       30 |       26 |        1 |     34% |44-46, 64, 112-137, 157-182, 195-198 |
 | FlowCyPy/units.py                                     |       21 |        0 |        4 |        0 |    100% |           |
-| FlowCyPy/utils.py                                     |       40 |        7 |        6 |        2 |     80% |28, 32, 40, 79-80, 84-85 |
-|                                             **TOTAL** | **1513** |  **261** |  **276** |   **75** | **78%** |           |
+| FlowCyPy/utils.py                                     |       56 |       19 |       10 |        2 |     62% |28, 32, 40, 109-123, 153-167 |
+|                                             **TOTAL** | **1542** |  **285** |  **290** |   **75** | **76%** |           |
 
 
 ## Setup coverage badge
