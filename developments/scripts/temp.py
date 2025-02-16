@@ -1,26 +1,3 @@
-"""
-Workflow
-========
-
-This tutorial demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library.
-The simulation involves configuring a flow setup, defining a single population of particles, and
-analyzing scattering signals from two detectors to produce a 2D density plot of scattering intensities.
-
-Overview:
----------
-1. Configure the flow cell and particle population.
-2. Define the laser source and detector parameters.
-3. Simulate the flow cytometry experiment.
-4. Analyze the generated signals and visualize results.
-
-"""
-
-# %%
-# Step 0: Import Necessary Libraries
-# -----------------------------------
-# Here, we import the necessary libraries and units for the simulation. The units module helps us
-# define physical quantities like meters, seconds, and watts in a concise and consistent manner.
-
 import numpy as np
 from FlowCyPy import units
 from FlowCyPy import NoiseSetting
@@ -58,7 +35,6 @@ scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.
 
 exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
 
-# Add an Exosome population
 scatterer_collection.add_population(exosome)
 
 scatterer_collection.dilute(factor=160)
@@ -96,10 +72,7 @@ cytometer = FlowCytometer(
     background_power=0.001 * units.milliwatt
 )
 
-
 acquisition = cytometer.get_acquisition(run_time=0.1 * units.millisecond)
-
-# acquisition.scatterer.plot(x='forward', y='side')
 
 triggered_acquisition = acquisition.run_triggering(
     threshold=0.2 * units.millivolt,
@@ -109,10 +82,9 @@ triggered_acquisition = acquisition.run_triggering(
     post_buffer=64
 )
 
-
-# triggered_acquisition.apply_filters(low_cutoff=10 * units.megahertz, high_cutoff=1 * units.megahertz)
-triggered_acquisition.apply_filters(high_cutoff=0.0001 * units.megahertz)
+triggered_acquisition.apply_filters(
+    high_cutoff=1.0 * units.kilohertz,
+    low_cutoff=1.5 * units.megahertz
+)
 
 triggered_acquisition.signal.plot()
-# triggered_acquisition.signal.plot()
-# acquisition.scatterer.log()

@@ -1,11 +1,12 @@
 import numpy as np
 from typing import List
 from FlowCyPy.units import second, volt, Quantity
-from scipy.signal import butter, filtfilt
 import pandas as pd
 import pint_pandas
 from FlowCyPy.peak_locator import BasePeakLocator
 from copy import copy
+from scipy.signal import butter, bessel, sosfilt
+import pint
 
 
 class ProxyDetector():
@@ -74,10 +75,6 @@ def generate_dummy_detector(time: np.ndarray, centers: List[float], heights: Lis
 
     return ProxyDetector(time=time, signal=signal)
 
-from scipy.signal import bessel, sosfilt
-import numpy as np
-import pint
-import pint_pandas
 
 def bessel_lowpass_filter(signal: pint_pandas.PintArray, cutoff: pint.Quantity, sampling_rate: pint.Quantity, order: int = 4) -> np.ndarray:
     """

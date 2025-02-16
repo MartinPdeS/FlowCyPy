@@ -3,6 +3,7 @@ from FlowCyPy import units
 from scipy.signal import find_peaks
 from FlowCyPy.utils import bessel_lowpass_filter, dc_highpass_filter
 from FlowCyPy.dataframe_subclass import PeakDataFrame
+from FlowCyPy.helper import validate_units
 import pint_pandas
 
 class TriggeredAcquisitions:
@@ -91,7 +92,7 @@ class TriggeredAcquisitions:
 
         return PeakDataFrame(self.peaks)
 
-    def apply_lowpass_filter(self, cutoff_freq: units.Quantity, order: int = 4) -> None:
+    def _apply_lowpass_filter(self, cutoff_freq: units.Quantity, order: int = 4) -> None:
         """
         Applies a Bessel low-pass filter to the signal data in-place.
 
@@ -136,7 +137,7 @@ class TriggeredAcquisitions:
             # Ensure values remain as a PintArray and keep original units
             self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
 
-    def apply_highpass_filter(self, cutoff_freq: units.Quantity, order: int = 4) -> None:
+    def _apply_highpass_filter(self, cutoff_freq: units.Quantity, order: int = 4) -> None:
         """
         Applies a DC high-pass filter to the signal data in-place.
 
@@ -181,6 +182,7 @@ class TriggeredAcquisitions:
             # Ensure values remain as a PintArray and keep original units
             self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
 
+    @validate_units(low_cutoff=units.hertz, high_cutoff=units.hertz)
     def apply_filters(self, low_cutoff: units.Quantity = None, high_cutoff: units.Quantity = None) -> None:
         """
         Applies low-pass and/or high-pass filters to the signal data in-place.
@@ -193,6 +195,6 @@ class TriggeredAcquisitions:
             The cutoff frequency for the high-pass filter. If None, no high-pass filtering is applied.
         """
         if low_cutoff is not None:
-            self.apply_lowpass_filter(low_cutoff)
+            self._apply_lowpass_filter(low_cutoff)
         if high_cutoff is not None:
-            self.apply_highpass_filter(high_cutoff)
+            self._apply_highpass_filter(high_cutoff)

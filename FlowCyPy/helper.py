@@ -33,6 +33,9 @@ def validate_units(**expected_units):
                 if arg_name in bound_args.arguments:
                     value = bound_args.arguments[arg_name]
 
+                    if value is None:
+                        continue
+
                     # Check if the value is a Pint Quantity
                     if not isinstance(value, Quantity):
                         raise TypeError(f"Argument '{arg_name}' must be a Pint Quantity, but got {type(value)}")
