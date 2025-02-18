@@ -108,24 +108,24 @@ cytometer = FlowCytometer(
 acquisition = cytometer.get_acquisition(run_time=1.0 * units.millisecond)
 
 # Visualize the scatter signals from both detectors
-acquisition.signal.log()
+# acquisition.signal.log()
 acquisition.signal.plot()
 
 triggered_acquisition = acquisition.run_triggering(
     threshold = 20 * units.microvolt,
     trigger_detector_name='forward',
-    max_triggers=10,
+    max_triggers=3,
     pre_buffer=64,
     post_buffer=64
 )
-triggered_acquisition.signal.plot()
+# triggered_acquisition.signal.plot()
 
 triggered_acquisition.apply_filters(
     low_cutoff=1.5 * units.megahertz,
     # high_cutoff=1.5 * units.megahertz
 )
 
-# triggered_acquisition.apply_baseline_restauration()
+triggered_acquisition.apply_baseline_restauration()
 
 triggered_acquisition.signal.plot()
 

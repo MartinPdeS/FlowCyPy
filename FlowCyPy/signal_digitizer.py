@@ -2,6 +2,10 @@ from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 from typing import Union, Tuple
 from FlowCyPy.units import Quantity
+import pandas as pd
+import numpy as np
+import logging
+import pint_pandas
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -86,3 +90,32 @@ class SignalDigitizer:
         if not value.check('Hz'):
             raise ValueError(f"sampling_freq must be in hertz, but got {value.units}")
         return value
+
+    def capture_signal(self, signal: pd.Series) -> None:
+        """
+        Processes and captures the final signal by applying noise and saturation.
+        """
+        if self.saturation_levels == 'auto':
+            min_level, max_level = signal.pint.quantity.min(), signal.pint.quantity.max()
+        elif isinstance(self.saturation_levels, tuple) and len(self.saturation_levels) == 2:
+            min_level, max_level = self.saturation_levels
+        else:
+            raise ValueError("saturation_levels must be 'auto' or a tuple of two Quantities.")
+
+        self._saturation_levels = min_level, max_level
+        # Generate bins for discretization
+        bins = np.linspace(
+            min_level.to(signal.pint.units).magnitude,
+            max_level.to(signal.pint.units).magnitude,
+            self._bit_depth
+        )
+
+        digitized_signal = np.digitize(signal.pint.magnitude, bins, right=True)
+
+        self.is_saturated = np.any((signal < min_level) | (signal > max_level))
+
+        # Throw a warning if saturated
+        if self.is_saturated:
+            logging.info("Signal values have been clipped to the saturation boundaries.")
+
+        return digitized_signal, (min_level, max_level)

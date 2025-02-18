@@ -106,10 +106,7 @@ addopts = [
     "-v", "-rA", "-rw", "--cov=FlowCyPy", "--cov-report=html", "--cov-report=term"
 ]
 testpaths = [
-    "tests/single/*",
-    "tests/experiment/*",
-    "tests/validation/*",
-    "tests/extra/*"
+    "tests/*",
 ]
 
 

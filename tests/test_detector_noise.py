@@ -88,7 +88,7 @@ def test_thermal_noise_generation(default_detector_thermal_noise, default_digiti
 
     thermal_noise = detector._add_thermal_noise_to_raw_signal(dataframe['Signal'])
     # Generate thermal noise and capture signal
-    detector.capture_signal(dataframe['Signal'])
+    default_digitizer.capture_signal(dataframe['Signal'])
 
     # Assert that thermal noise is added to the signal
     assert np.std(thermal_noise) > 0 * units.volt, "Thermal noise variance is zero, indicating no noise generated."
@@ -104,7 +104,7 @@ def test_dark_current_noise_generation(default_detector_dark_current, default_di
     dark_current_noise = detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])
 
     # Generate dark current noise and capture signal
-    detector.capture_signal(dataframe['Signal'])
+    default_digitizer.capture_signal(dataframe['Signal'])
 
     # Assert that dark current noise is added to the signal
     assert np.std(dark_current_noise) > 0 * units.volt, "Dark current noise variance is zero, indicating no noise generated."

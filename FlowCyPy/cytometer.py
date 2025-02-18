@@ -251,6 +251,7 @@ class FlowCytometer:
         _widths = scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude
         _centers = scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude
 
+        saturation_levels = dict()
         for detector in self.detectors:
             _coupling_power = scatterer_dataframe[detector.name].values
 
@@ -281,15 +282,17 @@ class FlowCytometer:
                 wavelength=self.flow_cell.source.wavelength
             )
 
-            digitized_signal = detector.capture_signal(signal=detector_signal)
+            signal_dataframe.loc[detector.name, 'Signal'] = detector_signal.pint.quantity.magnitude
 
-            signal_dataframe.loc[detector.name, 'Signal'] = PintArray(detector_signal, detector_signal.pint.units)
+            digitized_signal, _saturation = self.signal_digitizer.capture_signal(signal=detector_signal)
+
+            saturation_levels[detector.name] = _saturation
 
             signal_dataframe.loc[detector.name, 'DigitizedSignal'] = PintArray(digitized_signal, units.bit_bins)
 
         signal_dataframe = ContinuousAcquisitionDataFrame(signal_dataframe)
         signal_dataframe.attrs['bit_depth'] = self.signal_digitizer._bit_depth
-        signal_dataframe.attrs['saturation_levels'] = {d.name: d._saturation_levels for d in self.detectors}
+        signal_dataframe.attrs['saturation_levels'] = saturation_levels
         signal_dataframe.attrs['scatterer_dataframe'] = scatterer_dataframe
 
         experiment = Acquisition(

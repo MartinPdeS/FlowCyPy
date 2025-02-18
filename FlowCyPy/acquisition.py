@@ -1,10 +1,10 @@
 import warnings
 import pandas as pd
-import numpy as np
 from FlowCyPy import units
 from FlowCyPy.triggered_acquisition import TriggeredAcquisitions
 from FlowCyPy.dataframe_subclass import TriggeredAcquisitionDataFrame
 from FlowCyPy.binary import Interface
+import pint_pandas
 
 class Acquisition:
     """
@@ -96,13 +96,21 @@ class Acquisition:
         threshold_value = threshold.to(self.signal['Signal'].pint.units).magnitude
 
         # Prepare detector-specific signal & time mappings for C++ function
-        signal_map = {det: self.signal.xs(det)['Signal'].pint.magnitude for det in self.signal.index.get_level_values('Detector').unique()}
-        time_map = {det: self.signal.xs(det)['Time'].pint.magnitude for det in self.signal.index.get_level_values('Detector').unique()}
+        detectors_name = self.signal.index.get_level_values('Detector').unique()
+        signal_units = self.signal.xs(detectors_name[0])['Signal'].pint.units
+        time_units = self.signal.xs(detectors_name[0])['Time'].pint.units
+
+        signal_map = {det: self.signal.xs(det)['Signal'].pint.to(signal_units).pint.magnitude for det in detectors_name}
+        time_map = {det: self.signal.xs(det)['Time'].pint.to(time_units).pint.magnitude for det in detectors_name}
 
         # Call the C++ function for fast triggering detection
         times, signals, detectors, segment_ids = Interface.run_triggering(
             signal_map, time_map, threshold_value, pre_buffer, post_buffer, max_triggers or -1
         )
+
+        # Convert back to PintArray (restore units)
+        times = pint_pandas.PintArray(times, time_units)
+        signals = pint_pandas.PintArray(signals, signal_units)
 
         # If no triggers are found, warn the user and return None
         if len(times) == 0:
@@ -121,9 +129,13 @@ class Acquisition:
             "SegmentID": segment_ids
         }).set_index(['Detector', 'SegmentID'])
 
-        # Convert back to PintArray (restore units)
-        triggered_signal["Time"] = triggered_signal["Time"].pint.quantify(self.signal["Time"].pint.units)
-        triggered_signal["Signal"] = triggered_signal["Signal"].pint.quantify(self.signal["Signal"].pint.units)
+        digitized_signal, _ = self.cytometer.signal_digitizer.capture_signal(triggered_signal['Signal'])
+        digitized_signal = pint_pandas.PintArray(
+            digitized_signal,
+            units.bit_bins
+        )
+
+        triggered_signal['DigitizedSignal'] = digitized_signal
 
         # Create a specialized DataFrame class
         triggered_signal = TriggeredAcquisitionDataFrame(triggered_signal)

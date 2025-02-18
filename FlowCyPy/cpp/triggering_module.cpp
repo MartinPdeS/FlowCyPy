@@ -5,6 +5,7 @@
 #include <tuple>
 #include <algorithm>
 #include <stdexcept>
+#include <string>
 
 namespace py = pybind11;
 
@@ -17,9 +18,9 @@ namespace py = pybind11;
  * @param pre_buffer Number of points before the trigger.
  * @param post_buffer Number of points after the trigger.
  * @param max_triggers Maximum number of triggers to process (-1 = unlimited).
- * @return A tuple of NumPy arrays (times, signals, detector labels, segment IDs).
+ * @return A tuple of NumPy arrays and a Python list (times, signals, detector names, segment IDs).
  */
-std::tuple<py::array_t<double>, py::array_t<double>, py::array_t<int>, py::array_t<int>> run_triggering(
+std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>> run_triggering(
     std::map<std::string, py::array_t<double>> signal_map,
     std::map<std::string, py::array_t<double>> time_map,
     double threshold,
@@ -28,7 +29,8 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::array_t<int>, py::array
     int max_triggers = -1) // -1 means unlimited
 {
     std::vector<double> times_out, signals_out;
-    std::vector<int> detectors_out, segment_ids_out;
+    std::vector<std::string> detectors_out;  // Store detector names as strings
+    std::vector<int> segment_ids_out;
 
     int global_segment_id = 0; // Unique segment index across all detectors
 
@@ -77,7 +79,7 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::array_t<int>, py::array
             {
                 times_out.push_back(time_ptr[i]);
                 signals_out.push_back(signal_ptr[i]);
-                detectors_out.push_back(global_segment_id); // Assign segment ID
+                detectors_out.push_back(detector_name);  // Store detector name instead of ID
                 segment_ids_out.push_back(global_segment_id);
             }
             global_segment_id++; // Increment segment ID for the next one
@@ -89,10 +91,17 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::array_t<int>, py::array
         PyErr_WarnEx(PyExc_UserWarning, "No signals met the trigger criteria. Consider adjusting the threshold.", 1);
     }
 
+    // Convert vector of strings to Python list
+    py::list detector_list;
+    for (const auto &detector : detectors_out)
+    {
+        detector_list.append(detector);
+    }
+
     // Convert vectors to NumPy arrays
     return std::make_tuple(
         py::array_t<double>(times_out.size(), times_out.data()),
         py::array_t<double>(signals_out.size(), signals_out.data()),
-        py::array_t<int>(detectors_out.size(), detectors_out.data()),
+        detector_list,  // Now returning a Python list of strings
         py::array_t<int>(segment_ids_out.size(), segment_ids_out.data()));
 }
