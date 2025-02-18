@@ -4,7 +4,7 @@ import numpy as np
 from FlowCyPy import units
 from FlowCyPy.triggered_acquisition import TriggeredAcquisitions
 from FlowCyPy.dataframe_subclass import TriggeredAcquisitionDataFrame
-from FlowCyPy.binary.Interface import get_trigger_indices
+from FlowCyPy.binary import Interface
 
 class Acquisition:
     """
@@ -88,45 +88,56 @@ class Acquisition:
         -----
         - The peak detection function `self.detect_peaks` is automatically called at the end of this method to analyze triggered segments.
         """
-        start_indices, end_indices = get_trigger_indices(
-            threshold, trigger_detector_name, pre_buffer, post_buffer
+        # Ensure the trigger detector exists
+        if trigger_detector_name not in self.signal.index.get_level_values('Detector').unique():
+            raise ValueError(f"Detector '{trigger_detector_name}' not found in dataset.")
+
+        # Convert threshold to plain numeric value
+        threshold_value = threshold.to(self.signal['Signal'].pint.units).magnitude
+
+        # Prepare detector-specific signal & time mappings for C++ function
+        signal_map = {det: self.signal.xs(det)['Signal'].pint.magnitude for det in self.signal.index.get_level_values('Detector').unique()}
+        time_map = {det: self.signal.xs(det)['Time'].pint.magnitude for det in self.signal.index.get_level_values('Detector').unique()}
+
+        # Call the C++ function for fast triggering detection
+        times, signals, detectors, segment_ids = Interface.run_triggering(
+            signal_map, time_map, threshold_value, pre_buffer, post_buffer, max_triggers or -1
         )
 
-        if max_triggers is not None:
-            start_indices = start_indices[:max_triggers]
-            end_indices = end_indices[:max_triggers]
-
-        segments = []
-        for detector_name in self.signal.index.get_level_values('Detector').unique():
-            detector_data = self.signal.xs(detector_name)
-            time, digitized, signal = detector_data['Time'], detector_data['DigitizedSignal'],  detector_data['Signal']
-
-
-            for idx, (start, end) in enumerate(zip(start_indices, end_indices)):
-
-                segment = pd.DataFrame({
-                    'Time': time[start:end + 1],
-                    'DigitizedSignal': digitized[start:end + 1],
-                    'Signal': signal[start:end + 1],
-                    'Detector': detector_name,
-                    'SegmentID': idx
-                })
-                segments.append(segment)
-
-        if len(segments) !=0:
-            triggered_signal = TriggeredAcquisitionDataFrame(pd.concat(segments).set_index(['Detector', 'SegmentID']))
-            triggered_signal.attrs['bit_depth'] = self.signal.attrs['bit_depth']
-            triggered_signal.attrs['saturation_levels'] = self.signal.attrs['saturation_levels']
-            triggered_signal.attrs['scatterer_dataframe'] = self.signal.attrs['scatterer_dataframe']
-            triggered_signal.attrs['threshold'] = {'detector': trigger_detector_name, 'value': threshold}
-
-            triggered_acquisition = TriggeredAcquisitions(parent=self, dataframe=triggered_signal)
-            triggered_acquisition.scatterer = self.scatterer
-
-            return triggered_acquisition
-        else:
+        # If no triggers are found, warn the user and return None
+        if len(times) == 0:
             warnings.warn(
-                f"No signal were triggered during the run time, try changing the threshold. Signal min-max value is: {self.signal['Signal'].min().to_compact()}, {self.signal['Signal'].max().to_compact()}",
+                f"No signal met the trigger criteria. Try adjusting the threshold. "
+                f"Signal min-max: {self.signal['Signal'].min().to_compact()}, {self.signal['Signal'].max().to_compact()}",
                 UserWarning
             )
+            return None
+
+        # Convert NumPy arrays to Pandas DataFrame
+        triggered_signal = pd.DataFrame({
+            "Time": times,
+            "Signal": signals,
+            "Detector": detectors,
+            "SegmentID": segment_ids
+        }).set_index(['Detector', 'SegmentID'])
+
+        # Convert back to PintArray (restore units)
+        triggered_signal["Time"] = triggered_signal["Time"].pint.quantify(self.signal["Time"].pint.units)
+        triggered_signal["Signal"] = triggered_signal["Signal"].pint.quantify(self.signal["Signal"].pint.units)
+
+        # Create a specialized DataFrame class
+        triggered_signal = TriggeredAcquisitionDataFrame(triggered_signal)
+
+        # Copy metadata attributes
+        triggered_signal.attrs['bit_depth'] = self.signal.attrs.get('bit_depth', None)
+        triggered_signal.attrs['saturation_levels'] = self.signal.attrs.get('saturation_levels', None)
+        triggered_signal.attrs['scatterer_dataframe'] = self.signal.attrs.get('scatterer_dataframe', None)
+        triggered_signal.attrs['threshold'] = {'detector': trigger_detector_name, 'value': threshold}
+
+        # Wrap inside a TriggeredAcquisitions object
+        triggered_acquisition = TriggeredAcquisitions(parent=self, dataframe=triggered_signal)
+        triggered_acquisition.scatterer = self.scatterer
+
+        return triggered_acquisition
+
 
