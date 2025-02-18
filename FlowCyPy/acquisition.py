@@ -4,7 +4,7 @@ import numpy as np
 from FlowCyPy import units
 from FlowCyPy.triggered_acquisition import TriggeredAcquisitions
 from FlowCyPy.dataframe_subclass import TriggeredAcquisitionDataFrame
-
+from FlowCyPy.binary.Interface import get_trigger_indices
 
 class Acquisition:
     """
@@ -41,61 +41,6 @@ class Acquisition:
     @property
     def n_detectors(self) -> int:
         return len(self.signal.index.get_level_values('Detector').unique())
-
-    def _get_trigger_indices(
-        self,
-        threshold: units.Quantity,
-        trigger_detector_name: str = None,
-        pre_buffer: int = 64,
-        post_buffer: int = 64
-    ) -> tuple[np.ndarray, np.ndarray]:
-        """
-        Calculate start and end indices for triggered segments, ensuring no retriggering
-        occurs during an active buffer period.
-
-        Parameters
-        ----------
-        threshold : units.Quantity
-            The threshold value for triggering.
-        trigger_detector_name : str, optional
-            The name of the detector to use for the triggering signal.
-        pre_buffer : int, optional
-            Number of samples to include before the trigger point.
-        post_buffer : int, optional
-            Number of samples to include after the trigger point.
-
-        Returns
-        -------
-        tuple[np.ndarray, np.ndarray]
-            The start and end indices of non-overlapping triggered segments.
-
-        Raises
-        ------
-        ValueError
-            If the specified detector is not found in the data.
-        """
-        if trigger_detector_name not in self.signal.index.get_level_values('Detector').unique():
-            raise ValueError(f"Detector '{trigger_detector_name}' not found.")
-
-        signal = self.signal.xs(trigger_detector_name)['Signal']
-        trigger_signal = signal > threshold.to(signal.pint.units)
-
-        crossings = np.where(np.diff(trigger_signal.astype(int)) == 1)[0]
-        start_indices = np.clip(crossings - pre_buffer, 0, len(trigger_signal) - 1)
-        end_indices = np.clip(crossings + post_buffer, 0, len(trigger_signal) - 1)
-
-        # Suppress retriggering within an active buffer period
-        suppressed_start_indices = []
-        suppressed_end_indices = []
-
-        last_end = -1
-        for start, end in zip(start_indices, end_indices):
-            if start > last_end:  # Ensure no overlap with the last active buffer
-                suppressed_start_indices.append(start)
-                suppressed_end_indices.append(end)
-                last_end = end  # Update the end of the current active buffer
-
-        return np.array(suppressed_start_indices), np.array(suppressed_end_indices)
 
     def run_triggering(self,
             threshold: units.Quantity,
@@ -143,7 +88,7 @@ class Acquisition:
         -----
         - The peak detection function `self.detect_peaks` is automatically called at the end of this method to analyze triggered segments.
         """
-        start_indices, end_indices = self._get_trigger_indices(
+        start_indices, end_indices = get_trigger_indices(
             threshold, trigger_detector_name, pre_buffer, post_buffer
         )
 
