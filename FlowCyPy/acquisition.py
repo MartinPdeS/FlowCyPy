@@ -143,8 +143,6 @@ class Acquisition:
         -----
         - The peak detection function `self.detect_peaks` is automatically called at the end of this method to analyze triggered segments.
         """
-        self.threshold = threshold
-        self.trigger_detector_name = trigger_detector_name
         start_indices, end_indices = self._get_trigger_indices(
             threshold, trigger_detector_name, pre_buffer, post_buffer
         )
@@ -175,6 +173,7 @@ class Acquisition:
             triggered_signal.attrs['bit_depth'] = self.signal.attrs['bit_depth']
             triggered_signal.attrs['saturation_levels'] = self.signal.attrs['saturation_levels']
             triggered_signal.attrs['scatterer_dataframe'] = self.signal.attrs['scatterer_dataframe']
+            triggered_signal.attrs['threshold'] = {'detector': trigger_detector_name, 'value': threshold}
 
             triggered_acquisition = TriggeredAcquisitions(parent=self, dataframe=triggered_signal)
             triggered_acquisition.scatterer = self.scatterer

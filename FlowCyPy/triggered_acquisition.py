@@ -1,7 +1,7 @@
 import pandas as pd
 from FlowCyPy import units
 from scipy.signal import find_peaks
-from FlowCyPy.utils import bessel_lowpass_filter, dc_highpass_filter
+from FlowCyPy.filters import bessel_lowpass_filter, dc_highpass_filter
 from FlowCyPy.dataframe_subclass import PeakDataFrame
 from FlowCyPy.helper import validate_units
 import pint_pandas
@@ -137,6 +137,15 @@ class TriggeredAcquisitions:
             # Ensure values remain as a PintArray and keep original units
             self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
 
+            filtered_values = bessel_lowpass_filter(
+                signal=segment_data["Signal"].pint.quantity.magnitude,
+                cutoff=cutoff_freq,
+                sampling_rate=fs,
+                order=order
+            )
+
+            self.signal.loc[(detector, segment_id), "Signal"] = filtered_values
+
     def _apply_highpass_filter(self, cutoff_freq: units.Quantity, order: int = 4) -> None:
         """
         Applies a DC high-pass filter to the signal data in-place.
@@ -181,6 +190,34 @@ class TriggeredAcquisitions:
 
             # Ensure values remain as a PintArray and keep original units
             self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
+
+            filtered_values = dc_highpass_filter(
+                signal=segment_data["Signal"].pint.quantity.magnitude,
+                cutoff=cutoff_freq,
+                sampling_rate=fs,
+                order=order
+            )
+
+            # Ensure values remain as a PintArray and keep original units
+            self.signal.loc[(detector, segment_id), "Signal"] = filtered_values.astype(int)
+
+    def apply_baseline_restauration(self) -> None:
+        """
+        Restores the baseline of the signal by subtracting the minimum value
+        for both 'Signal' and 'DigitizedSignal', ensuring zero-based alignment.
+
+        This operation is performed in-place, preserving the original units.
+        """
+        if self.signal.empty:
+            return  # Avoid unnecessary computation if DataFrame is empty
+
+        # Compute the per-group (detector, segment) minimum for vectorized operations
+        min_signal = self.signal.groupby(level=['Detector', 'SegmentID'])["Signal"].transform("min")
+        min_digitized = self.signal.groupby(level=['Detector', 'SegmentID'])["DigitizedSignal"].transform("min")
+
+        # Apply baseline restoration in a single vectorized operation
+        self.signal["Signal"] -= min_signal
+        self.signal["DigitizedSignal"] -= min_digitized
 
     @validate_units(low_cutoff=units.hertz, high_cutoff=units.hertz)
     def apply_filters(self, low_cutoff: units.Quantity = None, high_cutoff: units.Quantity = None) -> None:

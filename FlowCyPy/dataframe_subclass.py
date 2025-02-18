@@ -197,12 +197,15 @@ class ContinuousAcquisitionDataFrame(pd.DataFrame):
             # Twin axis for continuous signal
             ax2 = ax.twinx()
             cont_time, cont_signal, cont_signal_units = self._get_continuous_signal(detector_name, time_units)
-            ax2.plot(cont_time, cont_signal, color='black', linewidth=1, linestyle='-', label='Continuous Signal', zorder=0)
+            ax2.plot(cont_time, cont_signal, color='black', linewidth=1, linestyle='-', label='Analog Signal', zorder=0)
 
             # Set y-limits for the continuous signal
             saturation_levels = self.attrs['saturation_levels'][detector_name]
             if saturation_levels[0] != saturation_levels[1]:
                 ax2.set_ylim(saturation_levels)
+
+            ax2.legend(loc='upper right')
+            ax.legend(loc='upper left')
 
         # Add event markers to the last subplot
         # Handle `filter_population` default case
@@ -240,6 +243,100 @@ class ContinuousAcquisitionDataFrame(pd.DataFrame):
         cont_signal_units = cont_signal.max().to_compact().units
         return cont_time, cont_signal.pint.to(cont_signal_units), cont_signal_units
 
+    def log(self, table_format: str = "grid", include_totals: bool = True) -> None:
+        """
+        Logs statistics about detector signals in the continuous acquisition data.
+
+        Parameters
+        ----------
+        table_format : str, optional
+            The format for the table display (default: 'grid').
+            Options include 'plain', 'github', 'grid', 'fancy_grid', etc.
+        include_totals : bool, optional
+            If True, logs the total number of acquisition points across all detectors (default: True).
+
+        Returns
+        -------
+        None
+            Logs detailed statistics about detector signals, including acquisition counts,
+            signal intensity metrics, and mean acquisition rates.
+        """
+        logging.info("\n=== Continuous Acquisition Signal Statistics ===")
+
+        if self.empty:
+            logging.warning("No data available for detectors.")
+            return
+
+        table_data = [
+            self._get_detector_stats(detector_name, self.xs(detector_name, level="Detector"))
+            for detector_name in self.index.get_level_values("Detector").unique()
+        ]
+
+        headers = [
+            "Detector",
+            "Num Points",
+            "First Time",
+            "Last Time",
+            "Mean Δ Time",
+            "Max Signal",
+            "Min Signal",
+            "Mean Signal",
+            "STD Signal",
+        ]
+
+        formatted_table = tabulate(table_data, headers=headers, tablefmt=table_format, floatfmt=".3f")
+        logging.info("\n" + formatted_table)
+
+        if include_totals:
+            total_points = sum(stat[1] for stat in table_data)
+            logging.info(f"\nTotal number of acquisition points across all detectors: {total_points}")
+
+    def _get_detector_stats(self, detector_name: str, group: pd.DataFrame) -> list:
+        """
+        Computes detailed statistics for a detector in continuous acquisition.
+
+        Parameters
+        ----------
+        detector_name : str
+            Name of the detector.
+        group : pd.DataFrame
+            DataFrame containing the continuous signal data.
+
+        Returns
+        -------
+        list
+            List of computed statistics:
+            [detector_name, num_points, first_time, last_time, mean_time_between_acquisitions,
+            max_signal, min_signal, mean_signal, std_signal].
+        """
+        if group.empty:
+            return [detector_name, 0, None, None, None, None, None, None, None]
+
+        num_points = len(group["Time"])
+        first_time = group["Time"].min()
+        last_time = group["Time"].max()
+
+        time_diffs = group["Time"].diff().dropna()
+        mean_time_between_acquisitions = time_diffs.mean() if not time_diffs.empty else None
+
+        # Compute signal statistics
+        max_signal = group["Signal"].max()
+        min_signal = group["Signal"].min()
+        mean_signal = group["Signal"].mean()
+        std_signal = group["Signal"].std()
+
+        return [
+            detector_name,
+            num_points,
+            first_time,
+            last_time,
+            mean_time_between_acquisitions,
+            max_signal,
+            min_signal,
+            mean_signal,
+            std_signal,
+        ]
+
 
 class TriggeredAcquisitionDataFrame(pd.DataFrame):
     """
@@ -275,11 +372,27 @@ class TriggeredAcquisitionDataFrame(pd.DataFrame):
         for ax, (detector_name, group) in zip(axes, self.groupby(level='Detector')):
             ax.set_ylabel(detector_name)
 
-            for _, sub_group in group.groupby(level='SegmentID'):
+            for segment_id, sub_group in group.groupby(level='SegmentID'):
                 x = sub_group['Time'].pint.to(time_units)
                 digitized = sub_group['DigitizedSignal']
-                ax.step(x, digitized, where='mid', linewidth=2)
+                ax.step(x, digitized, where='mid', linewidth=2, label=f'Digitized segment-{segment_id}')
                 ax.set_ylim([0, self.attrs['bit_depth']])
+
+                # Twin axis for continuous signal
+                ax2 = ax.twinx()
+                cont_time, cont_signal, cont_signal_units = self._get_continuous_signal(detector_name, time_units)
+                ax2.plot(cont_time, cont_signal, color='black', linewidth=1, linestyle='-', label='Analog Signal', zorder=0)
+
+                # Set y-limits for the continuous signal
+                saturation_levels = self.attrs['saturation_levels'][detector_name]
+                if saturation_levels[0] != saturation_levels[1]:
+                    ax2.set_ylim(saturation_levels)
+
+            if detector_name == self.attrs['threshold']['detector']:
+                ax2.axhline(y=self.attrs['threshold']['value'], linestyle='--', color='black', label='Threshold')
+
+            ax2.legend(loc='upper right')
+            ax.legend(loc='upper left')
 
         # Add event markers to the last subplot
         # Handle `filter_population` default case
@@ -291,6 +404,28 @@ class TriggeredAcquisitionDataFrame(pd.DataFrame):
 
         if show:
             plt.show()
+
+    def _get_continuous_signal(self, detector_name: str, time_units: units.Quantity):  # TODO: add that to the plottings
+        """
+        Retrieves and converts the continuous signal data for a given detector.
+
+        Parameters
+        ----------
+        detector_name : str
+            Name of the detector.
+        time_units : units.Quantity
+            Desired time units.
+
+        Returns
+        -------
+        tuple
+            (time array, signal array, signal units)
+        """
+        data = self.loc[detector_name]
+        cont_time = data['Time'].pint.to(time_units)
+        cont_signal = data['Signal']
+        cont_signal_units = cont_signal.max().to_compact().units
+        return cont_time, cont_signal.pint.to(cont_signal_units), cont_signal_units
 
     def log(self, table_format: str = "grid", include_totals: bool = True) -> None:
         """
