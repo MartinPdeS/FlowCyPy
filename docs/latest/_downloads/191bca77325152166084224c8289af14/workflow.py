@@ -160,15 +160,11 @@ cytometer = FlowCytometer(
 acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
 acquisition.scatterer.plot(
-    x='Size',
-    y='RefractiveIndex'
-)
-
-acquisition.scatterer.plot(
     x='side',
     y='forward'
 )
 
+# %%
 # Visualize the scatter signals from both detectors
 acquisition.analog.plot()
 
@@ -187,9 +183,13 @@ triggered_acquisition = acquisition.run_triggering(
 
 triggered_acquisition.analog.plot()
 
+
+# %%
+# Getting and plotting the extracted peaks.
 peaks = triggered_acquisition.detect_peaks()
 
 peaks.plot(
+    feature='Height',
     x_detector='side',
     y_detector='forward'
 )
@@ -206,7 +206,7 @@ data = classifier.run(
     detectors=['side', 'forward']
 )
 
-data.plot(
+_ = data.plot(
     feature='Height',
     x_detector='side',
     y_detector='forward'
