@@ -131,7 +131,7 @@ passing through the cross-sectional area is calculated as:
 
     flow_cell = FlowCell(
         source=source,
-        volume_flow=1 * units.microliter / units.second,  # Flow volume
+        volume_flow=0.3 * units.microliter / units.second,  # Flow volume
         flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
     )
 
@@ -175,7 +175,7 @@ given by:
     # Add an Exosome population
     scatterer_collection.add_population(exosome, custom_population)
 
-    scatterer_collection.dilute(factor=16)
+    scatterer_collection.dilute(factor=4)
 
     # Initialize the scatterer with the flow cell
     scatterer_collection.plot()  # Visualize the particle population
@@ -276,7 +276,7 @@ and particles follows Mie theory:
     )
 
     # Visualize the scatter signals from both detectors
-    acquisition.signal.plot()
+    acquisition.analog.plot()
 
 
 
@@ -328,7 +328,7 @@ window size and threshold.
         post_buffer=64
     )
 
-    triggered_acquisition.signal.plot()
+    triggered_acquisition.analog.plot()
 
     peaks = triggered_acquisition.detect_peaks()
 
@@ -363,7 +363,7 @@ window size and threshold.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f0016f20b90>
+    <seaborn.axisgrid.JointGrid object at 0x7f8fb11bdfd0>
 
 
 
@@ -403,14 +403,14 @@ Step 8: Classifying the collected dataset
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7efffa5fcc90>
+    <seaborn.axisgrid.JointGrid object at 0x7f8fa937d350>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 23.544 seconds)
+   **Total running time of the script:** (0 minutes 8.072 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

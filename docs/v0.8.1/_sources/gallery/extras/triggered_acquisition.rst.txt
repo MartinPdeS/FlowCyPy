@@ -106,7 +106,7 @@ Step 4: Define the particle size distribution
 Use a normal size distribution with a mean size of 200 nanometers and a standard deviation of 10 nanometers.
 This represents the population of scatterers (particles) that will interact with the laser source.
 
-.. GENERATED FROM PYTHON SOURCE LINES 50-138
+.. GENERATED FROM PYTHON SOURCE LINES 50-110
 
 .. code-block:: Python
 
@@ -170,27 +170,210 @@ This represents the population of scatterers (particles) that will interact with
     # Run the flow cytometry simulation
     acquisition = cytometer.get_acquisition(run_time=1.0 * units.millisecond)
 
-    # Visualize the scatter signals from both detectors
-    acquisition.signal.log()
-    acquisition.signal.plot()
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 111-112
+
+Visualize the scatter analog signals from both detectors
+
+.. GENERATED FROM PYTHON SOURCE LINES 112-115
+
+.. code-block:: Python
+
+    acquisition.analog.log()
+    acquisition.analog.plot()
+
+
+
+
+.. image-sg:: /gallery/extras/images/sphx_glr_triggered_acquisition_001.png
+   :alt: triggered acquisition
+   :srcset: /gallery/extras/images/sphx_glr_triggered_acquisition_001.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 116-117
+
+Visualize the scatter digital signals from both detectors
+
+.. GENERATED FROM PYTHON SOURCE LINES 117-136
+
+.. code-block:: Python
+
+    acquisition.digital.log()
+    acquisition.digital.plot()
+
 
     triggered_acquisition = acquisition.run_triggering(
         threshold = 20 * units.microvolt,
         trigger_detector_name='forward',
-        max_triggers=10,
+        max_triggers=8,
         pre_buffer=64,
         post_buffer=64
     )
-    triggered_acquisition.signal.plot()
 
     triggered_acquisition.apply_filters(
-        low_cutoff=1.5 * units.megahertz,
-        # high_cutoff=1.5 * units.megahertz
+        lowpass_cutoff=1.5 * units.megahertz,
+        highpass_cutoff=0.01 * units.kilohertz
     )
 
-    # triggered_acquisition.apply_baseline_restauration()
+    triggered_acquisition.apply_baseline_restauration()
 
-    triggered_acquisition.signal.plot()
+
+
+
+.. image-sg:: /gallery/extras/images/sphx_glr_triggered_acquisition_002.png
+   :alt: triggered acquisition
+   :srcset: /gallery/extras/images/sphx_glr_triggered_acquisition_002.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:142: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:187: PerformanceWarning: indexing past lexsort depth may impact performance.
+      self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 137-138
+
+Visualize the scatter triggered analog signals from both detectors
+
+.. GENERATED FROM PYTHON SOURCE LINES 138-140
+
+.. code-block:: Python
+
+    triggered_acquisition.analog.plot()
+
+
+
+
+.. image-sg:: /gallery/extras/images/sphx_glr_triggered_acquisition_003.png
+   :alt: triggered acquisition
+   :srcset: /gallery/extras/images/sphx_glr_triggered_acquisition_003.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 141-142
+
+Visualize the scatter triggered digital signals from both detectors
+
+.. GENERATED FROM PYTHON SOURCE LINES 142-154
+
+.. code-block:: Python
+
+    triggered_acquisition.digital.plot()
+
+
+
 
     """
     Summary:
@@ -201,83 +384,17 @@ This represents the population of scatterers (particles) that will interact with
 
 
 
-.. rst-class:: sphx-glr-horizontal
 
-
-    *
-
-      .. image-sg:: /gallery/extras/images/sphx_glr_triggered_acquisition_001.png
-         :alt: triggered acquisition
-         :srcset: /gallery/extras/images/sphx_glr_triggered_acquisition_001.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/extras/images/sphx_glr_triggered_acquisition_002.png
-         :alt: triggered acquisition
-         :srcset: /gallery/extras/images/sphx_glr_triggered_acquisition_002.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/extras/images/sphx_glr_triggered_acquisition_003.png
-         :alt: triggered acquisition
-         :srcset: /gallery/extras/images/sphx_glr_triggered_acquisition_003.png
-         :class: sphx-glr-multi-img
+.. image-sg:: /gallery/extras/images/sphx_glr_triggered_acquisition_004.png
+   :alt: triggered acquisition
+   :srcset: /gallery/extras/images/sphx_glr_triggered_acquisition_004.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:138: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:147: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "Signal"] = filtered_values
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:138: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:147: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "Signal"] = filtered_values
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:138: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:147: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "Signal"] = filtered_values
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:138: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:147: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "Signal"] = filtered_values
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:138: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:147: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "Signal"] = filtered_values
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:138: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:147: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "Signal"] = filtered_values
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:138: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:147: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "Signal"] = filtered_values
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:138: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:147: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "Signal"] = filtered_values
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:138: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:147: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "Signal"] = filtered_values
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:138: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:147: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "Signal"] = filtered_values
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:138: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:147: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "Signal"] = filtered_values
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:138: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "DigitizedSignal"] = filtered_values.astype(int)
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/triggered_acquisition.py:147: PerformanceWarning: indexing past lexsort depth may impact performance.
-      self.signal.loc[(detector, segment_id), "Signal"] = filtered_values
 
     '\nSummary:\n--------\nThis script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,\nand extracts important features. The process is visualized through signal plots, and key properties are displayed.\n'
 
@@ -286,7 +403,7 @@ This represents the population of scatterers (particles) that will interact with
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.062 seconds)
+   **Total running time of the script:** (0 minutes 6.719 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_triggered_acquisition.py:

@@ -86,7 +86,7 @@ of the detector.
         # Add thermal noise to the raw signal
         detector._add_thermal_noise_to_raw_signal(dataframe['Signal'])
 
-        detector.capture_signal(dataframe['Signal'])
+        signal_digitizer.capture_signal(dataframe['Signal'])
 
         # Plot the raw signal on the first axis
         ax_signal.step(
@@ -107,7 +107,7 @@ of the detector.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.395 seconds)
+   **Total running time of the script:** (0 minutes 0.452 seconds)
 
 
 .. _sphx_glr_download_gallery_noise_sources_thermal.py:

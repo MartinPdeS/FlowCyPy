@@ -69,7 +69,7 @@ from FlowCyPy import FlowCell
 
 flow_cell = FlowCell(
     source=source,
-    volume_flow=1 * units.microliter / units.second,  # Flow volume
+    volume_flow=0.3 * units.microliter / units.second,  # Flow volume
     flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
 )
 
@@ -100,7 +100,7 @@ custom_population = Population(
 # Add an Exosome population
 scatterer_collection.add_population(exosome, custom_population)
 
-scatterer_collection.dilute(factor=16)
+scatterer_collection.dilute(factor=4)
 
 # Initialize the scatterer with the flow cell
 scatterer_collection.plot()  # Visualize the particle population
@@ -170,7 +170,7 @@ acquisition.scatterer.plot(
 )
 
 # Visualize the scatter signals from both detectors
-acquisition.signal.plot()
+acquisition.analog.plot()
 
 # %%
 # Step 7: Analyze Detected Signals
@@ -185,7 +185,7 @@ triggered_acquisition = acquisition.run_triggering(
     post_buffer=64
 )
 
-triggered_acquisition.signal.plot()
+triggered_acquisition.analog.plot()
 
 peaks = triggered_acquisition.detect_peaks()
 

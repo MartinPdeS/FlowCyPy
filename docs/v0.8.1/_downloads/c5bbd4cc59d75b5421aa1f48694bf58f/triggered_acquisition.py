@@ -107,27 +107,42 @@ cytometer = FlowCytometer(
 # Run the flow cytometry simulation
 acquisition = cytometer.get_acquisition(run_time=1.0 * units.millisecond)
 
-# Visualize the scatter signals from both detectors
-acquisition.signal.log()
-acquisition.signal.plot()
+# %%
+# Visualize the scatter analog signals from both detectors
+acquisition.analog.log()
+acquisition.analog.plot()
+
+# %%
+# Visualize the scatter digital signals from both detectors
+acquisition.digital.log()
+acquisition.digital.plot()
+
 
 triggered_acquisition = acquisition.run_triggering(
     threshold = 20 * units.microvolt,
     trigger_detector_name='forward',
-    max_triggers=10,
+    max_triggers=8,
     pre_buffer=64,
     post_buffer=64
 )
-triggered_acquisition.signal.plot()
 
 triggered_acquisition.apply_filters(
-    low_cutoff=1.5 * units.megahertz,
-    # high_cutoff=1.5 * units.megahertz
+    lowpass_cutoff=1.5 * units.megahertz,
+    highpass_cutoff=0.01 * units.kilohertz
 )
 
-# triggered_acquisition.apply_baseline_restauration()
+triggered_acquisition.apply_baseline_restauration()
 
-triggered_acquisition.signal.plot()
+# %%
+# Visualize the scatter triggered analog signals from both detectors
+triggered_acquisition.analog.plot()
+
+# %%
+# Visualize the scatter triggered digital signals from both detectors
+triggered_acquisition.digital.plot()
+
+
+
 
 """
 Summary:
@@ -135,3 +150,4 @@ Summary:
 This script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,
 and extracts important features. The process is visualized through signal plots, and key properties are displayed.
 """
+

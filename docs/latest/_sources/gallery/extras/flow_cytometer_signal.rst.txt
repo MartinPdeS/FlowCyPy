@@ -31,7 +31,7 @@ Steps:
 3. Simulate the flow cytometer signals.
 4. Visualize and analyze the signals from FSC and SSC detectors.
 
-.. GENERATED FROM PYTHON SOURCE LINES 15-108
+.. GENERATED FROM PYTHON SOURCE LINES 15-106
 
 .. code-block:: Python
 
@@ -56,8 +56,8 @@ Steps:
     # Flow speed is set to 80 micrometers per second, with a flow area of 1 square micrometer and a total simulation time of 1 second.
     flow_cell = FlowCell(
         source=source,
-        volume_flow=10 * units.microliter / units.second, # Flow speed: 10 microliter per second
-        flow_area=(40 * units.micrometer) ** 2, # Flow area: 40 x 40 micrometers
+        volume_flow=0.1 * units.microliter / units.second, # Flow speed: 10 microliter per second
+        flow_area=(10 * units.micrometer) ** 2, # Flow area: 40 x 40 micrometers
     )
 
     # Step 4: Define the particle size distribution
@@ -68,16 +68,14 @@ Steps:
 
     population_0 = Population(
         name='EV',
-        # particle_count=1e+9 * units.particle / units.milliliter,
-        particle_count=10 * units.particle,
+        particle_count=1e+9 * units.particle / units.milliliter,
         size=distribution.RosinRammler(characteristic_size=200 * units.nanometer, spread=4.5),
         refractive_index=distribution.Normal(mean=1.42 * units.RIU, std_dev=0.05 * units.RIU)
     )
 
     population_1 = Population(
         name='LP',
-        # particle_count=1e+9 * units.particle / units.milliliter,
-        particle_count=50_000 * units.particle,
+        particle_count=1e+11 * units.particle / units.milliliter,
         size=distribution.RosinRammler(characteristic_size=100 * units.nanometer, spread=4.5),
         refractive_index=distribution.Normal(mean=1.39 * units.RIU, std_dev=0.05 * units.RIU)
     )
@@ -126,7 +124,7 @@ Steps:
     acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
     # Visualize the scatter signals from both detectors
-    acquisition.signal.plot(filter_population=['EV'])
+    acquisition.digital.plot(filter_population=['EV'])
 
 
 
@@ -140,7 +138,7 @@ Steps:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-112
+.. GENERATED FROM PYTHON SOURCE LINES 107-110
 
 The above plot shows the raw simulated signals for Forward Scatter (FSC) and
 Side Scatter (SSC) channels. These signals provide insights into particle size
@@ -149,7 +147,7 @@ and complexity and can be further analyzed for feature extraction, such as peak 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 19.863 seconds)
+   **Total running time of the script:** (0 minutes 1.569 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_flow_cytometer_signal.py:

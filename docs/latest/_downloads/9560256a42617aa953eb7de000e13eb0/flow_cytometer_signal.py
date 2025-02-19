@@ -33,8 +33,8 @@ source = GaussianBeam(
 # Flow speed is set to 80 micrometers per second, with a flow area of 1 square micrometer and a total simulation time of 1 second.
 flow_cell = FlowCell(
     source=source,
-    volume_flow=10 * units.microliter / units.second, # Flow speed: 10 microliter per second
-    flow_area=(40 * units.micrometer) ** 2, # Flow area: 40 x 40 micrometers
+    volume_flow=0.1 * units.microliter / units.second, # Flow speed: 10 microliter per second
+    flow_area=(10 * units.micrometer) ** 2, # Flow area: 40 x 40 micrometers
 )
 
 # Step 4: Define the particle size distribution
@@ -45,16 +45,14 @@ scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.
 
 population_0 = Population(
     name='EV',
-    # particle_count=1e+9 * units.particle / units.milliliter,
-    particle_count=10 * units.particle,
+    particle_count=1e+9 * units.particle / units.milliliter,
     size=distribution.RosinRammler(characteristic_size=200 * units.nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.42 * units.RIU, std_dev=0.05 * units.RIU)
 )
 
 population_1 = Population(
     name='LP',
-    # particle_count=1e+9 * units.particle / units.milliliter,
-    particle_count=50_000 * units.particle,
+    particle_count=1e+11 * units.particle / units.milliliter,
     size=distribution.RosinRammler(characteristic_size=100 * units.nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.39 * units.RIU, std_dev=0.05 * units.RIU)
 )
@@ -103,7 +101,7 @@ cytometer = FlowCytometer(
 acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
 # Visualize the scatter signals from both detectors
-acquisition.signal.plot(filter_population=['EV'])
+acquisition.digital.plot(filter_population=['EV'])
 
 # %%
 #
