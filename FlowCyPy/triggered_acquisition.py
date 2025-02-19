@@ -24,7 +24,7 @@ class TriggeredAcquisitions:
         dataframe : pd.DataFrame
             Dataframe containing the acquired signals.
         """
-        self.analog = dataframe
+        self.analog = dataframe.sort_index()
         self.parent = parent
 
         self.detect_peaks()

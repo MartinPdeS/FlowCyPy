@@ -172,13 +172,22 @@ def test_extra(distribution):
         name="Default population"
     )
 
-    scatterer = ScattererCollection()
+    population_1 = Population(
+        particle_count=CONCENTRATION,
+        size=distribution,
+        refractive_index=ri_distribution,
+        name="Default population"
+    )
 
-    scatterer.add_population(population_0)
+    scatterer_collection = ScattererCollection()
 
-    scatterer.dilute(factor=2)
+    scatterer_collection.add_population(population_0, population_1)
+
+    scatterer_collection.dilute(factor=2)
 
     assert np.isclose(population_0.particle_count.value, CONCENTRATION / 2), "Dilution mechanism does not return expected results"
+
+    scatterer_collection.set_concentrations([CONCENTRATION, CONCENTRATION])
 
 
 if __name__ == '__main__':

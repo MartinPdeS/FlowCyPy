@@ -1,5 +1,3 @@
-import logging
-from copy import copy
 import numpy as np
 import pandas as pd
 from typing import Optional
@@ -11,7 +9,6 @@ from PyMieSim.units import Quantity
 from FlowCyPy import units
 from FlowCyPy.units import AU, volt, watt, degree, ampere, coulomb
 from FlowCyPy.noises import NoiseSetting
-from FlowCyPy.peak_locator import BasePeakLocator
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.physical_constant import PhysicalConstant
 

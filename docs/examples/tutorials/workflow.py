@@ -159,7 +159,7 @@ cytometer = FlowCytometer(
 # Run the flow cytometry simulation
 acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-acquisition.scatterer.plot(
+_ = acquisition.scatterer.plot(
     x='side',
     y='forward'
 )

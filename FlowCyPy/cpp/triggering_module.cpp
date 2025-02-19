@@ -38,7 +38,7 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
         throw std::runtime_error("Trigger detector not found in time map.");
 
     std::vector<double> times_out, signals_out;
-    std::vector<std::string> detectors_out;  // Store detector names as strings
+    std::vector<std::string> detectors_out;
     std::vector<int> segment_ids_out;
 
     int global_segment_id = 0; // Unique segment index across all detectors
@@ -77,8 +77,20 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
             valid_triggers.emplace_back(start, end);
             last_end = end;
         }
-        if (max_triggers > 0 && valid_triggers.size() >= (size_t)max_triggers)
+        if (max_triggers > 0 && valid_triggers.size() >= static_cast<size_t>(max_triggers))
             break;
+    }
+
+    // If no valid triggers are found, return empty arrays
+    if (valid_triggers.empty())
+    {
+        PyErr_WarnEx(PyExc_UserWarning, "No signals met the trigger criteria. Returning empty arrays.", 1);
+        return std::make_tuple(
+            py::array_t<double>(0), // Empty time array
+            py::array_t<double>(0), // Empty signal array
+            py::list(),             // Empty detector list
+            py::array_t<int>(0)     // Empty segment IDs
+        );
     }
 
     // Apply triggers to all detectors
@@ -96,46 +108,21 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
         double *signal_ptr = static_cast<double *>(signal_buf.ptr);
         double *time_ptr = static_cast<double *>(time_buf.ptr);
 
-        // Apply triggers to all detectors
+        // Extract signal segments based on the trigger points
         for (const auto &[start, end] : valid_triggers)
         {
-            for (const auto &[detector_name, signal_array] : signal_map)
+            for (int i = start; i <= end; ++i)
             {
-                auto time_array = time_map.at(detector_name); // Fetch corresponding time data
+                if (i >= static_cast<int>(n)) // Ensure we don't go out of bounds
+                    break;
 
-                py::buffer_info signal_buf = signal_array.request();
-                py::buffer_info time_buf = time_array.request();
-
-                if (signal_buf.ndim != 1 || time_buf.ndim != 1)
-                    throw std::runtime_error("Signal and time arrays must be 1D");
-
-                size_t n = signal_buf.shape[0];
-                double *signal_ptr = static_cast<double *>(signal_buf.ptr);
-                double *time_ptr = static_cast<double *>(time_buf.ptr);
-
-                for (int i = start; i <= end; ++i)
-                {
-                    if (i >= n) // Ensure we don't go out of bounds
-                        break;
-
-                    times_out.push_back(time_ptr[i]);
-                    signals_out.push_back(signal_ptr[i]);
-                    detectors_out.push_back(detector_name);
-                    segment_ids_out.push_back(global_segment_id);
-                }
+                times_out.push_back(time_ptr[i]);
+                signals_out.push_back(signal_ptr[i]);
+                detectors_out.push_back(detector_name);
+                segment_ids_out.push_back(global_segment_id);
             }
-            global_segment_id++;  // ✅ Increment the segment ID **after** processing one event for all detectors
+            global_segment_id++; // Increment only once per valid trigger
         }
-
-
-
-
-
-    }
-
-    if (times_out.empty())
-    {
-        PyErr_WarnEx(PyExc_UserWarning, "No signals met the trigger criteria. Consider adjusting the threshold.", 1);
     }
 
     // Convert vector of strings to Python list
@@ -149,6 +136,6 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
     return std::make_tuple(
         py::array_t<double>(times_out.size(), times_out.data()),
         py::array_t<double>(signals_out.size(), signals_out.data()),
-        detector_list,  // Now returning a Python list of strings
+        detector_list,
         py::array_t<int>(segment_ids_out.size(), segment_ids_out.data()));
 }

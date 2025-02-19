@@ -123,8 +123,7 @@ class ScattererCollection():
         """
         return [population.concentration for population in self.populations]
 
-    @concentrations.setter
-    def concentrations(self, values: Union[List[Quantity], Quantity]) -> None:
+    def set_concentrations(self, values: Union[List[Quantity], Quantity]) -> None:
         """
         Sets the concentration of each population in the ScattererCollection instance.
 
