@@ -2,7 +2,7 @@ import pandas as pd
 from FlowCyPy import units
 from scipy.signal import find_peaks
 from FlowCyPy.filters import bessel_lowpass_filter, dc_highpass_filter
-from FlowCyPy.dataframe_subclass import PeakDataFrame
+from FlowCyPy import dataframe_subclass
 from FlowCyPy.helper import validate_units
 from FlowCyPy import dataframe_subclass
 import pint_pandas
@@ -27,8 +27,6 @@ class TriggeredAcquisitions:
         self.analog = dataframe.sort_index()
         self.parent = parent
 
-        self.detect_peaks()
-
     @property
     def signal_digitizer(self) -> object:
         return self.parent.signal_digitizer
@@ -51,51 +49,65 @@ class TriggeredAcquisitions:
             if detector.name == name:
                 return detector
 
-    def detect_peaks(self, multi_peak_strategy: str = 'max') -> None:
+    def detect_peaks(self, peak_detection_func) -> None:
         """
-        Detects peaks for each segment and stores results in a DataFrame.
+        Detects peaks for each segment using a custom peak detection function and stores results
+        in a MultiIndex DataFrame with the original units restored.
 
         Parameters
         ----------
-        multi_peak_strategy : str, optional
-            Strategy for handling multiple peaks in a segment. Options are:
-            - 'max': Take the maximum peak in the segment.
-            - 'mean': Take the average of the peaks in the segment.
-            - 'sum': Sum all peaks in the segment.
-            - 'discard': Remove entries with multiple peaks.
-            - 'keep': Keep all peaks without aggregation.
-            Default is 'max'.
+        peak_detection_func : function
+            A function that takes in a 2D NumPy array of shape (num_arrays, length_of_array)
+            and returns a 2D NumPy array (num_arrays, pad_width) containing detected peak indices.
+
+        Returns
+        -------
+        PeakDataFrame
+            MultiIndex DataFrame with index (Detector, SegmentID, PeakNumber)
+            and columns ['Time', 'Height'], including their original units.
         """
-        if multi_peak_strategy not in {'max', 'mean', 'sum', 'discard', 'keep'}:
-            raise ValueError("Invalid multi_peak_strategy. Choose from 'max', 'mean', 'sum', 'discard', 'keep'.")
+        # Extract detector names and segment IDs
+        detector_segment_groups = self.digital.groupby(level=['Detector', 'SegmentID'])
 
-        def process_segment(segment):
-            signal = segment['Signal'].values
-            time = segment['Time'].values
-            peaks, properties = find_peaks(signal, width=1)
+        # Get the original units from the 'Signal' and 'Time' columns
+        signal_units = self.digital['Signal'].pint.units
+        time_units = self.digital['Time'].pint.units
 
-            return pd.DataFrame({
-                "SegmentID": segment.name[1],
-                "Detector": segment.name[0],
-                "Height": signal[peaks],
-                "Time": time[peaks],
-                **{k: v for k, v in properties.items()}
-            })
+        peak_entries = []
 
-        # Process peaks for each group
-        results = self.digital.groupby(level=['Detector', 'SegmentID']).apply(process_segment)
-        results = results.reset_index(drop=True)
+        for (detector_name, segment_id), group in detector_segment_groups:
+            # Convert signal and time to NumPy arrays without units
+            signal_array = group['Signal'].pint.magnitude.to_numpy().reshape(1, -1)  # Extract numerical values
+            time_array = group['Time'].pint.magnitude.to_numpy().reshape(1, -1)  # Extract numerical values
 
-        # Process multi-peak strategies
-        _temp = results.reset_index()[['Detector', 'SegmentID', 'Height']].pint.dequantify().droplevel('unit', axis=1)
+            # Apply the peak detection function
+            detected_peak_indices = peak_detection_func(signal_array)  # Shape: (1, pad_width)
 
-        self.peaks = (
-            results.reset_index()
-            .loc[_temp.groupby(['Detector', 'SegmentID'])['Height'].idxmax()]
-            .set_index(['Detector', 'SegmentID'])
-        )
+            # Flatten indices and remove NaNs
+            valid_indices = detected_peak_indices.flatten()
+            valid_indices = valid_indices[~np.isnan(valid_indices)].astype(int)
 
-        return PeakDataFrame(self.peaks)
+            # Extract signal heights and time points at detected peak indices
+            peak_heights = signal_array[0, valid_indices]  # Numeric values
+            peak_times = time_array[0, valid_indices]  # Numeric values
+
+            # Store results in a structured format
+            for peak_number, (peak_time, peak_height) in enumerate(zip(peak_times, peak_heights)):
+                peak_entries.append([detector_name, segment_id, peak_number, peak_time, peak_height])
+
+        # Convert peak entries to a MultiIndex DataFrame
+        peaks = dataframe_subclass.PeakDataFrame(peak_entries, columns=['Detector', 'SegmentID', 'PeakNumber', 'Time', 'Height'])
+
+        # Correct way to restore units
+        peaks['Time'] = pint_pandas.PintArray(peaks['Time'].to_numpy(), dtype=time_units)
+        peaks['Height'] = pint_pandas.PintArray(peaks['Height'].to_numpy(), dtype=signal_units)
+
+        # Set the MultiIndex
+        peaks.set_index(['Detector', 'SegmentID', 'PeakNumber'], inplace=True)
+
+        return peaks
+
+
 
     def _apply_lowpass_filter(self, cutoff_freq: units.Quantity, order: int = 4) -> None:
         """
@@ -241,3 +253,33 @@ class TriggeredAcquisitions:
             dataframe.loc[detector_name, 'Signal'] = pint_pandas.PintArray(digitized_signal, units.bit_bins)
 
         return dataframe
+
+
+import numpy as np
+from scipy.signal import find_peaks
+
+def scipy_peak_detector(signal_matrix, pad_width=5, height=None, distance=1, width=None, prominence=None):
+    """
+    Uses `scipy.signal.find_peaks` to detect peaks in a 2D signal matrix.
+
+    Parameters:
+    - signal_matrix: np.ndarray of shape (num_arrays, length_of_array) with signal data.
+    - pad_width: int, number of peaks to return per row (default: 5).
+    - height, distance, width, prominence: Passed to `find_peaks` for peak selection.
+
+    Returns:
+    - np.ndarray of shape (num_arrays, pad_width) with detected peak indices.
+    """
+    num_rows = signal_matrix.shape[0]
+
+    # Initialize padded output array
+    padded_output = np.full((num_rows, pad_width), np.nan)  # Default to NaN for missing values
+
+    # Apply `find_peaks` to each row
+    for i in range(num_rows):
+        peaks, _ = find_peaks(signal_matrix[i], height=height, distance=distance, width=width, prominence=prominence)
+
+        num_found = len(peaks)
+        padded_output[i, :min(num_found, pad_width)] = peaks[:pad_width]  # Assign valid peaks
+
+    return padded_output

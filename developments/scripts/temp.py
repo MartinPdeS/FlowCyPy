@@ -31,7 +31,7 @@ scatterer_collection.add_population(exosome, custom_population)
 
 scatterer_collection.dilute(factor=4)
 
-scatterer_collection.plot()
+# scatterer_collection.plot()
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
@@ -67,19 +67,26 @@ cytometer = FlowCytometer(
 
 acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-acquisition.scatterer.plot(
-    x='side',
-    y='forward'
-)
+# acquisition.scatterer.plot(x='side', y='forward')
 
-acquisition.analog.plot()
+# acquisition.analog.plot()
 
 triggered_acquisition = acquisition.run_triggering(
     threshold=1.0 * units.millivolt,
     trigger_detector_name='forward',
     max_triggers=35,
-    pre_buffer=64,
+    pre_buffer=63,
     post_buffer=64
 )
 
-triggered_acquisition.analog.plot()
+# triggered_acquisition.analog.plot()
+
+from FlowCyPy.triggered_acquisition import scipy_peak_detector
+
+peaks = triggered_acquisition.detect_peaks(peak_detection_func=scipy_peak_detector)
+
+peaks.plot(
+    feature='Height',
+    x_detector='side',
+    y_detector='forward'
+)

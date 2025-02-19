@@ -231,8 +231,8 @@ class PeakDataFrame(pd.DataFrame):
         with plt.style.context(mps):
             # Create joint KDE plot with scatter points overlay
             grid = sns.jointplot(
-                x=x_data,#.pint.to(x_units),
-                y=y_data,#.pint.to(y_units),
+                x=x_data.values,#.pint.to(x_units),
+                y=y_data.values,#.pint.to(y_units),
                 kind='kde',
                 fill=True,
                 cmap="Blues",

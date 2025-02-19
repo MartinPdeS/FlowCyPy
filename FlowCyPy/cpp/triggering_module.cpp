@@ -70,9 +70,14 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
     int last_end = -1;
     for (int idx : trigger_indices)
     {
-        int start = std::max(0, idx - pre_buffer);
-        int end = std::min(static_cast<int>(n_trigger - 1), idx + post_buffer);
-        if (start > last_end)
+        int start = idx - pre_buffer;
+        int end = idx + post_buffer;
+
+        // ✅ Reject triggers if full buffer cannot be extracted
+        if (start < 0 || end >= static_cast<int>(n_trigger))
+            continue; // Skip this trigger
+
+        if (start > last_end) // Ensure no overlapping triggers
         {
             valid_triggers.emplace_back(start, end);
             last_end = end;
@@ -84,7 +89,7 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
     // If no valid triggers are found, return empty arrays
     if (valid_triggers.empty())
     {
-        PyErr_WarnEx(PyExc_UserWarning, "No signals met the trigger criteria. Returning empty arrays.", 1);
+        PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found (buffer too large or no signals met the criteria). Returning empty arrays.", 1);
         return std::make_tuple(
             py::array_t<double>(0), // Empty time array
             py::array_t<double>(0), // Empty signal array
