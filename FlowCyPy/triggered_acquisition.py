@@ -1,3 +1,4 @@
+from typing import Callable
 import pandas as pd
 from FlowCyPy import units
 from scipy.signal import find_peaks
@@ -6,6 +7,35 @@ from FlowCyPy import dataframe_subclass
 from FlowCyPy.helper import validate_units
 from FlowCyPy import dataframe_subclass
 import pint_pandas
+
+import numpy as np
+from scipy.signal import find_peaks
+
+def scipy_peak_detector(signal_matrix, pad_width=5, height=None, distance=1, width=None, prominence=None):
+    """
+    Uses `scipy.signal.find_peaks` to detect peaks in a 2D signal matrix.
+
+    Parameters:
+    - signal_matrix: np.ndarray of shape (num_arrays, length_of_array) with signal data.
+    - pad_width: int, number of peaks to return per row (default: 5).
+    - height, distance, width, prominence: Passed to `find_peaks` for peak selection.
+
+    Returns:
+    - np.ndarray of shape (num_arrays, pad_width) with detected peak indices.
+    """
+    num_rows = signal_matrix.shape[0]
+
+    # Initialize padded output array
+    padded_output = np.full((num_rows, pad_width), np.nan)  # Default to NaN for missing values
+
+    # Apply `find_peaks` to each row
+    for i in range(num_rows):
+        peaks, _ = find_peaks(signal_matrix[i], height=height, distance=distance, width=width, prominence=prominence)
+
+        num_found = len(peaks)
+        padded_output[i, :min(num_found, pad_width)] = peaks[:pad_width]  # Assign valid peaks
+
+    return padded_output
 
 class TriggeredAcquisitions:
     """
@@ -49,7 +79,7 @@ class TriggeredAcquisitions:
             if detector.name == name:
                 return detector
 
-    def detect_peaks(self, peak_detection_func) -> None:
+    def detect_peaks(self, peak_detection_func: Callable = scipy_peak_detector) -> None:
         """
         Detects peaks for each segment using a custom peak detection function and stores results
         in a MultiIndex DataFrame with the original units restored.
@@ -106,8 +136,6 @@ class TriggeredAcquisitions:
         peaks.set_index(['Detector', 'SegmentID', 'PeakNumber'], inplace=True)
 
         return peaks
-
-
 
     def _apply_lowpass_filter(self, cutoff_freq: units.Quantity, order: int = 4) -> None:
         """
@@ -253,33 +281,3 @@ class TriggeredAcquisitions:
             dataframe.loc[detector_name, 'Signal'] = pint_pandas.PintArray(digitized_signal, units.bit_bins)
 
         return dataframe
-
-
-import numpy as np
-from scipy.signal import find_peaks
-
-def scipy_peak_detector(signal_matrix, pad_width=5, height=None, distance=1, width=None, prominence=None):
-    """
-    Uses `scipy.signal.find_peaks` to detect peaks in a 2D signal matrix.
-
-    Parameters:
-    - signal_matrix: np.ndarray of shape (num_arrays, length_of_array) with signal data.
-    - pad_width: int, number of peaks to return per row (default: 5).
-    - height, distance, width, prominence: Passed to `find_peaks` for peak selection.
-
-    Returns:
-    - np.ndarray of shape (num_arrays, pad_width) with detected peak indices.
-    """
-    num_rows = signal_matrix.shape[0]
-
-    # Initialize padded output array
-    padded_output = np.full((num_rows, pad_width), np.nan)  # Default to NaN for missing values
-
-    # Apply `find_peaks` to each row
-    for i in range(num_rows):
-        peaks, _ = find_peaks(signal_matrix[i], height=height, distance=distance, width=width, prominence=prominence)
-
-        num_found = len(peaks)
-        padded_output[i, :min(num_found, pad_width)] = peaks[:pad_width]  # Assign valid peaks
-
-    return padded_output
