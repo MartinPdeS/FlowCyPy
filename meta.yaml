@@ -20,9 +20,9 @@ requirements:
     - python-build ~=1.2
     - setuptools_scm[toml] ~=8.0
   run:
+    - python {{PY_VER}}*
     - pandas ~=2.2
     - pint-pandas ~=0.6
-    - reportlab ~=4.2
     - seaborn ~=0.13
     - pydantic ~=2.9
     - tabulate ~=0.9
