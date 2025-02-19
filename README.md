@@ -11,7 +11,7 @@
 | FlowCyPy/coupling\_mechanism/rayleigh.py              |       23 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/uniform.py               |        6 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/cytometer.py                                 |       96 |        9 |       18 |        3 |     88% |237, 333, 338-341, 361-365 |
-| FlowCyPy/dataframe\_subclass.py                       |      191 |       69 |       32 |        5 |     60% |30-62, 210->213, 218, 219->exit, 263-291, 311-327, 396->399, 402->exit, 421-425, 445-469, 488-498, 539-556 |
+| FlowCyPy/dataframe\_subclass.py                       |      191 |       69 |       32 |        5 |     60% |30-62, 210->213, 218, 219->exit, 263-291, 311-327, 384->387, 390->exit, 409-413, 433-457, 476-486, 527-544 |
 | FlowCyPy/detector.py                                  |       77 |        5 |       12 |        3 |     91% |82, 102, 114, 252-253 |
 | FlowCyPy/distribution/base\_class.py                  |       27 |        4 |        2 |        1 |     83% |32, 36, 65, 72 |
 | FlowCyPy/distribution/delta.py                        |       31 |        2 |        2 |        1 |     91% |   74, 104 |
