@@ -11,7 +11,7 @@
 | FlowCyPy/coupling\_mechanism/rayleigh.py              |       23 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/uniform.py               |        6 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/cytometer.py                                 |       93 |        9 |       18 |        3 |     87% |237, 329, 334-337, 357-361 |
-| FlowCyPy/dataframe\_subclass.py                       |      233 |      110 |       42 |        5 |     49% |31-63, 174-191, 292->295, 299, 300->exit, 307-340, 346, 352-369, 375, 391-406, 431, 445-458, 464, 484-497, 512, 531, 543-553, 569-577, 583, 595-605 |
+| FlowCyPy/dataframe\_subclass.py                       |      230 |      110 |       42 |        5 |     48% |31-63, 174-191, 288->291, 295, 296->exit, 303-336, 342, 348-365, 371, 387-402, 427, 441-454, 460, 480-493, 508, 527, 539-549, 565-573, 579, 591-601 |
 | FlowCyPy/detector.py                                  |       77 |        5 |       12 |        3 |     91% |82, 102, 114, 252-253 |
 | FlowCyPy/distribution/base\_class.py                  |       27 |        4 |        2 |        1 |     83% |32, 36, 65, 72 |
 | FlowCyPy/distribution/delta.py                        |       31 |        2 |        2 |        1 |     91% |   74, 104 |
@@ -38,7 +38,7 @@
 | FlowCyPy/triggered\_acquisition.py                    |       79 |       34 |       30 |        1 |     44% |50-52, 70, 118-142, 162-187, 196-203, 217-220 |
 | FlowCyPy/units.py                                     |       21 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       33 |        3 |        6 |        2 |     87% |26, 30, 38 |
-|                                             **TOTAL** | **1635** |  **359** |  **298** |   **74** | **73%** |           |
+|                                             **TOTAL** | **1632** |  **359** |  **298** |   **74** | **73%** |           |
 
 
 ## Setup coverage badge
