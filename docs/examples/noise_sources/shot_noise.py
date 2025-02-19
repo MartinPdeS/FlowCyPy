@@ -54,7 +54,7 @@ for optical_power in optical_powers:
         wavelength=1550 * units.nanometer
     )
 
-    detector.capture_signal(dataframe['Signal'])
+    signal_digitizer.capture_signal(dataframe['Signal'])
 
     # Plot the raw signal on the first axis
     ax_signal.step(

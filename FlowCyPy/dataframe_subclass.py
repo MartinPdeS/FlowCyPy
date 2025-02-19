@@ -377,18 +377,6 @@ class TriggeredAcquisitionDataFrame(pd.DataFrame):
                 ax.step(x, digitized, where='mid', linewidth=2, label=f'Digitized segment-{segment_id}')
                 ax.set_ylim([0, self.attrs['bit_depth']])
 
-            #     # Twin axis for continuous signal
-            #     ax2 = ax.twinx()
-            #     cont_time, cont_signal, cont_signal_units = self._get_continuous_signal(detector_name, time_units)
-            #     ax2.plot(cont_time, cont_signal, color='black', linewidth=1, linestyle='-', label='Analog Signal', zorder=0)
-
-            #     # Set y-limits for the continuous signal
-            #     ax2.set_ylim(*self.attrs['saturation_levels'][detector_name])
-
-            # if detector_name == self.attrs['threshold']['detector']:
-            #     ax2.axhline(y=self.attrs['threshold']['value'], linestyle='--', color='black', label='Threshold')
-
-            # ax2.legend(loc='upper right')
             ax.legend(loc='upper left')
 
         # Add event markers to the last subplot

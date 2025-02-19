@@ -53,7 +53,7 @@ for dark_current in dark_currents:
     # Add dark current noise to the raw signal
     detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])
 
-    detector.capture_signal(dataframe['Signal'])
+    signal_digitizer.capture_signal(dataframe['Signal'])
 
     # Plot the raw signal on the first axis
     ax_signal.step(
