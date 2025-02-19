@@ -14,7 +14,7 @@ from FlowCyPy.detector import Detector
 from FlowCyPy.acquisition import Acquisition
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.helper import validate_units
-from FlowCyPy.dataframe_subclass import ContinuousAcquisitionDataFrame
+from FlowCyPy import dataframe_subclass
 
 
 # Set up logging configuration
@@ -284,14 +284,10 @@ class FlowCytometer:
 
             signal_dataframe.loc[detector.name, 'Signal'] = detector_signal.pint.quantity.magnitude
 
-            digitized_signal, _saturation = self.signal_digitizer.capture_signal(signal=detector_signal)
+            saturation_levels[detector.name] = self.signal_digitizer.get_saturation_values(signal=detector_signal)
 
-            saturation_levels[detector.name] = _saturation
+        signal_dataframe = dataframe_subclass.AnalogAcquisitionDataFrame(signal_dataframe)
 
-            signal_dataframe.loc[detector.name, 'DigitizedSignal'] = PintArray(digitized_signal, units.bit_bins)
-
-        signal_dataframe = ContinuousAcquisitionDataFrame(signal_dataframe)
-        signal_dataframe.attrs['bit_depth'] = self.signal_digitizer._bit_depth
         signal_dataframe.attrs['saturation_levels'] = saturation_levels
         signal_dataframe.attrs['scatterer_dataframe'] = scatterer_dataframe
 

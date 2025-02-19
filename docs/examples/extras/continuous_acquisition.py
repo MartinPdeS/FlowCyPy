@@ -38,8 +38,8 @@ source = GaussianBeam(
 # Set the flow speed to 80 micrometers per second and a flow area of 1 square micrometer, with a total simulation time of 1 second.
 flow_cell = FlowCell(
     source=source,
-    volume_flow=10 * units.microliter / units.second,        # Flow speed: 10 microliter per second
-    flow_area=(20 * units.micrometer) ** 2,        # Flow area: 10 x 10 micrometers
+    volume_flow=0.01 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+    flow_area=(10 * units.micrometer) ** 2,        # Flow area: 10 x 10 micrometers
 )
 
 # %%
@@ -58,7 +58,7 @@ ev_ri = distribution.Normal(
 )
 
 ev = Population(
-    particle_count=1.8e+8 * units.particle / units.milliliter,
+    particle_count=1.8e+9 * units.particle / units.milliliter,
     size=ev_size,               # Particle size distribution
     refractive_index=ev_ri,     # Refractive index distribution
     name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
@@ -107,9 +107,9 @@ cytometer = FlowCytometer(
 acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
 # Visualize the scatter signals from both detectors
-acquisition.signal.plot()
+acquisition.analog.plot()
 
-acquisition.signal.log()
+acquisition.analog.log()
 
 """
 Summary:

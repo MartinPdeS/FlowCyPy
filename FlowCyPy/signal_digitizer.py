@@ -91,16 +91,19 @@ class SignalDigitizer:
             raise ValueError(f"sampling_freq must be in hertz, but got {value.units}")
         return value
 
-    def capture_signal(self, signal: pd.Series) -> None:
+    def get_saturation_values(self, signal: pd.Series) -> Tuple[Quantity, Quantity]:
+        if self.saturation_levels == 'auto':
+            return signal.pint.quantity.min(), signal.pint.quantity.max()
+        elif isinstance(self.saturation_levels, tuple) and len(self.saturation_levels) == 2:
+            return self.saturation_levels
+
+        raise ValueError("saturation_levels must be 'auto' or a tuple of two Quantities.")
+
+    def capture_signal(self, signal: pd.Series) -> Tuple[Quantity, Quantity, Quantity]:
         """
         Processes and captures the final signal by applying noise and saturation.
         """
-        if self.saturation_levels == 'auto':
-            min_level, max_level = signal.pint.quantity.min(), signal.pint.quantity.max()
-        elif isinstance(self.saturation_levels, tuple) and len(self.saturation_levels) == 2:
-            min_level, max_level = self.saturation_levels
-        else:
-            raise ValueError("saturation_levels must be 'auto' or a tuple of two Quantities.")
+        min_level, max_level = self.get_saturation_values(signal)
 
         self._saturation_levels = min_level, max_level
         # Generate bins for discretization

@@ -99,12 +99,12 @@ def test_flow_cytometer_simulation(default_detector_0, default_detector_1, defau
     acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
     # Check that the signals are not all zeros (pulses should add non-zero values)
-    assert not np.all(acquisition.signal['Signal'] == 0 * units.volt), "FSC signal is all zeros."
-    assert not np.all(acquisition.signal['Signal'] == 0 * units.volt), "SSC signal is all zeros."
+    assert not np.all(acquisition.analog['Signal'] == 0 * units.volt), "FSC signal is all zeros."
+    assert not np.all(acquisition.analog['Signal'] == 0 * units.volt), "SSC signal is all zeros."
 
     # Check that the noise has been added to the signal
-    assert np.std(acquisition.signal['Signal']) > 0 * units.volt, "FSC signal variance is zero, indicating no noise added."
-    assert np.std(acquisition.signal['Signal']) > 0 * units.volt, "SSC signal variance is zero, indicating no noise added."
+    assert np.std(acquisition.analog['Signal']) > 0 * units.volt, "FSC signal variance is zero, indicating no noise added."
+    assert np.std(acquisition.analog['Signal']) > 0 * units.volt, "SSC signal variance is zero, indicating no noise added."
 
 
 @patch('matplotlib.pyplot.show')
@@ -120,7 +120,7 @@ def test_flow_cytometer_plot(mock_show, default_detector_0, default_detector_1, 
 
     acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-    acquisition.signal.plot()
+    acquisition.analog.plot()
 
     plt.close()
 
@@ -134,7 +134,7 @@ def test_flow_cytometer_plot(mock_show, default_detector_0, default_detector_1, 
         post_buffer=64
     )
 
-    triggered_acquisition.signal.plot()
+    triggered_acquisition.analog.plot()
 
     plt.close()
 

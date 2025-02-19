@@ -16,6 +16,7 @@ PYBIND11_MODULE(Interface, m) {
       m.def("run_triggering", &run_triggering,
             py::arg("signal_map"),
             py::arg("time_map"),
+            py::arg("trigger_detector_name"),
             py::arg("threshold"),
             py::arg("pre_buffer") = 64,
             py::arg("post_buffer") = 64,

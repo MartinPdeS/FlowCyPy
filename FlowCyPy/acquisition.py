@@ -1,9 +1,10 @@
+from typing import List
 import warnings
 import pandas as pd
 from FlowCyPy import units
-from FlowCyPy.triggered_acquisition import TriggeredAcquisitions
-from FlowCyPy.dataframe_subclass import TriggeredAcquisitionDataFrame
+from FlowCyPy import dataframe_subclass
 from FlowCyPy.binary import Interface
+from FlowCyPy.triggered_acquisition import TriggeredAcquisitions
 import pint_pandas
 
 class Acquisition:
@@ -34,13 +35,21 @@ class Acquisition:
             DataFrame with detector signal data.
         """
         self.cytometer = cytometer
-        self.signal = detector_dataframe
+        self.analog = detector_dataframe
         self.scatterer = scatterer_dataframe
         self.run_time = run_time
 
     @property
     def n_detectors(self) -> int:
-        return len(self.signal.index.get_level_values('Detector').unique())
+        return len(self.detector_names)
+
+    @property
+    def detector_names(self) -> List[str]:
+        return self.analog.index.get_level_values('Detector').unique()
+
+    @property
+    def signal_digitizer(self) -> object:
+        return self.cytometer.signal_digitizer
 
     def run_triggering(self,
             threshold: units.Quantity,
@@ -89,23 +98,28 @@ class Acquisition:
         - The peak detection function `self.detect_peaks` is automatically called at the end of this method to analyze triggered segments.
         """
         # Ensure the trigger detector exists
-        if trigger_detector_name not in self.signal.index.get_level_values('Detector').unique():
+        if trigger_detector_name not in self.detector_names:
             raise ValueError(f"Detector '{trigger_detector_name}' not found in dataset.")
 
         # Convert threshold to plain numeric value
-        threshold_value = threshold.to(self.signal['Signal'].pint.units).magnitude
+        threshold_value = threshold.to(self.analog['Signal'].pint.units).magnitude
 
         # Prepare detector-specific signal & time mappings for C++ function
-        detectors_name = self.signal.index.get_level_values('Detector').unique()
-        signal_units = self.signal.xs(detectors_name[0])['Signal'].pint.units
-        time_units = self.signal.xs(detectors_name[0])['Time'].pint.units
+        signal_units = self.analog.xs(self.detector_names[0])['Signal'].pint.units
+        time_units = self.analog.xs(self.detector_names[0])['Time'].pint.units
 
-        signal_map = {det: self.signal.xs(det)['Signal'].pint.to(signal_units).pint.magnitude for det in detectors_name}
-        time_map = {det: self.signal.xs(det)['Time'].pint.to(time_units).pint.magnitude for det in detectors_name}
+        signal_map = {det: self.analog.xs(det)['Signal'].pint.to(signal_units).pint.magnitude for det in self.detector_names}
+        time_map = {det: self.analog.xs(det)['Time'].pint.to(time_units).pint.magnitude for det in self.detector_names}
 
         # Call the C++ function for fast triggering detection
         times, signals, detectors, segment_ids = Interface.run_triggering(
-            signal_map, time_map, threshold_value, pre_buffer, post_buffer, max_triggers or -1
+            signal_map=signal_map,
+            time_map=time_map,
+            trigger_detector_name=trigger_detector_name,
+            threshold=threshold_value,
+            pre_buffer=pre_buffer,
+            post_buffer=post_buffer,
+            max_triggers=max_triggers or -1
         )
 
         # Convert back to PintArray (restore units)
@@ -116,7 +130,7 @@ class Acquisition:
         if len(times) == 0:
             warnings.warn(
                 f"No signal met the trigger criteria. Try adjusting the threshold. "
-                f"Signal min-max: {self.signal['Signal'].min().to_compact()}, {self.signal['Signal'].max().to_compact()}",
+                f"Signal min-max: {self.analog['Signal'].min().to_compact()}, {self.analog['Signal'].max().to_compact()}",
                 UserWarning
             )
             return None
@@ -129,21 +143,13 @@ class Acquisition:
             "SegmentID": segment_ids
         }).set_index(['Detector', 'SegmentID'])
 
-        digitized_signal, _ = self.cytometer.signal_digitizer.capture_signal(triggered_signal['Signal'])
-        digitized_signal = pint_pandas.PintArray(
-            digitized_signal,
-            units.bit_bins
-        )
-
-        triggered_signal['DigitizedSignal'] = digitized_signal
-
         # Create a specialized DataFrame class
-        triggered_signal = TriggeredAcquisitionDataFrame(triggered_signal)
+        triggered_signal = dataframe_subclass.TriggeredAnalogAcquisitionDataFrame(triggered_signal)
 
         # Copy metadata attributes
-        triggered_signal.attrs['bit_depth'] = self.signal.attrs.get('bit_depth', None)
-        triggered_signal.attrs['saturation_levels'] = self.signal.attrs.get('saturation_levels', None)
-        triggered_signal.attrs['scatterer_dataframe'] = self.signal.attrs.get('scatterer_dataframe', None)
+        triggered_signal.attrs['bit_depth'] = self.analog.attrs.get('bit_depth', None)
+        triggered_signal.attrs['saturation_levels'] = self.analog.attrs.get('saturation_levels', None)
+        triggered_signal.attrs['scatterer_dataframe'] = self.analog.attrs.get('scatterer_dataframe', None)
         triggered_signal.attrs['threshold'] = {'detector': trigger_detector_name, 'value': threshold}
 
         # Wrap inside a TriggeredAcquisitions object
@@ -153,3 +159,21 @@ class Acquisition:
         return triggered_acquisition
 
 
+    @property
+    def digital(self) -> pd.DataFrame:
+        dataframe = dataframe_subclass.DigitizedAcquisitionDataFrame(
+            index=self.analog.index,
+            data=dict(Time=self.analog.Time)
+        )
+
+        dataframe.attrs['saturation_levels'] = dict()
+        dataframe.attrs['scatterer_dataframe'] = self.analog.attrs.get('scatterer_dataframe', None)
+
+        for detector_name, group in self.analog.groupby('Detector'):
+            digitized_signal, _ = self.signal_digitizer.capture_signal(signal=group['Signal'])
+
+            dataframe.attrs['saturation_levels'][detector_name] = [0, self.signal_digitizer.bit_depth]
+
+            dataframe.loc[detector_name, 'Signal'] = pint_pandas.PintArray(digitized_signal, units.bit_bins)
+
+        return dataframe
