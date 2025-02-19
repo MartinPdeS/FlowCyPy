@@ -11,10 +11,14 @@ build:
 
 requirements:
   host:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - {{ compiler('fortran') }}
     - python {{ PY_VER }}*
-    - setuptools >=40.8.0
-    - wheel
-    - setuptools-scm >=8.0
+    - scikit-build-core ~=0.3
+    - pybind11 ~=2.13
+    - python-build ~=1.2
+    - setuptools_scm[toml] ~=8.0
   run:
     - pandas ~=2.2
     - pint-pandas ~=0.6
@@ -43,6 +47,10 @@ about:
     - material
     - microbeads
     - Mie scattering
+
+files:
+  include:
+    - "FlowCyPy/binary/*.so"
 
 test:
   imports:

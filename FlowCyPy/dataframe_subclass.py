@@ -195,10 +195,6 @@ class PeakDataFrame(pd.DataFrame):
     """
     A subclass of pandas DataFrame with a custom plot method.
     """
-    bit_depth: int
-    saturation_levels: dict
-    scatterer_dataframe: pd.DataFrame
-
     @property
     def _constructor(self):
         """
@@ -207,7 +203,7 @@ class PeakDataFrame(pd.DataFrame):
         return PeakDataFrame
 
     @helper.plot_sns
-    def plot(self, x_detector: str, y_detector: str, signal: str = 'Height', bandwidth_adjust: float = 0.8) -> None:
+    def plot(self, x_detector: str, y_detector: str, feature: str = 'Height', bandwidth_adjust: float = 0.8) -> None:
         """
         Plot the joint KDE distribution of the specified signal between two detectors using seaborn,
         optionally overlaying scatter points.
@@ -218,14 +214,14 @@ class PeakDataFrame(pd.DataFrame):
             Name of the detector to use for the x-axis.
         y_detector : str
             Name of the detector to use for the y-axis.
-        signal : str, optional
+        feature : str, optional
             The signal column to plot, by default 'Height'.
         bandwidth_adjust : float, optional
             Bandwidth adjustment factor for KDE, by default 0.8.
         """
         # Filter to only include rows for the specified detectors
-        x_data = self.loc[x_detector, signal]
-        y_data = self.loc[y_detector, signal]
+        x_data = self.loc[x_detector, feature]
+        y_data = self.loc[y_detector, feature]
 
         # x_units = x_data.max().to_compact().units
         # y_units = y_data.max().to_compact().units
@@ -246,7 +242,7 @@ class PeakDataFrame(pd.DataFrame):
         grid.figure.suptitle("Peaks properties")
         grid.ax_joint.scatter(x_data, y_data, color='C1', alpha=0.6)
 
-        grid.set_axis_labels(f"{signal} ({x_detector}) [{x_units}]", f"{signal} ({y_detector}) [{y_units}]", fontsize=12)
+        grid.set_axis_labels(f"{feature} ({x_detector}) [{x_units}]", f"{feature} ({y_detector}) [{y_units}]", fontsize=12)
 
         return grid
 
