@@ -284,7 +284,7 @@ and particles follows Mie theory:
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f19f3880f10>
+    <seaborn.axisgrid.JointGrid object at 0x7f9a581c4f50>
 
 
 
@@ -374,7 +374,7 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f19e95a1050>
+    <seaborn.axisgrid.JointGrid object at 0x7f9a5447d190>
 
 
 
@@ -415,7 +415,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.424 seconds)
+   **Total running time of the script:** (0 minutes 8.225 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:
