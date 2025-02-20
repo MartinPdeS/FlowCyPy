@@ -1,6 +1,6 @@
 import numpy as np
 from typing import List
-from FlowCyPy.units import second, volt, Quantity
+from FlowCyPy.units import second, Quantity
 import pandas as pd
 import pint_pandas
 from FlowCyPy.peak_locator import BasePeakLocator
@@ -62,10 +62,9 @@ def generate_dummy_detector(time: np.ndarray, centers: List[float], heights: Lis
     """
     time = Quantity(time, second)
     centers = Quantity(centers, second)
-    heights = Quantity(heights, volt)
     stds = Quantity(stds, second)
 
-    signal = np.zeros_like(time) * volt
+    signal = np.zeros_like(time) * heights.units
 
     for center, height, sigma in zip(centers, heights, stds):
         signal += height * np.exp(-((time - center) ** 2) / (2 * sigma ** 2))

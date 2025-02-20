@@ -101,6 +101,8 @@ class Acquisition:
         if trigger_detector_name not in self.detector_names:
             raise ValueError(f"Detector '{trigger_detector_name}' not found in dataset.")
 
+        signal_length = pre_buffer + post_buffer
+
         # Convert threshold to plain numeric value
         threshold_value = threshold.to(self.analog['Signal'].pint.units).magnitude
 
@@ -117,7 +119,7 @@ class Acquisition:
             time_map=time_map,
             trigger_detector_name=trigger_detector_name,
             threshold=threshold_value,
-            pre_buffer=pre_buffer,
+            pre_buffer=pre_buffer - 1,
             post_buffer=post_buffer,
             max_triggers=max_triggers or -1
         )
@@ -155,6 +157,7 @@ class Acquisition:
         # Wrap inside a TriggeredAcquisitions object
         triggered_acquisition = TriggeredAcquisitions(parent=self, dataframe=triggered_signal)
         triggered_acquisition.scatterer = self.scatterer
+        triggered_acquisition.signal_length = signal_length
 
         return triggered_acquisition
 

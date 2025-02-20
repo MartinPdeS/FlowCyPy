@@ -82,11 +82,11 @@ triggered_acquisition = acquisition.run_triggering(
 # triggered_acquisition.analog.plot()
 
 from FlowCyPy.triggered_acquisition import scipy_peak_detector
+print(triggered_acquisition.analog)
+# peaks = triggered_acquisition.detect_peaks(peak_detection_func=scipy_peak_detector)
 
-peaks = triggered_acquisition.detect_peaks(peak_detection_func=scipy_peak_detector)
-
-peaks.plot(
-    feature='Height',
-    x_detector='side',
-    y_detector='forward'
-)
+# peaks.plot(
+#     feature='Height',
+#     x_detector='side',
+#     y_detector='forward'
+# )

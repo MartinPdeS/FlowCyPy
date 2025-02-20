@@ -1,108 +1,129 @@
-from dataclasses import dataclass
-import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
 from scipy.signal import find_peaks
-from FlowCyPy.peak_locator.base_class import BasePeakLocator
-from FlowCyPy.units import Quantity, volt
 
-
-@dataclass
-class BasicPeakLocator(BasePeakLocator):
+class BasicPeakLocator:
     """
-    A basic peak detector class that identifies peaks in a signal using a threshold-based method.
+    A peak detection utility for identifying and extracting prominent peaks in 2D numerical arrays.
+
+    This class provides a callable object that detects peaks in each row of a 2D NumPy array.
+    It utilizes `scipy.signal.find_peaks` for peak detection and allows customization of
+    peak height, distance, width, and prominence to refine peak selection. The detected
+    peaks are returned in a structured format with NaN padding for missing values.
 
     Parameters
     ----------
-    threshold : Quantity, optional
-        The minimum height required for a peak to be considered significant. Default is `Quantity(0.1, volt)`.
-    min_peak_distance : Quantity, optional
-        The minimum distance between detected peaks. Default is `Quantity(0.1)`.
-    rel_height : float, optional
-        The relative height at which the peak width is measured. Default is `0.5`.
+    height : float, optional
+        Minimum height a peak must have to be detected. Default is 2000.
+    distance : int, optional
+        Minimum horizontal distance between detected peaks. Default is 1.
+    width : float, optional
+        Minimum width of detected peaks. If None, width is not considered. Default is None.
+    prominence : float, optional
+        Minimum prominence of detected peaks. If None, prominence is not considered. Default is None.
+    max_number_of_peaks : int, optional
+        Maximum number of peaks to return per row. If fewer peaks are detected, NaN values
+        are used as placeholders. Default is 5.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from scipy.signal import find_peaks
+    >>> peak_locator = DefaultPeakLocator(height=1000, distance=2, max_number_of_peaks=3)
+    >>> data = np.array([[0, 2000, 100, 5000, 200, 10000], [100, 50, 2000, 4000, 5000, 100]])
+    >>> peaks = peak_locator(data)
+    >>> print(peaks)
+    [[ 1.  3.  5.]
+     [ 2.  3.  4.]]
+
+    Methods
+    -------
+    __call__(array)
+        Detects peaks in each row of a 2D NumPy array and returns a structured output.
+
+    Notes
+    -----
+    - The function expects a **2D NumPy array** as input.
+    - If a row contains fewer peaks than `max_number_of_peaks`, NaN values are used as padding.
+    - Uses `scipy.signal.find_peaks`, which applies thresholding techniques for peak detection.
+    - The number of peaks found per row depends on the provided constraints (`height`, `distance`, etc.).
 
     """
 
-    threshold: Quantity = Quantity(0.0, volt)
-    rel_height: float = 0.5
-    min_peak_distance: Quantity = None
-
-    def init_data(self, dataframe: pd.DataFrame) -> None:
+    def __init__(self, height: float = 2000, distance: int = 1, width: float = None, prominence: float = None, max_number_of_peaks: int = 5, padding_value: object = -1):
         """
-        Initialize the data for peak detection.
+        Initializes the DefaultPeakLocator with configurable peak detection parameters.
 
         Parameters
         ----------
-        dataframe : pd.DataFrame
-            A DataFrame containing the signal data with columns 'Signal' and 'Time'.
-
-        Raises
-        ------
-        ValueError
-            If the DataFrame is missing required columns or is empty.
+        height : float, optional
+            Minimum height a peak must have to be detected. Default is 2000.
+        distance : int, optional
+            Minimum horizontal distance between detected peaks. Default is 1.
+        width : float, optional
+            Minimum width of detected peaks. If None, width is not considered. Default is None.
+        prominence : float, optional
+            Minimum prominence of detected peaks. If None, prominence is not considered. Default is None.
+        max_number_of_peaks : int, optional
+            Maximum number of peaks to return per row. If fewer peaks are detected, NaN values
+            are used as placeholders. Default is 5.
         """
-        super().init_data(dataframe)
+        self.height = height
+        self.distance = distance
+        self.width = width
+        self.prominence = prominence
+        self.max_number_of_peaks = max_number_of_peaks
+        self.padding_value = padding_value
 
-        if self.threshold is not None:
-            self.threshold = self.threshold.to(self.data['Signal'].values.units)
-
-        if self.min_peak_distance is not None:
-            self.min_peak_distance = self.min_peak_distance.to(self.data['Time'].values.units)
-
-    def _compute_algorithm_specific_features(self) -> None:
+    def __call__(self, array: np.ndarray) -> np.ndarray:
         """
-        Compute peaks based on the moving average algorithm.
-        """
-        peak_indices = self._compute_peak_positions()
+        Detects peaks in a 2D NumPy array.
 
-        widths_samples, width_heights, left_ips, right_ips = self._compute_peak_widths(
-            peak_indices,
-            self.data['Signal'].values
-        )
-
-        return peak_indices, widths_samples, width_heights, left_ips, right_ips
-
-    def _compute_peak_positions(self) -> pd.DataFrame:
-        """
-        Detects peaks in the signal and calculates their properties such as heights, widths, and areas.
+        This function applies `scipy.signal.find_peaks` row-wise to detect peaks based
+        on the specified height, distance, width, and prominence constraints. It returns
+        a structured NumPy array where each row contains the detected peak indices,
+        padded with NaN values if fewer than `max_number_of_peaks` peaks are found.
 
         Parameters
         ----------
-        detector : pd.DataFrame
-            DataFrame with the signal data to detect peaks in.
+        array : np.ndarray
+            A 2D NumPy array where each row represents a separate dataset for peak detection.
 
         Returns
         -------
-        peak_times : Quantity
-            The times at which peaks occur.
-        heights : Quantity
-            The heights of the detected peaks.
-        widths : Quantity
-            The widths of the detected peaks.
-        areas : Quantity or None
-            The areas under each peak, if `compute_area` is True.
-        """
-        # Find peaks in the difference signal
-        peak_indices, _ = find_peaks(
-            self.data['Signal'].values,
-            height=None if self.threshold is None else self.threshold.magnitude,
-            distance=None if self.min_peak_distance is None else int(np.ceil(self.min_peak_distance / self.dt))
-        )
+        np.ndarray
+            A 2D NumPy array of shape `(array.shape[0], max_number_of_peaks)`. Each row
+            contains the indices of detected peaks, padded with NaNs if fewer peaks are found.
 
-        return peak_indices
+        Raises
+        ------
+        AssertionError
+            If `array` is not a 2D NumPy array.
 
-    def _add_custom_to_ax(self, time_unit: str | Quantity, signal_unit: str | Quantity, ax: plt.Axes = None) -> None:
+        Examples
+        --------
+        >>> import numpy as np
+        >>> peak_locator = DefaultPeakLocator(height=500, distance=2, max_number_of_peaks=3)
+        >>> data = np.array([[0, 800, 100, 2000, 150, 9000], [50, 1000, 200, 3000, 4000, 100]])
+        >>> peaks = peak_locator(data)
+        >>> print(peaks)
+        [[ 1.  3.  5.]
+         [ 1.  3.  4.]]
         """
-        Add algorithm-specific elements to the plot.
+        assert array.ndim == 2, "Array must be of dimension 2."
 
-        Parameters
-        ----------
-        time_unit : str or Quantity
-            The unit for the time axis (e.g., 'microsecond').
-        signal_unit : str or Quantity
-            The unit for the signal axis (e.g., 'volt').
-        ax : matplotlib.axes.Axes
-            The Axes object to add elements to.
-        """
-        # Plot the signal threshold line
-        ax.axhline(y=self.threshold.to(signal_unit).magnitude, color='black', linestyle='--', label='Threshold', lw=1)
+        num_rows = array.shape[0]
+        padded_output = np.full((num_rows, self.max_number_of_peaks), self.padding_value)  # Default to NaN for missing values
+
+        for i in range(num_rows):
+            peaks, _ = find_peaks(
+                array[i],
+                height=self.height,
+                distance=self.distance,
+                width=self.width,
+                prominence=self.prominence
+            )
+
+            num_found = len(peaks)
+            padded_output[i, :min(num_found, self.max_number_of_peaks)] = peaks[:self.max_number_of_peaks]  # Assign valid peaks
+
+        return padded_output

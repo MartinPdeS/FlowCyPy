@@ -179,11 +179,12 @@ class ClassifierDataFrame(pd.DataFrame):
 
         # Set the plotting style
         with plt.style.context(mps):
+            temp = self.pint.dequantify()
+
             grid = sns.jointplot(
-                data=self,
-                x=(feature, x_detector),
-                y=(feature, y_detector),
-                hue='Label',
+                x=temp[(feature, x_detector)].values.squeeze(),
+                y=temp[(feature, y_detector)].values.squeeze(),
+                hue=temp['Label'].values.squeeze()
             )
 
         grid.figure.suptitle('Event classification')

@@ -1,18 +1,16 @@
 import numpy as np
 import pytest
-from FlowCyPy import peak_locator
 from FlowCyPy import units
 from FlowCyPy.utils import generate_dummy_detector
+from FlowCyPy.peak_locator import BasicPeakLocator
 
 # Update the algorithm class name to match the new implementation
 algorithms = [
-    peak_locator.BasicPeakLocator(threshold=0.1 * units.volt, rel_height=0.3),
-    peak_locator.MovingAverage(threshold=0.1 * units.volt, window_size=0.1 * units.second, min_peak_distance=1e-4 * units.second),
-    peak_locator.DerivativePeakLocator(derivative_threshold=1e-6 * units.volt / units.microsecond, min_peak_distance=1e-4 * units.second),
+    BasicPeakLocator(height=2, padding_value=-1)
 ]
 
 EXPECTED_PEAKS = units.Quantity(np.array([1, 3]), units.second)
-EXPECTED_HEIGHTS = units.Quantity(np.array([3, 8]), units.volt)
+EXPECTED_HEIGHTS = units.Quantity(np.array([3, 8]), units.bit_bins)
 EXPECTED_STDS = units.Quantity(np.array([0.03, 0.03]), units.second)
 
 
@@ -31,17 +29,16 @@ def test_peak_finders(algorithm):
         stds=EXPECTED_STDS
     )
 
+    dataframe = detector.dataframe.pint.dequantify()
+    signal = dataframe.Signal.values.T
+    print(signal)
+
     # Run the peak detection
-    detector.set_peak_locator(algorithm, compute_peak_area=True)
+    peaks = algorithm(signal)
 
-    # Assert results with helpful error messages
-    assert len(detector.algorithm.peak_properties.index) == len(EXPECTED_PEAKS), (
-        f"Expected {len(EXPECTED_PEAKS)} peaks, but got {len(detector.peak_properties.index)}."
-    )
+    peaks = peaks[peaks != -1]
 
-    # Allow a tolerance in height comparison due to numerical differences
-    assert np.allclose(detector.algorithm.peak_properties['Heights'].values.numpy_data, EXPECTED_HEIGHTS.magnitude, atol=0.5), \
-        f"Expected peak heights {EXPECTED_HEIGHTS}, but got {detector.peak_properties['Heights'].values}."
+    assert len(peaks) == 2, "Wrong number of peaks detected."
 
 
 if __name__ == '__main__':

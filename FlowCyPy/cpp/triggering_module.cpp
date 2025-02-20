@@ -41,8 +41,6 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
     std::vector<std::string> detectors_out;
     std::vector<int> segment_ids_out;
 
-    int global_segment_id = 0; // Unique segment index across all detectors
-
     // Get the trigger detector's signal and time
     auto trigger_signal_array = signal_map.at(trigger_detector_name);
     auto trigger_time_array = time_map.at(trigger_detector_name);
@@ -73,7 +71,7 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
         int start = idx - pre_buffer;
         int end = idx + post_buffer;
 
-        // ✅ Reject triggers if full buffer cannot be extracted
+        // Reject triggers if full buffer cannot be extracted
         if (start < 0 || end >= static_cast<int>(n_trigger))
             continue; // Skip this trigger
 
@@ -114,8 +112,10 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
         double *time_ptr = static_cast<double *>(time_buf.ptr);
 
         // Extract signal segments based on the trigger points
+        size_t segment_id = 0;
         for (const auto &[start, end] : valid_triggers)
         {
+
             for (int i = start; i <= end; ++i)
             {
                 if (i >= static_cast<int>(n)) // Ensure we don't go out of bounds
@@ -124,9 +124,9 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
                 times_out.push_back(time_ptr[i]);
                 signals_out.push_back(signal_ptr[i]);
                 detectors_out.push_back(detector_name);
-                segment_ids_out.push_back(global_segment_id);
+                segment_ids_out.push_back(segment_id);
             }
-            global_segment_id++; // Increment only once per valid trigger
+            segment_id++; // Increment only once per valid trigger
         }
     }
 
