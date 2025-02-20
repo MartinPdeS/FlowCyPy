@@ -9,7 +9,7 @@ from FlowCyPy import units
 from FlowCyPy import NoiseSetting
 from FlowCyPy import Population, distribution
 from FlowCyPy.signal_digitizer import SignalDigitizer
-
+from FlowCyPy import peak_locator
 
 NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
@@ -82,7 +82,7 @@ cytometer = FlowCytometer(
 acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
 # Visualize the scatter signals from both detectors
-# acquisition.analog.plot()
+acquisition.analog.plot()
 
 trigger_acquisition = acquisition.run_triggering(
     threshold=3 * units.millivolt,
@@ -92,9 +92,11 @@ trigger_acquisition = acquisition.run_triggering(
     post_buffer=64
 )
 
-# trigger_acquisition.analog.plot()
+trigger_acquisition.analog.plot()
 
-peaks = trigger_acquisition.detect_peaks()
+peak_algorithm = peak_locator.BasicPeakLocator()
+
+peaks = trigger_acquisition.detect_peaks(peak_algorithm)
 
 peaks.plot(
     x_detector='side',

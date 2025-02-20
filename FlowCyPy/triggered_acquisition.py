@@ -122,7 +122,6 @@ class TriggeredAcquisitions:
             .groupby(level=["Detector", "Segment"], group_keys=False).apply(lambda g: g.loc[g["Height"].idxmax()])
             .reset_index(level=["Peak_Number"], drop=True)
             .pint.quantify()
-
         )
 
         return dataframe_subclass.PeakDataFrame(output)

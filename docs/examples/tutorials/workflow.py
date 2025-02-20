@@ -186,10 +186,11 @@ triggered_acquisition.analog.plot()
 
 # %%
 # Getting and plotting the extracted peaks.
-from FlowCyPy.peak_locator import BasicPeakLocator
-peak_locator = BasicPeakLocator(height=10 * units.bit_bins, padding_value=-1)
+from FlowCyPy import peak_locator
+# peak_locator = peak_locator.ScipyPeakLocator(height=10 * units.bit_bins, padding_value=-1)
+peak_algorithm = peak_locator.BasicPeakLocator()
 
-peaks = triggered_acquisition.detect_peaks(peak_locator)
+peaks = triggered_acquisition.detect_peaks(peak_algorithm)
 
 peaks.plot(
     feature='Height',
