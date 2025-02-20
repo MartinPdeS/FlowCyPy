@@ -8,6 +8,7 @@ from FlowCyPy import peak_locator
 algorithms = [
     peak_locator.BasicPeakLocator(),
     peak_locator.ScipyPeakLocator(height=2 * units.bit_bins, padding_value=-1),
+    peak_locator.DerivativePeakLocator(padding_value=-1),
 ]
 
 EXPECTED_PEAKS = units.Quantity(np.array([1, 3]), units.second)

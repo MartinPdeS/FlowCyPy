@@ -8,7 +8,7 @@ from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import distribution
 from FlowCyPy.population import Population
 from FlowCyPy import units
-from FlowCyPy.peak_locator import BasicPeakLocator
+from FlowCyPy import peak_locator
 
 # ----------------- FIXTURES -----------------
 
@@ -192,9 +192,9 @@ def test_peak_detection(flow_cytometer):
         post_buffer=64
     )
 
-    peak_locator = BasicPeakLocator(height=3.0 * units.bit_bins)
+    algorithm = peak_locator.BasicPeakLocator()
 
-    peaks = triggered_acquisition.detect_peaks(peak_locator)
+    peaks = triggered_acquisition.detect_peaks(algorithm)
 
     assert len(peaks) > 0, "No peaks detected when they were expected."
 
@@ -212,9 +212,9 @@ def test_peak_plot(mock_show, flow_cytometer):
         post_buffer=64
     )
 
-    peak_locator = BasicPeakLocator(height=3.0 * units.bit_bins)
+    algorithm = peak_locator.BasicPeakLocator()
 
-    peaks = triggered_acquisition.detect_peaks(peak_locator)
+    peaks = triggered_acquisition.detect_peaks(algorithm)
 
     peaks.plot(x_detector='default', y_detector='default_bis')
     plt.close()
