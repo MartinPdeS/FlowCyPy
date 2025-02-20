@@ -117,7 +117,7 @@ class BasicPeakLocator:
         for i in range(num_rows):
             peaks, _ = find_peaks(
                 array[i],
-                height=self.height,
+                height=self.height.magnitude,
                 distance=self.distance,
                 width=self.width,
                 prominence=self.prominence

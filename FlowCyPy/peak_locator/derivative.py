@@ -1,143 +1,96 @@
-from dataclasses import dataclass
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.signal import find_peaks
-from FlowCyPy.peak_locator.base_class import BasePeakLocator
-import pandas as pd
-import pint_pandas
-from FlowCyPy.units import Quantity, microsecond
 
-
-@dataclass
-class DerivativePeakLocator(BasePeakLocator):
+class DerivativePeakLocator:
     """
-    Detects peaks in a signal using a derivative-based algorithm.
-    A peak is identified when the derivative exceeds a defined threshold.
+    A peak detection utility based on the zero-crossing of the first derivative.
+
+    This class detects peaks by identifying locations where the first derivative crosses
+    zero and the second derivative is negative, indicating a local maximum. It provides
+    an alternative to threshold-based methods like `scipy.signal.find_peaks`.
 
     Parameters
     ----------
-    derivative_threshold : Quantity, optional
-        The minimum derivative value required to detect a peak.
-        Default is `Quantity(0.1)`.
-    min_peak_distance : Quantity, optional
-        The minimum distance between detected peaks.
-        Default is `Quantity(0.1)`.
-    rel_height : float, optional
-        The relative height at which the peak width is measured. Default is `0.5` (half-height).
+    max_number_of_peaks : int, optional
+        Maximum number of peaks to return per row. If fewer peaks are detected, NaN values
+        are used as placeholders. Default is 5.
+    padding_value : object, optional
+        Value to pad missing peaks in output. Default is -1.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> peak_locator = DerivativePeakLocator(max_number_of_peaks=3)
+    >>> data = np.array([[0, 100, 500, 200, 50, 1000], [200, 400, 100, 900, 500, 700]])
+    >>> peaks = peak_locator(data)
+    >>> print(peaks)
+    [[ 2.  5. nan]
+     [ 1.  3.  5.]]
+
+    Methods
+    -------
+    __call__(array)
+        Detects peaks in each row of a 2D NumPy array and returns structured output.
+
+    Notes
+    -----
+    - This method relies on **derivatives**, making it effective for **smooth signals**.
+    - Works best when the signal has clear inflection points for peak detection.
+    - If a row contains fewer peaks than `max_number_of_peaks`, NaN values are used as padding.
 
     """
 
-    derivative_threshold: Quantity = Quantity(0.1, 'volt/microsecond')
-    min_peak_distance: Quantity = Quantity(0.1, microsecond)
-    rel_height: float = 0.5
-
-    def init_data(self, dataframe: pd.DataFrame) -> None:
+    def __init__(self, max_number_of_peaks: int = 5, padding_value: object = -1):
         """
-        Initialize the data for peak detection.
+        Initializes the `DerivativePeakLocator` with peak detection parameters.
 
         Parameters
         ----------
-        dataframe : pd.DataFrame
-            A DataFrame containing the signal data with columns 'Signal' and 'Time'.
+        max_number_of_peaks : int, optional
+            Maximum number of peaks to return per row. Default is 5.
+        padding_value : object, optional
+            Value to pad missing peaks in output. Default is -1.
+        """
+        self.max_number_of_peaks = max_number_of_peaks
+        self.padding_value = padding_value
+
+    def __call__(self, array: np.ndarray) -> np.ndarray:
+        """
+        Detects peaks using derivative-based zero-crossing.
+
+        This function computes the first and second derivatives row-wise and detects peaks
+        where the first derivative crosses zero and the second derivative is negative.
+
+        Parameters
+        ----------
+        array : np.ndarray
+            A 2D NumPy array where each row represents a separate dataset for peak detection.
+
+        Returns
+        -------
+        np.ndarray
+            A 2D NumPy array of shape `(array.shape[0], max_number_of_peaks)`. Each row
+            contains the indices of detected peaks, padded with NaNs if fewer peaks are found.
 
         Raises
         ------
-        ValueError
-            If the DataFrame is missing required columns or is empty.
+        AssertionError
+            If `array` is not a 2D NumPy array.
         """
-        super().init_data(dataframe)
+        assert array.ndim == 2, "Input must be a 2D NumPy array."
 
-        if self.derivative_threshold is not None:
-            self.derivative_threshold = self.derivative_threshold.to(
-                self.data['Signal'].values.units / self.data['Time'].values.units
-            )
+        num_rows = array.shape[0]
+        padded_output = np.full((num_rows, self.max_number_of_peaks), self.padding_value)  # Default to NaN for missing values
 
-        if self.min_peak_distance is not None:
-            self.min_peak_distance = self.min_peak_distance.to(self.data['Time'].values.units)
+        for i in range(num_rows):
+            # Compute first and second derivatives
+            first_derivative = np.diff(array[i])
+            second_derivative = np.diff(first_derivative)
 
-    def _compute_algorithm_specific_features(self) -> None:
-        """
-        Compute peaks based on the moving average algorithm.
-        """
-        peak_indices = self._compute_peak_positions()
+            # Find zero-crossings in first derivative & check for negative second derivative
+            peak_candidates = np.where((np.sign(first_derivative[:-1]) > np.sign(first_derivative[1:])) & (second_derivative < 0))[0] + 1
 
-        widths_samples, width_heights, left_ips, right_ips = self._compute_peak_widths(
-            peak_indices,
-            self.data['Signal'].values
-        )
+            # Store peaks (pad with NaN if fewer than max_number_of_peaks)
+            num_found = len(peak_candidates)
+            padded_output[i, :min(num_found, self.max_number_of_peaks)] = peak_candidates[:self.max_number_of_peaks]
 
-        return peak_indices, widths_samples, width_heights, left_ips, right_ips
-
-    def _compute_peak_positions(self) -> None:
-        """
-        Compute peaks based on the derivative of the signal and refine their positions
-        to align with the actual maxima in the original signal.
-        """
-        # Compute the derivative of the signal
-        derivative = np.gradient(
-            self.data['Signal'].values.quantity.magnitude,
-            self.data['Time'].values.quantity.magnitude
-        )
-        derivative = pint_pandas.PintArray(
-            derivative, dtype=self.data['Signal'].values.units / self.data['Time'].values.units
-        )
-
-        # Add the derivative to the DataFrame
-        self.data['Derivative'] = derivative
-
-        # Detect peaks in the derivative signal
-        derivative_peak_indices, _ = find_peaks(
-            self.data['Derivative'].values.quantity.magnitude,
-            height=self.derivative_threshold.magnitude,
-            prominence=0.1,  # Adjust this if needed
-            plateau_size=True,
-            distance=None if self.min_peak_distance is None else int(np.ceil(self.min_peak_distance / self.dt))
-        )
-
-        # Refine detected peaks to align with maxima in the original signal
-        refined_peak_indices = []
-        refinement_window = 5  # Number of samples around each derivative peak to search for the max
-
-        for idx in derivative_peak_indices:
-            # Define search window boundaries
-            window_start = max(0, idx - refinement_window)
-            window_end = min(len(self.data) - 1, idx + refinement_window)
-
-            # Find the maximum in the original signal within the window
-            true_max_idx = window_start + np.argmax(self.data['Signal'].iloc[window_start:window_end])
-            refined_peak_indices.append(true_max_idx)
-
-        refined_peak_indices = np.unique(refined_peak_indices)  # Remove duplicates
-
-        return refined_peak_indices
-
-    def _add_custom_to_ax(self, time_unit: str | Quantity, signal_unit: str | Quantity, ax: plt.Axes) -> None:
-        """
-        Add algorithm-specific elements to the plot.
-
-        Parameters
-        ----------
-        time_unit : str or Quantity
-            The unit for the time axis (e.g., 'microsecond').
-        signal_unit : str or Quantity
-            The unit for the signal axis (e.g., 'volt').
-        ax : matplotlib.axes.Axes
-            The Axes object to add elements to.
-        """
-        # Plot the derivative
-        ax.plot(
-            self.data.Time,
-            self.data.Derivative,
-            linestyle='--',
-            color='C2',
-            label='Derivative'
-        )
-
-        # Plot the derivative threshold line
-        ax.axhline(
-            y=self.derivative_threshold.to(self.data['Derivative'].values.units).magnitude,
-            color='black',
-            linestyle='--',
-            label='Derivative Threshold',
-            lw=1
-        )
+        return padded_output

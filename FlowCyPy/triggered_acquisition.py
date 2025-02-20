@@ -70,8 +70,6 @@ class TriggeredAcquisitions:
         _digital_signal = self.digital
 
         dataframes = []
-        signal_units = _digital_signal.Signal.pint.units
-        peak_detection_func.height = peak_detection_func.height.to(signal_units).magnitude
 
         for _, digital_signal in _digital_signal.groupby('Detector'):
             detection_matrix = digital_signal.pint.dequantify().Signal.values.reshape([-1, self.signal_length])
@@ -117,6 +115,15 @@ class TriggeredAcquisitions:
             dataframes.append(df_multi_index)
 
         output = pd.concat(dataframes, keys=_digital_signal.index.get_level_values('Detector').unique(), names=['Detector'])
+
+        # # Keep only the Peak_Number with the highest Height per (Detector, Segment)
+        output = (
+            output.pint.dequantify()
+            .groupby(level=["Detector", "Segment"], group_keys=False).apply(lambda g: g.loc[g["Height"].idxmax()])
+            .reset_index(level=["Peak_Number"], drop=True)
+            .pint.quantify()
+
+        )
 
         return dataframe_subclass.PeakDataFrame(output)
 

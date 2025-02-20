@@ -187,7 +187,7 @@ triggered_acquisition.analog.plot()
 # %%
 # Getting and plotting the extracted peaks.
 from FlowCyPy.peak_locator import BasicPeakLocator
-peak_locator = BasicPeakLocator(height=1000, padding_value=-1)
+peak_locator = BasicPeakLocator(height=10 * units.bit_bins, padding_value=-1)
 
 peaks = triggered_acquisition.detect_peaks(peak_locator)
 
@@ -202,7 +202,7 @@ peaks.plot(
 from FlowCyPy.classifier import KmeansClassifier
 
 classifier = KmeansClassifier(number_of_cluster=2)
-
+print(peaks)
 data = classifier.run(
     dataframe=peaks.unstack('Detector'),
     features=['Height'],

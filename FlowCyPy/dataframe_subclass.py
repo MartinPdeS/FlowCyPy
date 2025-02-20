@@ -224,16 +224,11 @@ class PeakDataFrame(pd.DataFrame):
         x_data = self.loc[x_detector, feature]
         y_data = self.loc[y_detector, feature]
 
-        # x_units = x_data.max().to_compact().units
-        # y_units = y_data.max().to_compact().units
-        x_units = x_data.pint.units
-        y_units = y_data.pint.units
-
         with plt.style.context(mps):
             # Create joint KDE plot with scatter points overlay
             grid = sns.jointplot(
-                x=x_data.values,#.pint.to(x_units),
-                y=y_data.values,#.pint.to(y_units),
+                x=x_data.values,
+                y=y_data.values,
                 kind='kde',
                 fill=True,
                 cmap="Blues",
@@ -243,7 +238,7 @@ class PeakDataFrame(pd.DataFrame):
         grid.figure.suptitle("Peaks properties")
         grid.ax_joint.scatter(x_data, y_data, color='C1', alpha=0.6)
 
-        grid.set_axis_labels(f"{feature} ({x_detector}) [{x_units}]", f"{feature} ({y_detector}) [{y_units}]", fontsize=12)
+        grid.set_axis_labels(f"{feature} ({x_detector})", f"{feature} ({y_detector})", fontsize=12)
 
         return grid
 
