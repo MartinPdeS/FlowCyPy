@@ -1,7 +1,5 @@
 import numpy as np
 import pytest
-import matplotlib.pyplot as plt
-from unittest.mock import patch
 
 # Importing from FlowCyPy
 from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, peak_locator, distribution
@@ -9,7 +7,6 @@ from FlowCyPy import units
 from FlowCyPy.population import Population
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy.utils import generate_dummy_detector
 
 # Seed for reproducibility
 np.random.seed(10)
@@ -104,14 +101,6 @@ def default_cytometer(default_scatterer, default_detector, flow_cell, default_di
     )
 
     return cytometer
-
-
-# Algorithm setup
-algorithm = peak_locator.MovingAverage(
-    threshold=0.001 * units.volt,
-    window_size=0.8 * units.second,
-)
-
 
 if __name__ == '__main__':
     pytest.main(["-W error", __file__])
