@@ -159,7 +159,7 @@ cytometer = FlowCytometer(
 # Run the flow cytometry simulation
 acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-acquisition.scatterer.plot(
+_ = acquisition.scatterer.plot(
     x='side',
     y='forward'
 )
@@ -186,7 +186,11 @@ triggered_acquisition.analog.plot()
 
 # %%
 # Getting and plotting the extracted peaks.
-peaks = triggered_acquisition.detect_peaks()
+from FlowCyPy import peak_locator
+# peak_locator = peak_locator.ScipyPeakLocator(height=10 * units.bit_bins, padding_value=-1)
+peak_algorithm = peak_locator.BasicPeakLocator()
+
+peaks = triggered_acquisition.detect_peaks(peak_algorithm)
 
 peaks.plot(
     feature='Height',
@@ -199,10 +203,10 @@ peaks.plot(
 from FlowCyPy.classifier import KmeansClassifier
 
 classifier = KmeansClassifier(number_of_cluster=2)
-
+print(peaks)
 data = classifier.run(
     dataframe=peaks.unstack('Detector'),
-    features=['Height', 'widths'],
+    features=['Height'],
     detectors=['side', 'forward']
 )
 

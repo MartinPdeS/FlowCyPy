@@ -641,8 +641,9 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">concentration</span> <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">]</span>
 
-    <span class="nd">@concentrations</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">concentrations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Quantity</span><span class="p">],</span> <span class="n">Quantity</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="ScattererCollection.set_concentrations">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.set_concentrations">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_concentrations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Quantity</span><span class="p">],</span> <span class="n">Quantity</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the concentration of each population in the ScattererCollection instance.</span>
 
@@ -674,7 +675,8 @@ document.write(`
                     <span class="sa">f</span><span class="s2">&quot;Invalid concentration dimensionality: </span><span class="si">{</span><span class="n">values</span><span class="o">.</span><span class="n">dimensionality</span><span class="si">}</span><span class="s2">. Expected dimensionality is &#39;particles per liter&#39; or similar.&quot;</span>
                 <span class="p">)</span>
             <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
-                <span class="n">population</span><span class="o">.</span><span class="n">concentration</span> <span class="o">=</span> <span class="n">values</span>
+                <span class="n">population</span><span class="o">.</span><span class="n">concentration</span> <span class="o">=</span> <span class="n">values</span></div>
+
 
 <div class="viewcode-block" id="ScattererCollection.dilute">
 <a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.dilute">[docs]</a>

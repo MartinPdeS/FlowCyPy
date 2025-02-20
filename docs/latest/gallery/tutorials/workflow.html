@@ -698,16 +698,13 @@ and particles follows Mie theory:</p>
 <span class="c1"># Run the flow cytometry simulation</span>
 <span class="n">acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 
-<span class="n">acquisition</span><span class="o">.</span><span class="n">scatterer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">acquisition</span><span class="o">.</span><span class="n">scatterer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
     <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>
     <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_002.png" srcset="../../_images/sphx_glr_workflow_002.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7fafac70e410&gt;
-</pre></div>
-</div>
-<p>Visualize the scatter signals from both detectors</p>
+<img src="../../_images/sphx_glr_workflow_002.png" srcset="../../_images/sphx_glr_workflow_002.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/><p>Visualize the scatter signals from both detectors</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">acquisition</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -728,7 +725,11 @@ window size and threshold.</p>
 </pre></div>
 </div>
 <img src="../../_images/sphx_glr_workflow_004.png" srcset="../../_images/sphx_glr_workflow_004.png" alt="workflow" class = "sphx-glr-single-img"/><p>Getting and plotting the extracted peaks.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">peaks</span> <span class="o">=</span> <span class="n">triggered_acquisition</span><span class="o">.</span><span class="n">detect_peaks</span><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">peak_locator</span>
+<span class="c1"># peak_locator = peak_locator.ScipyPeakLocator(height=10 * units.bit_bins, padding_value=-1)</span>
+<span class="n">peak_algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">BasicPeakLocator</span><span class="p">()</span>
+
+<span class="n">peaks</span> <span class="o">=</span> <span class="n">triggered_acquisition</span><span class="o">.</span><span class="n">detect_peaks</span><span class="p">(</span><span class="n">peak_algorithm</span><span class="p">)</span>
 
 <span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
     <span class="n">feature</span><span class="o">=</span><span class="s1">&#39;Height&#39;</span><span class="p">,</span>
@@ -737,17 +738,17 @@ window size and threshold.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="Peaks properties" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7fafab549d90&gt;
+<img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="Peaks properties" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7f44fcdf2310&gt;
 </pre></div>
 </div>
 <p>Step 8: Classifying the collected dataset</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.classifier</span><span class="w"> </span><span class="kn">import</span> <span class="n">KmeansClassifier</span>
 
 <span class="n">classifier</span> <span class="o">=</span> <span class="n">KmeansClassifier</span><span class="p">(</span><span class="n">number_of_cluster</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-
+<span class="nb">print</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
     <span class="n">dataframe</span><span class="o">=</span><span class="n">peaks</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="s1">&#39;Detector&#39;</span><span class="p">),</span>
-    <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Height&#39;</span><span class="p">,</span> <span class="s1">&#39;widths&#39;</span><span class="p">],</span>
+    <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Height&#39;</span><span class="p">],</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="s1">&#39;forward&#39;</span><span class="p">]</span>
 <span class="p">)</span>
 
@@ -758,7 +759,28 @@ window size and threshold.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_006.png" srcset="../../_images/sphx_glr_workflow_006.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 8.072 seconds)</p>
+<img src="../../_images/sphx_glr_workflow_006.png" srcset="../../_images/sphx_glr_workflow_006.png" alt="Event classification" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                  Peak_Index  Height                    Time
+Detector Segment
+forward  0               8.0   11019  3.8336528044003674e-07
+         1             103.0   11049     4.7670639219935e-06
+         2              68.0     553    6.33386115509626e-06
+         3              70.0   11534   1.286773897824819e-05
+         4              70.0   12617  1.5917993166097177e-05
+...                      ...     ...                     ...
+side     30             95.0   11157  0.00011560963413617803
+         31             25.0   11677  0.00011704308692391034
+         32             70.0    5894  0.00012129344112009335
+         33             77.0   10881  0.00012411034252854408
+         34             19.0   16383   0.0001258438203183599
+
+[70 rows x 3 columns]
+/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/dataframe_subclass.py:185: PerformanceWarning: indexing past lexsort depth may impact performance.
+  x=temp[(feature, x_detector)].values.squeeze(),
+/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/dataframe_subclass.py:186: PerformanceWarning: indexing past lexsort depth may impact performance.
+  y=temp[(feature, y_detector)].values.squeeze(),
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.544 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/67e0cd555ca79f8bdb69184b227f40a4/workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow.ipynb</span></code></a></p>

@@ -505,119 +505,111 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for FlowCyPy.peak_locator.basic</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_peaks</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.peak_locator.base_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePeakLocator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">volt</span>
-
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <div class="viewcode-block" id="BasicPeakLocator">
 <a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.basic.BasicPeakLocator">[docs]</a>
-<span class="nd">@dataclass</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">BasicPeakLocator</span><span class="p">(</span><span class="n">BasePeakLocator</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BasicPeakLocator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A basic peak detector class that identifies peaks in a signal using a threshold-based method.</span>
+<span class="sd">    A peak detection utility that identifies the maximum value in each row of a 2D array.</span>
+
+<span class="sd">    This class provides a callable object that detects the index of the maximum value in each</span>
+<span class="sd">    row of a 2D NumPy array. Unlike methods that rely on thresholding or derivative-based techniques,</span>
+<span class="sd">    this locator simply returns the index corresponding to the highest value in each row. The result</span>
+<span class="sd">    is a 2D array with one peak index per row, padded with a specified value if necessary.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    threshold : Quantity, optional</span>
-<span class="sd">        The minimum height required for a peak to be considered significant. Default is `Quantity(0.1, volt)`.</span>
-<span class="sd">    min_peak_distance : Quantity, optional</span>
-<span class="sd">        The minimum distance between detected peaks. Default is `Quantity(0.1)`.</span>
-<span class="sd">    rel_height : float, optional</span>
-<span class="sd">        The relative height at which the peak width is measured. Default is `0.5`.</span>
+<span class="sd">    padding_value : object, optional</span>
+<span class="sd">        Value used to pad the output if a row contains no data. Default is -1.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; data = np.array([</span>
+<span class="sd">    ...     [0, 800, 100, 2000, 150, 9000],</span>
+<span class="sd">    ...     [50, 1000, 200, 3000, 4000, 100]</span>
+<span class="sd">    ... ])</span>
+<span class="sd">    &gt;&gt;&gt; peak_locator = MaxPeakLocator(padding_value=-1)</span>
+<span class="sd">    &gt;&gt;&gt; peaks = peak_locator(data)</span>
+<span class="sd">    &gt;&gt;&gt; print(peaks)</span>
+<span class="sd">    [[5.]</span>
+<span class="sd">     [4.]]</span>
+
+<span class="sd">    Methods</span>
+<span class="sd">    -------</span>
+<span class="sd">    __call__(array)</span>
+<span class="sd">        Returns a 2D array where each row contains the index of the maximum value in the corresponding</span>
+<span class="sd">        row of the input array.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - The function expects a 2D NumPy array as input.</span>
+<span class="sd">    - If a row is empty (i.e. has zero columns), the padding value is returned.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">threshold</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">volt</span><span class="p">)</span>
-    <span class="n">rel_height</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
-    <span class="n">min_peak_distance</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="kc">None</span>
-
-<div class="viewcode-block" id="BasicPeakLocator.init_data">
-<a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.basic.BasicPeakLocator.init_data">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">init_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">padding_value</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize the data for peak detection.</span>
+<span class="sd">        Initializes the MaxPeakLocator with a specified padding value.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        dataframe : pd.DataFrame</span>
-<span class="sd">            A DataFrame containing the signal data with columns &#39;Signal&#39; and &#39;Time&#39;.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        ValueError</span>
-<span class="sd">            If the DataFrame is missing required columns or is empty.</span>
+<span class="sd">        padding_value : object, optional</span>
+<span class="sd">            Value used to pad missing peaks. Default is -1.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">init_data</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">padding_value</span> <span class="o">=</span> <span class="n">padding_value</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">units</span><span class="p">)</span></div>
-
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_algorithm_specific_features</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="BasicPeakLocator.__call__">
+<a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.basic.BasicPeakLocator.__call__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute peaks based on the moving average algorithm.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">peak_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_peak_positions</span><span class="p">()</span>
+<span class="sd">        Detects the index of the maximum value in each row of a 2D NumPy array.</span>
 
-        <span class="n">widths_samples</span><span class="p">,</span> <span class="n">width_heights</span><span class="p">,</span> <span class="n">left_ips</span><span class="p">,</span> <span class="n">right_ips</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_peak_widths</span><span class="p">(</span>
-            <span class="n">peak_indices</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-        <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">peak_indices</span><span class="p">,</span> <span class="n">widths_samples</span><span class="p">,</span> <span class="n">width_heights</span><span class="p">,</span> <span class="n">left_ips</span><span class="p">,</span> <span class="n">right_ips</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_peak_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Detects peaks in the signal and calculates their properties such as heights, widths, and areas.</span>
+<span class="sd">        This function computes the index of the maximum value for each row in the input array.</span>
+<span class="sd">        The output is a 2D NumPy array of shape (number_of_rows, 1). If a row is empty, the</span>
+<span class="sd">        padding value is returned.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        detector : pd.DataFrame</span>
-<span class="sd">            DataFrame with the signal data to detect peaks in.</span>
+<span class="sd">        array : np.ndarray</span>
+<span class="sd">            A 2D NumPy array where each row represents a separate dataset for peak detection.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        peak_times : Quantity</span>
-<span class="sd">            The times at which peaks occur.</span>
-<span class="sd">        heights : Quantity</span>
-<span class="sd">            The heights of the detected peaks.</span>
-<span class="sd">        widths : Quantity</span>
-<span class="sd">            The widths of the detected peaks.</span>
-<span class="sd">        areas : Quantity or None</span>
-<span class="sd">            The areas under each peak, if `compute_area` is True.</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            A 2D NumPy array of shape (array.shape[0], 1) where each entry contains the index of the</span>
+<span class="sd">            maximum value in the corresponding row. Rows with no data are filled with the padding value.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        AssertionError</span>
+<span class="sd">            If the input array is not 2-dimensional.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; data = np.array([</span>
+<span class="sd">        ...     [0, 800, 100, 2000, 150, 9000],</span>
+<span class="sd">        ...     [50, 1000, 200, 3000, 4000, 100]</span>
+<span class="sd">        ... ])</span>
+<span class="sd">        &gt;&gt;&gt; peak_locator = MaxPeakLocator(padding_value=-1)</span>
+<span class="sd">        &gt;&gt;&gt; peaks = peak_locator(data)</span>
+<span class="sd">        &gt;&gt;&gt; print(peaks)</span>
+<span class="sd">        [[5.]</span>
+<span class="sd">         [4.]]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Find peaks in the difference signal</span>
-        <span class="n">peak_indices</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-            <span class="n">height</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">distance</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">min_peak_distance</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
-        <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Input array must be 2D.&quot;</span>
+        <span class="n">num_rows</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">num_rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">peak_indices</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_rows</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">max_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">output</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_idx</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_custom_to_ax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">signal_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add algorithm-specific elements to the plot.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        time_unit : str or Quantity</span>
-<span class="sd">            The unit for the time axis (e.g., &#39;microsecond&#39;).</span>
-<span class="sd">        signal_unit : str or Quantity</span>
-<span class="sd">            The unit for the signal axis (e.g., &#39;volt&#39;).</span>
-<span class="sd">        ax : matplotlib.axes.Axes</span>
-<span class="sd">            The Axes object to add elements to.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Plot the signal threshold line</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_unit</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Threshold&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">output</span></div>
+</div>
 
 </pre></div>
 

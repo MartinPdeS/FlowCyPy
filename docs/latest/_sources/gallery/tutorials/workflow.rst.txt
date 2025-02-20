@@ -265,7 +265,7 @@ and particles follows Mie theory:
     # Run the flow cytometry simulation
     acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-    acquisition.scatterer.plot(
+    _ = acquisition.scatterer.plot(
         x='side',
         y='forward'
     )
@@ -279,12 +279,6 @@ and particles follows Mie theory:
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <seaborn.axisgrid.JointGrid object at 0x7fafac70e410>
 
 
 
@@ -348,11 +342,15 @@ window size and threshold.
 
 Getting and plotting the extracted peaks.
 
-.. GENERATED FROM PYTHON SOURCE LINES 189-197
+.. GENERATED FROM PYTHON SOURCE LINES 189-201
 
 .. code-block:: Python
 
-    peaks = triggered_acquisition.detect_peaks()
+    from FlowCyPy import peak_locator
+    # peak_locator = peak_locator.ScipyPeakLocator(height=10 * units.bit_bins, padding_value=-1)
+    peak_algorithm = peak_locator.BasicPeakLocator()
+
+    peaks = triggered_acquisition.detect_peaks(peak_algorithm)
 
     peaks.plot(
         feature='Height',
@@ -374,25 +372,25 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7fafab549d90>
+    <seaborn.axisgrid.JointGrid object at 0x7f44fcdf2310>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 198-199
+.. GENERATED FROM PYTHON SOURCE LINES 202-203
 
 Step 8: Classifying the collected dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 199-213
+.. GENERATED FROM PYTHON SOURCE LINES 203-217
 
 .. code-block:: Python
 
     from FlowCyPy.classifier import KmeansClassifier
 
     classifier = KmeansClassifier(number_of_cluster=2)
-
+    print(peaks)
     data = classifier.run(
         dataframe=peaks.unstack('Detector'),
-        features=['Height', 'widths'],
+        features=['Height'],
         detectors=['side', 'forward']
     )
 
@@ -409,13 +407,37 @@ Step 8: Classifying the collected dataset
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+                      Peak_Index  Height                    Time
+    Detector Segment                                            
+    forward  0               8.0   11019  3.8336528044003674e-07
+             1             103.0   11049     4.7670639219935e-06
+             2              68.0     553    6.33386115509626e-06
+             3              70.0   11534   1.286773897824819e-05
+             4              70.0   12617  1.5917993166097177e-05
+    ...                      ...     ...                     ...
+    side     30             95.0   11157  0.00011560963413617803
+             31             25.0   11677  0.00011704308692391034
+             32             70.0    5894  0.00012129344112009335
+             33             77.0   10881  0.00012411034252854408
+             34             19.0   16383   0.0001258438203183599
+
+    [70 rows x 3 columns]
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/dataframe_subclass.py:185: PerformanceWarning: indexing past lexsort depth may impact performance.
+      x=temp[(feature, x_detector)].values.squeeze(),
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/dataframe_subclass.py:186: PerformanceWarning: indexing past lexsort depth may impact performance.
+      y=temp[(feature, y_detector)].values.squeeze(),
+
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.072 seconds)
+   **Total running time of the script:** (0 minutes 6.544 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

@@ -21,14 +21,33 @@
 Limit of detection
 ==================
 
-.. GENERATED FROM PYTHON SOURCE LINES 5-103
+.. GENERATED FROM PYTHON SOURCE LINES 5-105
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_001.png
-   :alt: Peaks properties
-   :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_001.png
-   :class: sphx-glr-single-img
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_001.png
+         :alt: limit of detection
+         :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_001.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
+         :alt: limit of detection
+         :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
+         :alt: Peaks properties
+         :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
+         :class: sphx-glr-multi-img
 
 
 .. rst-class:: sphx-glr-script-out
@@ -36,7 +55,7 @@ Limit of detection
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7fafb0bd4750>
+    <seaborn.axisgrid.JointGrid object at 0x7f44ff82e050>
 
 
 
@@ -53,7 +72,7 @@ Limit of detection
     from FlowCyPy import NoiseSetting
     from FlowCyPy import Population, distribution
     from FlowCyPy.signal_digitizer import SignalDigitizer
-
+    from FlowCyPy import peak_locator
 
     NoiseSetting.include_noises = True
     NoiseSetting.include_shot_noise = True
@@ -126,7 +145,7 @@ Limit of detection
     acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
     # Visualize the scatter signals from both detectors
-    # acquisition.analog.plot()
+    acquisition.analog.plot()
 
     trigger_acquisition = acquisition.run_triggering(
         threshold=3 * units.millivolt,
@@ -136,9 +155,11 @@ Limit of detection
         post_buffer=64
     )
 
-    # trigger_acquisition.analog.plot()
+    trigger_acquisition.analog.plot()
 
-    peaks = trigger_acquisition.detect_peaks()
+    peak_algorithm = peak_locator.BasicPeakLocator()
+
+    peaks = trigger_acquisition.detect_peaks(peak_algorithm)
 
     peaks.plot(
         x_detector='side',
@@ -148,7 +169,7 @@ Limit of detection
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.422 seconds)
+   **Total running time of the script:** (0 minutes 4.140 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:
