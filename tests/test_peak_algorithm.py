@@ -6,7 +6,7 @@ from FlowCyPy.peak_locator import BasicPeakLocator
 
 # Update the algorithm class name to match the new implementation
 algorithms = [
-    BasicPeakLocator(height=2, padding_value=-1)
+    BasicPeakLocator(height=2 * units.bit_bins, padding_value=-1)
 ]
 
 EXPECTED_PEAKS = units.Quantity(np.array([1, 3]), units.second)
@@ -31,7 +31,6 @@ def test_peak_finders(algorithm):
 
     dataframe = detector.dataframe.pint.dequantify()
     signal = dataframe.Signal.values.T
-    print(signal)
 
     # Run the peak detection
     peaks = algorithm(signal)
