@@ -1,166 +1,121 @@
-from dataclasses import dataclass
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.signal import find_peaks
-from FlowCyPy.peak_locator.base_class import BasePeakLocator
-import pandas as pd
-import pint_pandas
-from FlowCyPy.units import Quantity
-from pint_pandas import PintArray
-from typing import Tuple, Callable
 
-
-@dataclass
-class MovingAverage(BasePeakLocator):
+class SlidingWindowPeakLocator:
     """
-    Detects peaks in a signal using a moving average algorithm.
-    A peak is identified when the signal exceeds the moving average by a defined threshold.
+    A peak detection utility that identifies peaks in each row of a 2D array using a sliding window approach.
+
+    This class segments each row of a 2D NumPy array into fixed-size windows and identifies the index of the
+    local maximum within each window. The detected peak indices are returned in a structured 2D array.
+
+    Unlike global peak-finding methods, this approach ensures that peaks are sampled evenly across the signal.
 
     Parameters
     ----------
-    threshold : Quantity, optional
-        The minimum difference between the signal and its moving average required to detect a peak. Default is `Quantity(0.2)`.
-    window_size : Quantity, optional
-        The window size for calculating the moving average. Default is `Quantity(500)`.
-    min_peak_distance : Quantity, optional
-        The minimum distance between detected peaks. Default is `Quantity(0.1)`.
-    rel_height : float, optional
-        The relative height at which the peak width is measured. Default is `0.5` (half-height).
+    window_size : int
+        The size of the sliding window used to detect local maxima.
+    max_number_of_peaks : int, optional
+        The maximum number of peaks to return per row. Default is 5.
+    padding_value : int, optional
+        The value used to pad the output when fewer than `max_number_of_peaks` peaks are detected. Default is -1.
 
+    Examples
+    --------
+    >>> import numpy as np
+    >>> data = np.array([
+    ...     [1, 3, 2, 5, 4, 2, 8, 1],
+    ...     [2, 1, 4, 3, 7, 0, 6, 2]
+    ... ])
+    >>> peak_locator = SlidingWindowPeakLocator(window_size=2, max_number_of_peaks=4, padding_value=-1)
+    >>> peaks = peak_locator(data)
+    >>> print(peaks)
+    [[1. 3. 4. 6.]
+     [0. 2. 4. 6.]]
+
+    Notes
+    -----
+    - This method is particularly useful for signals containing multiple distinct regions of interest
+      that need to be sampled at regular intervals.
+    - If a row contains fewer peaks than `max_number_of_peaks`, the remaining entries are padded with `padding_value`.
     """
 
-    threshold: Quantity
-    window_size: Quantity
-    min_peak_distance: Quantity = None
-    rel_height: float = 0.1
-
-    def init_data(self, dataframe: pd.DataFrame) -> None:
+    def __init__(self, window_size: int, max_number_of_peaks: int = 5, padding_value: int = -1):
         """
-        Initialize the data for peak detection.
+        Initializes the SlidingWindowPeakLocator with the given parameters.
 
         Parameters
         ----------
-        dataframe : pd.DataFrame
-            A DataFrame containing the signal data with columns 'Signal' and 'Time'.
+        window_size : int
+            The size of each sliding window.
+        max_number_of_peaks : int, optional
+            The maximum number of peaks to return per row. Default is 5.
+        padding_value : int, optional
+            The value used to pad missing peaks. Default is -1.
+        """
+        self.window_size = window_size
+        self.max_number_of_peaks = max_number_of_peaks
+        self.padding_value = padding_value
+
+    def __call__(self, array: np.ndarray) -> np.ndarray:
+        """
+        Detects peaks in each row of a 2D NumPy array using a sliding window.
+
+        Each row is divided into non-overlapping windows of size `window_size`, and the index of the
+        maximum value in each window is recorded.
+
+        Parameters
+        ----------
+        array : np.ndarray
+            A 2D NumPy array where each row represents a separate dataset for peak detection.
+
+        Returns
+        -------
+        np.ndarray
+            A 2D NumPy array of shape `(number_of_rows, max_number_of_peaks)`, where each entry contains
+            the global index of the detected peak in the corresponding window. Rows with fewer detected
+            peaks are padded with `padding_value`.
 
         Raises
         ------
-        ValueError
-            If the DataFrame is missing required columns or is empty.
+        AssertionError
+            If the input array is not a 2D NumPy array.
+
+        Examples
+        --------
+        >>> import numpy as np
+        >>> data = np.array([
+        ...     [1, 3, 2, 5, 4, 2, 8, 1],
+        ...     [2, 1, 4, 3, 7, 0, 6, 2]
+        ... ])
+        >>> peak_locator = SlidingWindowPeakLocator(window_size=2, max_number_of_peaks=4, padding_value=-1)
+        >>> peaks = peak_locator(data)
+        >>> print(peaks)
+        [[1. 3. 4. 6.]
+         [0. 2. 4. 6.]]
         """
-        super().init_data(dataframe)
+        assert array.ndim == 2, "Input array must be 2D."
 
-        if self.threshold is not None:
-            self.threshold = self.threshold.to(self.data['Signal'].values.units)
+        num_rows, num_cols = array.shape
+        num_windows = np.ceil(num_cols / self.window_size).astype(int)
 
-        self.window_size = self.window_size.to(self.data['Time'].values.units)
+        # Create an array to store peak indices
+        peak_indices = np.full((num_rows, self.max_number_of_peaks), self.padding_value, dtype=int)
 
-        if self.min_peak_distance is not None:
-            self.min_peak_distance = self.min_peak_distance.to(self.data['Time'].values.units)
+        for i in range(num_rows):
+            row = array[i]
 
-    def _compute_algorithm_specific_features(self) -> None:
-        """
-        Compute peaks based on the moving average algorithm.
-        """
-        peak_indices = self._compute_peak_positions()
+            # Generate window start and end indices
+            window_starts = np.arange(0, num_cols, self.window_size)
+            window_ends = np.minimum(window_starts + self.window_size, num_cols)
 
-        widths_samples, width_heights, left_ips, right_ips = self._compute_peak_widths(peak_indices, self.data['Difference'].values)
+            # Extract indices of the local maxima within each window
+            local_max_indices = []
+            for start, end in zip(window_starts, window_ends):
+                local_max_indices.append(start + np.argmax(row[start:end]))
 
-        return peak_indices, widths_samples, width_heights, left_ips, right_ips
+            local_max_indices = np.array(local_max_indices)
 
-    def _compute_peak_positions(self) -> None:
-        # Calculate moving average
-        window_size_samples = int(np.ceil(self.window_size / self.dt))
-        moving_avg = self.data['Signal'].rolling(window=window_size_samples, center=True, min_periods=1).mean()
-
-        # Reattach Pint units to the moving average
-        moving_avg = pint_pandas.PintArray(moving_avg, dtype=self.data['Signal'].values.units)
-
-        # Add the moving average to the DataFrame
-        self.data['MovingAverage'] = moving_avg
-
-        # Compute the difference signal
-        self.data['Difference'] = self.data['Signal'] - self.data['MovingAverage']
-
-        # Detect peaks
-        peak_indices, _ = find_peaks(
-            self.data['Difference'].values.quantity.magnitude,
-            height=None if self.threshold is None else self.threshold.magnitude,
-            distance=None if self.min_peak_distance is None else int(np.ceil(self.min_peak_distance / self.dt))
-        )
+            # Store the top max_number_of_peaks peaks, padding if necessary
+            num_detected = min(len(local_max_indices), self.max_number_of_peaks)
+            peak_indices[i, :num_detected] = local_max_indices[:num_detected]
 
         return peak_indices
-
-    def _add_custom_to_ax(self, time_unit: str | Quantity, signal_unit: str | Quantity, ax: plt.Axes) -> None:
-        """
-        Add algorithm-specific elements to the plot.
-
-        Parameters
-        ----------
-        time_unit : str or Quantity
-            The unit for the time axis (e.g., 'microsecond').
-        signal_unit : str or Quantity
-            The unit for the signal axis (e.g., 'volt').
-        ax : matplotlib.axes.Axes
-            The Axes object to add elements to.
-        """
-        ax.plot(
-            self.data.Time,
-            self.data.Difference,
-            linestyle='--',
-            color='C1',
-            label='MA-difference'
-        )
-
-        # Plot the signal threshold line
-        ax.axhline(y=self.threshold.to(signal_unit).magnitude, color='black', linestyle='--', label='Threshold', lw=1)
-
-
-    def format_input(function: Callable) -> Callable:
-        def wrapper(self, dataframe: pd.DataFrame, y: str, x: str = None):
-            x = dataframe[x] if x is not None else dataframe.index
-
-            new_dataframe = pd.DataFrame(
-                data=dict(
-                    x=x, y=dataframe[y]
-                )
-            )
-
-            return function(self=self, dataframe=new_dataframe)
-
-        return wrapper
-
-
-    @format_input
-    def process_data(self, dataframe: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        dt = dataframe.x[1] - dataframe.x[0]
-
-        window_size_samples = int(np.ceil(self.window_size / dt))
-
-
-        y_units = dataframe['y'].pint.units
-        x_units = dataframe['x'].pint.units
-
-        moving_avg = dataframe['y'].rolling(window=window_size_samples, center=True, min_periods=1).mean()
-
-        dataframe['MovingAverage'] = PintArray(moving_avg, y_units)
-
-        dataframe['Difference'] = dataframe['y'] - dataframe['MovingAverage']
-
-        peak_indices, meta = find_peaks(
-            x=dataframe['Difference'],
-            height=self.threshold.to(dataframe['Difference'].pint.units).magnitude,
-            distance=window_size_samples,
-            rel_height=0.1,
-            width=1
-        )
-
-        peak_dataframe = pd.DataFrame(
-            dict(
-                PeakPosition=dataframe['x'][peak_indices],
-                PeakHeight=PintArray(meta['peak_heights'], y_units),
-                PeakWidth=PintArray(meta['widths'], x_units),
-            )
-        )
-
-        return dataframe, peak_dataframe

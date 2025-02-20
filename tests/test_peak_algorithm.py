@@ -6,6 +6,7 @@ from FlowCyPy import peak_locator
 
 # Update the algorithm class name to match the new implementation
 algorithms = [
+    peak_locator.DeepPeakLocator(model_name='ROI_128', uncertainty=0.5, n_samples=30, max_number_of_peaks=5),
     peak_locator.BasicPeakLocator(),
     peak_locator.ScipyPeakLocator(height=2 * units.bit_bins, padding_value=-1),
     peak_locator.DerivativePeakLocator(padding_value=-1),
@@ -21,7 +22,7 @@ EXPECTED_STDS = units.Quantity(np.array([0.03, 0.03]), units.second)
 def test_peak_finders(algorithm):
 
     # Create time_stamp as a Quantity with units
-    time_stamp = units.Quantity(np.linspace(0, 4, 400), units.second)
+    time_stamp = units.Quantity(np.linspace(0, 4, 128), units.second)
 
     # Generate the Gaussian signal with units
     detector = generate_dummy_detector(
