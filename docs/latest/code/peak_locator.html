@@ -579,88 +579,6 @@ row of the input array.</p>
 </section>
 <section id="moving-average-class">
 <h2>Moving-average Class<a class="headerlink" href="#moving-average-class" title="Link to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="FlowCyPy.peak_locator.moving_average.MovingAverage">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MovingAverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_peak_distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/peak_locator/moving_average.html#MovingAverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.peak_locator.moving_average.MovingAverage" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePeakLocator</span></code></p>
-<p>Detects peaks in a signal using a moving average algorithm.
-A peak is identified when the signal exceeds the moving average by a defined threshold.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>threshold</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The minimum difference between the signal and its moving average required to detect a peak. Default is <cite>Quantity(0.2)</cite>.</p></li>
-<li><p><strong>window_size</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The window size for calculating the moving average. Default is <cite>Quantity(500)</cite>.</p></li>
-<li><p><strong>min_peak_distance</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The minimum distance between detected peaks. Default is <cite>Quantity(0.1)</cite>.</p></li>
-<li><p><strong>rel_height</strong> (<em>float</em><em>, </em><em>optional</em>) – The relative height at which the peak width is measured. Default is <cite>0.5</cite> (half-height).</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.peak_locator.moving_average.MovingAverage.format_input">
-<span class="sig-name descname"><span class="pre">format_input</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/peak_locator/moving_average.html#MovingAverage.format_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.peak_locator.moving_average.MovingAverage.format_input" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>function</strong> (<em>Callable</em>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Callable</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.peak_locator.moving_average.MovingAverage.init_data">
-<span class="sig-name descname"><span class="pre">init_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/peak_locator/moving_average.html#MovingAverage.init_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.peak_locator.moving_average.MovingAverage.init_data" title="Link to this definition">#</a></dt>
-<dd><p>Initialize the data for peak detection.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>dataframe</strong> (<em>pd.DataFrame</em>) – A DataFrame containing the signal data with columns ‘Signal’ and ‘Time’.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If the DataFrame is missing required columns or is empty.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.peak_locator.moving_average.MovingAverage.min_peak_distance">
-<span class="sig-name descname"><span class="pre">min_peak_distance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.peak_locator.moving_average.MovingAverage.min_peak_distance" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.peak_locator.moving_average.MovingAverage.process_data">
-<span class="sig-name descname"><span class="pre">process_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/peak_locator/moving_average.html#MovingAverage.process_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.peak_locator.moving_average.MovingAverage.process_data" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataframe</strong> (<em>DataFrame</em>)</p></li>
-<li><p><strong>y</strong> (<em>str</em>)</p></li>
-<li><p><strong>x</strong> (<em>str</em>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.peak_locator.moving_average.MovingAverage.rel_height">
-<span class="sig-name descname"><span class="pre">rel_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#FlowCyPy.peak_locator.moving_average.MovingAverage.rel_height" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.peak_locator.moving_average.MovingAverage.threshold">
-<span class="sig-name descname"><span class="pre">threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.peak_locator.moving_average.MovingAverage.threshold" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.peak_locator.moving_average.MovingAverage.window_size">
-<span class="sig-name descname"><span class="pre">window_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.peak_locator.moving_average.MovingAverage.window_size" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 </section>
 </section>
 
@@ -693,19 +611,7 @@ A peak is identified when the signal exceeds the moving average by a defined thr
 </li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moving-average-class">Moving-average Class</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_locator.moving_average.MovingAverage"><code class="docutils literal notranslate"><span class="pre">MovingAverage</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_locator.moving_average.MovingAverage.format_input"><code class="docutils literal notranslate"><span class="pre">MovingAverage.format_input()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_locator.moving_average.MovingAverage.init_data"><code class="docutils literal notranslate"><span class="pre">MovingAverage.init_data()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_locator.moving_average.MovingAverage.min_peak_distance"><code class="docutils literal notranslate"><span class="pre">MovingAverage.min_peak_distance</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_locator.moving_average.MovingAverage.process_data"><code class="docutils literal notranslate"><span class="pre">MovingAverage.process_data()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_locator.moving_average.MovingAverage.rel_height"><code class="docutils literal notranslate"><span class="pre">MovingAverage.rel_height</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_locator.moving_average.MovingAverage.threshold"><code class="docutils literal notranslate"><span class="pre">MovingAverage.threshold</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_locator.moving_average.MovingAverage.window_size"><code class="docutils literal notranslate"><span class="pre">MovingAverage.window_size</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moving-average-class">Moving-average Class</a></li>
 </ul>
   </nav></div>
 
