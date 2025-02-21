@@ -6,7 +6,7 @@ from FlowCyPy import peak_locator
 
 # Update the algorithm class name to match the new implementation
 algorithms = [
-    peak_locator.DeepPeakLocator(model_name='ROI_128', uncertainty=0.5, n_samples=30, max_number_of_peaks=5),
+    # peak_locator.DeepPeakLocator(model_name='ROI_128', uncertainty=0.5, n_samples=30, max_number_of_peaks=5),
     peak_locator.BasicPeakLocator(),
     peak_locator.ScipyPeakLocator(height=2 * units.bit_bins, padding_value=-1),
     peak_locator.DerivativePeakLocator(padding_value=-1),
