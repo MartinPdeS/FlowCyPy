@@ -25,10 +25,11 @@
 | FlowCyPy/helper.py                                    |       59 |       12 |       22 |        8 |     75% |37, 41, 45, 115-120, 123-126, 129, 131->134, 165 |
 | FlowCyPy/noises.py                                    |       27 |       13 |        6 |        0 |     42% |3-5, 65-67, 77, 81-87 |
 | FlowCyPy/particle\_count.py                           |       45 |       22 |       20 |        6 |     45% |30-31, 35, 41, 64-72, 94, 101-104, 110, 115-120, 127 |
+| FlowCyPy/peak\_locator/DeepPeak.py                    |       25 |       21 |        0 |        0 |     16% |69-73, 119-152 |
 | FlowCyPy/peak\_locator/base\_class.py                 |       48 |       31 |       12 |        0 |     28% |33-43, 51, 67-87, 103-132, 150-153, 157-163 |
 | FlowCyPy/peak\_locator/basic.py                       |       14 |        1 |        4 |        1 |     89% |        96 |
 | FlowCyPy/peak\_locator/derivative.py                  |       16 |        0 |        2 |        0 |    100% |           |
-| FlowCyPy/peak\_locator/moving\_average.py             |       56 |       31 |        4 |        0 |     42% |51-59, 65-69, 73-92, 107-116, 121-129, 136-166 |
+| FlowCyPy/peak\_locator/moving\_average.py             |       22 |       18 |        4 |        0 |     15% |54-56, 95-121 |
 | FlowCyPy/peak\_locator/scipy.py                       |       19 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/physical\_constant.py                        |       10 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/population.py                                |       50 |       13 |       12 |        5 |     71% |53, 76-77, 82, 105-106, 111, 124-133 |
@@ -39,7 +40,7 @@
 | FlowCyPy/triggered\_acquisition.py                    |       93 |       10 |       32 |        9 |     82% |49-51, 148, 156, 160, 192, 200, 204, 226, 246->248, 248->exit |
 | FlowCyPy/units.py                                     |       21 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       32 |        8 |        6 |        0 |     68% | 25-35, 38 |
-|                                             **TOTAL** | **1624** |  **327** |  **298** |   **79** | **75%** |           |
+|                                             **TOTAL** | **1615** |  **335** |  **298** |   **79** | **75%** |           |
 
 
 ## Setup coverage badge
