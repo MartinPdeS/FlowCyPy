@@ -69,11 +69,11 @@ cytometer = FlowCytometer(
 
 processing_steps = [
     circuits.BaselineRestorator(window_size=400 * units.millisecond),
-    # circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2),
+    circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2),
 ]
 
 acquisition = cytometer.get_acquisition(
-    run_time=0.5 * units.millisecond,
+    run_time=2 * units.millisecond,
     processing_steps=processing_steps
 )
 
