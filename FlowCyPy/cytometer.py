@@ -74,7 +74,7 @@ class FlowCytometer:
             signal_digitizer: SignalDigitizer,
             detectors: List[Detector],
             coupling_mechanism: Optional[str] = 'mie',
-            background_power: Optional[units.watt] = 0 * milliwatt):
+            background_power: Optional[units.Quantity] = 0 * milliwatt):
 
         self.scatterer_collection = scatterer_collection
         self.flow_cell = flow_cell
