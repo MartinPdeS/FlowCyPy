@@ -27,7 +27,7 @@ optical_powers = [1e-9 * units.watt, 5e-9 * units.watt, 1e-8 * units.watt]  # Po
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
-    sampling_freq=1e6 * units.hertz,        # Sampling frequency
+    sampling_rate=1e6 * units.hertz,        # Sampling frequency
 )
 
 # Create a figure for signal visualization

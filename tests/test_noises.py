@@ -23,13 +23,13 @@ def test_shot_noise():
     """
     # Signal and Detector Properties
     optical_power = 1 * units.watt  # Power in watts
-    sampling_freq = 1e6 * units.hertz  # Sampling frequency
+    sampling_rate = 1e6 * units.hertz  # Sampling frequency
     run_time = 500e-6 * units.second  # Signal duration
 
     signal_digitizer = SignalDigitizer(
         bit_depth=1024,
         saturation_levels='auto',
-        sampling_freq=sampling_freq
+        sampling_rate=sampling_rate
     )
 
     # Initialize Detector
@@ -72,13 +72,13 @@ def test_thermal_noise():
     # Detector Properties
     resistance = 50 * units.ohm  # Load resistance in ohms
     temperature = 300 * units.kelvin  # Temperature in Kelvin
-    sampling_freq = 1e6 * units.hertz  # Sampling frequency
+    sampling_rate = 1e6 * units.hertz  # Sampling frequency
     run_time = 500e-6 * units.second  # Signal duration
 
     signal_digitizer = SignalDigitizer(
         bit_depth=1024,
         saturation_levels='auto',
-        sampling_freq=sampling_freq,
+        sampling_rate=sampling_rate,
     )
 
     # Initialize Detector
@@ -118,13 +118,13 @@ def test_dark_current_noise():
     # Detector Properties
     dark_current = 1e-12 * units.ampere  # Dark current in amps
     resistance = 50 * units.ohm  # Load resistance
-    sampling_freq = 1e6 * units.hertz  # Sampling frequency
+    sampling_rate = 1e6 * units.hertz  # Sampling frequency
     run_time = 500e-6 * units.second  # Signal duration
 
     signal_digitizer = SignalDigitizer(
         bit_depth=1024,
         saturation_levels='auto',
-        sampling_freq=sampling_freq,
+        sampling_rate=sampling_rate,
     )
 
     # Initialize Detector

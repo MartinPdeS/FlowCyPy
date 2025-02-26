@@ -77,7 +77,7 @@ scatterer_collection.dilute(6)
 signal_digitizer = SignalDigitizer(
     bit_depth=1024,
     saturation_levels='auto',
-    sampling_freq=10 * units.megahertz,        # Sampling frequency: 1 MHz
+    sampling_rate=10 * units.megahertz,        # Sampling frequency: 1 MHz
 )
 
 detector_0 = Detector(

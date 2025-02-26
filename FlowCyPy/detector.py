@@ -125,7 +125,7 @@ class Detector():
         """
         self.signal_digitizer = signal_digitizer
 
-        time_points = int(self.signal_digitizer.sampling_freq * run_time)
+        time_points = int(self.signal_digitizer.sampling_rate * run_time)
         time = np.linspace(0, run_time, time_points)
 
         return pd.DataFrame(
@@ -256,14 +256,14 @@ class Detector():
             # Step 2: Compute mean photon count per sampling interval
             photon_rate = optical_power / energy_photon  # Photon rate (photons/s)
 
-            sampling_interval = 1 / self.signal_digitizer.sampling_freq  # Sampling interval (s)
+            sampling_interval = 1 / self.signal_digitizer.sampling_rate  # Sampling interval (s)
             mean_photon_count = photon_rate * sampling_interval  # Mean photons per sample
 
             # Step 3: Simulate photon arrivals using Poisson statistics
             photon_counts_distribution = np.random.poisson(mean_photon_count.to('').magnitude, size=len(signal))
 
             # Step 4: Convert photon counts to photocurrent
-            photon_power_distribution = photon_counts_distribution * energy_photon * self.signal_digitizer.sampling_freq
+            photon_power_distribution = photon_counts_distribution * energy_photon * self.signal_digitizer.sampling_rate
 
             photocurrent_distribution = self.responsitivity * photon_power_distribution  # Current (A)
             # Step 5: Convert photocurrent to shot noise voltage

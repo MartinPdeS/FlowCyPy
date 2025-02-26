@@ -148,7 +148,7 @@ class TriggeredAcquisitions:
             raise ValueError("Cutoff frequency must be specified for low-pass filtering.")
 
         # Get sampling frequency and ensure it's in Hertz
-        fs = self.parent.cytometer.signal_digitizer.sampling_freq.to("hertz")
+        fs = self.parent.cytometer.signal_digitizer.sampling_rate.to("hertz")
         nyquist_freq = fs / 2
 
         # Validate cutoff frequency
@@ -192,7 +192,7 @@ class TriggeredAcquisitions:
             raise ValueError("Cutoff frequency must be specified for high-pass filtering.")
 
         # Get sampling frequency and ensure it's in Hertz
-        fs = self.parent.cytometer.signal_digitizer.sampling_freq.to("hertz")
+        fs = self.parent.cytometer.signal_digitizer.sampling_rate.to("hertz")
         nyquist_freq = fs / 2
 
         # Validate cutoff frequency

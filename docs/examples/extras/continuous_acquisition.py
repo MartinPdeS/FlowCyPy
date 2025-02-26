@@ -76,7 +76,7 @@ scatterer_collection.add_population(ev)
 signal_digitizer = SignalDigitizer(
     bit_depth=1024,
     saturation_levels='auto',
-    sampling_freq=1 * units.megahertz,        # Sampling frequency: 1 MHz
+    sampling_rate=1 * units.megahertz,        # Sampling frequency: 1 MHz
 )
 
 detector_0 = Detector(

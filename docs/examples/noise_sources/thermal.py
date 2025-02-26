@@ -31,7 +31,7 @@ temperatures = [50, 500]  # Temperatures in Kelvin
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
-    sampling_freq=1e6 * units.hertz,
+    sampling_rate=1e6 * units.hertz,
 )
 
 # Initialize the plot

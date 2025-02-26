@@ -47,7 +47,7 @@ for size in [150, 100, 50, 30]:
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
-    sampling_freq=60 * units.megahertz,            # Sampling frequency: 60 MHz
+    sampling_rate=60 * units.megahertz,            # Sampling frequency: 60 MHz
 )
 
 detector_0 = Detector(

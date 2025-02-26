@@ -1,6 +1,8 @@
 import numpy as np
 from FlowCyPy import Detector, FlowCytometer, ScattererCollection, FlowCell, units, NoiseSetting, GaussianBeam, SignalDigitizer
 from FlowCyPy.population import Exosome, Population, distribution
+from FlowCyPy import circuits
+np.random.seed(3)
 
 NoiseSetting.include_noises = True
 
@@ -12,7 +14,7 @@ source = GaussianBeam(
 
 flow_cell = FlowCell(
     source=source,
-    volume_flow=0.1 * units.microliter / units.second,
+    volume_flow=0.01 * units.microliter / units.second,
     flow_area=(10 * units.micrometer) ** 2,
 )
 
@@ -29,14 +31,14 @@ custom_population = Population(
 
 scatterer_collection.add_population(exosome, custom_population)
 
-scatterer_collection.dilute(factor=4)
+scatterer_collection.dilute(factor=3)
 
 # scatterer_collection.plot()
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
-    sampling_freq=60 * units.megahertz,
+    sampling_rate=10 * units.megahertz,
 )
 
 detector_0 = Detector(
@@ -62,27 +64,33 @@ cytometer = FlowCytometer(
     signal_digitizer=signal_digitizer,
     detectors=[detector_0, detector_1],
     flow_cell=flow_cell,
-    background_power=0.001 * units.milliwatt
+    background_power=0.1 * units.milliwatt
 )
 
-acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+processing_steps = [
+    circuits.BaselineRestorator(window_size=400 * units.millisecond),
+    # circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2),
+]
 
-# acquisition.scatterer.plot(x='side', y='forward')
+acquisition = cytometer.get_acquisition(
+    run_time=0.5 * units.millisecond,
+    processing_steps=processing_steps
+)
 
-# acquisition.analog.plot()
+acquisition.analog.plot()
 
 triggered_acquisition = acquisition.run_triggering(
     threshold=1.0 * units.millivolt,
     trigger_detector_name='forward',
     max_triggers=35,
-    pre_buffer=63,
+    pre_buffer=64,
     post_buffer=64
 )
 
-# triggered_acquisition.analog.plot()
+triggered_acquisition.analog.plot()
 
-from FlowCyPy.triggered_acquisition import scipy_peak_detector
-print(triggered_acquisition.analog)
+# from FlowCyPy.triggered_acquisition import scipy_peak_detector
+# print(triggered_acquisition.analog)
 # peaks = triggered_acquisition.detect_peaks(peak_detection_func=scipy_peak_detector)
 
 # peaks.plot(

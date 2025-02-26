@@ -47,7 +47,7 @@ def default_flow_cell():
 @pytest.fixture
 def signal_digitizer():
     return SignalDigitizer(
-        sampling_freq=1e4 * units.hertz,           # Sampling frequency: 10,000 Hz
+        sampling_rate=1e4 * units.hertz,           # Sampling frequency: 10,000 Hz
         bit_depth=1024,
         saturation_levels=1e30 * units.volt
     )
@@ -121,7 +121,7 @@ def test_digitizer_properties(signal_digitizer):
     """
     Test the detector's properties and ensure they are correctly initialized.
     """
-    assert signal_digitizer.sampling_freq == 1e4 * units.hertz, f"Expected acquisition frequency to be 10,000 Hz, but got {detector.acquisition_frequency}."
+    assert signal_digitizer.sampling_rate == 1e4 * units.hertz, f"Expected acquisition frequency to be 10,000 Hz, but got {detector.acquisition_frequency}."
     assert signal_digitizer.saturation_levels == 1e30 * units.volt, f"Expected saturation level to be 1e30, but got {detector.saturation_level}."
     assert signal_digitizer.bit_depth == 1024, f"Expected 1024 bins, but got {detector.signal_digitizer.bit_depth}."
 

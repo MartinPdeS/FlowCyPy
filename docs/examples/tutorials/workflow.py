@@ -117,7 +117,7 @@ from FlowCyPy.signal_digitizer import SignalDigitizer
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
-    sampling_freq=60 * units.megahertz,
+    sampling_rate=60 * units.megahertz,
 )
 
 detector_0 = Detector(

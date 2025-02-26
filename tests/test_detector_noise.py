@@ -11,7 +11,7 @@ def default_digitizer():
     return SignalDigitizer(
         bit_depth=1024,
         saturation_levels=[0 * units.volt, 1e30 * units.volt],
-        sampling_freq=1e6 * units.hertz,  # High sampling frequency
+        sampling_rate=1e6 * units.hertz,  # High sampling frequency
     )
 
 @pytest.fixture

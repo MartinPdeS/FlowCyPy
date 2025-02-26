@@ -30,7 +30,7 @@ fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
-    sampling_freq=1e6 * units.hertz,        # Sampling frequency
+    sampling_rate=1e6 * units.hertz,        # Sampling frequency
 
 )
 

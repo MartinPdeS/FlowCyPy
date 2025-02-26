@@ -119,7 +119,7 @@ class Acquisition:
             time_map=time_map,
             trigger_detector_name=trigger_detector_name,
             threshold=threshold_value,
-            pre_buffer=pre_buffer - 1,
+            pre_buffer=pre_buffer,
             post_buffer=post_buffer,
             max_triggers=max_triggers or -1
         )

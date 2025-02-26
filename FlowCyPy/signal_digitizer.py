@@ -21,14 +21,14 @@ class SignalDigitizer:
 
     Attributes
     ----------
-    sampling_freq : Quantity
+    sampling_rate : Quantity
         The sampling frequency of the detector in hertz.
     bit_depth : Union[int, str]
         The number of discretization bins or bit-depth (e.g., '12bit').
     saturation_levels : Union[str, Tuple[Quantity, Quantity]]
         A tuple defining the lower and upper bounds for saturation, or 'auto' to set bounds dynamically.
     """
-    sampling_freq: Quantity
+    sampling_rate: Quantity
     bit_depth: Union[int, str] = '10bit'
     saturation_levels: Union[str, Tuple[Quantity, Quantity], Quantity] = 'auto'
 
@@ -46,7 +46,7 @@ class SignalDigitizer:
         Quantity
             The bandwidth of the detector, which is half the sampling frequency (Nyquist limit).
         """
-        return self.sampling_freq / 2
+        return self.sampling_rate / 2
 
     @staticmethod
     def _process_bit_depth(bit_depth: Union[int, str]) -> int:
@@ -69,8 +69,8 @@ class SignalDigitizer:
 
         return bit_depth
 
-    @field_validator('sampling_freq')
-    def _validate_sampling_freq(cls, value):
+    @field_validator('sampling_rate')
+    def _validate_sampling_rate(cls, value):
         """
         Validates that the sampling frequency is provided in hertz.
 
@@ -88,7 +88,7 @@ class SignalDigitizer:
             ValueError: If the sampling frequency is not in hertz.
         """
         if not value.check('Hz'):
-            raise ValueError(f"sampling_freq must be in hertz, but got {value.units}")
+            raise ValueError(f"sampling_rate must be in hertz, but got {value.units}")
         return value
 
     def get_saturation_values(self, signal: pd.Series) -> Tuple[Quantity, Quantity]:

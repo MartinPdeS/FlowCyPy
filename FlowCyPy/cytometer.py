@@ -15,6 +15,7 @@ from FlowCyPy.acquisition import Acquisition
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.helper import validate_units
 from FlowCyPy import dataframe_subclass
+from FlowCyPy.circuits import SignalProcessor
 
 
 # Set up logging configuration
@@ -83,7 +84,7 @@ class FlowCytometer:
         self.coupling_mechanism = coupling_mechanism
         self.background_power = background_power
 
-        assert len(self.detectors) == 2, 'For now, FlowCytometer can only take two detectors for the analysis.'
+        # assert len(self.detectors) == 2, 'For now, FlowCytometer can only take two detectors for the analysis.'
         assert self.detectors[0].name != self.detectors[1].name, 'Both detectors cannot have the same name'
 
         for detector in detectors:
@@ -110,6 +111,9 @@ class FlowCytometer:
         """
         detection_mechanism = self._get_detection_mechanism()
 
+        if scatterer_dataframe.empty:
+            return
+
         for detector in self.detectors:
             self.coupling_power = detection_mechanism(
                 source=self.source,
@@ -124,7 +128,7 @@ class FlowCytometer:
         r"""
         Generates and assigns random Gaussian pulse parameters for each particle event.
 
-        The pulse shape follows the Gaussian beam’s spatial intensity profile:
+        The pulse shape follows the Gaussian beam"s spatial intensity profile:
 
         .. math::
 
@@ -211,10 +215,10 @@ class FlowCytometer:
 
         dataframe.index.names = ["Detector", "Index"]
 
-        return dataframe
+        return dataframe.sort_index()
 
     @validate_units(run_time=units.second)
-    def get_acquisition(self, run_time: units.second) -> None:
+    def get_acquisition(self, run_time: units.second, processing_steps: list[SignalProcessor] = None) -> None:
         """
         Simulates the generation of optical signal pulses for each particle event.
 
@@ -227,6 +231,18 @@ class FlowCytometer:
         - Adds Gaussian pulses to each detector's `raw_signal`.
         - Includes noise and background power in the simulated signals.
         - Updates detector dataframes with captured signal information.
+
+        Parameters
+        ----------
+        run_time : pint.Quantity
+            The duration of the acquisition in seconds.
+        processing_steps : list of SignalProcessor, optional
+            List of signal processing steps to apply in order.
+
+        Returns
+        -------
+        Acquisition
+            The simulated acquisition experiment.
 
         Raises
         ------
@@ -251,10 +267,10 @@ class FlowCytometer:
         _widths = scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude
         _centers = scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude
 
+
         saturation_levels = dict()
         for detector in self.detectors:
-            _coupling_power = scatterer_dataframe[detector.name].values
-
+            total_power = self.background_power
             detector_signal = signal_dataframe.xs(detector.name)['Signal']
 
             # Generate noise components
@@ -265,15 +281,18 @@ class FlowCytometer:
             # Broadcast the time array to the shape of (number of signals, len(detector.time))
             time = signal_dataframe.xs(detector.name)['Time'].pint.magnitude
 
-            time_grid = np.expand_dims(time, axis=0) * units.second
-            centers = np.expand_dims(_centers, axis=1) * units.second
-            widths = np.expand_dims(_widths, axis=1) * units.second
+            if not scatterer_dataframe.empty:
+                _coupling_power = scatterer_dataframe[detector.name].values
 
-            # Compute the Gaussian for each height, center, and width using broadcasting
-            # To be noted that widths is defined as: waist / (2 * flow_speed)
-            power_gaussians = _coupling_power[:, np.newaxis] * np.exp(- (time_grid - centers) ** 2 / (2 * widths ** 2))
+                time_grid = np.expand_dims(time, axis=0) * units.second
+                centers = np.expand_dims(_centers, axis=1) * units.second
+                widths = np.expand_dims(_widths, axis=1) * units.second
 
-            total_power = np.sum(power_gaussians, axis=0) + self.background_power
+                # Compute the Gaussian for each height, center, and width using broadcasting
+                # To be noted that widths is defined as: waist / (2 * flow_speed)
+                power_gaussians = _coupling_power[:, np.newaxis] * np.exp(- (time_grid - centers) ** 2 / (2 * widths ** 2))
+
+                total_power += np.sum(power_gaussians, axis=0)
 
             # Sum all the Gaussians and add them to the detector.raw_signal
             detector._add_optical_power_to_raw_signal(
@@ -284,7 +303,17 @@ class FlowCytometer:
 
             signal_dataframe.loc[detector.name, 'Signal'] = detector_signal.pint.quantity.magnitude
 
-            saturation_levels[detector.name] = self.signal_digitizer.get_saturation_values(signal=detector_signal)
+            # Apply user-defined processing steps
+            if processing_steps:
+                temp = signal_dataframe.loc[detector.name, 'Signal'].values.numpy_data  # Get writable NumPy array
+
+                for step in processing_steps:
+                    step.apply(temp, sampling_rate=self.signal_digitizer.sampling_rate)  # Apply processing in-place
+
+                # Reintroduce units after processing
+                signal_dataframe.loc[detector.name, 'Signal'] = temp * signal_dataframe.loc[detector.name, 'Signal'].pint.units
+
+            saturation_levels[detector.name] = self.signal_digitizer.get_saturation_values(signal=signal_dataframe.loc[detector.name, 'Signal'])
 
         signal_dataframe = dataframe_subclass.AnalogAcquisitionDataFrame(signal_dataframe)
 

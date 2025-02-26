@@ -68,7 +68,7 @@ scatterer_collection.add_population(population_1, population_0)
 signal_digitizer = SignalDigitizer(
     bit_depth=1024,
     saturation_levels='auto',
-    sampling_freq=10 * units.megahertz,           # Sampling frequency: 10 MHz
+    sampling_rate=10 * units.megahertz,           # Sampling frequency: 10 MHz
 )
 
 detector_fsc = Detector(
