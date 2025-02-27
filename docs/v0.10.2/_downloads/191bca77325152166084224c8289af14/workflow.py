@@ -203,7 +203,7 @@ peaks.plot(
 from FlowCyPy.classifier import KmeansClassifier
 
 classifier = KmeansClassifier(number_of_cluster=2)
-print(peaks)
+
 data = classifier.run(
     dataframe=peaks.unstack('Detector'),
     features=['Height'],
