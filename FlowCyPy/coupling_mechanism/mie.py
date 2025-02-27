@@ -2,7 +2,6 @@ import numpy as np
 from FlowCyPy import Detector
 from FlowCyPy.source import BaseBeam
 from PyMieSim import experiment as _PyMieSim
-import PyMieSim
 from PyMieSim.units import Quantity, degree, watt, AU, hertz
 from FlowCyPy.noises import NoiseSetting
 import pandas as pd
@@ -128,6 +127,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
         polarization=0 * degree,
         amplitude=amplitude_with_rin
     )
+    print(pms_source, '\n\n\n')
 
     pms_scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
         total_size=total_size,
@@ -136,6 +136,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
         medium_property=medium_refractive_index,
         source=pms_source
     )
+    print(pms_scatterer, '\n\n\n')
 
     pms_detector = _PyMieSim.detector.Photodiode.build_sequential(
         mode_number='NC00',
@@ -148,6 +149,8 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
         sampling=detector.sampling,
         rotation=0 * degree
     )
+    print(pms_detector)
+
     # Set up the experiment
     experiment = _PyMieSim.Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
 

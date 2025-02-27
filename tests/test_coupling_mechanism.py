@@ -2,7 +2,8 @@ import pytest
 import numpy as np
 from FlowCyPy import ScattererCollection, Detector, FlowCell
 from FlowCyPy import distribution
-from FlowCyPy.coupling_mechanism.rayleigh import compute_detected_signal
+from FlowCyPy.coupling_mechanism import rayleigh
+from FlowCyPy.coupling_mechanism import mie
 from FlowCyPy.population import Population
 from FlowCyPy.source import GaussianBeam
 from FlowCyPy.signal_digitizer import SignalDigitizer
@@ -95,7 +96,6 @@ def test_generate_scatterer_size(scatterer_collection, default_flow_cell):
     assert len(sizes) > 0, f"Expected 10 scatterer sizes, but got {len(sizes)}."
     assert sizes.values.numpy_data.min() > 0, f"Expected all sizes to be positive, but got a minimum size of {sizes.magnitude.min()}."
 
-
 def test_rayleigh_mechanism_output(detector, scatterer_collection, source, default_flow_cell):
     """
     Test the detected power output of the Rayleigh scattering mechanism.
@@ -107,7 +107,7 @@ def test_rayleigh_mechanism_output(detector, scatterer_collection, source, defau
 
     scatterer_collection.fill_dataframe_with_sampling(scatterer_dataframe)
 
-    detected_power = compute_detected_signal(
+    detected_power = rayleigh.compute_detected_signal(
         source=source,
         detector=detector,
         scatterer_dataframe=scatterer_dataframe,

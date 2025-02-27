@@ -107,6 +107,9 @@ def test_flow_cytometer_acquisition(flow_cytometer):
     """Test if the Flow Cytometer generates a non-zero acquisition signal."""
     acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
+    print(acquisition.scatterer)
+    dsa
+
     signal = acquisition.analog['Signal']
 
     assert not np.all(signal == 0 * units.volt), "Acquisition signal is all zeros."
