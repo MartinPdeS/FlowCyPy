@@ -174,6 +174,63 @@ This represents the population of scatterers (particles) that will interact with
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    PlaneWave(amplitude=<Quantity([2579296.13543966 2579296.13543966 2579296.13543966 2579296.13543966
+     2579296.13543966 2579296.13543966 2579296.13543966], 'volt / meter')>, wavelength=<Quantity([800 800 800 800 800 800 800], 'nanometer')>, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j]]))) 
+
+
+
+    Sphere(source=PlaneWave(amplitude=<Quantity([2579296.13543966 2579296.13543966 2579296.13543966 2579296.13543966
+     2579296.13543966 2579296.13543966 2579296.13543966], 'volt / meter')>, wavelength=<Quantity([800 800 800 800 800 800 800], 'nanometer')>, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j]]))), diameter=<Quantity([193.79357843 191.65467065 209.16355926 207.07838473 204.19676132
+     205.34157589 191.82040561], 'nanometer')>, property=<Quantity([1.39788159 1.39622612 1.38573127 1.39084434 1.39615636 1.39538431
+     1.38360024], 'refractive_index_unit')>, medium_property=<Quantity([1. 1. 1. 1. 1. 1. 1.], 'refractive_index_unit')>) 
+
+
+
+    Photodiode(NA=<Quantity([0.4 0.4 0.4 0.4 0.4 0.4 0.4], 'dimensionless')>, gamma_offset=<Quantity([0 0 0 0 0 0 0], 'degree')>, phi_offset=<Quantity([90 90 90 90 90 90 90], 'degree')>, mean_coupling=False, coherent=False, cache_NA=<Quantity([0 0 0 0 0 0 0], 'dimensionless')>, sampling=<Quantity([100 100 100 100 100 100 100], 'dimensionless')>, polarization_filter=<Quantity([nan nan nan nan nan nan nan], 'degree')>, mode_number=array(['NC00', 'NC00', 'NC00', 'NC00', 'NC00', 'NC00', 'NC00'],
+          dtype='<U4'), rotation=<Quantity([0 0 0 0 0 0 0], 'degree')>)
+    PlaneWave(amplitude=<Quantity([2579296.13543966 2579296.13543966 2579296.13543966 2579296.13543966
+     2579296.13543966 2579296.13543966 2579296.13543966], 'volt / meter')>, wavelength=<Quantity([800 800 800 800 800 800 800], 'nanometer')>, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j]]))) 
+
+
+
+    Sphere(source=PlaneWave(amplitude=<Quantity([2579296.13543966 2579296.13543966 2579296.13543966 2579296.13543966
+     2579296.13543966 2579296.13543966 2579296.13543966], 'volt / meter')>, wavelength=<Quantity([800 800 800 800 800 800 800], 'nanometer')>, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j],
+           [1.+0.j, 0.+0.j]]))), diameter=<Quantity([193.79357843 191.65467065 209.16355926 207.07838473 204.19676132
+     205.34157589 191.82040561], 'nanometer')>, property=<Quantity([1.39788159 1.39622612 1.38573127 1.39084434 1.39615636 1.39538431
+     1.38360024], 'refractive_index_unit')>, medium_property=<Quantity([1. 1. 1. 1. 1. 1. 1.], 'refractive_index_unit')>) 
+
+
+
+    Photodiode(NA=<Quantity([0.4 0.4 0.4 0.4 0.4 0.4 0.4], 'dimensionless')>, gamma_offset=<Quantity([0 0 0 0 0 0 0], 'degree')>, phi_offset=<Quantity([0 0 0 0 0 0 0], 'degree')>, mean_coupling=False, coherent=False, cache_NA=<Quantity([0 0 0 0 0 0 0], 'dimensionless')>, sampling=<Quantity([100 100 100 100 100 100 100], 'dimensionless')>, polarization_filter=<Quantity([nan nan nan nan nan nan nan], 'degree')>, mode_number=array(['NC00', 'NC00', 'NC00', 'NC00', 'NC00', 'NC00', 'NC00'],
+          dtype='<U4'), rotation=<Quantity([0 0 0 0 0 0 0], 'degree')>)
+
 
 
 
@@ -302,7 +359,7 @@ Visualize the scatter triggered digital signals from both detectors
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.076 seconds)
+   **Total running time of the script:** (0 minutes 5.119 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_triggered_acquisition.py:
