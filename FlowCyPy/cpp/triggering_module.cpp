@@ -3,11 +3,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
-#include <deque>
 #include <vector>
 #include <tuple>
-#include <algorithm>
-#include <stdexcept>
 #include <string>
 #include <map>
 #include "processing.cpp"
@@ -156,9 +153,6 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
         detector_list,
         py::array_t<int>(segment_ids_out.size(), segment_ids_out.data()));
 }
-
-
-
 
 
 /**

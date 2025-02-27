@@ -4,8 +4,6 @@
 #include <pybind11/numpy.h>
 #include <vector>
 #include <tuple>
-#include <algorithm>
-#include <stdexcept>
 #include <cmath>
 #include <map>
 #include <limits>
@@ -250,12 +248,6 @@ void apply_butterworth_lowpass_filter(py::array_t<double>& py_signal, double sam
     std::memcpy(signal_ptr, signal.data(), n_samples * sizeof(double));
 }
 
-#include <vector>
-#include <deque>
-#include <algorithm>
-#include <limits>
-#include <stdexcept>
-#include <cstddef>
 
 /**
  * @brief Performs baseline restoration on a signal using a rolling window minimum.

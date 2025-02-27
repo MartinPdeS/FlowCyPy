@@ -1,10 +1,8 @@
 import numpy as np
-from FlowCyPy import ScattererCollection, Detector
+from FlowCyPy import Detector
 from FlowCyPy.source import BaseBeam
-from PyMieSim.experiment.scatterer import Sphere as PMS_SPHERE
-from PyMieSim.experiment.source import PlaneWave
-from PyMieSim.experiment.detector import Photodiode as PMS_PHOTODIODE
-from PyMieSim.experiment import Setup
+from PyMieSim import experiment as _PyMieSim
+import PyMieSim
 from PyMieSim.units import Quantity, degree, watt, AU, hertz
 from FlowCyPy.noises import NoiseSetting
 import pandas as pd
@@ -96,67 +94,6 @@ def apply_rin_noise(source: BaseBeam, total_size: int, bandwidth: float) -> np.n
     return amplitude_with_rin
 
 
-def initialize_scatterer(scatterer_dataframe: pd.DataFrame, source: PlaneWave, medium_refractive_index: Quantity) -> PMS_SPHERE:
-    """
-    Initializes the scatterer object for the PyMieSim experiment.
-
-    Parameters
-    ----------
-    scatterer : ScattererCollection
-        The scatterer object containing particle data.
-    source : PlaneWave
-        The light source for the simulation.
-
-    Returns
-    -------
-    PMS_SPHERE
-        Initialized scatterer for the experiment.
-    """
-    size_list = scatterer_dataframe['Size'].values
-    ri_list = scatterer_dataframe['RefractiveIndex'].values
-
-    if len(size_list) == 0:
-        raise ValueError("ScattererCollection size list is empty.")
-
-    size_list = size_list.quantity.magnitude * size_list.units
-    ri_list = ri_list.quantity.magnitude * ri_list.units
-
-    return PMS_SPHERE(
-        diameter=size_list,
-        property=ri_list,
-        medium_property=np.ones(len(size_list)) * medium_refractive_index,
-        source=source
-    )
-
-
-def initialize_detector(detector: Detector, total_size: int) -> PMS_PHOTODIODE:
-    """
-    Initializes the detector object for the PyMieSim experiment.
-
-    Parameters
-    ----------
-    detector : Detector
-        The detector object containing configuration data.
-    total_size : int
-        The number of particles being simulated.
-
-    Returns
-    -------
-    PMS_PHOTODIODE
-        Initialized detector for the experiment.
-    """
-    ONES = np.ones(total_size)
-
-    return PMS_PHOTODIODE(
-        NA=ONES * detector.numerical_aperture,
-        cache_NA=ONES * 0 * AU,
-        gamma_offset=ONES * detector.gamma_angle,
-        phi_offset=ONES * detector.phi_angle,
-        polarization_filter=ONES * np.nan * degree,
-        sampling=ONES * detector.sampling
-    )
-
-
 def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
     """
     Computes the detected signal by analyzing the scattering properties of particles.
@@ -185,22 +122,34 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
     total_size = len(size_list)
     amplitude_with_rin = apply_rin_noise(source, total_size, detector.signal_digitizer.bandwidth)
 
-    pms_source = PlaneWave(
-        wavelength=np.ones(total_size) * source.wavelength,
-        polarization=np.ones(total_size) * 0 * degree,
+    pms_source = _PyMieSim.source.PlaneWave.build_sequential(
+        total_size=total_size,
+        wavelength=source.wavelength,
+        polarization=0 * degree,
         amplitude=amplitude_with_rin
     )
 
-    pms_scatterer = initialize_scatterer(scatterer_dataframe, pms_source, medium_refractive_index)
-    pms_detector = initialize_detector(detector, total_size)
+    pms_scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
+        total_size=total_size,
+        diameter=scatterer_dataframe['Size'].values.quantity.magnitude * scatterer_dataframe['Size'].values.quantity.units,
+        property=scatterer_dataframe['RefractiveIndex'].values.quantity.magnitude * scatterer_dataframe['RefractiveIndex'].values.quantity.units,
+        medium_property=medium_refractive_index,
+        source=pms_source
+    )
 
-    # Configure the detector
-    pms_detector.mode_number = ['NC00'] * total_size
-    pms_detector.rotation = np.ones(total_size) * 0 * degree
-    pms_detector.__post_init__()
-
+    pms_detector = _PyMieSim.detector.Photodiode.build_sequential(
+        mode_number='NC00',
+        total_size=total_size,
+        NA=detector.numerical_aperture,
+        cache_NA=0 * AU,
+        gamma_offset=detector.gamma_angle,
+        phi_offset=detector.phi_angle,
+        polarization_filter=np.nan * degree,
+        sampling=detector.sampling,
+        rotation=0 * degree
+    )
     # Set up the experiment
-    experiment = Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
+    experiment = _PyMieSim.Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
 
     # Compute coupling values
     coupling_value = experiment.get_sequential('coupling').squeeze()
