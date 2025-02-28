@@ -93,7 +93,7 @@ def apply_rin_noise(source: BaseBeam, total_size: int, bandwidth: float) -> np.n
     return amplitude_with_rin
 
 
-def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
+def _compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
     """
     Computes the detected signal by analyzing the scattering properties of particles.
 
@@ -147,6 +147,71 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
         phi_offset=detector.phi_angle,
         polarization_filter=np.nan * degree,
         sampling=detector.sampling,
+        rotation=0 * degree
+    )
+    print(pms_detector, flush=True)
+
+    # Set up the experiment
+    experiment = _PyMieSim.Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
+
+    # Compute coupling values
+    coupling_value = experiment.get_sequential('coupling').squeeze()
+    return np.atleast_1d(coupling_value) * watt
+
+
+def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
+    """
+    Computes the detected signal by analyzing the scattering properties of particles.
+
+    Parameters
+    ----------
+    source : BaseBeam
+        The light source object containing wavelength, power, and other optical properties.
+    detector : Detector
+        The detector object containing properties such as numerical aperture and angles.
+    scatterer : ScattererCollection
+        The scatterer object containing particle size and refractive index data.
+    tolerance : float, optional
+        The tolerance for deciding if two values of size and refractive index are "close enough" to be cached.
+
+    Returns
+    -------
+    np.ndarray
+        Array of coupling values for each particle, based on the detected signal.
+    """
+    from FlowCyPy import units
+    size_list = scatterer_dataframe['Size'].values
+
+    if len(size_list) == 0:
+        return np.array([]) * watt
+
+    total_size = len(size_list)
+
+    pms_source = _PyMieSim.source.PlaneWave.build_sequential(
+        total_size=total_size,
+        wavelength=1 * units.micrometer,
+        polarization=0 * degree,
+        amplitude=0.001 * units.volt/units.meter
+    )
+    print(pms_source, '\n\n\n', flush=True)
+
+    pms_scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
+        total_size=total_size,
+        diameter=1 * units.micrometer,
+        property=1.5 * units.RIU,
+        medium_property=1.0 * units.RIU,
+        source=pms_source
+    )
+
+    pms_detector = _PyMieSim.detector.Photodiode.build_sequential(
+        mode_number='NC00',
+        total_size=total_size,
+        NA=1.5 * units.AU,
+        cache_NA=0 * AU,
+        gamma_offset=0 * units.degree,
+        phi_offset=0 * units.degree,
+        polarization_filter=np.nan * units.degree,
+        sampling=100 * units.AU,
         rotation=0 * degree
     )
     print(pms_detector, flush=True)
