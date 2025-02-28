@@ -155,5 +155,5 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
     experiment = _PyMieSim.Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
 
     # Compute coupling values
-    # coupling_value = experiment.get_sequential('coupling').squeeze()
+    coupling_value = experiment.get_sequential('coupling').squeeze()
     return np.atleast_1d(coupling_value) * watt

@@ -69,7 +69,7 @@ def size_distribution():
 def ri_distribution():
     """Fixture for creating a normal refractive index distribution."""
     return distribution.Normal(
-        mean=1.0 * units.RIU,
+        mean=1.5 * units.RIU,
         std_dev=0.1 * units.RIU
     )
 
