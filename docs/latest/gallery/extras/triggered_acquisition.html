@@ -656,8 +656,7 @@ This represents the population of scatterers (particles) that will interact with
 <span class="n">acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>PlaneWave(amplitude=&lt;Quantity([2579296.13543966 2579296.13543966 2579296.13543966 2579296.13543966
- 2579296.13543966 2579296.13543966 2579296.13543966], &#39;volt / meter&#39;)&gt;, wavelength=&lt;Quantity([800 800 800 800 800 800 800], &#39;nanometer&#39;)&gt;, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>PlaneWave(amplitude=&lt;Quantity([0.001 0.001 0.001 0.001 0.001 0.001 0.001], &#39;volt / meter&#39;)&gt;, wavelength=&lt;Quantity([1 1 1 1 1 1 1], &#39;micrometer&#39;)&gt;, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
        [1.+0.j, 0.+0.j],
        [1.+0.j, 0.+0.j],
        [1.+0.j, 0.+0.j],
@@ -667,23 +666,9 @@ This represents the population of scatterers (particles) that will interact with
 
 
 
-Sphere(source=PlaneWave(amplitude=&lt;Quantity([2579296.13543966 2579296.13543966 2579296.13543966 2579296.13543966
- 2579296.13543966 2579296.13543966 2579296.13543966], &#39;volt / meter&#39;)&gt;, wavelength=&lt;Quantity([800 800 800 800 800 800 800], &#39;nanometer&#39;)&gt;, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
-       [1.+0.j, 0.+0.j],
-       [1.+0.j, 0.+0.j],
-       [1.+0.j, 0.+0.j],
-       [1.+0.j, 0.+0.j],
-       [1.+0.j, 0.+0.j],
-       [1.+0.j, 0.+0.j]]))), diameter=&lt;Quantity([193.79357843 191.65467065 209.16355926 207.07838473 204.19676132
- 205.34157589 191.82040561], &#39;nanometer&#39;)&gt;, property=&lt;Quantity([1.39788159 1.39622612 1.38573127 1.39084434 1.39615636 1.39538431
- 1.38360024], &#39;refractive_index_unit&#39;)&gt;, medium_property=&lt;Quantity([1. 1. 1. 1. 1. 1. 1.], &#39;refractive_index_unit&#39;)&gt;)
-
-
-
-Photodiode(NA=&lt;Quantity([0.4 0.4 0.4 0.4 0.4 0.4 0.4], &#39;dimensionless&#39;)&gt;, gamma_offset=&lt;Quantity([0 0 0 0 0 0 0], &#39;degree&#39;)&gt;, phi_offset=&lt;Quantity([90 90 90 90 90 90 90], &#39;degree&#39;)&gt;, mean_coupling=False, coherent=False, cache_NA=&lt;Quantity([0 0 0 0 0 0 0], &#39;dimensionless&#39;)&gt;, sampling=&lt;Quantity([100 100 100 100 100 100 100], &#39;dimensionless&#39;)&gt;, polarization_filter=&lt;Quantity([nan nan nan nan nan nan nan], &#39;degree&#39;)&gt;, mode_number=array([&#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;],
+Photodiode(NA=&lt;Quantity([1.5 1.5 1.5 1.5 1.5 1.5 1.5], &#39;dimensionless&#39;)&gt;, gamma_offset=&lt;Quantity([0 0 0 0 0 0 0], &#39;degree&#39;)&gt;, phi_offset=&lt;Quantity([0 0 0 0 0 0 0], &#39;degree&#39;)&gt;, mean_coupling=False, coherent=False, cache_NA=&lt;Quantity([0 0 0 0 0 0 0], &#39;dimensionless&#39;)&gt;, sampling=&lt;Quantity([100 100 100 100 100 100 100], &#39;dimensionless&#39;)&gt;, polarization_filter=&lt;Quantity([nan nan nan nan nan nan nan], &#39;degree&#39;)&gt;, mode_number=array([&#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;],
       dtype=&#39;&lt;U4&#39;), rotation=&lt;Quantity([0 0 0 0 0 0 0], &#39;degree&#39;)&gt;)
-PlaneWave(amplitude=&lt;Quantity([2579296.13543966 2579296.13543966 2579296.13543966 2579296.13543966
- 2579296.13543966 2579296.13543966 2579296.13543966], &#39;volt / meter&#39;)&gt;, wavelength=&lt;Quantity([800 800 800 800 800 800 800], &#39;nanometer&#39;)&gt;, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
+PlaneWave(amplitude=&lt;Quantity([0.001 0.001 0.001 0.001 0.001 0.001 0.001], &#39;volt / meter&#39;)&gt;, wavelength=&lt;Quantity([1 1 1 1 1 1 1], &#39;micrometer&#39;)&gt;, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
        [1.+0.j, 0.+0.j],
        [1.+0.j, 0.+0.j],
        [1.+0.j, 0.+0.j],
@@ -693,20 +678,7 @@ PlaneWave(amplitude=&lt;Quantity([2579296.13543966 2579296.13543966 2579296.1354
 
 
 
-Sphere(source=PlaneWave(amplitude=&lt;Quantity([2579296.13543966 2579296.13543966 2579296.13543966 2579296.13543966
- 2579296.13543966 2579296.13543966 2579296.13543966], &#39;volt / meter&#39;)&gt;, wavelength=&lt;Quantity([800 800 800 800 800 800 800], &#39;nanometer&#39;)&gt;, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
-       [1.+0.j, 0.+0.j],
-       [1.+0.j, 0.+0.j],
-       [1.+0.j, 0.+0.j],
-       [1.+0.j, 0.+0.j],
-       [1.+0.j, 0.+0.j],
-       [1.+0.j, 0.+0.j]]))), diameter=&lt;Quantity([193.79357843 191.65467065 209.16355926 207.07838473 204.19676132
- 205.34157589 191.82040561], &#39;nanometer&#39;)&gt;, property=&lt;Quantity([1.39788159 1.39622612 1.38573127 1.39084434 1.39615636 1.39538431
- 1.38360024], &#39;refractive_index_unit&#39;)&gt;, medium_property=&lt;Quantity([1. 1. 1. 1. 1. 1. 1.], &#39;refractive_index_unit&#39;)&gt;)
-
-
-
-Photodiode(NA=&lt;Quantity([0.4 0.4 0.4 0.4 0.4 0.4 0.4], &#39;dimensionless&#39;)&gt;, gamma_offset=&lt;Quantity([0 0 0 0 0 0 0], &#39;degree&#39;)&gt;, phi_offset=&lt;Quantity([0 0 0 0 0 0 0], &#39;degree&#39;)&gt;, mean_coupling=False, coherent=False, cache_NA=&lt;Quantity([0 0 0 0 0 0 0], &#39;dimensionless&#39;)&gt;, sampling=&lt;Quantity([100 100 100 100 100 100 100], &#39;dimensionless&#39;)&gt;, polarization_filter=&lt;Quantity([nan nan nan nan nan nan nan], &#39;degree&#39;)&gt;, mode_number=array([&#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;],
+Photodiode(NA=&lt;Quantity([1.5 1.5 1.5 1.5 1.5 1.5 1.5], &#39;dimensionless&#39;)&gt;, gamma_offset=&lt;Quantity([0 0 0 0 0 0 0], &#39;degree&#39;)&gt;, phi_offset=&lt;Quantity([0 0 0 0 0 0 0], &#39;degree&#39;)&gt;, mean_coupling=False, coherent=False, cache_NA=&lt;Quantity([0 0 0 0 0 0 0], &#39;dimensionless&#39;)&gt;, sampling=&lt;Quantity([100 100 100 100 100 100 100], &#39;dimensionless&#39;)&gt;, polarization_filter=&lt;Quantity([nan nan nan nan nan nan nan], &#39;degree&#39;)&gt;, mode_number=array([&#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;, &#39;NC00&#39;],
       dtype=&#39;&lt;U4&#39;), rotation=&lt;Quantity([0 0 0 0 0 0 0], &#39;degree&#39;)&gt;)
 </pre></div>
 </div>
@@ -757,7 +729,7 @@ Photodiode(NA=&lt;Quantity([0.4 0.4 0.4 0.4 0.4 0.4 0.4], &#39;dimensionless&#39
 <img src="../../_images/sphx_glr_triggered_acquisition_004.png" srcset="../../_images/sphx_glr_triggered_acquisition_004.png" alt="triggered acquisition" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;\nSummary:\n--------\nThis script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,\nand extracts important features. The process is visualized through signal plots, and key properties are displayed.\n&#39;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.953 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.194 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-triggered-acquisition-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/384ceb7bb18f5408c3f8ecb06feeaef4/triggered_acquisition.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">triggered_acquisition.ipynb</span></code></a></p>

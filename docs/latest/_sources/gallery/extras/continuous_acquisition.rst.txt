@@ -193,32 +193,20 @@ This represents the population of scatterers (particles) that will interact with
 
  .. code-block:: none
 
-    PlaneWave(amplitude=<Quantity([2579296.13543966 2579296.13543966 2579296.13543966], 'volt / meter')>, wavelength=<Quantity([800 800 800], 'nanometer')>, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
+    PlaneWave(amplitude=<Quantity([0.001 0.001 0.001], 'volt / meter')>, wavelength=<Quantity([1 1 1], 'micrometer')>, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
            [1.+0.j, 0.+0.j],
            [1.+0.j, 0.+0.j]]))) 
 
 
 
-    Sphere(source=PlaneWave(amplitude=<Quantity([2579296.13543966 2579296.13543966 2579296.13543966], 'volt / meter')>, wavelength=<Quantity([800 800 800], 'nanometer')>, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
-           [1.+0.j, 0.+0.j],
-           [1.+0.j, 0.+0.j]]))), diameter=<Quantity([202.08031125 210.24935599 195.7701557 ], 'nanometer')>, property=<Quantity([1.38034343 1.3961552  1.41469157], 'refractive_index_unit')>, medium_property=<Quantity([1. 1. 1.], 'refractive_index_unit')>) 
-
-
-
-    Photodiode(NA=<Quantity([0.4 0.4 0.4], 'dimensionless')>, gamma_offset=<Quantity([0 0 0], 'degree')>, phi_offset=<Quantity([90 90 90], 'degree')>, mean_coupling=False, coherent=False, cache_NA=<Quantity([0 0 0], 'dimensionless')>, sampling=<Quantity([100 100 100], 'dimensionless')>, polarization_filter=<Quantity([nan nan nan], 'degree')>, mode_number=array(['NC00', 'NC00', 'NC00'], dtype='<U4'), rotation=<Quantity([0 0 0], 'degree')>)
-    PlaneWave(amplitude=<Quantity([2579296.13543966 2579296.13543966 2579296.13543966], 'volt / meter')>, wavelength=<Quantity([800 800 800], 'nanometer')>, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
+    Photodiode(NA=<Quantity([1.5 1.5 1.5], 'dimensionless')>, gamma_offset=<Quantity([0 0 0], 'degree')>, phi_offset=<Quantity([0 0 0], 'degree')>, mean_coupling=False, coherent=False, cache_NA=<Quantity([0 0 0], 'dimensionless')>, sampling=<Quantity([100 100 100], 'dimensionless')>, polarization_filter=<Quantity([nan nan nan], 'degree')>, mode_number=array(['NC00', 'NC00', 'NC00'], dtype='<U4'), rotation=<Quantity([0 0 0], 'degree')>)
+    PlaneWave(amplitude=<Quantity([0.001 0.001 0.001], 'volt / meter')>, wavelength=<Quantity([1 1 1], 'micrometer')>, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
            [1.+0.j, 0.+0.j],
            [1.+0.j, 0.+0.j]]))) 
 
 
 
-    Sphere(source=PlaneWave(amplitude=<Quantity([2579296.13543966 2579296.13543966 2579296.13543966], 'volt / meter')>, wavelength=<Quantity([800 800 800], 'nanometer')>, polarization=Linear(element=array([[1.+0.j, 0.+0.j],
-           [1.+0.j, 0.+0.j],
-           [1.+0.j, 0.+0.j]]))), diameter=<Quantity([202.08031125 210.24935599 195.7701557 ], 'nanometer')>, property=<Quantity([1.38034343 1.3961552  1.41469157], 'refractive_index_unit')>, medium_property=<Quantity([1. 1. 1.], 'refractive_index_unit')>) 
-
-
-
-    Photodiode(NA=<Quantity([0.4 0.4 0.4], 'dimensionless')>, gamma_offset=<Quantity([0 0 0], 'degree')>, phi_offset=<Quantity([0 0 0], 'degree')>, mean_coupling=False, coherent=False, cache_NA=<Quantity([0 0 0], 'dimensionless')>, sampling=<Quantity([100 100 100], 'dimensionless')>, polarization_filter=<Quantity([nan nan nan], 'degree')>, mode_number=array(['NC00', 'NC00', 'NC00'], dtype='<U4'), rotation=<Quantity([0 0 0], 'degree')>)
+    Photodiode(NA=<Quantity([1.5 1.5 1.5], 'dimensionless')>, gamma_offset=<Quantity([0 0 0], 'degree')>, phi_offset=<Quantity([0 0 0], 'degree')>, mean_coupling=False, coherent=False, cache_NA=<Quantity([0 0 0], 'dimensionless')>, sampling=<Quantity([100 100 100], 'dimensionless')>, polarization_filter=<Quantity([nan nan nan], 'degree')>, mode_number=array(['NC00', 'NC00', 'NC00'], dtype='<U4'), rotation=<Quantity([0 0 0], 'degree')>)
 
     '\nSummary:\n--------\nThis script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,\nand extracts important features. The process is visualized through signal plots, and key properties are displayed.\n'
 
@@ -227,7 +215,7 @@ This represents the population of scatterers (particles) that will interact with
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.511 seconds)
+   **Total running time of the script:** (0 minutes 0.577 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_continuous_acquisition.py:
