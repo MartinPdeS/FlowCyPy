@@ -22,7 +22,7 @@ def test_shot_noise():
     detector's responsitivity and resistance.
     """
     # Signal and Detector Properties
-    optical_power = 1 * units.watt  # Power in watts
+    optical_power = 1 * units.milliwatt  # Power in watts
     sampling_rate = 1e6 * units.hertz  # Sampling frequency
     run_time = 500e-6 * units.second  # Signal duration
 
