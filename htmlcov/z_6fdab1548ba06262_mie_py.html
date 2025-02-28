@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_6fdab1548ba06262_rayleigh_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-02-28 11:22 +0000
+            created at 2025-02-28 11:34 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -211,7 +211,7 @@
     <p class="pln"><span class="n"><a id="t127" href="#t127">127</a></span><span class="t">        <span class="nam">polarization</span><span class="op">=</span><span class="num">0</span> <span class="op">*</span> <span class="nam">degree</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t128" href="#t128">128</a></span><span class="t">        <span class="nam">amplitude</span><span class="op">=</span><span class="nam">amplitude_with_rin</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t129" href="#t129">129</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t130" href="#t130">130</a></span><span class="t">    <span class="nam">print</span><span class="op">(</span><span class="nam">pms_source</span><span class="op">,</span> <span class="str">'\n\n\n'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t130" href="#t130">130</a></span><span class="t">    <span class="nam">print</span><span class="op">(</span><span class="nam">pms_source</span><span class="op">,</span> <span class="str">'\n\n\n'</span><span class="op">,</span> <span class="nam">flush</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t131" href="#t131">131</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t132" href="#t132">132</a></span><span class="t">    <span class="nam">pms_scatterer</span> <span class="op">=</span> <span class="nam">_PyMieSim</span><span class="op">.</span><span class="nam">scatterer</span><span class="op">.</span><span class="nam">Sphere</span><span class="op">.</span><span class="nam">build_sequential</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t133" href="#t133">133</a></span><span class="t">        <span class="nam">total_size</span><span class="op">=</span><span class="nam">total_size</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -220,7 +220,7 @@
     <p class="pln"><span class="n"><a id="t136" href="#t136">136</a></span><span class="t">        <span class="nam">medium_property</span><span class="op">=</span><span class="nam">medium_refractive_index</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t137" href="#t137">137</a></span><span class="t">        <span class="nam">source</span><span class="op">=</span><span class="nam">pms_source</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t">    <span class="nam">print</span><span class="op">(</span><span class="nam">pms_scatterer</span><span class="op">,</span> <span class="str">'\n\n\n'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t">    <span class="nam">print</span><span class="op">(</span><span class="nam">pms_scatterer</span><span class="op">,</span> <span class="str">'\n\n\n'</span><span class="op">,</span> <span class="nam">flush</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t140" href="#t140">140</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t">    <span class="nam">pms_detector</span> <span class="op">=</span> <span class="nam">_PyMieSim</span><span class="op">.</span><span class="nam">detector</span><span class="op">.</span><span class="nam">Photodiode</span><span class="op">.</span><span class="nam">build_sequential</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t142" href="#t142">142</a></span><span class="t">        <span class="nam">mode_number</span><span class="op">=</span><span class="str">'NC00'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -233,7 +233,7 @@
     <p class="pln"><span class="n"><a id="t149" href="#t149">149</a></span><span class="t">        <span class="nam">sampling</span><span class="op">=</span><span class="nam">detector</span><span class="op">.</span><span class="nam">sampling</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t150" href="#t150">150</a></span><span class="t">        <span class="nam">rotation</span><span class="op">=</span><span class="num">0</span> <span class="op">*</span> <span class="nam">degree</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t151" href="#t151">151</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t152" href="#t152">152</a></span><span class="t">    <span class="nam">print</span><span class="op">(</span><span class="nam">pms_detector</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t152" href="#t152">152</a></span><span class="t">    <span class="nam">print</span><span class="op">(</span><span class="nam">pms_detector</span><span class="op">,</span> <span class="nam">flush</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t153" href="#t153">153</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t154" href="#t154">154</a></span><span class="t">    <span class="com"># Set up the experiment</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t">    <span class="nam">experiment</span> <span class="op">=</span> <span class="nam">_PyMieSim</span><span class="op">.</span><span class="nam">Setup</span><span class="op">(</span><span class="nam">source</span><span class="op">=</span><span class="nam">pms_source</span><span class="op">,</span> <span class="nam">scatterer</span><span class="op">=</span><span class="nam">pms_scatterer</span><span class="op">,</span> <span class="nam">detector</span><span class="op">=</span><span class="nam">pms_detector</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -250,7 +250,7 @@
             <a class="nav" href="z_6fdab1548ba06262_rayleigh_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-02-28 11:22 +0000
+            created at 2025-02-28 11:34 +0000
         </p>
     </div>
 </footer>
