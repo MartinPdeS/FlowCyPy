@@ -561,8 +561,16 @@ Limit of detection
            'NC00', 'NC00', 'NC00', 'NC00', 'NC00', 'NC00'], dtype='<U4'), rotation=<Quantity([0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
      0 0 0 0], 'degree')>)
+    DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__
+    mean_photon_count [0.0 0.0 0.0 ... 442325.8553195678 85598.97309090963 15958.539059449313] mW·nm/J/MHz/m
+    mean_photon_count.to().magnitude [0.00000000e+00 0.00000000e+00 0.00000000e+00 ... 4.42325855e-13
+     8.55989731e-14 1.59585391e-14]
+    DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__
+    mean_photon_count [0.0 0.0 0.0 ... 595878.0458460595 115314.41854103212 21498.501511815175] mW·nm/J/MHz/m
+    mean_photon_count.to().magnitude [0.00000000e+00 0.00000000e+00 0.00000000e+00 ... 5.95878046e-13
+     1.15314419e-13 2.14985015e-14]
 
-    <seaborn.axisgrid.JointGrid object at 0x7ff86114c0d0>
+    <seaborn.axisgrid.JointGrid object at 0x7fda13697d50>
 
 
 
@@ -676,7 +684,7 @@ Limit of detection
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.960 seconds)
+   **Total running time of the script:** (0 minutes 4.203 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:

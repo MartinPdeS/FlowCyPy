@@ -772,6 +772,9 @@ document.write(`
             <span class="n">mean_photon_count</span> <span class="o">=</span> <span class="n">photon_rate</span> <span class="o">*</span> <span class="n">sampling_interval</span>  <span class="c1"># Mean photons per sample</span>
 
             <span class="c1"># Step 3: Simulate photon arrivals using Poisson statistics</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;DEBUG__&#39;</span><span class="o">*</span><span class="mi">30</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mean_photon_count&#39;</span><span class="p">,</span> <span class="n">mean_photon_count</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mean_photon_count.to(&#39;&#39;).magnitude&#39;</span><span class="p">,</span> <span class="n">mean_photon_count</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
             <span class="n">photon_counts_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">mean_photon_count</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span>
 
             <span class="c1"># Step 4: Convert photon counts to photocurrent</span>
