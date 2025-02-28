@@ -260,9 +260,6 @@ class Detector():
             mean_photon_count = photon_rate * sampling_interval  # Mean photons per sample
 
             # Step 3: Simulate photon arrivals using Poisson statistics
-            print('DEBUG__'*30)
-            print('mean_photon_count', mean_photon_count)
-            print('mean_photon_count.to('').magnitude', mean_photon_count.to('').magnitude)
             photon_counts_distribution = np.random.poisson(mean_photon_count.to('').magnitude, size=len(signal))
 
             # Step 4: Convert photon counts to photocurrent
