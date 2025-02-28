@@ -93,7 +93,7 @@ def apply_rin_noise(source: BaseBeam, total_size: int, bandwidth: float) -> np.n
     return amplitude_with_rin
 
 
-def _compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
+def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
     """
     Computes the detected signal by analyzing the scattering properties of particles.
 
@@ -127,7 +127,6 @@ def _compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dat
         polarization=0 * degree,
         amplitude=amplitude_with_rin
     )
-    print(pms_source, '\n\n\n', flush=True)
 
     pms_scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
         total_size=total_size,
@@ -136,7 +135,6 @@ def _compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dat
         medium_property=medium_refractive_index,
         source=pms_source
     )
-    print(pms_scatterer, '\n\n\n', flush=True)
 
     pms_detector = _PyMieSim.detector.Photodiode.build_sequential(
         mode_number='NC00',
@@ -149,7 +147,6 @@ def _compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dat
         sampling=detector.sampling,
         rotation=0 * degree
     )
-    print(pms_detector, flush=True)
 
     # Set up the experiment
     experiment = _PyMieSim.Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
@@ -159,7 +156,7 @@ def _compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dat
     return np.atleast_1d(coupling_value) * watt
 
 
-def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
+def debug_compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
     """
     Computes the detected signal by analyzing the scattering properties of particles.
 
@@ -220,5 +217,5 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
     experiment = _PyMieSim.Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
 
     # Compute coupling values
-    coupling_value = experiment.get_sequential('Qsca').squeeze()
+    coupling_value = experiment.get_sequential('coupling').squeeze()
     return np.atleast_1d(coupling_value) * watt

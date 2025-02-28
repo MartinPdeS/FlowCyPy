@@ -62,6 +62,66 @@ class ScattererDataFrame(pd.DataFrame):
 
         return grid
 
+
+    @helper.plot_3d
+    def plot_3d(self,
+                ax: plt.Axes,
+                x: str = 'Size',
+                y: str = 'RefractiveIndex',
+                z: str = 'Density',
+                color: str = 'Population',
+                alpha: float = 0.8) -> plt.Figure:
+        """
+        Visualizes a 3D scatter plot of scatterer properties.
+
+        Parameters
+        ----------
+        x : str, optional
+            Column name for the x-axis (default: 'Size').
+        y : str, optional
+            Column name for the y-axis (default: 'RefractiveIndex').
+        z : str, optional
+            Column name for the z-axis (default: 'Density').
+        color : str, optional
+            Column name used for coloring the points (default: 'Population').
+        alpha : float, optional
+            Transparency for scatter points (default: 0.8).
+
+        Returns
+        -------
+        plt.Figure
+            The matplotlib Figure containing the 3D scatter plot.
+        """
+        # Reset index to ensure columns are available as DataFrame columns
+        df_reset = self.reset_index()
+
+        # If there's only one row, nothing to plot
+        if len(df_reset) <= 1:
+            return
+
+        for population, group in self.groupby('Population'):
+            # Retrieve data for each axis
+            x_data = group[x].values.quantity.magnitude
+            y_data = group[y].values.quantity.magnitude
+            z_data = group[z].values.quantity.magnitude
+
+            scatter = ax.scatter(x_data, y_data, z_data, label=population, cmap='viridis', alpha=alpha)
+
+        # Optionally, convert units if the columns contain Pint Quantities.
+        # For example:
+        # df_reset[x] = df_reset[x].pint.to(df_reset[x].max().to_compact().units)
+        # df_reset[y] = df_reset[y].pint.to(df_reset[y].max().to_compact().units)
+        # df_reset[z] = df_reset[z].pint.to(df_reset[z].max().to_compact().units)
+
+        # Plotting: the decorator's context will ensure a 3D axis is created.
+        ax.set_xlabel(x)
+        ax.set_ylabel(y)
+        ax.set_zlabel(z)
+        ax.set_title("3D Scatterer Sampling Distribution")
+
+        ax.legend()
+        return ax.figure
+
     def log(self, table_format: str = "grid") -> None:
         """
         Logs detailed information about scatterer populations.
@@ -179,7 +239,7 @@ class ClassifierDataFrame(pd.DataFrame):
 
         # Set the plotting style
         with plt.style.context(mps):
-            temp = self.pint.dequantify()
+            temp = self.pint.dequantify().sort_index(axis=1)
 
             grid = sns.jointplot(
                 x=temp[(feature, x_detector)].values.squeeze(),
@@ -242,6 +302,22 @@ class PeakDataFrame(pd.DataFrame):
 
         return grid
 
+    @helper.plot_3d
+    def plot_3d(self, x_detector: str, y_detector: str, z_detector: str, feature: str = 'Height', ax=None) -> plt.Figure:
+        # Retrieve data for each axis
+        x_data = self.loc[x_detector, feature].values.quantity.magnitude
+        y_data = self.loc[y_detector, feature].values.quantity.magnitude
+        z_data = self.loc[z_detector, feature].values.quantity.magnitude
+
+        # Plot data on the provided or newly created 3D axis.
+        ax.scatter(x_data, y_data, z_data, color='C1', alpha=0.6)
+        ax.set_xlabel(f"{feature} ({x_detector})")
+        ax.set_ylabel(f"{feature} ({y_detector})")
+        ax.set_zlabel(f"{feature} ({z_detector})")
+        ax.set_title("3D Peaks properties")
+
+        # Return the figure for further processing if needed.
+        return ax.figure
 
 class BaseAcquisitionDataFrame(pd.DataFrame):
     """

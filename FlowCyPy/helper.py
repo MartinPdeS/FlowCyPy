@@ -6,6 +6,7 @@ from functools import wraps
 import inspect
 from FlowCyPy.units import Quantity
 from FlowCyPy import units
+from MPSPlots.styles import mps
 
 def validate_units(**expected_units):
     """
@@ -134,6 +135,74 @@ def plot_sns(function: Callable) -> Callable:
         return grid
 
     return wrapper
+
+def plot_3d(function: Callable) -> Callable:
+    """
+    A decorator that wraps a 3D plotting function with additional functionality such as:
+      - Creating a new 3D axes if none is provided.
+      - Applying a custom style context.
+      - Optionally setting equal limits for all axes.
+      - Saving the figure to a file.
+      - Displaying the figure.
+
+    Parameters
+    ----------
+    function : Callable
+        The 3D plotting function to decorate. The function should accept an 'ax' keyword argument.
+
+    Returns
+    -------
+    Callable
+        A wrapped function that returns a matplotlib Figure containing the 3D plot.
+    """
+    def wrapper(self, show: bool = True, equal_axes: bool = False, save_filename: str = None, **kwargs) -> plt.Figure:
+        # If an Axes3D object is not provided, create one using our style context.
+        ax = kwargs.get('ax', None)
+        if ax is None:
+            with plt.style.context(mps):
+                fig = plt.figure()
+                ax = fig.add_subplot(111, projection='3d')
+        else:
+            fig = ax.figure
+
+        # Update kwargs with the created or provided ax.
+        kwargs['ax'] = ax
+
+        # Call the decorated plotting function.
+        fig = function(self, **kwargs)
+
+        # Optionally enforce equal scaling for all three axes.
+        if equal_axes:
+            x_limits = ax.get_xlim3d()
+            y_limits = ax.get_ylim3d()
+            z_limits = ax.get_zlim3d()
+
+            x_range = abs(x_limits[1] - x_limits[0])
+            y_range = abs(y_limits[1] - y_limits[0])
+            z_range = abs(z_limits[1] - z_limits[0])
+            max_range = max(x_range, y_range, z_range)
+
+            # Compute centers of each axis.
+            x_middle = (x_limits[0] + x_limits[1]) / 2
+            y_middle = (y_limits[0] + y_limits[1]) / 2
+            z_middle = (z_limits[0] + z_limits[1]) / 2
+
+            ax.set_xlim3d([x_middle - max_range/2, x_middle + max_range/2])
+            ax.set_ylim3d([y_middle - max_range/2, y_middle + max_range/2])
+            ax.set_zlim3d([z_middle - max_range/2, z_middle + max_range/2])
+
+        # Save the figure if a filename is provided.
+        if save_filename:
+            fig.savefig(save_filename)
+
+        # Display the figure if requested.
+        if show:
+            plt.show()
+
+        return fig
+
+    return wrapper
+
 
 def add_event_to_ax(
     scatterer_dataframe: pd.DataFrame,
