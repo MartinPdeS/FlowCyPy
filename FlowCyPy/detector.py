@@ -260,10 +260,14 @@ class Detector():
             mean_photon_count = photon_rate * sampling_interval  # Mean photons per sample
 
             # Step 3: Simulate photon arrivals using Poisson statistics
-            print('DEBUG__'*30)
-            print('mean_photon_count', mean_photon_count.max())
-            print('mean_photon_count.to('').magnitude', mean_photon_count.to('').magnitude.max())
-            photon_counts_distribution = np.random.poisson(mean_photon_count.to('').magnitude, size=len(signal))
+            # photon_counts_distribution = np.random.poisson(mean_photon_count.to('').magnitude, size=len(signal))
+
+            lam = mean_photon_count.to('').magnitude
+            if lam > 1e6:  # Threshold where Poisson becomes unstable
+                photon_counts_distribution = np.random.normal(lam, np.sqrt(lam), size=len(signal)).astype(int)
+            else:
+                photon_counts_distribution = np.random.poisson(lam, size=len(signal))
+
 
             # Step 4: Convert photon counts to photocurrent
             photon_power_distribution = photon_counts_distribution * energy_photon * self.signal_digitizer.sampling_rate
