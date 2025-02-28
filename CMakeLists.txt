@@ -25,4 +25,15 @@ function(add_project_module name source)
     set_target_properties(${name} PROPERTIES OUTPUT_NAME ${name})
 endfunction()
 
+function(add_project_module name source)
+    pybind11_add_module(${name} MODULE "${LOCAL_CXX_DIR}/${source}")
+    set_target_properties(${name} PROPERTIES OUTPUT_NAME ${name})
+
+    # Link necessary libraries (example: linking a library called "mylib")
+    target_link_libraries(${name} PRIVATE mylib)
+
+    # Copy shared libraries if they exist
+    add_custom_command(TARGET ${name} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:mylib> ${LOCAL_BIN_DIR})
+endfunction()
+
 add_project_module(Interface "interface.cpp")
