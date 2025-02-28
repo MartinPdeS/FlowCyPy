@@ -570,7 +570,7 @@ Limit of detection
     mean_photon_count.to().magnitude [0.00000000e+00 0.00000000e+00 0.00000000e+00 ... 5.95878046e-13
      1.15314419e-13 2.14985015e-14]
 
-    <seaborn.axisgrid.JointGrid object at 0x7fda13697d50>
+    <seaborn.axisgrid.JointGrid object at 0x7f6db7a68650>
 
 
 
@@ -684,7 +684,7 @@ Limit of detection
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.203 seconds)
+   **Total running time of the script:** (0 minutes 3.915 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:
