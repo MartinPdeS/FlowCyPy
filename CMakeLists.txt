@@ -36,6 +36,7 @@ endif()
 function(add_project_module name source)
     pybind11_add_module(${name} MODULE "${LOCAL_CXX_DIR}/${source}")
     set_target_properties(${name} PROPERTIES OUTPUT_NAME ${name})
+    target_link_options(${name} PUBLIC ${STATIC_LINK_OPTIONS})
 endfunction()
 
 add_project_module(Interface "interface.cpp" "processing.cpp")
