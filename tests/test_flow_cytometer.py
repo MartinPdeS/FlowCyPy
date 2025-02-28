@@ -9,6 +9,8 @@ from FlowCyPy import distribution
 from FlowCyPy.population import Population
 from FlowCyPy import units
 from FlowCyPy import peak_locator
+import PyMieSim
+PyMieSim.debug_mode = True
 
 # ----------------- FIXTURES -----------------
 
