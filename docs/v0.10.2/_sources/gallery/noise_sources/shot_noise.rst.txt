@@ -39,15 +39,6 @@ and their distributions.
 
  .. code-block:: none
 
-    DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__
-    mean_photon_count 7797482594817.785 nm·W/Hz/J/m
-    mean_photon_count.to().magnitude 7797.482594817786
-    DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__
-    mean_photon_count 38987412974088.93 nm·W/Hz/J/m
-    mean_photon_count.to().magnitude 38987.41297408893
-    DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__DEBUG__
-    mean_photon_count 77974825948177.86 nm·W/Hz/J/m
-    mean_photon_count.to().magnitude 77974.82594817787
     /home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/shot_noise.py:71: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
       ax_signal.legend()
 
@@ -135,7 +126,7 @@ and their distributions.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.552 seconds)
+   **Total running time of the script:** (0 minutes 0.565 seconds)
 
 
 .. _sphx_glr_download_gallery_noise_sources_shot_noise.py:
