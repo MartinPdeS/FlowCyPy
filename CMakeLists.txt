@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20)
+set(CMAKE_OSX_DEPLOYMENT_TARGET "14.0" CACHE STRING "Minimum OS X deployment version")
 project(FlowCyPy CXX)
 
 # CMake settings
@@ -19,12 +20,19 @@ include_directories("${LOCAL_CXX_DIR}")
 find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
 find_package(pybind11 CONFIG REQUIRED)
 
-# Function to add project modules
-function(add_project_module name source)
-    pybind11_add_module(${name} MODULE "${LOCAL_CXX_DIR}/${source}")
-    set_target_properties(${name} PROPERTIES OUTPUT_NAME ${name})
-endfunction()
+# Platform-specific settings for static linking
+if (WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    message("MinGW detected on Windows")
+    set(STATIC_LINK_OPTIONS "-static")
+    add_link_options(-static)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    message("AppleClang compiler detected")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    message("GNU compiler detected")
+endif()
 
+
+# Function to add project modules
 function(add_project_module name source)
     pybind11_add_module(${name} MODULE "${LOCAL_CXX_DIR}/${source}")
     set_target_properties(${name} PROPERTIES OUTPUT_NAME ${name})
