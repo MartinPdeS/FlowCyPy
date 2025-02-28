@@ -127,7 +127,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
         polarization=0 * degree,
         amplitude=amplitude_with_rin
     )
-    print(pms_source, '\n\n\n')
+    print(pms_source, '\n\n\n', flush=True)
 
     pms_scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
         total_size=total_size,
@@ -136,7 +136,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
         medium_property=medium_refractive_index,
         source=pms_source
     )
-    print(pms_scatterer, '\n\n\n')
+    print(pms_scatterer, '\n\n\n', flush=True)
 
     pms_detector = _PyMieSim.detector.Photodiode.build_sequential(
         mode_number='NC00',
@@ -149,7 +149,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
         sampling=detector.sampling,
         rotation=0 * degree
     )
-    print(pms_detector)
+    print(pms_detector, flush=True)
 
     # Set up the experiment
     experiment = _PyMieSim.Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
