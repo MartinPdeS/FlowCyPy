@@ -263,7 +263,7 @@ class Detector():
             # photon_counts_distribution = np.random.poisson(mean_photon_count.to('').magnitude, size=len(signal))
 
             lam = mean_photon_count.to('').magnitude
-            if lam > 1e6:  # Threshold where Poisson becomes unstable
+            if np.max(lam) > 1e6:  # Threshold where Poisson becomes unstable
                 photon_counts_distribution = np.random.normal(lam, np.sqrt(lam), size=len(signal)).astype(int)
             else:
                 photon_counts_distribution = np.random.poisson(lam, size=len(signal))
