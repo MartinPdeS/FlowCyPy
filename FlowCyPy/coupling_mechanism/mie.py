@@ -217,5 +217,9 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
     experiment = _PyMieSim.Setup(source=source, scatterer=scatterer, detector=detector)
 
     # Compute coupling values
-    coupling_value = experiment.get_sequential('coupling').squeeze()
+    print('mother fucker')
+    # coupling_value = experiment.get_sequential('coupling')
+
+
+
     return np.atleast_1d(coupling_value) * watt
