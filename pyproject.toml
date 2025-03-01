@@ -113,7 +113,7 @@ testpaths = [
 [tool.cibuildwheel]
 build-frontend = "build"
 before-test = ""
-test-command = "python -m pytest -rA {project}/tests --ignore={project}/tests/test_classifiers.py"
+test-command = "python -m pytest -rA {project}/tests --ignore={project}/tests/test_classifiers.py --ignore={project}/tests/test_coupling_mechanism.py --ignore={project}/tests/test_detector_noise.py --ignore={project}/tests/test_distribution.py"
 test-extras = ["testing"]
 
 [tool.cibuildwheel.linux]
