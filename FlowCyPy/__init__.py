@@ -8,6 +8,7 @@ from PyMieSim.experiment.detector import CoherentMode
 from PyMieSim.experiment.scatterer import Sphere
 from PyMieSim.experiment.source import Gaussian, PlaneWave
 from PyMieSim.experiment import Setup
+from FlowCyPy.binary import Interface
 
 from .cytometer import FlowCytometer
 from .scatterer_collection import ScattererCollection, CouplingModel
