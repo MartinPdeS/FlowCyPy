@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import pytest
 import numpy as np
-from PyMieSim.experiment.detector import CoherentMode
-from PyMieSim.experiment.scatterer import Sphere
-from PyMieSim.experiment.source import Gaussian, PlaneWave
-from PyMieSim import units
-from PyMieSim.experiment import Setup
-from FlowCyPy import Detector
-from FlowCyPy.source import BaseBeam
-from PyMieSim.units import Quantity, degree, watt, AU, hertz
-from FlowCyPy.noises import NoiseSetting
-import pandas as pd
-from FlowCyPy import ScattererCollection, Population, GaussianBeam, FlowCell, FlowCytometer, SignalDigitizer
+import pytest
+import matplotlib.pyplot as plt
+from unittest.mock import patch
+
+from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, FlowCell
+from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import distribution
+from FlowCyPy.population import Population
+from FlowCyPy import units
+from FlowCyPy import peak_locator
+import PyMieSim
+PyMieSim.debug_mode = True
+from FlowCyPy import distribution
+
+# ----------------- FIXTURES -----------------
 
 @pytest.fixture
 def default_digitizer():
@@ -42,6 +44,22 @@ def detector_1():
         numerical_aperture=1 * units.AU,
         phi_angle=90 * units.degree,
         responsitivity=1 * units.ampere / units.watt,
+    )
+
+@pytest.fixture
+def flow_cell():
+    """Fixture for creating a default flow cell."""
+    source = GaussianBeam(
+        numerical_aperture=1 * units.AU,
+        wavelength=1550 * units.nanometer,
+        optical_power=100e-3 * units.watt,
+    )
+
+    return FlowCell(
+        source=source,
+        volume_flow=0.1 * units.microliter / units.second,
+        flow_area=(12 * units.micrometer) ** 2,
+        event_scheme='uniform-sequential'
     )
 
 @pytest.fixture
@@ -78,22 +96,6 @@ def scatterer_collection(population):
     return scatterer
 
 @pytest.fixture
-def flow_cell():
-    """Fixture for creating a default flow cell."""
-    source = GaussianBeam(
-        numerical_aperture=1 * units.AU,
-        wavelength=1550 * units.nanometer,
-        optical_power=100e-3 * units.watt,
-    )
-
-    return FlowCell(
-        source=source,
-        volume_flow=0.1 * units.microliter / units.second,
-        flow_area=(12 * units.micrometer) ** 2,
-        event_scheme='uniform-sequential'
-    )
-
-@pytest.fixture
 def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, default_digitizer):
     """Fixture for creating a default Flow Cytometer."""
     return FlowCytometer(
@@ -105,12 +107,14 @@ def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, defa
     )
 
 def test_get_measure(flow_cytometer):
+    from PyMieSim import experiment as _PyMieSim
+
     acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
     size_list = acquisition.scatterer['Size'].values
 
     total_size = len(size_list)
-    source = Gaussian.build_sequential(
+    source = _PyMieSim.source.Gaussian.build_sequential(
         total_size=total_size,
         wavelength=np.linspace(600, 1000, total_size) * units.nanometer,
         polarization=0 * units.degree,
@@ -119,7 +123,7 @@ def test_get_measure(flow_cytometer):
     )
 
     # Configure the spherical scatterer
-    scatterer = Sphere.build_sequential(
+    scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
         total_size=total_size,
         diameter=10 * units.nanometer,
         source=source,
@@ -128,7 +132,7 @@ def test_get_measure(flow_cytometer):
     )
 
     # Configure the detector
-    detector = CoherentMode.build_sequential(
+    detector = _PyMieSim.detector.CoherentMode.build_sequential(
         mode_number='LP01',
         rotation=0 * units.degree,
         NA=0.1 * units.AU,
@@ -141,7 +145,7 @@ def test_get_measure(flow_cytometer):
     )
 
     # Set up and run the experiment
-    experiment = Setup(scatterer=scatterer, source=source, detector=detector)
+    experiment = _PyMieSim.Setup(scatterer=scatterer, source=source, detector=detector)
 
     coupling_value = experiment.get_sequential('coupling').squeeze()
 
