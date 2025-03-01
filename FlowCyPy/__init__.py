@@ -4,6 +4,11 @@ try:
 except ImportError:
     __version__ = "0.0.0"
 
+from PyMieSim.experiment.detector import CoherentMode
+from PyMieSim.experiment.scatterer import Sphere
+from PyMieSim.experiment.source import Gaussian, PlaneWave
+from PyMieSim.experiment import Setup
+
 from .cytometer import FlowCytometer
 from .scatterer_collection import ScattererCollection, CouplingModel
 from .population import Population
