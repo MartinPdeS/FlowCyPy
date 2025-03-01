@@ -89,8 +89,6 @@ from FlowCyPy.population import Exosome, Population, distribution
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
-exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
-
 population_0 = Population(
     name='Pop 0',
     particle_count=5e9 * units.particle / units.milliliter,
@@ -100,19 +98,19 @@ population_0 = Population(
 population_1 = Population(
     name='Pop 1',
     particle_count=5e9 * units.particle / units.milliliter,
-    size=distribution.RosinRammler(characteristic_size=250 * units.nanometer, spread=30),
+    size=distribution.RosinRammler(characteristic_size=100 * units.nanometer, spread=30),
     refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
 )
 
 population_2 = Population(
     name='Pop 2',
     particle_count=5e9 * units.particle / units.milliliter,
-    size=distribution.RosinRammler(characteristic_size=350 * units.nanometer, spread=30),
+    size=distribution.RosinRammler(characteristic_size=50 * units.nanometer, spread=30),
     refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
 )
 
 # Add an Exosome population
-scatterer_collection.add_population(exosome, population_0, population_1, population_2)
+scatterer_collection.add_population(population_0, population_1, population_2)
 
 scatterer_collection.dilute(factor=4)
 
@@ -137,7 +135,7 @@ signal_digitizer = SignalDigitizer(
 detector_0 = Detector(
     name='forward',
     phi_angle=0 * units.degree,                  # Forward scatter angle
-    numerical_aperture=0.2 * units.AU,
+    numerical_aperture=0.4 * units.AU,
     responsitivity=1 * units.ampere / units.watt,
     resistance=50 * units.ohm,
     temperature=300 * units.kelvin
@@ -146,7 +144,7 @@ detector_0 = Detector(
 detector_1 = Detector(
     name='side',
     phi_angle=90 * units.degree,                 # Side scatter angle
-    numerical_aperture=0.2 * units.AU,
+    numerical_aperture=0.4 * units.AU,
     responsitivity=1 * units.ampere / units.watt,
     resistance=50 * units.ohm,
     temperature=300 * units.kelvin,
@@ -155,7 +153,7 @@ detector_1 = Detector(
 detector_2 = Detector(
     name='det_2',
     phi_angle=45 * units.degree,                 # Side scatter angle
-    numerical_aperture=0.2 * units.AU,
+    numerical_aperture=0.4 * units.AU,
     responsitivity=1 * units.ampere / units.watt,
     resistance=50 * units.ohm,
     temperature=300 * units.kelvin,
@@ -186,6 +184,12 @@ _ = acquisition.scatterer.plot_3d(
     x='side',
     y='forward',
     z='det_2'
+)
+
+_ = acquisition.scatterer.plot(
+    x='side',
+    y='forward',
+    # z='det_2'
 )
 
 # %%

@@ -176,6 +176,7 @@ def debug_compute_detected_signal(source: BaseBeam, detector: Detector, scattere
     np.ndarray
         Array of coupling values for each particle, based on the detected signal.
     """
+    TOTAL_SIZE = 100
     from FlowCyPy import units
     size_list = scatterer_dataframe['Size'].values
 
@@ -184,37 +185,35 @@ def debug_compute_detected_signal(source: BaseBeam, detector: Detector, scattere
 
     total_size = len(size_list)
 
-    pms_source = _PyMieSim.source.PlaneWave.build_sequential(
-        total_size=total_size,
-        wavelength=1 * units.micrometer,
+    source = _PyMieSim.source.Gaussian.build_sequential(
+        wavelength=np.linspace(600, 1000, TOTAL_SIZE) * units.nanometer,
         polarization=0 * degree,
-        amplitude=0.001 * units.volt/units.meter
+        optical_power=1e-3 * watt,
+        NA=0.2 * AU,
+        total_size=TOTAL_SIZE
     )
-    print(pms_source, '\n\n\n', flush=True)
 
-    pms_scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
-        total_size=total_size,
-        diameter=1 * units.micrometer,
-        property=1.5 * units.RIU,
+    scatterer = _PyMieSim.scatteer.Sphere.build_sequential(
+        source=source,
+        diameter=np.linspace(400, 1400, TOTAL_SIZE) * units.nanometer,
+        property=1.4 * units.RIU,
         medium_property=1.0 * units.RIU,
-        source=pms_source
+        total_size=TOTAL_SIZE
     )
 
-    pms_detector = _PyMieSim.detector.Photodiode.build_sequential(
-        mode_number='NC00',
-        total_size=total_size,
-        NA=1.5 * units.AU,
-        cache_NA=0 * AU,
-        gamma_offset=0 * units.degree,
-        phi_offset=0 * units.degree,
-        polarization_filter=np.nan * units.degree,
-        sampling=100 * units.AU,
-        rotation=0 * degree
+    detector = _PyMieSim.detector.CoherentMode.build_sequential(
+        mode_number='LP01',
+        rotation=0 * degree,
+        NA=0.2 * AU,
+        polarization_filter=np.nan * degree,
+        gamma_offset=0 * degree,
+        phi_offset=0 * degree,
+        sampling=100 * AU,
+        total_size=TOTAL_SIZE
     )
-    print(pms_detector, flush=True)
 
     # Set up the experiment
-    experiment = _PyMieSim.Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
+    experiment = _PyMieSim.Setup(source=source, scatterer=scatterer, detector=detector)
 
     # Compute coupling values
     coupling_value = experiment.get_sequential('coupling').squeeze()
