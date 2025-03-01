@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 import pytest
 import numpy as np
-from PyMieSim import units
 from PyMieSim.experiment.detector import CoherentMode
 from PyMieSim.experiment.scatterer import Sphere
-from PyMieSim.experiment.source import Gaussian
+from PyMieSim.experiment.source import Gaussian, PlaneWave
+from PyMieSim import units
 from PyMieSim.experiment import Setup
+from FlowCyPy import Detector
+from FlowCyPy.source import BaseBeam
+from PyMieSim.units import Quantity, degree, watt, AU, hertz
+from FlowCyPy.noises import NoiseSetting
+import pandas as pd
 
 
 def test_get_measure():
@@ -45,7 +49,9 @@ def test_get_measure():
     # Set up and run the experiment
     experiment = Setup(scatterer=scatterer, source=source, detector=detector)
 
-    experiment.get_sequential('coupling')
+    coupling_value = experiment.get_sequential('coupling').squeeze()
+
+    output = np.atleast_1d(coupling_value) * units.watt
 
 
 if __name__ == "__main__":
