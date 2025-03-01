@@ -5,6 +5,10 @@ import pytest
 import matplotlib.pyplot as plt
 from unittest.mock import patch
 
+from PyMieSim.experiment.detector import CoherentMode
+from PyMieSim.experiment.scatterer import Sphere
+from PyMieSim.experiment.source import Gaussian, PlaneWave
+
 from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import distribution
@@ -114,7 +118,7 @@ def test_get_measure(flow_cytometer):
     size_list = acquisition.scatterer['Size'].values
 
     total_size = len(size_list)
-    source = _PyMieSim.source.Gaussian.build_sequential(
+    source = Gaussian.build_sequential(
         total_size=total_size,
         wavelength=np.linspace(600, 1000, total_size) * units.nanometer,
         polarization=0 * units.degree,
@@ -123,7 +127,7 @@ def test_get_measure(flow_cytometer):
     )
 
     # Configure the spherical scatterer
-    scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
+    scatterer = Sphere.build_sequential(
         total_size=total_size,
         diameter=10 * units.nanometer,
         source=source,
@@ -132,7 +136,7 @@ def test_get_measure(flow_cytometer):
     )
 
     # Configure the detector
-    detector = _PyMieSim.detector.CoherentMode.build_sequential(
+    detector = CoherentMode.build_sequential(
         mode_number='LP01',
         rotation=0 * units.degree,
         NA=0.1 * units.AU,
@@ -145,7 +149,7 @@ def test_get_measure(flow_cytometer):
     )
 
     # Set up and run the experiment
-    experiment = _PyMieSim.Setup(scatterer=scatterer, source=source, detector=detector)
+    experiment = Setup(scatterer=scatterer, source=source, detector=detector)
 
     coupling_value = experiment.get_sequential('coupling').squeeze()
 
