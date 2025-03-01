@@ -1,53 +1,70 @@
-import numpy as np
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import pytest
-from FlowCyPy import units
-import PyMieSim
-PyMieSim.debug_mode = True
+import numpy as np
+
 from PyMieSim.experiment.detector import CoherentMode
 from PyMieSim.experiment.scatterer import Sphere
-from PyMieSim.experiment.source import Gaussian
+from PyMieSim.experiment.source import Gaussian, PlaneWave
 from PyMieSim.experiment import Setup
-from PyMieSim.units import watt, AU
+from PyOptik import Material
+from PyMieSim.units import nanometer, degree, watt, AU, RIU, volt, meter
+
+# Configure the medium and core materials for the sphere
+properties = [Material.silver, Material.fused_silica, 1.4 * RIU]
+medium_properties = [Material.water, 1.1 * RIU]
+
+# List of measures to be tested
+measures = Sphere.available_measure_list
+
+gaussian_source = Gaussian(
+    wavelength=np.linspace(600, 1000, 150) * nanometer,
+    polarization=0 * degree,
+    optical_power=1e-3 * watt,
+    NA=0.2 * AU
+)
+
+planewave_source = PlaneWave(
+    wavelength=np.linspace(600, 1000, 150) * nanometer,
+    polarization=0 * degree,
+    amplitude=1 * volt / meter,
+)
+
+sources = [gaussian_source, planewave_source]
 
 
-
-
-def test_debug():
-    TOTAL_SIZE = 100
-
-    source = Gaussian(
-        wavelength=np.linspace(600, 1000, TOTAL_SIZE) * units.nanometer,
-        polarization=0 * units.degree,
-        optical_power=1e-3 * units.watt,
-        NA=0.2 * units.AU,
-        # total_size=TOTAL_SIZE
-    )
-
+@pytest.mark.parametrize('medium_property', medium_properties, ids=[f'Medium:{m}' for m in medium_properties])
+@pytest.mark.parametrize('source', sources, ids=[f'Source:{m.__class__.__name__}' for m in sources])
+@pytest.mark.parametrize('property', properties, ids=[f'Property:{m}' for m in properties])
+@pytest.mark.parametrize('measure', measures)
+def test_get_measure(source, measure, property, medium_property):
+    # Configure the spherical scatterer
     scatterer = Sphere(
+        diameter=np.linspace(400, 1400, 10) * nanometer,
         source=source,
-        diameter=np.linspace(400, 1400, 2) * units.nanometer,
-        property=1.4 * units.RIU,
-        medium_property=1.0 * units.RIU,
-        # total_size=TOTAL_SIZE
+        property=property,
+        medium_property=medium_property
     )
 
+    # Configure the detector
     detector = CoherentMode(
         mode_number='LP01',
-        rotation=0 * units.degree,
-        NA=0.2 * units.AU,
-        cache_NA=0 * AU,
-        polarization_filter=np.nan * units.degree,
-        gamma_offset=0 * units.degree,
-        phi_offset=0 * units.degree,
-        sampling=100 * units.AU,
-        # total_size=TOTAL_SIZE
+        rotation=0 * degree,
+        NA=[0.1] * AU,
+        polarization_filter=None,
+        gamma_offset=[0, 1] * degree,
+        phi_offset=0 * degree,
+        sampling=100 * AU
     )
 
+    # Set up and run the experiment
     experiment = Setup(scatterer=scatterer, source=source, detector=detector)
 
-    experiment.get('coupling')
+    experiment.get(measure, drop_unique_level=True, scale_unit=True)
+
+    experiment.get(measure, drop_unique_level=False, scale_unit=True, as_numpy=True)
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main(["-W error", __file__])
