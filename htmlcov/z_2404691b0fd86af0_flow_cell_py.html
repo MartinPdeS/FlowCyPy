@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for FlowCyPy/flow_cell.py: 89%</title>
+    <title>Coverage for FlowCyPy/flow_cell.py: 76%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
     <link rel="stylesheet" href="style_cb_8e611ae1.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>FlowCyPy/flow_cell.py</b>:
-            <span class="pc_cov">89%</span>
+            <span class="pc_cov">76%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -56,8 +56,8 @@
         </aside>
         <h2>
             <span class="text">62 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">57<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">5<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">50<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">12<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
             <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">3<span class="text"> partial</span></button>
         </h2>
@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_2404691b0fd86af0_helper_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-03-01 21:44 +0000
+            created at 2025-03-01 21:50 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -185,16 +185,16 @@
     <p class="run"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t">        <span class="nam">event_dataframe</span> <span class="op">=</span> <span class="nam">pd</span><span class="op">.</span><span class="nam">concat</span><span class="op">(</span><span class="nam">population_event_frames</span><span class="op">,</span> <span class="nam">keys</span><span class="op">=</span><span class="op">[</span><span class="nam">pop</span><span class="op">.</span><span class="nam">name</span> <span class="key">for</span> <span class="nam">pop</span> <span class="key">in</span> <span class="nam">populations</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t102" href="#t102">102</a></span><span class="t">        <span class="nam">event_dataframe</span><span class="op">.</span><span class="nam">index</span><span class="op">.</span><span class="nam">names</span> <span class="op">=</span> <span class="op">[</span><span class="str">"Population"</span><span class="op">,</span> <span class="str">"Index"</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t103" href="#t103">103</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t104" href="#t104">104</a></span><span class="t">        <span class="key">if</span> <span class="nam">self</span><span class="op">.</span><span class="nam">event_scheme</span><span class="op">.</span><span class="nam">lower</span><span class="op">(</span><span class="op">)</span> <span class="key">in</span> <span class="op">[</span><span class="str">'uniform-random'</span><span class="op">,</span> <span class="str">'uniform-sequential'</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t105" href="#t105">105</a></span><span class="t">            <span class="nam">total_events</span> <span class="op">=</span> <span class="nam">len</span><span class="op">(</span><span class="nam">event_dataframe</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t">            <span class="nam">start_time</span> <span class="op">=</span> <span class="num">0</span> <span class="op">*</span> <span class="nam">run_time</span><span class="op">.</span><span class="nam">units</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t">            <span class="nam">end_time</span> <span class="op">=</span> <span class="nam">run_time</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t108" href="#t108">108</a></span><span class="t">            <span class="nam">time_interval</span> <span class="op">=</span> <span class="op">(</span><span class="nam">end_time</span> <span class="op">-</span> <span class="nam">start_time</span><span class="op">)</span> <span class="op">/</span> <span class="nam">total_events</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t">            <span class="nam">evenly_spaced_times</span> <span class="op">=</span> <span class="nam">numpy</span><span class="op">.</span><span class="nam">arange</span><span class="op">(</span><span class="num">0</span><span class="op">,</span> <span class="nam">total_events</span><span class="op">)</span> <span class="op">*</span> <span class="nam">time_interval</span>&nbsp;</span><span class="r"></span></p>
+    <p class="par run show_par"><span class="n"><a id="t104" href="#t104">104</a></span><span class="t">        <span class="key">if</span> <span class="nam">self</span><span class="op">.</span><span class="nam">event_scheme</span><span class="op">.</span><span class="nam">lower</span><span class="op">(</span><span class="op">)</span> <span class="key">in</span> <span class="op">[</span><span class="str">'uniform-random'</span><span class="op">,</span> <span class="str">'uniform-sequential'</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">104&#x202F;&#x219B;&#x202F;105</span><span class="annotate long">line 104 didn't jump to line 105 because the condition on line 104 was never true</span></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t105" href="#t105">105</a></span><span class="t">            <span class="nam">total_events</span> <span class="op">=</span> <span class="nam">len</span><span class="op">(</span><span class="nam">event_dataframe</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t">            <span class="nam">start_time</span> <span class="op">=</span> <span class="num">0</span> <span class="op">*</span> <span class="nam">run_time</span><span class="op">.</span><span class="nam">units</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t">            <span class="nam">end_time</span> <span class="op">=</span> <span class="nam">run_time</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t108" href="#t108">108</a></span><span class="t">            <span class="nam">time_interval</span> <span class="op">=</span> <span class="op">(</span><span class="nam">end_time</span> <span class="op">-</span> <span class="nam">start_time</span><span class="op">)</span> <span class="op">/</span> <span class="nam">total_events</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t">            <span class="nam">evenly_spaced_times</span> <span class="op">=</span> <span class="nam">numpy</span><span class="op">.</span><span class="nam">arange</span><span class="op">(</span><span class="num">0</span><span class="op">,</span> <span class="nam">total_events</span><span class="op">)</span> <span class="op">*</span> <span class="nam">time_interval</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="par run show_par"><span class="n"><a id="t111" href="#t111">111</a></span><span class="t">            <span class="key">if</span> <span class="nam">self</span><span class="op">.</span><span class="nam">event_scheme</span><span class="op">.</span><span class="nam">lower</span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="str">'uniform-random'</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">111&#x202F;&#x219B;&#x202F;112</span><span class="annotate long">line 111 didn't jump to line 112 because the condition on line 111 was never true</span></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t111" href="#t111">111</a></span><span class="t">            <span class="key">if</span> <span class="nam">self</span><span class="op">.</span><span class="nam">event_scheme</span><span class="op">.</span><span class="nam">lower</span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="str">'uniform-random'</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t112" href="#t112">112</a></span><span class="t">                <span class="nam">numpy</span><span class="op">.</span><span class="nam">random</span><span class="op">.</span><span class="nam">shuffle</span><span class="op">(</span><span class="nam">evenly_spaced_times</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t113" href="#t113">113</a></span><span class="t">            <span class="nam">event_dataframe</span><span class="op">[</span><span class="str">'Time'</span><span class="op">]</span> <span class="op">=</span> <span class="nam">PintArray</span><span class="op">(</span><span class="nam">evenly_spaced_times</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">units</span><span class="op">.</span><span class="nam">second</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span> <span class="nam">units</span><span class="op">.</span><span class="nam">second</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t113" href="#t113">113</a></span><span class="t">            <span class="nam">event_dataframe</span><span class="op">[</span><span class="str">'Time'</span><span class="op">]</span> <span class="op">=</span> <span class="nam">PintArray</span><span class="op">(</span><span class="nam">evenly_spaced_times</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">units</span><span class="op">.</span><span class="nam">second</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span> <span class="nam">units</span><span class="op">.</span><span class="nam">second</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t114" href="#t114">114</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t115" href="#t115">115</a></span><span class="t">        <span class="nam">scatterer_dataframe</span> <span class="op">=</span> <span class="nam">ScattererDataFrame</span><span class="op">(</span><span class="nam">event_dataframe</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t116" href="#t116">116</a></span><span class="t">        <span class="nam">scatterer_dataframe</span><span class="op">.</span><span class="nam">attrs</span><span class="op">[</span><span class="str">'run_time'</span><span class="op">]</span> <span class="op">=</span> <span class="nam">run_time</span>&nbsp;</span><span class="r"></span></p>
@@ -235,7 +235,7 @@
             <a class="nav" href="z_2404691b0fd86af0_helper_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-03-01 21:44 +0000
+            created at 2025-03-01 21:50 +0000
         </p>
     </div>
 </footer>
