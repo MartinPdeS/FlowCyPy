@@ -5,11 +5,6 @@ import pytest
 import matplotlib.pyplot as plt
 from unittest.mock import patch
 
-from PyMieSim.experiment.detector import CoherentMode
-from PyMieSim.experiment.scatterer import Sphere
-from PyMieSim.experiment.source import Gaussian, PlaneWave
-from PyMieSim.experiment import Setup
-
 from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import distribution
@@ -19,6 +14,12 @@ from FlowCyPy import peak_locator
 import PyMieSim
 PyMieSim.debug_mode = True
 from FlowCyPy import distribution
+
+
+from PyMieSim.experiment.detector import CoherentMode
+from PyMieSim.experiment.scatterer import Sphere
+from PyMieSim.experiment.source import Gaussian, PlaneWave
+from PyMieSim.experiment import Setup
 
 # ----------------- FIXTURES -----------------
 
