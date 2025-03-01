@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for FlowCyPy/detector.py: 87%</title>
+    <title>Coverage for FlowCyPy/detector.py: 89%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
     <link rel="stylesheet" href="style_cb_8e611ae1.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>FlowCyPy/detector.py</b>:
-            <span class="pc_cov">87%</span>
+            <span class="pc_cov">89%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -56,10 +56,10 @@
         </aside>
         <h2>
             <span class="text">77 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">70<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">7<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">71<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">6<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
-            <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">5<span class="text"> partial</span></button>
+            <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">4<span class="text"> partial</span></button>
         </h2>
         <p class="text">
             <a id="prevFileLink" class="nav" href="z_2404691b0fd86af0_dataframe_subclass_py.html">&#xab; prev</a> &nbsp; &nbsp;
@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_a8dd2029198ba351_base_class_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-03-01 22:21 +0000
+            created at 2025-03-01 22:29 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -238,8 +238,8 @@
     <p class="pln"><span class="n"><a id="t154" href="#t154">154</a></span><span class="t"><span class="str">        np.ndarray</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t"><span class="str">            An array of thermal noise values.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="par run show_par"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t">        <span class="key">if</span> <span class="nam">self</span><span class="op">.</span><span class="nam">resistance</span><span class="op">.</span><span class="nam">magnitude</span> <span class="op">==</span> <span class="num">0</span> <span class="key">or</span> <span class="nam">self</span><span class="op">.</span><span class="nam">temperature</span><span class="op">.</span><span class="nam">magnitude</span> <span class="op">==</span> <span class="num">0</span> <span class="key">or</span> <span class="key">not</span> <span class="nam">NoiseSetting</span><span class="op">.</span><span class="nam">include_thermal_noise</span> <span class="key">or</span> <span class="key">not</span> <span class="nam">NoiseSetting</span><span class="op">.</span><span class="nam">include_noises</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">157&#x202F;&#x219B;&#x202F;158</span><span class="annotate long">line 157 didn't jump to line 158 because the condition on line 157 was never true</span></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t">            <span class="key">return</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t">        <span class="key">if</span> <span class="nam">self</span><span class="op">.</span><span class="nam">resistance</span><span class="op">.</span><span class="nam">magnitude</span> <span class="op">==</span> <span class="num">0</span> <span class="key">or</span> <span class="nam">self</span><span class="op">.</span><span class="nam">temperature</span><span class="op">.</span><span class="nam">magnitude</span> <span class="op">==</span> <span class="num">0</span> <span class="key">or</span> <span class="key">not</span> <span class="nam">NoiseSetting</span><span class="op">.</span><span class="nam">include_thermal_noise</span> <span class="key">or</span> <span class="key">not</span> <span class="nam">NoiseSetting</span><span class="op">.</span><span class="nam">include_noises</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t">            <span class="key">return</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t160" href="#t160">160</a></span><span class="t">        <span class="nam">noise_std</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">sqrt</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t161" href="#t161">161</a></span><span class="t">            <span class="num">4</span> <span class="op">*</span> <span class="nam">PhysicalConstant</span><span class="op">.</span><span class="nam">kb</span> <span class="op">*</span> <span class="nam">self</span><span class="op">.</span><span class="nam">temperature</span> <span class="op">*</span> <span class="nam">self</span><span class="op">.</span><span class="nam">resistance</span> <span class="op">*</span> <span class="nam">self</span><span class="op">.</span><span class="nam">signal_digitizer</span><span class="op">.</span><span class="nam">bandwidth</span>&nbsp;</span><span class="r"></span></p>
@@ -373,7 +373,7 @@
             <a class="nav" href="z_a8dd2029198ba351_base_class_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-03-01 22:21 +0000
+            created at 2025-03-01 22:29 +0000
         </p>
     </div>
 </footer>
