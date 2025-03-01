@@ -93,7 +93,7 @@ def apply_rin_noise(source: BaseBeam, total_size: int, bandwidth: float) -> np.n
     return amplitude_with_rin
 
 
-def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
+def _compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
     """
     Computes the detected signal by analyzing the scattering properties of particles.
 
@@ -156,7 +156,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
     return np.atleast_1d(coupling_value) * watt
 
 
-def debug_compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
+def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
     """
     Computes the detected signal by analyzing the scattering properties of particles.
 
@@ -176,14 +176,14 @@ def debug_compute_detected_signal(source: BaseBeam, detector: Detector, scattere
     np.ndarray
         Array of coupling values for each particle, based on the detected signal.
     """
-    TOTAL_SIZE = 100
+
     from FlowCyPy import units
     size_list = scatterer_dataframe['Size'].values
 
     if len(size_list) == 0:
         return np.array([]) * watt
 
-    total_size = len(size_list)
+    TOTAL_SIZE = total_size = len(size_list)
 
     source = _PyMieSim.source.Gaussian.build_sequential(
         wavelength=np.linspace(600, 1000, TOTAL_SIZE) * units.nanometer,
@@ -193,7 +193,7 @@ def debug_compute_detected_signal(source: BaseBeam, detector: Detector, scattere
         total_size=TOTAL_SIZE
     )
 
-    scatterer = _PyMieSim.scatteer.Sphere.build_sequential(
+    scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
         source=source,
         diameter=np.linspace(400, 1400, TOTAL_SIZE) * units.nanometer,
         property=1.4 * units.RIU,
@@ -206,6 +206,7 @@ def debug_compute_detected_signal(source: BaseBeam, detector: Detector, scattere
         rotation=0 * degree,
         NA=0.2 * AU,
         polarization_filter=np.nan * degree,
+        cache_NA=0 * units.AU,
         gamma_offset=0 * degree,
         phi_offset=0 * degree,
         sampling=100 * AU,
