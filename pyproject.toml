@@ -139,10 +139,10 @@ omit = [
     '*\__init__.py',
     'FlowCyPy/_version.py',
     'FlowCyPy/directories.py',
-    "tests/test_classifiers.py",
-    "tests/test_coupling_mechanism.py",
-    "tests/test_detector_noise.py",
-    "tests/test_distribution.py"
+    "*test_classifiers.py",
+    "*test_coupling_mechanism.py",
+    "*test_detector_noise.py",
+    "*test_distribution.py"
 ]
 branch = true
 relative_files = true
