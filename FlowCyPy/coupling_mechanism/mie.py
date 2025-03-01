@@ -1,7 +1,12 @@
 import numpy as np
+
+from PyMieSim.experiment.detector import CoherentMode
+from PyMieSim.experiment.scatterer import Sphere
+from PyMieSim.experiment.source import Gaussian, PlaneWave
+from PyMieSim import units
+from PyMieSim.experiment import Setup
 from FlowCyPy import Detector
 from FlowCyPy.source import BaseBeam
-from PyMieSim import experiment as _PyMieSim
 from PyMieSim.units import Quantity, degree, watt, AU, hertz
 from FlowCyPy.noises import NoiseSetting
 import pandas as pd
@@ -113,6 +118,8 @@ def _compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dat
     np.ndarray
         Array of coupling values for each particle, based on the detected signal.
     """
+    from PyMieSim import experiment as _PyMieSim
+
     size_list = scatterer_dataframe['Size'].values
 
     if len(size_list) == 0:
@@ -177,58 +184,41 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
         Array of coupling values for each particle, based on the detected signal.
     """
 
-    from FlowCyPy import units
     size_list = scatterer_dataframe['Size'].values
 
-    TOTAL_SIZE = total_size = len(size_list)
-
-
-
-    import pytest
-    import numpy as np
-    from unittest.mock import patch
-
-    import matplotlib.pyplot as plt
-
-    from PyMieSim.experiment.detector import CoherentMode
-    from PyMieSim.experiment.scatterer import Sphere
-    from PyMieSim.experiment.source import Gaussian, PlaneWave
-    from PyMieSim.experiment import Setup
-    from PyOptik import Material
-    from PyMieSim.units import nanometer, degree, watt, AU, RIU
-
-
+    TOTAL_SIZE = len(size_list)
 
     source = Gaussian.build_sequential(
-        wavelength=np.linspace(600, 1000, TOTAL_SIZE) * nanometer,
-        polarization=0 * degree,
-        optical_power=1e-3 * watt,
-        NA=0.2 * AU,
+        wavelength=np.linspace(600, 1000, TOTAL_SIZE) * units.nanometer,
+        polarization=0 * units.degree,
+        optical_power=1e-3 * units.watt,
+        NA=0.2 * units.AU,
         total_size=TOTAL_SIZE
     )
 
     scatterer = Sphere.build_sequential(
         source=source,
-        diameter=np.linspace(400, 1400, TOTAL_SIZE) * nanometer,
-        property=1.4 * RIU,
-        medium_property=1.0 * RIU,
+        diameter=np.linspace(400, 1400, TOTAL_SIZE) * units.nanometer,
+        property=1.4 * units.RIU,
+        medium_property=1.0 * units.RIU,
         total_size=TOTAL_SIZE
     )
 
     detector = CoherentMode.build_sequential(
         mode_number='LP01',
-        rotation=0 * degree,
-        NA=0.2 * AU,
-        polarization_filter=np.nan * degree,
-        gamma_offset=0 * degree,
-        phi_offset=0 * degree,
-        sampling=100 * AU,
+        rotation=0 * units.degree,
+        NA=0.2 * units.AU,
+        cache_NA=0 * AU,
+        polarization_filter=np.nan * units.degree,
+        gamma_offset=0 * units.degree,
+        phi_offset=0 * units.degree,
+        sampling=100 * units.AU,
         total_size=TOTAL_SIZE
     )
 
     experiment = Setup(scatterer=scatterer, source=source, detector=detector)
 
     # This call should complete without raising an error.
-    coupling = experiment.get_sequential(Sphere.available_measure_list[0])
+    coupling = experiment.get_sequential('coupling')
 
     return np.atleast_1d(coupling) * watt
