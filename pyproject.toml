@@ -106,15 +106,14 @@ addopts = [
     "-v", "-rA", "-rw", "--cov=FlowCyPy", "--cov-report=html", "--cov-report=term"
 ]
 testpaths = [
-    # "tests/*",
-    "tests/test_flow_cytometer.py",
+    "tests/*",
 ]
 
 
 [tool.cibuildwheel]
 build-frontend = "build"
 before-test = ""
-test-command = "python -m pytest -rA {project}/tests"
+test-command = "python -m pytest -rA {project}/tests --ignore={project}/tests/test_classifiers.py"
 test-extras = ["testing"]
 
 [tool.cibuildwheel.linux]
