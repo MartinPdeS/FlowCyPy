@@ -180,46 +180,55 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
     from FlowCyPy import units
     size_list = scatterer_dataframe['Size'].values
 
-    if len(size_list) == 0:
-        return np.array([]) * watt
-
     TOTAL_SIZE = total_size = len(size_list)
 
-    source = _PyMieSim.source.Gaussian.build_sequential(
-        wavelength=np.linspace(600, 1000, TOTAL_SIZE) * units.nanometer,
+
+
+    import pytest
+    import numpy as np
+    from unittest.mock import patch
+
+    import matplotlib.pyplot as plt
+
+    from PyMieSim.experiment.detector import CoherentMode
+    from PyMieSim.experiment.scatterer import Sphere
+    from PyMieSim.experiment.source import Gaussian, PlaneWave
+    from PyMieSim.experiment import Setup
+    from PyOptik import Material
+    from PyMieSim.units import nanometer, degree, watt, AU, RIU
+
+
+
+    source = Gaussian.build_sequential(
+        wavelength=np.linspace(600, 1000, TOTAL_SIZE) * nanometer,
         polarization=0 * degree,
         optical_power=1e-3 * watt,
         NA=0.2 * AU,
         total_size=TOTAL_SIZE
     )
 
-    scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
+    scatterer = Sphere.build_sequential(
         source=source,
-        diameter=np.linspace(400, 1400, TOTAL_SIZE) * units.nanometer,
-        property=1.4 * units.RIU,
-        medium_property=1.0 * units.RIU,
+        diameter=np.linspace(400, 1400, TOTAL_SIZE) * nanometer,
+        property=1.4 * RIU,
+        medium_property=1.0 * RIU,
         total_size=TOTAL_SIZE
     )
 
-    detector = _PyMieSim.detector.CoherentMode.build_sequential(
+    detector = CoherentMode.build_sequential(
         mode_number='LP01',
         rotation=0 * degree,
         NA=0.2 * AU,
         polarization_filter=np.nan * degree,
-        cache_NA=0 * units.AU,
         gamma_offset=0 * degree,
         phi_offset=0 * degree,
         sampling=100 * AU,
         total_size=TOTAL_SIZE
     )
 
-    # Set up the experiment
-    experiment = _PyMieSim.Setup(source=source, scatterer=scatterer, detector=detector)
+    experiment = Setup(scatterer=scatterer, source=source, detector=detector)
 
-    # Compute coupling values
-    print('mother fucker')
-    # coupling_value = experiment.get_sequential('coupling')
+    # This call should complete without raising an error.
+    coupling = experiment.get_sequential(Sphere.available_measure_list[0])
 
-
-
-    return np.atleast_1d(coupling_value) * watt
+    return np.atleast_1d(coupling) * watt
