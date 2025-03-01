@@ -39,4 +39,6 @@ function(add_project_module name source)
     target_link_options(${name} PUBLIC ${STATIC_LINK_OPTIONS})
 endfunction()
 
+add_compile_options(-Wall -Wextra -pedantic-errors)
+
 add_project_module(Interface "interface.cpp" "processing.cpp")

@@ -1,5 +1,8 @@
 import numpy as np
-
+from PyMieSim.binary.Experiment import CppExperiment
+from PyMieSim.binary.SetsInterface import CppDetectorSet
+from PyMieSim.binary.SetsInterface import CppSphereSet
+from PyMieSim.binary.SetsInterface import CppSourceSet
 from PyMieSim.experiment.detector import CoherentMode
 from PyMieSim.experiment.scatterer import Sphere
 from PyMieSim.experiment.source import Gaussian, PlaneWave
