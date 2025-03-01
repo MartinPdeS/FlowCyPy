@@ -106,14 +106,15 @@ addopts = [
     "-v", "-rA", "-rw", "--cov=FlowCyPy", "--cov-report=html", "--cov-report=term"
 ]
 testpaths = [
-    "tests/*",
+    # "tests/*",
+    "tests/test_flow_cytometer.py",
 ]
 
 
 [tool.cibuildwheel]
 build-frontend = "build"
 before-test = ""
-test-command = "python -m pytest -rA {project}/tests --ignore={project}/tests/gui"
+test-command = "python -m pytest -rA {project}/tests"
 test-extras = ["testing"]
 
 [tool.cibuildwheel.linux]
@@ -139,10 +140,6 @@ omit = [
     '*\__init__.py',
     'FlowCyPy/_version.py',
     'FlowCyPy/directories.py',
-    "*test_classifiers.py",
-    "*test_coupling_mechanism.py",
-    "*test_detector_noise.py",
-    "*test_distribution.py"
 ]
 branch = true
 relative_files = true
