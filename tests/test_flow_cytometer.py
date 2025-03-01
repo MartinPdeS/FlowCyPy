@@ -15,23 +15,23 @@ from PyMieSim.units import watt, AU
 def test_debug():
     TOTAL_SIZE = 100
 
-    source = Gaussian.build_sequential(
+    source = Gaussian(
         wavelength=np.linspace(600, 1000, TOTAL_SIZE) * units.nanometer,
         polarization=0 * units.degree,
         optical_power=1e-3 * units.watt,
         NA=0.2 * units.AU,
-        total_size=TOTAL_SIZE
+        # total_size=TOTAL_SIZE
     )
 
-    scatterer = Sphere.build_sequential(
+    scatterer = Sphere(
         source=source,
-        diameter=np.linspace(400, 1400, TOTAL_SIZE) * units.nanometer,
+        diameter=np.linspace(400, 1400, 2) * units.nanometer,
         property=1.4 * units.RIU,
         medium_property=1.0 * units.RIU,
-        total_size=TOTAL_SIZE
+        # total_size=TOTAL_SIZE
     )
 
-    detector = CoherentMode.build_sequential(
+    detector = CoherentMode(
         mode_number='LP01',
         rotation=0 * units.degree,
         NA=0.2 * units.AU,
@@ -40,12 +40,12 @@ def test_debug():
         gamma_offset=0 * units.degree,
         phi_offset=0 * units.degree,
         sampling=100 * units.AU,
-        total_size=TOTAL_SIZE
+        # total_size=TOTAL_SIZE
     )
 
     experiment = Setup(scatterer=scatterer, source=source, detector=detector)
 
-    experiment.get_sequential('coupling')
+    experiment.get('coupling')
 
 
 
