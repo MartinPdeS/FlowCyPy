@@ -1,9 +1,9 @@
+from FlowCyPy import run_triggering # type: ignore
 from typing import List
 import warnings
 import pandas as pd
 from FlowCyPy import units
 from FlowCyPy import dataframe_subclass
-from FlowCyPy.binary.Interface import run_triggering # type: ignore
 from FlowCyPy.triggered_acquisition import TriggeredAcquisitions
 import pint_pandas
 
