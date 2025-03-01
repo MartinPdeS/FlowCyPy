@@ -9,6 +9,7 @@ from PyMieSim.experiment.scatterer import Sphere
 from PyMieSim.experiment.source import Gaussian, PlaneWave
 from PyMieSim.experiment import Setup
 from FlowCyPy.binary import Interface
+from FlowCyPy.binary.Interface import get_trigger_indices, run_triggering, apply_baseline_restoration, apply_bessel_lowpass_filter, apply_butterworth_lowpass_filter
 
 from .cytometer import FlowCytometer
 from .scatterer_collection import ScattererCollection, CouplingModel

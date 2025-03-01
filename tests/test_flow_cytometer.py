@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import matplotlib.pyplot as plt
 from unittest.mock import patch
-from FlowCyPy.binary import Interface
+from FlowCyPy.binary.Interface import get_trigger_indices, run_triggering, apply_baseline_restoration, apply_bessel_lowpass_filter, apply_butterworth_lowpass_filter
 from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import distribution
