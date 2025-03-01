@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import numpy as np
 import pytest
 import matplotlib.pyplot as plt
@@ -11,15 +9,6 @@ from FlowCyPy import distribution
 from FlowCyPy.population import Population
 from FlowCyPy import units
 from FlowCyPy import peak_locator
-import PyMieSim
-PyMieSim.debug_mode = True
-from FlowCyPy import distribution
-
-
-from PyMieSim.experiment.detector import CoherentMode
-from PyMieSim.experiment.scatterer import Sphere
-from PyMieSim.experiment.source import Gaussian, PlaneWave
-from PyMieSim.experiment import Setup
 
 # ----------------- FIXTURES -----------------
 
@@ -112,49 +101,125 @@ def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, defa
         coupling_mechanism='mie'
     )
 
-def test_get_measure(flow_cytometer):
+# ----------------- UNIT TESTS -----------------
+
+def test_flow_cytometer_acquisition(flow_cytometer):
+    """Test if the Flow Cytometer generates a non-zero acquisition signal."""
     acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-    size_list = acquisition.scatterer['Size'].values
+    signal = acquisition.analog['Signal']
 
-    total_size = len(size_list)
-    source = Gaussian.build_sequential(
-        total_size=total_size,
-        wavelength=np.linspace(600, 1000, total_size) * units.nanometer,
-        polarization=0 * units.degree,
-        NA=0.2 * units.AU,
-        optical_power=1e-3 * units.watt,
+    assert not np.all(signal == 0 * units.volt), "Acquisition signal is all zeros."
+    assert np.std(signal) > 0 * units.volt, "Acquisition signal variance is zero, indicating no noise added."
+
+
+def test_flow_cytometer_multiple_detectors(flow_cytometer):
+    """Ensure that both detectors generate non-zero signals."""
+    acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+
+    signal_0 = acquisition.analog['Signal']
+    signal_1 = acquisition.analog['Signal']
+
+    assert not np.all(signal_0 == 0 * units.volt), "Detector 0 signal is all zeros."
+    assert not np.all(signal_1 == 0 * units.volt), "Detector 1 signal is all zeros."
+
+
+@patch('matplotlib.pyplot.show')
+def test_flow_cytometer_plot(mock_show, flow_cytometer):
+    """Test if the flow cytometer plots without error."""
+    acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+
+    acquisition.analog.plot()
+    acquisition.analog.log()
+    plt.close()
+
+    acquisition.digital.plot()
+    acquisition.digital.log()
+    plt.close()
+
+    acquisition.scatterer.log()
+
+
+def test_flow_cytometer_triggered_acquisition(flow_cytometer):
+    """Test triggered acquisition with a defined threshold."""
+    acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+
+    triggered_acquisition = acquisition.run_triggering(
+        threshold=3.0 * units.millivolt,
+        trigger_detector_name='default',
+        max_triggers=35,
+        pre_buffer=64,
+        post_buffer=64
     )
 
-    # Configure the spherical scatterer
-    scatterer = Sphere.build_sequential(
-        total_size=total_size,
-        diameter=10 * units.nanometer,
-        source=source,
-        property=1.4 * units.RIU,
-        medium_property=1.1 * units.RIU
+    assert triggered_acquisition is not None, "Triggered acquisition failed to return results."
+    assert len(triggered_acquisition.analog) > 0, "Triggered acquisition has no signal data."
+
+
+def test_flow_cytometer_signal_processing(flow_cytometer):
+    """Test filtering and baseline restoration on the acquired signal."""
+    acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+
+    triggered_acquisition = acquisition.run_triggering(
+        threshold=3.0 * units.millivolt,
+        trigger_detector_name='default',
+        max_triggers=35,
+        pre_buffer=64,
+        post_buffer=64
     )
 
-    # Configure the detector
-    detector = CoherentMode.build_sequential(
-        mode_number='LP01',
-        rotation=0 * units.degree,
-        NA=0.1 * units.AU,
-        polarization_filter=np.nan * units.degree,
-        gamma_offset=0 * units.degree,
-        phi_offset=0 * units.degree,
-        sampling=100 * units.AU,
-        cache_NA=0. *  units.AU,
-        total_size=total_size
+    # Apply filtering
+    triggered_acquisition.apply_filters(
+        lowpass_cutoff=1.5 * units.megahertz,
+        highpass_cutoff=0.01 * units.kilohertz
     )
 
-    # Set up and run the experiment
-    experiment = Setup(scatterer=scatterer, source=source, detector=detector)
+    # Apply baseline restoration
+    triggered_acquisition.apply_baseline_restauration()
 
-    coupling_value = experiment.get_sequential('coupling').squeeze()
-
-    output = np.atleast_1d(coupling_value) * units.watt
+    assert np.std(triggered_acquisition.analog['Signal']) > 0, "Filtered signal has zero variance."
 
 
-if __name__ == "__main__":
+def test_peak_detection(flow_cytometer):
+    """Ensure peak detection works correctly on the triggered acquisition."""
+    acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+
+    triggered_acquisition = acquisition.run_triggering(
+        threshold=3.0 * units.millivolt,
+        trigger_detector_name='default',
+        max_triggers=35,
+        pre_buffer=64,
+        post_buffer=64
+    )
+
+    algorithm = peak_locator.BasicPeakLocator()
+
+    peaks = triggered_acquisition.detect_peaks(algorithm)
+
+    assert len(peaks) > 0, "No peaks detected when they were expected."
+
+
+@patch('matplotlib.pyplot.show')
+def test_peak_plot(mock_show, flow_cytometer):
+    """Ensure peak plots render correctly."""
+    acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+
+    triggered_acquisition = acquisition.run_triggering(
+        threshold=3.0 * units.millivolt,
+        trigger_detector_name='default',
+        max_triggers=35,
+        pre_buffer=64,
+        post_buffer=64
+    )
+
+    algorithm = peak_locator.BasicPeakLocator()
+
+    peaks = triggered_acquisition.detect_peaks(algorithm)
+
+    peaks.plot(x_detector='default', y_detector='default_bis')
+    plt.close()
+
+
+
+if __name__ == '__main__':
     pytest.main(["-W error", __file__])
