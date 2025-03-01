@@ -3,7 +3,7 @@ import warnings
 import pandas as pd
 from FlowCyPy import units
 from FlowCyPy import dataframe_subclass
-from FlowCyPy.binary import Interface
+from FlowCyPy.binary.Interface import run_triggering # type: ignore
 from FlowCyPy.triggered_acquisition import TriggeredAcquisitions
 import pint_pandas
 
@@ -114,7 +114,7 @@ class Acquisition:
         time_map = {det: self.analog.xs(det)['Time'].pint.to(time_units).pint.magnitude for det in self.detector_names}
 
         # Call the C++ function for fast triggering detection
-        times, signals, detectors, segment_ids = Interface.run_triggering(
+        times, signals, detectors, segment_ids = run_triggering(
             signal_map=signal_map,
             time_map=time_map,
             trigger_detector_name=trigger_detector_name,
