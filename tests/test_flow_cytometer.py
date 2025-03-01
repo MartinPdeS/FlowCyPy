@@ -8,6 +8,7 @@ from unittest.mock import patch
 from PyMieSim.experiment.detector import CoherentMode
 from PyMieSim.experiment.scatterer import Sphere
 from PyMieSim.experiment.source import Gaussian, PlaneWave
+from PyMieSim.experiment import Setup
 
 from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
@@ -111,8 +112,6 @@ def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, defa
     )
 
 def test_get_measure(flow_cytometer):
-    from PyMieSim import experiment as _PyMieSim
-
     acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
     size_list = acquisition.scatterer['Size'].values
