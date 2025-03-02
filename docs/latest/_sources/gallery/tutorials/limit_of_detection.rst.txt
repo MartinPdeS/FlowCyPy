@@ -55,7 +55,7 @@ Limit of detection
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f8ef4ee7b50>
+    <seaborn.axisgrid.JointGrid object at 0x7fb0e9877a50>
 
 
 
@@ -169,7 +169,7 @@ Limit of detection
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.682 seconds)
+   **Total running time of the script:** (0 minutes 3.622 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:
