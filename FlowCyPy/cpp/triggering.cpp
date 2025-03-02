@@ -215,7 +215,7 @@ void run_triggering(
     py::array_t<double> trigger_signal_array = py::reinterpret_borrow<py::array_t<double>>(signal_obj);
 
     py::object time_obj = time_map[trigger_detector_name.c_str()];
-    py::array_t<double> trigger_signal_array = py::reinterpret_borrow<py::array_t<double>>(time_obj);
+    py::array_t<double> trigger_time_array = py::reinterpret_borrow<py::array_t<double>>(time_obj);
 
 
 
@@ -234,7 +234,7 @@ void run_triggering(
     std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
 
     // Find trigger indices using baseline-restored signal
-    std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
+    // std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
 
     // // Apply buffer constraints
     // std::vector<std::pair<int, int>> valid_triggers = apply_buffer_constraints(
