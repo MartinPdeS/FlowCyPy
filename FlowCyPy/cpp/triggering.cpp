@@ -266,8 +266,8 @@ void dummy_function(){}
 
 
 void dummy_triggering(
-    std::map<std::string, py::array_t<double>> signal_map,
-    std::map<std::string, py::array_t<double>> time_map,
+    // std::map<std::string, py::array_t<double>> signal_map,
+    // std::map<std::string, py::array_t<double>> time_map,
     const std::string &trigger_detector_name,
     double threshold,
     int pre_buffer = 64,
@@ -322,8 +322,8 @@ PYBIND11_MODULE(triggering_system, module) {
 
     // Expose run_triggering function with full filtering capabilities
     module.def("run", &dummy_triggering,
-      py::arg("signal_map"),
-      py::arg("time_map"),
+    //   py::arg("signal_map"),
+    //   py::arg("time_map"),
       py::arg("trigger_detector_name"),
       py::arg("threshold"),
       py::arg("pre_buffer") = 64,
