@@ -275,8 +275,8 @@ void dummy_triggering(
     int max_triggers = -1)
 {
     // Validate trigger detector
-    validate_detector_existence(signal_map, trigger_detector_name, "Trigger detector not found in signal map.");
-    validate_detector_existence(time_map, trigger_detector_name, "Trigger detector not found in time map.");
+    // validate_detector_existence(signal_map, trigger_detector_name, "Trigger detector not found in signal map.");
+    // validate_detector_existence(time_map, trigger_detector_name, "Trigger detector not found in time map.");
 
     // // Get trigger detector data
     // auto trigger_signal_array = signal_map.at(trigger_detector_name);
@@ -328,10 +328,7 @@ PYBIND11_MODULE(triggering_system, module) {
       py::arg("threshold"),
       py::arg("pre_buffer") = 64,
       py::arg("post_buffer") = 64,
-      py::arg("max_triggers") = -1,               // Maximum number of trigger events (-1 for unlimited)
-      "Executes triggered acquisition analysis with optional baseline restoration and Bessel low-pass filtering. "
-      "Detects triggers based on a given threshold, applies pre/post-trigger buffers, and extracts signal segments "
-      "from multiple detectors.");
+      py::arg("max_triggers") = -1);
 
     // // Expose run_triggering function with full filtering capabilities
     // module.def("run", &run_triggering,
