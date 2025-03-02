@@ -206,7 +206,8 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
  *      - The **low-pass filter** is applied to smooth the signal, but only if `filter_lowpass_cutoff` is specified.
  *      - If no valid triggers are found, the function returns empty arrays.
  */
-std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>> run_triggering(
+// std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
+void run_triggering(
     const py::dict &signal_map,
     const py::dict &time_map,
     const std::string &trigger_detector_name,
@@ -247,11 +248,11 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
     if (valid_triggers.empty())
     {
         PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found after baseline restoration. Returning empty arrays.", 1);
-        return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
+        // return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
     }
 
     // Extract triggered signal segments
-    return extract_signal_segments(signal_map, time_map, valid_triggers);
+    // return extract_signal_segments(signal_map, time_map, valid_triggers);
 }
 
 
