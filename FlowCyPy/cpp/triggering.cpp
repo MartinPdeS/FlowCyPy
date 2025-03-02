@@ -4,6 +4,7 @@
 #include <vector>
 #include <tuple>
 #include <string>
+#include <stdexcept>
 #include <map>
 #include "filter.h"
 
@@ -79,19 +80,6 @@ std::vector<std::pair<int, int>> apply_buffer_constraints(
  * @param valid_triggers List of valid trigger segments (start, end).
  * @return Tuple containing NumPy arrays for times, signals, detector names, and segment IDs.
  */
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <pybind11/stl.h>
-#include <tuple>
-#include <vector>
-#include <string>
-#include <stdexcept>
-
-namespace py = pybind11;
-
-// Assume find_trigger_indices is defined elsewhere:
-std::vector<int> find_trigger_indices(const double* signal, size_t n, double threshold);
-
 std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
 extract_signal_segments(
     const std::vector<std::string>& detector_names,
@@ -244,24 +232,24 @@ run_triggering(
     double *trigger_signal_ptr = static_cast<double *>(trigger_signal_buf.ptr);
 
     // Apply Baseline Restoration BEFORE thresholding
-    // std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
+    std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
 
     // Find trigger indices using baseline-restored signal
-    // std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
+    std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
 
-    // // Apply buffer constraints
-    // std::vector<std::pair<int, int>> valid_triggers = apply_buffer_constraints(
-    //     trigger_indices,
-    //     pre_buffer - 1,
-    //     post_buffer,
-    //     static_cast<int>(n_trigger),
-    //     max_triggers
-    // );
+    // Apply buffer constraints
+    std::vector<std::pair<int, int>> valid_triggers = apply_buffer_constraints(
+        trigger_indices,
+        pre_buffer - 1,
+        post_buffer,
+        static_cast<int>(n_trigger),
+        max_triggers
+    );
 
-    // if (valid_triggers.empty()) {
-    //     PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found after baseline restoration. Returning empty arrays.", 1);
-    //     return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
-    // }
+    if (valid_triggers.empty()) {
+        PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found after baseline restoration. Returning empty arrays.", 1);
+        // return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
+    }
 
     // Extract triggered signal segments
     // return extract_signal_segments(signal_map, time_map, valid_triggers);
