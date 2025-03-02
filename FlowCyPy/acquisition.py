@@ -1,4 +1,3 @@
-from FlowCyPy import run_triggering # type: ignore
 from typing import List
 import warnings
 import pandas as pd
@@ -113,6 +112,7 @@ class Acquisition:
         signal_map = {det: self.analog.xs(det)['Signal'].pint.to(signal_units).pint.magnitude for det in self.detector_names}
         time_map = {det: self.analog.xs(det)['Time'].pint.to(time_units).pint.magnitude for det in self.detector_names}
 
+        from FlowCyPy.binary.Interface import run_triggering # type: ignore
         # Call the C++ function for fast triggering detection
         times, signals, detectors, segment_ids = run_triggering(
             signal_map=signal_map,
