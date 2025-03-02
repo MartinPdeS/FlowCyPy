@@ -266,8 +266,8 @@ void dummy_function(){}
 
 
 void dummy_triggering(
-    const std::map<std::string, py::array_t<double>> &signal_map,
-    const std::map<std::string, py::array_t<double>> &time_map,
+    const py::dict &signal_map,
+    const py::dict &time_map,
     const std::string &trigger_detector_name,
     double threshold,
     int pre_buffer = 64,
