@@ -1,7 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-#include "processing.cpp"
-#include "triggering_module.cpp"
+#include "processing.h"
+#include "triggering_module.h"
 
 namespace py = pybind11;
 

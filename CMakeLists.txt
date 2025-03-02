@@ -34,11 +34,16 @@ endif()
 
 # Function to add project modules
 function(add_project_module name source)
-    pybind11_add_module(${name} MODULE "${LOCAL_CXX_DIR}/${source}")
+    pybind11_add_module(
+        ${name} MODULE
+        "${LOCAL_CXX_DIR}/interface.cpp"
+        "${LOCAL_CXX_DIR}/triggering_module.cpp"
+        "${LOCAL_CXX_DIR}/processing.cpp"
+    )
     set_target_properties(${name} PROPERTIES OUTPUT_NAME ${name})
     target_link_options(${name} PUBLIC ${STATIC_LINK_OPTIONS})
 endfunction()
 
 add_compile_options(-Wall -Wextra -pedantic-errors)
 
-add_project_module(Interface "interface.cpp" "processing.cpp")
+add_project_module(Interface "lol")

@@ -1,5 +1,3 @@
-#pragma once
-
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
@@ -210,7 +208,6 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
  *      - The **low-pass filter** is applied to smooth the signal, but only if `filter_lowpass_cutoff` is specified.
  *      - If no valid triggers are found, the function returns empty arrays.
  */
-
 std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>> run_triggering(
     std::map<std::string, py::array_t<double>> signal_map,
     std::map<std::string, py::array_t<double>> time_map,
