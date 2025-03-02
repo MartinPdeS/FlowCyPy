@@ -4,12 +4,28 @@
 #include <vector>
 #include <tuple>
 #include <string>
-#include <stdexcept>
 #include <map>
 #include "filter.h"
 
 namespace py = pybind11;
 
+
+/**
+ * @brief Validates if the specified detector exists in the given map.
+ *
+ * @param map The map containing detector data.
+ * @param detector_name The name of the detector to check.
+ * @param error_message The error message to throw if not found.
+ * @throws std::runtime_error if the detector is not found in the map.
+ */
+void validate_detector_existence(
+    const std::map<std::string, py::array_t<double>> &map,
+    const std::string &detector_name,
+    const std::string &error_message)
+{
+    if (map.find(detector_name) == map.end())
+        throw std::runtime_error(error_message);
+}
 
 /**
  * @brief Identifies trigger points where the signal crosses a given threshold.
@@ -19,7 +35,10 @@ namespace py = pybind11;
  * @param threshold The trigger threshold.
  * @return A vector of indices where the signal crosses the threshold.
  */
-std::vector<int> find_trigger_indices(double *trigger_signal, size_t signal_size, double threshold)
+std::vector<int> find_trigger_indices(
+    double *trigger_signal,
+    size_t signal_size,
+    double threshold)
 {
     std::vector<int> trigger_indices;
     for (size_t i = 1; i < signal_size; ++i)
@@ -80,55 +99,39 @@ std::vector<std::pair<int, int>> apply_buffer_constraints(
  * @param valid_triggers List of valid trigger segments (start, end).
  * @return Tuple containing NumPy arrays for times, signals, detector names, and segment IDs.
  */
-std::tuple<py::array_t<double>, py::array_t<double>, std::vector<std::string>, py::array_t<int>>
-extract_signal_segments(
-    const py::dict &signal_map,
-    const py::dict &time_map,
+std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>> extract_signal_segments(
+    const std::map<std::string, py::array_t<double>> &signal_map,
+    const std::map<std::string, py::array_t<double>> &time_map,
     const std::vector<std::pair<int, int>> &valid_triggers)
 {
     std::vector<double> times_out, signals_out;
     std::vector<std::string> detectors_out;
     std::vector<int> segment_ids_out;
 
-    // Get the list of keys from signal_map.
-    py::list keys = signal_map.attr("keys")();
-    size_t num_keys = keys.size();
-
-    // Iterate over keys using index-based loop.
-    for (size_t i = 0; i < num_keys; i++) {
-        std::string detector_name = keys[i].cast<std::string>();
-
-        // Retrieve the corresponding arrays from both dictionaries.
-
-        // py::array_t<double> signal_array = signal_map[detector_name.c_str()].cast<py::array_t<double>>();
-        py::object signal_obj = signal_map[detector_name.c_str()];
-        py::array_t<double> signal_array = py::reinterpret_borrow<py::array_t<double>>(signal_obj);
-
-        // py::array_t<double> time_array   = time_map[detector_name.c_str()].cast<py::array_t<double>>();
-        py::object time_obj = time_map[detector_name.c_str()];
-        py::array_t<double> time_array = py::reinterpret_borrow<py::array_t<double>>(time_obj);
+    for (const auto &[detector_name, signal_array] : signal_map)
+    {
+        auto time_array = time_map.at(detector_name);
 
         py::buffer_info signal_buf = signal_array.request();
-        py::buffer_info time_buf   = time_array.request();
+        py::buffer_info time_buf = time_array.request();
 
         if (signal_buf.ndim != 1 || time_buf.ndim != 1)
             throw std::runtime_error("Signal and time arrays must be 1D");
 
         size_t signal_size = signal_buf.shape[0];
         double *signal_ptr = static_cast<double *>(signal_buf.ptr);
-        double *time_ptr   = static_cast<double *>(time_buf.ptr);
+        double *time_ptr = static_cast<double *>(time_buf.ptr);
 
         size_t segment_id = 0;
-        // Iterate over valid trigger segments.
-        for (const auto &trigger : valid_triggers) {
-            int start = trigger.first;
-            int end   = trigger.second;
-            for (int j = start; j <= end; ++j) {
-                if (j >= static_cast<int>(signal_size))
+        for (const auto &[start, end] : valid_triggers)
+        {
+            for (int i = start; i <= end; ++i)
+            {
+                if (i >= static_cast<int>(signal_size))
                     break;
 
-                times_out.push_back(time_ptr[j]);
-                signals_out.push_back(signal_ptr[j]);
+                times_out.push_back(time_ptr[i]);
+                signals_out.push_back(signal_ptr[i]);
                 detectors_out.push_back(detector_name);
                 segment_ids_out.push_back(segment_id);
             }
@@ -136,12 +139,17 @@ extract_signal_segments(
         }
     }
 
+    // Convert vector of strings to Python list
+    py::list detector_list;
+    for (const auto &detector : detectors_out)
+        detector_list.append(detector);
+
+
     return std::make_tuple(
         py::array_t<double>(times_out.size(), times_out.data()),
         py::array_t<double>(signals_out.size(), signals_out.data()),
-        detectors_out,
-        py::array_t<int>(segment_ids_out.size(), segment_ids_out.data())
-    );
+        detector_list,
+        py::array_t<int>(segment_ids_out.size(), segment_ids_out.data()));
 }
 
 
@@ -200,11 +208,9 @@ extract_signal_segments(
  *      - The **low-pass filter** is applied to smooth the signal, but only if `filter_lowpass_cutoff` is specified.
  *      - If no valid triggers are found, the function returns empty arrays.
  */
-// std::tuple<py::array_t<double>, py::array_t<double>, std::vector<std::string>, py::array_t<int>>
-void
-run_triggering(
-    const py::dict &signal_map,
-    const py::dict &time_map,
+std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>> run_triggering(
+    std::map<std::string, py::array_t<double>> signal_map,
+    std::map<std::string, py::array_t<double>> time_map,
     const std::string &trigger_detector_name,
     double threshold,
     int pre_buffer = 64,
@@ -212,19 +218,12 @@ run_triggering(
     int max_triggers = -1)
 {
     // Validate trigger detector
-    if (!signal_map.contains(trigger_detector_name.c_str())) {
-        throw std::runtime_error("Trigger detector not found in signal_map");
-    }
-    if (!time_map.contains(trigger_detector_name.c_str())) {
-        throw std::runtime_error("Trigger detector not found in time_map");
-    }
+    validate_detector_existence(signal_map, trigger_detector_name, "Trigger detector not found in signal map.");
+    validate_detector_existence(time_map, trigger_detector_name, "Trigger detector not found in time map.");
 
-    // Borrow the object from the dict.
-    py::object signal_obj = signal_map[trigger_detector_name.c_str()];
-    py::array_t<double> trigger_signal_array = py::reinterpret_borrow<py::array_t<double>>(signal_obj);
-
-    py::object time_obj = time_map[trigger_detector_name.c_str()];
-    py::array_t<double> trigger_time_array = py::reinterpret_borrow<py::array_t<double>>(time_obj);
+    // Get trigger detector data
+    auto trigger_signal_array = signal_map.at(trigger_detector_name);
+    auto trigger_time_array = time_map.at(trigger_detector_name);
 
     py::buffer_info trigger_signal_buf = trigger_signal_array.request();
     py::buffer_info trigger_time_buf = trigger_time_array.request();
@@ -247,14 +246,14 @@ run_triggering(
         max_triggers
     );
 
-    if (valid_triggers.empty()) {
+    if (valid_triggers.empty())
+    {
         PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found after baseline restoration. Returning empty arrays.", 1);
-        // return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
+        return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
     }
 
     // Extract triggered signal segments
-    // return extract_signal_segments(signal_map, time_map, valid_triggers);
-
+    return extract_signal_segments(signal_map, time_map, valid_triggers);
 }
 
 
@@ -269,19 +268,8 @@ PYBIND11_MODULE(triggering_system, module) {
       py::arg("threshold"),
       py::arg("pre_buffer") = 64,
       py::arg("post_buffer") = 64,
-      py::arg("max_triggers") = -1);
-
-// }
-    // // Expose run_triggering function with full filtering capabilities
-    // module.def("run", &run_triggering,
-    //   py::arg("signal_map"),
-    //   py::arg("time_map"),
-    //   py::arg("trigger_detector_name"),
-    //   py::arg("threshold"),
-    //   py::arg("pre_buffer") = 64,
-    //   py::arg("post_buffer") = 64,
-    //   py::arg("max_triggers") = -1,               // Maximum number of trigger events (-1 for unlimited)
-    //   "Executes triggered acquisition analysis with optional baseline restoration and Bessel low-pass filtering. "
-    //   "Detects triggers based on a given threshold, applies pre/post-trigger buffers, and extracts signal segments "
-    //   "from multiple detectors.");
+      py::arg("max_triggers") = -1,               // Maximum number of trigger events (-1 for unlimited)
+      "Executes triggered acquisition analysis with optional baseline restoration and Bessel low-pass filtering. "
+      "Detects triggers based on a given threshold, applies pre/post-trigger buffers, and extracts signal segments "
+      "from multiple detectors.");
 }
