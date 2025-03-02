@@ -1,0 +1,1598 @@
+{
+ "Detector": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.detector",
+   "module_short": "FlowCyPy",
+   "name": "Detector"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Detector"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.detector",
+   "module_short": "FlowCyPy",
+   "name": "Detector"
+  }
+ ],
+ "NoiseSetting.include_RIN_noise": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "bool"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.NoiseSetting",
+   "module_short": "FlowCyPy.NoiseSetting",
+   "name": "include_RIN_noise"
+  }
+ ],
+ "NoiseSetting.include_dark_current_noise": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "bool"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.NoiseSetting",
+   "module_short": "FlowCyPy.NoiseSetting",
+   "name": "include_dark_current_noise"
+  }
+ ],
+ "NoiseSetting.include_noises": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "bool"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.NoiseSetting",
+   "module_short": "FlowCyPy.NoiseSetting",
+   "name": "include_noises"
+  }
+ ],
+ "NoiseSetting.include_shot_noise": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "bool"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.NoiseSetting",
+   "module_short": "FlowCyPy.NoiseSetting",
+   "name": "include_shot_noise"
+  }
+ ],
+ "NoiseSetting.include_thermal_noise": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "bool"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.NoiseSetting",
+   "module_short": "FlowCyPy.NoiseSetting",
+   "name": "include_thermal_noise"
+  }
+ ],
+ "SignalDigitizer": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.signal_digitizer",
+   "module_short": "FlowCyPy.signal_digitizer",
+   "name": "SignalDigitizer"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "SignalDigitizer"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.signal_digitizer",
+   "module_short": "FlowCyPy.signal_digitizer",
+   "name": "SignalDigitizer"
+  }
+ ],
+ "ax_hist": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes"
+  }
+ ],
+ "ax_hist.hist": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.hist"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.hist"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.hist"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.hist"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.hist"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.hist"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.hist"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.hist"
+  }
+ ],
+ "ax_hist.legend": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.legend"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.legend"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.legend"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.legend"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.legend"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.legend"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.legend"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.legend"
+  }
+ ],
+ "ax_hist.set_title": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_title"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_title"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.set_title"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.set_title"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.set_title"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.set_title"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.set_title"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.set_title"
+  }
+ ],
+ "ax_hist.set_xlabel": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.set_xlabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.set_xlabel"
+  }
+ ],
+ "ax_hist.set_ylabel": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.set_ylabel"
+  }
+ ],
+ "ax_signal": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes"
+  }
+ ],
+ "ax_signal.legend": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.legend"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.legend"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.legend"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.legend"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.legend"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.legend"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.legend"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.legend"
+  }
+ ],
+ "ax_signal.set_title": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_title"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_title"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.set_title"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.set_title"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.set_title"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.set_title"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.set_title"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.set_title"
+  }
+ ],
+ "ax_signal.set_ylabel": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.set_ylabel"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.set_ylabel"
+  }
+ ],
+ "ax_signal.step": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.step"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "Axes.step"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Axes.step"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes._base",
+   "module_short": "matplotlib.axes._base",
+   "name": "_AxesBase.step"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.axes",
+   "module_short": "matplotlib.axes",
+   "name": "_AxesBase.step"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "_AxesBase.step"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.artist",
+   "module_short": "matplotlib.artist",
+   "name": "Artist.step"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Artist.step"
+  }
+ ],
+ "dark_current": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Quantity"
+  }
+ ],
+ "dark_current.magnitude": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Quantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.registry",
+   "module_short": "pint",
+   "name": "Quantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Quantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.system.objects",
+   "module_short": "pint.facets.system.objects",
+   "name": "SystemQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.system",
+   "module_short": "pint.facets.system",
+   "name": "SystemQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "SystemQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "SystemQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.context.objects",
+   "module_short": "pint.facets.context.objects",
+   "name": "ContextQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.context",
+   "module_short": "pint.facets.context",
+   "name": "ContextQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "ContextQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "ContextQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.dask",
+   "module_short": "pint.facets.dask",
+   "name": "DaskQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "DaskQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "DaskQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.numpy.quantity",
+   "module_short": "pint.facets.numpy.quantity",
+   "name": "NumpyQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.numpy",
+   "module_short": "pint.facets.numpy",
+   "name": "NumpyQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "NumpyQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "NumpyQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.measurement.objects",
+   "module_short": "pint.facets.measurement",
+   "name": "MeasurementQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.measurement",
+   "module_short": "pint.facets.measurement",
+   "name": "MeasurementQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "MeasurementQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "MeasurementQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.nonmultiplicative.objects",
+   "module_short": "pint.facets.nonmultiplicative.objects",
+   "name": "NonMultiplicativeQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.nonmultiplicative",
+   "module_short": "pint.facets.nonmultiplicative",
+   "name": "NonMultiplicativeQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "NonMultiplicativeQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "NonMultiplicativeQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.plain.quantity",
+   "module_short": "pint.facets.plain",
+   "name": "PlainQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.plain",
+   "module_short": "pint.facets.plain",
+   "name": "PlainQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "PlainQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "PlainQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.group.objects",
+   "module_short": "pint.facets.group",
+   "name": "GroupQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.group",
+   "module_short": "pint.facets.group",
+   "name": "GroupQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "GroupQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "GroupQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "typing",
+   "module_short": "typing",
+   "name": "Generic.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.util",
+   "module_short": "pint.util",
+   "name": "PrettyIPython.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "PrettyIPython.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.util",
+   "module_short": "pint.util",
+   "name": "SharedRegistryObject.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "SharedRegistryObject.magnitude"
+  }
+ ],
+ "dark_currents": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "list"
+  }
+ ],
+ "dataframe": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame"
+  }
+ ],
+ "dataframe.Signal.pint.quantity.magnitude": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Quantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.registry",
+   "module_short": "pint",
+   "name": "Quantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Quantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.system.objects",
+   "module_short": "pint.facets.system.objects",
+   "name": "SystemQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.system",
+   "module_short": "pint.facets.system",
+   "name": "SystemQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "SystemQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "SystemQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.context.objects",
+   "module_short": "pint.facets.context.objects",
+   "name": "ContextQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.context",
+   "module_short": "pint.facets.context",
+   "name": "ContextQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "ContextQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "ContextQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.dask",
+   "module_short": "pint.facets.dask",
+   "name": "DaskQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "DaskQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "DaskQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.numpy.quantity",
+   "module_short": "pint.facets.numpy.quantity",
+   "name": "NumpyQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.numpy",
+   "module_short": "pint.facets.numpy",
+   "name": "NumpyQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "NumpyQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "NumpyQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.measurement.objects",
+   "module_short": "pint.facets.measurement",
+   "name": "MeasurementQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.measurement",
+   "module_short": "pint.facets.measurement",
+   "name": "MeasurementQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "MeasurementQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "MeasurementQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.nonmultiplicative.objects",
+   "module_short": "pint.facets.nonmultiplicative.objects",
+   "name": "NonMultiplicativeQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.nonmultiplicative",
+   "module_short": "pint.facets.nonmultiplicative",
+   "name": "NonMultiplicativeQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "NonMultiplicativeQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "NonMultiplicativeQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.plain.quantity",
+   "module_short": "pint.facets.plain",
+   "name": "PlainQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.plain",
+   "module_short": "pint.facets.plain",
+   "name": "PlainQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "PlainQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "PlainQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.group.objects",
+   "module_short": "pint.facets.group",
+   "name": "GroupQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets.group",
+   "module_short": "pint.facets.group",
+   "name": "GroupQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.facets",
+   "module_short": "pint.facets",
+   "name": "GroupQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "GroupQuantity.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "typing",
+   "module_short": "typing",
+   "name": "Generic.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.util",
+   "module_short": "pint.util",
+   "name": "PrettyIPython.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "PrettyIPython.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint.util",
+   "module_short": "pint.util",
+   "name": "SharedRegistryObject.magnitude"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "SharedRegistryObject.magnitude"
+  }
+ ],
+ "dataframe.index": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.indexes.range",
+   "module_short": "pandas.core.indexes.range",
+   "name": "RangeIndex"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.indexes",
+   "module_short": "pandas.core.indexes",
+   "name": "RangeIndex"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "RangeIndex"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "RangeIndex"
+  }
+ ],
+ "detector": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.detector",
+   "module_short": "FlowCyPy",
+   "name": "Detector"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Detector"
+  }
+ ],
+ "detector._add_dark_current_noise_to_raw_signal": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.detector",
+   "module_short": "FlowCyPy",
+   "name": "Detector._add_dark_current_noise_to_raw_signal"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Detector._add_dark_current_noise_to_raw_signal"
+  }
+ ],
+ "detector.get_initialized_signal": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.detector",
+   "module_short": "FlowCyPy",
+   "name": "Detector.get_initialized_signal"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Detector.get_initialized_signal"
+  }
+ ],
+ "detector.name": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "str"
+  }
+ ],
+ "fig": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.figure",
+   "module_short": "matplotlib.figure",
+   "name": "Figure"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Figure"
+  }
+ ],
+ "plt.show": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "show"
+  }
+ ],
+ "plt.subplots": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "subplots"
+  }
+ ],
+ "plt.tight_layout": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "tight_layout"
+  }
+ ],
+ "signal_digitizer": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.signal_digitizer",
+   "module_short": "FlowCyPy.signal_digitizer",
+   "name": "SignalDigitizer"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "SignalDigitizer"
+  }
+ ],
+ "signal_digitizer.capture_signal": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.signal_digitizer",
+   "module_short": "FlowCyPy.signal_digitizer",
+   "name": "SignalDigitizer.capture_signal"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "SignalDigitizer.capture_signal"
+  }
+ ],
+ "units.AU": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "AU"
+  }
+ ],
+ "units.ampere": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "ampere"
+  }
+ ],
+ "units.degree": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "degree"
+  }
+ ],
+ "units.hertz": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "hertz"
+  }
+ ],
+ "units.kelvin": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "kelvin"
+  }
+ ],
+ "units.ohm": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "ohm"
+  }
+ ],
+ "units.second": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "second"
+  }
+ ],
+ "units.watt": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "watt"
+  }
+ ]
+}

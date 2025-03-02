@@ -1,0 +1,310 @@
+{
+ "Population": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.population",
+   "module_short": "FlowCyPy",
+   "name": "Population"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Population"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Population"
+  }
+ ],
+ "RIU": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "RIU"
+  }
+ ],
+ "ScattererCollection": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.scatterer_collection",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection"
+  }
+ ],
+ "distribution.Normal": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.normal",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Normal"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Normal"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Normal"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Normal"
+  }
+ ],
+ "distribution.RosinRammler": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.particle_size_distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "RosinRammler"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "RosinRammler"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "RosinRammler"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "RosinRammler"
+  }
+ ],
+ "milliliter": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "milliliter"
+  }
+ ],
+ "nanometer": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "nanometer"
+  }
+ ],
+ "np.random.seed": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy.random",
+   "module_short": "numpy.random",
+   "name": "seed"
+  }
+ ],
+ "particle": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "particle"
+  }
+ ],
+ "population_0": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.population",
+   "module_short": "FlowCyPy",
+   "name": "Population"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Population"
+  }
+ ],
+ "population_1": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.population",
+   "module_short": "FlowCyPy",
+   "name": "Population"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Population"
+  }
+ ],
+ "scatterer_collection": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.scatterer_collection",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection"
+  }
+ ],
+ "scatterer_collection.add_population": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.scatterer_collection",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection.add_population"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection.add_population"
+  }
+ ],
+ "scatterer_collection.plot": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.scatterer_collection",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection.plot"
+  }
+ ]
+}

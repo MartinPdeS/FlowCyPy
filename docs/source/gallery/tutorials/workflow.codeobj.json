@@ -1,0 +1,1061 @@
+{
+ "Detector": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.detector",
+   "module_short": "FlowCyPy",
+   "name": "Detector"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Detector"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.detector",
+   "module_short": "FlowCyPy",
+   "name": "Detector"
+  }
+ ],
+ "Exosome": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.populations_instances",
+   "module_short": "FlowCyPy.populations_instances",
+   "name": "Exosome"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Exosome"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.population",
+   "module_short": "FlowCyPy.population",
+   "name": "Exosome"
+  }
+ ],
+ "FlowCell": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.flow_cell",
+   "module_short": "FlowCyPy",
+   "name": "FlowCell"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "FlowCell"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "FlowCell"
+  }
+ ],
+ "FlowCytometer": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.cytometer",
+   "module_short": "FlowCyPy",
+   "name": "FlowCytometer"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "FlowCytometer"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "FlowCytometer"
+  }
+ ],
+ "GaussianBeam": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.source",
+   "module_short": "FlowCyPy",
+   "name": "GaussianBeam"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "GaussianBeam"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.source",
+   "module_short": "FlowCyPy.source",
+   "name": "BaseBeam"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "BaseBeam"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "GaussianBeam"
+  }
+ ],
+ "KmeansClassifier": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.classifier",
+   "module_short": "FlowCyPy.classifier",
+   "name": "KmeansClassifier"
+  }
+ ],
+ "NoiseSetting.include_dark_current_noise": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "bool"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.NoiseSetting",
+   "module_short": "FlowCyPy.NoiseSetting",
+   "name": "include_dark_current_noise"
+  }
+ ],
+ "NoiseSetting.include_noises": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "bool"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.NoiseSetting",
+   "module_short": "FlowCyPy.NoiseSetting",
+   "name": "include_noises"
+  }
+ ],
+ "NoiseSetting.include_shot_noise": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "bool"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.NoiseSetting",
+   "module_short": "FlowCyPy.NoiseSetting",
+   "name": "include_shot_noise"
+  }
+ ],
+ "NoiseSetting.include_thermal_noise": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "bool"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.NoiseSetting",
+   "module_short": "FlowCyPy.NoiseSetting",
+   "name": "include_thermal_noise"
+  }
+ ],
+ "Population": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.population",
+   "module_short": "FlowCyPy",
+   "name": "Population"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Population"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.population",
+   "module_short": "FlowCyPy",
+   "name": "Population"
+  }
+ ],
+ "ScattererCollection": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.scatterer_collection",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection"
+  }
+ ],
+ "SignalDigitizer": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.signal_digitizer",
+   "module_short": "FlowCyPy.signal_digitizer",
+   "name": "SignalDigitizer"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "SignalDigitizer"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.signal_digitizer",
+   "module_short": "FlowCyPy.signal_digitizer",
+   "name": "SignalDigitizer"
+  }
+ ],
+ "acquisition": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.acquisition",
+   "module_short": "FlowCyPy.acquisition",
+   "name": "Acquisition"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Acquisition"
+  }
+ ],
+ "acquisition.run_triggering": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.acquisition",
+   "module_short": "FlowCyPy.acquisition",
+   "name": "Acquisition.run_triggering"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Acquisition.run_triggering"
+  }
+ ],
+ "acquisition.scatterer.plot": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.dataframe_subclass",
+   "module_short": "FlowCyPy.dataframe_subclass",
+   "name": "ScattererDataFrame.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "ScattererDataFrame.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.frame",
+   "module_short": "pandas.core.frame",
+   "name": "DataFrame.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DataFrame.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DataFrame.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.generic",
+   "module_short": "pandas.core.generic",
+   "name": "NDFrame.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "NDFrame.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "NDFrame.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.arraylike",
+   "module_short": "pandas.core.arraylike",
+   "name": "OpsMixin.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "OpsMixin.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "OpsMixin.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.base",
+   "module_short": "pandas.core.base",
+   "name": "PandasObject.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "PandasObject.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "PandasObject.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.indexing",
+   "module_short": "pandas.core.indexing",
+   "name": "IndexingMixin.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "IndexingMixin.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "IndexingMixin.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core.accessor",
+   "module_short": "pandas.core.accessor",
+   "name": "DirNamesMixin.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas.core",
+   "module_short": "pandas.core",
+   "name": "DirNamesMixin.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pandas",
+   "module_short": "pandas",
+   "name": "DirNamesMixin.plot"
+  }
+ ],
+ "acquisition.signal.plot": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.acquisition",
+   "module_short": "FlowCyPy.acquisition",
+   "name": "Acquisition"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Acquisition"
+  }
+ ],
+ "custom_population": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.population",
+   "module_short": "FlowCyPy",
+   "name": "Population"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Population"
+  }
+ ],
+ "cytometer": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.cytometer",
+   "module_short": "FlowCyPy",
+   "name": "FlowCytometer"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "FlowCytometer"
+  }
+ ],
+ "cytometer.get_acquisition": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.cytometer",
+   "module_short": "FlowCyPy",
+   "name": "FlowCytometer.get_acquisition"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "FlowCytometer.get_acquisition"
+  }
+ ],
+ "detector_0": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.detector",
+   "module_short": "FlowCyPy",
+   "name": "Detector"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Detector"
+  }
+ ],
+ "detector_1": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.detector",
+   "module_short": "FlowCyPy",
+   "name": "Detector"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Detector"
+  }
+ ],
+ "distribution.Normal": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.normal",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Normal"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Normal"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Normal"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.population.distribution",
+   "module_short": "FlowCyPy.population.distribution",
+   "name": "Normal"
+  }
+ ],
+ "distribution.RosinRammler": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.particle_size_distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "RosinRammler"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "RosinRammler"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "RosinRammler"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.population.distribution",
+   "module_short": "FlowCyPy.population.distribution",
+   "name": "RosinRammler"
+  }
+ ],
+ "exosome": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.population",
+   "module_short": "FlowCyPy",
+   "name": "Population"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Population"
+  }
+ ],
+ "flow_cell": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.flow_cell",
+   "module_short": "FlowCyPy",
+   "name": "FlowCell"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "FlowCell"
+  }
+ ],
+ "np.random.seed": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy.random",
+   "module_short": "numpy.random",
+   "name": "seed"
+  }
+ ],
+ "scatterer_collection": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.scatterer_collection",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection"
+  }
+ ],
+ "scatterer_collection.add_population": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.scatterer_collection",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection.add_population"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection.add_population"
+  }
+ ],
+ "scatterer_collection.dilute": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.scatterer_collection",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection.dilute"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection.dilute"
+  }
+ ],
+ "scatterer_collection.plot": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.scatterer_collection",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection.plot"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "ScattererCollection.plot"
+  }
+ ],
+ "signal_digitizer": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.signal_digitizer",
+   "module_short": "FlowCyPy.signal_digitizer",
+   "name": "SignalDigitizer"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "SignalDigitizer"
+  }
+ ],
+ "source": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.source",
+   "module_short": "FlowCyPy",
+   "name": "GaussianBeam"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "GaussianBeam"
+  }
+ ],
+ "units.AU": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "AU"
+  }
+ ],
+ "units.RIU": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "RIU"
+  }
+ ],
+ "units.ampere": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "ampere"
+  }
+ ],
+ "units.degree": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "degree"
+  }
+ ],
+ "units.kelvin": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "kelvin"
+  }
+ ],
+ "units.megahertz": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "megahertz"
+  }
+ ],
+ "units.microliter": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "microliter"
+  }
+ ],
+ "units.micrometer": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "micrometer"
+  }
+ ],
+ "units.milliliter": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "milliliter"
+  }
+ ],
+ "units.millisecond": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "millisecond"
+  }
+ ],
+ "units.millivolt": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "millivolt"
+  }
+ ],
+ "units.milliwatt": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "milliwatt"
+  }
+ ],
+ "units.nanometer": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "nanometer"
+  }
+ ],
+ "units.ohm": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "ohm"
+  }
+ ],
+ "units.particle": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "particle"
+  }
+ ],
+ "units.second": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "second"
+  }
+ ],
+ "units.watt": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "watt"
+  }
+ ]
+}

@@ -1,0 +1,903 @@
+{
+ "axes": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "ndarray"
+  }
+ ],
+ "axes.ravel": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  }
+ ],
+ "delta_dist": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.delta",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Delta"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Delta"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Delta"
+  }
+ ],
+ "delta_dist.generate": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.delta",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Delta.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Delta.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Delta.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base.generate"
+  }
+ ],
+ "delta_sizes": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Quantity"
+  }
+ ],
+ "distribution.Delta": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.delta",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Delta"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Delta"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Delta"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Delta"
+  }
+ ],
+ "distribution.LogNormal": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.lognormal",
+   "module_short": "FlowCyPy.distribution",
+   "name": "LogNormal"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "LogNormal"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "LogNormal"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "LogNormal"
+  }
+ ],
+ "distribution.Normal": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.normal",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Normal"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Normal"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Normal"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Normal"
+  }
+ ],
+ "distribution.RosinRammler": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.particle_size_distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "RosinRammler"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "RosinRammler"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "RosinRammler"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "RosinRammler"
+  }
+ ],
+ "distribution.Uniform": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.uniform",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Uniform"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Uniform"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Uniform"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Uniform"
+  }
+ ],
+ "distribution.Weibull": [
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.weibull",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Weibull"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Weibull"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Weibull"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base"
+  },
+  {
+   "is_class": true,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Weibull"
+  }
+ ],
+ "fig": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.figure",
+   "module_short": "matplotlib.figure",
+   "name": "Figure"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib",
+   "module_short": "matplotlib",
+   "name": "Figure"
+  }
+ ],
+ "lognormal_dist": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.lognormal",
+   "module_short": "FlowCyPy.distribution",
+   "name": "LogNormal"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "LogNormal"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "LogNormal"
+  }
+ ],
+ "lognormal_dist.generate": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.lognormal",
+   "module_short": "FlowCyPy.distribution",
+   "name": "LogNormal.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "LogNormal.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "LogNormal.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base.generate"
+  }
+ ],
+ "lognormal_sizes": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Quantity"
+  }
+ ],
+ "n_particles": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Quantity"
+  }
+ ],
+ "nanometer": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "nanometer"
+  }
+ ],
+ "normal_dist": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.normal",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Normal"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Normal"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Normal"
+  }
+ ],
+ "normal_dist.generate": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.normal",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Normal.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Normal.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Normal.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base.generate"
+  }
+ ],
+ "normal_sizes": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Quantity"
+  }
+ ],
+ "np.random.seed": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "builtin_function_or_method"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy.random",
+   "module_short": "numpy.random",
+   "name": "seed"
+  }
+ ],
+ "particle": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Unit"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.units",
+   "module_short": "FlowCyPy.units",
+   "name": "particle"
+  }
+ ],
+ "plt.show": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "show"
+  }
+ ],
+ "plt.subplots": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "subplots"
+  }
+ ],
+ "plt.tight_layout": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "builtins",
+   "module_short": "builtins",
+   "name": "function"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "tight_layout"
+  }
+ ],
+ "rosinrammler_dist": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.particle_size_distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "RosinRammler"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "RosinRammler"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "RosinRammler"
+  }
+ ],
+ "rosinrammler_dist.generate": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.particle_size_distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "RosinRammler.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "RosinRammler.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "RosinRammler.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base.generate"
+  }
+ ],
+ "rosinrammler_sizes": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Quantity"
+  }
+ ],
+ "uniform_dist": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.uniform",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Uniform"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Uniform"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Uniform"
+  }
+ ],
+ "uniform_dist.generate": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.uniform",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Uniform.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Uniform.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Uniform.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base.generate"
+  }
+ ],
+ "uniform_sizes": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Quantity"
+  }
+ ],
+ "weibull_dist": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.weibull",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Weibull"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Weibull"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Weibull"
+  }
+ ],
+ "weibull_dist.generate": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.weibull",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Weibull.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Weibull.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Weibull.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution.base_class",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy.distribution",
+   "module_short": "FlowCyPy.distribution",
+   "name": "Base.generate"
+  },
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "FlowCyPy",
+   "module_short": "FlowCyPy",
+   "name": "Base.generate"
+  }
+ ],
+ "weibull_sizes": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "pint",
+   "module_short": "pint",
+   "name": "Quantity"
+  }
+ ]
+}
