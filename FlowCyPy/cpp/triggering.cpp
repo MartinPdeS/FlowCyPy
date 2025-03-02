@@ -266,51 +266,15 @@ void dummy_function(){}
 
 
 void dummy_triggering(
-    // std::map<std::string, py::array_t<double>> signal_map,
-    // std::map<std::string, py::array_t<double>> time_map,
+    const std::map<std::string, py::array_t<double>> &signal_map,
+    const std::map<std::string, py::array_t<double>> &time_map,
     const std::string &trigger_detector_name,
     double threshold,
     int pre_buffer = 64,
     int post_buffer = 64,
     int max_triggers = -1)
 {
-    // Validate trigger detector
-    // validate_detector_existence(signal_map, trigger_detector_name, "Trigger detector not found in signal map.");
-    // validate_detector_existence(time_map, trigger_detector_name, "Trigger detector not found in time map.");
 
-    // // Get trigger detector data
-    // auto trigger_signal_array = signal_map.at(trigger_detector_name);
-    // auto trigger_time_array = time_map.at(trigger_detector_name);
-
-    // py::buffer_info trigger_signal_buf = trigger_signal_array.request();
-    // py::buffer_info trigger_time_buf = trigger_time_array.request();
-
-    // size_t n_trigger = trigger_signal_buf.shape[0];
-    // double *trigger_signal_ptr = static_cast<double *>(trigger_signal_buf.ptr);
-
-    // // Apply Baseline Restoration BEFORE thresholding
-    // std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
-
-    // // Find trigger indices using baseline-restored signal
-    // std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
-
-    // // Apply buffer constraints
-    // std::vector<std::pair<int, int>> valid_triggers = apply_buffer_constraints(
-    //     trigger_indices,
-    //     pre_buffer - 1,
-    //     post_buffer,
-    //     static_cast<int>(n_trigger),
-    //     max_triggers
-    // );
-
-    // if (valid_triggers.empty())
-    // {
-    //     PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found after baseline restoration. Returning empty arrays.", 1);
-    //     return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
-    // }
-
-    // // Extract triggered signal segments
-    // return extract_signal_segments(signal_map, time_map, valid_triggers);
 }
 
 
@@ -318,18 +282,16 @@ PYBIND11_MODULE(triggering_system, module) {
     module.doc() = "Module for efficient signal processing and triggered acquisition using C++";
 
     // Expose run_triggering function with full filtering capabilities
-    module.def("dummy_function", &dummy_function);
-
-    // Expose run_triggering function with full filtering capabilities
     module.def("run", &dummy_triggering,
-    //   py::arg("signal_map"),
-    //   py::arg("time_map"),
+      py::arg("signal_map"),
+      py::arg("time_map"),
       py::arg("trigger_detector_name"),
       py::arg("threshold"),
       py::arg("pre_buffer") = 64,
       py::arg("post_buffer") = 64,
       py::arg("max_triggers") = -1);
 
+// }
     // // Expose run_triggering function with full filtering capabilities
     // module.def("run", &run_triggering,
     //   py::arg("signal_map"),
