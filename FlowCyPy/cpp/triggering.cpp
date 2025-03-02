@@ -211,8 +211,11 @@ void run_triggering(
     }
 
     // Borrow the object from the dict.
-    py::object sig_obj = signal_map[trigger_detector_name.c_str()];
-    py::array_t<double> trigger_signal_array = py::reinterpret_borrow<py::array_t<double>>(sig_obj);
+    py::object signal_obj = signal_map[trigger_detector_name.c_str()];
+    py::array_t<double> trigger_signal_array = py::reinterpret_borrow<py::array_t<double>>(signal_obj);
+
+    py::object time_obj = time_map[trigger_detector_name.c_str()];
+    py::array_t<double> trigger_signal_array = py::reinterpret_borrow<py::array_t<double>>(time_obj);
 
 
 
@@ -221,17 +224,17 @@ void run_triggering(
     // py::array_t<double> trigger_signal_array = signal_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
     // py::array_t<double> trigger_time_array = time_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
 
-    // py::buffer_info trigger_signal_buf = trigger_signal_array.request();
-    // py::buffer_info trigger_time_buf = trigger_time_array.request();
+    py::buffer_info trigger_signal_buf = trigger_signal_array.request();
+    py::buffer_info trigger_time_buf = trigger_time_array.request();
 
-    // size_t n_trigger = trigger_signal_buf.shape[0];
-    // double *trigger_signal_ptr = static_cast<double *>(trigger_signal_buf.ptr);
+    size_t n_trigger = trigger_signal_buf.shape[0];
+    double *trigger_signal_ptr = static_cast<double *>(trigger_signal_buf.ptr);
 
-    // // Apply Baseline Restoration BEFORE thresholding
-    // std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
+    // Apply Baseline Restoration BEFORE thresholding
+    std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
 
-    // // Find trigger indices using baseline-restored signal
-    // std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
+    // Find trigger indices using baseline-restored signal
+    std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
 
     // // Apply buffer constraints
     // std::vector<std::pair<int, int>> valid_triggers = apply_buffer_constraints(
