@@ -33,17 +33,20 @@ endif()
 
 
 # Function to add project modules
-function(add_project_module name source)
-    pybind11_add_module(
-        ${name} MODULE
-        "${LOCAL_CXX_DIR}/interface.cpp"
-        "${LOCAL_CXX_DIR}/triggering_module.cpp"
-        "${LOCAL_CXX_DIR}/processing.cpp"
-    )
+function(add_project_module name)
+    # Create an empty list to store full paths for source files.
+    set(SOURCES "")
+
+    # ARGN contains all the arguments passed after the first one (the module name).
+    foreach(src IN LISTS ARGN)
+        list(APPEND SOURCES "${LOCAL_CXX_DIR}/${src}")
+    endforeach()
+
+    pybind11_add_module(${name} MODULE ${SOURCES})
     set_target_properties(${name} PROPERTIES OUTPUT_NAME ${name})
     target_link_options(${name} PUBLIC ${STATIC_LINK_OPTIONS})
 endfunction()
 
 add_compile_options(-Wall -Wextra -pedantic-errors)
 
-add_project_module(Interface "lol")
+add_project_module(Interface "interface.cpp" "triggering_module.cpp" "processing.cpp")
