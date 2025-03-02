@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
-from FlowCyPy.binary import Interface
+# from FlowCyPy.binary import Interface
 from FlowCyPy.helper import validate_units
 from FlowCyPy import units
 
