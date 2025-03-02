@@ -38,38 +38,38 @@ std::vector<int> find_trigger_indices(double *trigger_signal, size_t signal_size
  * @param max_triggers Maximum number of allowed triggers.
  * @return A vector of valid (start, end) trigger segments.
  */
-// std::vector<std::pair<int, int>> apply_buffer_constraints(
-//     const std::vector<int> &trigger_indices,
-//     int pre_buffer,
-//     int post_buffer,
-//     int signal_size,
-//     int max_triggers)
-// {
-//     std::vector<std::pair<int, int>> valid_triggers;
-//     int last_end = -1;
+std::vector<std::pair<int, int>> apply_buffer_constraints(
+    const std::vector<int> &trigger_indices,
+    int pre_buffer,
+    int post_buffer,
+    int signal_size,
+    int max_triggers)
+{
+    std::vector<std::pair<int, int>> valid_triggers;
+    int last_end = -1;
 
-//     for (int idx : trigger_indices)
-//     {
-//         int start = idx - pre_buffer;
-//         int end = idx + post_buffer;
+    for (int idx : trigger_indices)
+    {
+        int start = idx - pre_buffer;
+        int end = idx + post_buffer;
 
-//         // Ensure valid trigger range
-//         if (start < 0 || end >= signal_size)
-//             continue;
+        // Ensure valid trigger range
+        if (start < 0 || end >= signal_size)
+            continue;
 
-//         // Avoid overlapping triggers
-//         if (start > last_end)
-//         {
-//             valid_triggers.emplace_back(start, end);
-//             last_end = end;
-//         }
+        // Avoid overlapping triggers
+        if (start > last_end)
+        {
+            valid_triggers.emplace_back(start, end);
+            last_end = end;
+        }
 
-//         if (max_triggers > 0 && valid_triggers.size() >= static_cast<size_t>(max_triggers))
-//             break;
-//     }
+        if (max_triggers > 0 && valid_triggers.size() >= static_cast<size_t>(max_triggers))
+            break;
+    }
 
-//     return valid_triggers;
-// }
+    return valid_triggers;
+}
 
 /**
  * @brief Extracts signal segments based on trigger points for all detectors.
@@ -233,20 +233,20 @@ void run_triggering(
     // Find trigger indices using baseline-restored signal
     std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
 
-    // // Apply buffer constraints
-    // std::vector<std::pair<int, int>> valid_triggers = apply_buffer_constraints(
-    //     trigger_indices,
-    //     pre_buffer - 1,
-    //     post_buffer,
-    //     static_cast<int>(n_trigger),
-    //     max_triggers
-    // );
+    // Apply buffer constraints
+    std::vector<std::pair<int, int>> valid_triggers = apply_buffer_constraints(
+        trigger_indices,
+        pre_buffer - 1,
+        post_buffer,
+        static_cast<int>(n_trigger),
+        max_triggers
+    );
 
-    // if (valid_triggers.empty())
-    // {
-    //     PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found after baseline restoration. Returning empty arrays.", 1);
-    //     return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
-    // }
+    if (valid_triggers.empty())
+    {
+        PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found after baseline restoration. Returning empty arrays.", 1);
+        // return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
+    }
 
     // Extract triggered signal segments
     // return extract_signal_segments(signal_map, time_map, valid_triggers);
