@@ -226,17 +226,17 @@ void run_triggering(
     auto sig_map = build_borrowed_map(signal_map);
     auto time_map_local = build_borrowed_map(time_map);
 
-    // Retrieve the arrays from the maps.
-    py::array_t<double> trigger_signal_array = sig_map[trigger_detector_name];
-    py::array_t<double> trigger_time_array   = time_map_local[trigger_detector_name];
+    // // Retrieve the arrays from the maps.
+    // py::array_t<double> trigger_signal_array = sig_map[trigger_detector_name];
+    // py::array_t<double> trigger_time_array   = time_map_local[trigger_detector_name];
 
-    // For example, get the buffer info from the signal array.
-    py::buffer_info trigger_signal_buf = trigger_signal_array.request();
-    size_t n_trigger = trigger_signal_buf.shape[0];
-    double *trigger_signal_ptr = static_cast<double*>(trigger_signal_buf.ptr);
+    // // For example, get the buffer info from the signal array.
+    // py::buffer_info trigger_signal_buf = trigger_signal_array.request();
+    // size_t n_trigger = trigger_signal_buf.shape[0];
+    // double *trigger_signal_ptr = static_cast<double*>(trigger_signal_buf.ptr);
 
-    // Make a local copy of the signal data (if needed)
-    std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
+    // // Make a local copy of the signal data (if needed)
+    // std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
 
     // Find trigger indices using baseline-restored signal
     // std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
