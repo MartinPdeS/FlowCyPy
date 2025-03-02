@@ -221,27 +221,34 @@ run_triggering(
     int post_buffer = 64,
     int max_triggers = -1)
 {
-    // Validate trigger detector exists in both dictionaries.
-    if (!signal_map.contains(trigger_detector_name.c_str()))
+    // Validate trigger detector
+    if (!signal_map.contains(trigger_detector_name.c_str())) {
         throw std::runtime_error("Trigger detector not found in signal_map");
-    if (!time_map.contains(trigger_detector_name.c_str()))
+    }
+    if (!time_map.contains(trigger_detector_name.c_str())) {
         throw std::runtime_error("Trigger detector not found in time_map");
+    }
 
-    // Borrow the specific trigger arrays for baseline restoration.
-    py::object sig_obj = signal_map[trigger_detector_name.c_str()];
-    py::array_t<double> trigger_signal_array = py::reinterpret_borrow<py::array_t<double>>(sig_obj);
+    // Borrow the object from the dict.
+    py::object signal_obj = signal_map[trigger_detector_name.c_str()];
+    py::array_t<double> trigger_signal_array = py::reinterpret_borrow<py::array_t<double>>(signal_obj);
 
-    // Get buffer info and copy data for processing.
+    py::object time_obj = time_map[trigger_detector_name.c_str()];
+    py::array_t<double> trigger_time_array = py::reinterpret_borrow<py::array_t<double>>(time_obj);
+
     py::buffer_info trigger_signal_buf = trigger_signal_array.request();
-    size_t n_trigger = trigger_signal_buf.shape[0];
-    double *trigger_signal_ptr = static_cast<double*>(trigger_signal_buf.ptr);
+    py::buffer_info trigger_time_buf = trigger_time_array.request();
 
+    size_t n_trigger = trigger_signal_buf.shape[0];
+    double *trigger_signal_ptr = static_cast<double *>(trigger_signal_buf.ptr);
+
+    // Apply Baseline Restoration BEFORE thresholding
     std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
 
-    // Find trigger indices using baseline-restored signal.
+    // Find trigger indices using baseline-restored signal
     std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
 
-    // Apply buffer constraints.
+    // Apply buffer constraints
     std::vector<std::pair<int, int>> valid_triggers = apply_buffer_constraints(
         trigger_indices,
         pre_buffer - 1,
@@ -250,36 +257,15 @@ run_triggering(
         max_triggers
     );
 
-    // If no valid triggers found, warn and return empty arrays.
-    if (valid_triggers.empty()) {
-        PyErr_WarnEx(PyExc_UserWarning,
-                     "No valid triggers found after baseline restoration. Returning empty arrays.",
-                     1);
-        return std::make_tuple(py::array_t<double>(0),
-                               py::array_t<double>(0),
-                               py::list(),
-                               py::array_t<int>(0));
+    if (valid_triggers.empty())
+    {
+        PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found after baseline restoration. Returning empty arrays.", 1);
+        return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
     }
 
-    // Now, build vectors from the dictionaries.
-    std::vector<std::string> detector_names;
-    std::vector<py::array_t<double>> signal_arrays;
-    std::vector<py::array_t<double>> time_arrays;
+    // Extract triggered signal segments
+    // return extract_signal_segments(signal_map, time_map, valid_triggers);
 
-    // Iterate over signal_map (assuming time_map has the same keys)
-    for (auto item : signal_map) {
-        std::string key = item.first.cast<std::string>();
-        // Borrow the numpy arrays
-        py::array_t<double> sig_arr = py::reinterpret_borrow<py::array_t<double>>(item.second);
-        py::array_t<double> time_arr = py::reinterpret_borrow<py::array_t<double>>(time_map[key.c_str()]);
-
-        detector_names.push_back(key);
-        signal_arrays.push_back(sig_arr);
-        time_arrays.push_back(time_arr);
-    }
-
-    // Call extract_signal_segments with the built vectors.
-    return extract_signal_segments(detector_names, signal_arrays, time_arrays, valid_triggers);
 }
 
 
