@@ -80,7 +80,7 @@ std::vector<std::pair<int, int>> apply_buffer_constraints(
  * @param valid_triggers List of valid trigger segments (start, end).
  * @return Tuple containing NumPy arrays for times, signals, detector names, and segment IDs.
  */
-std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
+std::tuple<py::array_t<double>, py::array_t<double>, std::vector<std::string>, py::array_t<int>>
 extract_signal_segments(
     const std::vector<std::string>& detector_names,
     const std::vector<py::array_t<double>>& signal_arrays,
@@ -131,9 +131,9 @@ extract_signal_segments(
     }
 
     // Convert vector of strings to py::list.
-    py::list detector_list;
+    std::vector<std::string> detector_list;
     for (const auto& det : detectors_out)
-        detector_list.append(det);
+        detector_list.push_back(det);
 
     return std::make_tuple(
         py::array_t<double>(times_out.size(), times_out.data()),
@@ -199,7 +199,7 @@ extract_signal_segments(
  *      - The **low-pass filter** is applied to smooth the signal, but only if `filter_lowpass_cutoff` is specified.
  *      - If no valid triggers are found, the function returns empty arrays.
  */
-// std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
+// std::tuple<py::array_t<double>, py::array_t<double>, std::vector<std::string>, py::array_t<int>>
 void
 run_triggering(
     const py::dict &signal_map,
@@ -219,8 +219,10 @@ run_triggering(
     }
 
     // Borrow the object from the dict.
-    py::object signal_obj = signal_map[trigger_detector_name.c_str()];
-    py::array_t<double> trigger_signal_array = py::reinterpret_borrow<py::array_t<double>>(signal_obj);
+    // py::object signal_obj = signal_map[trigger_detector_name.c_str()];
+    // py::array_t<double> trigger_signal_array = py::reinterpret_borrow<py::array_t<double>>(signal_obj);
+
+    py::array_t<double> trigger_signal_array = signal_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
 
     py::object time_obj = time_map[trigger_detector_name.c_str()];
     py::array_t<double> trigger_time_array = py::reinterpret_borrow<py::array_t<double>>(time_obj);
