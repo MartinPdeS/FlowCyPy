@@ -18,12 +18,9 @@ namespace py = pybind11;
  * @param error_message The error message to throw if not found.
  * @throws std::runtime_error if the detector is not found in the map.
  */
-void validate_detector_existence(
-    const std::map<std::string, py::array_t<double>> &map,
-    const std::string &detector_name,
-    const std::string &error_message)
+void validate_detector_existence(const py::dict &map, const std::string &detector_name, const std::string &error_message)
 {
-    if (map.find(detector_name) == map.end())
+    if (!map.contains(detector_name))
         throw std::runtime_error(error_message);
 }
 
@@ -100,17 +97,18 @@ std::vector<std::pair<int, int>> apply_buffer_constraints(
  * @return Tuple containing NumPy arrays for times, signals, detector names, and segment IDs.
  */
 std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>> extract_signal_segments(
-    const std::map<std::string, py::array_t<double>> &signal_map,
-    const std::map<std::string, py::array_t<double>> &time_map,
+    const py::dict &signal_map,
+    const py::dict &time_map,
     const std::vector<std::pair<int, int>> &valid_triggers)
 {
     std::vector<double> times_out, signals_out;
     std::vector<std::string> detectors_out;
     std::vector<int> segment_ids_out;
 
-    for (const auto &[detector_name, signal_array] : signal_map)
-    {
-        auto time_array = time_map.at(detector_name);
+    for (auto item : signal_map) {
+        std::string detector_name = item.first.cast<std::string>();
+        py::array_t<double> signal_array = item.second.cast<py::array_t<double>>();
+        py::array_t<double> time_array = time_map[detector_name.c_str()].cast<py::array_t<double>>();
 
         py::buffer_info signal_buf = signal_array.request();
         py::buffer_info time_buf = time_array.request();
@@ -209,8 +207,8 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
  *      - If no valid triggers are found, the function returns empty arrays.
  */
 std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>> run_triggering(
-    std::map<std::string, py::array_t<double>> signal_map,
-    std::map<std::string, py::array_t<double>> time_map,
+    const py::dict &signal_map,
+    const py::dict &time_map,
     const std::string &trigger_detector_name,
     double threshold,
     int pre_buffer = 64,
@@ -222,8 +220,8 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
     validate_detector_existence(time_map, trigger_detector_name, "Trigger detector not found in time map.");
 
     // Get trigger detector data
-    auto trigger_signal_array = signal_map.at(trigger_detector_name);
-    auto trigger_time_array = time_map.at(trigger_detector_name);
+    py::array_t<double> trigger_signal_array = signal_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
+    py::array_t<double> trigger_time_array = time_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
 
     py::buffer_info trigger_signal_buf = trigger_signal_array.request();
     py::buffer_info trigger_time_buf = trigger_time_array.request();
@@ -257,32 +255,11 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
 }
 
 
-void dummy_function(){}
-
-
-
-
-
-
-
-void dummy_triggering(
-    const py::dict &signal_map,
-    const py::dict &time_map,
-    const std::string &trigger_detector_name,
-    double threshold,
-    int pre_buffer = 64,
-    int post_buffer = 64,
-    int max_triggers = -1)
-{
-
-}
-
-
 PYBIND11_MODULE(triggering_system, module) {
     module.doc() = "Module for efficient signal processing and triggered acquisition using C++";
 
     // Expose run_triggering function with full filtering capabilities
-    module.def("run", &dummy_triggering,
+    module.def("run", &run_triggering,
       py::arg("signal_map"),
       py::arg("time_map"),
       py::arg("trigger_detector_name"),
