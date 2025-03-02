@@ -80,7 +80,8 @@ std::vector<std::pair<int, int>> apply_buffer_constraints(
  * @param valid_triggers List of valid trigger segments (start, end).
  * @return Tuple containing NumPy arrays for times, signals, detector names, and segment IDs.
  */
-std::tuple<py::array_t<double>, py::array_t<double>, std::vector<std::string>, py::array_t<int>> extract_signal_segments(
+std::tuple<py::array_t<double>, py::array_t<double>, std::vector<std::string>, py::array_t<int>>
+extract_signal_segments(
     const py::dict &signal_map,
     const py::dict &time_map,
     const std::vector<std::pair<int, int>> &valid_triggers)
@@ -89,31 +90,45 @@ std::tuple<py::array_t<double>, py::array_t<double>, std::vector<std::string>, p
     std::vector<std::string> detectors_out;
     std::vector<int> segment_ids_out;
 
-    for (auto item : signal_map) {
-        std::string detector_name = item.first.cast<std::string>();
-        py::array_t<double> signal_array = item.second.cast<py::array_t<double>>();
-        py::array_t<double> time_array = time_map[detector_name.c_str()].cast<py::array_t<double>>();
+    // Get the list of keys from signal_map.
+    py::list keys = signal_map.attr("keys")();
+    size_t num_keys = keys.size();
+
+    // Iterate over keys using index-based loop.
+    for (size_t i = 0; i < num_keys; i++) {
+        std::string detector_name = keys[i].cast<std::string>();
+
+        // Retrieve the corresponding arrays from both dictionaries.
+
+        // py::array_t<double> signal_array = signal_map[detector_name.c_str()].cast<py::array_t<double>>();
+        py::object signal_obj = signal_map[detector_name.c_str()];
+        py::array_t<double> signal_array = py::reinterpret_borrow<py::array_t<double>>(signal_obj);
+
+        // py::array_t<double> time_array   = time_map[detector_name.c_str()].cast<py::array_t<double>>();
+        py::object time_obj = time_map[detector_name.c_str()];
+        py::array_t<double> time_array = py::reinterpret_borrow<py::array_t<double>>(time_obj);
 
         py::buffer_info signal_buf = signal_array.request();
-        py::buffer_info time_buf = time_array.request();
+        py::buffer_info time_buf   = time_array.request();
 
         if (signal_buf.ndim != 1 || time_buf.ndim != 1)
             throw std::runtime_error("Signal and time arrays must be 1D");
 
         size_t signal_size = signal_buf.shape[0];
         double *signal_ptr = static_cast<double *>(signal_buf.ptr);
-        double *time_ptr = static_cast<double *>(time_buf.ptr);
+        double *time_ptr   = static_cast<double *>(time_buf.ptr);
 
         size_t segment_id = 0;
-        for (const auto &[start, end] : valid_triggers)
-        {
-            for (int i = start; i <= end; ++i)
-            {
-                if (i >= static_cast<int>(signal_size))
+        // Iterate over valid trigger segments.
+        for (const auto &trigger : valid_triggers) {
+            int start = trigger.first;
+            int end   = trigger.second;
+            for (int j = start; j <= end; ++j) {
+                if (j >= static_cast<int>(signal_size))
                     break;
 
-                times_out.push_back(time_ptr[i]);
-                signals_out.push_back(signal_ptr[i]);
+                times_out.push_back(time_ptr[j]);
+                signals_out.push_back(signal_ptr[j]);
                 detectors_out.push_back(detector_name);
                 segment_ids_out.push_back(segment_id);
             }
@@ -121,17 +136,12 @@ std::tuple<py::array_t<double>, py::array_t<double>, std::vector<std::string>, p
         }
     }
 
-    // Convert vector of strings to py::list.
-    std::vector<std::string> detector_list;
-    for (const auto& det : detectors_out)
-        detector_list.push_back(det);
-
-
     return std::make_tuple(
         py::array_t<double>(times_out.size(), times_out.data()),
         py::array_t<double>(signals_out.size(), signals_out.data()),
-        detector_list,
-        py::array_t<int>(segment_ids_out.size(), segment_ids_out.data()));
+        detectors_out,
+        py::array_t<int>(segment_ids_out.size(), segment_ids_out.data())
+    );
 }
 
 
