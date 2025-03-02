@@ -221,8 +221,8 @@ void run_triggering(
     // validate_detector_existence(time_map, trigger_detector_name, "Trigger detector not found in time map.");
 
     // Get trigger detector data
-    // py::array_t<double> trigger_signal_array = signal_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
-    // py::array_t<double> trigger_time_array = time_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
+    py::array_t<double> trigger_signal_array = signal_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
+    py::array_t<double> trigger_time_array = time_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
 
     // py::buffer_info trigger_signal_buf = trigger_signal_array.request();
     // py::buffer_info trigger_time_buf = trigger_time_array.request();
