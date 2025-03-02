@@ -110,8 +110,8 @@ class Acquisition:
         signal_units = self.analog.xs(self.detector_names[0])['Signal'].pint.units
         time_units = self.analog.xs(self.detector_names[0])['Time'].pint.units
 
-        signal_map = {det: self.analog.xs(det)['Signal'].pint.to(signal_units).pint.magnitude for det in self.detector_names}
-        time_map = {det: self.analog.xs(det)['Time'].pint.to(time_units).pint.magnitude for det in self.detector_names}
+        signal_map = {det: self.analog.xs(det)['Signal'].pint.to(signal_units).pint.magnitude.to_numpy() for det in self.detector_names}
+        time_map = {det: self.analog.xs(det)['Time'].pint.to(time_units).pint.magnitude.to_numpy() for det in self.detector_names}
 
         # Call the C++ function for fast triggering detection
         times, signals, detectors, segment_ids = triggering_system.run(
