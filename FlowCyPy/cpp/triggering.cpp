@@ -10,21 +10,6 @@
 namespace py = pybind11;
 
 
-// Helper: Build a std::map from a py::dict using borrowed references.
-std::map<std::string, py::array_t<double>> build_borrowed_map(const py::dict &dict) {
-    std::map<std::string, py::array_t<double>> result;
-    // Iterate over the dictionary items.
-    for (auto item : dict) {
-        // Convert the key to a std::string.
-        std::string key = item.first.cast<std::string>();
-        // Borrow the object from the dict and reinterpret as a NumPy array.
-        py::array_t<double> arr = py::reinterpret_borrow<py::array_t<double>>(item.second);
-        result[key] = arr;
-    }
-    return result;
-}
-
-
 /**
  * @brief Identifies trigger points where the signal crosses a given threshold.
  *
@@ -222,23 +207,30 @@ void run_triggering(
         throw std::runtime_error("Trigger detector not found in time_map");
     }
 
-    // Build std::map objects from the dictionaries using borrowed references.
-    auto sig_map = build_borrowed_map(signal_map);
-    auto time_map_local = build_borrowed_map(time_map);
+    // Borrow the object from the dict.
+    py::object signal_obj = signal_map[trigger_detector_name.c_str()];
+    py::array_t<double> trigger_signal_array = py::reinterpret_borrow<py::array_t<double>>(signal_obj);
 
-    // // Retrieve the arrays from the maps.
-    // py::array_t<double> trigger_signal_array = sig_map[trigger_detector_name];
-    // py::array_t<double> trigger_time_array   = time_map_local[trigger_detector_name];
+    py::object time_obj = time_map[trigger_detector_name.c_str()];
+    py::array_t<double> trigger_time_array = py::reinterpret_borrow<py::array_t<double>>(time_obj);
 
-    // // For example, get the buffer info from the signal array.
+
+
+
+    // // Get trigger detector data
+    // // py::array_t<double> trigger_signal_array = signal_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
+    // // py::array_t<double> trigger_time_array = time_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
+
     // py::buffer_info trigger_signal_buf = trigger_signal_array.request();
-    // size_t n_trigger = trigger_signal_buf.shape[0];
-    // double *trigger_signal_ptr = static_cast<double*>(trigger_signal_buf.ptr);
+    // py::buffer_info trigger_time_buf = trigger_time_array.request();
 
-    // // Make a local copy of the signal data (if needed)
+    // size_t n_trigger = trigger_signal_buf.shape[0];
+    // double *trigger_signal_ptr = static_cast<double *>(trigger_signal_buf.ptr);
+
+    // // Apply Baseline Restoration BEFORE thresholding
     // std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
 
-    // Find trigger indices using baseline-restored signal
+    // // Find trigger indices using baseline-restored signal
     // std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
 
     // // Apply buffer constraints
