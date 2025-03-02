@@ -210,8 +210,14 @@ void run_triggering(
         throw std::runtime_error("Trigger detector not found in time_map");
     }
 
+    py::object obj = signal_map[trigger_detector_name.c_str()];
+    if (!py::isinstance<py::array>(obj)) {
+        throw std::runtime_error("Value for trigger_detector_name is not a numpy array");
+    }
+    py::array_t<double> trigger_signal_array = obj.cast<py::array_t<double>>();
+
     // Get trigger detector data
-    py::array_t<double> trigger_signal_array = signal_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
+    // py::array_t<double> trigger_signal_array = signal_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
     // py::array_t<double> trigger_time_array = time_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
 
     // py::buffer_info trigger_signal_buf = trigger_signal_array.request();
