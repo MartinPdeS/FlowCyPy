@@ -211,7 +211,7 @@ void run_triggering(
     }
 
     // Get trigger detector data
-    // py::array_t<double> trigger_signal_array = signal_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
+    py::array_t<double> trigger_signal_array = signal_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
     // py::array_t<double> trigger_time_array = time_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
 
     // py::buffer_info trigger_signal_buf = trigger_signal_array.request();
