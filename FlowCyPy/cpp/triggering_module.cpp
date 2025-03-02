@@ -9,6 +9,8 @@
 
 namespace py = pybind11;
 
+void dummy_function(){}
+
 
 /**
  * @brief Validates if the specified detector exists in the given map.

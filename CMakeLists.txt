@@ -13,6 +13,7 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Type of build" FORCE)
 set(LOCAL_CXX_DIR "${PROJECT_NAME}/cpp")
 set(LOCAL_BIN_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/binary")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${LOCAL_BIN_DIR}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
 
 # Include directories
 include_directories("${LOCAL_CXX_DIR}")
@@ -48,5 +49,6 @@ function(add_project_module name)
 endfunction()
 
 add_compile_options(-Wall -Wextra -pedantic-errors)
+
 
 add_project_module(Interface "interface.cpp" "triggering_module.cpp" "processing.cpp")

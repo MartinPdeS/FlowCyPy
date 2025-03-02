@@ -23,6 +23,9 @@ namespace py = pybind11;
 void validate_detector_existence(const std::map<std::string, py::array_t<double>> &map, const std::string &detector_name, const std::string &error_message);
 
 
+void dummy_function();
+
+
 /**
  * @brief Identifies trigger points where the signal crosses a given threshold.
  *
