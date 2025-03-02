@@ -80,29 +80,20 @@ std::vector<std::pair<int, int>> apply_buffer_constraints(
  * @param valid_triggers List of valid trigger segments (start, end).
  * @return Tuple containing NumPy arrays for times, signals, detector names, and segment IDs.
  */
-std::tuple<py::array_t<double>, py::array_t<double>, std::vector<std::string>, py::array_t<int>>
-extract_signal_segments(
-    const std::vector<std::string>& detector_names,
-    const std::vector<py::array_t<double>>& signal_arrays,
-    const std::vector<py::array_t<double>>& time_arrays,
-    const std::vector<std::pair<int, int>>& valid_triggers)
+std::tuple<py::array_t<double>, py::array_t<double>, std::vector<std::string>, py::array_t<int>> extract_signal_segments(
+    const py::dict &signal_map,
+    const py::dict &time_map,
+    const std::vector<std::pair<int, int>> &valid_triggers)
 {
-    // Check that all parallel vectors have the same length.
-    if (detector_names.size() != signal_arrays.size() || detector_names.size() != time_arrays.size()) {
-        throw std::runtime_error("Input vectors must have the same length");
-    }
-
     std::vector<double> times_out, signals_out;
     std::vector<std::string> detectors_out;
     std::vector<int> segment_ids_out;
 
-    // Iterate over each detector.
-    for (size_t idx = 0; idx < detector_names.size(); ++idx) {
-        const std::string& detector_name = detector_names[idx];
-        const py::array_t<double>& signal_array = signal_arrays[idx];
-        const py::array_t<double>& time_array = time_arrays[idx];
+    for (auto item : signal_map) {
+        std::string detector_name = item.first.cast<std::string>();
+        py::array_t<double> signal_array = item.second.cast<py::array_t<double>>();
+        py::array_t<double> time_array = time_map[detector_name.c_str()].cast<py::array_t<double>>();
 
-        // Get buffer info.
         py::buffer_info signal_buf = signal_array.request();
         py::buffer_info time_buf = time_array.request();
 
@@ -110,17 +101,17 @@ extract_signal_segments(
             throw std::runtime_error("Signal and time arrays must be 1D");
 
         size_t signal_size = signal_buf.shape[0];
-        double* signal_ptr = static_cast<double*>(signal_buf.ptr);
-        double* time_ptr = static_cast<double*>(time_buf.ptr);
+        double *signal_ptr = static_cast<double *>(signal_buf.ptr);
+        double *time_ptr = static_cast<double *>(time_buf.ptr);
 
         size_t segment_id = 0;
-        // For each valid trigger, extract the corresponding segment.
-        for (const auto& trigger : valid_triggers) {
-            int start = trigger.first;
-            int end   = trigger.second;
-            for (int i = start; i <= end; ++i) {
+        for (const auto &[start, end] : valid_triggers)
+        {
+            for (int i = start; i <= end; ++i)
+            {
                 if (i >= static_cast<int>(signal_size))
                     break;
+
                 times_out.push_back(time_ptr[i]);
                 signals_out.push_back(signal_ptr[i]);
                 detectors_out.push_back(detector_name);
@@ -135,12 +126,12 @@ extract_signal_segments(
     for (const auto& det : detectors_out)
         detector_list.push_back(det);
 
+
     return std::make_tuple(
         py::array_t<double>(times_out.size(), times_out.data()),
         py::array_t<double>(signals_out.size(), signals_out.data()),
         detector_list,
-        py::array_t<int>(segment_ids_out.size(), segment_ids_out.data())
-    );
+        py::array_t<int>(segment_ids_out.size(), segment_ids_out.data()));
 }
 
 
@@ -219,10 +210,8 @@ run_triggering(
     }
 
     // Borrow the object from the dict.
-    // py::object signal_obj = signal_map[trigger_detector_name.c_str()];
-    // py::array_t<double> trigger_signal_array = py::reinterpret_borrow<py::array_t<double>>(signal_obj);
-
-    py::array_t<double> trigger_signal_array = signal_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
+    py::object signal_obj = signal_map[trigger_detector_name.c_str()];
+    py::array_t<double> trigger_signal_array = py::reinterpret_borrow<py::array_t<double>>(signal_obj);
 
     py::object time_obj = time_map[trigger_detector_name.c_str()];
     py::array_t<double> trigger_time_array = py::reinterpret_borrow<py::array_t<double>>(time_obj);
