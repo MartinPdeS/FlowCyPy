@@ -1,9 +1,11 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-#include "processing.h"
-#include "triggering_module.h"
+// #include "processing.h"
+// #include "triggering_module.h"
 
 namespace py = pybind11;
+
+void dummy_function(){};
 
 PYBIND11_MODULE(Interface, m) {
     m.doc() = "Module for efficient signal processing and triggered acquisition using C++";

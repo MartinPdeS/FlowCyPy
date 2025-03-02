@@ -50,5 +50,6 @@ endfunction()
 
 add_compile_options(-Wall -Wextra -pedantic-errors)
 
+add_project_module(Interface "interface.cpp")
 
-add_project_module(Interface "interface.cpp" "triggering_module.cpp" "processing.cpp")
+# add_project_module(Interface "interface.cpp" "triggering_module.cpp" "processing.cpp")

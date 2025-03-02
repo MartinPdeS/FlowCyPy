@@ -11,6 +11,8 @@
 
 namespace py = pybind11;
 
+void dummy_function();
+
 
 /**
  * @brief Validates if the specified detector exists in the given map.
@@ -22,8 +24,6 @@ namespace py = pybind11;
  */
 void validate_detector_existence(const std::map<std::string, py::array_t<double>> &map, const std::string &detector_name, const std::string &error_message);
 
-
-void dummy_function();
 
 
 /**

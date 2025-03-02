@@ -5,7 +5,6 @@ from FlowCyPy.units import Quantity
 import pandas as pd
 import numpy as np
 import logging
-import pint_pandas
 
 config_dict = dict(
     arbitrary_types_allowed=True,
