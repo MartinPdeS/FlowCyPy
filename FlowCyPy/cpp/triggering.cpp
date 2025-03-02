@@ -18,18 +18,15 @@ namespace py = pybind11;
  * @param threshold The trigger threshold.
  * @return A vector of indices where the signal crosses the threshold.
  */
-// std::vector<int> find_trigger_indices(
-//     double *trigger_signal,
-//     size_t signal_size,
-//     double threshold)
-// {
-//     std::vector<int> trigger_indices;
-//     for (size_t i = 1; i < signal_size; ++i)
-//         if (trigger_signal[i - 1] <= threshold && trigger_signal[i] > threshold)
-//             trigger_indices.push_back(i - 1);
+std::vector<int> find_trigger_indices(double *trigger_signal, size_t signal_size, double threshold)
+{
+    std::vector<int> trigger_indices;
+    for (size_t i = 1; i < signal_size; ++i)
+        if (trigger_signal[i - 1] <= threshold && trigger_signal[i] > threshold)
+            trigger_indices.push_back(i - 1);
 
-//     return trigger_indices;
-// }
+    return trigger_indices;
+}
 
 /**
  * @brief Applies pre-buffer and post-buffer constraints to trigger indices, ensuring no overlap.
@@ -234,7 +231,7 @@ void run_triggering(
     std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
 
     // Find trigger indices using baseline-restored signal
-    // std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
+    std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
 
     // // Apply buffer constraints
     // std::vector<std::pair<int, int>> valid_triggers = apply_buffer_constraints(
