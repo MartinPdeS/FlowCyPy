@@ -11,20 +11,6 @@ namespace py = pybind11;
 
 
 /**
- * @brief Validates if the specified detector exists in the given map.
- *
- * @param map The map containing detector data.
- * @param detector_name The name of the detector to check.
- * @param error_message The error message to throw if not found.
- * @throws std::runtime_error if the detector is not found in the map.
- */
-// void validate_detector_existence(const py::dict &map, const std::string &detector_name, const std::string &error_message)
-// {
-//     if (!map.contains(detector_name))
-//         throw std::runtime_error(error_message);
-// }
-
-/**
  * @brief Identifies trigger points where the signal crosses a given threshold.
  *
  * @param trigger_signal Pointer to the signal array.
@@ -217,8 +203,12 @@ void run_triggering(
     int max_triggers = -1)
 {
     // Validate trigger detector
-    // validate_detector_existence(signal_map, trigger_detector_name, "Trigger detector not found in signal map.");
-    // validate_detector_existence(time_map, trigger_detector_name, "Trigger detector not found in time map.");
+    if (!signal_map.contains(trigger_detector_name.c_str())) {
+        throw std::runtime_error("Trigger detector not found in signal_map");
+    }
+    if (!time_map.contains(trigger_detector_name.c_str())) {
+        throw std::runtime_error("Trigger detector not found in time_map");
+    }
 
     // Get trigger detector data
     py::array_t<double> trigger_signal_array = signal_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
