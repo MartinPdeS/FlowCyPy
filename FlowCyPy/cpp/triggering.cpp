@@ -211,7 +211,8 @@ extract_signal_segments(
  *      - The **low-pass filter** is applied to smooth the signal, but only if `filter_lowpass_cutoff` is specified.
  *      - If no valid triggers are found, the function returns empty arrays.
  */
-std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
+// std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
+void
 run_triggering(
     const py::dict &signal_map,
     const py::dict &time_map,
