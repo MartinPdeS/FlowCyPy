@@ -230,8 +230,8 @@ void run_triggering(
     // Apply Baseline Restoration BEFORE thresholding
     std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
 
-    // // Find trigger indices using baseline-restored signal
-    // std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
+    // Find trigger indices using baseline-restored signal
+    std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
 
     // // Apply buffer constraints
     // std::vector<std::pair<int, int>> valid_triggers = apply_buffer_constraints(
