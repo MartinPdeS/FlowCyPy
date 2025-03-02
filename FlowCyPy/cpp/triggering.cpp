@@ -79,59 +79,81 @@ std::vector<std::pair<int, int>> apply_buffer_constraints(
  * @param valid_triggers List of valid trigger segments (start, end).
  * @return Tuple containing NumPy arrays for times, signals, detector names, and segment IDs.
  */
-// std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>> extract_signal_segments(
-//     const py::dict &signal_map,
-//     const py::dict &time_map,
-//     const std::vector<std::pair<int, int>> &valid_triggers)
-// {
-//     std::vector<double> times_out, signals_out;
-//     std::vector<std::string> detectors_out;
-//     std::vector<int> segment_ids_out;
+#include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
+#include <pybind11/stl.h>
+#include <tuple>
+#include <vector>
+#include <string>
+#include <stdexcept>
 
-//     for (auto item : signal_map) {
-//         std::string detector_name = item.first.cast<std::string>();
-//         py::array_t<double> signal_array = item.second.cast<py::array_t<double>>();
-//         py::array_t<double> time_array = time_map[detector_name.c_str()].cast<py::array_t<double>>();
+namespace py = pybind11;
 
-//         py::buffer_info signal_buf = signal_array.request();
-//         py::buffer_info time_buf = time_array.request();
+// Assume find_trigger_indices is defined elsewhere:
+std::vector<int> find_trigger_indices(const double* signal, size_t n, double threshold);
 
-//         if (signal_buf.ndim != 1 || time_buf.ndim != 1)
-//             throw std::runtime_error("Signal and time arrays must be 1D");
+std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
+extract_signal_segments(
+    const std::vector<std::string>& detector_names,
+    const std::vector<py::array_t<double>>& signal_arrays,
+    const std::vector<py::array_t<double>>& time_arrays,
+    const std::vector<std::pair<int, int>>& valid_triggers)
+{
+    // Check that all parallel vectors have the same length.
+    if (detector_names.size() != signal_arrays.size() || detector_names.size() != time_arrays.size()) {
+        throw std::runtime_error("Input vectors must have the same length");
+    }
 
-//         size_t signal_size = signal_buf.shape[0];
-//         double *signal_ptr = static_cast<double *>(signal_buf.ptr);
-//         double *time_ptr = static_cast<double *>(time_buf.ptr);
+    std::vector<double> times_out, signals_out;
+    std::vector<std::string> detectors_out;
+    std::vector<int> segment_ids_out;
 
-//         size_t segment_id = 0;
-//         for (const auto &[start, end] : valid_triggers)
-//         {
-//             for (int i = start; i <= end; ++i)
-//             {
-//                 if (i >= static_cast<int>(signal_size))
-//                     break;
+    // Iterate over each detector.
+    for (size_t idx = 0; idx < detector_names.size(); ++idx) {
+        const std::string& detector_name = detector_names[idx];
+        const py::array_t<double>& signal_array = signal_arrays[idx];
+        const py::array_t<double>& time_array = time_arrays[idx];
 
-//                 times_out.push_back(time_ptr[i]);
-//                 signals_out.push_back(signal_ptr[i]);
-//                 detectors_out.push_back(detector_name);
-//                 segment_ids_out.push_back(segment_id);
-//             }
-//             segment_id++;
-//         }
-//     }
+        // Get buffer info.
+        py::buffer_info signal_buf = signal_array.request();
+        py::buffer_info time_buf = time_array.request();
 
-//     // Convert vector of strings to Python list
-//     py::list detector_list;
-//     for (const auto &detector : detectors_out)
-//         detector_list.append(detector);
+        if (signal_buf.ndim != 1 || time_buf.ndim != 1)
+            throw std::runtime_error("Signal and time arrays must be 1D");
 
+        size_t signal_size = signal_buf.shape[0];
+        double* signal_ptr = static_cast<double*>(signal_buf.ptr);
+        double* time_ptr = static_cast<double*>(time_buf.ptr);
 
-//     return std::make_tuple(
-//         py::array_t<double>(times_out.size(), times_out.data()),
-//         py::array_t<double>(signals_out.size(), signals_out.data()),
-//         detector_list,
-//         py::array_t<int>(segment_ids_out.size(), segment_ids_out.data()));
-// }
+        size_t segment_id = 0;
+        // For each valid trigger, extract the corresponding segment.
+        for (const auto& trigger : valid_triggers) {
+            int start = trigger.first;
+            int end   = trigger.second;
+            for (int i = start; i <= end; ++i) {
+                if (i >= static_cast<int>(signal_size))
+                    break;
+                times_out.push_back(time_ptr[i]);
+                signals_out.push_back(signal_ptr[i]);
+                detectors_out.push_back(detector_name);
+                segment_ids_out.push_back(segment_id);
+            }
+            segment_id++;
+        }
+    }
+
+    // Convert vector of strings to py::list.
+    py::list detector_list;
+    for (const auto& det : detectors_out)
+        detector_list.append(det);
+
+    return std::make_tuple(
+        py::array_t<double>(times_out.size(), times_out.data()),
+        py::array_t<double>(signals_out.size(), signals_out.data()),
+        detector_list,
+        py::array_t<int>(segment_ids_out.size(), segment_ids_out.data())
+    );
+}
 
 
 /**
@@ -189,8 +211,9 @@ std::vector<std::pair<int, int>> apply_buffer_constraints(
  *      - The **low-pass filter** is applied to smooth the signal, but only if `filter_lowpass_cutoff` is specified.
  *      - If no valid triggers are found, the function returns empty arrays.
  */
-// std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
-void run_triggering(
+std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
+// void
+run_triggering(
     const py::dict &signal_map,
     const py::dict &time_map,
     const std::string &trigger_detector_name,
@@ -213,13 +236,6 @@ void run_triggering(
 
     py::object time_obj = time_map[trigger_detector_name.c_str()];
     py::array_t<double> trigger_time_array = py::reinterpret_borrow<py::array_t<double>>(time_obj);
-
-
-
-
-    // // Get trigger detector data
-    // // py::array_t<double> trigger_signal_array = signal_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
-    // // py::array_t<double> trigger_time_array = time_map[trigger_detector_name.c_str()].cast<py::array_t<double>>();
 
     py::buffer_info trigger_signal_buf = trigger_signal_array.request();
     py::buffer_info trigger_time_buf = trigger_time_array.request();
@@ -245,7 +261,7 @@ void run_triggering(
     if (valid_triggers.empty())
     {
         PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found after baseline restoration. Returning empty arrays.", 1);
-        // return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
+        return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
     }
 
     // Extract triggered signal segments
