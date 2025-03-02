@@ -259,19 +259,25 @@ std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
 }
 
 
+void dummy_function(){}
+
+
 PYBIND11_MODULE(triggering_system, module) {
     module.doc() = "Module for efficient signal processing and triggered acquisition using C++";
 
     // Expose run_triggering function with full filtering capabilities
-    module.def("run", &run_triggering,
-      py::arg("signal_map"),
-      py::arg("time_map"),
-      py::arg("trigger_detector_name"),
-      py::arg("threshold"),
-      py::arg("pre_buffer") = 64,
-      py::arg("post_buffer") = 64,
-      py::arg("max_triggers") = -1,               // Maximum number of trigger events (-1 for unlimited)
-      "Executes triggered acquisition analysis with optional baseline restoration and Bessel low-pass filtering. "
-      "Detects triggers based on a given threshold, applies pre/post-trigger buffers, and extracts signal segments "
-      "from multiple detectors.");
+    module.def("dummy_function", &dummy_function);
+
+    // // Expose run_triggering function with full filtering capabilities
+    // module.def("run", &run_triggering,
+    //   py::arg("signal_map"),
+    //   py::arg("time_map"),
+    //   py::arg("trigger_detector_name"),
+    //   py::arg("threshold"),
+    //   py::arg("pre_buffer") = 64,
+    //   py::arg("post_buffer") = 64,
+    //   py::arg("max_triggers") = -1,               // Maximum number of trigger events (-1 for unlimited)
+    //   "Executes triggered acquisition analysis with optional baseline restoration and Bessel low-pass filtering. "
+    //   "Detects triggers based on a given threshold, applies pre/post-trigger buffers, and extracts signal segments "
+    //   "from multiple detectors.");
 }
