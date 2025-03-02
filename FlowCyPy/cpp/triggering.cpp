@@ -248,20 +248,19 @@ run_triggering(
     // Find trigger indices using baseline-restored signal
     std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
 
-    // Apply buffer constraints
-    std::vector<std::pair<int, int>> valid_triggers = apply_buffer_constraints(
-        trigger_indices,
-        pre_buffer - 1,
-        post_buffer,
-        static_cast<int>(n_trigger),
-        max_triggers
-    );
+    // // Apply buffer constraints
+    // std::vector<std::pair<int, int>> valid_triggers = apply_buffer_constraints(
+    //     trigger_indices,
+    //     pre_buffer - 1,
+    //     post_buffer,
+    //     static_cast<int>(n_trigger),
+    //     max_triggers
+    // );
 
-    if (valid_triggers.empty())
-    {
-        PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found after baseline restoration. Returning empty arrays.", 1);
-        return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
-    }
+    // if (valid_triggers.empty()) {
+    //     PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found after baseline restoration. Returning empty arrays.", 1);
+    //     return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
+    // }
 
     // Extract triggered signal segments
     // return extract_signal_segments(signal_map, time_map, valid_triggers);
