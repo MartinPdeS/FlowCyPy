@@ -194,7 +194,7 @@ class ScattererCollection():
         ----------
         scatterer_dataframe : pd.DataFrame
             A DataFrame indexed by population names (first level) and containing the
-            following columns: `'Size'`: To be filled with particle diameter data. `'RefractiveIndex'`:
+            following columns: `'Diameter'`: To be filled with particle diameter data. `'RefractiveIndex'`:
             To be filled with refractive index data. The DataFrame must already have the required structure.
 
         Returns
@@ -216,7 +216,7 @@ class ScattererCollection():
 
             diameter, ri = population.generate_sampling(sampling)
 
-            scatterer_dataframe.loc[population.name, 'Size'] = PintArray(diameter, dtype=diameter.units)
+            scatterer_dataframe.loc[population.name, 'Diameter'] = PintArray(diameter, dtype=diameter.units)
             scatterer_dataframe.loc[population.name, 'RefractiveIndex'] = PintArray(ri, dtype=ri.units)
 
     def plot(self, n_points: int = 200) -> None:
@@ -296,7 +296,7 @@ class ScattererCollection():
         # Set axis labels
         grid.ax_joint.legend(handles=legend_handles, title="Populations")
 
-        grid.ax_joint.set_xlabel(f"Size [{diameter.units}]")
+        grid.ax_joint.set_xlabel(f"Diameter [{diameter.units}]")
         grid.ax_joint.set_ylabel(f"Refractive Index [{ri.units}]")
 
         plt.tight_layout()

@@ -262,8 +262,6 @@ class Detector():
             mean_photon_count = photon_rate * sampling_interval  # Mean photons per sample
 
             # Step 3: Simulate photon arrivals using Poisson statistics
-            # photon_counts_distribution = np.random.poisson(mean_photon_count.to('').magnitude, size=len(signal))
-
             lam = mean_photon_count.to('').magnitude
             if np.max(lam) > 1e6:  # Threshold where Poisson becomes unstable
                 photon_counts_distribution = np.random.normal(lam, np.sqrt(lam), size=len(signal)).astype(int)

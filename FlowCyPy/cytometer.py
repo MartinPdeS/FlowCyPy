@@ -343,7 +343,7 @@ class FlowCytometer:
         Returns
         -------
         Callable
-            A function that computes the detected signal for scatterer sizes and particle distributions.
+            A function that computes the detected signal for scatterer diameters and particle distributions.
 
         Raises
         ------

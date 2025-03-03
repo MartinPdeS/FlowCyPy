@@ -47,7 +47,7 @@ class ScattererDataFrame(pd.DataFrame):
         for col_name, col_data in df.items():
             # Convert to compact unit
             unit = col_data.max().to_compact().units
-            df.loc[:, col_name] = col_data.pint.to(unit)
+            df[col_name] = col_data.pint.to(unit)
             units_list.append(unit)
 
         return df, units_list
@@ -55,7 +55,7 @@ class ScattererDataFrame(pd.DataFrame):
     @helper.plot_sns
     def plot_2d(
         self,
-        x: str = 'Size',
+        x: str = 'Diameter',
         y: str = 'RefractiveIndex',
         alpha: float = 0.8,
         bandwidth_adjust: float = 1,
@@ -67,7 +67,7 @@ class ScattererDataFrame(pd.DataFrame):
         Parameters
         ----------
         x : str, optional
-            Column representing scatterer sizes (default: 'Size').
+            Column representing scatterer sizes (default: 'Diameter').
         y : str, optional
             Column representing refractive indices (default: 'RefractiveIndex').
         alpha : float, optional
@@ -108,7 +108,7 @@ class ScattererDataFrame(pd.DataFrame):
     def plot_3d(
         self,
         ax: plt.Axes,
-        x: str = 'Size',
+        x: str = 'Diameter',
         y: str = 'RefractiveIndex',
         z: str = 'Density',
         hue: str = 'Population',
@@ -122,7 +122,7 @@ class ScattererDataFrame(pd.DataFrame):
         ax : plt.Axes
             A matplotlib 3D axis to plot on.
         x : str, optional
-            Column for the x-axis (default: 'Size').
+            Column for the x-axis (default: 'Diameter').
         y : str, optional
             Column for the y-axis (default: 'RefractiveIndex').
         z : str, optional
@@ -173,7 +173,7 @@ class ScattererDataFrame(pd.DataFrame):
             "Name",
             "Refractive Index",
             "Medium Refractive Index",
-            "Size",
+            "Diameter",
             "Particle Count",
             "Number of Events",
             "Min Time Between Events",
@@ -201,7 +201,7 @@ class ScattererDataFrame(pd.DataFrame):
         name = population_name
         refractive_index = f"{population_df['RefractiveIndex'].mean():~P}"
         medium_refractive_index = f"{self.attrs['run_time']:~P}"  # Update as needed
-        size = f"{population_df['Size'].mean():~P}"
+        size = f"{population_df['Diameter'].mean():~P}"
         particle_count = len(population_df)
         num_events = particle_count
 
@@ -311,7 +311,8 @@ class PeakDataFrame(pd.DataFrame):
             unit = col_data.max().to_compact().units
             if unit.dimensionality == units.bit_bins.dimensionality:
                 unit = units.bit_bins
-            df.loc[:, col_name] = col_data.pint.to(unit)
+            # df.loc[:, col_name] = col_data.pint.to(unit)
+            df[col_name] = col_data.pint.to(unit)
             unit_list.append(unit)
 
         return df, unit_list

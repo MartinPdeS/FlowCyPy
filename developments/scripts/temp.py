@@ -24,7 +24,7 @@ Overview:
 import numpy as np
 from FlowCyPy import units
 import PyMieSim
-PyMieSim.debug_mode = True
+PyMieSim.debug_mode = False
 
 # %%
 # Step 1: Configure Noise Settings
@@ -52,8 +52,8 @@ from FlowCyPy import GaussianBeam
 
 source = GaussianBeam(
     numerical_aperture=0.3 * units.AU,           # Numerical aperture
-    wavelength=200 * units.nanometer,           # Wavelength
-    optical_power=20 * units.milliwatt          # Optical power
+    wavelength=455 * units.nanometer,           # Wavelength
+    optical_power=20000 * units.milliwatt          # Optical power
 )
 
 
@@ -136,8 +136,9 @@ detector_0 = Detector(
     name='forward',
     phi_angle=0 * units.degree,                  # Forward scatter angle
     numerical_aperture=0.4 * units.AU,
+    cache_numerical_aperture=0.00 * units.AU,
     responsitivity=1 * units.ampere / units.watt,
-    resistance=50 * units.ohm,
+    resistance=1500 * units.ohm,
     temperature=300 * units.kelvin
 )
 
@@ -152,8 +153,8 @@ detector_1 = Detector(
 
 detector_2 = Detector(
     name='det_2',
-    phi_angle=45 * units.degree,                 # Side scatter angle
-    numerical_aperture=0.4 * units.AU,
+    phi_angle=90 * units.degree,                 # Side scatter angle
+    numerical_aperture=0.1 * units.AU,
     responsitivity=1 * units.ampere / units.watt,
     resistance=50 * units.ohm,
     temperature=300 * units.kelvin,
@@ -180,8 +181,9 @@ cytometer = FlowCytometer(
 # Run the flow cytometry simulation
 acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-acquisition.scatterer.plot(x='forward', y='side', z='RefractiveIndex')
-acquisition.scatterer.plot(x='forward', y='side')
+# acquisition.scatterer.plot(x='forward', y='side', z='det_2')
+# acquisition.scatterer.plot(x='forward', y='side')
+acquisition.scatterer.plot(x='forward', y='side', z='Diameter')
 
 # dsa
 
@@ -207,7 +209,7 @@ acquisition.analog.plot()
 # The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 # window size and threshold.
 triggered_acquisition = acquisition.run_triggering(
-    threshold=0.2 * units.millivolt,
+    threshold=10 * units.millivolt,
     trigger_detector_name='forward',
     max_triggers=35,
     pre_buffer=64,

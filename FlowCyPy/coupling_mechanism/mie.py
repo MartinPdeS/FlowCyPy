@@ -103,9 +103,9 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
     detector : Detector
         The detector object containing properties such as numerical aperture and angles.
     scatterer : ScattererCollection
-        The scatterer object containing particle size and refractive index data.
+        The scatterer object containing particle diameter and refractive index data.
     tolerance : float, optional
-        The tolerance for deciding if two values of size and refractive index are "close enough" to be cached.
+        The tolerance for deciding if two values of diameter and refractive index are "close enough" to be cached.
 
     Returns
     -------
@@ -114,7 +114,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
     """
     from PyMieSim import experiment as _PyMieSim
 
-    size_list = scatterer_dataframe['Size'].values
+    size_list = scatterer_dataframe['Diameter'].values
 
     if len(size_list) == 0:
         return np.array([]) * watt
@@ -131,7 +131,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
 
     pms_scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
         total_size=total_size,
-        diameter=scatterer_dataframe['Size'].values.quantity.magnitude * scatterer_dataframe['Size'].values.quantity.units,
+        diameter=scatterer_dataframe['Diameter'].values.quantity.magnitude * scatterer_dataframe['Diameter'].values.quantity.units,
         property=scatterer_dataframe['RefractiveIndex'].values.quantity.magnitude * scatterer_dataframe['RefractiveIndex'].values.quantity.units,
         medium_property=medium_refractive_index,
         source=pms_source
