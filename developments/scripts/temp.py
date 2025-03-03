@@ -180,21 +180,26 @@ cytometer = FlowCytometer(
 # Run the flow cytometry simulation
 acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
-_ = acquisition.scatterer.plot_3d(
-    x='side',
-    y='forward',
-    z='det_2'
-)
+acquisition.scatterer.plot(x='forward', y='side', z='RefractiveIndex')
+acquisition.scatterer.plot(x='forward', y='side')
 
-_ = acquisition.scatterer.plot(
-    x='side',
-    y='forward',
-    # z='det_2'
-)
+# dsa
+
+# _ = acquisition.scatterer.plot_3d(
+#     x='side',
+#     y='forward',
+#     z='det_2'
+# )
+
+# _ = acquisition.scatterer.plot(
+#     x='side',
+#     y='forward',
+#     # z='det_2'
+# )
 
 # %%
 # Visualize the scatter signals from both detectors
-# acquisition.analog.plot()
+acquisition.analog.plot()
 
 # %%
 # Step 7: Analyze Detected Signals
@@ -209,7 +214,7 @@ triggered_acquisition = acquisition.run_triggering(
     post_buffer=64
 )
 
-# triggered_acquisition.analog.plot()
+triggered_acquisition.analog.plot()
 
 
 # %%
@@ -219,13 +224,16 @@ from FlowCyPy import peak_locator
 peak_algorithm = peak_locator.BasicPeakLocator()
 
 peaks = triggered_acquisition.detect_peaks(peak_algorithm)
+# print(peaks)
+peaks.plot(x='forward', y='side')
+peaks.plot(x='forward', y='side', z='det_2')
 
-peaks.plot_3d(
-    feature='Height',
-    x_detector='side',
-    y_detector='forward',
-    z_detector='det_2'
-)
+# peaks.plot_3d(
+#     feature='Height',
+#     x_detector='side',
+#     y_detector='forward',
+#     z_detector='det_2'
+# )
 
 # # %%
 # # Step 8: Classifying the collected dataset

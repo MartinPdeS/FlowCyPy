@@ -191,6 +191,7 @@ def plot_3d(function: Callable) -> Callable:
             ax.set_ylim3d([y_middle - max_range/2, y_middle + max_range/2])
             ax.set_zlim3d([z_middle - max_range/2, z_middle + max_range/2])
 
+        ax.legend()
         # Save the figure if a filename is provided.
         if save_filename:
             fig.savefig(save_filename)

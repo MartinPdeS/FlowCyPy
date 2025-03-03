@@ -97,7 +97,7 @@ def apply_rin_noise(source: BaseBeam, total_size: int, bandwidth: float) -> np.n
     return amplitude_with_rin
 
 
-def _compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
+def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
     """
     Computes the detected signal by analyzing the scattering properties of particles.
 
@@ -160,64 +160,3 @@ def _compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dat
     # Compute coupling values
     coupling_value = experiment.get_sequential('coupling').squeeze()
     return np.atleast_1d(coupling_value) * watt
-
-
-def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
-    """
-    Computes the detected signal by analyzing the scattering properties of particles.
-
-    Parameters
-    ----------
-    source : BaseBeam
-        The light source object containing wavelength, power, and other optical properties.
-    detector : Detector
-        The detector object containing properties such as numerical aperture and angles.
-    scatterer : ScattererCollection
-        The scatterer object containing particle size and refractive index data.
-    tolerance : float, optional
-        The tolerance for deciding if two values of size and refractive index are "close enough" to be cached.
-
-    Returns
-    -------
-    np.ndarray
-        Array of coupling values for each particle, based on the detected signal.
-    """
-
-    size_list = scatterer_dataframe['Size'].values
-
-    TOTAL_SIZE = len(size_list)
-
-    source = Gaussian.build_sequential(
-        wavelength=np.linspace(600, 1000, TOTAL_SIZE) * units.nanometer,
-        polarization=0 * units.degree,
-        optical_power=1e-3 * units.watt,
-        NA=0.2 * units.AU,
-        total_size=TOTAL_SIZE
-    )
-
-    scatterer = Sphere.build_sequential(
-        source=source,
-        diameter=np.linspace(400, 1400, TOTAL_SIZE) * units.nanometer,
-        property=1.4 * units.RIU,
-        medium_property=1.0 * units.RIU,
-        total_size=TOTAL_SIZE
-    )
-
-    detector = CoherentMode.build_sequential(
-        mode_number='LP01',
-        rotation=0 * units.degree,
-        NA=0.2 * units.AU,
-        cache_NA=0 * AU,
-        polarization_filter=np.nan * units.degree,
-        gamma_offset=0 * units.degree,
-        phi_offset=0 * units.degree,
-        sampling=100 * units.AU,
-        total_size=TOTAL_SIZE
-    )
-
-    experiment = Setup(scatterer=scatterer, source=source, detector=detector)
-
-    # This call should complete without raising an error.
-    coupling = experiment.get_sequential('coupling')
-
-    return np.atleast_1d(coupling) * watt
