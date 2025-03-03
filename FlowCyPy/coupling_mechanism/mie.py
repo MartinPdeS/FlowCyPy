@@ -1,9 +1,4 @@
 import numpy as np
-from PyMieSim.experiment.detector import CoherentMode
-from PyMieSim.experiment.scatterer import Sphere
-from PyMieSim.experiment.source import Gaussian, PlaneWave
-from PyMieSim import units
-from PyMieSim.experiment import Setup
 from FlowCyPy import Detector
 from FlowCyPy.source import BaseBeam
 from PyMieSim.units import Quantity, degree, watt, AU, hertz
@@ -146,7 +141,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
         mode_number='NC00',
         total_size=total_size,
         NA=detector.numerical_aperture,
-        cache_NA=0 * AU,
+        cache_NA=detector.cache_numerical_aperture,
         gamma_offset=detector.gamma_angle,
         phi_offset=detector.phi_angle,
         polarization_filter=np.nan * degree,

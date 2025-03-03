@@ -7,7 +7,6 @@ import pint_pandas
 
 from PyMieSim.units import Quantity
 from FlowCyPy import units
-from FlowCyPy.units import AU, volt, watt, degree, ampere, coulomb
 from FlowCyPy.noises import NoiseSetting
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.physical_constant import PhysicalConstant
@@ -36,6 +35,8 @@ class Detector():
         The detection angle in degrees.
     numerical_aperture : Quantity
         The numerical aperture of the detector, a unitless value.
+    cache_numerical_aperture : Quantity
+        The numerical aperture of the cache in front of the detector, a unitless value.
     responsitivity : Quantity
         Detector's responsivity, default is 1 volt per watt.
     dark_current : Quantity
@@ -47,14 +48,14 @@ class Detector():
     """
     phi_angle: Quantity
     numerical_aperture: Quantity
-    # cache_numerical_aperture: QUantity
 
-    gamma_angle: Optional[Quantity] = Quantity(0, degree)
-    sampling: Optional[Quantity] = 100 * AU
-    responsitivity: Optional[Quantity] = Quantity(1, ampere / watt)
-    dark_current: Optional[Quantity] = Quantity(0.0, ampere)  # Dark current
-    resistance: Optional[Quantity] = Quantity(50.0, 'ohm')  # Resistance for thermal noise
-    temperature: Optional[Quantity] = Quantity(0.0, 'kelvin')  # Temperature for thermal noise
+    cache_numerical_aperture: Quantity = Quantity(0, units.AU)
+    gamma_angle: Optional[Quantity] = Quantity(0, units.degree)
+    sampling: Optional[Quantity] = Quantity(100, units.AU)
+    responsitivity: Optional[Quantity] = Quantity(1, units.ampere / units.watt)
+    dark_current: Optional[Quantity] = Quantity(0.0, units.ampere)  # Dark current
+    resistance: Optional[Quantity] = Quantity(50.0, units.ohm)  # Resistance for thermal noise
+    temperature: Optional[Quantity] = Quantity(0.0, units.kelvin)  # Temperature for thermal noise
     name: Optional[str] = None
 
 
@@ -162,7 +163,7 @@ class Detector():
             4 * PhysicalConstant.kb * self.temperature * self.resistance * self.signal_digitizer.bandwidth
         )
 
-        thermal_noise = np.random.normal(0, noise_std.to(volt).magnitude, size=len(signal)) * volt
+        thermal_noise = np.random.normal(0, noise_std.to(units.volt).magnitude, size=len(signal)) * units.volt
 
         signal += thermal_noise
 
@@ -191,10 +192,10 @@ class Detector():
             return
 
         dark_current_std = np.sqrt(
-            2 * 1.602176634e-19 * coulomb * self.dark_current * self.signal_digitizer.bandwidth
+            2 * 1.602176634e-19 * units.coulomb * self.dark_current * self.signal_digitizer.bandwidth
         )
 
-        dark_current_noise = np.random.normal(0, dark_current_std.to(ampere).magnitude, size=len(signal)) * ampere
+        dark_current_noise = np.random.normal(0, dark_current_std.to(units.ampere).magnitude, size=len(signal)) * units.ampere
 
         dark_voltage_noise = dark_current_noise * self.resistance
 
