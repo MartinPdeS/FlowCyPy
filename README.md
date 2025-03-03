@@ -8,12 +8,12 @@
 | FlowCyPy/circuits.py                                  |       34 |       15 |        0 |        0 |     56% |21, 34, 45-48, 66-68, 79-87, 104-106, 117-125 |
 | FlowCyPy/classifier.py                                |       44 |        0 |        8 |        4 |     92% |32->35, 74->78, 121->125, 172->176 |
 | FlowCyPy/coupling\_mechanism/empirical.py             |        9 |        4 |        0 |        0 |     56% |     39-47 |
-| FlowCyPy/coupling\_mechanism/mie.py                   |       40 |       18 |        4 |        0 |     50% |81-97, 120-162 |
+| FlowCyPy/coupling\_mechanism/mie.py                   |       26 |        1 |        4 |        2 |     90% |78->92, 120 |
 | FlowCyPy/coupling\_mechanism/rayleigh.py              |       23 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/uniform.py               |        6 |        1 |        0 |        0 |     83% |        40 |
-| FlowCyPy/cytometer.py                                 |      102 |       15 |       26 |        7 |     80% |115, 253, 284->298, 308-314, 358, 360, 363-366, 386-390 |
-| FlowCyPy/dataframe\_subclass.py                       |      256 |      110 |       46 |        9 |     53% |31-63, 96-123, 234-252, 308-320, 360->363, 367, 368->exit, 375-408, 414, 423-424, 435->exit, 460, 499, 516-517, 557, 575-593, 599, 611-621, 637-645, 651, 663-673 |
-| FlowCyPy/detector.py                                  |       77 |        6 |       14 |        4 |     89% |79, 99, 111, 249-250, 269 |
+| FlowCyPy/cytometer.py                                 |      104 |       14 |       24 |        6 |     81% |115, 295->308, 318-324, 372, 374, 377-380, 400-404 |
+| FlowCyPy/dataframe\_subclass.py                       |      279 |      119 |       56 |        9 |     53% |26-28, 44-53, 85-105, 140-155, 257-270, 288, 312->315, 387-407, 455->458, 467, 468->exit, 482-507, 520, 535-536, 546->exit, 581, 642-643, 692-712, 716, 728-737, 760-766, 770, 782-791 |
+| FlowCyPy/detector.py                                  |       77 |        6 |       14 |        4 |     89% |81, 101, 113, 251-252, 269 |
 | FlowCyPy/distribution/base\_class.py                  |       27 |        4 |        2 |        1 |     83% |32, 36, 65, 72 |
 | FlowCyPy/distribution/delta.py                        |       31 |        2 |        2 |        1 |     91% |   74, 104 |
 | FlowCyPy/distribution/lognormal.py                    |       37 |        3 |        4 |        2 |     88% |90, 92, 124 |
@@ -23,7 +23,7 @@
 | FlowCyPy/distribution/weibull.py                      |       36 |       16 |        2 |        0 |     53% |28, 32, 36, 57-62, 79, 102-112, 115 |
 | FlowCyPy/filters.py                                   |       22 |        2 |        4 |        2 |     85% |    39, 83 |
 | FlowCyPy/flow\_cell.py                                |       62 |        5 |        8 |        3 |     89% |66, 74, 81, 112, 142 |
-| FlowCyPy/helper.py                                    |       90 |       39 |       30 |        8 |     54% |38, 42, 46, 116-121, 124-127, 130, 132->135, 160-202, 234 |
+| FlowCyPy/helper.py                                    |       91 |       40 |       30 |        8 |     54% |38, 42, 46, 116-121, 124-127, 130, 132->135, 160-203, 235 |
 | FlowCyPy/noises.py                                    |       27 |       13 |        6 |        0 |     42% |3-5, 65-67, 77, 81-87 |
 | FlowCyPy/particle\_count.py                           |       45 |       20 |       20 |        4 |     51% |30-31, 41, 64-72, 101-104, 110, 115-120, 127 |
 | FlowCyPy/peak\_locator/DeepPeak.py                    |       25 |       21 |        0 |        0 |     16% |69-73, 119-152 |
@@ -41,7 +41,7 @@
 | FlowCyPy/triggered\_acquisition.py                    |       93 |       10 |       32 |        9 |     82% |49-51, 148, 156, 160, 192, 200, 204, 226, 246->248, 248->exit |
 | FlowCyPy/units.py                                     |       21 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       65 |       29 |       14 |        0 |     48% |28-38, 41, 107-145 |
-|                                             **TOTAL** | **1748** |  **441** |  **326** |   **78** | **71%** |           |
+|                                             **TOTAL** | **1760** |  **433** |  **334** |   **79** | **71%** |           |
 
 
 ## Setup coverage badge
