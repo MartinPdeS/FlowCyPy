@@ -93,7 +93,7 @@ class RosinRammler(Base):
         x_max = d * x_max  # Scale x_max by characteristic property
         return np.linspace(x_min, x_max, n_samples) * self._units
 
-    def get_pdf(self, x_min: float = 0.01, x_max: float = 4, n_samples: int = 100) -> Tuple[np.ndarray, np.ndarray]:
+    def get_pdf(self, x_min: float = 0.1, x_max: float = 2, n_samples: int = 100) -> Tuple[np.ndarray, np.ndarray]:
         r"""
         Returns the x-values and the scaled PDF values for the particle property distribution.
 

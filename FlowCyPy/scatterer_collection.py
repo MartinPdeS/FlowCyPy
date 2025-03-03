@@ -49,7 +49,7 @@ class ScattererCollection():
 
         return [(p.particle_count.value / total_concentration).magnitude for p in self.populations]
 
-    def get_population_dataframe(self, total_sampling: Optional[Quantity]) -> pd.DataFrame:
+    def get_population_dataframe(self, total_sampling: Optional[Quantity], use_ratio: bool = True) -> pd.DataFrame:
         """
         Generate a DataFrame by sampling particles from populations.
 
@@ -64,7 +64,10 @@ class ScattererCollection():
             A MultiIndex DataFrame containing the sampled data from all populations. The first
             index level indicates the population name, and the second level indexes the sampled data.
         """
-        ratios = self.get_population_ratios()
+        if use_ratio:
+            ratios = self.get_population_ratios()
+        else:
+            ratios = [1] * len(self.populations)
 
         sampling_list = [int(ratio * total_sampling.magnitude) for ratio in ratios]
 
@@ -219,87 +222,61 @@ class ScattererCollection():
             scatterer_dataframe.loc[population.name, 'Diameter'] = PintArray(diameter, dtype=diameter.units)
             scatterer_dataframe.loc[population.name, 'RefractiveIndex'] = PintArray(ri, dtype=ri.units)
 
-    def plot(self, n_points: int = 200) -> None:
+    def plot(self, sampling: int = 1000, show: bool = True, use_ratio: bool = False):
         """
         Visualizes the joint and marginal distributions of diameter and refractive index
-        for multiple populations in the scatterer collection.
+        for all populations in the scatterer collection using sampled data and seaborn's jointplot.
 
-        This method creates a joint plot using `sns.JointGrid`, where:
-
-            - The joint area displays filled contours representing the PDF values of diameter and refractive index.
-            - The marginal areas display the diameter and refractive index PDFs as filled plots.
-
-        Each population is plotted with a distinct color using a transparent colormap for the joint area.
+        This method generates a DataFrame with samples drawn from each population (distributed
+        according to their relative particle counts), then creates a KDE joint plot with marginal
+        distributions. Each population is distinguished by color.
 
         Parameters
         ----------
-        n_points : int, optional
-            The number of points used to compute the diameter and refractive index PDFs. Default is 100.
-            Increasing this value results in smoother distributions but increases computation time.
+        sampling : int, optional
+            Total number of samples to draw across all populations. The samples are distributed
+            among populations based on their concentration ratios. Default is 1000.
+        show : bool, optional
+            If True, displays the plot immediately.
 
-        Notes
-        -----
-
-            - The joint area uses a transparent colormap, transitioning from fully transparent to fully opaque for better visualization of overlapping populations.
-            - Marginal plots show semi-transparent filled curves for clarity.
-
-        Example
+        Returns
         -------
-        >>> scatterer_collection.plot(n_points=200)
-
+        g : seaborn.axisgrid.JointGrid
+            The JointGrid object containing the plot.
         """
-        def create_transparent_colormap(base_color):
-            """
-            Create a colormap that transitions from transparent to a specified base color.
-            """
-            return LinearSegmentedColormap.from_list(
-                "transparent_colormap",
-                [(base_color[0], base_color[1], base_color[2], 0),  # Fully transparent
-                (base_color[0], base_color[1], base_color[2], 1)],  # Fully opaque
-                N=256
-            )
+        # Convert the total sample count into a Quantity.
+        total_sampling = sampling * particle  # Assumes 'particle' is a valid unit from PyMieSim.units
 
-        # Create a JointGrid for visualization
+        # Generate the DataFrame with sampling.
+        df = self.get_population_dataframe(total_sampling, use_ratio=use_ratio)
+
+        # Reset the MultiIndex to obtain a column for population names.
+        df_reset = df.reset_index()
+
+        # Create the joint plot using seaborn's jointplot.
+        # Note: As of seaborn 0.11+, jointplot supports the hue parameter.
         with plt.style.context(mps):
-            grid = sns.JointGrid()
-
-        # Initialize a list to store legend handles
-        legend_handles = []
-
-        for index, population in enumerate(self.populations):
-            # Get diameter and refractive index PDFs
-            diameter, diameter_pdf = population.diameter.get_pdf(n_samples=n_points)
-            diameter_pdf /= diameter_pdf.max()
-            ri, ri_pdf = population.refractive_index.get_pdf(n_samples=n_points)
-            ri_pdf /= ri_pdf.max()
-
-            # Create a grid of diameter and ri values
-            X, Y = np.meshgrid(diameter, ri)
-            Z = np.outer(ri_pdf, diameter_pdf)  # Compute the PDF values on the grid
-
-            # Create a transparent colormap for this population
-            base_color = sns.color_palette()[index]
-            transparent_cmap = create_transparent_colormap(base_color)
-
-            # Plot the joint area as a filled contour plot
-            grid.ax_joint.contourf(
-                X, Y, Z, levels=10, cmap=transparent_cmap, extend="min"
+            g = sns.jointplot(
+                data=df_reset,
+                y='Diameter',
+                x='RefractiveIndex',
+                hue='Population',
+                kind='kde',
+                fill=True,
+                height=8,
             )
 
-            legend_handles.append(mpatches.Patch(color=base_color, label=population.name))
+        # Set axis labels (using the units from the first population; assumes consistency across populations).
+        g.set_axis_labels(
+            f"Diameter [{self.populations[0].diameter._units}]",
+            f"Refractive Index [{self.populations[0].refractive_index._units}]"
+        )
 
-
-            # Plot the marginal distributions
-            grid.ax_marg_x.fill_between(diameter.magnitude, diameter_pdf, color=f"C{index}", alpha=0.5)
-            grid.ax_marg_y.fill_betweenx(ri.magnitude, ri_pdf, color=f"C{index}", alpha=0.5)
-
-        # Set axis labels
-        grid.ax_joint.legend(handles=legend_handles, title="Populations")
-
-        grid.ax_joint.set_xlabel(f"Diameter [{diameter.units}]")
-        grid.ax_joint.set_ylabel(f"Refractive Index [{ri.units}]")
-
+        # Set a title for the plot.
+        plt.suptitle("Scatterer Collection", fontsize=16, y=1.02)
         plt.tight_layout()
 
-        # Show the plot
-        plt.show()
+        if show:
+            plt.show()
+
+        return g

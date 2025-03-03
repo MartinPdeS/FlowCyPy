@@ -5,6 +5,10 @@ import pandas as pd
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 from pint_pandas import PintArray
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from matplotlib import gridspec
 
 from PyMieSim.units import Quantity, RIU, meter
 from FlowCyPy.particle_count import ParticleCount
