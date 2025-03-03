@@ -77,18 +77,24 @@ Import necessary libraries and modules
 
 
 .. image-sg:: /gallery/extras/images/sphx_glr_scatterer_distribution_001.png
-   :alt: scatterer distribution
+   :alt: Scatterer Collection
    :srcset: /gallery/extras/images/sphx_glr_scatterer_distribution_001.png
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <seaborn.axisgrid.JointGrid object at 0x7f1f31636050>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.451 seconds)
+   **Total running time of the script:** (0 minutes 2.385 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_scatterer_distribution.py:

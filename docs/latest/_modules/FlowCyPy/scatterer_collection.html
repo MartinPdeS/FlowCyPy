@@ -563,7 +563,7 @@ document.write(`
 
 <div class="viewcode-block" id="ScattererCollection.get_population_dataframe">
 <a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.get_population_dataframe">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_population_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_sampling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_population_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_sampling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">],</span> <span class="n">use_ratio</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a DataFrame by sampling particles from populations.</span>
 
@@ -578,7 +578,10 @@ document.write(`
 <span class="sd">            A MultiIndex DataFrame containing the sampled data from all populations. The first</span>
 <span class="sd">            index level indicates the population name, and the second level indexes the sampled data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ratios</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_population_ratios</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">use_ratio</span><span class="p">:</span>
+            <span class="n">ratios</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_population_ratios</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ratios</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">)</span>
 
         <span class="n">sampling_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">ratio</span> <span class="o">*</span> <span class="n">total_sampling</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="k">for</span> <span class="n">ratio</span> <span class="ow">in</span> <span class="n">ratios</span><span class="p">]</span>
 
@@ -748,90 +751,64 @@ document.write(`
 
 <div class="viewcode-block" id="ScattererCollection.plot">
 <a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.plot">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_points</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">use_ratio</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Visualizes the joint and marginal distributions of diameter and refractive index</span>
-<span class="sd">        for multiple populations in the scatterer collection.</span>
+<span class="sd">        for all populations in the scatterer collection using sampled data and seaborn&#39;s jointplot.</span>
 
-<span class="sd">        This method creates a joint plot using `sns.JointGrid`, where:</span>
-
-<span class="sd">            - The joint area displays filled contours representing the PDF values of diameter and refractive index.</span>
-<span class="sd">            - The marginal areas display the diameter and refractive index PDFs as filled plots.</span>
-
-<span class="sd">        Each population is plotted with a distinct color using a transparent colormap for the joint area.</span>
+<span class="sd">        This method generates a DataFrame with samples drawn from each population (distributed</span>
+<span class="sd">        according to their relative particle counts), then creates a KDE joint plot with marginal</span>
+<span class="sd">        distributions. Each population is distinguished by color.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        n_points : int, optional</span>
-<span class="sd">            The number of points used to compute the diameter and refractive index PDFs. Default is 100.</span>
-<span class="sd">            Increasing this value results in smoother distributions but increases computation time.</span>
+<span class="sd">        sampling : int, optional</span>
+<span class="sd">            Total number of samples to draw across all populations. The samples are distributed</span>
+<span class="sd">            among populations based on their concentration ratios. Default is 1000.</span>
+<span class="sd">        show : bool, optional</span>
+<span class="sd">            If True, displays the plot immediately.</span>
 
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-
-<span class="sd">            - The joint area uses a transparent colormap, transitioning from fully transparent to fully opaque for better visualization of overlapping populations.</span>
-<span class="sd">            - Marginal plots show semi-transparent filled curves for clarity.</span>
-
-<span class="sd">        Example</span>
+<span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        &gt;&gt;&gt; scatterer_collection.plot(n_points=200)</span>
-
+<span class="sd">        g : seaborn.axisgrid.JointGrid</span>
+<span class="sd">            The JointGrid object containing the plot.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">create_transparent_colormap</span><span class="p">(</span><span class="n">base_color</span><span class="p">):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Create a colormap that transitions from transparent to a specified base color.</span>
-<span class="sd">            &quot;&quot;&quot;</span>
-            <span class="k">return</span> <span class="n">LinearSegmentedColormap</span><span class="o">.</span><span class="n">from_list</span><span class="p">(</span>
-                <span class="s2">&quot;transparent_colormap&quot;</span><span class="p">,</span>
-                <span class="p">[(</span><span class="n">base_color</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">base_color</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">base_color</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">0</span><span class="p">),</span>  <span class="c1"># Fully transparent</span>
-                <span class="p">(</span><span class="n">base_color</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">base_color</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">base_color</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">1</span><span class="p">)],</span>  <span class="c1"># Fully opaque</span>
-                <span class="n">N</span><span class="o">=</span><span class="mi">256</span>
-            <span class="p">)</span>
+        <span class="c1"># Convert the total sample count into a Quantity.</span>
+        <span class="n">total_sampling</span> <span class="o">=</span> <span class="n">sampling</span> <span class="o">*</span> <span class="n">particle</span>  <span class="c1"># Assumes &#39;particle&#39; is a valid unit from PyMieSim.units</span>
 
-        <span class="c1"># Create a JointGrid for visualization</span>
+        <span class="c1"># Generate the DataFrame with sampling.</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_population_dataframe</span><span class="p">(</span><span class="n">total_sampling</span><span class="p">,</span> <span class="n">use_ratio</span><span class="o">=</span><span class="n">use_ratio</span><span class="p">)</span>
+
+        <span class="c1"># Reset the MultiIndex to obtain a column for population names.</span>
+        <span class="n">df_reset</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+        <span class="c1"># Create the joint plot using seaborn&#39;s jointplot.</span>
+        <span class="c1"># Note: As of seaborn 0.11+, jointplot supports the hue parameter.</span>
         <span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">mps</span><span class="p">):</span>
-            <span class="n">grid</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">JointGrid</span><span class="p">()</span>
-
-        <span class="c1"># Initialize a list to store legend handles</span>
-        <span class="n">legend_handles</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">population</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">):</span>
-            <span class="c1"># Get diameter and refractive index PDFs</span>
-            <span class="n">diameter</span><span class="p">,</span> <span class="n">diameter_pdf</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">diameter</span><span class="o">.</span><span class="n">get_pdf</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_points</span><span class="p">)</span>
-            <span class="n">diameter_pdf</span> <span class="o">/=</span> <span class="n">diameter_pdf</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-            <span class="n">ri</span><span class="p">,</span> <span class="n">ri_pdf</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">refractive_index</span><span class="o">.</span><span class="n">get_pdf</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_points</span><span class="p">)</span>
-            <span class="n">ri_pdf</span> <span class="o">/=</span> <span class="n">ri_pdf</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-
-            <span class="c1"># Create a grid of diameter and ri values</span>
-            <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">diameter</span><span class="p">,</span> <span class="n">ri</span><span class="p">)</span>
-            <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">ri_pdf</span><span class="p">,</span> <span class="n">diameter_pdf</span><span class="p">)</span>  <span class="c1"># Compute the PDF values on the grid</span>
-
-            <span class="c1"># Create a transparent colormap for this population</span>
-            <span class="n">base_color</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">()[</span><span class="n">index</span><span class="p">]</span>
-            <span class="n">transparent_cmap</span> <span class="o">=</span> <span class="n">create_transparent_colormap</span><span class="p">(</span><span class="n">base_color</span><span class="p">)</span>
-
-            <span class="c1"># Plot the joint area as a filled contour plot</span>
-            <span class="n">grid</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span>
-                <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">transparent_cmap</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="s2">&quot;min&quot;</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">df_reset</span><span class="p">,</span>
+                <span class="n">y</span><span class="o">=</span><span class="s1">&#39;Diameter&#39;</span><span class="p">,</span>
+                <span class="n">x</span><span class="o">=</span><span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">,</span>
+                <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;Population&#39;</span><span class="p">,</span>
+                <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;kde&#39;</span><span class="p">,</span>
+                <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">height</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="n">legend_handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mpatches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">base_color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="c1"># Set axis labels (using the units from the first population; assumes consistency across populations).</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Diameter [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">diameter</span><span class="o">.</span><span class="n">_units</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;Refractive Index [</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">refractive_index</span><span class="o">.</span><span class="n">_units</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="p">)</span>
 
-
-            <span class="c1"># Plot the marginal distributions</span>
-            <span class="n">grid</span><span class="o">.</span><span class="n">ax_marg_x</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">diameter</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">diameter_pdf</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;C</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-            <span class="n">grid</span><span class="o">.</span><span class="n">ax_marg_y</span><span class="o">.</span><span class="n">fill_betweenx</span><span class="p">(</span><span class="n">ri</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">ri_pdf</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;C</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-
-        <span class="c1"># Set axis labels</span>
-        <span class="n">grid</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">legend_handles</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Populations&quot;</span><span class="p">)</span>
-
-        <span class="n">grid</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Diameter [</span><span class="si">{</span><span class="n">diameter</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
-        <span class="n">grid</span><span class="o">.</span><span class="n">ax_joint</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Refractive Index [</span><span class="si">{</span><span class="n">ri</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
-
+        <span class="c1"># Set a title for the plot.</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Scatterer Collection&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.02</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 
-        <span class="c1"># Show the plot</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+        <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">g</span></div>
 </div>
 
 </pre></div>

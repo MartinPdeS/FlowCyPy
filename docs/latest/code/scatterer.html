@@ -644,11 +644,14 @@ refractive index sampling data.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.get_population_dataframe">
-<span class="sig-name descname"><span class="pre">get_population_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_sampling</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.get_population_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.get_population_dataframe" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_population_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_sampling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.get_population_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.get_population_dataframe" title="Link to this definition">#</a></dt>
 <dd><p>Generate a DataFrame by sampling particles from populations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>total_sampling</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – Total number of samples to draw, distributed across populations based on their ratios.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>total_sampling</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – Total number of samples to draw, distributed across populations based on their ratios.</p></li>
+<li><p><strong>use_ratio</strong> (<em>bool</em>)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A MultiIndex DataFrame containing the sampled data from all populations. The first
@@ -672,35 +675,28 @@ index level indicates the population name, and the second level indexes the samp
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.plot" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.plot" title="Link to this definition">#</a></dt>
 <dd><p>Visualizes the joint and marginal distributions of diameter and refractive index
-for multiple populations in the scatterer collection.</p>
-<p>This method creates a joint plot using <cite>sns.JointGrid</cite>, where:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>The joint area displays filled contours representing the PDF values of diameter and refractive index.</p></li>
-<li><p>The marginal areas display the diameter and refractive index PDFs as filled plots.</p></li>
-</ul>
-</div></blockquote>
-<p>Each population is plotted with a distinct color using a transparent colormap for the joint area.</p>
+for all populations in the scatterer collection using sampled data and seaborn’s jointplot.</p>
+<p>This method generates a DataFrame with samples drawn from each population (distributed
+according to their relative particle counts), then creates a KDE joint plot with marginal
+distributions. Each population is distinguished by color.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_points</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of points used to compute the diameter and refractive index PDFs. Default is 100.
-Increasing this value results in smoother distributions but increases computation time.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sampling</strong> (<em>int</em><em>, </em><em>optional</em>) – Total number of samples to draw across all populations. The samples are distributed
+among populations based on their concentration ratios. Default is 1000.</p></li>
+<li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, displays the plot immediately.</p></li>
+<li><p><strong>use_ratio</strong> (<em>bool</em>)</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>g</strong> – The JointGrid object containing the plot.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>seaborn.axisgrid.JointGrid</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>The joint area uses a transparent colormap, transitioning from fully transparent to fully opaque for better visualization of overlapping populations.</p></li>
-<li><p>Marginal plots show semi-transparent filled curves for clarity.</p></li>
-</ul>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n_points</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py method">
