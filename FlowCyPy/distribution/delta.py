@@ -8,20 +8,20 @@ from pydantic.dataclasses import dataclass
 @dataclass(config=config_dict)
 class Delta(Base):
     r"""
-    Represents a delta Dirac distribution for particle sizes.
+    Represents a delta Dirac distribution for particle properties.
 
-    In a delta Dirac distribution, all particle sizes are the same, represented by the Dirac delta function:
+    In a delta Dirac distribution, all particle properties are the same, represented by the Dirac delta function:
 
     .. math::
         f(x) = \delta(x - x_0)
 
     where:
-    - :math:`x_0` is the singular particle size.
+    - :math:`x_0` is the singular particle property.
 
     Parameters
     ----------
     position : Quantity
-        The particle size for the delta distribution in meters.
+        The particle property for the delta distribution in meters.
     """
 
     position: Quantity
@@ -36,19 +36,19 @@ class Delta(Base):
     @Base.pre_generate
     def generate(self, n_samples: int) -> Quantity:
         r"""
-        Generates a singular distribution of scatterer sizes.
+        Generates a singular distribution of scatterer properties.
 
-        All sizes generated will be exactly the same as `position`.
+        All sipropertieszes generated will be exactly the same as `position`.
 
         Parameters
         ----------
         n_samples : int
-            The number of particle sizes to generate.
+            The number of particle properties to generate.
 
         Returns
         -------
         Quantity
-            An array of identical scatterer sizes in meters.
+            An array of identical scatterer properties in meters.
         """
         return np.ones(n_samples) * self.position.magnitude
 

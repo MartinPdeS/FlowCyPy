@@ -29,15 +29,15 @@ class Population():
         Name of the population distribution.
     refractive_index : Union[distribution.Base, Quantity]
         Refractive index or refractive index distributions.
-    size : Union[distribution.Base, Quantity]
-        Particle size or size distributions.
+    diameter : Union[distribution.Base, Quantity]
+        Particle diameter or diameter distributions.
     particle_count : ParticleCount
         Scatterer density in particles per cubic meter, default is 1 particle/m³.
 
     """
     name: str
     refractive_index: Union[distribution.Base, Quantity]
-    size: Union[distribution.Base, Quantity]
+    diameter: Union[distribution.Base, Quantity]
     particle_count: ParticleCount | Quantity
 
     def __post_init__(self):
@@ -81,28 +81,28 @@ class Population():
 
         raise TypeError(f"refractive_index must be of type Quantity<RIU or refractive_index_units> or distribution.Base, but got {type(value)}")
 
-    @field_validator('size')
-    def _validate_size(cls, value):
+    @field_validator('diameter')
+    def _validate_diameter(cls, value):
         """
-        Validates that the size is either a Quantity or a valid distribution.Base instance.
+        Validates that the diameter is either a Quantity or a valid distribution.Base instance.
 
         Parameters
         ----------
         value : Union[distribution.Base, Quantity]
-            The size to validate.
+            The diameter to validate.
 
         Returns
         -------
         Union[distribution.Base, Quantity]
-            The validated size.
+            The validated diameter.
 
         Raises
         ------
         TypeError
-            If the size is not of type Quantity or distribution.Base.
+            If the diameter is not of type Quantity or distribution.Base.
         """
         if isinstance(value, Quantity):
-            assert value.check(meter), "The size value provided does not have length units [meter]"
+            assert value.check(meter), "The diameter value provided does not have length units [meter]"
             return distribution.Delta(position=value)
 
         if isinstance(value, distribution.Base):
@@ -114,20 +114,20 @@ class Population():
         self.particle_count /= factor
 
     def generate_sampling(self, sampling: Quantity) -> tuple:
-        size = self.size.generate(sampling)
+        diameter = self.diameter.generate(sampling)
 
         ri = self.refractive_index.generate(sampling)
 
-        return size, ri
+        return diameter, ri
 
     def _get_sampling(self, sampling: int) -> pd.DataFrame:
-        size = self.size.generate(sampling)
+        diameter = self.diameter.generate(sampling)
 
         ri = self.refractive_index.generate(sampling)
 
         dataframe = pd.DataFrame(columns=['Size', 'RefractiveIndex'])
 
-        dataframe['Size'] = PintArray(size, dtype=size.units)
+        dataframe['Size'] = PintArray(diameter, dtype=diameter.units)
         dataframe['RefractiveIndex'] = PintArray(ri, dtype=ri.units)
 
         return dataframe

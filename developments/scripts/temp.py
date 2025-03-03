@@ -92,20 +92,20 @@ scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.
 population_0 = Population(
     name='Pop 0',
     particle_count=5e9 * units.particle / units.milliliter,
-    size=distribution.RosinRammler(characteristic_size=150 * units.nanometer, spread=30),
+    diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
     refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
 )
 population_1 = Population(
     name='Pop 1',
     particle_count=5e9 * units.particle / units.milliliter,
-    size=distribution.RosinRammler(characteristic_size=100 * units.nanometer, spread=30),
+    diameter=distribution.RosinRammler(characteristic_property=100 * units.nanometer, spread=30),
     refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
 )
 
 population_2 = Population(
     name='Pop 2',
     particle_count=5e9 * units.particle / units.milliliter,
-    size=distribution.RosinRammler(characteristic_size=50 * units.nanometer, spread=30),
+    diameter=distribution.RosinRammler(characteristic_property=50 * units.nanometer, spread=30),
     refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
 )
 

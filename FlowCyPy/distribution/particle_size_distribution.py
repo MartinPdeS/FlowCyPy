@@ -10,8 +10,8 @@ class RosinRammler(Base):
     r"""
     Represents a Particle Size Distribution using the Rosin-Rammler model.
 
-    The Rosin-Rammler distribution is described by its characteristic size and
-    spread parameter, and is used to model particle sizes in systems such as
+    The Rosin-Rammler distribution is described by its characteristic property and
+    spread parameter, and is used to model particle properties in systems such as
     powders or granular materials.
 
     The distribution function is given by:
@@ -20,42 +20,42 @@ class RosinRammler(Base):
         F(x) = 1 - \exp \left( - \left( \frac{x}{d} \right)^k \right)
 
     where:
-        - :math:`x` is the particle size.
-        - :math:`d` is the characteristic particle size.
+        - :math:`x` is the particle property.
+        - :math:`d` is the characteristic particle property.
         - :math:`k` is the spread parameter.
 
     Parameters
     ----------
-    characteristic_size : Quantity
-        The characteristic particle size in meters.
+    characteristic_property : Quantity
+        The characteristic particle property.
     spread : float
         The spread parameter (shape factor).
     """
 
-    characteristic_size: Quantity
+    characteristic_property: Quantity
     spread: float
 
     @property
     def _units(self) -> Quantity:
-        return self.characteristic_size.units
+        return self.characteristic_property.units
 
     @Base.pre_generate
     def generate(self, n_samples: int) -> Quantity:
         """
-        Generates a particle size distribution based on the Rosin-Rammler model.
+        Generates a particle property distribution based on the Rosin-Rammler model.
 
         Parameters
         ----------
         n_samples : Quantity
-            The number of particle sizes to generate (dimensionless).
+            The number of particle properties to generate (dimensionless).
 
         Returns
         -------
         Quantity
-            An array of particle sizes in meters (or other units).
+            An array of particle properties in meters (or other units).
         """
         # Convert characteristic size to main units
-        d = self.characteristic_size.magnitude
+        d = self.characteristic_property.magnitude
 
         # Generate uniform random samples in [0, 1)
         u = np.random.uniform(size=n_samples)
@@ -66,15 +66,15 @@ class RosinRammler(Base):
 
     def _generate_default_x(self, x_min: float, x_max: float, n_samples: int = 100) -> np.ndarray:
         """
-        Generates a default range for x-values based on the characteristic size
+        Generates a default range for x-values based on the characteristic property
         and spread of the Rosin-Rammler distribution.
 
         Parameters
         ----------
         x_min : float
-            Factor for the minimum x-value as a fraction of the characteristic size.
+            Factor for the minimum x-value as a fraction of the characteristic property.
         x_max : float
-            Factor for the maximum x-value as a multiple of the characteristic size.
+            Factor for the maximum x-value as a multiple of the characteristic property.
         n_samples : int, optional
             Number of points in the generated range. Default is 500.
 
@@ -88,14 +88,14 @@ class RosinRammler(Base):
         if x_max <= x_min:
             raise ValueError("x_max must be greater than x_min.")
 
-        d = self.characteristic_size.magnitude  # Characteristic size in base units
-        x_min = d * x_min  # Scale x_min by characteristic size
-        x_max = d * x_max  # Scale x_max by characteristic size
+        d = self.characteristic_property.magnitude  # Characteristic property in base units
+        x_min = d * x_min  # Scale x_min by characteristic property
+        x_max = d * x_max  # Scale x_max by characteristic property
         return np.linspace(x_min, x_max, n_samples) * self._units
 
     def get_pdf(self, x_min: float = 0.01, x_max: float = 4, n_samples: int = 100) -> Tuple[np.ndarray, np.ndarray]:
         r"""
-        Returns the x-values and the scaled PDF values for the particle size distribution.
+        Returns the x-values and the scaled PDF values for the particle property distribution.
 
         The PDF for the Rosin-Rammler distribution is derived from the CDF:
 
@@ -105,9 +105,9 @@ class RosinRammler(Base):
         Parameters
         ----------
         x_min : float, optional
-            Factor for the minimum x-value as a fraction of the characteristic size. Default is 0.01.
+            Factor for the minimum x-value as a fraction of the characteristic property. Default is 0.01.
         x_max : float, optional
-            Factor for the maximum x-value as a multiple of the characteristic size. Default is 5.
+            Factor for the maximum x-value as a multiple of the characteristic property. Default is 5.
         n_samples : int, optional
             Number of points in the generated range. Default is 500.
 
@@ -121,7 +121,7 @@ class RosinRammler(Base):
 
         x = x.to(self._units)
         _x = x.magnitude
-        d = self.characteristic_size.to(self._units).magnitude
+        d = self.characteristic_property.to(self._units).magnitude
         k = self.spread
 
         # Rosin-Rammler PDF formula
@@ -130,4 +130,4 @@ class RosinRammler(Base):
         return x, pdf
 
     def __repr__(self) -> str:
-        return f"RR({self.characteristic_size:.3f~P}, {self.spread:.3f})"
+        return f"RR({self.characteristic_property:.3f~P}, {self.spread:.3f})"

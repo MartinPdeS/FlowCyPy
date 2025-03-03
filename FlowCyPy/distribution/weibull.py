@@ -8,9 +8,9 @@ from pydantic.dataclasses import dataclass
 @dataclass(config=config_dict)
 class Weibull(Base):
     r"""
-    Represents a Weibull distribution for particle sizes.
+    Represents a Weibull distribution for particle properties.
 
-    The Weibull distribution is commonly used for modeling size distributions in biological systems.
+    The Weibull distribution is commonly used for modeling property distributions in biological systems.
 
     Parameters
     ----------
@@ -64,17 +64,17 @@ class Weibull(Base):
     @Base.pre_generate
     def generate(self, n_samples: int) -> Quantity:
         """
-        Generates a Weibull distribution of scatterer sizes.
+        Generates a Weibull distribution of scatterer properties.
 
         Parameters
         ----------
         n_samples : int
-            The number of particle sizes to generate.
+            The number of particle properties to generate.
 
         Returns
         -------
         Quantity
-            An array of particle sizes in meters.
+            An array of particle properties in meters.
         """
         return np.random.weibull(
             self.shape.magnitude,
@@ -90,7 +90,7 @@ class Weibull(Base):
         Parameters
         ----------
         x : Quantity, optional
-            The input x-values (particle sizes) over which to compute the PDF. If not provided, a range is generated.
+            The input x-values (particle properties) over which to compute the PDF. If not provided, a range is generated.
         n_points : int, optional
             Number of points in the generated range if `x` is not provided. Default is 100.
 

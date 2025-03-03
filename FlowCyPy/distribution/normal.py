@@ -9,7 +9,7 @@ from pydantic.dataclasses import dataclass
 @dataclass(config=config_dict)
 class Normal(Base):
     r"""
-    Represents a normal (Gaussian) distribution for particle sizes.
+    Represents a normal (Gaussian) distribution for particle properties.
 
     The normal distribution is described by its mean and standard deviation:
 
@@ -17,16 +17,16 @@ class Normal(Base):
         f(x) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp \left( - \frac{(x - \mu)^2}{2 \sigma^2} \right)
 
     where:
-    - :math:`\mu` is the mean of the distribution (average particle size).
+    - :math:`\mu` is the mean of the distribution (average particle property).
     - :math:`\sigma` is the standard deviation (width of the distribution).
-    - :math:`x` represents particle sizes.
+    - :math:`x` represents particle properties.
 
     Parameters
     ----------
     mean : Quantity
-        The mean (average) particle size in meters.
+        The mean (average) particle property in meters.
     std_dev : Quantity
-        The standard deviation of particle sizes in meters.
+        The standard deviation of particle properties in meters.
     """
 
     mean: Quantity
@@ -47,19 +47,19 @@ class Normal(Base):
     @Base.pre_generate
     def generate(self, n_samples: int) -> np.ndarray:
         """
-        Generates a normal distribution of scatterer sizes.
+        Generates a normal distribution of scatterer properties.
 
-        The generated sizes are based on the normal distribution's mean and standard deviation.
+        The generated properties are based on the normal distribution's mean and standard deviation.
 
         Parameters
         ----------
         n_samples : int
-            The number of particle sizes to generate.
+            The number of particle properties to generate.
 
         Returns
         -------
         np.ndarray
-            An array of scatterer sizes in meters.
+            An array of scatterer properties in meters.
         """
         return np.random.normal(
             loc=self._mean.magnitude,
@@ -101,7 +101,7 @@ class Normal(Base):
         Parameters
         ----------
         x : np.ndarray, optional
-            The input x-values (particle sizes) over which to compute the PDF. If not provided, a range is generated.
+            The input x-values (particle properties) over which to compute the PDF. If not provided, a range is generated.
         x_min : float, optional
             Factor for the minimum x-value as a multiple of the standard deviation from the mean. Default is -3.
         x_max : float, optional

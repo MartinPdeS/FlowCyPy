@@ -23,8 +23,8 @@ class CouplingModel(Enum):
 
 class ScattererCollection():
     """
-    Defines and manages the size and refractive index distributions of scatterers (particles)
-    passing through a flow cytometer. This class generates random scatterer sizes and refractive
+    Defines and manages the diameter and refractive index distributions of scatterers (particles)
+    passing through a flow cytometer. This class generates random scatterer diameters and refractive
     indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).
 
     """
@@ -93,8 +93,8 @@ class ScattererCollection():
         ----------
         name : str
             The name of the population.
-        size : BaseDistribution
-            The size distribution of the population.
+        diameter : BaseDistribution
+            The diameter distribution of the population.
         refractive_index : BaseDistribution
             The refractive index distribution of the population.
 
@@ -188,22 +188,22 @@ class ScattererCollection():
 
     def fill_dataframe_with_sampling(self, scatterer_dataframe: pd.DataFrame) -> None:
         """
-        Fills a DataFrame with size and refractive index sampling data for each population.
+        Fills a DataFrame with diameter and refractive index sampling data for each population.
 
         Parameters
         ----------
         scatterer_dataframe : pd.DataFrame
             A DataFrame indexed by population names (first level) and containing the
-            following columns: `'Size'`: To be filled with particle size data. `'RefractiveIndex'`:
+            following columns: `'Size'`: To be filled with particle diameter data. `'RefractiveIndex'`:
             To be filled with refractive index data. The DataFrame must already have the required structure.
 
         Returns
         -------
         None
-            The method modifies the `scatterer_dataframe` in place, adding size and
+            The method modifies the `scatterer_dataframe` in place, adding diameter and
             refractive index sampling data.
 
-        After filling, the DataFrame will be populated with size and refractive index data.
+        After filling, the DataFrame will be populated with diameter and refractive index data.
         """
         for population in self.populations:
             # Check if population.name is in the dataframe's index
@@ -214,27 +214,27 @@ class ScattererCollection():
             sub_dataframe = scatterer_dataframe.xs(population.name)
             sampling = len(sub_dataframe) * units.particle
 
-            size, ri = population.generate_sampling(sampling)
+            diameter, ri = population.generate_sampling(sampling)
 
-            scatterer_dataframe.loc[population.name, 'Size'] = PintArray(size, dtype=size.units)
+            scatterer_dataframe.loc[population.name, 'Size'] = PintArray(diameter, dtype=diameter.units)
             scatterer_dataframe.loc[population.name, 'RefractiveIndex'] = PintArray(ri, dtype=ri.units)
 
     def plot(self, n_points: int = 200) -> None:
         """
-        Visualizes the joint and marginal distributions of size and refractive index
+        Visualizes the joint and marginal distributions of diameter and refractive index
         for multiple populations in the scatterer collection.
 
         This method creates a joint plot using `sns.JointGrid`, where:
 
-            - The joint area displays filled contours representing the PDF values of size and refractive index.
-            - The marginal areas display the size and refractive index PDFs as filled plots.
+            - The joint area displays filled contours representing the PDF values of diameter and refractive index.
+            - The marginal areas display the diameter and refractive index PDFs as filled plots.
 
         Each population is plotted with a distinct color using a transparent colormap for the joint area.
 
         Parameters
         ----------
         n_points : int, optional
-            The number of points used to compute the size and refractive index PDFs. Default is 100.
+            The number of points used to compute the diameter and refractive index PDFs. Default is 100.
             Increasing this value results in smoother distributions but increases computation time.
 
         Notes
@@ -267,15 +267,15 @@ class ScattererCollection():
         legend_handles = []
 
         for index, population in enumerate(self.populations):
-            # Get size and refractive index PDFs
-            size, size_pdf = population.size.get_pdf(n_samples=n_points)
-            size_pdf /= size_pdf.max()
+            # Get diameter and refractive index PDFs
+            diameter, diameter_pdf = population.diameter.get_pdf(n_samples=n_points)
+            diameter_pdf /= diameter_pdf.max()
             ri, ri_pdf = population.refractive_index.get_pdf(n_samples=n_points)
             ri_pdf /= ri_pdf.max()
 
-            # Create a grid of size and ri values
-            X, Y = np.meshgrid(size, ri)
-            Z = np.outer(ri_pdf, size_pdf)  # Compute the PDF values on the grid
+            # Create a grid of diameter and ri values
+            X, Y = np.meshgrid(diameter, ri)
+            Z = np.outer(ri_pdf, diameter_pdf)  # Compute the PDF values on the grid
 
             # Create a transparent colormap for this population
             base_color = sns.color_palette()[index]
@@ -290,13 +290,13 @@ class ScattererCollection():
 
 
             # Plot the marginal distributions
-            grid.ax_marg_x.fill_between(size.magnitude, size_pdf, color=f"C{index}", alpha=0.5)
+            grid.ax_marg_x.fill_between(diameter.magnitude, diameter_pdf, color=f"C{index}", alpha=0.5)
             grid.ax_marg_y.fill_betweenx(ri.magnitude, ri_pdf, color=f"C{index}", alpha=0.5)
 
         # Set axis labels
         grid.ax_joint.legend(handles=legend_handles, title="Populations")
 
-        grid.ax_joint.set_xlabel(f"Size [{size.units}]")
+        grid.ax_joint.set_xlabel(f"Size [{diameter.units}]")
         grid.ax_joint.set_ylabel(f"Refractive Index [{ri.units}]")
 
         plt.tight_layout()

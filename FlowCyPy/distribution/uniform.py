@@ -8,9 +8,9 @@ from pydantic.dataclasses import dataclass
 @dataclass(config=config_dict)
 class Uniform(Base):
     r"""
-    Represents a uniform distribution for particle sizes.
+    Represents a uniform distribution for particle properties.
 
-    The uniform distribution assigns equal probability to all particle sizes within a specified range:
+    The uniform distribution assigns equal probability to all particle properties within a specified range:
 
     .. math::
         f(x) = \frac{1}{b - a} \quad \text{for} \quad a \leq x \leq b
@@ -22,9 +22,9 @@ class Uniform(Base):
     Parameters
     ----------
     lower_bound : Quantity
-        The lower bound for particle sizes in meters.
+        The lower bound for particle properties in meters.
     upper_bound : Quantity
-        The upper bound for particle sizes in meters.
+        The upper bound for particle properties in meters.
     """
 
     lower_bound: Quantity
@@ -67,19 +67,19 @@ class Uniform(Base):
     @Base.pre_generate
     def generate(self, n_samples: int) -> Quantity:
         """
-        Generates a uniform distribution of scatterer sizes.
+        Generates a uniform distribution of scatterer properties.
 
-        The generated sizes are uniformly distributed between the specified `lower_bound` and `upper_bound`.
+        The generated properties are uniformly distributed between the specified `lower_bound` and `upper_bound`.
 
         Parameters
         ----------
         n_samples : int
-            The number of particle sizes to generate.
+            The number of particle properties to generate.
 
         Returns
         -------
         Quantity
-            An array of scatterer sizes in meters.
+            An array of scatterer properties in meters.
         """
         return np.random.uniform(
             self._lower_bound.magnitude,

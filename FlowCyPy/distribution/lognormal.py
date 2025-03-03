@@ -9,7 +9,7 @@ from pydantic.dataclasses import dataclass
 @dataclass(config=config_dict)
 class LogNormal(Base):
     r"""
-    Represents a log-normal distribution for particle sizes.
+    Represents a log-normal distribution for particle properties.
 
     The log-normal distribution is described by its mean and standard deviation of the logarithm of the values:
 
@@ -17,17 +17,17 @@ class LogNormal(Base):
         f(x) = \frac{1}{x \sigma \sqrt{2 \pi}} \exp \left( - \frac{(\ln(x) - \mu)^2}{2 \sigma^2} \right)
 
     where:
-    - :math:`\mu` is the mean of the natural logarithm of the particle sizes.
-    - :math:`\sigma` is the standard deviation of the logarithm of particle sizes.
+    - :math:`\mu` is the mean of the natural logarithm of the particle properties.
+    - :math:`\sigma` is the standard deviation of the logarithm of particle properties.
 
     Parameters
     ----------
     mean : Quantity
-        The mean particle size in meters.
+        The mean particle properties.
     std_dev : Quantity
-        The standard deviation of the logarithm of particle sizes.
+        The standard deviation of the logarithm of particle properties.
     scale_factor : float, optional
-        A scaling factor applied to the PDF (not the sizes).
+        A scaling factor applied to the PDF (not the properties).
     """
 
     mean: Quantity
@@ -48,19 +48,19 @@ class LogNormal(Base):
     @Base.pre_generate
     def generate(self, n_samples: int) -> Quantity:
         """
-        Generates a log-normal distribution of scatterer sizes.
+        Generates a log-normal distribution of scatterer properties.
 
-        The generated sizes follow a log-normal distribution, where the logarithm of the sizes is normally distributed.
+        The generated properties follow a log-normal distribution, where the logarithm of the properties is normally distributed.
 
         Parameters
         ----------
         n_samples : Quantity
-            The number of particle sizes to generate.
+            The number of particle properties to generate.
 
         Returns
         -------
         Quantity
-            An array of scatterer sizes in meters.
+            An array of scatterer properties in meters.
         """
         return np.random.lognormal(
             mean=self._mean.magnitude,

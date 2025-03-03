@@ -8,16 +8,16 @@ class CallablePopulationMeta(type):
 
 
 class CallablePopulation(metaclass=CallablePopulationMeta):
-    def __init__(self, name, size_dist, ri_dist):
+    def __init__(self, name, diameter_dist, ri_dist):
         self._name = name
-        self._size_distribution = size_dist
+        self._diameter_distribution = diameter_dist
         self._ri_distribution = ri_dist
 
     def __call__(self, particle_count: Quantity = 1 * particle):
         return Population(
             particle_count=particle_count,
             name=self._name,
-            size=self._size_distribution,
+            diameter=self._diameter_distribution,
             refractive_index=self._ri_distribution,
         )
 
@@ -35,10 +35,10 @@ _populations = (
 )
 
 # Dynamically create population classes
-for (name, size, size_spread, ri, ri_spread) in _populations:
-    size_distribution = distribution.RosinRammler(
-        characteristic_size=size,
-        spread=size_spread
+for (name, diameter, diameter_spread, ri, ri_spread) in _populations:
+    diameter_distribution = distribution.RosinRammler(
+        characteristic_property=diameter,
+        spread=diameter_spread
     )
 
     ri_distribution = distribution.Normal(
@@ -48,17 +48,17 @@ for (name, size, size_spread, ri, ri_spread) in _populations:
 
     # Create a class dynamically for each population
     cls = type(name, (CallablePopulation,), {})
-    globals()[name] = cls(name, size_distribution, ri_distribution)
+    globals()[name] = cls(name, diameter_distribution, ri_distribution)
 
 
 # Helper function for microbeads
-def get_microbeads(size: Quantity, refractive_index: Quantity, name: str) -> Population:
-    size_distribution = distribution.Delta(position=size)
+def get_microbeads(diameter: Quantity, refractive_index: Quantity, name: str) -> Population:
+    diameter_distribution = distribution.Delta(position=diameter)
     ri_distribution = distribution.Delta(position=refractive_index)
 
     microbeads = Population(
         name=name,
-        size=size_distribution,
+        diameter=diameter_distribution,
         refractive_index=ri_distribution
     )
 

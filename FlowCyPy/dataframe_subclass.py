@@ -146,7 +146,7 @@ class ScattererDataFrame(pd.DataFrame):
             x_data = group[x].values.quantity.magnitude
             y_data = group[y].values.quantity.magnitude
             z_data = group[z].values.quantity.magnitude
-            ax.scatter(x_data, y_data, z_data, label=population, cmap='viridis', alpha=alpha)
+            ax.scatter(x_data, y_data, z_data, label=population, alpha=alpha)
 
         ax.set_xlabel(f"{x} [{x_unit}]", labelpad=20)
         ax.set_ylabel(f"{y} [{y_unit}]", labelpad=20)

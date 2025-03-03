@@ -13,10 +13,10 @@ config_dict = dict(
 
 class Base:
     """
-    Base class for distributions used to define particle sizes in the flow cytometer.
+    Base class for distributions used to define particle diameters in the flow cytometer.
 
-    This class provides a structure for generating random scatterer sizes based on different statistical distributions.
-    Each subclass must implement the `generate` method to generate a distribution of sizes and `get_pdf` to compute the
+    This class provides a structure for generating random scatterer diameters based on different statistical distributions.
+    Each subclass must implement the `generate` method to generate a distribution of diameters and `get_pdf` to compute the
     probability density function (PDF) values.
 
     Parameters
@@ -28,7 +28,7 @@ class Base:
     scale_factor: Optional[float] = 1.0
 
     def generate(self, n_samples: int) -> np.ndarray:
-        """Generate a distribution of scatterer sizes."""
+        """Generate a distribution of scatterer diameters."""
         raise NotImplementedError("Must be implemented by subclasses")
 
     def get_pdf(self, x: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
@@ -37,12 +37,12 @@ class Base:
 
     def plot(self, n_samples: int = 4000, bins: int = 50) -> None:
         """
-        Plots a histogram of the generated particle sizes based on the log-normal distribution.
+        Plots a histogram of the generated particle diameters based on the log-normal distribution.
 
         Parameters
         ----------
         n_samples : int, optional
-            The number of particle sizes to generate for the histogram (default is 1000).
+            The number of particle diameters to generate for the histogram (default is 1000).
         bins : int, optional
             The number of bins in the histogram (default is 50).
         """

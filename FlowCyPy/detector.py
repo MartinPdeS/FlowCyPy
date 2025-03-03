@@ -47,6 +47,7 @@ class Detector():
     """
     phi_angle: Quantity
     numerical_aperture: Quantity
+    # cache_numerical_aperture: QUantity
 
     gamma_angle: Optional[Quantity] = Quantity(0, degree)
     sampling: Optional[Quantity] = 100 * AU
