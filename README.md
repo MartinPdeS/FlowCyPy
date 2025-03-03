@@ -18,7 +18,7 @@
 | FlowCyPy/distribution/delta.py                        |       31 |        2 |        2 |        1 |     91% |   74, 104 |
 | FlowCyPy/distribution/lognormal.py                    |       37 |        3 |        4 |        2 |     88% |90, 92, 124 |
 | FlowCyPy/distribution/normal.py                       |       36 |        2 |        2 |        1 |     92% |   89, 128 |
-| FlowCyPy/distribution/particle\_size\_distribution.py |       37 |        3 |        4 |        2 |     88% |87, 89, 133 |
+| FlowCyPy/distribution/particle\_size\_distribution.py |       37 |       16 |        4 |        0 |     51% |86-94, 120-130, 133 |
 | FlowCyPy/distribution/uniform.py                      |       34 |        1 |        0 |        0 |     97% |       117 |
 | FlowCyPy/distribution/weibull.py                      |       36 |       16 |        2 |        0 |     53% |28, 32, 36, 57-62, 79, 102-112, 115 |
 | FlowCyPy/filters.py                                   |       22 |        2 |        4 |        2 |     85% |    39, 83 |
@@ -33,15 +33,15 @@
 | FlowCyPy/peak\_locator/moving\_average.py             |       22 |       18 |        4 |        0 |     15% |54-56, 95-121 |
 | FlowCyPy/peak\_locator/scipy.py                       |       19 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/physical\_constant.py                        |       10 |        0 |        0 |        0 |    100% |           |
-| FlowCyPy/population.py                                |       50 |       13 |       12 |        5 |     71% |53, 76-77, 82, 105-106, 111, 124-133 |
+| FlowCyPy/population.py                                |       54 |       13 |       12 |        5 |     73% |57, 80-81, 86, 109-110, 115, 128-137 |
 | FlowCyPy/populations\_instances.py                    |       24 |        6 |        2 |        0 |     77% |7, 17, 56-65 |
-| FlowCyPy/scatterer\_collection.py                     |       91 |       18 |       22 |        4 |     77% |48-50, 67-86, 124, 142, 146, 153-158, 211 |
+| FlowCyPy/scatterer\_collection.py                     |       81 |       11 |       24 |        6 |     80% |48-50, 68, 127, 145, 149, 156-161, 214, 279->282 |
 | FlowCyPy/signal\_digitizer.py                         |       45 |        4 |       10 |        3 |     87% |66-67, 90, 99 |
 | FlowCyPy/source.py                                    |       72 |        7 |       18 |        6 |     86% |33, 38, 48, 51, 58, 61, 71 |
 | FlowCyPy/triggered\_acquisition.py                    |       93 |       10 |       32 |        9 |     82% |49-51, 148, 156, 160, 192, 200, 204, 226, 246->248, 248->exit |
 | FlowCyPy/units.py                                     |       21 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       65 |       29 |       14 |        0 |     48% |28-38, 41, 107-145 |
-|                                             **TOTAL** | **1760** |  **433** |  **334** |   **79** | **71%** |           |
+|                                             **TOTAL** | **1754** |  **439** |  **336** |   **79** | **71%** |           |
 
 
 ## Setup coverage badge
