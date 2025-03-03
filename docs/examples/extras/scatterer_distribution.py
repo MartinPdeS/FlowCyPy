@@ -35,25 +35,17 @@ scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)
 population_0 = Population(
     name='EV',
     particle_count=2e+9 * particle / milliliter,
-    size=distribution.RosinRammler(characteristic_size=50 * nanometer, spread=4.5),
+    diameter=distribution.RosinRammler(characteristic_property=50 * nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.39 * RIU, std_dev=0.05 * RIU)
 )
 
 population_1 = Population(
     name='LP',
     particle_count=1e+10 * particle / milliliter,
-    size=distribution.RosinRammler(characteristic_size=200 * nanometer, spread=4.5),
+    diameter=distribution.RosinRammler(characteristic_property=200 * nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.45 * RIU, std_dev=0.05 * RIU)
 )
 
 scatterer_collection.add_population(population_0, population_1)
 
 scatterer_collection.plot()
-
-"""
-Summary:
---------
-This script defines a flow cytometer simulation, sets up the particle size and refractive index distributions,
-and visualizes the scatterer distribution in a 2D density plot. It provides insight into the scattering properties
-of two different particle populations.
-"""

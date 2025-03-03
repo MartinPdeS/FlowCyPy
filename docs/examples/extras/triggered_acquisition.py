@@ -47,7 +47,7 @@ flow_cell = FlowCell(
 # ---------------------------------------------
 # Use a normal size distribution with a mean size of 200 nanometers and a standard deviation of 10 nanometers.
 # This represents the population of scatterers (particles) that will interact with the laser source.
-ev_size = distribution.Normal(
+ev_diameter = distribution.Normal(
     mean=200 * units.nanometer,       # Mean particle size: 200 nanometers
     std_dev=10 * units.nanometer      # Standard deviation: 10 nanometers
 )
@@ -59,7 +59,7 @@ ev_ri = distribution.Normal(
 
 ev = Population(
     particle_count=1.8e+8 * units.particle / units.milliliter,
-    size=ev_size,               # Particle size distribution
+    diameter=ev_diameter,               # Particle size distribution
     refractive_index=ev_ri,     # Refractive index distribution
     name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
 )
@@ -105,7 +105,8 @@ cytometer = FlowCytometer(
 )
 
 # Run the flow cytometry simulation
-acquisition = cytometer.get_acquisition(run_time=1.0 * units.millisecond)
+acquisition = cytometer.prepare_acquisition(run_time=1.0 * units.millisecond)
+acquisition = cytometer.get_acquisition()
 
 # %%
 # Visualize the scatter analog signals from both detectors

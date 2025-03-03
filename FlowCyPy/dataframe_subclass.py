@@ -231,7 +231,7 @@ class ClassifierDataFrame(pd.DataFrame):
         return ClassifierDataFrame
 
     @helper.plot_sns
-    def plot(self, feature: str, x_detector: str, y_detector: str) -> plt.Figure:
+    def plot(self, feature: str, x: str, y: str) -> plt.Figure:
         """
         Visualize the classification of peaks using a scatter plot.
 
@@ -262,8 +262,8 @@ class ClassifierDataFrame(pd.DataFrame):
         with plt.style.context(mps):
             temp = self.pint.dequantify().sort_index(axis=1)
             grid = sns.jointplot(
-                x=temp[(feature, x_detector)].values.squeeze(),
-                y=temp[(feature, y_detector)].values.squeeze(),
+                x=temp[(feature, x)].values.squeeze(),
+                y=temp[(feature, y)].values.squeeze(),
                 hue=temp['Label'].values.squeeze()
             )
         grid.figure.suptitle('Event classification')
@@ -607,6 +607,12 @@ class AnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
     """
     DataFrame subclass for continuous (analog) acquisition data.
     """
+
+    def __init__(self, dataframe: pd.DataFrame, **attributes: dict):
+        super().__init__(dataframe)
+
+        self.attrs.update(attributes)
+
 
     def _plot_detector_data(
         self,

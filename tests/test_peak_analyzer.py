@@ -102,5 +102,8 @@ def default_cytometer(default_scatterer, default_detector, flow_cell, default_di
 
     return cytometer
 
+def test_dummy():
+    pass
+
 if __name__ == '__main__':
     pytest.main(["-W error", __file__])

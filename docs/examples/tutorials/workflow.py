@@ -93,7 +93,7 @@ exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
 custom_population = Population(
     name='Pop 0',
     particle_count=5e9 * units.particle / units.milliliter,
-    size=distribution.RosinRammler(characteristic_size=150 * units.nanometer, spread=30),
+    diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
     refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
 )
 
@@ -103,7 +103,7 @@ scatterer_collection.add_population(exosome, custom_population)
 scatterer_collection.dilute(factor=4)
 
 # Initialize the scatterer with the flow cell
-# scatterer_collection.plot()  # Visualize the particle population
+scatterer_collection.plot()  # Visualize the particle population
 
 # %%
 # Step 5: Define Detectors
@@ -157,7 +157,8 @@ cytometer = FlowCytometer(
 )
 
 # Run the flow cytometry simulation
-acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
+acquisition = cytometer.get_acquisition()
 
 _ = acquisition.scatterer.plot(
     x='side',
@@ -192,11 +193,7 @@ peak_algorithm = peak_locator.BasicPeakLocator()
 
 peaks = triggered_acquisition.detect_peaks(peak_algorithm)
 
-peaks.plot(
-    feature='Height',
-    x_detector='side',
-    y_detector='forward'
-)
+peaks.plot(feature='Height', x='side', y='forward')
 
 # %%
 # Step 8: Classifying the collected dataset
@@ -210,8 +207,4 @@ data = classifier.run(
     detectors=['side', 'forward']
 )
 
-_ = data.plot(
-    feature='Height',
-    x_detector='side',
-    y_detector='forward'
-)
+_ = data.plot(feature='Height', x='side', y='forward')

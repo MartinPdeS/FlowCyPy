@@ -46,14 +46,14 @@ scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.
 population_0 = Population(
     name='EV',
     particle_count=1e+9 * units.particle / units.milliliter,
-    size=distribution.RosinRammler(characteristic_size=200 * units.nanometer, spread=4.5),
+    diameter=distribution.RosinRammler(characteristic_property=200 * units.nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.42 * units.RIU, std_dev=0.05 * units.RIU)
 )
 
 population_1 = Population(
     name='LP',
     particle_count=1e+11 * units.particle / units.milliliter,
-    size=distribution.RosinRammler(characteristic_size=100 * units.nanometer, spread=4.5),
+    diameter=distribution.RosinRammler(characteristic_property=100 * units.nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.39 * units.RIU, std_dev=0.05 * units.RIU)
 )
 
@@ -98,7 +98,8 @@ cytometer = FlowCytometer(
 # ---------------------------------------
 # Simulate the signals for both detectors (FSC and SSC) as particles pass through the laser beam.
 # Run the flow cytometry simulation
-acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+acquisition = cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
+acquisition = cytometer.get_acquisition()
 
 # Visualize the scatter signals from both detectors
 acquisition.digital.plot(filter_population=['EV'])

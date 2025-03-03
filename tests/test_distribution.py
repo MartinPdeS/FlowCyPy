@@ -87,10 +87,10 @@ def test_normal_properties():
 def test_lognormal_properties():
     """Test specific properties of certain distributions."""
     distribution = distributions[1]
-    sizes = distribution.generate(4000 * units.particle)
+    diameters = distribution.generate(4000 * units.particle)
 
     # Test for LogNormalDistribution: Check that the standard deviation is approximately correct
-    std_dev_size = np.std(sizes)
+    std_dev_size = np.std(diameters)
     expected_std = distribution.std_dev
 
     assert np.isclose(std_dev_size, expected_std, rtol=2), f"LogNormalDistribution: Standard deviation {std_dev_size} deviates from expected {expected_std}"

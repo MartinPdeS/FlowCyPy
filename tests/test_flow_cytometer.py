@@ -57,7 +57,7 @@ def flow_cell():
     )
 
 @pytest.fixture
-def size_distribution():
+def diameter_distribution():
     """Fixture for creating a normal size distribution."""
     return distribution.Normal(
         mean=1.0 * units.micrometer,
@@ -73,11 +73,11 @@ def ri_distribution():
     )
 
 @pytest.fixture
-def population(size_distribution, ri_distribution):
+def population(diameter_distribution, ri_distribution):
     """Fixture for creating a default population."""
     return Population(
         particle_count=110 * units.particle,
-        size=size_distribution,
+        diameter=diameter_distribution,
         refractive_index=ri_distribution,
         name="Default population"
     )
@@ -104,7 +104,8 @@ def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, defa
 
 def test_flow_cytometer_acquisition(flow_cytometer):
     """Test if the Flow Cytometer generates a non-zero acquisition signal."""
-    acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+    flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
+    acquisition = flow_cytometer.get_acquisition()
 
     signal = acquisition.analog['Signal']
 
@@ -114,7 +115,8 @@ def test_flow_cytometer_acquisition(flow_cytometer):
 
 def test_flow_cytometer_multiple_detectors(flow_cytometer):
     """Ensure that both detectors generate non-zero signals."""
-    acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+    flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
+    acquisition = flow_cytometer.get_acquisition()
 
     signal_0 = acquisition.analog['Signal']
     signal_1 = acquisition.analog['Signal']
@@ -126,7 +128,8 @@ def test_flow_cytometer_multiple_detectors(flow_cytometer):
 @patch('matplotlib.pyplot.show')
 def test_flow_cytometer_plot(mock_show, flow_cytometer):
     """Test if the flow cytometer plots without error."""
-    acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+    flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
+    acquisition = flow_cytometer.get_acquisition()
 
     acquisition.analog.plot()
     acquisition.analog.log()
@@ -141,7 +144,8 @@ def test_flow_cytometer_plot(mock_show, flow_cytometer):
 
 def test_flow_cytometer_triggered_acquisition(flow_cytometer):
     """Test triggered acquisition with a defined threshold."""
-    acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+    flow_cytometer.prepare_acquisition(run_time=2 * units.millisecond)
+    acquisition = flow_cytometer.get_acquisition()
 
     triggered_acquisition = acquisition.run_triggering(
         threshold=3.0 * units.millivolt,
@@ -157,7 +161,8 @@ def test_flow_cytometer_triggered_acquisition(flow_cytometer):
 
 def test_flow_cytometer_signal_processing(flow_cytometer):
     """Test filtering and baseline restoration on the acquired signal."""
-    acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+    flow_cytometer.prepare_acquisition(run_time=2.0 * units.millisecond)
+    acquisition = flow_cytometer.get_acquisition()
 
     triggered_acquisition = acquisition.run_triggering(
         threshold=3.0 * units.millivolt,
@@ -181,7 +186,8 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
 
 def test_peak_detection(flow_cytometer):
     """Ensure peak detection works correctly on the triggered acquisition."""
-    acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+    flow_cytometer.prepare_acquisition(run_time=2.0 * units.millisecond)
+    acquisition = flow_cytometer.get_acquisition()
 
     triggered_acquisition = acquisition.run_triggering(
         threshold=3.0 * units.millivolt,
@@ -201,7 +207,8 @@ def test_peak_detection(flow_cytometer):
 @patch('matplotlib.pyplot.show')
 def test_peak_plot(mock_show, flow_cytometer):
     """Ensure peak plots render correctly."""
-    acquisition = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+    flow_cytometer.prepare_acquisition(run_time=2.0 * units.millisecond)
+    acquisition = flow_cytometer.get_acquisition()
 
     triggered_acquisition = acquisition.run_triggering(
         threshold=3.0 * units.millivolt,
@@ -215,7 +222,7 @@ def test_peak_plot(mock_show, flow_cytometer):
 
     peaks = triggered_acquisition.detect_peaks(algorithm)
 
-    peaks.plot(x_detector='default', y_detector='default_bis')
+    peaks.plot(x='default', y='default_bis')
     plt.close()
 
 

@@ -27,7 +27,7 @@ distributions = [
     dist.Normal(mean=1.0 * units.micrometer, std_dev=100.0 * units.nanometer),
     dist.LogNormal(mean=1.0 * units.micrometer, std_dev=0.01 * units.micrometer),
     dist.Uniform(lower_bound=0.5 * units.micrometer, upper_bound=1.5 * units.micrometer),
-    dist.RosinRammler(characteristic_size=0.5 * units.micrometer, spread=1.5),
+    dist.RosinRammler(characteristic_property=0.5 * units.micrometer, spread=1.5),
 ]
 
 
@@ -43,7 +43,7 @@ def test_generate_distribution_size(distribution, default_flow_cell):
 
     population_0 = Population(
         particle_count=CONCENTRATION,
-        size=distribution,
+        diameter=distribution,
         refractive_index=ri_distribution,
         name="Default population"
     )
@@ -65,33 +65,33 @@ def test_generate_distribution_size(distribution, default_flow_cell):
     scatterer_collection.fill_dataframe_with_sampling(dataframe)
 
 
-    assert np.all(dataframe['Size'] > 0), "Some generated sizes are not positive."
+    assert np.all(dataframe['Diameter'] > 0), "Some generated sizes are not positive."
 
     # Check if the sizes follow the expected bounds depending on the distribution type
     if isinstance(distribution, dist.Normal):
         expected_mean = distribution.mean
 
-        generated_mean = dataframe['Size'].mean()
+        generated_mean = dataframe['Diameter'].mean()
 
         assert np.isclose(generated_mean, expected_mean, rtol=1e-1), (
             f"Normal distribution: Expected mean {expected_mean}, but got {generated_mean}"
         )
 
     elif isinstance(distribution, dist.LogNormal):
-        assert np.all(dataframe['Size'] > 0 * units.meter), "Lognormal distribution generated non-positive sizes."
+        assert np.all(dataframe['Diameter'] > 0 * units.meter), "Lognormal distribution generated non-positive sizes."
 
     elif isinstance(distribution, dist.Uniform):
         lower_bound = distribution.lower_bound
         upper_bound = distribution.upper_bound
 
-        assert np.all((dataframe['Size'] >= lower_bound) & (dataframe['Size'] <= upper_bound)), (
-            f"Uniform distribution: Sizes are out of bounds [{lower_bound}, {upper_bound}]"
+        assert np.all((dataframe['Diameter'] >= lower_bound) & (dataframe['Diameter'] <= upper_bound)), (
+            f"Uniform distribution: Diameters are out of bounds [{lower_bound}, {upper_bound}]"
         )
 
     elif isinstance(distribution, dist.Delta):
         singular_value = distribution.size_value
 
-        assert np.all(dataframe['Size'] == singular_value), (
+        assert np.all(dataframe['Diameter'] == singular_value), (
             f"Singular distribution: All sizes should be {singular_value}, but got varying sizes."
         )
 
@@ -106,7 +106,7 @@ def test_generate_longitudinal_positions(default_flow_cell, distribution):
 
     population_0 = Population(
         particle_count=CONCENTRATION,
-        size=distribution,
+        diameter=distribution,
         refractive_index=ri_distribution,
         name="Default population"
     )
@@ -144,7 +144,7 @@ def test_plot_positions(mock_show, distribution):
 
     population_0 = Population(
         particle_count=CONCENTRATION,
-        size=distribution,
+        diameter=distribution,
         refractive_index=ri_distribution,
         name="Default population"
     )
@@ -167,14 +167,14 @@ def test_extra(distribution):
 
     population_0 = Population(
         particle_count=CONCENTRATION,
-        size=distribution,
+        diameter=distribution,
         refractive_index=ri_distribution,
         name="Default population"
     )
 
     population_1 = Population(
         particle_count=CONCENTRATION,
-        size=distribution,
+        diameter=distribution,
         refractive_index=ri_distribution,
         name="Default population"
     )

@@ -41,7 +41,7 @@ def compute_scattering_cross_section(scatterer_dataframe: pd.DataFrame, source: 
     np.ndarray
         The angle-dependent Rayleigh scattering cross-section (in square meters, m²).
     """
-    size_list = scatterer_dataframe['Size'].pint.to(meter).values.numpy_data
+    size_list = scatterer_dataframe['Diameter'].pint.to(meter).values.numpy_data
     ri_list = scatterer_dataframe['RefractiveIndex'].values.numpy_data
 
     # Extract properties

@@ -3,7 +3,6 @@ import numpy as np
 from FlowCyPy import ScattererCollection, Detector, FlowCell
 from FlowCyPy import distribution
 from FlowCyPy.coupling_mechanism import rayleigh
-from FlowCyPy.coupling_mechanism import mie
 from FlowCyPy.population import Population
 from FlowCyPy.source import GaussianBeam
 from FlowCyPy.signal_digitizer import SignalDigitizer
@@ -32,7 +31,7 @@ def normal_population(normal_size_distribution, normal_ri_distribution):
     """Fixture for creating a Population."""
     return Population(
         particle_count=1e+10 * units.particle / units.milliliter,
-        size=normal_size_distribution,
+        diameter=normal_size_distribution,
         refractive_index=normal_ri_distribution,
         name="Default population"
     )
@@ -90,11 +89,11 @@ def test_generate_scatterer_size(scatterer_collection, default_flow_cell):
 
     scatterer_collection.fill_dataframe_with_sampling(scatterer_dataframe)
 
-    sizes = scatterer_dataframe['Size']
+    diameters = scatterer_dataframe['Diameter']
 
-    assert sizes is not None, "ScattererCollection sizes should be generated."
-    assert len(sizes) > 0, f"Expected 10 scatterer sizes, but got {len(sizes)}."
-    assert sizes.values.numpy_data.min() > 0, f"Expected all sizes to be positive, but got a minimum size of {sizes.magnitude.min()}."
+    assert diameters is not None, "ScattererCollection sizes should be generated."
+    assert len(diameters) > 0, f"Expected 10 scatterer sizes, but got {len(diameters)}."
+    assert diameters.values.numpy_data.min() > 0, f"Expected all sizes to be positive, but got a minimum size of {diameters.magnitude.min()}."
 
 def test_rayleigh_mechanism_output(detector, scatterer_collection, source, default_flow_cell):
     """

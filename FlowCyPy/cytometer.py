@@ -218,7 +218,32 @@ class FlowCytometer:
         return dataframe.sort_index()
 
     @validate_units(run_time=units.second)
-    def get_acquisition(self, run_time: units.second, processing_steps: list[SignalProcessor] = None) -> None:
+    def prepare_acquisition(self, run_time: units.second) -> None:
+        """
+        Set the internal properties for run_time.
+
+        Parameters
+        ----------
+        run_time : pint.Quantity
+            The duration of the acquisition in seconds.
+
+        """
+        self.run_time = run_time
+
+        self.signal_dataframe = self._initialize_signal(run_time=self.run_time)
+
+        scatterer_dataframe = self.flow_cell._generate_event_dataframe(self.scatterer_collection.populations, run_time=run_time)
+
+        self.scatterer_collection.fill_dataframe_with_sampling(scatterer_dataframe)
+
+        self._run_coupling_analysis(scatterer_dataframe)
+
+        self._generate_pulse_parameters(scatterer_dataframe)
+
+        self.scatterer_collection.dataframe = scatterer_dataframe
+
+    @validate_units(run_time=units.second)
+    def get_acquisition(self, processing_steps: list[SignalProcessor] = None) -> None:
         """
         Simulates the generation of optical signal pulses for each particle event.
 
@@ -249,24 +274,10 @@ class FlowCytometer:
         ValueError
             If the scatterer collection lacks required data columns ('Widths', 'Time').
         """
-        if not run_time.check('second'):
-            raise ValueError(f"flow_speed must be in meter per second, but got {run_time.units}")
+        _widths = self.scatterer_collection.dataframe['Widths'].pint.to('second').pint.quantity.magnitude
+        _centers = self.scatterer_collection.dataframe['Time'].pint.to('second').pint.quantity.magnitude
 
-        signal_dataframe = self._initialize_signal(run_time=run_time)
-
-        scatterer_dataframe = self.flow_cell._generate_event_dataframe(self.scatterer_collection.populations, run_time=run_time)
-
-        self.scatterer_collection.fill_dataframe_with_sampling(scatterer_dataframe)
-
-        self._run_coupling_analysis(scatterer_dataframe)
-
-        self._generate_pulse_parameters(scatterer_dataframe)
-
-        self.scatterer_collection.dataframe = scatterer_dataframe
-
-        _widths = scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude
-        _centers = scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude
-
+        signal_dataframe = self.signal_dataframe
 
         saturation_levels = dict()
         for detector in self.detectors:
@@ -281,15 +292,14 @@ class FlowCytometer:
             # Broadcast the time array to the shape of (number of signals, len(detector.time))
             time = signal_dataframe.xs(detector.name)['Time'].pint.magnitude
 
-            if not scatterer_dataframe.empty:
-                _coupling_power = scatterer_dataframe[detector.name].values
+            if not self.scatterer_collection.dataframe.empty:
+                _coupling_power = self.scatterer_collection.dataframe[detector.name].values
 
                 time_grid = np.expand_dims(time, axis=0) * units.second
                 centers = np.expand_dims(_centers, axis=1) * units.second
                 widths = np.expand_dims(_widths, axis=1) * units.second
 
-                # Compute the Gaussian for each height, center, and width using broadcasting
-                # To be noted that widths is defined as: waist / (2 * flow_speed)
+                # Compute the Gaussian for each height, center, and width using broadcasting. To be noted that widths is defined as: waist / (2 * flow_speed)
                 power_gaussians = _coupling_power[:, np.newaxis] * np.exp(- (time_grid - centers) ** 2 / (2 * widths ** 2))
 
                 total_power += np.sum(power_gaussians, axis=0)
@@ -315,17 +325,21 @@ class FlowCytometer:
 
             saturation_levels[detector.name] = self.signal_digitizer.get_saturation_values(signal=signal_dataframe.loc[detector.name, 'Signal'])
 
-        signal_dataframe = dataframe_subclass.AnalogAcquisitionDataFrame(signal_dataframe)
-
-        signal_dataframe.attrs['saturation_levels'] = saturation_levels
-        signal_dataframe.attrs['scatterer_dataframe'] = scatterer_dataframe
+        signal_dataframe = dataframe_subclass.AnalogAcquisitionDataFrame(
+            signal_dataframe,
+            saturation_levels=saturation_levels,
+            scatterer_dataframe=self.scatterer_collection.dataframe
+        )
 
         experiment = Acquisition(
             cytometer=self,
-            run_time=run_time,
-            scatterer_dataframe=scatterer_dataframe,
+            run_time=self.run_time,
+            scatterer_dataframe=self.scatterer_collection.dataframe,
             detector_dataframe=signal_dataframe
         )
+
+        delattr(self, 'run_time')
+        delattr(self, 'signal_dataframe')
 
         return experiment
 

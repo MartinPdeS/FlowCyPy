@@ -38,7 +38,7 @@ for size in [150, 100, 50, 30]:
     population = Population(
         name=f'{size} nanometer',
         particle_count=20 * units.particle,
-        size=distribution.Delta(position=size * units.nanometer),
+        diameter=distribution.Delta(position=size * units.nanometer),
         refractive_index=distribution.Delta(position=1.39 * units.RIU)
     )
 
@@ -79,7 +79,8 @@ cytometer = FlowCytometer(
 )
 
 # Run the flow cytometry simulation
-acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
+acquisition = cytometer.get_acquisition()
 
 # Visualize the scatter signals from both detectors
 acquisition.analog.plot()
@@ -98,7 +99,4 @@ peak_algorithm = peak_locator.BasicPeakLocator()
 
 peaks = trigger_acquisition.detect_peaks(peak_algorithm)
 
-peaks.plot(
-    x_detector='side',
-    y_detector='forward'
-)
+peaks.plot(x='side', y='forward')

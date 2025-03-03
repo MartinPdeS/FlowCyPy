@@ -27,7 +27,7 @@ def flow_cell():
 @pytest.fixture
 def populations():
     """Fixture to create a Population object for testing."""
-    size_dist = distribution.Normal(
+    diameter_dist = distribution.Normal(
         mean=500 * units.nanometer, std_dev=50 * units.nanometer
     )
     refractive_index_dist = distribution.Normal(
@@ -36,14 +36,14 @@ def populations():
     )
     population_0 = Population(
         particle_count=1.8e11 * units.particle / units.milliliter,
-        size=size_dist,
+        diameter=diameter_dist,
         refractive_index=refractive_index_dist,
         name="Test Population 0"
     )
 
     population_1 = Population(
         particle_count=1.8e11 * units.particle / units.milliliter,
-        size=size_dist,
+        diameter=diameter_dist,
         refractive_index=refractive_index_dist,
         name="Test Population 1"
     )

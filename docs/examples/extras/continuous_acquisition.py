@@ -8,7 +8,7 @@ provide insights into the physical properties of particles passing through the l
 
 Workflow:
 ---------
-1. Define a particle size distribution using `ScattererCollection`.
+1. Define a particle diameter distribution using `ScattererCollection`.
 2. Simulate flow cytometer signals using `FlowCytometer`.
 3. Analyze the forward scatter signal with `PulseAnalyzer` to extract features like peak height, width, and area.
 4. Visualize the generated signals and display the extracted pulse features.
@@ -43,12 +43,12 @@ flow_cell = FlowCell(
 )
 
 # %%
-# Step 4: Define the particle size distribution
+# Step 4: Define the particle diameter distribution
 # ---------------------------------------------
-# Use a normal size distribution with a mean size of 200 nanometers and a standard deviation of 10 nanometers.
+# Use a normal diameter distribution with a mean diameter of 200 nanometers and a standard deviation of 10 nanometers.
 # This represents the population of scatterers (particles) that will interact with the laser source.
-ev_size = distribution.Normal(
-    mean=200 * units.nanometer,       # Mean particle size: 200 nanometers
+ev_diameter = distribution.Normal(
+    mean=200 * units.nanometer,       # Mean particle diameter: 200 nanometers
     std_dev=10 * units.nanometer      # Standard deviation: 10 nanometers
 )
 
@@ -59,7 +59,7 @@ ev_ri = distribution.Normal(
 
 ev = Population(
     particle_count=1.8e+9 * units.particle / units.milliliter,
-    size=ev_size,               # Particle size distribution
+    diameter=ev_diameter,           # Particle diameter distribution
     refractive_index=ev_ri,     # Refractive index distribution
     name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
 )
@@ -89,7 +89,7 @@ detector_0 = Detector(
 detector_1 = Detector(
     phi_angle=0 * units.degree,               # Detector angle: 90 degrees (Sid e Scatter)
     numerical_aperture=0.4 * units.AU,        # Numerical aperture of the detector
-    name='second detector',             # Detector name
+    name='second detector',                   # Detector name
     responsitivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
 )
 
@@ -99,12 +99,14 @@ detector_1 = Detector(
 cytometer = FlowCytometer(
     signal_digitizer=signal_digitizer,
     scatterer_collection=scatterer_collection,
-    flow_cell=flow_cell,                # Particle size distribution
+    flow_cell=flow_cell,                # Particle diameter distribution
     detectors=[detector_0, detector_1]  # List of detectors used in the simulation
 )
 
 # Run the flow cytometry simulation
-acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
+
+acquisition = cytometer.get_acquisition()
 
 # Visualize the scatter signals from both detectors
 acquisition.analog.plot()
