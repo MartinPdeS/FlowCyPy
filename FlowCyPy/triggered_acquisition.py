@@ -53,200 +53,172 @@ class TriggeredAcquisitions:
     def detect_peaks(self, peak_detection_func) -> None:
         """
         Detects peaks for each segment using a custom peak detection function and stores results
-        in a MultiIndex DataFrame with the original units restored.
+        in a MultiIndex DataFrame with original units restored.
+
+        The custom peak detection function must accept a 2D NumPy array of shape (num_segments, signal_length)
+        and return a dictionary with the following key:
+            - "peak_index": 2D array (num_segments, num_peaks) of detected peak indices.
+        Optionally, the dictionary may also contain:
+            - "width": 2D array (num_segments, num_peaks) of computed peak widths.
+            - "area": 2D array (num_segments, num_peaks) of computed peak areas.
+
+        The resulting DataFrame uses a MultiIndex (Detector, Segment, Peak_Number) and contains the following columns:
+            - "Peak_Index", "Time", "Height"
+        and, if computed, "Width" and "Area".
 
         Parameters
         ----------
         peak_detection_func : function
-            A function that takes in a 2D NumPy array of shape (num_arrays, length_of_array)
-            and returns a 2D NumPy array (num_arrays, pad_width) containing detected peak indices.
+            A function that takes a 2D NumPy array (num_segments, signal_length) and returns a dictionary
+            with peak metrics.
 
         Returns
         -------
         PeakDataFrame
-            MultiIndex DataFrame with index (Detector, SegmentID, PeakNumber)
-            and columns ['Time', 'Height'], including their original units.
+            A MultiIndex DataFrame (Detector, Segment, Peak_Number) with the computed metrics and original units restored.
         """
-        _digital_signal = self.digital
+        digital_signal = self.digital
+        df_list = []
 
-        dataframes = []
+        for detector, group in digital_signal.groupby('Detector'):
+            # Dequantify and reshape signal and time matrices.
+            signal_matrix = group.pint.dequantify().Signal.values.reshape([-1, self.signal_length])
+            time_matrix = group.pint.dequantify().Time.values.reshape([-1, self.signal_length])
 
-        for _, digital_signal in _digital_signal.groupby('Detector'):
-            detection_matrix = digital_signal.pint.dequantify().Signal.values.reshape([-1, self.signal_length])
-            time_matrix = digital_signal.pint.dequantify().Time.values.reshape([-1, self.signal_length])  # Retain pint units
+            # Run the custom peak detection function.
+            peaks = peak_detection_func(signal_matrix)
+            num_segments, num_peaks = peaks["peak_index"].shape
 
-            peak_indices = peak_detection_func(detection_matrix)
-
-            # Define the number of segments and peaks
-            num_segments, num_peaks = peak_indices.shape
-
-            # Create MultiIndex tuples
-            segment_indices = np.repeat(np.arange(num_segments), num_peaks)
+            # Build a MultiIndex for (Segment, Peak_Number)
+            segments = np.repeat(np.arange(num_segments), num_peaks)
             peak_numbers = np.tile(np.arange(1, num_peaks + 1), num_segments)
+            multi_index = pd.MultiIndex.from_tuples(zip(segments, peak_numbers), names=["Segment", "Peak_Number"])
 
-            multi_index = pd.MultiIndex.from_tuples(zip(segment_indices, peak_numbers), names=["Segment", "Peak_Number"])
+            # Flatten the peak indices.
+            flat_peak_idx = peaks["peak_index"].ravel()
 
-            # Flatten the peak indices array for values
-            flattened_peak_indices = peak_indices.ravel()
+            # Create the DataFrame with mandatory column "Peak_Index"
+            df = pd.DataFrame({"Peak_Index": flat_peak_idx}, index=multi_index)
 
-            # Create the MultiIndex DataFrame
-            df_multi_index = pd.DataFrame({"Peak_Index": flattened_peak_indices}, index=multi_index)
+            # Conditionally add "Width" and "Area" if they exist in peaks.
+            if "width" in peaks:
+                flat_width = peaks["width"].ravel()
+                df["Width"] = flat_width
+            if "area" in peaks:
+                flat_area = peaks["area"].ravel()
+                df["Area"] = flat_area
 
-            # Remove rows where Peak_Index is -1 (since -1 represents missing peaks)
-            df_multi_index = df_multi_index[df_multi_index["Peak_Index"] != -1]
+            # Remove rows where Peak_Index is -1 (invalid/missing peaks).
+            df = df[df["Peak_Index"] != -1]
 
-            # Extract valid peak indices from the MultiIndex DataFrame
-            peak_indices_valid = df_multi_index["Peak_Index"].values.astype(int)
+            # Extract corresponding peak heights and times.
+            peak_heights = []
+            peak_times = []
+            for (segment, _), idx in df["Peak_Index"].items():
+                idx = int(idx)
+                peak_heights.append(np.take(signal_matrix[segment], idx))
+                peak_times.append(np.take(time_matrix[segment], idx))
+            df["Height"] = pint_pandas.PintArray(peak_heights, group.Signal.values.units)
+            df["Time"] = pint_pandas.PintArray(peak_times, group.Time.values.units)
 
-            # Retrieve the corresponding peak heights from detection_matrix
-            peak_heights_valid = []
-            peak_times_valid = []
-            for (segment_id, peak_number), indices in zip(df_multi_index.index, df_multi_index.Peak_Index):
-                heights = np.take(detection_matrix[segment_id], indices)
-                times = np.take(time_matrix[segment_id], indices)
+            # Record the detector name.
+            df["Detector"] = detector
+            df.reset_index(inplace=True)
+            df.set_index(["Detector", "Segment", "Peak_Number"], inplace=True)
 
-                peak_heights_valid.append(heights)
-                peak_times_valid.append(times)
+            df_list.append(df)
 
-            # Assign extracted values to the DataFrame
-            df_multi_index["Height"] = pint_pandas.PintArray(peak_heights_valid, digital_signal.Signal.values.units)
-            df_multi_index["Time"] = pint_pandas.PintArray(peak_times_valid, digital_signal.Time.values.units)
+        # Concatenate results from all detectors.
+        combined_df = pd.concat(df_list, axis=0)
 
-            dataframes.append(df_multi_index)
-
-        output = pd.concat(dataframes, keys=_digital_signal.index.get_level_values('Detector').unique(), names=['Detector'])
-
-        # # Keep only the Peak_Number with the highest Height per (Detector, Segment)
-        output = (
-            output.pint.dequantify()
-            .groupby(level=["Detector", "Segment"], group_keys=False).apply(lambda g: g.loc[g["Height"].idxmax()])
+        # Optionally, keep only the peak with the highest Height per (Detector, Segment).
+        final_df = (
+            combined_df.pint.dequantify()
+            .groupby(level=["Detector", "Segment"], group_keys=False)
+            .apply(lambda g: g.loc[g["Height"].idxmax()])
             .reset_index(level=["Peak_Number"], drop=True)
             .pint.quantify()
         )
 
-        return dataframe_subclass.PeakDataFrame(output)
+        return dataframe_subclass.PeakDataFrame(final_df)
 
-    def _apply_lowpass_filter(self, cutoff_freq: units.Quantity, order: int = 4) -> None:
-        """
-        Applies a Bessel low-pass filter to the signal data in-place.
 
-        Parameters
-        ----------
-        cutoff_freq : units.Quantity
-            The cutoff frequency for the low-pass filter (must have frequency units).
-        order : int, optional
-            The order of the Bessel filter, default is 4.
 
-        Raises
-        ------
-        ValueError
-            If cutoff frequency is missing or exceeds Nyquist frequency.
-        TypeError
-            If signal data is not stored as a PintArray.
-        """
-        if cutoff_freq is None:
-            raise ValueError("Cutoff frequency must be specified for low-pass filtering.")
+    # def detect_peaks(self, peak_detection_func) -> pd.DataFrame:
+    #     """
+    #     Detects peaks for each segment using a custom peak detection function and stores results
+    #     in a MultiIndex DataFrame with the original units restored.
 
-        # Get sampling frequency and ensure it's in Hertz
-        fs = self.parent.cytometer.signal_digitizer.sampling_rate.to("hertz")
-        nyquist_freq = fs / 2
+    #     Parameters
+    #     ----------
+    #     peak_detection_func : function
+    #         A function that takes in a 2D NumPy array of shape (num_arrays, length_of_array)
+    #         and returns a 2D NumPy array (num_arrays, pad_width) containing detected peak indices.
 
-        # Validate cutoff frequency
-        if cutoff_freq.to("hertz") >= nyquist_freq:
-            raise ValueError(f"Cutoff frequency ({cutoff_freq}) must be below the Nyquist frequency ({nyquist_freq}).")
+    #     Returns
+    #     -------
+    #     PeakDataFrame
+    #         MultiIndex DataFrame with index (Detector, SegmentID, PeakNumber)
+    #         and columns ['Time', 'Height'], including their original units.
+    #     """
+    #     _digital_signal = self.digital
 
-        # Ensure the signal column is a PintArray
-        if not isinstance(self.analog["Signal"].array, pint_pandas.PintArray):
-            raise TypeError("Expected 'Signal' to be a PintArray, but got a different type.")
+    #     dataframes = []
 
-        # Iterate through each detector-segment pair and apply filtering
-        for (detector, segment_id), segment_data in self.analog.groupby(level=['Detector', 'SegmentID']):
-            filtered_values = bessel_lowpass_filter(
-                signal=segment_data["Signal"].pint.quantity.magnitude,
-                cutoff=cutoff_freq,
-                sampling_rate=fs,
-                order=order
-            )
+    #     for _, digital_signal in _digital_signal.groupby('Detector'):
+    #         detection_matrix = digital_signal.pint.dequantify().Signal.values.reshape([-1, self.signal_length])
+    #         time_matrix = digital_signal.pint.dequantify().Time.values.reshape([-1, self.signal_length])  # Retain pint units
 
-            self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    #         peak_dict = peak_detection_func(detection_matrix)
 
-    def _apply_highpass_filter(self, cutoff_freq: units.Quantity, order: int = 4) -> None:
-        """
-        Applies a DC high-pass filter to the signal data in-place.
+    #         # Define the number of segments and peaks
+    #         num_segments, num_peaks = peak_dict['peak_index'].shape
 
-        Parameters
-        ----------
-        cutoff_freq : units.Quantity
-            The cutoff frequency for the high-pass filter (must have frequency units).
-        order : int, optional
-            The order of the high-pass filter, default is 4.
+    #         # Create MultiIndex tuples
+    #         segment_indices = np.repeat(np.arange(num_segments), num_peaks)
+    #         peak_numbers = np.tile(np.arange(1, num_peaks + 1), num_segments)
 
-        Raises
-        ------
-        ValueError
-            If cutoff frequency is missing or exceeds Nyquist frequency.
-        TypeError
-            If signal data is not stored as a PintArray.
-        """
-        if cutoff_freq is None:
-            raise ValueError("Cutoff frequency must be specified for high-pass filtering.")
+    #         multi_index = pd.MultiIndex.from_tuples(zip(segment_indices, peak_numbers), names=["Segment", "Peak_Number"])
 
-        # Get sampling frequency and ensure it's in Hertz
-        fs = self.parent.cytometer.signal_digitizer.sampling_rate.to("hertz")
-        nyquist_freq = fs / 2
+    #         # Flatten the peak indices array for values
+    #         flattened_peak_indices = peak_dict['peak_index'].ravel()
 
-        # Validate cutoff frequency
-        if cutoff_freq.to("hertz") >= nyquist_freq:
-            raise ValueError(f"Cutoff frequency ({cutoff_freq}) must be below the Nyquist frequency ({nyquist_freq}).")
+    #         # Create the MultiIndex DataFrame
+    #         df_multi_index = pd.DataFrame({"Peak_Index": flattened_peak_indices}, index=multi_index)
 
-        # Ensure the signal column is a PintArray
-        if not isinstance(self.analog["Signal"].array, pint_pandas.PintArray):
-            raise TypeError("Expected 'Signal' to be a PintArray, but got a different type.")
+    #         # Remove rows where Peak_Index is -1 (since -1 represents missing peaks)
+    #         df_multi_index = df_multi_index[df_multi_index["Peak_Index"] != -1]
 
-        # Iterate through each detector-segment pair and apply filtering
-        for (detector, segment_id), segment_data in self.analog.groupby(level=['Detector', 'SegmentID']):
-            filtered_values = dc_highpass_filter(
-                signal=segment_data["Signal"].pint.quantity.magnitude,
-                cutoff=cutoff_freq,
-                sampling_rate=fs,
-                order=order
-            )
+    #         # Extract valid peak indices from the MultiIndex DataFrame
+    #         peak_indices_valid = df_multi_index["Peak_Index"].values.astype(int)
 
-            # Ensure values remain as a PintArray and keep original units
-            self.analog.loc[(detector, segment_id), "Signal"] = filtered_values
+    #         # Retrieve the corresponding peak heights from detection_matrix
+    #         peak_heights_valid = []
+    #         peak_times_valid = []
+    #         for (segment_id, peak_number), indices in zip(df_multi_index.index, df_multi_index.Peak_Index):
+    #             heights = np.take(detection_matrix[segment_id], indices)
+    #             times = np.take(time_matrix[segment_id], indices)
 
-    def apply_baseline_restauration(self) -> None:
-        """
-        Restores the baseline of the signal by subtracting the minimum value
-        for both 'Signal' and 'DigitizedSignal', ensuring zero-based alignment.
+    #             peak_heights_valid.append(heights)
+    #             peak_times_valid.append(times)
 
-        This operation is performed in-place, preserving the original units.
-        """
-        if self.analog.empty:
-            return  # Avoid unnecessary computation if DataFrame is empty
+    #         # Assign extracted values to the DataFrame
+    #         df_multi_index["Height"] = pint_pandas.PintArray(peak_heights_valid, digital_signal.Signal.values.units)
+    #         df_multi_index["Time"] = pint_pandas.PintArray(peak_times_valid, digital_signal.Time.values.units)
 
-        # Compute the per-group (detector, segment) minimum for vectorized operations
-        min_signal = self.analog.groupby(level=['Detector', 'SegmentID'])["Signal"].transform("min")
+    #         dataframes.append(df_multi_index)
 
-        # Apply baseline restoration in a single vectorized operation
-        self.analog["Signal"] -= min_signal
+    #     output = pd.concat(dataframes, keys=_digital_signal.index.get_level_values('Detector').unique(), names=['Detector'])
 
-    @validate_units(low_cutoff=units.hertz, high_cutoff=units.hertz)
-    def apply_filters(self, lowpass_cutoff: units.Quantity = None, highpass_cutoff: units.Quantity = None) -> None:
-        """
-        Applies low-pass and/or high-pass filters to the signal data in-place.
+    #     # # Keep only the Peak_Number with the highest Height per (Detector, Segment)
+    #     output = (
+    #         output.pint.dequantify()
+    #         .groupby(level=["Detector", "Segment"], group_keys=False).apply(lambda g: g.loc[g["Height"].idxmax()])
+    #         .reset_index(level=["Peak_Number"], drop=True)
+    #         .pint.quantify()
+    #     )
 
-        Parameters
-        ----------
-        low_cutoff : units.Quantity, optional
-            The cutoff frequency for the low-pass filter. If None, no low-pass filtering is applied.
-        high_cutoff : units.Quantity, optional
-            The cutoff frequency for the high-pass filter. If None, no high-pass filtering is applied.
-        """
-        if lowpass_cutoff is not None:
-            self._apply_lowpass_filter(lowpass_cutoff)
-        if highpass_cutoff is not None:
-            self._apply_highpass_filter(highpass_cutoff)
+    #     return dataframe_subclass.PeakDataFrame(output)
 
     @property
     def digital(self) -> pd.DataFrame:

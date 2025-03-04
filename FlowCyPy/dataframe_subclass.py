@@ -308,12 +308,16 @@ class PeakDataFrame(pd.DataFrame):
         unit_list = []
 
         for col_name, col_data in df.items():
-            unit = col_data.max().to_compact().units
-            if unit.dimensionality == units.bit_bins.dimensionality:
-                unit = units.bit_bins
-            # df.loc[:, col_name] = col_data.pint.to(unit)
-            df[col_name] = col_data.pint.to(unit)
-            unit_list.append(unit)
+            if not hasattr(col_data, 'pint'):
+                df[col_name] = col_data
+                unit_list.append('None')
+            else:
+                unit = col_data.max().to_compact().units
+                if unit.dimensionality == units.bit_bins.dimensionality:
+                    unit = units.bit_bins
+                # df.loc[:, col_name] = col_data.pint.to(unit)
+                df[col_name] = col_data.pint.to(unit)
+                unit_list.append(unit)
 
         return df, unit_list
 
