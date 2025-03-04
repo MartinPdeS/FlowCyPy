@@ -127,13 +127,6 @@ triggered_acquisition = acquisition.run_triggering(
     post_buffer=64
 )
 
-triggered_acquisition.apply_filters(
-    lowpass_cutoff=1.5 * units.megahertz,
-    highpass_cutoff=0.01 * units.kilohertz
-)
-
-triggered_acquisition.apply_baseline_restauration()
-
 # %%
 # Visualize the scatter triggered analog signals from both detectors
 triggered_acquisition.analog.plot()

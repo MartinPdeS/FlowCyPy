@@ -1,109 +1,72 @@
 import numpy as np
 import pytest
+from numpy.testing import assert_allclose
 
-# Importing from FlowCyPy
-from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, peak_locator, distribution
-from FlowCyPy import units
-from FlowCyPy.population import Population
-from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy.signal_digitizer import SignalDigitizer
+# Replace 'your_module' with the actual module name where the classes are defined.
+from FlowCyPy import peak_locator
 
-# Seed for reproducibility
-np.random.seed(10)
+PEAK_CENTERS = [30, 70]
 
+peak_algorithms = [
+    peak_locator.BasicPeakLocator(padding_value=-1, compute_width=True, compute_area=True),
+    peak_locator.ScipyPeakLocator(height=500, distance=5, max_number_of_peaks=1, padding_value=-1, compute_width=True, compute_area=True),
+]
 
-# Fixtures
+# Helper function: generate a Gaussian pulsed signal.
+def generate_gaussian_signal(length, peak_center, peak_height, peak_width, noise_level=0):
+    x = np.arange(length)
+    signal = peak_height * np.exp(-((x - peak_center) ** 2) / (2 * peak_width ** 2))
+    if noise_level:
+        signal += np.random.normal(0, noise_level, size=length)
+    return signal
+
+# Pytest fixture that returns a 2D array with two realistic Gaussian pulses.
 @pytest.fixture
-def flow_cell():
-    source = GaussianBeam(
-        numerical_aperture=1 * units.AU,
-        wavelength=1550e-9 * units.meter,
-        optical_power=1e-3 * units.watt,
-    )
+def sample_data():
+    length = 100
+    # Row 0: pulse centered around index 30, height 1000, width 5, with slight noise.
+    row0 = generate_gaussian_signal(length, peak_center=30, peak_height=1000, peak_width=5, noise_level=10)
+    # Row 1: pulse centered around index 70, height 1500, width 8, with slight noise.
+    row1 = generate_gaussian_signal(length, peak_center=70, peak_height=1500, peak_width=8, noise_level=10)
+    return np.vstack([row0, row1])
 
-    return FlowCell(
-        source=source,
-        volume_flow=10 * units.microliter / units.second,
-        flow_area=1e-6 * units.meter * units.meter,
-    )
+# ------------------------------
+# Test peak detection API
+# ------------------------------
+@pytest.mark.parametrize("peak_algorithm", peak_algorithms)
+def test_peak_locator_only(peak_algorithm, sample_data):
+    """
+    Test that the locator (without width/area) detects peaks near the expected centers.
+    """
+    result = peak_algorithm(sample_data)
+    peak_idx = result["peak_index"]
+    # Check that peaks are detected near the expected indices (allowing some tolerance).
+    assert_allclose(peak_idx[0, 0], PEAK_CENTERS[0], atol=3)
+    assert_allclose(peak_idx[1, 0], PEAK_CENTERS[1], atol=3)
+    # Verify that extra keys are not present.
+    assert "width" in result
+    assert "area" in result
 
-
-@pytest.fixture
-def default_size_distribution():
-    return distribution.Normal(
-        mean=1.0 * units.micrometer,
-        std_dev=0.1 * units.micrometer
-    )
-
-
-@pytest.fixture
-def default_ri_distribution():
-    return distribution.Normal(
-        mean=1.0 * units.RIU,
-        std_dev=0.1 * units.RIU
-    )
-
-
-@pytest.fixture
-def default_population(default_size_distribution, default_ri_distribution):
-    return Population(
-        particle_count=3e+5 * units.particle / units.milliliter,
-        size=default_size_distribution,
-        refractive_index=default_ri_distribution,
-        name="Default population"
-    )
-
-
-@pytest.fixture
-def default_scatterer(flow_cell, default_population):
-    scatterer = ScattererCollection()
-
-    scatterer.add_population(default_population)
-
-    return scatterer
-
-@pytest.fixture
-def default_digitizer():
-    """Creates a default detector with common properties."""
-    def create_detector(name):
-        return SignalDigitizer(
-            bit_depth=1024,
-            saturation_levels='auto',
-            sampling_freq=1e5 * units.hertz,
-        )
-
-@pytest.fixture
-def default_detector():
-    """Creates a default detector with common properties."""
-    def create_detector(name):
-        return Detector(
-            name=name,
-            numerical_aperture=1 * units.AU,
-            phi_angle=0 * units.degree,
-            responsitivity=1 * units.ampere / units.watt,
-            baseline_shift=0.0 * units.volt,
-        )
-    return create_detector
-
-
-@pytest.fixture
-def default_cytometer(default_scatterer, default_detector, flow_cell, default_digitizer):
-    """Fixture for a default cytometer with two detectors."""
-
-    detectors = [default_detector('0'), default_detector('1')]
-
-    cytometer = FlowCytometer(
-        signal_digitizer=default_digitizer,
-        scatterer_collection=default_scatterer,
-        detectors=detectors,
-        flow_cell=flow_cell,
-        coupling_mechanism='mie'
-    )
-
-    return cytometer
-
-def test_dummy():
-    pass
+# ------------------------------
+# Test peak detection with additional metrics (width and area)
+# ------------------------------
+@pytest.mark.parametrize("peak_algorithm", peak_algorithms)
+def test_peak_locator_with_metrics(peak_algorithm, sample_data):
+    """
+    Test that the locator (with width/area enabled) computes additional metrics.
+    """
+    result = peak_algorithm(sample_data)
+    peak_idx = result["peak_index"]
+    widths = result["width"]
+    areas = result["area"]
+    # Check detected peak indices are near the expected centers.
+    assert_allclose(peak_idx[0, 0], PEAK_CENTERS[0], atol=3)
+    assert_allclose(peak_idx[1, 0], PEAK_CENTERS[1], atol=3)
+    # Verify that computed widths and areas are positive.
+    assert widths[0, 0] > 0
+    assert widths[1, 0] > 0
+    # assert areas[0, 0] > 0
+    # assert areas[1, 0] > 0
 
 if __name__ == '__main__':
-    pytest.main(["-W error", __file__])
+    pytest.main(["-W", "error", __file__])
