@@ -296,7 +296,7 @@ Visualize the scatter triggered digital signals from both detectors
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.752 seconds)
+   **Total running time of the script:** (0 minutes 4.580 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_triggered_acquisition.py:
