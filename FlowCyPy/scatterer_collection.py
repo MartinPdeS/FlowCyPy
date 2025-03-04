@@ -1,13 +1,10 @@
 from typing import List, Optional, Union
 from MPSPlots.styles import mps
 import pandas as pd
-import numpy as np
-import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Optional, List
 from pint_pandas import PintArray
-from matplotlib.colors import LinearSegmentedColormap
 from enum import Enum
 
 from FlowCyPy import units
@@ -250,6 +247,8 @@ class ScattererCollection():
         # Generate the DataFrame with sampling.
         df = self.get_population_dataframe(total_sampling, use_ratio=use_ratio)
 
+        print(df)
+
         # Reset the MultiIndex to obtain a column for population names.
         df_reset = df.reset_index()
 
@@ -263,6 +262,7 @@ class ScattererCollection():
                 hue='Population',
                 kind='kde',
                 fill=True,
+                common_norm=False,
                 height=8,
             )
 

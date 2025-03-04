@@ -260,8 +260,6 @@ class FlowCytometer:
 
         Parameters
         ----------
-        run_time : pint.Quantity
-            The duration of the acquisition in seconds.
         processing_steps : list of SignalProcessor, optional
             List of signal processing steps to apply in order.
 
