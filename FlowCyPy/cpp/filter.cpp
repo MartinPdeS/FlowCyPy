@@ -278,7 +278,8 @@ void compute_baseline_restoration(std::vector<double> &signal, int window_size)
         // For i==0, no previous sample exists, so leave signal[0] unchanged.
         for (size_t i = 1; i < n; ++i)
         {
-            global_min = std::min(global_min, orig[i - 1]);
+            global_min = std::min(global_min, orig[i]);  // Now look until the last point included
+            // global_min = std::min(global_min, orig[i - 1]);  // Originally for look until the last point excluded
             signal[i] = orig[i] - global_min;
         }
         return;
@@ -289,7 +290,8 @@ void compute_baseline_restoration(std::vector<double> &signal, int window_size)
     for (size_t i = 1; i < n; ++i)
     {
         size_t start = (i < static_cast<size_t>(window_size)) ? 0 : i - window_size;
-        double local_min = *std::min_element(orig.begin() + start, orig.begin() + i);
+        double local_min = *std::min_element(orig.begin() + start, orig.begin() + i);  // Now look until the last point included
+        // double local_min = *std::min_element(orig.begin() + start, orig.begin() + i + 1);  // Originally for look until the last point excluded
         signal[i] = orig[i] - local_min;
     }
 }

@@ -107,7 +107,7 @@ cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
 acquisition_none = cytometer.get_acquisition(processing_steps=processing_steps_none)
 ax.plot(
     acquisition_none.analog.loc['forward', 'Time'].pint.to('microsecond'),
-    acquisition_none.analog.loc['forward', 'Signal'],
+    acquisition_none.analog.loc['forward', 'Signal'].pint.to('millivolt'),
     linestyle='-',
     label='Raw Signal'
 )
@@ -117,7 +117,7 @@ processing_steps_baseline = [circuits.BaselineRestorator(window_size=1000 * unit
 acquisition_baseline = cytometer.get_acquisition(processing_steps=processing_steps_baseline)
 ax.plot(
     acquisition_baseline.analog.loc['forward', 'Time'].pint.to('microsecond'),
-    acquisition_baseline.analog.loc['forward', 'Signal'],
+    acquisition_baseline.analog.loc['forward', 'Signal'].pint.to('millivolt'),
     linestyle='--',
     label='Baseline Restored'
 )
@@ -127,7 +127,7 @@ processing_steps_bessel = [circuits.BesselLowPass(cutoff=3 * units.megahertz, or
 acquisition_bessel = cytometer.get_acquisition(processing_steps=processing_steps_bessel)
 ax.plot(
     acquisition_bessel.analog.loc['forward', 'Time'].pint.to('microsecond'),
-    acquisition_bessel.analog.loc['forward', 'Signal'],
+    acquisition_bessel.analog.loc['forward', 'Signal'].pint.to('millivolt'),
     linestyle='-.',
     label='Bessel LowPass'
 )
@@ -135,7 +135,7 @@ ax.plot(
 # Configure the plot.
 ax.set_title("Flow Cytometry Signal Processing")
 ax.set_xlabel("Time [microsecond]")
-ax.set_ylabel("Signal Amplitude (a.u.)")
+ax.set_ylabel("Signal Amplitude [millivolt]")
 ax.legend()
 plt.tight_layout()
 plt.show()
