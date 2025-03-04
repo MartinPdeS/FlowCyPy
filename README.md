@@ -11,9 +11,9 @@
 | FlowCyPy/coupling\_mechanism/mie.py                   |       26 |        1 |        4 |        2 |     90% |78->92, 120 |
 | FlowCyPy/coupling\_mechanism/rayleigh.py              |       23 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/uniform.py               |        6 |        1 |        0 |        0 |     83% |        40 |
-| FlowCyPy/cytometer.py                                 |      104 |       14 |       24 |        6 |     81% |115, 295->308, 318-324, 372, 374, 377-380, 400-404 |
-| FlowCyPy/dataframe\_subclass.py                       |      279 |      119 |       56 |        9 |     53% |26-28, 44-53, 85-105, 140-155, 257-270, 288, 312->315, 387-407, 455->458, 467, 468->exit, 482-507, 520, 535-536, 546->exit, 581, 642-643, 692-712, 716, 728-737, 760-766, 770, 782-791 |
-| FlowCyPy/detector.py                                  |       77 |        6 |       14 |        4 |     89% |81, 101, 113, 251-252, 269 |
+| FlowCyPy/cytometer.py                                 |      103 |       14 |       26 |        6 |     81% |118, 296->309, 319-325, 370, 372, 375-378, 398-402 |
+| FlowCyPy/dataframe\_subclass.py                       |      279 |      119 |       56 |        9 |     53% |26-28, 44-53, 85-105, 140-155, 257-270, 288, 312->315, 387-407, 456->459, 468, 469->exit, 483-508, 521, 536-537, 547->exit, 582, 643-644, 693-713, 717, 729-738, 761-767, 771, 783-792 |
+| FlowCyPy/detector.py                                  |       76 |        6 |       14 |        4 |     89% |81, 101, 113, 249-250, 267 |
 | FlowCyPy/distribution/base\_class.py                  |       27 |        4 |        2 |        1 |     83% |32, 36, 65, 72 |
 | FlowCyPy/distribution/delta.py                        |       31 |        2 |        2 |        1 |     91% |   74, 104 |
 | FlowCyPy/distribution/lognormal.py                    |       37 |        3 |        4 |        2 |     88% |90, 92, 124 |
@@ -41,7 +41,7 @@
 | FlowCyPy/triggered\_acquisition.py                    |       93 |       10 |       32 |        9 |     82% |49-51, 148, 156, 160, 192, 200, 204, 226, 246->248, 248->exit |
 | FlowCyPy/units.py                                     |       21 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       65 |       29 |       14 |        0 |     48% |28-38, 41, 107-145 |
-|                                             **TOTAL** | **1754** |  **439** |  **336** |   **79** | **71%** |           |
+|                                             **TOTAL** | **1752** |  **439** |  **338** |   **79** | **71%** |           |
 
 
 ## Setup coverage badge
