@@ -112,7 +112,7 @@ class Detector():
     def dataframe(self) -> pd.DataFrame:
         return self.cytometer.dataframe.xs(self.name)
 
-    def get_initialized_signal(self, signal_digitizer: SignalDigitizer, run_time: Quantity) -> pd.DataFrame:
+    def get_initialized_signal(self, run_time: Quantity) -> pd.DataFrame:
         """
         Initializes the raw signal for each detector based on the source and flow cell configuration.
 
@@ -125,8 +125,6 @@ class Detector():
         based on the flow cell's runtime.
 
         """
-        self.signal_digitizer = signal_digitizer
-
         time_points = int(self.signal_digitizer.sampling_rate * run_time)
         time = np.linspace(0, run_time, time_points)
 

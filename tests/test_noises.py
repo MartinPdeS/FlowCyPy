@@ -41,7 +41,10 @@ def test_shot_noise():
         dark_current=1e-12 * units.ampere,
         phi_angle=0 * units.degree,
     )
-    dataframe = detector.get_initialized_signal(run_time=run_time, signal_digitizer=signal_digitizer)
+
+    detector.signal_digitizer = signal_digitizer
+
+    dataframe = detector.get_initialized_signal(run_time=run_time)
 
     noise = detector._add_optical_power_to_raw_signal(
         optical_power=optical_power,
@@ -90,7 +93,9 @@ def test_thermal_noise():
         dark_current=0 * units.ampere,
         phi_angle=0 * units.degree,
     )
-    dataframe = detector.get_initialized_signal(run_time=run_time, signal_digitizer=signal_digitizer)
+    detector.signal_digitizer = signal_digitizer
+
+    dataframe = detector.get_initialized_signal(run_time=run_time)
 
     # Generate thermal noise
     noise = detector._add_thermal_noise_to_raw_signal(signal=dataframe['Signal'])  # Capture returned noise
@@ -136,7 +141,9 @@ def test_dark_current_noise():
         dark_current=dark_current,
         phi_angle=0 * units.degree,
     )
-    dataframe = detector.get_initialized_signal(run_time=run_time, signal_digitizer=signal_digitizer)
+    detector.signal_digitizer = signal_digitizer
+
+    dataframe = detector.get_initialized_signal(run_time=run_time)
 
     # Generate dark current noise
     noise = detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])  # Capture returned noise

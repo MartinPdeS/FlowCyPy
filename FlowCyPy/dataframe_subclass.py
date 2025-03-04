@@ -442,6 +442,7 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
                 nrows=n_plots,
                 figsize=figure_size,
                 sharex=True,
+                sharey=True,
                 gridspec_kw={'height_ratios': [1] * (n_plots - 1) + [0.5]}
             )
 

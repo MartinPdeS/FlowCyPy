@@ -285,19 +285,12 @@ void compute_baseline_restoration(std::vector<double> &signal, int window_size)
     }
 
     // For a finite window: for each index i, consider the window [max(0, i-window_size), i)
-    for (size_t i = 0; i < n; ++i)
+    signal[0] = 0;  // No previous samples, so leave the first sample unchanged.
+    for (size_t i = 1; i < n; ++i)
     {
-        if (i == 0)
-        {
-            // No previous samples, so leave the first sample unchanged.
-            signal[i] = 0;
-        }
-        else
-        {
-            size_t start = (i < static_cast<size_t>(window_size)) ? 0 : i - window_size;
-            double local_min = *std::min_element(orig.begin() + start, orig.begin() + i);
-            signal[i] = orig[i] - local_min;
-        }
+        size_t start = (i < static_cast<size_t>(window_size)) ? 0 : i - window_size;
+        double local_min = *std::min_element(orig.begin() + start, orig.begin() + i);
+        signal[i] = orig[i] - local_min;
     }
 }
 

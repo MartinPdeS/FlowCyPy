@@ -90,6 +90,9 @@ class FlowCytometer:
         for detector in detectors:
             detector.cytometer = self
 
+        for detector in self.detectors:
+            detector.signal_digitizer = signal_digitizer
+
     def _run_coupling_analysis(self, scatterer_dataframe: pd.DataFrame) -> None:
         """
         Computes and assigns the optical coupling power for each particle-detection event.
@@ -207,7 +210,7 @@ class FlowCytometer:
 
         # Initialize the detectors
         for detector in self.detectors:
-            dataframe = detector.get_initialized_signal(run_time=run_time, signal_digitizer=self.signal_digitizer)
+            dataframe = detector.get_initialized_signal(run_time=run_time)
 
             dataframes.append(dataframe)
 
@@ -229,8 +232,6 @@ class FlowCytometer:
 
         """
         self.run_time = run_time
-
-        self.signal_dataframe = self._initialize_signal(run_time=self.run_time)
 
         scatterer_dataframe = self.flow_cell._generate_event_dataframe(self.scatterer_collection.populations, run_time=run_time)
 
@@ -277,7 +278,7 @@ class FlowCytometer:
         _widths = self.scatterer_collection.dataframe['Widths'].pint.to('second').pint.quantity.magnitude
         _centers = self.scatterer_collection.dataframe['Time'].pint.to('second').pint.quantity.magnitude
 
-        signal_dataframe = self.signal_dataframe
+        signal_dataframe = self._initialize_signal(run_time=self.run_time)
 
         saturation_levels = dict()
         for detector in self.detectors:
@@ -318,7 +319,7 @@ class FlowCytometer:
                 temp = signal_dataframe.loc[detector.name, 'Signal'].values.numpy_data  # Get writable NumPy array
 
                 for step in processing_steps:
-                    step.apply(temp, sampling_rate=self.signal_digitizer.sampling_rate)  # Apply processing in-place
+                    step.apply(temp, sampling_rate=detector.signal_digitizer.sampling_rate)  # Apply processing in-place
 
                 # Reintroduce units after processing
                 signal_dataframe.loc[detector.name, 'Signal'] = temp * signal_dataframe.loc[detector.name, 'Signal'].pint.units
@@ -337,9 +338,6 @@ class FlowCytometer:
             scatterer_dataframe=self.scatterer_collection.dataframe,
             detector_dataframe=signal_dataframe
         )
-
-        delattr(self, 'run_time')
-        delattr(self, 'signal_dataframe')
 
         return experiment
 
