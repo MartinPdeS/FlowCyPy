@@ -8,6 +8,7 @@ from FlowCyPy import distribution
 from FlowCyPy.population import Population
 from FlowCyPy import units
 from FlowCyPy import peak_locator
+from FlowCyPy import circuits
 
 # ----------------- FIXTURES -----------------
 
@@ -172,22 +173,19 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
         post_buffer=64
     )
 
-    # Apply filtering
-    triggered_acquisition.apply_filters(
-        lowpass_cutoff=1.5 * units.megahertz,
-        highpass_cutoff=0.01 * units.kilohertz
-    )
-
-    # Apply baseline restoration
-    triggered_acquisition.apply_baseline_restauration()
-
     assert np.std(triggered_acquisition.analog['Signal']) > 0, "Filtered signal has zero variance."
 
 
 def test_peak_detection(flow_cytometer):
     """Ensure peak detection works correctly on the triggered acquisition."""
     flow_cytometer.prepare_acquisition(run_time=2.0 * units.millisecond)
-    acquisition = flow_cytometer.get_acquisition()
+
+    processing_steps = [
+        circuits.BaselineRestorator(window_size=1000 * units.microsecond),
+        circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)
+    ]
+
+    acquisition = flow_cytometer.get_acquisition(processing_steps=processing_steps)
 
     triggered_acquisition = acquisition.run_triggering(
         threshold=3.0 * units.millivolt,

@@ -31,23 +31,6 @@ def sample_data():
     return np.vstack([row0, row1])
 
 # ------------------------------
-# Test peak detection API
-# ------------------------------
-@pytest.mark.parametrize("peak_algorithm", peak_algorithms)
-def test_peak_locator_only(peak_algorithm, sample_data):
-    """
-    Test that the locator (without width/area) detects peaks near the expected centers.
-    """
-    result = peak_algorithm(sample_data)
-    peak_idx = result["peak_index"]
-    # Check that peaks are detected near the expected indices (allowing some tolerance).
-    assert_allclose(peak_idx[0, 0], PEAK_CENTERS[0], atol=3)
-    assert_allclose(peak_idx[1, 0], PEAK_CENTERS[1], atol=3)
-    # Verify that extra keys are not present.
-    assert "width" in result
-    assert "area" in result
-
-# ------------------------------
 # Test peak detection with additional metrics (width and area)
 # ------------------------------
 @pytest.mark.parametrize("peak_algorithm", peak_algorithms)

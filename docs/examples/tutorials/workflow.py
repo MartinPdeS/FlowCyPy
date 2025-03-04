@@ -194,7 +194,7 @@ peak_algorithm = peak_locator.SlidingWindowPeakLocator(window_size=10, compute_w
 
 
 peaks = triggered_acquisition.detect_peaks(peak_algorithm)
-print(peaks)
+
 
 peaks.plot(feature='Height', x='side', y='forward')
 
