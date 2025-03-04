@@ -182,7 +182,7 @@ def test_peak_detection(flow_cytometer):
 
     processing_steps = [
         circuits.BaselineRestorator(window_size=1000 * units.microsecond),
-        circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)
+        circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
     ]
 
     acquisition = flow_cytometer.get_acquisition(processing_steps=processing_steps)
