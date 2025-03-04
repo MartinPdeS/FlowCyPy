@@ -25,7 +25,7 @@ This example demonstrates the effect of different optical power levels on a flow
 We initialize the detector, apply varying optical power levels, and visualize the resulting signals
 and their distributions.
 
-.. GENERATED FROM PYTHON SOURCE LINES 10-81
+.. GENERATED FROM PYTHON SOURCE LINES 10-83
 
 
 
@@ -39,7 +39,7 @@ and their distributions.
 
  .. code-block:: none
 
-    /home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/shot_noise.py:71: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+    /home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/shot_noise.py:73: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
       ax_signal.legend()
 
 
@@ -88,8 +88,10 @@ and their distributions.
             phi_angle=0 * units.degree              # Detector orientation angle
         )
 
+        detector.signal_digitizer = signal_digitizer
+
         # Initialize the raw signal
-        dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second, signal_digitizer=signal_digitizer)
+        dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second)
 
         # Add optical power to the raw signal
         detector._add_optical_power_to_raw_signal(
@@ -126,7 +128,7 @@ and their distributions.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.473 seconds)
+   **Total running time of the script:** (0 minutes 0.495 seconds)
 
 
 .. _sphx_glr_download_gallery_noise_sources_shot_noise.py:

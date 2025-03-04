@@ -572,7 +572,7 @@ for analysis.  It can optionally simulate different noise sources: shot noise, t
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector.get_initialized_signal">
-<span class="sig-name descname"><span class="pre">get_initialized_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_digitizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.get_initialized_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.get_initialized_signal" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_initialized_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.get_initialized_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.get_initialized_signal" title="Link to this definition">#</a></dt>
 <dd><p>Initializes the raw signal for each detector based on the source and flow cell configuration.</p>
 <p>This method prepares the detectors for signal capture by associating each detector with the
 light source and generating a time-dependent raw signal placeholder.</p>
@@ -583,10 +583,7 @@ based on the flow cell’s runtime.</p>
 </section>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>signal_digitizer</strong> (<em>SignalDigitizer</em>)</p></li>
-<li><p><strong>run_time</strong> (<em>Quantity</em>)</p></li>
-</ul>
+<dd class="field-odd"><p><strong>run_time</strong> (<em>Quantity</em>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>DataFrame</em></p>

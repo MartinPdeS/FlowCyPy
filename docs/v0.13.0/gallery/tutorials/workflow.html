@@ -56,7 +56,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Examples: Noises" href="../noise_sources/index.html" />
-    <link rel="prev" title="Limit of detection" href="limit_of_detection.html" />
+    <link rel="prev" title="Signal Processing in Flow Cytometry" href="signal_processing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -466,6 +466,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Workflow</a></li>
 </ul>
 </details></li>
@@ -645,7 +646,7 @@ given by:</p>
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>  <span class="c1"># Visualize the particle population</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="Scatterer Collection" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7f1f30f8d350&gt;
+<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="Scatterer Collection" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7f66d9cd88d0&gt;
 </pre></div>
 </div>
 </section>
@@ -699,7 +700,7 @@ and particles follows Mie theory:</p>
 <span class="p">)</span>
 
 <span class="c1"># Run the flow cytometry simulation</span>
-<span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
+<span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 <span class="n">acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">()</span>
 
 <span class="n">_</span> <span class="o">=</span> <span class="n">acquisition</span><span class="o">.</span><span class="n">scatterer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
@@ -730,15 +731,63 @@ window size and threshold.</p>
 </div>
 <img src="../../_images/sphx_glr_workflow_004.png" srcset="../../_images/sphx_glr_workflow_004.png" alt="workflow" class = "sphx-glr-single-img"/><p>Getting and plotting the extracted peaks.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">peak_locator</span>
-<span class="c1"># peak_locator = peak_locator.ScipyPeakLocator(height=10 * units.bit_bins, padding_value=-1)</span>
-<span class="n">peak_algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">BasicPeakLocator</span><span class="p">()</span>
+<span class="c1"># peak_algorithm = peak_locator.ScipyPeakLocator(height=10, padding_value=-1)</span>
+<span class="c1"># peak_algorithm = peak_locator.BasicPeakLocator(compute_width=True)</span>
+<span class="n">peak_algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">SlidingWindowPeakLocator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">compute_width</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
 
 <span class="n">peaks</span> <span class="o">=</span> <span class="n">triggered_acquisition</span><span class="o">.</span><span class="n">detect_peaks</span><span class="p">(</span><span class="n">peak_algorithm</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">peaks</span><span class="p">)</span>
 
 <span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;Height&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="Peaks properties" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7f1f35324b50&gt;
+<img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="Peaks properties" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                  Peak_Index  Width  Height                    Time
+Detector Segment
+forward  0                49    0.0       1   2.750458409734956e-06
+         1                 0    8.0       0  6.8011335222537095e-06
+         2                 1    3.0      73   1.153525587597933e-05
+         3                 0    8.0       0   1.750291715285881e-05
+         4                49    0.0       1  2.6504417402900484e-05
+         5                26    8.0       2   3.088848141356893e-05
+         6                 0    8.0       0   3.408901483580597e-05
+         7                 0    8.0       1  3.8773128854809136e-05
+         8                48    1.0       1  4.2490415069178194e-05
+         9                 0    8.0       0  4.4407401233538924e-05
+         10                1    3.0     806    4.73578929821637e-05
+         11                0    8.0       0   5.304217369561594e-05
+         12               40    8.0       1    5.92432072012002e-05
+         13                0    8.0       0   6.364394065677613e-05
+         14                0    8.0       0   6.772795465910986e-05
+         15                0    8.0       0   7.132855475912653e-05
+         16                0    8.0       0   7.664610768461411e-05
+         17                0    8.0       1   7.937989664944157e-05
+         18                0    8.0       1   8.184697449574929e-05
+         19                0    8.0       0   8.963160526754459e-05
+         20                0    8.0       0   9.416569428238041e-05
+side     0                 0    8.0       0  1.9336556092682113e-06
+         1                 0    8.0       0  6.8011335222537095e-06
+         2                 1    3.0      98   1.153525587597933e-05
+         3                 0    8.0       0   1.750291715285881e-05
+         4                49    0.0       1  2.6504417402900484e-05
+         5                27    4.0       3   3.090515085847642e-05
+         6                 0    8.0       0   3.408901483580597e-05
+         7                 0    8.0       1  3.8773128854809136e-05
+         8                48    1.0       1  4.2490415069178194e-05
+         9                 0    8.0       0  4.4407401233538924e-05
+         10                1    3.0     888    4.73578929821637e-05
+         11                0    8.0       0   5.304217369561594e-05
+         12               40    8.0       1    5.92432072012002e-05
+         13                0    8.0       0   6.364394065677613e-05
+         14                0    8.0       0   6.772795465910986e-05
+         15                0    8.0       0   7.132855475912653e-05
+         16                0    8.0       0   7.664610768461411e-05
+         17                0    8.0       2   7.937989664944157e-05
+         18                0    8.0       1   8.184697449574929e-05
+         19                0    8.0       0   8.963160526754459e-05
+         20                0    8.0       0   9.416569428238041e-05
+
+&lt;seaborn.axisgrid.JointGrid object at 0x7f66e263a850&gt;
 </pre></div>
 </div>
 <p>Step 8: Classifying the collected dataset</p>
@@ -755,7 +804,7 @@ window size and threshold.</p>
 <span class="n">_</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;Height&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_006.png" srcset="../../_images/sphx_glr_workflow_006.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 7.951 seconds)</p>
+<img src="../../_images/sphx_glr_workflow_006.png" srcset="../../_images/sphx_glr_workflow_006.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.600 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/67e0cd555ca79f8bdb69184b227f40a4/workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow.ipynb</span></code></a></p>

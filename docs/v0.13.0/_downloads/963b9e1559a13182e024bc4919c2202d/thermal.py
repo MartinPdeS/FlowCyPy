@@ -48,7 +48,9 @@ for temperature in temperatures:
         phi_angle=0 * units.degree,
         temperature=temperature * units.kelvin,
     )
-    dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second, signal_digitizer=signal_digitizer)
+    detector.signal_digitizer = signal_digitizer
+
+    dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second)
 
     # Add thermal noise to the raw signal
     detector._add_thermal_noise_to_raw_signal(dataframe['Signal'])

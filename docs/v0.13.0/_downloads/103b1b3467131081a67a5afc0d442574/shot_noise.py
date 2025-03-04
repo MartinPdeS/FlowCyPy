@@ -44,8 +44,10 @@ for optical_power in optical_powers:
         phi_angle=0 * units.degree              # Detector orientation angle
     )
 
+    detector.signal_digitizer = signal_digitizer
+
     # Initialize the raw signal
-    dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second, signal_digitizer=signal_digitizer)
+    dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second)
 
     # Add optical power to the raw signal
     detector._add_optical_power_to_raw_signal(

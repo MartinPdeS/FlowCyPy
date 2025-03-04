@@ -47,8 +47,10 @@ for dark_current in dark_currents:
         dark_current=dark_current         # Dark current level
     )
 
+    detector.signal_digitizer = signal_digitizer
+
     # Initialize the raw signal
-    dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second, signal_digitizer=signal_digitizer)
+    dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second)
 
     # Add dark current noise to the raw signal
     detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])

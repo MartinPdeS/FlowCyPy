@@ -513,15 +513,24 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A peak detection utility that identifies the maximum value in each row of a 2D array.</span>
 
-<span class="sd">    This class provides a callable object that detects the index of the maximum value in each</span>
-<span class="sd">    row of a 2D NumPy array. Unlike methods that rely on thresholding or derivative-based techniques,</span>
-<span class="sd">    this locator simply returns the index corresponding to the highest value in each row. The result</span>
-<span class="sd">    is a 2D array with one peak index per row, padded with a specified value if necessary.</span>
+<span class="sd">    Optionally, the peak detection can also compute the width and area of the peak.</span>
+
+<span class="sd">    The width is computed as the number of contiguous points around the maximum that remain above</span>
+<span class="sd">    a specified fraction (threshold) of the maximum value. The area is the sum of the values over</span>
+<span class="sd">    that same region.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    padding_value : object, optional</span>
 <span class="sd">        Value used to pad the output if a row contains no data. Default is -1.</span>
+<span class="sd">    compute_width : bool, optional</span>
+<span class="sd">        If True, the width of the peak (number of samples) is computed. Default is False.</span>
+<span class="sd">    compute_area : bool, optional</span>
+<span class="sd">        If True, the area (sum of values) of the peak is computed. Default is False.</span>
+<span class="sd">    threshold : float, optional</span>
+<span class="sd">        Fraction of the peak value used to determine the boundaries for width and area computation.</span>
+<span class="sd">        For example, a threshold of 0.5 means the region above 50% of the maximum is considered.</span>
+<span class="sd">        Default is 0.5.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -530,44 +539,38 @@ document.write(`
 <span class="sd">    ...     [0, 800, 100, 2000, 150, 9000],</span>
 <span class="sd">    ...     [50, 1000, 200, 3000, 4000, 100]</span>
 <span class="sd">    ... ])</span>
-<span class="sd">    &gt;&gt;&gt; peak_locator = MaxPeakLocator(padding_value=-1)</span>
-<span class="sd">    &gt;&gt;&gt; peaks = peak_locator(data)</span>
-<span class="sd">    &gt;&gt;&gt; print(peaks)</span>
-<span class="sd">    [[5.]</span>
-<span class="sd">     [4.]]</span>
-
-<span class="sd">    Methods</span>
-<span class="sd">    -------</span>
-<span class="sd">    __call__(array)</span>
-<span class="sd">        Returns a 2D array where each row contains the index of the maximum value in the corresponding</span>
-<span class="sd">        row of the input array.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    - The function expects a 2D NumPy array as input.</span>
-<span class="sd">    - If a row is empty (i.e. has zero columns), the padding value is returned.</span>
+<span class="sd">    &gt;&gt;&gt; # Only compute peak indices:</span>
+<span class="sd">    &gt;&gt;&gt; peak_locator = BasicPeakLocator(padding_value=-1)</span>
+<span class="sd">    &gt;&gt;&gt; results = peak_locator(data)</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Peak Indices:\n&quot;, results[&quot;peak_index&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Widths:\n&quot;, results[&quot;width&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Areas:\n&quot;, results[&quot;area&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; # Compute peak index, width, and area:</span>
+<span class="sd">    &gt;&gt;&gt; peak_locator_metrics = BasicPeakLocator(padding_value=-1, compute_width=True, compute_area=True, threshold=0.5)</span>
+<span class="sd">    &gt;&gt;&gt; results = peak_locator_metrics(data)</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Peak Indices:\n&quot;, results[&quot;peak_index&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Widths:\n&quot;, results[&quot;width&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Areas:\n&quot;, results[&quot;area&quot;])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">padding_value</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">padding_value</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">compute_width</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">compute_area</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes the MaxPeakLocator with a specified padding value.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        padding_value : object, optional</span>
-<span class="sd">            Value used to pad missing peaks. Default is -1.</span>
+<span class="sd">        Initializes the BasicPeakLocator with a specified padding value and options</span>
+<span class="sd">        to compute additional metrics (width and area).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">padding_value</span> <span class="o">=</span> <span class="n">padding_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span> <span class="o">=</span> <span class="n">compute_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span> <span class="o">=</span> <span class="n">compute_area</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
 
-<div class="viewcode-block" id="BasicPeakLocator.__call__">
-<a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.basic.BasicPeakLocator.__call__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Detects the index of the maximum value in each row of a 2D NumPy array.</span>
+<span class="sd">        Optionally computes the width and area of the peak.</span>
 
-<span class="sd">        This function computes the index of the maximum value for each row in the input array.</span>
-<span class="sd">        The output is a 2D NumPy array of shape (number_of_rows, 1). If a row is empty, the</span>
-<span class="sd">        padding value is returned.</span>
+<span class="sd">        For each row, the method finds the index of the maximum value. If compute_width or compute_area</span>
+<span class="sd">        is enabled, it computes the boundaries where the data fall below the specified threshold</span>
+<span class="sd">        (fraction of the maximum value) and uses that to compute the width (number of samples) and the area.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -576,40 +579,58 @@ document.write(`
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        np.ndarray</span>
-<span class="sd">            A 2D NumPy array of shape (array.shape[0], 1) where each entry contains the index of the</span>
-<span class="sd">            maximum value in the corresponding row. Rows with no data are filled with the padding value.</span>
+<span class="sd">        dict</span>
+<span class="sd">            A dictionary with key &quot;peak_index&quot; (2D array of shape (n_rows, 1) containing the index of the</span>
+<span class="sd">            maximum in each row) and, if enabled, keys &quot;width&quot; and/or &quot;area&quot; (2D arrays with the computed</span>
+<span class="sd">            peak widths and areas, respectively).</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        AssertionError</span>
 <span class="sd">            If the input array is not 2-dimensional.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">        &gt;&gt;&gt; data = np.array([</span>
-<span class="sd">        ...     [0, 800, 100, 2000, 150, 9000],</span>
-<span class="sd">        ...     [50, 1000, 200, 3000, 4000, 100]</span>
-<span class="sd">        ... ])</span>
-<span class="sd">        &gt;&gt;&gt; peak_locator = MaxPeakLocator(padding_value=-1)</span>
-<span class="sd">        &gt;&gt;&gt; peaks = peak_locator(data)</span>
-<span class="sd">        &gt;&gt;&gt; print(peaks)</span>
-<span class="sd">        [[5.]</span>
-<span class="sd">         [4.]]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Input array must be 2D.&quot;</span>
         <span class="n">num_rows</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">num_rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">peak_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">num_rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">widths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">num_rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">areas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">num_rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span> <span class="k">else</span> <span class="kc">None</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_rows</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="n">max_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">output</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_idx</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">max_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="n">peak_indices</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_idx</span>
 
-        <span class="k">return</span> <span class="n">output</span></div>
-</div>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span><span class="p">:</span>
+                <span class="n">max_val</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">max_idx</span><span class="p">]</span>
+                <span class="n">threshold_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">*</span> <span class="n">max_val</span>
+
+                <span class="c1"># Find left boundary: move left until value falls below threshold.</span>
+                <span class="n">left</span> <span class="o">=</span> <span class="n">max_idx</span>
+                <span class="k">while</span> <span class="n">left</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="n">left</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">threshold_val</span><span class="p">:</span>
+                    <span class="n">left</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="n">left_boundary</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># first index above threshold</span>
+
+                <span class="c1"># Find right boundary: move right until value falls below threshold.</span>
+                <span class="n">right</span> <span class="o">=</span> <span class="n">max_idx</span>
+                <span class="k">while</span> <span class="n">right</span> <span class="o">&lt;</span> <span class="n">row</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="n">right</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">threshold_val</span><span class="p">:</span>
+                    <span class="n">right</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">right_boundary</span> <span class="o">=</span> <span class="n">right</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># last index above threshold</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span><span class="p">:</span>
+                    <span class="n">widths</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">right_boundary</span> <span class="o">-</span> <span class="n">left_boundary</span> <span class="o">+</span> <span class="mi">1</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span><span class="p">:</span>
+                    <span class="n">areas</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">left_boundary</span><span class="p">:</span><span class="n">right_boundary</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;peak_index&quot;</span><span class="p">:</span> <span class="n">peak_indices</span><span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">widths</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">areas</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
 
 </pre></div>
 
