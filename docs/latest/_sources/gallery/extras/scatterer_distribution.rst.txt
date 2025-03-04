@@ -86,15 +86,30 @@ Import necessary libraries and modules
 
  .. code-block:: none
 
+                                Diameter     RefractiveIndex
+    Population Index                                        
+    EV         0      48.685861195822774  1.4164902505664154
+               1       60.04961491675073  1.4638033424194599
+               2       59.70261101290269  1.3788222846952922
+               3       56.19815079476007     1.3449760451417
+               4      23.966808222875194  1.4157881781025778
+    ...                              ...                 ...
+    LP         995    152.66216191682807  1.4709462214577693
+               996    178.72433984883764   1.491502662311642
+               997    141.20945290738908   1.411573873929729
+               998     189.6250830362507  1.5166224845777578
+               999     93.18506683374343  1.3575830026663274
 
-    <seaborn.axisgrid.JointGrid object at 0x7fb0b154aad0>
+    [2000 rows x 2 columns]
+
+    <seaborn.axisgrid.JointGrid object at 0x7f871af30510>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.413 seconds)
+   **Total running time of the script:** (0 minutes 2.433 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_scatterer_distribution.py:

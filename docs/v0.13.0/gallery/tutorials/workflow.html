@@ -643,10 +643,26 @@ given by:</p>
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
 <span class="c1"># Initialize the scatterer with the flow cell</span>
-<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>  <span class="c1"># Visualize the particle population</span>
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sampling</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>  <span class="c1"># Visualize the particle population</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="Scatterer Collection" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7fb0b18363d0&gt;
+<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="Scatterer Collection" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                            Diameter     RefractiveIndex
+Population Index
+Exosome    0       62.62095252967773  1.3734799207620483
+           1       77.68132625687906  1.3743158929548398
+           2       41.04205731060343  1.3717035560392283
+           3       59.19203915680885   1.372057204461995
+           4       104.6360883570574  1.3965189854623634
+...                              ...                 ...
+Pop 0      595     150.0666600909874  1.4392491413242194
+           596     146.6999503540621  1.4389507574627813
+           597     146.1820832274198   1.440094199659698
+           598    156.02740054794003  1.4359249514790766
+           599     152.7517812795318   1.440999653649115
+
+[1200 rows x 2 columns]
+
+&lt;seaborn.axisgrid.JointGrid object at 0x7f8714ea0510&gt;
 </pre></div>
 </div>
 </section>
@@ -742,7 +758,7 @@ window size and threshold.</p>
 <span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;Height&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="Peaks properties" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7fb0b14dec90&gt;
+<img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="Peaks properties" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7f87177f56d0&gt;
 </pre></div>
 </div>
 <p>Step 8: Classifying the collected dataset</p>
@@ -759,7 +775,7 @@ window size and threshold.</p>
 <span class="n">_</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;Height&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_006.png" srcset="../../_images/sphx_glr_workflow_006.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.751 seconds)</p>
+<img src="../../_images/sphx_glr_workflow_006.png" srcset="../../_images/sphx_glr_workflow_006.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.008 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/67e0cd555ca79f8bdb69184b227f40a4/workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow.ipynb</span></code></a></p>
