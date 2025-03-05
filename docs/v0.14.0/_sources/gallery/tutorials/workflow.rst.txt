@@ -178,12 +178,38 @@ given by:
     scatterer_collection.dilute(factor=1)
 
     # Initialize the scatterer with the flow cell
-    # scatterer_collection.plot(sampling=600)  # Visualize the particle population
+    scatterer_collection.plot(sampling=600)  # Visualize the particle population
 
 
 
 
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :alt: Scatterer Collection
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :class: sphx-glr-single-img
 
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+                                Diameter     RefractiveIndex
+    Population Index                                        
+    Exosome    0       62.62095252967773  1.3734799207620483
+               1       77.68132625687906  1.3743158929548398
+               2       41.04205731060343  1.3717035560392283
+               3       59.19203915680885   1.372057204461995
+               4       104.6360883570574  1.3965189854623634
+    ...                              ...                 ...
+    Pop 0      595     150.0666600909874  1.4392491413242194
+               596     146.6999503540621  1.4389507574627813
+               597     146.1820832274198   1.440094199659698
+               598    156.02740054794003  1.4359249514790766
+               599     152.7517812795318   1.440999653649115
+
+    [1200 rows x 2 columns]
+
+    <seaborn.axisgrid.JointGrid object at 0x7fa038192110>
 
 
 
@@ -280,9 +306,9 @@ and particles follows Mie theory:
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
    :alt: Scatterer Sampling Distribution
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
    :class: sphx-glr-single-img
 
 
@@ -302,9 +328,9 @@ Visualize the scatter signals from both detectors
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_003.png
    :alt: workflow
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_003.png
    :class: sphx-glr-single-img
 
 
@@ -336,9 +362,9 @@ window size and threshold.
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_003.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_004.png
    :alt: workflow
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_003.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_004.png
    :class: sphx-glr-single-img
 
 
@@ -367,9 +393,9 @@ Getting and plotting the extracted peaks.
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_004.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
    :alt: Peaks properties
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_004.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_005.png
    :class: sphx-glr-single-img
 
 
@@ -378,7 +404,7 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f65945613d0>
+    <seaborn.axisgrid.JointGrid object at 0x7fa031953610>
 
 
 
@@ -403,9 +429,9 @@ Step 8: Classifying the collected dataset
     _ = data.plot(feature='Height', x='side', y='forward')
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_006.png
    :alt: Event classification
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_005.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_006.png
    :class: sphx-glr-single-img
 
 
@@ -415,7 +441,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.935 seconds)
+   **Total running time of the script:** (0 minutes 8.204 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:
