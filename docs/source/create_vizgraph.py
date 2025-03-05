@@ -38,8 +38,15 @@ dot = Digraph('Architecture', comment='ScattererCollection Architecture', format
 dot.attr(rankdir='TB', splines='ortho', fontsize='10', fontname=fontname)
 
 # Main nodes.
-dot.node('TriggeredAcquisition', 'Acquisition', shape='box', style='rounded,filled', fillcolor='lightgrey', fontsize='14', fontname=fontname)
-dot.node('Acquisition', 'Acquisition', shape='box', style='rounded,filled', fillcolor='lightgrey', fontsize='14', fontname=fontname)
+
+
+with dot.subgraph(name='acq_sub') as cluster:
+    cluster.attr(rank='same')
+    cluster.node('TriggeringSystem', 'TriggeringSystem', shape='box', style='rounded,filled', fillcolor='lightgrey', fontsize='14', fontname=fontname)
+    cluster.node('SignalProcessing', 'SignalProcessing', shape='box', style='rounded,filled', fillcolor='lightgrey', fontsize='14', fontname=fontname)
+    cluster.node('Acquisition', 'Acquisition', shape='box', style='rounded,filled', fillcolor='lightgrey', fontsize='14', fontname=fontname)
+
+dot.node('TriggeredAcquisition', 'TriggeredAcquisition', shape='box', style='rounded,filled', fillcolor='lightgrey', fontsize='14', fontname=fontname)
 dot.node('FlowCytometer', 'FlowCytometer', shape='box', style='rounded,filled', fillcolor='lightgrey', fontsize='14', fontname=fontname)
 dot.node('SignalDigitizer', 'SignalDigitizer', shape='box', style='rounded,filled', fillcolor='lightgrey', fontsize='14', fontname=fontname)
 dot.node('FlowCell', 'FlowCell', shape='box', style='rounded,filled', fillcolor='lightgrey', fontsize='14', fontname=fontname)
@@ -55,8 +62,8 @@ with dot.subgraph(name='cluster_populations') as pop_cluster:
     add_population(pop_cluster, 'Population 1')
 
 # Define connections.
-dot.edge('TriggeredAcquisition', 'Acquisition', style='solid', fontsize='10')
 dot.edge('Acquisition', 'FlowCytometer', style='solid', fontsize='10')
+dot.edge('TriggeredAcquisition', 'Acquisition', style='solid', fontsize='10')
 dot.edge('FlowCytometer', 'SignalDigitizer', style='solid', fontsize='10')
 dot.edge('FlowCytometer', 'Detector 1', style='solid', fontsize='10')
 dot.edge('FlowCytometer', 'Detector 2', style='solid', fontsize='10')
@@ -64,6 +71,13 @@ dot.edge('FlowCytometer', 'ScattererCollection', style='solid', fontsize='10')
 dot.edge('FlowCytometer', 'FlowCell', style='solid', fontsize='10')
 dot.edge('ScattererCollection', 'Population 0', style='solid', fontsize='10')
 dot.edge('ScattererCollection', 'Population 1', style='solid', fontsize='10')
+
+
+dot.edge('SignalProcessing', 'Acquisition', style='solid', fontsize='10', dir='back')
+dot.edge('Acquisition', 'TriggeringSystem', style='solid', fontsize='10')
+
+
+
 
 # Render and view the graph.
 dot.render('Architecture', view=True)
