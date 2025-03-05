@@ -148,6 +148,19 @@ Simulate a simple flow cytometer experiment:
 
 Explore more examples in the `FlowCyPy Examples <https://martinpdes.github.io/FlowCyPy/gallery/index.html>`_.
 
+
+
+Code structure
+--------------
+
+Here is the architecture for a standard workflow using FlowCyPy:
+
+
+|arch|
+
+
+
+
 Development and Contribution
 -----------------------------
 
@@ -207,6 +220,10 @@ Contact
 For inquiries or collaboration, contact `Martin Poinsinet de Sivry-Houle <mailto:martin.poinsinet.de.sivry@gmail.com>`_.
 
 .. |logo| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/logo.png
+    :align: middle
+    :alt: FlowCyPy Logo
+
+.. |arch| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/architecture.png
     :align: middle
     :alt: FlowCyPy Logo
 
