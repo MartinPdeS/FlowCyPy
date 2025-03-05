@@ -4,7 +4,7 @@ import pandas as pd
 from FlowCyPy import units
 from FlowCyPy import dataframe_subclass
 from FlowCyPy.triggered_acquisition import TriggeredAcquisitions
-from FlowCyPy.binary import triggering_system
+from FlowCyPy.binary.triggering_system import TriggeringSystem # type: ignore
 import pint_pandas
 
 class Acquisition:
@@ -56,46 +56,62 @@ class Acquisition:
             trigger_detector_name: str,
             pre_buffer: int = 64,
             post_buffer: int = 64,
-            max_triggers: int = None) -> TriggeredAcquisitions:
+            max_triggers: int = None,
+            scheme: str = 'fixed-window') -> TriggeredAcquisitions:
         """
-        Execute triggered acquisition analysis for signal data.
+        Execute triggered acquisition analysis on signal data.
 
-        This method identifies segments of signal data based on a triggering threshold
-        and specified detector. It extracts segments of interest from the signal,
-        including a pre-trigger buffer and post-trigger buffer.
+        This method identifies segments of a signal that exceed a specified threshold
+        using a designated detector, then extracts those segments with additional
+        pre- and post-trigger buffers. The analysis can operate in either "fixed-window"
+        or "dynamic" mode based on the `scheme` parameter.
 
         Parameters
         ----------
         threshold : units.Quantity
-            The threshold value for triggering. Only signal values exceeding this threshold
-            will be considered as trigger events.
+            The signal threshold value. Only signal values that exceed this threshold
+            are considered as trigger events.
         trigger_detector_name : str
-            The name of the detector used for triggering. This determines which detector's
-            signal is analyzed for trigger events.
+            The name of the detector whose signal is used for detecting trigger events.
         pre_buffer : int, optional
-            The number of points to include before the trigger point in each segment.
+            The number of data points to include before the trigger point in each extracted segment.
             Default is 64.
         post_buffer : int, optional
-            The number of points to include after the trigger point in each segment.
+            The number of data points to include after the trigger point in each extracted segment.
             Default is 64.
         max_triggers : int, optional
-            The maximum number of triggers to process. If None, all triggers will be processed.
-            Default is None.
+            The maximum number of trigger events to process. If set to None, all detected
+            trigger events are processed. Default is None.
+        scheme : str, optional
+            The triggering scheme to use. Use 'fixed-window' for a fixed-length window based on the
+            pre_buffer and post_buffer parameters, or 'dynamic' for a window that extends dynamically
+            until the signal falls below the threshold. Default is 'fixed-window'.
+
+        Returns
+        -------
+        TriggeredAcquisitions
+            An object containing the extracted signal segments, associated time values,
+            detector names, and segment IDs.
 
         Raises
         ------
         ValueError
-            If the specified `trigger_detector_name` is not found in the dataset.
+            If the specified `trigger_detector_name` is not present in the dataset.
 
-        Warnings
-        --------
+        Warns
+        -----
         UserWarning
-            If no triggers are detected for the specified threshold, the method raises a warning
-            indicating that no signals met the criteria.
+            If no triggers are detected (i.e., no signal segments meet the threshold criteria),
+            a warning is issued and empty arrays are returned.
 
         Notes
         -----
-        - The peak detection function `self.detect_peaks` is automatically called at the end of this method to analyze triggered segments.
+        - In dynamic mode, the extracted segment includes:
+        pre_buffer points before the trigger, all points where the signal is above threshold,
+        and post_buffer points after the signal falls below the threshold, yielding a segment length
+        of pre_buffer + width + post_buffer - 1.
+        - The method automatically invokes `self.detect_peaks` at the end of the analysis to further
+        process the triggered segments.
         """
         # Ensure the trigger detector exists
         if trigger_detector_name not in self.detector_names:
@@ -114,7 +130,8 @@ class Acquisition:
         time_map = {det: self.analog.xs(det)['Time'].pint.to(time_units).pint.magnitude.to_numpy(copy=False) for det in self.detector_names}
 
         # Call the C++ function for fast triggering detection
-        times, signals, detectors, segment_ids = triggering_system.run(
+        triggering_system = TriggeringSystem(
+            scheme=scheme,
             signal_map=signal_map,
             time_map=time_map,
             trigger_detector_name=trigger_detector_name,
@@ -122,7 +139,9 @@ class Acquisition:
             pre_buffer=pre_buffer,
             post_buffer=post_buffer,
             max_triggers=max_triggers or -1
-        )
+            )
+
+        times, signals, detectors, segment_ids = triggering_system.run()
 
         # Convert back to PintArray (restore units)
         times = pint_pandas.PintArray(times, time_units)

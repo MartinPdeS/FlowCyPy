@@ -45,7 +45,7 @@ population_2 = Population(
 
 scatterer_collection.add_population(population_0, population_1, population_2)
 
-scatterer_collection.dilute(factor=4)
+scatterer_collection.dilute(factor=16)
 
 scatterer_collection.plot(sampling=5000, use_ratio=False)
 
@@ -83,7 +83,7 @@ cytometer = FlowCytometer(
 )
 
 # Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=0.2 * 3 * units.millisecond)
+cytometer.prepare_acquisition(run_time=0.2 * 10 * units.millisecond)
 acquisition = cytometer.get_acquisition()
 
 cytometer.scatterer_collection.dataframe.plot(x='RefractiveIndex', y='Diameter')
@@ -99,7 +99,7 @@ acquisition.analog.plot()
 triggered_acquisition = acquisition.run_triggering(
     threshold=10 * units.millivolt,
     trigger_detector_name='forward',
-    max_triggers=35,
+    max_triggers=2000,
     pre_buffer=64,
     post_buffer=64
 )
@@ -111,6 +111,18 @@ peak_algorithm = peak_locator.BasicPeakLocator()
 peaks = triggered_acquisition.detect_peaks(peak_algorithm)
 # print(peaks)
 peaks.plot(x='forward', y='side')
-peaks.plot(x='forward', y='side', z='det_2')
+# peaks.plot(x='forward', y='side', z='det_2')
 
 
+
+from FlowCyPy.classifier import KmeansClassifier
+
+classifier = KmeansClassifier(number_of_cluster=3)
+
+data = classifier.run(
+    dataframe=peaks.unstack('Detector'),
+    features=['Height'],
+    detectors=['side', 'forward']
+)
+
+data.plot(feature='Height', x='forward', y='side')

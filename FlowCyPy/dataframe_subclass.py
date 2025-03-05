@@ -446,7 +446,6 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
                 nrows=n_plots,
                 figsize=figure_size,
                 sharex=True,
-                sharey=True,
                 gridspec_kw={'height_ratios': [1] * (n_plots - 1) + [0.5]}
             )
 
@@ -705,7 +704,7 @@ class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
             ax.set_ylabel(f'{detector_name} [{_signal_units}]', labelpad=20)
 
             if detector_name == self.attrs['threshold']['detector']:
-                handles, labels = ax.get_legend_handles_labels()
+                _, labels = ax.get_legend_handles_labels()
                 if 'Threshold' not in labels:
                     ax.axhline(
                         y=self.attrs['threshold']['value'].to(_signal_units),

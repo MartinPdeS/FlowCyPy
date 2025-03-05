@@ -52,4 +52,6 @@ add_compile_options(-Wall -Wextra -pedantic-errors)
 
 add_project_module(filtering "filter.cpp")
 
-add_project_module(triggering_system "triggering.cpp" "filter.cpp")
+# add_project_module(triggering_system "triggering.cpp" "filter.cpp")
+
+add_project_module(triggering_system "triggering_system.cpp" "filter.cpp")

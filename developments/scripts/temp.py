@@ -23,8 +23,7 @@ Overview:
 
 import numpy as np
 from FlowCyPy import units
-import PyMieSim
-PyMieSim.debug_mode = False
+
 
 # %%
 # Step 1: Configure Noise Settings
@@ -52,8 +51,8 @@ from FlowCyPy import GaussianBeam
 
 source = GaussianBeam(
     numerical_aperture=0.3 * units.AU,           # Numerical aperture
-    wavelength=455 * units.nanometer,           # Wavelength
-    optical_power=20000 * units.milliwatt          # Optical power
+    wavelength=200 * units.nanometer,           # Wavelength
+    optical_power=20 * units.milliwatt          # Optical power
 )
 
 
@@ -89,33 +88,22 @@ from FlowCyPy.population import Exosome, Population, distribution
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
-population_0 = Population(
+exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
+
+custom_population = Population(
     name='Pop 0',
     particle_count=5e9 * units.particle / units.milliliter,
     diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
     refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
 )
-population_1 = Population(
-    name='Pop 1',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=100 * units.nanometer, spread=30),
-    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
-)
-
-population_2 = Population(
-    name='Pop 2',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=50 * units.nanometer, spread=30),
-    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
-)
 
 # Add an Exosome population
-scatterer_collection.add_population(population_0, population_1, population_2)
+scatterer_collection.add_population(exosome, custom_population)
 
-scatterer_collection.dilute(factor=4)
+scatterer_collection.dilute(factor=1)
 
 # Initialize the scatterer with the flow cell
-# scatterer_collection.plot()  # Visualize the particle population
+# scatterer_collection.plot(sampling=600)  # Visualize the particle population
 
 # %%
 # Step 5: Define Detectors
@@ -135,26 +123,26 @@ signal_digitizer = SignalDigitizer(
 detector_0 = Detector(
     name='forward',
     phi_angle=0 * units.degree,                  # Forward scatter angle
-    numerical_aperture=0.4 * units.AU,
-    cache_numerical_aperture=0.00 * units.AU,
+    numerical_aperture=0.3 * units.AU,
     responsitivity=1 * units.ampere / units.watt,
-    resistance=1500 * units.ohm,
+    resistance=50 * units.ohm,
     temperature=300 * units.kelvin
 )
 
 detector_1 = Detector(
     name='side',
     phi_angle=90 * units.degree,                 # Side scatter angle
-    numerical_aperture=0.4 * units.AU,
+    numerical_aperture=0.3 * units.AU,
     responsitivity=1 * units.ampere / units.watt,
     resistance=50 * units.ohm,
     temperature=300 * units.kelvin,
 )
 
+
 detector_2 = Detector(
     name='det_2',
-    phi_angle=90 * units.degree,                 # Side scatter angle
-    numerical_aperture=0.1 * units.AU,
+    phi_angle=30 * units.degree,                 # Side scatter angle
+    numerical_aperture=0.3 * units.AU,
     responsitivity=1 * units.ampere / units.watt,
     resistance=50 * units.ohm,
     temperature=300 * units.kelvin,
@@ -179,29 +167,18 @@ cytometer = FlowCytometer(
 )
 
 # Run the flow cytometry simulation
-acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
-
-# acquisition.scatterer.plot(x='forward', y='side', z='det_2')
-# acquisition.scatterer.plot(x='forward', y='side')
-acquisition.scatterer.plot(x='forward', y='side', z='Diameter')
-
-# dsa
-
-# _ = acquisition.scatterer.plot_3d(
-#     x='side',
-#     y='forward',
-#     z='det_2'
-# )
+cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
+acquisition = cytometer.get_acquisition()
 
 # _ = acquisition.scatterer.plot(
 #     x='side',
 #     y='forward',
-#     # z='det_2'
+#     z='RefractiveIndex'
 # )
 
 # %%
 # Visualize the scatter signals from both detectors
-acquisition.analog.plot()
+# acquisition.analog.plot()
 
 # %%
 # Step 7: Analyze Detected Signals
@@ -209,7 +186,7 @@ acquisition.analog.plot()
 # The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 # window size and threshold.
 triggered_acquisition = acquisition.run_triggering(
-    threshold=10 * units.millivolt,
+    threshold=0.2 * units.millivolt,
     trigger_detector_name='forward',
     max_triggers=35,
     pre_buffer=64,
@@ -219,23 +196,18 @@ triggered_acquisition = acquisition.run_triggering(
 triggered_acquisition.analog.plot()
 
 
-# %%
-# Getting and plotting the extracted peaks.
-from FlowCyPy import peak_locator
-# peak_locator = peak_locator.ScipyPeakLocator(height=10 * units.bit_bins, padding_value=-1)
-peak_algorithm = peak_locator.BasicPeakLocator()
+# # %%
+# # Getting and plotting the extracted peaks.
+# from FlowCyPy import peak_locator
+# # peak_algorithm = peak_locator.ScipyPeakLocator(height=10, padding_value=-1)
+# # peak_algorithm = peak_locator.BasicPeakLocator(compute_width=True)
+# peak_algorithm = peak_locator.SlidingWindowPeakLocator(window_size=10, compute_width=True)
 
-peaks = triggered_acquisition.detect_peaks(peak_algorithm)
-# print(peaks)
-peaks.plot(x='forward', y='side')
-peaks.plot(x='forward', y='side', z='det_2')
 
-# peaks.plot_3d(
-#     feature='Height',
-#     x_detector='side',
-#     y_detector='forward',
-#     z_detector='det_2'
-# )
+# peaks = triggered_acquisition.detect_peaks(peak_algorithm)
+
+
+# peaks.plot(feature='Height', x='side', y='forward')
 
 # # %%
 # # Step 8: Classifying the collected dataset
@@ -249,8 +221,4 @@ peaks.plot(x='forward', y='side', z='det_2')
 #     detectors=['side', 'forward']
 # )
 
-# _ = data.plot(
-#     feature='Height',
-#     x_detector='side',
-#     y_detector='forward'
-# )
+# _ = data.plot(feature='Height', x='side', y='forward')
