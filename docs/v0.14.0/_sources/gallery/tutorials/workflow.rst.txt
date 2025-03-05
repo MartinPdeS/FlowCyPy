@@ -175,41 +175,15 @@ given by:
     # Add an Exosome population
     scatterer_collection.add_population(exosome, custom_population)
 
-    scatterer_collection.dilute(factor=4)
+    scatterer_collection.dilute(factor=1)
 
     # Initialize the scatterer with the flow cell
-    scatterer_collection.plot(sampling=600)  # Visualize the particle population
+    # scatterer_collection.plot(sampling=600)  # Visualize the particle population
 
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
-   :alt: Scatterer Collection
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
-   :class: sphx-glr-single-img
 
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-                                Diameter     RefractiveIndex
-    Population Index                                        
-    Exosome    0       62.62095252967773  1.3734799207620483
-               1       77.68132625687906  1.3743158929548398
-               2       41.04205731060343  1.3717035560392283
-               3       59.19203915680885   1.372057204461995
-               4       104.6360883570574  1.3965189854623634
-    ...                              ...                 ...
-    Pop 0      595     150.0666600909874  1.4392491413242194
-               596     146.6999503540621  1.4389507574627813
-               597     146.1820832274198   1.440094199659698
-               598    156.02740054794003  1.4359249514790766
-               599     152.7517812795318   1.440999653649115
-
-    [1200 rows x 2 columns]
-
-    <seaborn.axisgrid.JointGrid object at 0x7fc72c346ed0>
 
 
 
@@ -220,7 +194,7 @@ Step 5: Define Detectors
 Detectors measure light intensity. Parameters like responsitivity define the conversion of optical
 power to electronic signals, and saturation level represents the maximum signal they can handle.
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-141
+.. GENERATED FROM PYTHON SOURCE LINES 113-151
 
 .. code-block:: Python
 
@@ -237,7 +211,7 @@ power to electronic signals, and saturation level represents the maximum signal 
     detector_0 = Detector(
         name='forward',
         phi_angle=0 * units.degree,                  # Forward scatter angle
-        numerical_aperture=1.2 * units.AU,
+        numerical_aperture=0.3 * units.AU,
         responsitivity=1 * units.ampere / units.watt,
         resistance=50 * units.ohm,
         temperature=300 * units.kelvin
@@ -246,7 +220,17 @@ power to electronic signals, and saturation level represents the maximum signal 
     detector_1 = Detector(
         name='side',
         phi_angle=90 * units.degree,                 # Side scatter angle
-        numerical_aperture=1.2 * units.AU,
+        numerical_aperture=0.3 * units.AU,
+        responsitivity=1 * units.ampere / units.watt,
+        resistance=50 * units.ohm,
+        temperature=300 * units.kelvin,
+    )
+
+
+    detector_2 = Detector(
+        name='det_2',
+        phi_angle=30 * units.degree,                 # Side scatter angle
+        numerical_aperture=0.3 * units.AU,
         responsitivity=1 * units.ampere / units.watt,
         resistance=50 * units.ohm,
         temperature=300 * units.kelvin,
@@ -259,7 +243,7 @@ power to electronic signals, and saturation level represents the maximum signal 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-149
+.. GENERATED FROM PYTHON SOURCE LINES 152-159
 
 Step 6: Simulate Flow Cytometry Experiment
 ------------------------------------------
@@ -269,7 +253,7 @@ and particles follows Mie theory:
 .. math::
     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-168
+.. GENERATED FROM PYTHON SOURCE LINES 159-179
 
 .. code-block:: Python
 
@@ -278,7 +262,7 @@ and particles follows Mie theory:
     cytometer = FlowCytometer(
         scatterer_collection=scatterer_collection,
         signal_digitizer=signal_digitizer,
-        detectors=[detector_0, detector_1],
+        detectors=[detector_0, detector_1, detector_2],
         flow_cell=flow_cell,
         background_power=0.001 * units.milliwatt
     )
@@ -289,26 +273,27 @@ and particles follows Mie theory:
 
     _ = acquisition.scatterer.plot(
         x='side',
-        y='forward'
+        y='forward',
+        z='RefractiveIndex'
     )
 
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
    :alt: Scatterer Sampling Distribution
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
    :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 169-170
+.. GENERATED FROM PYTHON SOURCE LINES 180-181
 
 Visualize the scatter signals from both detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 170-172
+.. GENERATED FROM PYTHON SOURCE LINES 181-183
 
 .. code-block:: Python
 
@@ -317,23 +302,23 @@ Visualize the scatter signals from both detectors
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_003.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
    :alt: workflow
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_003.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
    :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 173-177
+.. GENERATED FROM PYTHON SOURCE LINES 184-188
 
 Step 7: Analyze Detected Signals
 --------------------------------
 The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 177-188
+.. GENERATED FROM PYTHON SOURCE LINES 188-199
 
 .. code-block:: Python
 
@@ -351,20 +336,20 @@ window size and threshold.
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_004.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_003.png
    :alt: workflow
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_004.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_003.png
    :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 189-190
+.. GENERATED FROM PYTHON SOURCE LINES 200-201
 
 Getting and plotting the extracted peaks.
 
-.. GENERATED FROM PYTHON SOURCE LINES 190-201
+.. GENERATED FROM PYTHON SOURCE LINES 201-212
 
 .. code-block:: Python
 
@@ -382,9 +367,9 @@ Getting and plotting the extracted peaks.
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_004.png
    :alt: Peaks properties
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_005.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_004.png
    :class: sphx-glr-single-img
 
 
@@ -393,15 +378,15 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7fc72c04c150>
+    <seaborn.axisgrid.JointGrid object at 0x7f9adcfcdc10>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 202-203
+.. GENERATED FROM PYTHON SOURCE LINES 213-214
 
 Step 8: Classifying the collected dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 203-213
+.. GENERATED FROM PYTHON SOURCE LINES 214-224
 
 .. code-block:: Python
 
@@ -418,9 +403,9 @@ Step 8: Classifying the collected dataset
     _ = data.plot(feature='Height', x='side', y='forward')
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_006.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
    :alt: Event classification
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_006.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_005.png
    :class: sphx-glr-single-img
 
 
@@ -430,7 +415,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.806 seconds)
+   **Total running time of the script:** (0 minutes 6.138 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

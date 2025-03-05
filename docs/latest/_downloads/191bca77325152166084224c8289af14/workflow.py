@@ -100,10 +100,10 @@ custom_population = Population(
 # Add an Exosome population
 scatterer_collection.add_population(exosome, custom_population)
 
-scatterer_collection.dilute(factor=4)
+scatterer_collection.dilute(factor=1)
 
 # Initialize the scatterer with the flow cell
-scatterer_collection.plot(sampling=600)  # Visualize the particle population
+# scatterer_collection.plot(sampling=600)  # Visualize the particle population
 
 # %%
 # Step 5: Define Detectors
@@ -123,7 +123,7 @@ signal_digitizer = SignalDigitizer(
 detector_0 = Detector(
     name='forward',
     phi_angle=0 * units.degree,                  # Forward scatter angle
-    numerical_aperture=1.2 * units.AU,
+    numerical_aperture=0.3 * units.AU,
     responsitivity=1 * units.ampere / units.watt,
     resistance=50 * units.ohm,
     temperature=300 * units.kelvin
@@ -132,7 +132,17 @@ detector_0 = Detector(
 detector_1 = Detector(
     name='side',
     phi_angle=90 * units.degree,                 # Side scatter angle
-    numerical_aperture=1.2 * units.AU,
+    numerical_aperture=0.3 * units.AU,
+    responsitivity=1 * units.ampere / units.watt,
+    resistance=50 * units.ohm,
+    temperature=300 * units.kelvin,
+)
+
+
+detector_2 = Detector(
+    name='det_2',
+    phi_angle=30 * units.degree,                 # Side scatter angle
+    numerical_aperture=0.3 * units.AU,
     responsitivity=1 * units.ampere / units.watt,
     resistance=50 * units.ohm,
     temperature=300 * units.kelvin,
@@ -151,7 +161,7 @@ from FlowCyPy import FlowCytometer
 cytometer = FlowCytometer(
     scatterer_collection=scatterer_collection,
     signal_digitizer=signal_digitizer,
-    detectors=[detector_0, detector_1],
+    detectors=[detector_0, detector_1, detector_2],
     flow_cell=flow_cell,
     background_power=0.001 * units.milliwatt
 )
@@ -162,7 +172,8 @@ acquisition = cytometer.get_acquisition()
 
 _ = acquisition.scatterer.plot(
     x='side',
-    y='forward'
+    y='forward',
+    z='RefractiveIndex'
 )
 
 # %%
