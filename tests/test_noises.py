@@ -46,7 +46,7 @@ def test_shot_noise():
 
     dataframe = detector.get_initialized_signal(run_time=run_time)
 
-    noise = detector._add_optical_power_to_raw_signal(
+    noise = detector.capture_signal(
         optical_power=optical_power,
         wavelength=1550 * units.nanometer,
         signal=dataframe['Signal']
@@ -95,10 +95,8 @@ def test_thermal_noise():
     )
     detector.signal_digitizer = signal_digitizer
 
-    dataframe = detector.get_initialized_signal(run_time=run_time)
-
     # Generate thermal noise
-    noise = detector._add_thermal_noise_to_raw_signal(signal=dataframe['Signal'])  # Capture returned noise
+    noise = detector.get_noise_signal(sequence_length=128)  # Capture returned noise
 
     # Step 1: Compute Theoretical Thermal Noise in Voltage
     bandwidth = detector.signal_digitizer.bandwidth  # Bandwidth in Hz
@@ -143,10 +141,8 @@ def test_dark_current_noise():
     )
     detector.signal_digitizer = signal_digitizer
 
-    dataframe = detector.get_initialized_signal(run_time=run_time)
-
     # Generate dark current noise
-    noise = detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])  # Capture returned noise
+    noise = detector.get_noise_signal(sequence_length=128)  # Capture returned noise
 
     # Step 1: Compute Theoretical Dark Current Noise in Voltage
     bandwidth = detector.signal_digitizer.bandwidth  # Bandwidth in Hz

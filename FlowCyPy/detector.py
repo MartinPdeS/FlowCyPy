@@ -8,7 +8,6 @@ import pint_pandas
 from PyMieSim.units import Quantity
 from FlowCyPy import units
 from FlowCyPy.noises import NoiseSetting
-from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.physical_constant import PhysicalConstant
 
 config_dict = dict(
@@ -135,6 +134,28 @@ class Detector():
             )
         )
 
+    def get_noise_signal(self, sequence_length: int):
+        # Generate noise components
+        signal = np.zeros(sequence_length) * units.volt
+        noise_dictionnary = self.get_noise_parameters()
+
+        for _, parameters in noise_dictionnary.items():
+            if parameters is None:
+                continue
+
+            signal_units = signal.units
+            # Generate noise values for this group
+            noise = np.random.normal(
+                parameters['mean'].to(signal_units).magnitude,
+                parameters['std'].to(signal_units).magnitude,
+                size=len(signal)
+            ) * signal_units
+
+            # Update the 'Signal' column in the original DataFrame using .loc
+            signal += noise
+
+        return signal
+
     def get_noise_parameters(self) -> dict:
         r"""
         Compute and return the noise parameters for thermal and dark current noise.
@@ -200,6 +221,37 @@ class Detector():
 
         return noises
 
+    def get_shot_noise(self, signal: pd.Series, optical_power: Quantity, wavelength: Quantity) -> None:
+        if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
+            return optical_power * self.responsitivity * self.resistance
+
+        else:
+            # Step 1: Compute photon energy
+            energy_photon = PhysicalConstant.h * PhysicalConstant.c / wavelength  # Photon energy (J)
+
+            # Step 2: Compute mean photon count per sampling interval
+            photon_rate = optical_power / energy_photon  # Photon rate (photons/s)
+
+            sampling_interval = 1 / self.signal_digitizer.sampling_rate  # Sampling interval (s)
+            mean_photon_count = photon_rate * sampling_interval  # Mean photons per sample
+
+            # Step 3: Simulate photon arrivals using Poisson statistics
+            mean = mean_photon_count.to('').magnitude
+            if np.max(mean) > 1e6:  # Threshold where Poisson becomes unstable
+                photon_counts_distribution = np.random.normal(mean, np.sqrt(mean), size=len(signal)).astype(int)
+            else:
+                photon_counts_distribution = np.random.poisson(mean, size=len(signal))
+
+
+            # Step 4: Convert photon counts to photocurrent
+            photon_power_distribution = photon_counts_distribution * energy_photon * self.signal_digitizer.sampling_rate
+
+            photocurrent_distribution = self.responsitivity * photon_power_distribution  # Current (A)
+            # Step 5: Convert photocurrent to shot noise voltage
+            shot_noise_voltage_distribution = photocurrent_distribution * self.resistance  # Voltage (V)
+
+            return shot_noise_voltage_distribution
+
     def capture_signal(self, signal: pd.Series, optical_power: Quantity, wavelength: Quantity) -> None:
         r"""
         Simulates photon shot noise based on the given optical power and detector bandwidth, and adds
@@ -245,7 +297,7 @@ class Detector():
                 - \( R_{\text{load}} \) is the load resistance of the detector (Ohms).
         """
         if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
-            return optical_power * self.responsitivity * self.resistance
+            return np.ones(len(signal)) * optical_power * self.responsitivity * self.resistance
 
         else:
             # Step 1: Compute photon energy
@@ -264,6 +316,7 @@ class Detector():
             else:
                 photon_counts_distribution = np.random.poisson(mean, size=len(signal))
 
+            print('photon_counts_distribution', photon_counts_distribution)
 
             # Step 4: Convert photon counts to photocurrent
             photon_power_distribution = photon_counts_distribution * energy_photon * self.signal_digitizer.sampling_rate

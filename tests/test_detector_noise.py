@@ -3,7 +3,9 @@ import pytest
 from FlowCyPy import Detector
 from FlowCyPy import units
 from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy import NoiseSetting
 
+NoiseSetting.include_noises = True
 
 @pytest.fixture
 def default_digitizer():
@@ -67,13 +69,18 @@ def default_detector_dark_current(default_digitizer):
 def test_shot_noise_generation(default_detector_shot_noise, default_digitizer):
     """Test that shot noise is generated and not zero for a detector."""
     # Generate photon shot noise
+    NoiseSetting.include_shot_noise = True
+    NoiseSetting.include_thermal_noise = False
+    NoiseSetting.include_dark_current_noise = False
+    NoiseSetting.include_RIN_noise = False
+
     detector = default_detector_shot_noise
 
     dataframe = detector.get_initialized_signal(run_time=100 * units.microsecond)
 
     optical_power = np.linspace(1e-3, 3e-3, len(dataframe)) * units.watt
 
-    shot_noise = detector._add_optical_power_to_raw_signal(
+    shot_noise = detector.capture_signal(
         signal=dataframe['Signal'],
         optical_power=optical_power,
         wavelength=1550 * units.nanometer
@@ -86,11 +93,17 @@ def test_shot_noise_generation(default_detector_shot_noise, default_digitizer):
 def test_thermal_noise_generation(default_detector_thermal_noise):
     """Test that thermal noise is generated and not zero for a detector."""
     # Initialize the raw signal
+    NoiseSetting.include_shot_noise = False
+    NoiseSetting.include_thermal_noise = True
+    NoiseSetting.include_dark_current_noise = False
+    NoiseSetting.include_RIN_noise = False
+
     detector = default_detector_thermal_noise
 
     dataframe = detector.get_initialized_signal(run_time=100 * units.microsecond)
+    sequence_length = len(dataframe['Signal'])
 
-    thermal_noise = detector._add_thermal_noise_to_raw_signal(dataframe['Signal'])
+    thermal_noise = detector.get_noise_signal(sequence_length)
     # Generate thermal noise and capture signal
     detector.signal_digitizer.capture_signal(dataframe['Signal'])
 
@@ -100,12 +113,18 @@ def test_thermal_noise_generation(default_detector_thermal_noise):
 
 def test_dark_current_noise_generation(default_detector_dark_current):
     """Test that dark current noise is generated and not zero for a detector."""
+    NoiseSetting.include_shot_noise = False
+    NoiseSetting.include_thermal_noise = False
+    NoiseSetting.include_dark_current_noise = True
+    NoiseSetting.include_RIN_noise = False
+
     # Initialize the raw signal
     detector = default_detector_dark_current
 
     dataframe = detector.get_initialized_signal(run_time=100 * units.microsecond)
+    sequence_length = len(dataframe['Signal'])
 
-    dark_current_noise = detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])
+    dark_current_noise = detector.get_noise_signal(sequence_length)
 
     # Generate dark current noise and capture signal
     detector.signal_digitizer.capture_signal(dataframe['Signal'])
@@ -116,17 +135,20 @@ def test_dark_current_noise_generation(default_detector_dark_current):
 
 def test_combined_noise_generation(default_detector_shot_noise):
     """Test that combined noises are generated for the detector."""
+    NoiseSetting.include_shot_noise = True
+    NoiseSetting.include_thermal_noise = True
+    NoiseSetting.include_dark_current_noise = True
+    NoiseSetting.include_RIN_noise = True
     # Initialize the raw signal with shot noise enabled
     detector = default_detector_shot_noise
 
     dataframe = detector.get_initialized_signal(run_time=100 * units.microsecond)
+    sequence_length = len(dataframe['Signal'])
 
-    detector._add_thermal_noise_to_raw_signal(dataframe['Signal'])
-
-    detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])
+    noises = detector.get_noise_signal(sequence_length)
 
     # Assert that the signal contains noise (not zero)
-    assert np.std(dataframe.Signal) > 0 * units.volt, "Noise variance is zero, indicating no noise added to signal."
+    assert np.std(noises) > 0 * units.volt, "Noise variance is zero, indicating no noise added to signal."
 
 
 if __name__ == '__main__':
