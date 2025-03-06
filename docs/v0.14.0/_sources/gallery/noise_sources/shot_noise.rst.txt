@@ -25,7 +25,7 @@ This example demonstrates the effect of different optical power levels on a flow
 We initialize the detector, apply varying optical power levels, and visualize the resulting signals
 and their distributions.
 
-.. GENERATED FROM PYTHON SOURCE LINES 10-83
+.. GENERATED FROM PYTHON SOURCE LINES 10-74
 
 
 
@@ -39,7 +39,7 @@ and their distributions.
 
  .. code-block:: none
 
-    /home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/shot_noise.py:73: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+    /home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/shot_noise.py:64: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
       ax_signal.legend()
 
 
@@ -56,7 +56,7 @@ and their distributions.
     from FlowCyPy.detector import Detector
     from FlowCyPy import units
     from FlowCyPy.signal_digitizer import SignalDigitizer
-
+    import numpy
     from FlowCyPy import NoiseSetting
 
     NoiseSetting.include_noises = True
@@ -66,7 +66,7 @@ and their distributions.
     NoiseSetting.include_RIN_noise = False
 
     # Define optical power levels
-    optical_powers = [1e-9 * units.watt, 5e-9 * units.watt, 1e-8 * units.watt]  # Powers in watts
+    optical_powers = [1e-9 * units.watt, 2e-9 * units.watt, 4e-9 * units.watt]  # Powers in watts
 
     signal_digitizer = SignalDigitizer(
         bit_depth='14bit',
@@ -90,26 +90,17 @@ and their distributions.
 
         detector.signal_digitizer = signal_digitizer
 
-        # Initialize the raw signal
-        dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second)
-
-        # Add optical power to the raw signal
-        detector._add_optical_power_to_raw_signal(
-            signal=dataframe['Signal'],
+        noise = detector.get_shot_noise(
+            signal = numpy.zeros(200) * units.volt,
             optical_power=optical_power,
             wavelength=1550 * units.nanometer
         )
 
-        signal_digitizer.capture_signal(dataframe['Signal'])
-
         # Plot the raw signal on the first axis
-        ax_signal.step(
-            dataframe.index,
-            dataframe.Signal.pint.quantity.magnitude
-        )
+        ax_signal.step(numpy.arange(200), noise)
 
         # Plot the histogram of the raw signal
-        ax_hist.hist(dataframe['Signal'], bins=50, alpha=0.6, label=detector.name)
+        ax_hist.hist(noise, bins=50, alpha=0.6, label=detector.name)
 
     # Customize the axes
     ax_signal.set_title("Raw Signals at Different Optical Powers")
@@ -128,7 +119,7 @@ and their distributions.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.505 seconds)
+   **Total running time of the script:** (0 minutes 0.533 seconds)
 
 
 .. _sphx_glr_download_gallery_noise_sources_shot_noise.py:

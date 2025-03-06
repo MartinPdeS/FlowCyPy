@@ -25,7 +25,7 @@ This example illustrates the impact of varying dark current levels on a flow cyt
 The detector is initialized, dark current noise is applied, and the resulting signals are visualized
 along with their distributions.
 
-.. GENERATED FROM PYTHON SOURCE LINES 10-82
+.. GENERATED FROM PYTHON SOURCE LINES 10-74
 
 
 
@@ -39,7 +39,7 @@ along with their distributions.
 
  .. code-block:: none
 
-    /home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/dark_current.py:72: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+    /home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/dark_current.py:64: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
       ax_signal.legend()
 
 
@@ -56,7 +56,7 @@ along with their distributions.
     from FlowCyPy.detector import Detector
     from FlowCyPy import units
     from FlowCyPy.signal_digitizer import SignalDigitizer
-
+    import numpy
     from FlowCyPy import NoiseSetting
 
     NoiseSetting.include_noises = True
@@ -93,22 +93,14 @@ along with their distributions.
 
         detector.signal_digitizer = signal_digitizer
 
-        # Initialize the raw signal
-        dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second)
-
         # Add dark current noise to the raw signal
-        detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])
-
-        signal_digitizer.capture_signal(dataframe['Signal'])
+        noise = detector.get_noise_signal(200)
 
         # Plot the raw signal on the first axis
-        ax_signal.step(
-            dataframe.index,
-            dataframe.Signal.pint.quantity.magnitude
-        )
+        ax_signal.step(x=numpy.arange(200), y=noise)
 
         # Plot the histogram of the raw signal
-        ax_hist.hist(dataframe['Signal'], bins=50, alpha=0.6, label=detector.name)
+        ax_hist.hist(noise, bins=50, alpha=0.6, label=detector.name)
 
     # Customize the axes
     ax_signal.set_title("Raw Signals with Different Dark Current Levels")
@@ -127,7 +119,7 @@ along with their distributions.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.543 seconds)
+   **Total running time of the script:** (0 minutes 0.545 seconds)
 
 
 .. _sphx_glr_download_gallery_noise_sources_dark_current.py:

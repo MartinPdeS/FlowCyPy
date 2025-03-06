@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from FlowCyPy.detector import Detector
 from FlowCyPy import units
 from FlowCyPy.signal_digitizer import SignalDigitizer
-
+import numpy
 from FlowCyPy import NoiseSetting
 
 NoiseSetting.include_noises = True
@@ -22,7 +22,7 @@ NoiseSetting.include_thermal_noise = False
 NoiseSetting.include_RIN_noise = False
 
 # Define optical power levels
-optical_powers = [1e-9 * units.watt, 5e-9 * units.watt, 1e-8 * units.watt]  # Powers in watts
+optical_powers = [1e-9 * units.watt, 2e-9 * units.watt, 4e-9 * units.watt]  # Powers in watts
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
@@ -46,26 +46,17 @@ for optical_power in optical_powers:
 
     detector.signal_digitizer = signal_digitizer
 
-    # Initialize the raw signal
-    dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second)
-
-    # Add optical power to the raw signal
-    detector._add_optical_power_to_raw_signal(
-        signal=dataframe['Signal'],
+    noise = detector.get_shot_noise(
+        signal = numpy.zeros(200) * units.volt,
         optical_power=optical_power,
         wavelength=1550 * units.nanometer
     )
 
-    signal_digitizer.capture_signal(dataframe['Signal'])
-
     # Plot the raw signal on the first axis
-    ax_signal.step(
-        dataframe.index,
-        dataframe.Signal.pint.quantity.magnitude
-    )
+    ax_signal.step(numpy.arange(200), noise)
 
     # Plot the histogram of the raw signal
-    ax_hist.hist(dataframe['Signal'], bins=50, alpha=0.6, label=detector.name)
+    ax_hist.hist(noise, bins=50, alpha=0.6, label=detector.name)
 
 # Customize the axes
 ax_signal.set_title("Raw Signals at Different Optical Powers")

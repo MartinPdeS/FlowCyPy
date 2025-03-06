@@ -515,7 +515,6 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">PyMieSim.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.noises</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoiseSetting</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.physical_constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysicalConstant</span>
 
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -647,73 +646,136 @@ document.write(`
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_thermal_noise_to_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generates thermal noise (Johnson-Nyquist noise) based on temperature, resistance, and bandwidth.</span>
+<div class="viewcode-block" id="Detector.get_noise_signal">
+<a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector.get_noise_signal">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_noise_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequence_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="c1"># Generate noise components</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">sequence_length</span><span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span>
+        <span class="n">noise_dictionnary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_noise_parameters</span><span class="p">()</span>
 
-<span class="sd">        Thermal noise is caused by the thermal agitation of charge carriers. It is given by:</span>
-<span class="sd">        \[</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">parameters</span> <span class="ow">in</span> <span class="n">noise_dictionnary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">signal_units</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">units</span>
+            <span class="c1"># Generate noise values for this group</span>
+            <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;std&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+                <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+            <span class="p">)</span> <span class="o">*</span> <span class="n">signal_units</span>
+
+            <span class="c1"># Update the &#39;Signal&#39; column in the original DataFrame using .loc</span>
+            <span class="n">signal</span> <span class="o">+=</span> <span class="n">noise</span>
+
+        <span class="k">return</span> <span class="n">signal</span></div>
+
+
+<div class="viewcode-block" id="Detector.get_noise_parameters">
+<a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector.get_noise_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_noise_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute and return the noise parameters for thermal and dark current noise.</span>
+
+<span class="sd">        Thermal noise (Johnson–Nyquist noise) results from the thermal agitation of charge carriers</span>
+<span class="sd">        and is computed using the formula:</span>
+
+<span class="sd">        .. math::</span>
 <span class="sd">            \sigma_{\text{thermal}} = \sqrt{4 k_B T B R}</span>
-<span class="sd">        \]</span>
-<span class="sd">        Where:</span>
-<span class="sd">            - \( k_B \) is the Boltzmann constant (\(1.38 \times 10^{-23}\) J/K),</span>
-<span class="sd">            - \( T \) is the temperature in Kelvin,</span>
-<span class="sd">            - \( B \) is the bandwidth,</span>
-<span class="sd">            - \( R \) is the resistance.</span>
+
+<span class="sd">        where:</span>
+<span class="sd">        - :math:`k_B` is the Boltzmann constant (1.38×10⁻²³ J/K),</span>
+<span class="sd">        - :math:`T` is the temperature in Kelvin,</span>
+<span class="sd">        - :math:`B` is the bandwidth,</span>
+<span class="sd">        - :math:`R` is the resistance.</span>
+
+<span class="sd">        Dark current noise is computed as:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            \sigma_{\text{dark}} = \sqrt{2 q I_d B}</span>
+
+<span class="sd">        where:</span>
+<span class="sd">        - :math:`q` is the elementary charge (1.602176634×10⁻¹⁹ C),</span>
+<span class="sd">        - :math:`I_d` is the dark current,</span>
+<span class="sd">        - :math:`B` is the bandwidth.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        np.ndarray</span>
-<span class="sd">            An array of thermal noise values.</span>
+<span class="sd">        dict</span>
+<span class="sd">            A dictionary with the following structure:</span>
+<span class="sd">            {</span>
+<span class="sd">                &#39;thermal&#39;: {</span>
+<span class="sd">                    &#39;mean&#39;: 0 * volt,</span>
+<span class="sd">                    &#39;std&#39;: computed thermal noise standard deviation</span>
+<span class="sd">                },</span>
+<span class="sd">                &#39;dark_current&#39;: {</span>
+<span class="sd">                    &#39;mean&#39;: 0 * volt,</span>
+<span class="sd">                    &#39;std&#39;: computed dark current noise standard deviation</span>
+<span class="sd">                }</span>
+<span class="sd">            }</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_thermal_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
-            <span class="k">return</span>
-
-        <span class="n">noise_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
-            <span class="mi">4</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">kb</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">bandwidth</span>
+        <span class="n">noises</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">thermal</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">dark_current</span><span class="o">=</span><span class="kc">None</span>
         <span class="p">)</span>
 
-        <span class="n">thermal_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">noise_std</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">volt</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">noises</span>
 
-        <span class="n">signal</span> <span class="o">+=</span> <span class="n">thermal_noise</span>
+        <span class="c1"># if self.resistance.magnitude == 0 or self.temperature.magnitude == 0 or not NoiseSetting.include_thermal_noise or not NoiseSetting.include_noises:</span>
+        <span class="k">if</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_thermal_noise</span><span class="p">:</span>
+            <span class="n">noises</span><span class="p">[</span><span class="s1">&#39;thermal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span><span class="p">,</span>
+                <span class="s1">&#39;std&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">kb</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">)</span>
+            <span class="p">}</span>
 
-        <span class="k">return</span> <span class="n">thermal_noise</span>
+        <span class="k">if</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_dark_current_noise</span><span class="p">:</span>
+            <span class="n">noises</span><span class="p">[</span><span class="s1">&#39;dark_current&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;mean&#39;</span><span class="p">:</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span><span class="p">,</span>
+                <span class="s1">&#39;std&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mf">1.602176634e-19</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">coulomb</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>
+            <span class="p">}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_dark_current_noise_to_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generates dark current noise (shot noise from dark current).</span>
 
-<span class="sd">        Dark current noise is a type of shot noise caused by the random generation of electrons in a detector,</span>
-<span class="sd">        even in the absence of light. It is given by:</span>
-<span class="sd">        \[</span>
-<span class="sd">            \sigma_{\text{dark current}} = \sqrt{2 e I_{\text{dark}} B}</span>
-<span class="sd">        \]</span>
-<span class="sd">        Where:</span>
-<span class="sd">            - \( e \) is the elementary charge,</span>
-<span class="sd">            - \( I_{\text{dark}} \) is the dark current,</span>
-<span class="sd">            - \( B \) is the bandwidth.</span>
+        <span class="k">return</span> <span class="n">noises</span></div>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        np.ndarray</span>
-<span class="sd">            An array of dark current noise values.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_dark_current_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
-            <span class="k">return</span>
 
-        <span class="n">dark_current_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
-            <span class="mi">2</span> <span class="o">*</span> <span class="mf">1.602176634e-19</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">coulomb</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">bandwidth</span>
-        <span class="p">)</span>
+<div class="viewcode-block" id="Detector.get_shot_noise">
+<a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector.get_shot_noise">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_shot_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">optical_power</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">optical_power</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">responsitivity</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>
 
-        <span class="n">dark_current_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dark_current_std</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">ampere</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Step 1: Compute photon energy</span>
+            <span class="n">energy_photon</span> <span class="o">=</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">c</span> <span class="o">/</span> <span class="n">wavelength</span>  <span class="c1"># Photon energy (J)</span>
 
-        <span class="n">dark_voltage_noise</span> <span class="o">=</span> <span class="n">dark_current_noise</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>
+            <span class="c1"># Step 2: Compute mean photon count per sampling interval</span>
+            <span class="n">photon_rate</span> <span class="o">=</span> <span class="n">optical_power</span> <span class="o">/</span> <span class="n">energy_photon</span>  <span class="c1"># Photon rate (photons/s)</span>
 
-        <span class="n">signal</span> <span class="o">+=</span> <span class="n">dark_voltage_noise</span>
+            <span class="n">sampling_interval</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">sampling_rate</span>  <span class="c1"># Sampling interval (s)</span>
+            <span class="n">mean_photon_count</span> <span class="o">=</span> <span class="n">photon_rate</span> <span class="o">*</span> <span class="n">sampling_interval</span>  <span class="c1"># Mean photons per sample</span>
 
-        <span class="k">return</span> <span class="n">dark_voltage_noise</span>
+            <span class="c1"># Step 3: Simulate photon arrivals using Poisson statistics</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="n">mean_photon_count</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e6</span><span class="p">:</span>  <span class="c1"># Threshold where Poisson becomes unstable</span>
+                <span class="n">photon_counts_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">photon_counts_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_optical_power_to_raw_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">optical_power</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="c1"># Step 4: Convert photon counts to photocurrent</span>
+            <span class="n">photon_power_distribution</span> <span class="o">=</span> <span class="n">photon_counts_distribution</span> <span class="o">*</span> <span class="n">energy_photon</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">sampling_rate</span>
+
+            <span class="n">photocurrent_distribution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">responsitivity</span> <span class="o">*</span> <span class="n">photon_power_distribution</span>  <span class="c1"># Current (A)</span>
+            <span class="c1"># Step 5: Convert photocurrent to shot noise voltage</span>
+            <span class="n">shot_noise_voltage_distribution</span> <span class="o">=</span> <span class="n">photocurrent_distribution</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>  <span class="c1"># Voltage (V)</span>
+
+            <span class="k">return</span> <span class="n">shot_noise_voltage_distribution</span></div>
+
+
+<div class="viewcode-block" id="Detector.capture_signal">
+<a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector.capture_signal">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">capture_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">optical_power</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simulates photon shot noise based on the given optical power and detector bandwidth, and adds</span>
 <span class="sd">        the corresponding voltage noise to the raw signal.</span>
@@ -758,8 +820,7 @@ document.write(`
 <span class="sd">                - \( R_{\text{load}} \) is the load resistance of the detector (Ohms).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
-            <span class="n">signal</span> <span class="o">+=</span> <span class="n">optical_power</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">responsitivity</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>
-            <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span> <span class="o">*</span> <span class="n">optical_power</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">responsitivity</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Step 1: Compute photon energy</span>
@@ -772,12 +833,13 @@ document.write(`
             <span class="n">mean_photon_count</span> <span class="o">=</span> <span class="n">photon_rate</span> <span class="o">*</span> <span class="n">sampling_interval</span>  <span class="c1"># Mean photons per sample</span>
 
             <span class="c1"># Step 3: Simulate photon arrivals using Poisson statistics</span>
-            <span class="n">lam</span> <span class="o">=</span> <span class="n">mean_photon_count</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
-            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">lam</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e6</span><span class="p">:</span>  <span class="c1"># Threshold where Poisson becomes unstable</span>
-                <span class="n">photon_counts_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lam</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="n">mean_photon_count</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e6</span><span class="p">:</span>  <span class="c1"># Threshold where Poisson becomes unstable</span>
+                <span class="n">photon_counts_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">photon_counts_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">lam</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span>
+                <span class="n">photon_counts_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span>
 
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;photon_counts_distribution&#39;</span><span class="p">,</span> <span class="n">photon_counts_distribution</span><span class="p">)</span>
 
             <span class="c1"># Step 4: Convert photon counts to photocurrent</span>
             <span class="n">photon_power_distribution</span> <span class="o">=</span> <span class="n">photon_counts_distribution</span> <span class="o">*</span> <span class="n">energy_photon</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="o">.</span><span class="n">sampling_rate</span>
@@ -790,6 +852,7 @@ document.write(`
             <span class="n">signal</span> <span class="o">+=</span> <span class="n">shot_noise_voltage_distribution</span>
 
             <span class="k">return</span> <span class="n">shot_noise_voltage_distribution</span></div>
+</div>
 
 </pre></div>
 

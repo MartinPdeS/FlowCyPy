@@ -44,6 +44,7 @@
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'code/detector';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.15.4';
@@ -565,6 +566,79 @@ for analysis.  It can optionally simulate different noise sources: shot noise, t
 <span class="sig-name descname"><span class="pre">cache_numerical_aperture</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(0,</span> <span class="pre">'dimensionless')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.cache_numerical_aperture" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.capture_signal">
+<span class="sig-name descname"><span class="pre">capture_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optical_power</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.capture_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.capture_signal" title="Link to this definition">#</a></dt>
+<dd><p>Simulates photon shot noise based on the given optical power and detector bandwidth, and adds
+the corresponding voltage noise to the raw signal.</p>
+<p>Photon shot noise arises from the random and discrete arrival of photons at the detector. The noise
+follows Poisson statistics. This method computes the photon shot noise and adds it to the raw signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optical_power</strong> (<em>Quantity</em>) – The optical power incident on the detector, in watts (W).</p></li>
+<li><p><strong>signal</strong> (<em>Series</em>)</p></li>
+<li><p><strong>wavelength</strong> (<em>Quantity</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul>
+<li><p><em>np.ndarray</em> – An array representing the voltage noise due to photon shot noise, in volts (V).</p></li>
+<li><p><em>Physics</em> –</p>
+<ul class="simple">
+<li><p>The number of photons arriving at the detector ( N_{text{ph}} ) is given by:</p></li>
+</ul>
+<dl class="simple">
+<dt>[</dt><dd><p>N_{text{ph}} = frac{P_{text{opt}}}{E_{text{photon}}}</p>
+</dd>
+</dl>
+<p>]
+where:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>( P_{text{opt}} ) is the optical power (W),</p></li>
+<li><p>( E_{text{photon}} = frac{h cdot c}{lambda} ) is the energy of a photon (J),</p></li>
+<li><p>( h ) is Planck’s constant ((6.626 times 10^{-34}, text{J} cdot text{s})),</p></li>
+<li><p>( c ) is the speed of light ((3 times 10^8 , text{m/s})),</p></li>
+<li><p>( lambda ) is the wavelength of the incident light.</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>The photocurrent is computed as:</p></li>
+</ul>
+<dl class="simple">
+<dt>[</dt><dd><p>I_{text{photon}} = R_{text{det}} cdot N_{text{photon}}</p>
+</dd>
+</dl>
+<p>]
+where:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>( R_{text{det}} ) is the detector responsivity (A/W).</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>The voltage shot noise is then given by:</p></li>
+</ul>
+<p>[
+V_{text{shot}} = I_{text{photon}} cdot R_{text{load}}
+]
+where:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>( R_{text{load}} ) is the load resistance of the detector (Ohms).</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector.dataframe">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dataframe</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.dataframe" title="Link to this definition">#</a></dt>
@@ -587,6 +661,80 @@ based on the flow cell’s runtime.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>DataFrame</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.get_noise_parameters">
+<span class="sig-name descname"><span class="pre">get_noise_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.get_noise_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.get_noise_parameters" title="Link to this definition">#</a></dt>
+<dd><p>Compute and return the noise parameters for thermal and dark current noise.</p>
+<p>Thermal noise (Johnson–Nyquist noise) results from the thermal agitation of charge carriers
+and is computed using the formula:</p>
+<div class="math notranslate nohighlight">
+\[\sigma_{\text{thermal}} = \sqrt{4 k_B T B R}\]</div>
+<p>where:
+- <span class="math notranslate nohighlight">\(k_B\)</span> is the Boltzmann constant (1.38×10⁻²³ J/K),
+- <span class="math notranslate nohighlight">\(T\)</span> is the temperature in Kelvin,
+- <span class="math notranslate nohighlight">\(B\)</span> is the bandwidth,
+- <span class="math notranslate nohighlight">\(R\)</span> is the resistance.</p>
+<p>Dark current noise is computed as:</p>
+<div class="math notranslate nohighlight">
+\[\sigma_{\text{dark}} = \sqrt{2 q I_d B}\]</div>
+<p>where:
+- <span class="math notranslate nohighlight">\(q\)</span> is the elementary charge (1.602176634×10⁻¹⁹ C),
+- <span class="math notranslate nohighlight">\(I_d\)</span> is the dark current,
+- <span class="math notranslate nohighlight">\(B\)</span> is the bandwidth.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>A dictionary with the following structure:
+{</p>
+<blockquote>
+<div><dl class="simple">
+<dt>’thermal’: {</dt><dd><p>‘mean’: 0 * volt,
+‘std’: computed thermal noise standard deviation</p>
+</dd>
+</dl>
+<p>},
+‘dark_current’: {</p>
+<blockquote>
+<div><p>’mean’: 0 * volt,
+‘std’: computed dark current noise standard deviation</p>
+</div></blockquote>
+<p>}</p>
+</div></blockquote>
+<p>}</p>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.get_noise_signal">
+<span class="sig-name descname"><span class="pre">get_noise_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence_length</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.get_noise_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.get_noise_signal" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sequence_length</strong> (<em>int</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.get_shot_noise">
+<span class="sig-name descname"><span class="pre">get_shot_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optical_power</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.get_shot_noise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.get_shot_noise" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>Series</em>)</p></li>
+<li><p><strong>optical_power</strong> (<em>Quantity</em>)</p></li>
+<li><p><strong>wavelength</strong> (<em>Quantity</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -619,8 +767,12 @@ based on the flow cell’s runtime.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector"><code class="docutils literal notranslate"><span class="pre">Detector</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.cache_numerical_aperture"><code class="docutils literal notranslate"><span class="pre">Detector.cache_numerical_aperture</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.capture_signal"><code class="docutils literal notranslate"><span class="pre">Detector.capture_signal()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.dataframe"><code class="docutils literal notranslate"><span class="pre">Detector.dataframe</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.get_initialized_signal"><code class="docutils literal notranslate"><span class="pre">Detector.get_initialized_signal()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.get_noise_parameters"><code class="docutils literal notranslate"><span class="pre">Detector.get_noise_parameters()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.get_noise_signal"><code class="docutils literal notranslate"><span class="pre">Detector.get_noise_signal()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.get_shot_noise"><code class="docutils literal notranslate"><span class="pre">Detector.get_shot_noise()</span></code></a></li>
 </ul>
 </li>
 </ul>

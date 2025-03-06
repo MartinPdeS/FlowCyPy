@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from FlowCyPy.detector import Detector
 from FlowCyPy import units
 from FlowCyPy.signal_digitizer import SignalDigitizer
-
+import numpy
 from FlowCyPy import NoiseSetting
 
 NoiseSetting.include_noises = True
@@ -49,22 +49,14 @@ for dark_current in dark_currents:
 
     detector.signal_digitizer = signal_digitizer
 
-    # Initialize the raw signal
-    dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second)
-
     # Add dark current noise to the raw signal
-    detector._add_dark_current_noise_to_raw_signal(dataframe['Signal'])
-
-    signal_digitizer.capture_signal(dataframe['Signal'])
+    noise = detector.get_noise_signal(200)
 
     # Plot the raw signal on the first axis
-    ax_signal.step(
-        dataframe.index,
-        dataframe.Signal.pint.quantity.magnitude
-    )
+    ax_signal.step(x=numpy.arange(200), y=noise)
 
     # Plot the histogram of the raw signal
-    ax_hist.hist(dataframe['Signal'], bins=50, alpha=0.6, label=detector.name)
+    ax_hist.hist(noise, bins=50, alpha=0.6, label=detector.name)
 
 # Customize the axes
 ax_signal.set_title("Raw Signals with Different Dark Current Levels")

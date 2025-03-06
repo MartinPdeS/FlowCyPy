@@ -17,6 +17,7 @@ from FlowCyPy import units
 import matplotlib.pyplot as plt
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import NoiseSetting
+import numpy
 
 # Configure Noise Settings
 NoiseSetting.include_noises = True
@@ -50,21 +51,13 @@ for temperature in temperatures:
     )
     detector.signal_digitizer = signal_digitizer
 
-    dataframe = detector.get_initialized_signal(run_time=200e-6 * units.second)
-
     # Add thermal noise to the raw signal
-    detector._add_thermal_noise_to_raw_signal(dataframe['Signal'])
+    noise = detector.get_noise_signal(200)
 
-    signal_digitizer.capture_signal(dataframe['Signal'])
-
-    # Plot the raw signal on the first axis
-    ax_signal.step(
-        dataframe.index,
-        dataframe.Signal.pint.quantity.magnitude
-    )
+    ax_signal.step(x=numpy.arange(200), y=noise)
 
     # Plot the histogram of the raw signal on the bottom subplot
-    ax1.hist(dataframe['Signal'], alpha=0.5, label=f"{detector.name} K", bins=50)
+    ax1.hist(noise, alpha=0.5, label=f"{detector.name} K", bins=50)
 
 # Add legends and show the plot
 ax1.legend(title="Temperature")

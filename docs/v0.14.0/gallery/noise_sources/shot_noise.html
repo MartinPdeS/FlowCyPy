@@ -553,7 +553,7 @@ to download the full example code.</p>
 <p>This example demonstrates the effect of different optical power levels on a flow cytometer detector.
 We initialize the detector, apply varying optical power levels, and visualize the resulting signals
 and their distributions.</p>
-<img src="../../_images/sphx_glr_shot_noise_001.png" srcset="../../_images/sphx_glr_shot_noise_001.png" alt="Raw Signals at Different Optical Powers, Histogram of Raw Signals" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/shot_noise.py:73: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+<img src="../../_images/sphx_glr_shot_noise_001.png" srcset="../../_images/sphx_glr_shot_noise_001.png" alt="Raw Signals at Different Optical Powers, Histogram of Raw Signals" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/shot_noise.py:64: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
   ax_signal.legend()
 </pre></div>
 </div>
@@ -564,7 +564,7 @@ and their distributions.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">Detector</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
-
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoiseSetting</span>
 
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
@@ -574,7 +574,7 @@ and their distributions.</p>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_RIN_noise</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="c1"># Define optical power levels</span>
-<span class="n">optical_powers</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1e-9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span> <span class="mf">5e-9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span> <span class="mf">1e-8</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">]</span>  <span class="c1"># Powers in watts</span>
+<span class="n">optical_powers</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1e-9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span> <span class="mf">2e-9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span> <span class="mf">4e-9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">]</span>  <span class="c1"># Powers in watts</span>
 
 <span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>
@@ -598,26 +598,17 @@ and their distributions.</p>
 
     <span class="n">detector</span><span class="o">.</span><span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">signal_digitizer</span>
 
-    <span class="c1"># Initialize the raw signal</span>
-    <span class="n">dataframe</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">get_initialized_signal</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">200e-6</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
-
-    <span class="c1"># Add optical power to the raw signal</span>
-    <span class="n">detector</span><span class="o">.</span><span class="n">_add_optical_power_to_raw_signal</span><span class="p">(</span>
-        <span class="n">signal</span><span class="o">=</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">],</span>
+    <span class="n">noise</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">get_shot_noise</span><span class="p">(</span>
+        <span class="n">signal</span> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.zeros.html#numpy.zeros" title="numpy.zeros" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span></a><span class="p">(</span><span class="mi">200</span><span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span><span class="p">,</span>
         <span class="n">optical_power</span><span class="o">=</span><span class="n">optical_power</span><span class="p">,</span>
         <span class="n">wavelength</span><span class="o">=</span><span class="mi">1550</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span>
     <span class="p">)</span>
 
-    <span class="n">signal_digitizer</span><span class="o">.</span><span class="n">capture_signal</span><span class="p">(</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">])</span>
-
     <span class="c1"># Plot the raw signal on the first axis</span>
-    <span class="n">ax_signal</span><span class="o">.</span><span class="n">step</span><span class="p">(</span>
-        <span class="n">dataframe</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
-        <span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span>
-    <span class="p">)</span>
+    <span class="n">ax_signal</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="mi">200</span><span class="p">),</span> <span class="n">noise</span><span class="p">)</span>
 
     <span class="c1"># Plot the histogram of the raw signal</span>
-    <span class="n">ax_hist</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">ax_hist</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">noise</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
 <span class="c1"># Customize the axes</span>
 <span class="n">ax_signal</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Raw Signals at Different Optical Powers&quot;</span><span class="p">)</span>
@@ -634,7 +625,7 @@ and their distributions.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.505 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.533 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-noise-sources-shot-noise-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/0ed030493f46cf072d14cf8d5b0bb706/shot_noise.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">shot_noise.ipynb</span></code></a></p>

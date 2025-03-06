@@ -561,6 +561,7 @@ of the detector.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoiseSetting</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
 <span class="c1"># Configure Noise Settings</span>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
@@ -594,21 +595,13 @@ of the detector.</p>
     <span class="p">)</span>
     <span class="n">detector</span><span class="o">.</span><span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">signal_digitizer</span>
 
-    <span class="n">dataframe</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">get_initialized_signal</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">200e-6</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
-
     <span class="c1"># Add thermal noise to the raw signal</span>
-    <span class="n">detector</span><span class="o">.</span><span class="n">_add_thermal_noise_to_raw_signal</span><span class="p">(</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">])</span>
+    <span class="n">noise</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">get_noise_signal</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
 
-    <span class="n">signal_digitizer</span><span class="o">.</span><span class="n">capture_signal</span><span class="p">(</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">])</span>
-
-    <span class="c1"># Plot the raw signal on the first axis</span>
-    <span class="n">ax_signal</span><span class="o">.</span><span class="n">step</span><span class="p">(</span>
-        <span class="n">dataframe</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
-        <span class="n">dataframe</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span>
-    <span class="p">)</span>
+    <span class="n">ax_signal</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.arange.html#numpy.arange" title="numpy.arange" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span></a><span class="p">(</span><span class="mi">200</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">noise</span><span class="p">)</span>
 
     <span class="c1"># Plot the histogram of the raw signal on the bottom subplot</span>
-    <span class="n">ax1</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> K&quot;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">noise</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> K&quot;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
 <span class="c1"># Add legends and show the plot</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Temperature&quot;</span><span class="p">)</span>
@@ -618,7 +611,7 @@ of the detector.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.455 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.445 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-noise-sources-thermal-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/c038ad83f8c758fcf830007ce54b0f88/thermal.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">thermal.ipynb</span></code></a></p>

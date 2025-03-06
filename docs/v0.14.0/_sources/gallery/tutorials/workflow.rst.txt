@@ -70,9 +70,9 @@ globally but exclude specific types, such as shot noise and thermal noise.
     from FlowCyPy import NoiseSetting
 
     NoiseSetting.include_noises = True
-    NoiseSetting.include_shot_noise = False
-    NoiseSetting.include_thermal_noise = False
-    NoiseSetting.include_dark_current_noise = False
+    # NoiseSetting.include_shot_noise = False
+    # NoiseSetting.include_thermal_noise = False
+    # NoiseSetting.include_dark_current_noise = False
 
     np.random.seed(3)  # Ensure reproducibility
 
@@ -209,7 +209,7 @@ given by:
 
     [1200 rows x 2 columns]
 
-    <seaborn.axisgrid.JointGrid object at 0x7fa038192110>
+    <seaborn.axisgrid.JointGrid object at 0x7ff395b3c210>
 
 
 
@@ -312,6 +312,14 @@ and particles follows Mie theory:
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    photon_counts_distribution [16560 16645 16606 ... 16852 16984 16620]
+    photon_counts_distribution [16503 16879 16882 ... 16689 16886 17066]
+    photon_counts_distribution [16842 16733 16868 ... 16862 16763 16796]
+
 
 
 
@@ -404,7 +412,7 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7fa031953610>
+    <seaborn.axisgrid.JointGrid object at 0x7ff395b0ed90>
 
 
 
@@ -441,7 +449,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.204 seconds)
+   **Total running time of the script:** (0 minutes 8.395 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:
