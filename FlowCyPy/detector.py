@@ -135,73 +135,72 @@ class Detector():
             )
         )
 
-    def _add_thermal_noise_to_raw_signal(self, signal: pd.Series) -> np.ndarray:
+    def get_noise_parameters(self) -> dict:
         r"""
-        Generates thermal noise (Johnson-Nyquist noise) based on temperature, resistance, and bandwidth.
+        Compute and return the noise parameters for thermal and dark current noise.
 
-        Thermal noise is caused by the thermal agitation of charge carriers. It is given by:
-        \[
+        Thermal noise (Johnson–Nyquist noise) results from the thermal agitation of charge carriers
+        and is computed using the formula:
+
+        .. math::
             \sigma_{\text{thermal}} = \sqrt{4 k_B T B R}
-        \]
-        Where:
-            - \( k_B \) is the Boltzmann constant (\(1.38 \times 10^{-23}\) J/K),
-            - \( T \) is the temperature in Kelvin,
-            - \( B \) is the bandwidth,
-            - \( R \) is the resistance.
+
+        where:
+        - :math:`k_B` is the Boltzmann constant (1.38×10⁻²³ J/K),
+        - :math:`T` is the temperature in Kelvin,
+        - :math:`B` is the bandwidth,
+        - :math:`R` is the resistance.
+
+        Dark current noise is computed as:
+
+        .. math::
+            \sigma_{\text{dark}} = \sqrt{2 q I_d B}
+
+        where:
+        - :math:`q` is the elementary charge (1.602176634×10⁻¹⁹ C),
+        - :math:`I_d` is the dark current,
+        - :math:`B` is the bandwidth.
 
         Returns
         -------
-        np.ndarray
-            An array of thermal noise values.
+        dict
+            A dictionary with the following structure:
+            {
+                'thermal': {
+                    'mean': 0 * volt,
+                    'std': computed thermal noise standard deviation
+                },
+                'dark_current': {
+                    'mean': 0 * volt,
+                    'std': computed dark current noise standard deviation
+                }
+            }
         """
-        if self.resistance.magnitude == 0 or self.temperature.magnitude == 0 or not NoiseSetting.include_thermal_noise or not NoiseSetting.include_noises:
-            return
-
-        noise_std = np.sqrt(
-            4 * PhysicalConstant.kb * self.temperature * self.resistance * self.signal_digitizer.bandwidth
+        noises = dict(
+            thermal=None,
+            dark_current=None
         )
 
-        thermal_noise = np.random.normal(0, noise_std.to(units.volt).magnitude, size=len(signal)) * units.volt
+        if not NoiseSetting.include_noises:
+            return noises
 
-        signal += thermal_noise
+        # if self.resistance.magnitude == 0 or self.temperature.magnitude == 0 or not NoiseSetting.include_thermal_noise or not NoiseSetting.include_noises:
+        if NoiseSetting.include_thermal_noise:
+            noises['thermal'] = {
+                'mean': 0 * units.volt,
+                'std':np.sqrt(4 * PhysicalConstant.kb * self.temperature * self.resistance * self.signal_digitizer.bandwidth)
+            }
 
-        return thermal_noise
+        if NoiseSetting.include_dark_current_noise:
+            noises['dark_current'] = {
+                'mean': 0 * units.volt,
+                'std': np.sqrt(2 * 1.602176634e-19 * units.coulomb * self.dark_current * self.signal_digitizer.bandwidth) * self.resistance
+            }
 
-    def _add_dark_current_noise_to_raw_signal(self, signal: pd.Series) -> np.ndarray:
-        r"""
-        Generates dark current noise (shot noise from dark current).
 
-        Dark current noise is a type of shot noise caused by the random generation of electrons in a detector,
-        even in the absence of light. It is given by:
-        \[
-            \sigma_{\text{dark current}} = \sqrt{2 e I_{\text{dark}} B}
-        \]
-        Where:
-            - \( e \) is the elementary charge,
-            - \( I_{\text{dark}} \) is the dark current,
-            - \( B \) is the bandwidth.
+        return noises
 
-        Returns
-        -------
-        np.ndarray
-            An array of dark current noise values.
-        """
-        if self.dark_current.magnitude == 0 or not NoiseSetting.include_dark_current_noise or not NoiseSetting.include_noises:
-            return
-
-        dark_current_std = np.sqrt(
-            2 * 1.602176634e-19 * units.coulomb * self.dark_current * self.signal_digitizer.bandwidth
-        )
-
-        dark_current_noise = np.random.normal(0, dark_current_std.to(units.ampere).magnitude, size=len(signal)) * units.ampere
-
-        dark_voltage_noise = dark_current_noise * self.resistance
-
-        signal += dark_voltage_noise
-
-        return dark_voltage_noise
-
-    def _add_optical_power_to_raw_signal(self, signal: pd.Series, optical_power: Quantity, wavelength: Quantity) -> None:
+    def capture_signal(self, signal: pd.Series, optical_power: Quantity, wavelength: Quantity) -> None:
         r"""
         Simulates photon shot noise based on the given optical power and detector bandwidth, and adds
         the corresponding voltage noise to the raw signal.
@@ -246,8 +245,7 @@ class Detector():
                 - \( R_{\text{load}} \) is the load resistance of the detector (Ohms).
         """
         if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
-            signal += optical_power * self.responsitivity * self.resistance
-            return None
+            return optical_power * self.responsitivity * self.resistance
 
         else:
             # Step 1: Compute photon energy
@@ -260,11 +258,11 @@ class Detector():
             mean_photon_count = photon_rate * sampling_interval  # Mean photons per sample
 
             # Step 3: Simulate photon arrivals using Poisson statistics
-            lam = mean_photon_count.to('').magnitude
-            if np.max(lam) > 1e6:  # Threshold where Poisson becomes unstable
-                photon_counts_distribution = np.random.normal(lam, np.sqrt(lam), size=len(signal)).astype(int)
+            mean = mean_photon_count.to('').magnitude
+            if np.max(mean) > 1e6:  # Threshold where Poisson becomes unstable
+                photon_counts_distribution = np.random.normal(mean, np.sqrt(mean), size=len(signal)).astype(int)
             else:
-                photon_counts_distribution = np.random.poisson(lam, size=len(signal))
+                photon_counts_distribution = np.random.poisson(mean, size=len(signal))
 
 
             # Step 4: Convert photon counts to photocurrent
