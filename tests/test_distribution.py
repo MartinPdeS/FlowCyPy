@@ -32,7 +32,7 @@ def test_number_of_samples(mock_show, distribution, n_samples):
     """Test the generate method of the Distribution class."""
 
     # Generate particle sizes
-    sizes = distribution.generate(n_samples * units.particle)
+    sizes = distribution.generate(n_samples)
 
     # Assert the shape is correct
     assert sizes.shape == (n_samples,), f"{distribution.__class__.__name__}: Generated size array has incorrect shape."
@@ -76,7 +76,7 @@ def test_uniform_properties():
 def test_normal_properties():
     """Test specific properties of certain distributions."""
     distribution = distributions[0]
-    sizes = distribution.generate(100 * units.particle)
+    sizes = distribution.generate(100)
 
     # Test for NormalDistribution: Check that the mean is approximately correct
     mean_size = np.mean(sizes)
@@ -87,7 +87,7 @@ def test_normal_properties():
 def test_lognormal_properties():
     """Test specific properties of certain distributions."""
     distribution = distributions[1]
-    diameters = distribution.generate(4000 * units.particle)
+    diameters = distribution.generate(4000)
 
     # Test for LogNormalDistribution: Check that the standard deviation is approximately correct
     std_dev_size = np.std(diameters)

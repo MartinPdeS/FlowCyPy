@@ -1,78 +1,68 @@
-import numpy as np
-from FlowCyPy import units
-from FlowCyPy import GaussianBeam, FlowCell, ScattererCollection, Population
-from FlowCyPy import distribution, Detector, SignalDigitizer, FlowCytometer, peak_locator
-from FlowCyPy import NoiseSetting
+"""
+Workflow
+========
 
-NoiseSetting.include_noises = True
-NoiseSetting.include_shot_noise = False
-NoiseSetting.include_thermal_noise = False
-NoiseSetting.include_dark_current_noise = False
+This tutorial demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library.
+The simulation involves configuring a flow setup, defining a single population of particles, and
+analyzing scattering signals from two detectors to produce a 2D density plot of scattering intensities.
+
+Overview:
+---------
+1. Configure the flow cell and particle population.
+2. Define the laser source and detector parameters.
+3. Simulate the flow cytometry experiment.
+4. Analyze the generated signals and visualize results.
+
+"""
+
+# %%
+# Step 0: Import Necessary Libraries
+# -----------------------------------
+# Here, we import the necessary libraries and units for the simulation. The units module helps us
+# define physical quantities like meters, seconds, and watts in a concise and consistent manner.
+
+from FlowCyPy import units
+from FlowCyPy import GaussianBeam
+from FlowCyPy import FlowCell
+from FlowCyPy import ScattererCollection
+from FlowCyPy.population import Exosome, HDL
+from FlowCyPy.detector import PMT
+from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy import FlowCytometer
 
 source = GaussianBeam(
-    numerical_aperture=0.3 * units.AU,
-    wavelength=400 * units.nanometer,
-    optical_power=200 * units.milliwatt
+    numerical_aperture=0.3 * units.AU,           # Numerical aperture
+    wavelength=200 * units.nanometer,           # Wavelength
+    optical_power=200 * units.milliwatt          # Optical power
 )
 
 
 flow_cell = FlowCell(
     source=source,
-    volume_flow=0.3 * units.microliter / units.second,
-    flow_area=(10 * units.micrometer) ** 2,
+    volume_flow=0.3 * units.microliter / units.second,  # Flow volume
+    flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
 )
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
-population_0 = Population(
-    name='250 nm | 1.40 RI',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=250 * units.nanometer, spread=30),
-    refractive_index=distribution.Normal(mean=1.40 * units.RIU, std_dev=0.002 * units.RIU)
-)
-population_1 = Population(
-    name='200 nm | 1.42 RI',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=200 * units.nanometer, spread=30),
-    refractive_index=distribution.Normal(mean=1.42 * units.RIU, std_dev=0.002 * units.RIU)
-)
-population_2 = Population(
-    name='150 nm | 1.44 RI',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=5),
-    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
+# Add an Exosome and HDL population
+scatterer_collection.add_population(
+    Exosome(particle_count=5e9 * units.particle / units.milliliter),
+    HDL(particle_count=5e9 * units.particle / units.milliliter)
 )
 
-scatterer_collection.add_population(population_0, population_1, population_2)
-
-scatterer_collection.dilute(factor=16)
-
-scatterer_collection.plot(sampling=5000, use_ratio=False)
+scatterer_collection.dilute(factor=1)
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
-    sampling_rate=60 * units.megahertz,
+    sampling_rate=10 * units.megahertz,
 )
 
-detector_0 = Detector(
-    name='forward',
-    phi_angle=0 * units.degree,                  # Forward scatter angle
-    numerical_aperture=0.4 * units.AU,
-    cache_numerical_aperture=0.00 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
-    resistance=1500 * units.ohm,
-    temperature=300 * units.kelvin
-)
+detector_0 = PMT(name='forward', cache_numerical_aperture=0.0 * units.AU, phi_angle=0 * units.degree, numerical_aperture=0.3 * units.AU)
 
-detector_1 = Detector(
-    name='side',
-    phi_angle=90 * units.degree,                 # Side scatter angle
-    numerical_aperture=0.4 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
-    resistance=50 * units.ohm,
-    temperature=300 * units.kelvin,
-)
+detector_1 = PMT(name='side', phi_angle=90 * units.degree, numerical_aperture=0.3 * units.AU)
+
 
 cytometer = FlowCytometer(
     scatterer_collection=scatterer_collection,
@@ -83,46 +73,16 @@ cytometer = FlowCytometer(
 )
 
 # Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=0.2 * 10 * units.millisecond)
-acquisition = cytometer.get_acquisition()
+cytometer.prepare_acquisition(run_time=1 * units.millisecond)
 
-cytometer.scatterer_collection.dataframe.plot(x='RefractiveIndex', y='Diameter')
-
-# acquisition.scatterer.plot(x='RefractiveIndex', y='Diameter')
-
-# acquisition.scatterer.plot(x='forward', y='side', z='det_2')
-acquisition.scatterer.plot(x='forward', y='side')
-# acquisition.scatterer.plot(x='forward', y='side', z='Diameter')
-
-acquisition.analog.plot()
-
-triggered_acquisition = acquisition.run_triggering(
-    threshold=10 * units.millivolt,
-    trigger_detector_name='forward',
-    max_triggers=2000,
-    pre_buffer=64,
-    post_buffer=64
+cytometer.scatterer_dataframe.plot(
+    x='Diameter',
+    y='RefractiveIndex'
 )
 
-triggered_acquisition.analog.plot()
-
-peak_algorithm = peak_locator.BasicPeakLocator()
-
-peaks = triggered_acquisition.detect_peaks(peak_algorithm)
-# print(peaks)
-peaks.plot(x='forward', y='side')
-# peaks.plot(x='forward', y='side', z='det_2')
-
-
-
-from FlowCyPy.classifier import KmeansClassifier
-
-classifier = KmeansClassifier(number_of_cluster=3)
-
-data = classifier.run(
-    dataframe=peaks.unstack('Detector'),
-    features=['Height'],
-    detectors=['side', 'forward']
+cytometer.scatterer_dataframe.plot(
+    x='side',
+    y='forward',
+    # log_scale=True
+#     z='RefractiveIndex'
 )
-
-data.plot(feature='Height', x='forward', y='side')

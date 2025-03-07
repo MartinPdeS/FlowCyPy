@@ -212,7 +212,7 @@ class ScattererCollection():
 
             # Safely access the sub-dataframe and proceed
             sub_dataframe = scatterer_dataframe.xs(population.name)
-            sampling = len(sub_dataframe) * units.particle
+            sampling = len(sub_dataframe)
 
             diameter, ri = population.generate_sampling(sampling)
 

@@ -46,7 +46,7 @@ class Base:
         bins : int, optional
             The number of bins in the histogram (default is 50).
         """
-        samples = self.generate(Quantity(n_samples, particle))
+        samples = self.generate(n_samples)
 
         # Plotting the PDF
         with plt.style.context(mps):  # Assuming mps is a custom style
@@ -68,12 +68,12 @@ class Base:
         def wrapper(self, n_samples: Quantity):
 
             # Validate inputs
-            if not isinstance(n_samples, Quantity) or not n_samples.check("particle"):
-                raise ValueError("n_sample must be a dimensionless Quantity.")
+            # if not isinstance(n_samples, Quantity) or not n_samples.check("particle"):
+            #     raise ValueError("n_sample must be a dimensionless Quantity.")
 
             # if n_samples.magnitude < 2:
             #     raise ValueError("n_samples must be at least 2.")
 
-            return function(self=self, n_samples=n_samples.magnitude) * self._units
+            return function(self=self, n_samples=n_samples) * self._units
 
         return wrapper
