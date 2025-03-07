@@ -5,7 +5,7 @@ from unittest.mock import patch
 from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import distribution
-from FlowCyPy.population import Population
+from FlowCyPy.population import Sphere
 from FlowCyPy import units
 from FlowCyPy import peak_locator
 from FlowCyPy import circuits
@@ -76,7 +76,7 @@ def ri_distribution():
 @pytest.fixture
 def population(diameter_distribution, ri_distribution):
     """Fixture for creating a default population."""
-    return Population(
+    return Sphere(
         particle_count=110 * units.particle,
         diameter=diameter_distribution,
         refractive_index=ri_distribution,

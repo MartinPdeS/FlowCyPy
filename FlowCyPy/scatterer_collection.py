@@ -9,7 +9,7 @@ from enum import Enum
 
 from FlowCyPy import units
 from FlowCyPy.units import Quantity, RIU, particle, liter
-from FlowCyPy.population import Population
+from FlowCyPy.population import BasePopulation
 
 
 class CouplingModel(Enum):
@@ -25,11 +25,11 @@ class ScattererCollection():
     indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).
 
     """
-    def __init__(self, medium_refractive_index: Quantity = 1.0 * RIU, populations: List[Population] = None, coupling_model: Optional[CouplingModel] = CouplingModel.MIE):
+    def __init__(self, medium_refractive_index: Quantity = 1.0 * RIU, populations: List[BasePopulation] = None, coupling_model: Optional[CouplingModel] = CouplingModel.MIE):
         """
         Parameters
         ----------
-        populations : List[Population]
+        populations : List[BasePopulation]
             A list of Population instances that define different scatterer populations.
         coupling_model : Optional[CouplingModel], optional
             The type of coupling factor to use (CouplingModel.MIE, CouplingModel.RAYLEIGH, CouplingModel.UNIFORM). Default is CouplingModel.MIE.
@@ -85,7 +85,7 @@ class ScattererCollection():
 
         return scatterer_dataframe
 
-    def add_population(self, *population: Population) -> 'ScattererCollection':
+    def add_population(self, *population: BasePopulation) -> 'ScattererCollection':
         """
         Adds a population to the ScattererCollection instance with the specified attributes.
 

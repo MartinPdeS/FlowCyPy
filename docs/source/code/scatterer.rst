@@ -9,7 +9,12 @@ Classes representing particles and populations within the cytometer.
    :members:
    :show-inheritance:
 
-.. autoclass:: FlowCyPy.population.Population
+.. autoclass:: FlowCyPy.population.Sphere
+   :members:
+   :show-inheritance:
+   :exclude-members: name, refractive_index, size
+
+.. autoclass:: FlowCyPy.population.CoreShell
    :members:
    :show-inheritance:
    :exclude-members: name, refractive_index, size

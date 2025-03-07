@@ -18,7 +18,7 @@ Workflow:
 # Step 1: Import necessary modules from FlowCyPy
 from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
 from FlowCyPy import distribution
-from FlowCyPy.population import Population
+from FlowCyPy.population import Sphere
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import units
 
@@ -57,7 +57,7 @@ ev_ri = distribution.Normal(
     std_dev=0.01 * units.RIU  # Standard deviation: 0.01
 )
 
-ev = Population(
+ev = Sphere(
     particle_count=1.8e+8 * units.particle / units.milliliter,
     diameter=ev_diameter,               # Particle size distribution
     refractive_index=ev_ri,     # Refractive index distribution

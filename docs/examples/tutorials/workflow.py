@@ -84,13 +84,13 @@ flow_cell = FlowCell(
 #     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
 
 from FlowCyPy import ScattererCollection
-from FlowCyPy.population import Exosome, Population, distribution
+from FlowCyPy.population import Exosome, Sphere, distribution
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
 exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
 
-custom_population = Population(
+custom_population = Sphere(
     name='Pop 0',
     particle_count=5e9 * units.particle / units.milliliter,
     diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
@@ -108,7 +108,7 @@ scatterer_collection.plot(sampling=600)  # Visualize the particle population
 # %%
 # Step 5: Define Detectors
 # ------------------------
-# Detectors measure light intensity. Parameters like responsitivity define the conversion of optical
+# Detectors measure light intensity. Parameters like responsivity define the conversion of optical
 # power to electronic signals, and saturation level represents the maximum signal they can handle.
 
 from FlowCyPy.detector import Detector
@@ -124,7 +124,7 @@ detector_0 = Detector(
     name='forward',
     phi_angle=0 * units.degree,                  # Forward scatter angle
     numerical_aperture=0.3 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
+    responsivity=1 * units.ampere / units.watt,
     resistance=50 * units.ohm,
     temperature=300 * units.kelvin
 )
@@ -133,7 +133,7 @@ detector_1 = Detector(
     name='side',
     phi_angle=90 * units.degree,                 # Side scatter angle
     numerical_aperture=0.3 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
+    responsivity=1 * units.ampere / units.watt,
     resistance=50 * units.ohm,
     temperature=300 * units.kelvin,
 )
@@ -143,7 +143,7 @@ detector_2 = Detector(
     name='det_2',
     phi_angle=30 * units.degree,                 # Side scatter angle
     numerical_aperture=0.3 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
+    responsivity=1 * units.ampere / units.watt,
     resistance=50 * units.ohm,
     temperature=300 * units.kelvin,
 )

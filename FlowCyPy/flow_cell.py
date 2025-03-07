@@ -8,7 +8,7 @@ from pydantic import field_validator
 from pint_pandas import PintArray
 
 from FlowCyPy.source import BaseBeam
-from FlowCyPy.population import Population
+from FlowCyPy.population import BasePopulation
 from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy.units import meter, particle, Quantity
 from FlowCyPy import units
@@ -87,7 +87,7 @@ class FlowCell:
             for p in scatterer_collection.populations
         ]
 
-    def _generate_event_dataframe(self, populations: List[Population], run_time: Quantity) -> pd.DataFrame:
+    def _generate_event_dataframe(self, populations: List[BasePopulation], run_time: Quantity) -> pd.DataFrame:
         """
         Generates a DataFrame of event times for each population based on the specified scheme.
         """
@@ -116,7 +116,7 @@ class FlowCell:
         scatterer_dataframe.attrs['run_time'] = run_time
         return scatterer_dataframe
 
-    def _generate_poisson_events(self, run_time: Quantity, population: Population) -> pd.DataFrame:
+    def _generate_poisson_events(self, run_time: Quantity, population: BasePopulation) -> pd.DataFrame:
         """
         Generates particle arrival times using a Poisson process.
         """

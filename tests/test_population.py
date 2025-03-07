@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from FlowCyPy import distribution
-from FlowCyPy.population import Population
+from FlowCyPy.population import Sphere
 from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import units
@@ -34,14 +34,14 @@ def populations():
         mean=1.4 * units.RIU,
         std_dev=0.01 * units.RIU
     )
-    population_0 = Population(
+    population_0 = Sphere(
         particle_count=1.8e11 * units.particle / units.milliliter,
         diameter=diameter_dist,
         refractive_index=refractive_index_dist,
         name="Test Population 0"
     )
 
-    population_1 = Population(
+    population_1 = Sphere(
         particle_count=1.8e11 * units.particle / units.milliliter,
         diameter=diameter_dist,
         refractive_index=refractive_index_dist,
@@ -91,7 +91,7 @@ def test_invalid_flow_cell():
             flow_area=(10 * units.micrometer) ** 2,
             run_time=1 * units.second,
         )
-        population = Population(
+        population = Sphere(
             size=distribution.Normal(mean=500 * units.nanometer, std_dev=50 * units.nanometer),
             refractive_index=distribution.Normal(mean=1.4, std_dev=0.01),
             name="Invalid Test"

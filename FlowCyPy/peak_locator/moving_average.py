@@ -1,7 +1,7 @@
 import numpy as np
 
 class SlidingWindowPeakLocator:
-    """
+    r"""
     A peak detection utility that identifies peaks in each row of a 2D array using a sliding window approach.
 
     Each row is segmented into fixed-size windows, and the local maximum is found in each window.

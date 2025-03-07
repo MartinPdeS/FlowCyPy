@@ -7,7 +7,8 @@ import numpy as np
 from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
 from FlowCyPy import units
 from FlowCyPy import NoiseSetting
-from FlowCyPy import Population, distribution
+from FlowCyPy.population import Sphere
+from FlowCyPy import distribution
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import peak_locator
 
@@ -35,7 +36,7 @@ scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.
 
 for size in [150, 100, 50, 30]:
 
-    population = Population(
+    population = Sphere(
         name=f'{size} nanometer',
         particle_count=20 * units.particle,
         diameter=distribution.Delta(position=size * units.nanometer),

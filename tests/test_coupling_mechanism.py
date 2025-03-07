@@ -3,7 +3,7 @@ import numpy as np
 from FlowCyPy import ScattererCollection, Detector, FlowCell
 from FlowCyPy import distribution
 from FlowCyPy.coupling_mechanism import rayleigh
-from FlowCyPy.population import Population
+from FlowCyPy.population import Sphere
 from FlowCyPy.source import GaussianBeam
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import units
@@ -29,7 +29,7 @@ def normal_ri_distribution():
 @pytest.fixture
 def normal_population(normal_size_distribution, normal_ri_distribution):
     """Fixture for creating a Population."""
-    return Population(
+    return Sphere(
         particle_count=1e+10 * units.particle / units.milliliter,
         diameter=normal_size_distribution,
         refractive_index=normal_ri_distribution,

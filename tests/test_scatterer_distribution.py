@@ -5,7 +5,7 @@ import numpy as np
 from FlowCyPy import ScattererCollection
 from FlowCyPy import distribution as dist
 from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy.population import Population
+from FlowCyPy.population import Sphere
 from FlowCyPy import units
 
 
@@ -41,7 +41,7 @@ def test_generate_distribution_size(distribution, default_flow_cell):
         std_dev=0.01 * units.RIU
     )
 
-    population_0 = Population(
+    population_0 = Sphere(
         particle_count=CONCENTRATION,
         diameter=distribution,
         refractive_index=ri_distribution,
@@ -104,7 +104,7 @@ def test_generate_longitudinal_positions(default_flow_cell, distribution):
         std_dev=0.01 * units.RIU
     )
 
-    population_0 = Population(
+    population_0 = Sphere(
         particle_count=CONCENTRATION,
         diameter=distribution,
         refractive_index=ri_distribution,
@@ -142,7 +142,7 @@ def test_plot_positions(mock_show, distribution):
         std_dev=0.01 * units.RIU
     )
 
-    population_0 = Population(
+    population_0 = Sphere(
         particle_count=CONCENTRATION,
         diameter=distribution,
         refractive_index=ri_distribution,
@@ -165,14 +165,14 @@ def test_extra(distribution):
         std_dev=0.01 * units.RIU
     )
 
-    population_0 = Population(
+    population_0 = Sphere(
         particle_count=CONCENTRATION,
         diameter=distribution,
         refractive_index=ri_distribution,
         name="Default population"
     )
 
-    population_1 = Population(
+    population_1 = Sphere(
         particle_count=CONCENTRATION,
         diameter=distribution,
         refractive_index=ri_distribution,

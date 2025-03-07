@@ -109,19 +109,6 @@ class GaussianBeam(BaseBeam):
         The polarization of the laser source in degrees (default is 0 degrees).
     RIN : Optional[float]
         The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a stable laser.
-
-    Attributes
-    ----------
-    waist : Quantity
-        The beam waist at the focus.
-    numerical_aperture : Quantity
-        The numerical aperture (NA) of the lens.
-    frequency : Quantity
-        The frequency of the laser, calculated as `frequency = c / wavelength`.
-    photon_energy : Quantity
-        The energy of a single photon, calculated as `photon_energy = h * frequency`.
-    amplitude : Quantity
-        The electric field amplitude at the focus, derived from optical power, waist, and fundamental constants.
     """
     optical_power: Quantity
     wavelength: Quantity
@@ -173,10 +160,16 @@ class GaussianBeam(BaseBeam):
         return E0.to(volt / meter)
 
     def amplitude_at(self, x: Quantity, y: Quantity = 0 * meter) -> Quantity:
-        """
+        r"""
         Returns the electric field amplitude at a position (x,y) in the focal plane.
+
         For a Gaussian beam, the spatial distribution is:
             E(x,y) = E(0) * exp[-(x^2+y^2)/w_0^2]
+
+        Returns
+        -------
+        Quantity
+            The electric field amplitude at the focus in volts per meter.
         """
         r2 = x**2 + y**2
         E0 = self.calculate_field_amplitude_at_focus()
@@ -210,15 +203,6 @@ class AstigmaticGaussianBeam(BaseBeam):
         The Relative Intensity Noise (RIN) of the laser, specified as a fractional value.
         Default is 0.0, representing a perfectly stable laser.
 
-    Attributes
-    ----------
-    waist_x : Quantity
-        The beam waist at the focus along the x-axis.
-    waist_y : Quantity
-        The beam waist at the focus along the y-axis.
-    amplitude : Quantity
-        The electric field amplitude at the focus, derived from optical power, waist_x, waist_y,
-        and fundamental constants.
     """
     optical_power: Quantity
     wavelength: Quantity
@@ -286,10 +270,16 @@ class AstigmaticGaussianBeam(BaseBeam):
         return E0.to(volt / meter)
 
     def amplitude_at(self, x: Quantity, y: Quantity) -> Quantity:
-        """
+        r"""
         Returns the electric field amplitude at position (x,y) in the focal plane.
+
         For an astigmatic Gaussian beam, the distribution is:
             E(x,y) = E(0,0) * exp[-(x^2/w_{0x}^2) - (y^2/w_{0y}^2)]
+
+        Returns
+        -------
+        Quantity
+            The electric field amplitude at the focus in volts per meter.
         """
         E0 = self.calculate_field_amplitude_at_focus()
         return E0 * np.exp(-x**2 / self.waist_x**2 - y**2 / self.waist_y**2)

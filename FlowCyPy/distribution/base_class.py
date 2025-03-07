@@ -2,7 +2,7 @@ import numpy as np
 from typing import Optional, Tuple, Callable
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
-from FlowCyPy.units import particle, Quantity
+from FlowCyPy.units import Quantity
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -66,13 +66,6 @@ class Base:
 
     def pre_generate(function: Callable) -> Callable:
         def wrapper(self, n_samples: Quantity):
-
-            # Validate inputs
-            # if not isinstance(n_samples, Quantity) or not n_samples.check("particle"):
-            #     raise ValueError("n_sample must be a dimensionless Quantity.")
-
-            # if n_samples.magnitude < 2:
-            #     raise ValueError("n_samples must be at least 2.")
 
             return function(self=self, n_samples=n_samples) * self._units
 

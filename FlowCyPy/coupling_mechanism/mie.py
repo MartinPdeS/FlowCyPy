@@ -1,7 +1,7 @@
 import numpy as np
 from FlowCyPy import Detector
 from FlowCyPy.source import BaseBeam
-from PyMieSim.units import Quantity, degree, watt, AU, hertz
+from PyMieSim.units import Quantity, degree, watt, hertz
 from FlowCyPy.noises import NoiseSetting
 import pandas as pd
 

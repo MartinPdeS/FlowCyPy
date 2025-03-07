@@ -1,7 +1,7 @@
 import numpy as np
 
 class DerivativePeakLocator:
-    """
+    r"""
     A peak detection utility based on the zero-crossing of the first derivative.
 
     This class detects peaks by computing the first and second derivatives of each row of a 2D array.
@@ -35,6 +35,7 @@ class DerivativePeakLocator:
     >>> print(result["peak_index"])
     [[2. 5. nan]
      [1. 3. 5.]]
+
     >>> # With width and area computations enabled:
     >>> peak_locator_metrics = DerivativePeakLocator(max_number_of_peaks=3, compute_width=True, compute_area=True, threshold=0.5)
     >>> result = peak_locator_metrics(data)

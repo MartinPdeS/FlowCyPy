@@ -1,7 +1,7 @@
 import numpy as np
 
 class BasicPeakLocator:
-    """
+    r"""
     A peak detection utility that identifies the maximum value in each row of a 2D array.
 
     Optionally, the peak detection can also compute the width and area of the peak.
