@@ -118,14 +118,12 @@ class FlowCytometer:
             return
 
         for detector in self.detectors:
-            self.coupling_power = detection_mechanism(
+            detection_mechanism(
                 source=self.source,
                 detector=detector,
                 scatterer_dataframe=scatterer_dataframe,
                 medium_refractive_index=self.scatterer_collection.medium_refractive_index
             )
-
-            scatterer_dataframe[detector.name] = PintArray(self.coupling_power, dtype=self.coupling_power.units)
 
     def _generate_pulse_parameters(self, scatterer_dataframe: pd.DataFrame) -> None:
         r"""

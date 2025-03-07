@@ -206,18 +206,17 @@ class ScattererCollection():
         After filling, the DataFrame will be populated with diameter and refractive index data.
         """
         for population in self.populations:
-            # Check if population.name is in the dataframe's index
-            if population.name not in scatterer_dataframe.index:
-                continue  # Skip this iteration if population.name is not present
+            # Check if population.name is in the DataFrame's index at level 0
+            if population.name not in scatterer_dataframe.index.get_level_values(0):
+                continue
 
-            # Safely access the sub-dataframe and proceed
-            sub_dataframe = scatterer_dataframe.xs(population.name)
+            # Access the sub-dataframe at level 0
+            sub_dataframe = scatterer_dataframe.xs(population.name, level=0)
             sampling = len(sub_dataframe)
 
-            diameter, ri = population.generate_sampling(sampling)
-
-            scatterer_dataframe.loc[population.name, 'Diameter'] = PintArray(diameter, dtype=diameter.units)
-            scatterer_dataframe.loc[population.name, 'RefractiveIndex'] = PintArray(ri, dtype=ri.units)
+            for key, value in population.generate_sampling(sampling).items():
+                scatterer_dataframe.loc[(population.name,), key] = PintArray(value, dtype=value.units)
+                scatterer_dataframe.loc[(population.name,), 'type'] = str(population.__class__.__name__)
 
     def plot(self, sampling: int = 1000, show: bool = True, use_ratio: bool = False):
         """
@@ -246,8 +245,6 @@ class ScattererCollection():
 
         # Generate the DataFrame with sampling.
         df = self.get_population_dataframe(total_sampling, use_ratio=use_ratio)
-
-        print(df)
 
         # Reset the MultiIndex to obtain a column for population names.
         df_reset = df.reset_index()

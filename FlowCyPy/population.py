@@ -163,6 +163,11 @@ class Sphere(BasePopulation):
         This method uses the underlying distributions (or fixed quantities) for diameter and refractive index
         to generate a sample set for simulation or analysis.
 
+
+        This method creates a dictionnary with the following entries:
+          - 'Diameter': The generated diameters.
+          - 'RefractiveIndex': The generated refractive index values.
+
         Parameters
         ----------
         sampling : int
@@ -173,33 +178,10 @@ class Sphere(BasePopulation):
         tuple
             A tuple containing the generated diameter sample and refractive index sample.
         """
-        diameter = self.diameter.generate(sampling)
-        ri = self.refractive_index.generate(sampling)
-        return diameter, ri
-
-    def _get_sampling(self, sampling: int) -> pd.DataFrame:
-        """
-        Generate a DataFrame with particle sampling data.
-
-        This internal method generates a pandas DataFrame containing samples for particle diameter ("Size")
-        and refractive index ("RefractiveIndex") based on a specified number of samples.
-
-        Parameters
-        ----------
-        sampling : int
-            The number of samples to generate.
-
-        Returns
-        -------
-        pd.DataFrame
-            A DataFrame with two columns: 'Size' and 'RefractiveIndex', containing the sampled values.
-        """
-        diameter = self.diameter.generate(sampling)
-        ri = self.refractive_index.generate(sampling)
-        dataframe = pd.DataFrame(columns=['Size', 'RefractiveIndex'])
-        dataframe['Size'] = PintArray(diameter, dtype=diameter.units)
-        dataframe['RefractiveIndex'] = PintArray(ri, dtype=ri.units)
-        return dataframe
+        return {
+            'Diameter': self.diameter.generate(sampling),
+            'RefractiveIndex': self.refractive_index.generate(sampling)
+        }
 
 
 @dataclass(config=config_dict)
@@ -298,11 +280,17 @@ class CoreShell(BasePopulation):
         return core + 2 * shell
 
     def generate_sampling(self, sampling: Quantity) -> tuple:
-        """
+        r"""
         Generate a sampling of core-shell particle properties.
 
         This method generates a sample set for the core diameter, shell thickness, core refractive index,
         and shell refractive index from their underlying distributions (or fixed values).
+
+        This method creates a dictionnary with the following entries:
+          - 'CoreDiameter': The generated core diameters.
+          - 'ShellThickness': The generated shell thickness values.
+          - 'CoreRefractiveIndex': The generated core refractive indices.
+          - 'ShellRefractiveIndex': The generated shell refractive indices.
 
         Parameters
         ----------
@@ -315,47 +303,12 @@ class CoreShell(BasePopulation):
             A tuple containing the generated samples in the order:
             (core_diameter, shell_thickness, refractive_index_core, refractive_index_shell).
         """
-        core = self.core_diameter.generate(sampling)
-        shell = self.shell_thickness.generate(sampling)
-        ri_core = self.core_refractive_index.generate(sampling)
-        ri_shell = self.shell_refractive_index.generate(sampling)
-        return core, shell, ri_core, ri_shell
-
-    def _get_sampling(self, sampling: int) -> pd.DataFrame:
-        """
-        Generate a DataFrame containing sampled particle properties for core–shell particles.
-
-        This internal method creates a pandas DataFrame with the following columns:
-          - 'CoreSize': The generated core diameters.
-          - 'ShellThickness': The generated shell thickness values.
-          - 'OverallDiameter': The computed overall diameters (core + 2 * shell_thickness).
-          - 'CoreRefractiveIndex': The generated core refractive indices.
-          - 'ShellRefractiveIndex': The generated shell refractive indices.
-
-        Parameters
-        ----------
-        sampling : int
-            The number of samples to generate.
-
-        Returns
-        -------
-        pd.DataFrame
-            A DataFrame containing the sampling data for the core–shell particle properties.
-        """
-        core = self.core_diameter.generate(sampling)
-        shell = self.shell_thickness.generate(sampling)
-        ri_core = self.refractive_index_core.generate(sampling)
-        ri_shell = self.refractive_index_shell.generate(sampling)
-
-        dataframe = pd.DataFrame(columns=[
-            'CoreSize', 'ShellThickness', 'CoreRefractiveIndex', 'ShellRefractiveIndex'
-        ])
-        dataframe['CoreSize'] = PintArray(core, dtype=core.units)
-        dataframe['ShellThickness'] = PintArray(shell, dtype=shell.units)
-        dataframe['CoreRefractiveIndex'] = PintArray(ri_core, dtype=ri_core.units)
-        dataframe['ShellRefractiveIndex'] = PintArray(ri_shell, dtype=ri_shell.units)
-
-        return dataframe
+        return {
+            'CoreDiameter':  self.core_diameter.generate(sampling),
+            'ShellThickness':  self.shell_thickness.generate(sampling),
+            'CoreRefractiveIndex': self.core_refractive_index.generate(sampling),
+            'ShellRefractiveIndex': self.shell_refractive_index.generate(sampling)
+        }
 
 
 class CallablePopulationMeta(type):

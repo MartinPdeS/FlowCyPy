@@ -25,8 +25,7 @@ from FlowCyPy import units
 from FlowCyPy import GaussianBeam
 from FlowCyPy import FlowCell
 from FlowCyPy import ScattererCollection
-from FlowCyPy.population import CoreShell, Sphere
-from FlowCyPy import distribution
+from FlowCyPy.population import Exosome, HDL
 from FlowCyPy.detector import PMT
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import FlowCytometer
@@ -34,7 +33,7 @@ from FlowCyPy import FlowCytometer
 source = GaussianBeam(
     numerical_aperture=0.3 * units.AU,           # Numerical aperture
     wavelength=200 * units.nanometer,           # Wavelength
-    optical_power=200 * units.milliwatt          # Optical power
+    optical_power=20 * units.milliwatt          # Optical power
 )
 
 
@@ -46,38 +45,24 @@ flow_cell = FlowCell(
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
-population_0 = CoreShell(
-    name=f'coreshell',
-    particle_count=20 * units.particle,
-    core_diameter=distribution.Delta(position=100 * units.nanometer),
-    core_refractive_index=distribution.Normal(mean=1.39 * units.RIU, std_dev=0.02 * units.RIU),
-    shell_thickness=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
-    shell_refractive_index=distribution.Normal(mean=1.43 * units.RIU, std_dev=0.02 * units.RIU),
-)
-
-population_1 = Sphere(
-    name=f'sphere',
-    particle_count=20 * units.particle,
-    diameter=distribution.Delta(position=100 * units.nanometer),
-    refractive_index=distribution.Normal(mean=1.39 * units.RIU, std_dev=0.02 * units.RIU),
-)
-
 # Add an Exosome and HDL population
 scatterer_collection.add_population(
-    population_0, population_1
-    # Exosome(particle_count=5e9 * units.particle / units.milliliter),
-    # HDL(particle_count=5e9 * units.particle / units.milliliter)
+    Exosome(particle_count=5e9 * units.particle / units.milliliter),
+    HDL(particle_count=5e9 * units.particle / units.milliliter)
 )
 
 scatterer_collection.dilute(factor=1)
 
+# Initialize the scatterer with the flow cell
+scatterer_collection.plot(sampling=600)  # Visualize the particle population
+
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
-    sampling_rate=10 * units.megahertz,
+    sampling_rate=60 * units.megahertz,
 )
 
-detector_0 = PMT(name='forward', cache_numerical_aperture=0.0 * units.AU, phi_angle=0 * units.degree, numerical_aperture=0.3 * units.AU)
+detector_0 = PMT(name='forward', phi_angle=0 * units.degree, numerical_aperture=0.3 * units.AU)
 
 detector_1 = PMT(name='side', phi_angle=90 * units.degree, numerical_aperture=0.3 * units.AU)
 
@@ -91,16 +76,10 @@ cytometer = FlowCytometer(
 )
 
 # Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=1 * units.millisecond)
-
-cytometer.scatterer_dataframe.plot(
-    x='ShellThickness',
-    y='CoreRefractiveIndex'
-)
+cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
 
 cytometer.scatterer_dataframe.plot(
     x='side',
     y='forward',
-    # log_scale=True
-#     z='RefractiveIndex'
+    z='RefractiveIndex'
 )
