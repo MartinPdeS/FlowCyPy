@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_2404691b0fd86af0_helper_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-03-07 13:17 +0000
+            created at 2025-03-07 14:39 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -92,7 +92,7 @@
     <p class="run"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t"><span class="key">from</span> <span class="nam">pint_pandas</span> <span class="key">import</span> <span class="nam">PintArray</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">source</span> <span class="key">import</span> <span class="nam">BaseBeam</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">population</span> <span class="key">import</span> <span class="nam">Population</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">population</span> <span class="key">import</span> <span class="nam">BasePopulation</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">scatterer_collection</span> <span class="key">import</span> <span class="nam">ScattererCollection</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">units</span> <span class="key">import</span> <span class="nam">meter</span><span class="op">,</span> <span class="nam">particle</span><span class="op">,</span> <span class="nam">Quantity</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span> <span class="key">import</span> <span class="nam">units</span>&nbsp;</span><span class="r"></span></p>
@@ -171,7 +171,7 @@
     <p class="pln"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t">            <span class="key">for</span> <span class="nam">p</span> <span class="key">in</span> <span class="nam">scatterer_collection</span><span class="op">.</span><span class="nam">populations</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t">        <span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t">    <span class="key">def</span> <span class="nam">_generate_event_dataframe</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">populations</span><span class="op">:</span> <span class="nam">List</span><span class="op">[</span><span class="nam">Population</span><span class="op">]</span><span class="op">,</span> <span class="nam">run_time</span><span class="op">:</span> <span class="nam">Quantity</span><span class="op">)</span> <span class="op">-></span> <span class="nam">pd</span><span class="op">.</span><span class="nam">DataFrame</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t">    <span class="key">def</span> <span class="nam">_generate_event_dataframe</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">populations</span><span class="op">:</span> <span class="nam">List</span><span class="op">[</span><span class="nam">BasePopulation</span><span class="op">]</span><span class="op">,</span> <span class="nam">run_time</span><span class="op">:</span> <span class="nam">Quantity</span><span class="op">)</span> <span class="op">-></span> <span class="nam">pd</span><span class="op">.</span><span class="nam">DataFrame</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t">        <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t92" href="#t92">92</a></span><span class="t"><span class="str">        Generates a DataFrame of event times for each population based on the specified scheme.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
@@ -200,7 +200,7 @@
     <p class="run"><span class="n"><a id="t116" href="#t116">116</a></span><span class="t">        <span class="nam">scatterer_dataframe</span><span class="op">.</span><span class="nam">attrs</span><span class="op">[</span><span class="str">'run_time'</span><span class="op">]</span> <span class="op">=</span> <span class="nam">run_time</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t117" href="#t117">117</a></span><span class="t">        <span class="key">return</span> <span class="nam">scatterer_dataframe</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t118" href="#t118">118</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t119" href="#t119">119</a></span><span class="t">    <span class="key">def</span> <span class="nam">_generate_poisson_events</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">run_time</span><span class="op">:</span> <span class="nam">Quantity</span><span class="op">,</span> <span class="nam">population</span><span class="op">:</span> <span class="nam">Population</span><span class="op">)</span> <span class="op">-></span> <span class="nam">pd</span><span class="op">.</span><span class="nam">DataFrame</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t119" href="#t119">119</a></span><span class="t">    <span class="key">def</span> <span class="nam">_generate_poisson_events</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">run_time</span><span class="op">:</span> <span class="nam">Quantity</span><span class="op">,</span> <span class="nam">population</span><span class="op">:</span> <span class="nam">BasePopulation</span><span class="op">)</span> <span class="op">-></span> <span class="nam">pd</span><span class="op">.</span><span class="nam">DataFrame</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t120" href="#t120">120</a></span><span class="t">        <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t"><span class="str">        Generates particle arrival times using a Poisson process.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
@@ -235,7 +235,7 @@
             <a class="nav" href="z_2404691b0fd86af0_helper_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-03-07 13:17 +0000
+            created at 2025-03-07 14:39 +0000
         </p>
     </div>
 </footer>
