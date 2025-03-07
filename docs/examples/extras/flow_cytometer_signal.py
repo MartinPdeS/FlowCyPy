@@ -64,7 +64,7 @@ scatterer_collection.add_population(population_1, population_0)
 # Step 5: Set up the detectors
 # ----------------------------
 # Two detectors are used: Forward Scatter (FSC) and Side Scatter (SSC). Each detector is configured
-# with its own numerical aperture, responsitivity, noise level, and acquisition frequency.
+# with its own numerical aperture, responsivity, noise level, and acquisition frequency.
 signal_digitizer = SignalDigitizer(
     bit_depth=1024,
     saturation_levels='auto',

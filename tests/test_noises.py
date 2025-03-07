@@ -19,7 +19,7 @@ def test_shot_noise():
     Test that shot noise added to the signal matches the theoretical standard deviation.
 
     Shot noise is computed as the square root of the signal power in the context of the
-    detector's responsitivity and resistance.
+    detector's responsivity and resistance.
     """
     # Signal and Detector Properties
     optical_power = 0.001 * units.milliwatt  # Power in watts
@@ -34,7 +34,7 @@ def test_shot_noise():
 
     # Initialize Detector
     detector = Detector(
-        responsitivity=1 * units.ampere / units.watt,  # Responsitivity (current per power)
+        responsivity=1 * units.ampere / units.watt,  # Responsitivity (current per power)
         resistance=50 * units.ohm,              # Load resistance
         numerical_aperture=0.2 * units.AU,
         temperature=300 * units.kelvin,
@@ -53,7 +53,7 @@ def test_shot_noise():
     )  # Capture returned noise
 
     # Step 1: Compute Equivalent Shot Noise in Voltage
-    photo_current = optical_power * detector.responsitivity
+    photo_current = optical_power * detector.responsivity
 
     expected_std = np.sqrt(2 * PhysicalConstant.e * detector.signal_digitizer.bandwidth * photo_current) * detector.resistance # Shot noise current std
 
@@ -86,7 +86,7 @@ def test_thermal_noise():
 
     # Initialize Detector
     detector = Detector(
-        responsitivity=1 * units.ampere / units.watt,  # Responsitivity (not used here but required)
+        responsivity=1 * units.ampere / units.watt,  # Responsitivity (not used here but required)
         resistance=resistance,            # Load resistance
         numerical_aperture=0.2 * units.AU,
         temperature=temperature,
@@ -132,7 +132,7 @@ def test_dark_current_noise():
 
     # Initialize Detector
     detector = Detector(
-        responsitivity=1 * units.ampere / units.watt,  # Responsitivity (not used here but required)
+        responsivity=1 * units.ampere / units.watt,  # Responsitivity (not used here but required)
         resistance=resistance,            # Load resistance
         numerical_aperture=0.2 * units.AU,
         temperature=0 * units.kelvin,

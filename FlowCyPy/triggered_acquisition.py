@@ -1,9 +1,6 @@
 import numpy as np
 import pandas as pd
 from FlowCyPy import units
-from FlowCyPy.filters import bessel_lowpass_filter, dc_highpass_filter
-from FlowCyPy import dataframe_subclass
-from FlowCyPy.helper import validate_units
 from FlowCyPy import dataframe_subclass
 import pint_pandas
 
@@ -141,84 +138,6 @@ class TriggeredAcquisitions:
         )
 
         return dataframe_subclass.PeakDataFrame(final_df)
-
-
-
-    # def detect_peaks(self, peak_detection_func) -> pd.DataFrame:
-    #     """
-    #     Detects peaks for each segment using a custom peak detection function and stores results
-    #     in a MultiIndex DataFrame with the original units restored.
-
-    #     Parameters
-    #     ----------
-    #     peak_detection_func : function
-    #         A function that takes in a 2D NumPy array of shape (num_arrays, length_of_array)
-    #         and returns a 2D NumPy array (num_arrays, pad_width) containing detected peak indices.
-
-    #     Returns
-    #     -------
-    #     PeakDataFrame
-    #         MultiIndex DataFrame with index (Detector, SegmentID, PeakNumber)
-    #         and columns ['Time', 'Height'], including their original units.
-    #     """
-    #     _digital_signal = self.digital
-
-    #     dataframes = []
-
-    #     for _, digital_signal in _digital_signal.groupby('Detector'):
-    #         detection_matrix = digital_signal.pint.dequantify().Signal.values.reshape([-1, self.signal_length])
-    #         time_matrix = digital_signal.pint.dequantify().Time.values.reshape([-1, self.signal_length])  # Retain pint units
-
-    #         peak_dict = peak_detection_func(detection_matrix)
-
-    #         # Define the number of segments and peaks
-    #         num_segments, num_peaks = peak_dict['peak_index'].shape
-
-    #         # Create MultiIndex tuples
-    #         segment_indices = np.repeat(np.arange(num_segments), num_peaks)
-    #         peak_numbers = np.tile(np.arange(1, num_peaks + 1), num_segments)
-
-    #         multi_index = pd.MultiIndex.from_tuples(zip(segment_indices, peak_numbers), names=["Segment", "Peak_Number"])
-
-    #         # Flatten the peak indices array for values
-    #         flattened_peak_indices = peak_dict['peak_index'].ravel()
-
-    #         # Create the MultiIndex DataFrame
-    #         df_multi_index = pd.DataFrame({"Peak_Index": flattened_peak_indices}, index=multi_index)
-
-    #         # Remove rows where Peak_Index is -1 (since -1 represents missing peaks)
-    #         df_multi_index = df_multi_index[df_multi_index["Peak_Index"] != -1]
-
-    #         # Extract valid peak indices from the MultiIndex DataFrame
-    #         peak_indices_valid = df_multi_index["Peak_Index"].values.astype(int)
-
-    #         # Retrieve the corresponding peak heights from detection_matrix
-    #         peak_heights_valid = []
-    #         peak_times_valid = []
-    #         for (segment_id, peak_number), indices in zip(df_multi_index.index, df_multi_index.Peak_Index):
-    #             heights = np.take(detection_matrix[segment_id], indices)
-    #             times = np.take(time_matrix[segment_id], indices)
-
-    #             peak_heights_valid.append(heights)
-    #             peak_times_valid.append(times)
-
-    #         # Assign extracted values to the DataFrame
-    #         df_multi_index["Height"] = pint_pandas.PintArray(peak_heights_valid, digital_signal.Signal.values.units)
-    #         df_multi_index["Time"] = pint_pandas.PintArray(peak_times_valid, digital_signal.Time.values.units)
-
-    #         dataframes.append(df_multi_index)
-
-    #     output = pd.concat(dataframes, keys=_digital_signal.index.get_level_values('Detector').unique(), names=['Detector'])
-
-    #     # # Keep only the Peak_Number with the highest Height per (Detector, Segment)
-    #     output = (
-    #         output.pint.dequantify()
-    #         .groupby(level=["Detector", "Segment"], group_keys=False).apply(lambda g: g.loc[g["Height"].idxmax()])
-    #         .reset_index(level=["Peak_Number"], drop=True)
-    #         .pint.quantify()
-    #     )
-
-    #     return dataframe_subclass.PeakDataFrame(output)
 
     @property
     def digital(self) -> pd.DataFrame:

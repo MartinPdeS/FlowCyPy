@@ -39,7 +39,7 @@ for dark_current in dark_currents:
     # Initialize the detector
     detector = Detector(
         name=f"{dark_current.magnitude:.1e} A",
-        responsitivity=1 * units.ampere / units.watt,  # Responsitivity (current per power)
+        responsivity=1 * units.ampere / units.watt,  # Responsitivity (current per power)
         resistance=50 * units.ohm,              # Load resistance
         numerical_aperture=0.2 * units.AU,      # Numerical aperture
         phi_angle=0 * units.degree,             # Detector orientation angle

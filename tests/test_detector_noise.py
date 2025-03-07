@@ -23,7 +23,7 @@ def default_detector_shot_noise(default_digitizer):
         name='shot_noise_detector',
         numerical_aperture=1 * units.AU,
         phi_angle=90 * units.degree,
-        responsitivity=1 * units.ampere / units.watt,  # Responsivity in A/W
+        responsivity=1 * units.ampere / units.watt,  # Responsivity in A/W
         resistance=50 * units.ohm,
         temperature=300 * units.kelvin,
     )
@@ -41,7 +41,7 @@ def default_detector_thermal_noise(default_digitizer):
         name='thermal_noise_detector',
         numerical_aperture=1 * units.AU,
         phi_angle=90 * units.degree,
-        responsitivity=1 * units.ampere / units.watt,  # Responsivity in A/W
+        responsivity=1 * units.ampere / units.watt,  # Responsivity in A/W
         resistance=50 * units.ohm,  # Resistance for thermal noise
         temperature=300 * units.kelvin,  # Typical room temperature
     )
@@ -57,7 +57,7 @@ def default_detector_dark_current(default_digitizer):
         name='dark_current_noise_detector',
         numerical_aperture=1 * units.AU,
         phi_angle=90 * units.degree,
-        responsitivity=1 * units.ampere / units.watt,  # Responsivity in A/W
+        responsivity=1 * units.ampere / units.watt,  # Responsivity in A/W
         dark_current=10e-2 * units.ampere,  # Dark current of 10 nA
         temperature=300 * units.kelvin,
     )

@@ -58,7 +58,7 @@ def detector():
         phi_angle=90 * units.degree,
         numerical_aperture=0.1 * units.AU,
         name='first detector',
-        responsitivity=1.0 * units.ampere / units.watt,  # Responsitivity of the detector
+        responsivity=1.0 * units.ampere / units.watt,  # Responsitivity of the detector
     )
 
 
@@ -131,7 +131,7 @@ def test_detector_properties(detector):
     Test the detector's properties and ensure they are correctly initialized.
     """
     assert detector.numerical_aperture == 0.1 * units.AU, f"Expected detector numerical aperture to be 0.1, but got {detector.numerical_aperture}."
-    assert detector.responsitivity == 1.0 * units.ampere / units.watt, f"Expected detector responsitivity to be 1.0, but got {detector.responsitivity}."
+    assert detector.responsivity == 1.0 * units.ampere / units.watt, f"Expected detector responsivity to be 1.0, but got {detector.responsivity}."
 
 
 def test_source_properties(source):

@@ -233,15 +233,13 @@ class FlowCytometer:
         """
         self.run_time = run_time
 
-        scatterer_dataframe = self.flow_cell._generate_event_dataframe(self.scatterer_collection.populations, run_time=run_time)
+        self.scatterer_dataframe = self.flow_cell._generate_event_dataframe(self.scatterer_collection.populations, run_time=run_time)
 
-        self.scatterer_collection.fill_dataframe_with_sampling(scatterer_dataframe)
+        self.scatterer_collection.fill_dataframe_with_sampling(self.scatterer_dataframe)
 
-        self._run_coupling_analysis(scatterer_dataframe)
+        self._run_coupling_analysis(self.scatterer_dataframe)
 
-        self._generate_pulse_parameters(scatterer_dataframe)
-
-        self.scatterer_collection.dataframe = scatterer_dataframe
+        self._generate_pulse_parameters(self.scatterer_dataframe)
 
     @validate_units(run_time=units.second)
     def get_acquisition(self, processing_steps: list[SignalProcessor] = None) -> None:
@@ -273,8 +271,8 @@ class FlowCytometer:
         ValueError
             If the scatterer collection lacks required data columns ('Widths', 'Time').
         """
-        _widths = self.scatterer_collection.dataframe['Widths'].pint.to('second').pint.quantity.magnitude
-        _centers = self.scatterer_collection.dataframe['Time'].pint.to('second').pint.quantity.magnitude
+        _widths = self.scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude
+        _centers = self.scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude
 
         signal_dataframe = self._initialize_signal(run_time=self.run_time)
 
@@ -283,8 +281,8 @@ class FlowCytometer:
             total_power = self.background_power
 
             # Broadcast the time array to the shape of (number of signals, len(detector.time))
-            if not self.scatterer_collection.dataframe.empty:
-                _coupling_power = self.scatterer_collection.dataframe[detector_name].values
+            if not self.scatterer_dataframe.empty:
+                _coupling_power = self.scatterer_dataframe[detector_name].values
 
                 time_grid = np.expand_dims(group['Time'].pint.magnitude, axis=0) * units.second
                 centers = np.expand_dims(_centers, axis=1) * units.second
@@ -300,9 +298,9 @@ class FlowCytometer:
                 signal=group['Signal'],
                 optical_power=total_power,
                 wavelength=self.flow_cell.source.wavelength
-            ).to(group['Signal'].pint.units)
+            ).pint.to(group['Signal'].pint.units)
 
-            signal_dataframe.loc[detector_name, 'Signal'] = signal.magnitude
+            signal_dataframe.loc[detector_name, 'Signal'] = signal
 
         # Apply user-defined processing steps
         self.circuit_process_data(signal_dataframe, processing_steps)
@@ -315,13 +313,13 @@ class FlowCytometer:
         signal_dataframe = dataframe_subclass.AnalogAcquisitionDataFrame(
             signal_dataframe,
             saturation_levels=saturation_levels,
-            scatterer_dataframe=self.scatterer_collection.dataframe
+            scatterer_dataframe=self.scatterer_dataframe
         )
 
         experiment = Acquisition(
             cytometer=self,
             run_time=self.run_time,
-            scatterer_dataframe=self.scatterer_collection.dataframe,
+            scatterer_dataframe=self.scatterer_dataframe,
             detector_dataframe=signal_dataframe
         )
 
@@ -376,6 +374,9 @@ class FlowCytometer:
         """
         # Generate noise components
         for detector_name, group in signal_dataframe.groupby('Detector'):
+            mean = 0 * units.volt
+            std_2 = 0 * units.volt ** 2
+            signal_units = group['Signal'].pint.units
             detector = self.get_detector_by_name(detector_name)
             noises = detector.get_noise_parameters()
 
@@ -383,18 +384,21 @@ class FlowCytometer:
                 if parameters is None:
                     continue
 
-                signal_units = group['Signal'].pint.units
-                # Generate noise values for this group
-                noise = np.random.normal(
-                    parameters['mean'].to(signal_units).magnitude,
-                    parameters['std'].to(signal_units).magnitude,
-                    size=len(group)
-                ) * signal_units
+                mean += parameters['mean']
+                std_2 += parameters['mean'] ** 2
 
-                # Update the 'Signal' column in the original DataFrame using .loc
-                signal_dataframe.loc[group.index, 'Signal'] = group['Signal'] + noise
 
-    def get_detector_by_name(self, name: str):
+            # Generate noise values for this group
+            noise = np.random.normal(
+                mean.to(signal_units).magnitude,
+                np.sqrt(std_2).to(signal_units).magnitude,
+                size=len(group)
+            ) * signal_units
+
+            # Update the 'Signal' column in the original DataFrame using .loc
+            signal_dataframe.loc[group.index, 'Signal'] = group['Signal'] + noise
+
+    def get_detector_by_name(self, name: str) -> Detector:
         """
         Retrieve a detector object by its name.
 
@@ -447,28 +451,4 @@ class FlowCytometer:
                 return coupling_mechanism.empirical.compute_detected_signal
             case _:
                 raise ValueError("Invalid coupling mechanism. Choose 'rayleigh' or 'uniform'.")
-
-    def add_detector(self, **kwargs) -> Detector:
-        """
-        Dynamically adds a new detector to the system configuration.
-
-        Parameters
-        ----------
-        **kwargs : dict
-            Keyword arguments passed to the `Detector` constructor.
-
-        Returns
-        -------
-        Detector
-            The newly added detector instance.
-
-        Effects
-        -------
-        - Appends the created detector to the `detectors` list.
-        """
-        detector = Detector(**kwargs)
-
-        self.detectors.append(detector)
-
-        return detector
 

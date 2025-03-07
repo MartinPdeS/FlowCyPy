@@ -28,7 +28,7 @@ def detector_0():
         name='default',
         numerical_aperture=1 * units.AU,
         phi_angle=90 * units.degree,
-        responsitivity=1 * units.ampere / units.watt,
+        responsivity=1 * units.ampere / units.watt,
     )
 
 @pytest.fixture
@@ -38,7 +38,7 @@ def detector_1():
         name='default_bis',
         numerical_aperture=1 * units.AU,
         phi_angle=90 * units.degree,
-        responsitivity=1 * units.ampere / units.watt,
+        responsivity=1 * units.ampere / units.watt,
     )
 
 @pytest.fixture
