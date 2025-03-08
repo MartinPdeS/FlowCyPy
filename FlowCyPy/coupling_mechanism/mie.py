@@ -124,8 +124,6 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
 
     process_coreshell(source, detector, scatterer_dataframe, coreshell_mask, medium_refractive_index)
 
-    print(scatterer_dataframe)
-
 def process_sphere(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, sphere_mask: pd.Series, medium_refractive_index: Quantity) -> None:
     """
     Processes the 'Sphere' type particles and updates the original DataFrame in-place.
@@ -183,9 +181,10 @@ def process_sphere(source: BaseBeam, detector: Detector, scatterer_dataframe: pd
     experiment = _PyMieSim.Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
 
     # Compute coupling values (an array of length equal to total_size)
-    coupling_value = experiment.get_sequential('coupling').squeeze()
+    coupling_value = experiment.get_sequential('coupling')
 
     # Here we update the original DataFrame in-place using the mask.
+
     scatterer_dataframe.loc[sphere_mask, detector.name] = pint_pandas.PintArray(coupling_value, dtype=units.watt)
 
 
@@ -231,6 +230,6 @@ def process_coreshell(source: BaseBeam, detector: Detector, scatterer_dataframe:
     experiment = _PyMieSim.Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
 
     # Compute coupling values
-    coupling_value = experiment.get_sequential('coupling').squeeze()
+    coupling_value = experiment.get_sequential('coupling')
 
     scatterer_dataframe.loc[coreshell_mask, detector.name] = pint_pandas.PintArray(coupling_value, dtype=units.watt)

@@ -58,7 +58,7 @@ ev_ri = distribution.Normal(
 )
 
 ev = Sphere(
-    particle_count=1.8e+9 * units.particle / units.milliliter,
+    particle_count=10 * units.particle,
     diameter=ev_diameter,           # Particle diameter distribution
     refractive_index=ev_ri,     # Refractive index distribution
     name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
