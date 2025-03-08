@@ -22,6 +22,9 @@ from FlowCyPy.population import Sphere
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import units
 
+import numpy
+numpy.random.seed(3)
+
 # %%
 # Step 2: Define the laser source
 # -------------------------------

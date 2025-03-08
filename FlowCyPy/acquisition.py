@@ -149,7 +149,7 @@ class Acquisition:
 
         # If no triggers are found, warn the user and return None
         if len(times) == 0:
-            print(
+            raise ValueError(
                 f"No signal met the trigger criteria. Try adjusting the threshold. "
                 f"Signal min-max: {self.analog['Signal'].min().to_compact()}, {self.analog['Signal'].max().to_compact()}",
             )
@@ -158,7 +158,7 @@ class Acquisition:
                 f"Signal min-max: {self.analog['Signal'].min().to_compact()}, {self.analog['Signal'].max().to_compact()}",
                 UserWarning
             )
-            dsa
+
             return None
 
         # Convert NumPy arrays to Pandas DataFrame
