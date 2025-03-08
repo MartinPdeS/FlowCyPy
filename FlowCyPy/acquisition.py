@@ -150,7 +150,8 @@ class Acquisition:
         # If no triggers are found, warn the user and return None
         if len(times) == 0:
             raise ValueError(
-                f"{self.analog['Signal'].values}"
+                # f"{self.analog['Signal'].values}"
+                f"{self.scatterer.__repr__()}"
                 f"No signal met the trigger criteria. Try adjusting the threshold. "
                 f"Signal min-max: {self.analog['Signal'].min().to_compact()}, {self.analog['Signal'].max().to_compact()}",
             )
