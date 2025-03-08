@@ -291,10 +291,10 @@ class Detector():
             \sigma_{\text{thermal}} = \sqrt{4 k_B T B R}
 
         where:
-        - :math:`k_B` is the Boltzmann constant (1.38 x 10⁻²³ J/K),
-        - :math:`T` is the temperature in Kelvin,
-        - :math:`B` is the bandwidth,
-        - :math:`R` is the resistance.
+            - :math:`k_B` is the Boltzmann constant (1.38 x 10⁻²³ J/K),
+            - :math:`T` is the temperature in Kelvin,
+            - :math:`B` is the bandwidth,
+            - :math:`R` is the resistance.
 
         Dark current noise is computed as:
 
@@ -348,10 +348,8 @@ class Detector():
 
 
         Physics:
-            - The number of photons arriving at the detector \( N_{\text{ph}} \) is given by:
-            \[
-                N_{\text{ph}} = \frac{P_{\text{opt}}}{E_{\text{photon}}}
-            \]
+            - The number of photons arriving at the detector \( N_{\text{ph}} \) is given by: \[ N_{\text{ph}} = \frac{P_{\text{opt}}}{E_{\text{photon}}} \]
+
             where:
                 - \( P_{\text{opt}} \) is the optical power (W),
                 - \( E_{\text{photon}} = \frac{h \cdot c}{\lambda} \) is the energy of a photon (J),
@@ -359,17 +357,13 @@ class Detector():
                 - \( c \) is the speed of light (\(3 \times 10^8 \, \text{m/s}\)),
                 - \( \lambda \) is the wavelength of the incident light.
 
-            - The photocurrent is computed as:
-            \[
-                I_{\text{photon}} = R_{\text{det}} \cdot N_{\text{photon}}
-            \]
+            - The photocurrent is computed as: \[ I_{\text{photon}} = R_{\text{det}} \cdot N_{\text{photon}} \]
+
             where:
                 - \( R_{\text{det}} \) is the detector responsivity (A/W).
 
-            - The voltage shot noise is then given by:
-            \[
-            V_{\text{shot}} = I_{\text{photon}} \cdot R_{\text{load}}
-            \]
+            - The voltage shot noise is then given by: \[ V_{\text{shot}} = I_{\text{photon}} \cdot R_{\text{load}} \]
+
             where:
                 - \( R_{\text{load}} \) is the load resistance of the detector (Ohms).
 
@@ -445,6 +439,7 @@ class Detector():
             - Photon rate: \( N_{\text{ph}} = \frac{P_{\text{opt}}}{E_{\text{photon}}} \)
             - Photocurrent: \( I_{\text{photon}} = R_{\text{det}} \cdot N_{\text{photon}} \)
             - Shot noise voltage: \( V_{\text{shot}} = I_{\text{photon}} \cdot R_{\text{load}} \)
+
         """
         return signal + self.get_shot_noise(
             signal=signal,
