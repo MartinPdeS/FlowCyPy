@@ -76,7 +76,6 @@ def test_thermal_noise():
     resistance = 50 * units.ohm  # Load resistance in ohms
     temperature = 300 * units.kelvin  # Temperature in Kelvin
     sampling_rate = 1e6 * units.hertz  # Sampling frequency
-    run_time = 1500e-6 * units.second  # Signal duration
 
     signal_digitizer = SignalDigitizer(
         bit_depth=1024,
@@ -96,7 +95,7 @@ def test_thermal_noise():
     detector.signal_digitizer = signal_digitizer
 
     # Generate thermal noise
-    noise = detector.get_noise_signal(sequence_length=128)  # Capture returned noise
+    noise = detector.get_noise_signal(sequence_length=500)  # Capture returned noise
 
     # Step 1: Compute Theoretical Thermal Noise in Voltage
     bandwidth = detector.signal_digitizer.bandwidth  # Bandwidth in Hz
@@ -142,7 +141,7 @@ def test_dark_current_noise():
     detector.signal_digitizer = signal_digitizer
 
     # Generate dark current noise
-    noise = detector.get_noise_signal(sequence_length=128)  # Capture returned noise
+    noise = detector.get_noise_signal(sequence_length=500)  # Capture returned noise
 
     # Step 1: Compute Theoretical Dark Current Noise in Voltage
     bandwidth = detector.signal_digitizer.bandwidth  # Bandwidth in Hz
