@@ -8,7 +8,7 @@
 | FlowCyPy/circuits.py                                  |       34 |        6 |        0 |        0 |     82% |21, 104-106, 117-125 |
 | FlowCyPy/classifier.py                                |       44 |        0 |        8 |        4 |     92% |32->35, 74->78, 121->125, 172->176 |
 | FlowCyPy/coupling\_mechanism/empirical.py             |        9 |        4 |        0 |        0 |     56% |     39-47 |
-| FlowCyPy/coupling\_mechanism/mie.py                   |       46 |        8 |        6 |        3 |     79% |80->94, 150, 199-236 |
+| FlowCyPy/coupling\_mechanism/mie.py                   |       45 |        8 |        6 |        3 |     78% |80->94, 148, 198-235 |
 | FlowCyPy/coupling\_mechanism/rayleigh.py              |       23 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/uniform.py               |        6 |        1 |        0 |        0 |     83% |        40 |
 | FlowCyPy/cytometer.py                                 |      121 |        8 |       40 |        7 |     89% |118, 282->295, 383, 413->exit, 443, 445, 448-451 |
@@ -40,7 +40,7 @@
 | FlowCyPy/triggered\_acquisition.py                    |       62 |        7 |       14 |        2 |     83% |46-48, 102-103, 105-106 |
 | FlowCyPy/units.py                                     |       21 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       56 |       56 |       14 |        0 |      0% |     1-134 |
-|                                             **TOTAL** | **1996** |  **581** |  **462** |   **96** | **66%** |           |
+|                                             **TOTAL** | **1995** |  **581** |  **462** |   **96** | **66%** |           |
 
 
 ## Setup coverage badge
