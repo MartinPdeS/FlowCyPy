@@ -58,7 +58,6 @@ ev_ri = distribution.Normal(
 )
 
 ev = Sphere(
-    # particle_count=1.8e+8 * units.particle / units.milliliter,
     particle_count=20 * units.particle,
     diameter=ev_diameter,               # Particle size distribution
     refractive_index=ev_ri,     # Refractive index distribution
