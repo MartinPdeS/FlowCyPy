@@ -126,16 +126,6 @@ class Sphere(BasePopulation):
         The number density of particles (scatterers) per cubic meter. If a Quantity is provided,
         it should be convertible to a ParticleCount.
 
-    Attributes
-    ----------
-    name : str
-        The name of the population.
-    refractive_index : distribution.Base
-        The validated refractive index, stored as a distribution (via Delta if originally a Quantity).
-    diameter : distribution.Base
-        The validated diameter, stored as a distribution (via Delta if originally a Quantity).
-    particle_count : ParticleCount
-        The scatterer density in particles per cubic meter, stored as a ParticleCount.
     """
 
     name: str
@@ -217,20 +207,6 @@ class CoreShell(BasePopulation):
     particle_count : ParticleCount | Quantity
         The particle density in particles per cubic meter.
 
-    Attributes
-    ----------
-    name : str
-        The name of the population.
-    core_diameter : distribution.Base
-        The validated core diameter stored as a distribution (via Delta if originally a Quantity).
-    shell_thickness : distribution.Base
-        The validated shell thickness stored as a distribution (via Delta if originally a Quantity).
-    refractive_index_core : distribution.Base
-        The validated refractive index for the core.
-    refractive_index_shell : distribution.Base
-        The validated refractive index for the shell.
-    particle_count : ParticleCount
-        The particle density in particles per cubic meter.
     """
 
     name: str
