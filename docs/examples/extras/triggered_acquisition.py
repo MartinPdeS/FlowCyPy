@@ -134,14 +134,3 @@ triggered_acquisition.analog.plot()
 # %%
 # Visualize the scatter triggered digital signals from both detectors
 triggered_acquisition.digital.plot()
-
-
-
-
-"""
-Summary:
---------
-This script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,
-and extracts important features. The process is visualized through signal plots, and key properties are displayed.
-"""
-
