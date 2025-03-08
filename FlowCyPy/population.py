@@ -1,10 +1,8 @@
 
 from typing import Union
 from FlowCyPy import distribution
-import pandas as pd
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-from pint_pandas import PintArray
 from FlowCyPy.units import Quantity, nanometer, RIU, micrometer, particle
 from FlowCyPy.particle_count import ParticleCount
 
@@ -155,8 +153,8 @@ class Sphere(BasePopulation):
 
 
         This method creates a dictionnary with the following entries:
-          - 'Diameter': The generated diameters.
-          - 'RefractiveIndex': The generated refractive index values.
+            - 'Diameter': The generated diameters.
+            - 'RefractiveIndex': The generated refractive index values.
 
         Parameters
         ----------
@@ -221,9 +219,10 @@ class CoreShell(BasePopulation):
         Post-initialization processing.
 
         This method ensures that:
-         - All Quantity attributes are converted to their base SI units.
-         - The particle_count is stored as a ParticleCount instance.
-         - The core_diameter, shell_thickness, and refractive indices are validated via their respective field validators.
+            - All Quantity attributes are converted to their base SI units.
+            - The particle_count is stored as a ParticleCount instance.
+            - The core_diameter, shell_thickness, and refractive indices are validated via their respective field validators.
+
         """
         self.particle_count = ParticleCount(self.particle_count)
         # Convert any Quantity attribute to its base SI units.
@@ -263,10 +262,10 @@ class CoreShell(BasePopulation):
         and shell refractive index from their underlying distributions (or fixed values).
 
         This method creates a dictionnary with the following entries:
-          - 'CoreDiameter': The generated core diameters.
-          - 'ShellThickness': The generated shell thickness values.
-          - 'CoreRefractiveIndex': The generated core refractive indices.
-          - 'ShellRefractiveIndex': The generated shell refractive indices.
+            - 'CoreDiameter': The generated core diameters.
+            - 'ShellThickness': The generated shell thickness values.
+            - 'CoreRefractiveIndex': The generated core refractive indices.
+            - 'ShellRefractiveIndex': The generated shell refractive indices.
 
         Parameters
         ----------
