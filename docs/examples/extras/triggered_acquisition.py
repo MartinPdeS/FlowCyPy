@@ -58,7 +58,8 @@ ev_ri = distribution.Normal(
 )
 
 ev = Sphere(
-    particle_count=1.8e+8 * units.particle / units.milliliter,
+    # particle_count=1.8e+8 * units.particle / units.milliliter,
+    particle_count=20 * units.particle,
     diameter=ev_diameter,               # Particle size distribution
     refractive_index=ev_ri,     # Refractive index distribution
     name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
@@ -68,7 +69,7 @@ scatterer_collection = ScattererCollection()
 
 scatterer_collection.add_population(ev)
 
-scatterer_collection.dilute(6)
+scatterer_collection.dilute(2)
 
 # Step 5: Define the detector
 # ---------------------------
