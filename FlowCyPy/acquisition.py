@@ -106,12 +106,12 @@ class Acquisition:
 
         Notes
         -----
-        - In dynamic mode, the extracted segment includes:
-        pre_buffer points before the trigger, all points where the signal is above threshold,
-        and post_buffer points after the signal falls below the threshold, yielding a segment length
-        of pre_buffer + width + post_buffer - 1.
-        - The method automatically invokes `self.detect_peaks` at the end of the analysis to further
-        process the triggered segments.
+            - In dynamic mode, the extracted segment includes:
+            pre_buffer points before the trigger, all points where the signal is above threshold,
+            and post_buffer points after the signal falls below the threshold, yielding a segment length
+            of pre_buffer + width + post_buffer - 1.
+            - The method automatically invokes `self.detect_peaks` at the end of the analysis to further
+            process the triggered segments.
         """
         # Ensure the trigger detector exists
         if trigger_detector_name not in self.detector_names:
@@ -149,12 +149,12 @@ class Acquisition:
 
         # If no triggers are found, warn the user and return None
         if len(times) == 0:
-            raise ValueError(
-                f"{self.analog['Signal'].pint.to(self.analog['Signal'].max().to_compact().units)}"
-                # f"{self.analog.Signal.__repr__()}"
-                f"No signal met the trigger criteria. Try adjusting the threshold. "
-                f"Signal min-max: {self.analog['Signal'].min().to_compact()}, {self.analog['Signal'].max().to_compact()}",
-            )
+            # raise ValueError(
+            #     # f"{self.analog['Signal'].pint.to(self.analog['Signal'].max().to_compact().units)}"
+            #     # f"{self.analog.Signal.__repr__()}"
+            #     f"No signal met the trigger criteria. Try adjusting the threshold. "
+            #     f"Signal min-max: {self.analog['Signal'].min().to_compact()}, {self.analog['Signal'].max().to_compact()}",
+            # )
             warnings.warn(
                 f"No signal met the trigger criteria. Try adjusting the threshold. "
                 f"Signal min-max: {self.analog['Signal'].min().to_compact()}, {self.analog['Signal'].max().to_compact()}",

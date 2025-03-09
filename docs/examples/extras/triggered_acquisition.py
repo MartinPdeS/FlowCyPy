@@ -130,10 +130,10 @@ triggered_acquisition = acquisition.run_triggering(
     post_buffer=64
 )
 
-# %%
-# Visualize the scatter triggered analog signals from both detectors
-triggered_acquisition.analog.plot()
+# # %%
+# # Visualize the scatter triggered analog signals from both detectors
+# triggered_acquisition.analog.plot()
 
-# %%
-# Visualize the scatter triggered digital signals from both detectors
-triggered_acquisition.digital.plot()
+# # %%
+# # Visualize the scatter triggered digital signals from both detectors
+# triggered_acquisition.digital.plot()
