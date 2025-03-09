@@ -43,7 +43,7 @@ for temperature in temperatures:
     # Initialize Detector
     detector = Detector(
         name=str(temperature),
-        responsitivity=1 * units.ampere / units.watt,
+        responsivity=1 * units.ampere / units.watt,
         resistance=50 * units.ohm,
         numerical_aperture=0.2 * units.AU,
         phi_angle=0 * units.degree,

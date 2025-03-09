@@ -627,14 +627,12 @@ document.write(`
             <span class="k">return</span>
 
         <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">coupling_power</span> <span class="o">=</span> <span class="n">detection_mechanism</span><span class="p">(</span>
+            <span class="n">detection_mechanism</span><span class="p">(</span>
                 <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
                 <span class="n">detector</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
                 <span class="n">scatterer_dataframe</span><span class="o">=</span><span class="n">scatterer_dataframe</span><span class="p">,</span>
                 <span class="n">medium_refractive_index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">medium_refractive_index</span>
             <span class="p">)</span>
-
-            <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coupling_power</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">coupling_power</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_pulse_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scatterer_dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -744,15 +742,13 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">run_time</span> <span class="o">=</span> <span class="n">run_time</span>
 
-        <span class="n">scatterer_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">_generate_event_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">populations</span><span class="p">,</span> <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">_generate_event_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">populations</span><span class="p">,</span> <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">fill_dataframe_with_sampling</span><span class="p">(</span><span class="n">scatterer_dataframe</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">fill_dataframe_with_sampling</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_run_coupling_analysis</span><span class="p">(</span><span class="n">scatterer_dataframe</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_coupling_analysis</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_pulse_parameters</span><span class="p">(</span><span class="n">scatterer_dataframe</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span> <span class="o">=</span> <span class="n">scatterer_dataframe</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_pulse_parameters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FlowCytometer.get_acquisition">
@@ -787,8 +783,8 @@ document.write(`
 <span class="sd">        ValueError</span>
 <span class="sd">            If the scatterer collection lacks required data columns (&#39;Widths&#39;, &#39;Time&#39;).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">_widths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Widths&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span>
-        <span class="n">_centers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span>
+        <span class="n">_widths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s1">&#39;Widths&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span>
+        <span class="n">_centers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span>
 
         <span class="n">signal_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_signal</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_time</span><span class="p">)</span>
 
@@ -797,8 +793,8 @@ document.write(`
             <span class="n">total_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">background_power</span>
 
             <span class="c1"># Broadcast the time array to the shape of (number of signals, len(detector.time))</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-                <span class="n">_coupling_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="p">[</span><span class="n">detector_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                <span class="n">_coupling_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span><span class="p">[</span><span class="n">detector_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
                 <span class="n">time_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span>
                 <span class="n">centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">_centers</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span>
@@ -814,9 +810,9 @@ document.write(`
                 <span class="n">signal</span><span class="o">=</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">],</span>
                 <span class="n">optical_power</span><span class="o">=</span><span class="n">total_power</span><span class="p">,</span>
                 <span class="n">wavelength</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">wavelength</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
 
-            <span class="n">signal_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">detector_name</span><span class="p">,</span> <span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">magnitude</span>
+            <span class="n">signal_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">detector_name</span><span class="p">,</span> <span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal</span>
 
         <span class="c1"># Apply user-defined processing steps</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">circuit_process_data</span><span class="p">(</span><span class="n">signal_dataframe</span><span class="p">,</span> <span class="n">processing_steps</span><span class="p">)</span>
@@ -829,13 +825,13 @@ document.write(`
         <span class="n">signal_dataframe</span> <span class="o">=</span> <span class="n">dataframe_subclass</span><span class="o">.</span><span class="n">AnalogAcquisitionDataFrame</span><span class="p">(</span>
             <span class="n">signal_dataframe</span><span class="p">,</span>
             <span class="n">saturation_levels</span><span class="o">=</span><span class="n">saturation_levels</span><span class="p">,</span>
-            <span class="n">scatterer_dataframe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span>
+            <span class="n">scatterer_dataframe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span>
         <span class="p">)</span>
 
         <span class="n">experiment</span> <span class="o">=</span> <span class="n">Acquisition</span><span class="p">(</span>
             <span class="n">cytometer</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">run_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_time</span><span class="p">,</span>
-            <span class="n">scatterer_dataframe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dataframe</span><span class="p">,</span>
+            <span class="n">scatterer_dataframe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span><span class="p">,</span>
             <span class="n">detector_dataframe</span><span class="o">=</span><span class="n">signal_dataframe</span>
         <span class="p">)</span>
 
@@ -899,6 +895,9 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Generate noise components</span>
         <span class="k">for</span> <span class="n">detector_name</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">signal_dataframe</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;Detector&#39;</span><span class="p">):</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span>
+            <span class="n">std_2</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="n">signal_units</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span>
             <span class="n">detector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_detector_by_name</span><span class="p">(</span><span class="n">detector_name</span><span class="p">)</span>
             <span class="n">noises</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">get_noise_parameters</span><span class="p">()</span>
 
@@ -906,21 +905,24 @@ document.write(`
                 <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">continue</span>
 
-                <span class="n">signal_units</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span>
-                <span class="c1"># Generate noise values for this group</span>
-                <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
-                    <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-                    <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;std&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-                    <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
-                <span class="p">)</span> <span class="o">*</span> <span class="n">signal_units</span>
+                <span class="n">mean</span> <span class="o">+=</span> <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span>
+                <span class="n">std_2</span> <span class="o">+=</span> <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
 
-                <span class="c1"># Update the &#39;Signal&#39; column in the original DataFrame using .loc</span>
-                <span class="n">signal_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">noise</span></div>
+
+            <span class="c1"># Generate noise values for this group</span>
+            <span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
+                <span class="n">mean</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">std_2</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+                <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">)</span>
+            <span class="p">)</span> <span class="o">*</span> <span class="n">signal_units</span>
+
+            <span class="c1"># Update the &#39;Signal&#39; column in the original DataFrame using .loc</span>
+            <span class="n">signal_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;Signal&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">noise</span></div>
 
 
 <div class="viewcode-block" id="FlowCytometer.get_detector_by_name">
 <a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.get_detector_by_name">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_detector_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_detector_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Detector</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve a detector object by its name.</span>
 
@@ -973,34 +975,7 @@ document.write(`
             <span class="k">case</span> <span class="s1">&#39;empirical&#39;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">coupling_mechanism</span><span class="o">.</span><span class="n">empirical</span><span class="o">.</span><span class="n">compute_detected_signal</span>
             <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid coupling mechanism. Choose &#39;rayleigh&#39; or &#39;uniform&#39;.&quot;</span><span class="p">)</span>
-
-<div class="viewcode-block" id="FlowCytometer.add_detector">
-<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.add_detector">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_detector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Detector</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Dynamically adds a new detector to the system configuration.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        **kwargs : dict</span>
-<span class="sd">            Keyword arguments passed to the `Detector` constructor.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Detector</span>
-<span class="sd">            The newly added detector instance.</span>
-
-<span class="sd">        Effects</span>
-<span class="sd">        -------</span>
-<span class="sd">        - Appends the created detector to the `detectors` list.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">detector</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">detector</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">detector</span></div>
-</div>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid coupling mechanism. Choose &#39;rayleigh&#39; or &#39;uniform&#39;.&quot;</span><span class="p">)</span></div>
 
 
 </pre></div>

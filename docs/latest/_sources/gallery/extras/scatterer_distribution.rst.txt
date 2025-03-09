@@ -43,7 +43,7 @@ Import necessary libraries and modules
 .. code-block:: Python
 
     from FlowCyPy import ScattererCollection
-    from FlowCyPy import distribution, Population
+    from FlowCyPy import distribution, population
     from FlowCyPy.units import nanometer, RIU, particle, milliliter
     import numpy as np
 
@@ -56,14 +56,14 @@ Import necessary libraries and modules
     # Two particle populations are defined with different sizes and refractive indices.
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)
 
-    population_0 = Population(
+    population_0 = population.Sphere(
         name='EV',
         particle_count=2e+9 * particle / milliliter,
         diameter=distribution.RosinRammler(characteristic_property=50 * nanometer, spread=4.5),
         refractive_index=distribution.Normal(mean=1.39 * RIU, std_dev=0.05 * RIU)
     )
 
-    population_1 = Population(
+    population_1 = population.Sphere(
         name='LP',
         particle_count=1e+10 * particle / milliliter,
         diameter=distribution.RosinRammler(characteristic_property=200 * nanometer, spread=4.5),
@@ -86,30 +86,15 @@ Import necessary libraries and modules
 
  .. code-block:: none
 
-                                Diameter     RefractiveIndex
-    Population Index                                        
-    EV         0      48.685861195822774  1.4164902505664154
-               1       60.04961491675073  1.4638033424194599
-               2       59.70261101290269  1.3788222846952922
-               3       56.19815079476007     1.3449760451417
-               4      23.966808222875194  1.4157881781025778
-    ...                              ...                 ...
-    LP         995    152.66216191682807  1.4709462214577693
-               996    178.72433984883764   1.491502662311642
-               997    141.20945290738908   1.411573873929729
-               998     189.6250830362507  1.5166224845777578
-               999     93.18506683374343  1.3575830026663274
 
-    [2000 rows x 2 columns]
-
-    <seaborn.axisgrid.JointGrid object at 0x7ff3963df850>
+    <seaborn.axisgrid.JointGrid object at 0x7fece87eb1d0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.526 seconds)
+   **Total running time of the script:** (0 minutes 2.486 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_scatterer_distribution.py:

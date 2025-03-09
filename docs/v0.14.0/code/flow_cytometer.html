@@ -641,32 +641,6 @@ Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh�
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.add_detector">
-<span class="sig-name descname"><span class="pre">add_detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.add_detector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.add_detector" title="Link to this definition">#</a></dt>
-<dd><p>Dynamically adds a new detector to the system configuration.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> (<em>dict</em>) – Keyword arguments passed to the <cite>Detector</cite> constructor.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>Detector</em> – The newly added detector instance.</p></li>
-<li><p><em>Effects</em></p></li>
-<li><p><em>——-</em></p></li>
-<li><ul>
-<li><p>Appends the created detector to the <cite>detectors</cite> list.</p></li>
-</ul>
-</li>
-</ul>
-</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="detector.html#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><em>Detector</em></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.add_noises_to_signal">
 <span class="sig-name descname"><span class="pre">add_noises_to_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.add_noises_to_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.add_noises_to_signal" title="Link to this definition">#</a></dt>
 <dd><p>Add noise components to the signal data in the given dataframe.</p>
@@ -809,7 +783,6 @@ to each detector’s raw signal.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.detectors"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.detectors</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.coupling_mechanism"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.coupling_mechanism</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.background_power"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.background_power</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.add_detector"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.add_detector()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.add_noises_to_signal"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.add_noises_to_signal()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.circuit_process_data"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.circuit_process_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.get_acquisition"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.get_acquisition()</span></code></a></li>

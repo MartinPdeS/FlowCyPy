@@ -489,6 +489,7 @@ document.write(`
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
@@ -500,18 +501,16 @@ document.write(`
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.add_detector">add_detector() (FlowCytometer method)</a>
-</li>
       <li><a href="code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.add_noises_to_signal">add_noises_to_signal() (FlowCytometer method)</a>
 </li>
       <li><a href="code/scatterer.html#FlowCyPy.ScattererCollection.add_population">add_population() (ScattererCollection method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code/source.html#FlowCyPy.source.AstigmaticGaussianBeam.amplitude">amplitude (AstigmaticGaussianBeam attribute)</a>
+      <li><a href="code/source.html#FlowCyPy.source.AstigmaticGaussianBeam.amplitude_at">amplitude_at() (AstigmaticGaussianBeam method)</a>
 
       <ul>
-        <li><a href="code/source.html#FlowCyPy.source.GaussianBeam.amplitude">(GaussianBeam attribute)</a>
+        <li><a href="code/source.html#FlowCyPy.source.GaussianBeam.amplitude_at">(GaussianBeam method)</a>
 </li>
       </ul></li>
       <li><a href="code/source.html#FlowCyPy.source.AstigmaticGaussianBeam">AstigmaticGaussianBeam (class in FlowCyPy.source)</a>
@@ -544,13 +543,19 @@ document.write(`
       </ul></li>
       <li><a href="code/detector.html#FlowCyPy.detector.Detector.capture_signal">capture_signal() (Detector method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/distributions.html#FlowCyPy.distribution.RosinRammler.characteristic_property">characteristic_property (RosinRammler attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.circuit_process_data">circuit_process_data() (FlowCytometer method)</a>
 </li>
       <li><a href="code/scatterer.html#FlowCyPy.ScattererCollection.concentrations">concentrations (ScattererCollection property)</a>
+</li>
+      <li><a href="code/scatterer.html#FlowCyPy.population.CoreShell.core_diameter">core_diameter (CoreShell attribute)</a>
+</li>
+      <li><a href="code/scatterer.html#FlowCyPy.population.CoreShell.core_refractive_index">core_refractive_index (CoreShell attribute)</a>
+</li>
+      <li><a href="code/scatterer.html#FlowCyPy.population.CoreShell">CoreShell (class in FlowCyPy.population)</a>
 </li>
       <li><a href="code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.coupling_mechanism">coupling_mechanism (FlowCytometer attribute)</a>
 </li>
@@ -564,20 +569,18 @@ document.write(`
 </li>
       <li><a href="code/distributions.html#FlowCyPy.distribution.Delta">Delta (class in FlowCyPy.distribution)</a>
 </li>
-      <li><a href="code/detector.html#FlowCyPy.detector.Detector">Detector (class in FlowCyPy.detector)</a>
+      <li><a href="code/peak_locator.html#FlowCyPy.peak_locator.derivative.DerivativePeakLocator">DerivativePeakLocator (class in FlowCyPy.peak_locator.derivative)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/detector.html#FlowCyPy.detector.Detector">Detector (class in FlowCyPy.detector)</a>
+</li>
       <li><a href="code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.detectors">detectors (FlowCytometer attribute)</a>
 </li>
-      <li><a href="code/scatterer.html#FlowCyPy.population.Population.diameter">diameter (Population attribute)</a>
+      <li><a href="code/scatterer.html#FlowCyPy.population.Sphere.diameter">diameter (Sphere attribute)</a>
 </li>
-      <li><a href="code/scatterer.html#FlowCyPy.population.Population.dilute">dilute() (Population method)</a>
-
-      <ul>
-        <li><a href="code/scatterer.html#FlowCyPy.ScattererCollection.dilute">(ScattererCollection method)</a>
+      <li><a href="code/scatterer.html#FlowCyPy.ScattererCollection.dilute">dilute() (ScattererCollection method)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -602,8 +605,6 @@ document.write(`
 </li>
       <li><a href="code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer">FlowCytometer (class in FlowCyPy.cytometer)</a>
 </li>
-      <li><a href="code/source.html#FlowCyPy.source.GaussianBeam.frequency">frequency (GaussianBeam attribute)</a>
-</li>
   </ul></td>
 </tr></table>
 
@@ -626,8 +627,12 @@ document.write(`
         <li><a href="code/distributions.html#FlowCyPy.distribution.Weibull.generate">(Weibull method)</a>
 </li>
       </ul></li>
-      <li><a href="code/scatterer.html#FlowCyPy.population.Population.generate_sampling">generate_sampling() (Population method)</a>
+      <li><a href="code/scatterer.html#FlowCyPy.population.CoreShell.generate_sampling">generate_sampling() (CoreShell method)</a>
+
+      <ul>
+        <li><a href="code/scatterer.html#FlowCyPy.population.Sphere.generate_sampling">(Sphere method)</a>
 </li>
+      </ul></li>
       <li><a href="code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.get_acquisition">get_acquisition() (FlowCytometer method)</a>
 </li>
       <li><a href="code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.get_detector_by_name">get_detector_by_name() (FlowCytometer method)</a>
@@ -701,18 +706,26 @@ document.write(`
   </ul></td>
 </tr></table>
 
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/scatterer.html#FlowCyPy.population.CoreShell.overall_diameter">overall_diameter() (CoreShell method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code/scatterer.html#FlowCyPy.population.Population.particle_count">particle_count (Population attribute)</a>
+      <li><a href="code/scatterer.html#FlowCyPy.population.CoreShell.particle_count">particle_count (CoreShell attribute)</a>
+
+      <ul>
+        <li><a href="code/scatterer.html#FlowCyPy.population.Sphere.particle_count">(Sphere attribute)</a>
 </li>
-      <li><a href="code/source.html#FlowCyPy.source.GaussianBeam.photon_energy">photon_energy (GaussianBeam attribute)</a>
-</li>
-      <li><a href="code/scatterer.html#FlowCyPy.ScattererCollection.plot">plot() (ScattererCollection method)</a>
-</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code/scatterer.html#FlowCyPy.population.Population">Population (class in FlowCyPy.population)</a>
+      <li><a href="code/scatterer.html#FlowCyPy.ScattererCollection.plot">plot() (ScattererCollection method)</a>
 </li>
       <li><a href="code/distributions.html#FlowCyPy.distribution.Delta.position">position (Delta attribute)</a>
 </li>
@@ -724,6 +737,8 @@ document.write(`
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/detector.html#FlowCyPy.detector.Detector.responsivity">responsivity (Detector attribute)</a>
+</li>
       <li><a href="code/source.html#FlowCyPy.source.AstigmaticGaussianBeam.RIN">RIN (AstigmaticGaussianBeam attribute)</a>
 
       <ul>
@@ -750,14 +765,22 @@ document.write(`
 </li>
       <li><a href="code/distributions.html#FlowCyPy.distribution.Weibull.shape">shape (Weibull attribute)</a>
 </li>
+      <li><a href="code/scatterer.html#FlowCyPy.population.CoreShell.shell_refractive_index">shell_refractive_index (CoreShell attribute)</a>
+</li>
+      <li><a href="code/scatterer.html#FlowCyPy.population.CoreShell.shell_thickness">shell_thickness (CoreShell attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/peak_locator.html#FlowCyPy.peak_locator.moving_average.SlidingWindowPeakLocator">SlidingWindowPeakLocator (class in FlowCyPy.peak_locator.moving_average)</a>
+</li>
       <li><a href="code/flow_cell.html#FlowCyPy.FlowCell.source">source (FlowCell attribute)</a>
 
       <ul>
         <li><a href="code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.source">(FlowCytometer attribute)</a>
 </li>
       </ul></li>
+      <li><a href="code/scatterer.html#FlowCyPy.population.Sphere">Sphere (class in FlowCyPy.population)</a>
+</li>
       <li><a href="code/distributions.html#FlowCyPy.distribution.RosinRammler.spread">spread (RosinRammler attribute)</a>
 </li>
       <li><a href="code/distributions.html#FlowCyPy.distribution.LogNormal.std_dev">std_dev (LogNormal attribute)</a>

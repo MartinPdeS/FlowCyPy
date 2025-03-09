@@ -515,7 +515,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">pint_pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">PintArray</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseBeam</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Population</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePopulation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.scatterer_collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererCollection</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">meter</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">Quantity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
@@ -602,7 +602,7 @@ document.write(`
         <span class="p">]</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_event_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Population</span><span class="p">],</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_event_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BasePopulation</span><span class="p">],</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates a DataFrame of event times for each population based on the specified scheme.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -631,7 +631,7 @@ document.write(`
         <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;run_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">run_time</span>
         <span class="k">return</span> <span class="n">scatterer_dataframe</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_poisson_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="n">Population</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_poisson_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="n">BasePopulation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates particle arrival times using a Poisson process.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

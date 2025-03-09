@@ -15,7 +15,7 @@ Steps:
 
 # Step 1: Import the necessary libraries
 from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
-from FlowCyPy import distribution, Population
+from FlowCyPy import distribution, population
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import units
 
@@ -43,14 +43,14 @@ flow_cell = FlowCell(
 # and a refractive index of 1.39 with a small variation of 0.01.
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
-population_0 = Population(
+population_0 = population.Sphere(
     name='EV',
     particle_count=1e+9 * units.particle / units.milliliter,
     diameter=distribution.RosinRammler(characteristic_property=200 * units.nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.42 * units.RIU, std_dev=0.05 * units.RIU)
 )
 
-population_1 = Population(
+population_1 = population.Sphere(
     name='LP',
     particle_count=1e+11 * units.particle / units.milliliter,
     diameter=distribution.RosinRammler(characteristic_property=100 * units.nanometer, spread=4.5),
@@ -64,7 +64,7 @@ scatterer_collection.add_population(population_1, population_0)
 # Step 5: Set up the detectors
 # ----------------------------
 # Two detectors are used: Forward Scatter (FSC) and Side Scatter (SSC). Each detector is configured
-# with its own numerical aperture, responsitivity, noise level, and acquisition frequency.
+# with its own numerical aperture, responsivity, noise level, and acquisition frequency.
 signal_digitizer = SignalDigitizer(
     bit_depth=1024,
     saturation_levels='auto',

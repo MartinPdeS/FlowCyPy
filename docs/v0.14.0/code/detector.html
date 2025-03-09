@@ -540,24 +540,25 @@ document.write(`
 <p>Classes for modeling the signal detection process in flow cytometry.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_numerical_aperture=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'dimensionless')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma_angle=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'degree')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling=&lt;Quantity(100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'dimensionless')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">responsitivity=&lt;Quantity(1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ampere</span> <span class="pre">/</span> <span class="pre">watt')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_current=&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ampere')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resistance=&lt;Quantity(50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ohm')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature=&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'kelvin')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_numerical_aperture=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'dimensionless')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma_angle=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'degree')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling=&lt;Quantity(100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'dimensionless')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">responsivity=&lt;Quantity(1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ampere</span> <span class="pre">/</span> <span class="pre">watt')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_current=&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ampere')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resistance=&lt;Quantity(50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ohm')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature=&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'kelvin')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class representing a signal detector used in flow cytometry.</p>
-<p>This class models a photodetector, simulating signal acquisition, noise addition, and signal processing
-for analysis.  It can optionally simulate different noise sources: shot noise, thermal noise, and dark current noise.</p>
+<p>Represents a photodetector in a flow cytometry simulation.</p>
+<p>This class simulates a detector that captures light scattering signals, incorporating
+the effects of noise sources (shot noise, thermal noise, and dark current noise) as part
+of the signal processing workflow.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – The name or identifier of the detector.</p></li>
-<li><p><strong>phi_angle</strong> (<em>Quantity</em>) – The detection angle in degrees.</p></li>
-<li><p><strong>numerical_aperture</strong> (<em>Quantity</em>) – The numerical aperture of the detector, a unitless value.</p></li>
-<li><p><strong>cache_numerical_aperture</strong> (<em>Quantity</em>) – The numerical aperture of the cache in front of the detector, a unitless value.</p></li>
-<li><p><strong>responsitivity</strong> (<em>Quantity</em>) – Detector’s responsivity, default is 1 volt per watt.</p></li>
-<li><p><strong>dark_current</strong> (<em>Quantity</em>) – The dark current of the detector, default is 0 amperes.</p></li>
-<li><p><strong>resistance</strong> (<em>Quantity</em>) – Resistance of the detector, used for thermal noise simulation.</p></li>
-<li><p><strong>temperature</strong> (<em>Quantity</em>) – Temperature of the detector in Kelvin, used for thermal noise simulation.</p></li>
-<li><p><strong>gamma_angle</strong> (<em>Quantity</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>sampling</strong> (<em>Quantity</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Identifier for the detector. If not provided, a unique ID is assigned.</p></li>
+<li><p><strong>phi_angle</strong> (<em>Quantity</em>) – The detector’s primary angle of incidence (in degrees).</p></li>
+<li><p><strong>numerical_aperture</strong> (<em>Quantity</em>) – The numerical aperture of the detector (dimensionless).</p></li>
+<li><p><strong>cache_numerical_aperture</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The numerical aperture of the cache positioned in front of the detector (dimensionless).</p></li>
+<li><p><strong>responsivity</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – Detector responsivity (in ampere per watt). Default is 1 A/W.</p></li>
+<li><p><strong>dark_current</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The dark current of the detector (in amperes). Default is 0 A.</p></li>
+<li><p><strong>resistance</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The load resistance of the detector used in thermal noise simulation (in ohms). Default is 50 Ω.</p></li>
+<li><p><strong>temperature</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – Operating temperature of the detector (in kelvin) for thermal noise simulation.</p></li>
+<li><p><strong>gamma_angle</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – An additional angular parameter (in degrees), if applicable.</p></li>
+<li><p><strong>sampling</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – Sampling rate or related parameter (unitless or arbitrary units), default is 100.</p></li>
 </ul>
 </dd>
 </dl>
@@ -569,72 +570,35 @@ for analysis.  It can optionally simulate different noise sources: shot noise, t
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector.capture_signal">
 <span class="sig-name descname"><span class="pre">capture_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optical_power</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.capture_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.capture_signal" title="Link to this definition">#</a></dt>
-<dd><p>Simulates photon shot noise based on the given optical power and detector bandwidth, and adds
-the corresponding voltage noise to the raw signal.</p>
-<p>Photon shot noise arises from the random and discrete arrival of photons at the detector. The noise
-follows Poisson statistics. This method computes the photon shot noise and adds it to the raw signal.</p>
+<dd><p>Simulates the capture of a signal by adding photon shot noise to the raw signal.</p>
+<p>This method calculates the shot noise voltage (based on the given optical power and wavelength)
+and adds it to the existing raw signal to simulate the detector’s output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>optical_power</strong> (<em>Quantity</em>) – The optical power incident on the detector, in watts (W).</p></li>
-<li><p><strong>signal</strong> (<em>Series</em>)</p></li>
-<li><p><strong>wavelength</strong> (<em>Quantity</em>)</p></li>
+<li><p><strong>signal</strong> (<em>pd.Series</em>) – The original raw signal data (in volts).</p></li>
+<li><p><strong>optical_power</strong> (<em>Quantity</em>) – The optical power incident on the detector (in watts).</p></li>
+<li><p><strong>wavelength</strong> (<em>Quantity</em>) – The wavelength of the incident light (in meters).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul>
-<li><p><em>np.ndarray</em> – An array representing the voltage noise due to photon shot noise, in volts (V).</p></li>
-<li><p><em>Physics</em> –</p>
-<ul class="simple">
-<li><p>The number of photons arriving at the detector ( N_{text{ph}} ) is given by:</p></li>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>None</em> – The raw signal is updated in place with the added shot noise.</p></li>
+<li><p><em>Physics Background</em></p></li>
+<li><p><em>——————</em></p></li>
+<li><p><em>Photon shot noise arises due to the random arrival of photons. The following relationships are used</em> –</p>
+<ul>
+<li><p>Photon energy: ( E_{text{photon}} = frac{h c}{lambda} )</p></li>
+<li><p>Photon rate: ( N_{text{ph}} = frac{P_{text{opt}}}{E_{text{photon}}} )</p></li>
+<li><p>Photocurrent: ( I_{text{photon}} = R_{text{det}} cdot N_{text{photon}} )</p></li>
+<li><p>Shot noise voltage: ( V_{text{shot}} = I_{text{photon}} cdot R_{text{load}} )</p></li>
 </ul>
-<dl class="simple">
-<dt>[</dt><dd><p>N_{text{ph}} = frac{P_{text{opt}}}{E_{text{photon}}}</p>
-</dd>
-</dl>
-<p>]
-where:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>( P_{text{opt}} ) is the optical power (W),</p></li>
-<li><p>( E_{text{photon}} = frac{h cdot c}{lambda} ) is the energy of a photon (J),</p></li>
-<li><p>( h ) is Planck’s constant ((6.626 times 10^{-34}, text{J} cdot text{s})),</p></li>
-<li><p>( c ) is the speed of light ((3 times 10^8 , text{m/s})),</p></li>
-<li><p>( lambda ) is the wavelength of the incident light.</p></li>
-</ul>
-</div></blockquote>
-<ul class="simple">
-<li><p>The photocurrent is computed as:</p></li>
-</ul>
-<dl class="simple">
-<dt>[</dt><dd><p>I_{text{photon}} = R_{text{det}} cdot N_{text{photon}}</p>
-</dd>
-</dl>
-<p>]
-where:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>( R_{text{det}} ) is the detector responsivity (A/W).</p></li>
-</ul>
-</div></blockquote>
-<ul class="simple">
-<li><p>The voltage shot noise is then given by:</p></li>
-</ul>
-<p>[
-V_{text{shot}} = I_{text{photon}} cdot R_{text{load}}
-]
-where:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>( R_{text{load}} ) is the load resistance of the detector (Ohms).</p></li>
-</ul>
-</div></blockquote>
 </li>
 </ul>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
+<dd class="field-odd"><p><em>Series</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -642,25 +606,33 @@ where:</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector.dataframe">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dataframe</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.dataframe" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Retrieves the detector-specific slice of the cytometer’s dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dataframe corresponding to the detector’s recorded data.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector.get_initialized_signal">
 <span class="sig-name descname"><span class="pre">get_initialized_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.get_initialized_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.get_initialized_signal" title="Link to this definition">#</a></dt>
-<dd><p>Initializes the raw signal for each detector based on the source and flow cell configuration.</p>
-<p>This method prepares the detectors for signal capture by associating each detector with the
-light source and generating a time-dependent raw signal placeholder.</p>
-<section id="effects">
-<h2>Effects<a class="headerlink" href="#effects" title="Link to this heading">#</a></h2>
-<p>Each detector’s <cite>raw_signal</cite> attribute is initialized with time-dependent values
-based on the flow cell’s runtime.</p>
-</section>
+<dd><p>Initializes a placeholder for the detector’s raw signal over a specified runtime.</p>
+<p>This method creates a time-dependent DataFrame with columns for time and the
+corresponding signal (initialized to zero volts).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>run_time</strong> (<em>Quantity</em>)</p>
+<dd class="field-odd"><p><strong>run_time</strong> (<em>Quantity</em>) – The total acquisition time for the signal (in seconds).</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>DataFrame</em></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A DataFrame with a time column (in seconds) and a signal column (in volts),
+initialized to zero.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
 </dd></dl>
@@ -669,42 +641,29 @@ based on the flow cell’s runtime.</p>
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector.get_noise_parameters">
 <span class="sig-name descname"><span class="pre">get_noise_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.get_noise_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.get_noise_parameters" title="Link to this definition">#</a></dt>
 <dd><p>Compute and return the noise parameters for thermal and dark current noise.</p>
-<p>Thermal noise (Johnson–Nyquist noise) results from the thermal agitation of charge carriers
+<p>Thermal noise (Johnson-Nyquist noise) results from the thermal agitation of charge carriers
 and is computed using the formula:</p>
 <div class="math notranslate nohighlight">
 \[\sigma_{\text{thermal}} = \sqrt{4 k_B T B R}\]</div>
-<p>where:
-- <span class="math notranslate nohighlight">\(k_B\)</span> is the Boltzmann constant (1.38×10⁻²³ J/K),
-- <span class="math notranslate nohighlight">\(T\)</span> is the temperature in Kelvin,
-- <span class="math notranslate nohighlight">\(B\)</span> is the bandwidth,
-- <span class="math notranslate nohighlight">\(R\)</span> is the resistance.</p>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(k_B\)</span> is the Boltzmann constant (1.38 x 10⁻²³ J/K),</p></li>
+<li><p><span class="math notranslate nohighlight">\(T\)</span> is the temperature in Kelvin,</p></li>
+<li><p><span class="math notranslate nohighlight">\(B\)</span> is the bandwidth,</p></li>
+<li><p><span class="math notranslate nohighlight">\(R\)</span> is the resistance.</p></li>
+</ul>
+</dd>
+</dl>
 <p>Dark current noise is computed as:</p>
 <div class="math notranslate nohighlight">
 \[\sigma_{\text{dark}} = \sqrt{2 q I_d B}\]</div>
 <p>where:
-- <span class="math notranslate nohighlight">\(q\)</span> is the elementary charge (1.602176634×10⁻¹⁹ C),
+- <span class="math notranslate nohighlight">\(q\)</span> is the elementary charge (1.602176634 x 10⁻¹⁹ C),
 - <span class="math notranslate nohighlight">\(I_d\)</span> is the dark current,
 - <span class="math notranslate nohighlight">\(B\)</span> is the bandwidth.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><p>A dictionary with the following structure:
-{</p>
-<blockquote>
-<div><dl class="simple">
-<dt>’thermal’: {</dt><dd><p>‘mean’: 0 * volt,
-‘std’: computed thermal noise standard deviation</p>
-</dd>
-</dl>
-<p>},
-‘dark_current’: {</p>
-<blockquote>
-<div><p>’mean’: 0 * volt,
-‘std’: computed dark current noise standard deviation</p>
-</div></blockquote>
-<p>}</p>
-</div></blockquote>
-<p>}</p>
-</p>
+<dd class="field-odd"><p>Dictionary containing noise parameters for ‘thermal’ and ‘dark_current’.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>dict</p>
@@ -715,9 +674,18 @@ and is computed using the formula:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector.get_noise_signal">
 <span class="sig-name descname"><span class="pre">get_noise_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence_length</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.get_noise_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.get_noise_signal" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Generates the composite noise signal over a specified sequence length.</p>
+<p>This method computes and aggregates different noise components
+(e.g., thermal and dark current noise) based on their parameters.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>sequence_length</strong> (<em>int</em>)</p>
+<dd class="field-odd"><p><strong>sequence_length</strong> (<em>int</em>) – The number of data points for which to generate the noise signal.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The aggregated noise signal (in volts) as a Quantity array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
 </dd>
 </dl>
 </dd></dl>
@@ -725,19 +693,70 @@ and is computed using the formula:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector.get_shot_noise">
 <span class="sig-name descname"><span class="pre">get_shot_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optical_power</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.get_shot_noise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.get_shot_noise" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>signal</strong> (<em>Series</em>)</p></li>
-<li><p><strong>optical_power</strong> (<em>Quantity</em>)</p></li>
-<li><p><strong>wavelength</strong> (<em>Quantity</em>)</p></li>
+<dd><p>Computes the shot noise voltage arising from photon statistics.</p>
+<dl>
+<dt>Shot noise is due to the discrete nature of photon arrivals. The process includes:</dt><dd><ol class="arabic simple">
+<li><p>Calculating the energy per photon.</p></li>
+<li><p>Estimating the mean number of photons arriving per sampling interval.</p></li>
+<li><p>Simulating photon counts via Poisson statistics (or a normal approximation for high counts).</p></li>
+<li><p>Converting photon counts to photocurrent using the detector responsivity.</p></li>
+<li><p>Converting the photocurrent to voltage noise using the detector resistance.</p></li>
+</ol>
+</dd>
+<dt>Physics:</dt><dd><ul class="simple">
+<li><p>The number of photons arriving at the detector ( N_{text{ph}} ) is given by: [ N_{text{ph}} = frac{P_{text{opt}}}{E_{text{photon}}} ]</p></li>
+</ul>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>( P_{text{opt}} ) is the optical power (W),</p></li>
+<li><p>( E_{text{photon}} = frac{h cdot c}{lambda} ) is the energy of a photon (J),</p></li>
+<li><p>( h ) is Planck’s constant ((6.626 times 10^{-34}, text{J} cdot text{s})),</p></li>
+<li><p>( c ) is the speed of light ((3 times 10^8 , text{m/s})),</p></li>
+<li><p>( lambda ) is the wavelength of the incident light.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
+</dl>
+<ul class="simple">
+<li><p>The photocurrent is computed as: [ I_{text{photon}} = R_{text{det}} cdot N_{text{photon}} ]</p></li>
+</ul>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>( R_{text{det}} ) is the detector responsivity (A/W).</p></li>
+</ul>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>The voltage shot noise is then given by: [ V_{text{shot}} = I_{text{photon}} cdot R_{text{load}} ]</p></li>
+</ul>
+<dl class="simple">
+<dt>where:</dt><dd><ul class="simple">
+<li><p>( R_{text{load}} ) is the load resistance of the detector (Ohms).</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>pd.Series</em>) – The raw signal data series (used to infer the number of samples).</p></li>
+<li><p><strong>optical_power</strong> (<em>Quantity</em>) – The incident optical power on the detector (in watts).</p></li>
+<li><p><strong>wavelength</strong> (<em>Quantity</em>) – The wavelength of the incident light (in meters).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The shot noise voltage distribution (in volts).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.responsivity">
+<span class="sig-name descname"><span class="pre">responsivity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(1,</span> <span class="pre">'ampere</span> <span class="pre">/</span> <span class="pre">watt')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.responsivity" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -773,6 +792,7 @@ and is computed using the formula:</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.get_noise_parameters"><code class="docutils literal notranslate"><span class="pre">Detector.get_noise_parameters()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.get_noise_signal"><code class="docutils literal notranslate"><span class="pre">Detector.get_noise_signal()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.get_shot_noise"><code class="docutils literal notranslate"><span class="pre">Detector.get_shot_noise()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.responsivity"><code class="docutils literal notranslate"><span class="pre">Detector.responsivity</span></code></a></li>
 </ul>
 </li>
 </ul>

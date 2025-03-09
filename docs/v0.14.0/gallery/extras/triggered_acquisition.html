@@ -465,6 +465,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/limit_of_detection.html">Limit of detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/pre_defined_workflow.html">Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/signal_processing.html">Signal Processing in Flow Cytometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Workflow</a></li>
 </ul>
@@ -564,9 +565,12 @@ provide insights into the physical properties of particles passing through the l
 <p>Step 1: Import necessary modules from FlowCyPy</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">GaussianBeam</span><span class="p">,</span> <span class="n">FlowCell</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Population</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sphere</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -606,8 +610,8 @@ This represents the population of scatterers (particles) that will interact with
     <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span>  <span class="c1"># Standard deviation: 0.01</span>
 <span class="p">)</span>
 
-<span class="n">ev</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
-    <span class="n">particle_count</span><span class="o">=</span><span class="mf">1.8e+8</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
+<span class="n">ev</span> <span class="o">=</span> <span class="n">Sphere</span><span class="p">(</span>
+    <span class="n">particle_count</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span><span class="p">,</span>
     <span class="n">diameter</span><span class="o">=</span><span class="n">ev_diameter</span><span class="p">,</span>               <span class="c1"># Particle size distribution</span>
     <span class="n">refractive_index</span><span class="o">=</span><span class="n">ev_ri</span><span class="p">,</span>     <span class="c1"># Refractive index distribution</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EV&#39;</span>                   <span class="c1"># Name of the particle population: Extracellular Vesicles (EV)</span>
@@ -617,12 +621,12 @@ This represents the population of scatterers (particles) that will interact with
 
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span>
 
-<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="c1"># Step 5: Define the detector</span>
 <span class="c1"># ---------------------------</span>
 <span class="c1"># The detector captures the scattered light. It is positioned at 90 degrees relative to the incident light beam</span>
-<span class="c1"># and configured with a numerical aperture of 0.4 and responsitivity of 1.</span>
+<span class="c1"># and configured with a numerical aperture of 0.4 and responsivity of 1.</span>
 <span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
     <span class="n">saturation_levels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
@@ -633,14 +637,14 @@ This represents the population of scatterers (particles) that will interact with
     <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>              <span class="c1"># Detector angle: 90 degrees (Side Scatter)</span>
     <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>        <span class="c1"># Numerical aperture of the detector</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>              <span class="c1"># Detector name</span>
-    <span class="n">responsitivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>   <span class="c1"># Responsitivity of the detector (light to signal conversion efficiency)</span>
+    <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>   <span class="c1"># Responsitivity of the detector (light to signal conversion efficiency)</span>
 <span class="p">)</span>
 
 <span class="n">detector_1</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span>
     <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>               <span class="c1"># Detector angle: 90 degrees (Sid e Scatter)</span>
     <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>        <span class="c1"># Numerical aperture of the detector</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>             <span class="c1"># Detector name</span>
-    <span class="n">responsitivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>   <span class="c1"># Responsitivity of the detector (light to signal conversion efficiency)</span>
+    <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>   <span class="c1"># Responsitivity of the detector (light to signal conversion efficiency)</span>
 <span class="p">)</span>
 
 <span class="c1"># Step 6: Simulate Flow Cytometer Signals</span>
@@ -663,7 +667,13 @@ This represents the population of scatterers (particles) that will interact with
 <span class="n">acquisition</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_triggered_acquisition_001.png" srcset="../../_images/sphx_glr_triggered_acquisition_001.png" alt="triggered acquisition" class = "sphx-glr-single-img"/><p>Visualize the scatter digital signals from both detectors</p>
+<img src="../../_images/sphx_glr_triggered_acquisition_001.png" srcset="../../_images/sphx_glr_triggered_acquisition_001.png" alt="triggered acquisition" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/dataframe_subclass.py:637: UserWarning: Attempting to set identical low and high ylims makes transformation singular; automatically expanding.
+  ax.set_ylim(self.attrs[&#39;saturation_levels&#39;][detector_name])
+/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/dataframe_subclass.py:637: UserWarning: Attempting to set identical low and high ylims makes transformation singular; automatically expanding.
+  ax.set_ylim(self.attrs[&#39;saturation_levels&#39;][detector_name])
+</pre></div>
+</div>
+<p>Visualize the scatter digital signals from both detectors</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">acquisition</span><span class="o">.</span><span class="n">digital</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
 <span class="n">acquisition</span><span class="o">.</span><span class="n">digital</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
@@ -675,30 +685,23 @@ This represents the population of scatterers (particles) that will interact with
     <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
     <span class="n">post_buffer</span><span class="o">=</span><span class="mi">64</span>
 <span class="p">)</span>
+
+<span class="c1"># # %%</span>
+<span class="c1"># # Visualize the scatter triggered analog signals from both detectors</span>
+<span class="c1"># triggered_acquisition.analog.plot()</span>
+
+<span class="c1"># # %%</span>
+<span class="c1"># # Visualize the scatter triggered digital signals from both detectors</span>
+<span class="c1"># triggered_acquisition.digital.plot()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_triggered_acquisition_002.png" srcset="../../_images/sphx_glr_triggered_acquisition_002.png" alt="triggered acquisition" class = "sphx-glr-single-img"/><p>Visualize the scatter triggered analog signals from both detectors</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">triggered_acquisition</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<img src="../../_images/sphx_glr_triggered_acquisition_002.png" srcset="../../_images/sphx_glr_triggered_acquisition_002.png" alt="triggered acquisition" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/acquisition.py:144: UserWarning: No valid triggers found after baseline restoration. Returning empty arrays.
+  times, signals, detectors, segment_ids = triggering_system.run()
+/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/acquisition.py:158: UserWarning: No signal met the trigger criteria. Try adjusting the threshold. Signal min-max: 0.0 V, 0.0 V
+  warnings.warn(
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_triggered_acquisition_003.png" srcset="../../_images/sphx_glr_triggered_acquisition_003.png" alt="triggered acquisition" class = "sphx-glr-single-img"/><p>Visualize the scatter triggered digital signals from both detectors</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">triggered_acquisition</span><span class="o">.</span><span class="n">digital</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-
-
-
-
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Summary:</span>
-<span class="sd">--------</span>
-<span class="sd">This script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,</span>
-<span class="sd">and extracts important features. The process is visualized through signal plots, and key properties are displayed.</span>
-<span class="sd">&quot;&quot;&quot;</span>
-</pre></div>
-</div>
-<img src="../../_images/sphx_glr_triggered_acquisition_004.png" srcset="../../_images/sphx_glr_triggered_acquisition_004.png" alt="triggered acquisition" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;\nSummary:\n--------\nThis script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,\nand extracts important features. The process is visualized through signal plots, and key properties are displayed.\n&#39;
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.411 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.714 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-triggered-acquisition-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/384ceb7bb18f5408c3f8ecb06feeaef4/triggered_acquisition.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">triggered_acquisition.ipynb</span></code></a></p>

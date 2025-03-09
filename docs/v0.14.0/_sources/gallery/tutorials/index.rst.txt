@@ -29,6 +29,23 @@ Examples: Tutorials
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library. The simulation involves configuring a flow setup, defining a single population of particles, and analyzing scattering signals from two detectors to produce a 2D density plot of scattering intensities.">
+
+.. only:: html
+
+  .. image:: /gallery/tutorials/images/thumb/sphx_glr_pre_defined_workflow_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_gallery_tutorials_pre_defined_workflow.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Workflow</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to apply signal processing techniques to flow cytometry data using FlowCyPy. The simulation is set up with a Gaussian beam, a flow cell, and two detectors. A single population of scatterers (with delta distributions) is used, and the focus here is on processing the forward scatter detector signals. Three acquisitions are performed:">
 
 .. only:: html
@@ -72,6 +89,7 @@ Examples: Tutorials
    :hidden:
 
    /gallery/tutorials/limit_of_detection
+   /gallery/tutorials/pre_defined_workflow
    /gallery/tutorials/signal_processing
    /gallery/tutorials/workflow
 

@@ -24,13 +24,13 @@ Distributions Covered:
 import numpy as np
 import matplotlib.pyplot as plt
 from FlowCyPy import distribution
-from FlowCyPy.units import nanometer, particle
+from FlowCyPy.units import nanometer
 
 # Set random seed for reproducibility
 np.random.seed(3)
 
 # Define the number of particles to generate
-n_particles = 10000 * particle
+n_particles = 10000
 
 # Initialize subplots for the distribution plots
 fig, axes = plt.subplots(3, 2, figsize=(12, 10))

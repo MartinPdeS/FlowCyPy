@@ -159,13 +159,13 @@ given by:
 
 
     from FlowCyPy import ScattererCollection
-    from FlowCyPy.population import Exosome, Population, distribution
+    from FlowCyPy.population import Exosome, Sphere, distribution
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
     exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
 
-    custom_population = Population(
+    custom_population = Sphere(
         name='Pop 0',
         particle_count=5e9 * units.particle / units.milliliter,
         diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
@@ -193,23 +193,8 @@ given by:
 
  .. code-block:: none
 
-                                Diameter     RefractiveIndex
-    Population Index                                        
-    Exosome    0       62.62095252967773  1.3734799207620483
-               1       77.68132625687906  1.3743158929548398
-               2       41.04205731060343  1.3717035560392283
-               3       59.19203915680885   1.372057204461995
-               4       104.6360883570574  1.3965189854623634
-    ...                              ...                 ...
-    Pop 0      595     150.0666600909874  1.4392491413242194
-               596     146.6999503540621  1.4389507574627813
-               597     146.1820832274198   1.440094199659698
-               598    156.02740054794003  1.4359249514790766
-               599     152.7517812795318   1.440999653649115
 
-    [1200 rows x 2 columns]
-
-    <seaborn.axisgrid.JointGrid object at 0x7ff395b3c210>
+    <seaborn.axisgrid.JointGrid object at 0x7fece838fd50>
 
 
 
@@ -217,7 +202,7 @@ given by:
 
 Step 5: Define Detectors
 ------------------------
-Detectors measure light intensity. Parameters like responsitivity define the conversion of optical
+Detectors measure light intensity. Parameters like responsivity define the conversion of optical
 power to electronic signals, and saturation level represents the maximum signal they can handle.
 
 .. GENERATED FROM PYTHON SOURCE LINES 113-151
@@ -238,7 +223,7 @@ power to electronic signals, and saturation level represents the maximum signal 
         name='forward',
         phi_angle=0 * units.degree,                  # Forward scatter angle
         numerical_aperture=0.3 * units.AU,
-        responsitivity=1 * units.ampere / units.watt,
+        responsivity=1 * units.ampere / units.watt,
         resistance=50 * units.ohm,
         temperature=300 * units.kelvin
     )
@@ -247,7 +232,7 @@ power to electronic signals, and saturation level represents the maximum signal 
         name='side',
         phi_angle=90 * units.degree,                 # Side scatter angle
         numerical_aperture=0.3 * units.AU,
-        responsitivity=1 * units.ampere / units.watt,
+        responsivity=1 * units.ampere / units.watt,
         resistance=50 * units.ohm,
         temperature=300 * units.kelvin,
     )
@@ -257,7 +242,7 @@ power to electronic signals, and saturation level represents the maximum signal 
         name='det_2',
         phi_angle=30 * units.degree,                 # Side scatter angle
         numerical_aperture=0.3 * units.AU,
-        responsitivity=1 * units.ampere / units.watt,
+        responsivity=1 * units.ampere / units.watt,
         resistance=50 * units.ohm,
         temperature=300 * units.kelvin,
     )
@@ -311,14 +296,6 @@ and particles follows Mie theory:
    :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
    :class: sphx-glr-single-img
 
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    photon_counts_distribution [16560 16645 16606 ... 16852 16984 16620]
-    photon_counts_distribution [16503 16879 16882 ... 16689 16886 17066]
-    photon_counts_distribution [16842 16733 16868 ... 16862 16763 16796]
 
 
 
@@ -412,7 +389,7 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7ff395b0ed90>
+    <seaborn.axisgrid.JointGrid object at 0x7fecee789090>
 
 
 
@@ -449,7 +426,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.395 seconds)
+   **Total running time of the script:** (0 minutes 8.468 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

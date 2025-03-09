@@ -19,7 +19,7 @@ Steps in the Workflow:
 # %%
 # Import necessary libraries and modules
 from FlowCyPy import ScattererCollection
-from FlowCyPy import distribution, Population
+from FlowCyPy import distribution, population
 from FlowCyPy.units import nanometer, RIU, particle, milliliter
 import numpy as np
 
@@ -32,14 +32,14 @@ np.random.seed(20)
 # Two particle populations are defined with different sizes and refractive indices.
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)
 
-population_0 = Population(
+population_0 = population.Sphere(
     name='EV',
     particle_count=2e+9 * particle / milliliter,
     diameter=distribution.RosinRammler(characteristic_property=50 * nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.39 * RIU, std_dev=0.05 * RIU)
 )
 
-population_1 = Population(
+population_1 = population.Sphere(
     name='LP',
     particle_count=1e+10 * particle / milliliter,
     diameter=distribution.RosinRammler(characteristic_property=200 * nanometer, spread=4.5),

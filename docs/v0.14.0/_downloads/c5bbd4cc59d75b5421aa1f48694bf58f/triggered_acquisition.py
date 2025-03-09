@@ -18,9 +18,12 @@ Workflow:
 # Step 1: Import necessary modules from FlowCyPy
 from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
 from FlowCyPy import distribution
-from FlowCyPy.population import Population
+from FlowCyPy.population import Sphere
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import units
+
+import numpy
+numpy.random.seed(3)
 
 # %%
 # Step 2: Define the laser source
@@ -57,8 +60,8 @@ ev_ri = distribution.Normal(
     std_dev=0.01 * units.RIU  # Standard deviation: 0.01
 )
 
-ev = Population(
-    particle_count=1.8e+8 * units.particle / units.milliliter,
+ev = Sphere(
+    particle_count=20 * units.particle,
     diameter=ev_diameter,               # Particle size distribution
     refractive_index=ev_ri,     # Refractive index distribution
     name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
@@ -68,12 +71,12 @@ scatterer_collection = ScattererCollection()
 
 scatterer_collection.add_population(ev)
 
-scatterer_collection.dilute(6)
+scatterer_collection.dilute(2)
 
 # Step 5: Define the detector
 # ---------------------------
 # The detector captures the scattered light. It is positioned at 90 degrees relative to the incident light beam
-# and configured with a numerical aperture of 0.4 and responsitivity of 1.
+# and configured with a numerical aperture of 0.4 and responsivity of 1.
 signal_digitizer = SignalDigitizer(
     bit_depth=1024,
     saturation_levels='auto',
@@ -84,14 +87,14 @@ detector_0 = Detector(
     phi_angle=90 * units.degree,              # Detector angle: 90 degrees (Side Scatter)
     numerical_aperture=0.4 * units.AU,        # Numerical aperture of the detector
     name='side',              # Detector name
-    responsitivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
+    responsivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
 )
 
 detector_1 = Detector(
     phi_angle=0 * units.degree,               # Detector angle: 90 degrees (Sid e Scatter)
     numerical_aperture=0.4 * units.AU,        # Numerical aperture of the detector
     name='forward',             # Detector name
-    responsitivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
+    responsivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
 )
 
 # Step 6: Simulate Flow Cytometer Signals
@@ -127,21 +130,10 @@ triggered_acquisition = acquisition.run_triggering(
     post_buffer=64
 )
 
-# %%
-# Visualize the scatter triggered analog signals from both detectors
-triggered_acquisition.analog.plot()
+# # %%
+# # Visualize the scatter triggered analog signals from both detectors
+# triggered_acquisition.analog.plot()
 
-# %%
-# Visualize the scatter triggered digital signals from both detectors
-triggered_acquisition.digital.plot()
-
-
-
-
-"""
-Summary:
---------
-This script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,
-and extracts important features. The process is visualized through signal plots, and key properties are displayed.
-"""
-
+# # %%
+# # Visualize the scatter triggered digital signals from both detectors
+# triggered_acquisition.digital.plot()

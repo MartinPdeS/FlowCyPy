@@ -38,7 +38,7 @@ for optical_power in optical_powers:
     # Initialize the detector
     detector = Detector(
         name=f"{optical_power.magnitude:.1e} W",
-        responsitivity=1 * units.ampere / units.watt,  # Responsitivity (current per power)
+        responsivity=1 * units.ampere / units.watt,  # Responsitivity (current per power)
         resistance=50 * units.ohm,              # Load resistance
         numerical_aperture=0.2 * units.AU,      # Numerical aperture
         phi_angle=0 * units.degree              # Detector orientation angle
@@ -53,7 +53,7 @@ for optical_power in optical_powers:
     )
 
     # Plot the raw signal on the first axis
-    ax_signal.step(numpy.arange(200), noise)
+    ax_signal.step(numpy.arange(200), noise, label=detector.name)
 
     # Plot the histogram of the raw signal
     ax_hist.hist(noise, bins=50, alpha=0.6, label=detector.name)

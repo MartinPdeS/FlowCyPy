@@ -83,7 +83,7 @@ along with their distributions.
         # Initialize the detector
         detector = Detector(
             name=f"{dark_current.magnitude:.1e} A",
-            responsitivity=1 * units.ampere / units.watt,  # Responsitivity (current per power)
+            responsivity=1 * units.ampere / units.watt,  # Responsitivity (current per power)
             resistance=50 * units.ohm,              # Load resistance
             numerical_aperture=0.2 * units.AU,      # Numerical aperture
             phi_angle=0 * units.degree,             # Detector orientation angle
@@ -119,7 +119,7 @@ along with their distributions.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.545 seconds)
+   **Total running time of the script:** (0 minutes 0.574 seconds)
 
 
 .. _sphx_glr_download_gallery_noise_sources_dark_current.py:

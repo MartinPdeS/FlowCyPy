@@ -18,7 +18,7 @@ Workflow:
 # Step 1: Import necessary modules from FlowCyPy
 from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
 from FlowCyPy import distribution
-from FlowCyPy.population import Population
+from FlowCyPy.population import Sphere
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import units
 
@@ -44,7 +44,7 @@ flow_cell = FlowCell(
 
 # %%
 # Step 4: Define the particle diameter distribution
-# ---------------------------------------------
+# -------------------------------------------------
 # Use a normal diameter distribution with a mean diameter of 200 nanometers and a standard deviation of 10 nanometers.
 # This represents the population of scatterers (particles) that will interact with the laser source.
 ev_diameter = distribution.Normal(
@@ -57,8 +57,8 @@ ev_ri = distribution.Normal(
     std_dev=0.01 * units.RIU  # Standard deviation: 0.01
 )
 
-ev = Population(
-    particle_count=1.8e+9 * units.particle / units.milliliter,
+ev = Sphere(
+    particle_count=10 * units.particle,
     diameter=ev_diameter,           # Particle diameter distribution
     refractive_index=ev_ri,     # Refractive index distribution
     name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
@@ -72,7 +72,7 @@ scatterer_collection.add_population(ev)
 # Step 5: Define the detector
 # ---------------------------
 # The detector captures the scattered light. It is positioned at 90 degrees relative to the incident light beam
-# and configured with a numerical aperture of 0.4 and responsitivity of 1.
+# and configured with a numerical aperture of 0.4 and responsivity of 1.
 signal_digitizer = SignalDigitizer(
     bit_depth=1024,
     saturation_levels='auto',
@@ -83,14 +83,14 @@ detector_0 = Detector(
     phi_angle=90 * units.degree,              # Detector angle: 90 degrees (Side Scatter)
     numerical_aperture=0.4 * units.AU,        # Numerical aperture of the detector
     name='first detector',              # Detector name
-    responsitivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
+    responsivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
 )
 
 detector_1 = Detector(
     phi_angle=0 * units.degree,               # Detector angle: 90 degrees (Sid e Scatter)
     numerical_aperture=0.4 * units.AU,        # Numerical aperture of the detector
     name='second detector',                   # Detector name
-    responsitivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
+    responsivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
 )
 
 # Step 6: Simulate Flow Cytometer Signals

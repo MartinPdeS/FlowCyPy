@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 # Import necessary components from FlowCyPy
 from FlowCyPy import (
     FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell,
-    Population, distribution, circuits, units, NoiseSetting
+    population, distribution, circuits, units, NoiseSetting
 )
 from FlowCyPy.signal_digitizer import SignalDigitizer
 
@@ -47,7 +47,7 @@ flow_cell = FlowCell(
 
 # Create a scatterer collection with a single population.
 # For signal processing, we use delta distributions (i.e., no variability).
-population = Population(
+population = population.Sphere(
     name='Population',
     particle_count=10 * units.particle,
     diameter=distribution.Delta(position=150 * units.nanometer),
@@ -70,7 +70,7 @@ detector_0 = Detector(
     name='side',
     phi_angle=90 * units.degree,
     numerical_aperture=0.2 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
+    responsivity=1 * units.ampere / units.watt,
     resistance=13000 * units.ohm,
     dark_current=1 * units.microampere,
     temperature=100 * units.kelvin,
@@ -80,7 +80,7 @@ detector_1 = Detector(
     name='forward',
     phi_angle=0 * units.degree,
     numerical_aperture=0.2 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
+    responsivity=1 * units.ampere / units.watt,
     resistance=13000 * units.ohm,
     dark_current=1 * units.microampere,
     temperature=100 * units.kelvin,

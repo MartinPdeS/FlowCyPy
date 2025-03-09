@@ -7,7 +7,8 @@ import numpy as np
 from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
 from FlowCyPy import units
 from FlowCyPy import NoiseSetting
-from FlowCyPy import Population, distribution
+from FlowCyPy.population import Sphere
+from FlowCyPy import distribution
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import peak_locator
 
@@ -35,7 +36,7 @@ scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.
 
 for size in [150, 100, 50, 30]:
 
-    population = Population(
+    population = Sphere(
         name=f'{size} nanometer',
         particle_count=20 * units.particle,
         diameter=distribution.Delta(position=size * units.nanometer),
@@ -54,7 +55,7 @@ detector_0 = Detector(
     name='side',                             # Detector name: Side scatter detector
     phi_angle=90 * units.degree,                   # Angle: 90 degrees (Side Scatter)
     numerical_aperture=.2 * units.AU,             # Numerical aperture: 1.2
-    responsitivity=1 * units.ampere / units.watt,        # Responsitivity: 1 ampere per watt
+    responsivity=1 * units.ampere / units.watt,        # Responsitivity: 1 ampere per watt
     resistance=13000 * units.ohm,                     # Detector resistance: 50 ohms
     dark_current=0.01 * units.milliampere,          # Dark current: 0.1 milliamps
     temperature=300 * units.kelvin                 # Operating temperature: 300 Kelvin
@@ -64,7 +65,7 @@ detector_1 = Detector(
     name='forward',                          # Detector name: Forward scatter detector
     phi_angle=0 * units.degree,                    # Angle: 0 degrees (Forward Scatter)
     numerical_aperture=.2 * units.AU,             # Numerical aperture: 1.2
-    responsitivity=1 * units.ampere / units.watt,        # Responsitivity: 1 ampere per watt
+    responsivity=1 * units.ampere / units.watt,        # Responsitivity: 1 ampere per watt
     resistance=13000 * units.ohm,                     # Detector resistance: 50 ohms
     dark_current=0.01 * units.milliampere,          # Dark current: 0.1 milliamps
     temperature=300 * units.kelvin                 # Operating temperature: 300 Kelvin

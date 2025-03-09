@@ -539,24 +539,24 @@ document.write(`
 <dt class="sig sig-object py" id="FlowCyPy.peak_locator.basic.BasicPeakLocator">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BasicPeakLocator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">padding_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/peak_locator/basic.html#BasicPeakLocator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.peak_locator.basic.BasicPeakLocator" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<blockquote>
-<div><p>A peak detection utility that identifies the maximum value in each row of a 2D array.</p>
+<p>A peak detection utility that identifies the maximum value in each row of a 2D array.</p>
 <p>Optionally, the peak detection can also compute the width and area of the peak.</p>
 <p>The width is computed as the number of contiguous points around the maximum that remain above
 a specified fraction (threshold) of the maximum value. The area is the sum of the values over
 that same region.</p>
-<dl class="simple">
-<dt>padding_value<span class="classifier">object, optional</span></dt><dd><p>Value used to pad the output if a row contains no data. Default is -1.</p>
-</dd>
-<dt>compute_width<span class="classifier">bool, optional</span></dt><dd><p>If True, the width of the peak (number of samples) is computed. Default is False.</p>
-</dd>
-<dt>compute_area<span class="classifier">bool, optional</span></dt><dd><p>If True, the area (sum of values) of the peak is computed. Default is False.</p>
-</dd>
-<dt>threshold<span class="classifier">float, optional</span></dt><dd><p>Fraction of the peak value used to determine the boundaries for width and area computation.
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>padding_value</strong> (<em>object</em><em>, </em><em>optional</em>) – Value used to pad the output if a row contains no data. Default is -1.</p></li>
+<li><p><strong>compute_width</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the width of the peak (number of samples) is computed. Default is False.</p></li>
+<li><p><strong>compute_area</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the area (sum of values) of the peak is computed. Default is False.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – Fraction of the peak value used to determine the boundaries for width and area computation.
 For example, a threshold of 0.5 means the region above 50% of the maximum is considered.
-Default is 0.5.</p>
+Default is 0.5.</p></li>
+</ul>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
 <span class="gp">... </span>    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">9000</span><span class="p">],</span>
@@ -565,51 +565,113 @@ Default is 0.5.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Only compute peak indices:</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">peak_locator</span> <span class="o">=</span> <span class="n">BasicPeakLocator</span><span class="p">(</span><span class="n">padding_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Peak Indices:</span>
-</pre></div>
-</div>
-</div></blockquote>
-<dl>
-<dt>“, results[“peak_index”])</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Widths:</span>
-</pre></div>
-</div>
-</dd>
-<dt>“, results[“width”])</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Areas:</span>
-</pre></div>
-</div>
-</dd>
-<dt>“, results[“area”])</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Compute peak index, width, and area:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Peak Indices:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;peak_index&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Widths:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Areas:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Compute peak index, width, and area:</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">peak_locator_metrics</span> <span class="o">=</span> <span class="n">BasicPeakLocator</span><span class="p">(</span><span class="n">padding_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">compute_width</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_area</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="n">peak_locator_metrics</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Peak Indices:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Peak Indices:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;peak_index&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Widths:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Areas:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
-</dd>
-<dt>“, results[“peak_index”])</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Widths:</span>
-</pre></div>
-</div>
-</dd>
-<dt>“, results[“width”])</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Areas:</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-<p>“, results[“area”])</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>padding_value</strong> (<em>object</em>)</p></li>
-<li><p><strong>compute_width</strong> (<em>bool</em>)</p></li>
-<li><p><strong>compute_area</strong> (<em>bool</em>)</p></li>
-<li><p><strong>threshold</strong> (<em>float</em>)</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 </section>
 <section id="moving-average-class">
 <h2>Moving-average Class<a class="headerlink" href="#moving-average-class" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.peak_locator.moving_average.SlidingWindowPeakLocator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SlidingWindowPeakLocator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">window_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_number_of_peaks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/peak_locator/moving_average.html#SlidingWindowPeakLocator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.peak_locator.moving_average.SlidingWindowPeakLocator" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A peak detection utility that identifies peaks in each row of a 2D array using a sliding window approach.</p>
+<p>Each row is segmented into fixed-size windows, and the local maximum is found in each window.
+Optionally, the width (number of samples above a threshold) and the area (sum of values) of each
+peak within its window are computed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>window_size</strong> (<em>int</em>) – The size of the sliding window used to detect local maxima.</p></li>
+<li><p><strong>max_number_of_peaks</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum number of peaks to return per row. Default is 5.</p></li>
+<li><p><strong>padding_value</strong> (<em>int</em><em>, </em><em>optional</em>) – The value used to pad the output when fewer than <cite>max_number_of_peaks</cite> peaks are detected. Default is -1.</p></li>
+<li><p><strong>compute_width</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, compute the width (in samples) of each detected peak. Default is False.</p></li>
+<li><p><strong>compute_area</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, compute the area (sum of signal values) under each detected peak. Default is False.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – Fraction of the peak height used to determine the boundaries for width and area calculations.
+Default is 0.5.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+<span class="gp">... </span>    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Without additional metrics:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">locator</span> <span class="o">=</span> <span class="n">SlidingWindowPeakLocator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_number_of_peaks</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">padding_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">locator</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;peak_index&quot;</span><span class="p">])</span>
+<span class="go">[[1 3 4 6]</span>
+<span class="go"> [0 2 4 6]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># With width and area computations enabled:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">locator_metrics</span> <span class="o">=</span> <span class="n">SlidingWindowPeakLocator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_number_of_peaks</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">padding_value</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>                                            <span class="n">compute_width</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_area</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">locator_metrics</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Peak indices:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;peak_index&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Widths:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Areas:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="derivative-based-class">
+<h2>Derivative based Class<a class="headerlink" href="#derivative-based-class" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.peak_locator.derivative.DerivativePeakLocator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DerivativePeakLocator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_number_of_peaks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/peak_locator/derivative.html#DerivativePeakLocator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.peak_locator.derivative.DerivativePeakLocator" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A peak detection utility based on the zero-crossing of the first derivative.</p>
+<p>This class detects peaks by computing the first and second derivatives of each row of a 2D array.
+A peak is defined where the first derivative changes sign from positive to negative and the second derivative is negative.
+Optionally, for each detected peak, the width (number of samples above a threshold) and area (sum of values over the peak region)
+can be computed using a simple threshold-based approach.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_number_of_peaks</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of peaks to return per row. If fewer peaks are detected, missing values are padded with padding_value.
+Default is 5.</p></li>
+<li><p><strong>padding_value</strong> (<em>object</em><em>, </em><em>optional</em>) – Value to pad missing peaks in output. Default is -1.</p></li>
+<li><p><strong>compute_width</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, compute the width (in samples) of each detected peak. Default is False.</p></li>
+<li><p><strong>compute_area</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, compute the area (sum of values) under each detected peak. Default is False.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em><em>, </em><em>optional</em>) – Fraction of the peak height used to determine the boundaries for width and area calculations.
+Default is 0.5.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Without additional metrics:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">peak_locator</span> <span class="o">=</span> <span class="n">DerivativePeakLocator</span><span class="p">(</span><span class="n">max_number_of_peaks</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+<span class="gp">... </span>                 <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">900</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">700</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;peak_index&quot;</span><span class="p">])</span>
+<span class="go">[[2. 5. nan]</span>
+<span class="go"> [1. 3. 5.]]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># With width and area computations enabled:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">peak_locator_metrics</span> <span class="o">=</span> <span class="n">DerivativePeakLocator</span><span class="p">(</span><span class="n">max_number_of_peaks</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">compute_width</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_area</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">peak_locator_metrics</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Peak indices:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;peak_index&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Widths:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Areas:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </section>
 </section>
 
@@ -639,7 +701,14 @@ Default is 0.5.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_locator.basic.BasicPeakLocator"><code class="docutils literal notranslate"><span class="pre">BasicPeakLocator</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moving-average-class">Moving-average Class</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moving-average-class">Moving-average Class</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_locator.moving_average.SlidingWindowPeakLocator"><code class="docutils literal notranslate"><span class="pre">SlidingWindowPeakLocator</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#derivative-based-class">Derivative based Class</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.peak_locator.derivative.DerivativePeakLocator"><code class="docutils literal notranslate"><span class="pre">DerivativePeakLocator</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

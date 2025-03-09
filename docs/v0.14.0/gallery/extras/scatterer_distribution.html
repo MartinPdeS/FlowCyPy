@@ -465,6 +465,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/limit_of_detection.html">Limit of detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/pre_defined_workflow.html">Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/signal_processing.html">Signal Processing in Flow Cytometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Workflow</a></li>
 </ul>
@@ -564,7 +565,7 @@ detected by two detectors (Forward Scatter and Side Scatter) and visualizes the 
 </ol>
 <p>Import necessary libraries and modules</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererCollection</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span><span class="p">,</span> <span class="n">Population</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span><span class="p">,</span> <span class="n">population</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">milliliter</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -577,14 +578,14 @@ detected by two detectors (Forward Scatter and Side Scatter) and visualizes the 
 <span class="c1"># Two particle populations are defined with different sizes and refractive indices.</span>
 <span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
 
-<span class="n">population_0</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
+<span class="n">population_0</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EV&#39;</span><span class="p">,</span>
     <span class="n">particle_count</span><span class="o">=</span><span class="mf">2e+9</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">,</span>
     <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="n">characteristic_property</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">4.5</span><span class="p">),</span>
     <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">1.39</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.05</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
 <span class="p">)</span>
 
-<span class="n">population_1</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
+<span class="n">population_1</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LP&#39;</span><span class="p">,</span>
     <span class="n">particle_count</span><span class="o">=</span><span class="mf">1e+10</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">,</span>
     <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="n">characteristic_property</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">4.5</span><span class="p">),</span>
@@ -596,26 +597,10 @@ detected by two detectors (Forward Scatter and Side Scatter) and visualizes the 
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_scatterer_distribution_001.png" srcset="../../_images/sphx_glr_scatterer_distribution_001.png" alt="Scatterer Collection" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>                            Diameter     RefractiveIndex
-Population Index
-EV         0      48.685861195822774  1.4164902505664154
-           1       60.04961491675073  1.4638033424194599
-           2       59.70261101290269  1.3788222846952922
-           3       56.19815079476007     1.3449760451417
-           4      23.966808222875194  1.4157881781025778
-...                              ...                 ...
-LP         995    152.66216191682807  1.4709462214577693
-           996    178.72433984883764   1.491502662311642
-           997    141.20945290738908   1.411573873929729
-           998     189.6250830362507  1.5166224845777578
-           999     93.18506683374343  1.3575830026663274
-
-[2000 rows x 2 columns]
-
-&lt;seaborn.axisgrid.JointGrid object at 0x7ff3963df850&gt;
+<img src="../../_images/sphx_glr_scatterer_distribution_001.png" srcset="../../_images/sphx_glr_scatterer_distribution_001.png" alt="Scatterer Collection" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7fece87eb1d0&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.526 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 2.486 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-scatterer-distribution-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/2feeb5621a24cc8e6e422b0ec7e47b6c/scatterer_distribution.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">scatterer_distribution.ipynb</span></code></a></p>

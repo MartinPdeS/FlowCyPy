@@ -36,16 +36,18 @@ Workflow:
 
 Step 1: Import necessary modules from FlowCyPy
 
-.. GENERATED FROM PYTHON SOURCE LINES 19-25
+.. GENERATED FROM PYTHON SOURCE LINES 19-28
 
 .. code-block:: Python
 
     from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
     from FlowCyPy import distribution
-    from FlowCyPy.population import Population
+    from FlowCyPy.population import Sphere
     from FlowCyPy.signal_digitizer import SignalDigitizer
     from FlowCyPy import units
 
+    import numpy
+    numpy.random.seed(3)
 
 
 
@@ -53,13 +55,14 @@ Step 1: Import necessary modules from FlowCyPy
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 26-29
+
+.. GENERATED FROM PYTHON SOURCE LINES 29-32
 
 Step 2: Define the laser source
 -------------------------------
 Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and a numerical aperture of 0.3.
 
-.. GENERATED FROM PYTHON SOURCE LINES 29-35
+.. GENERATED FROM PYTHON SOURCE LINES 32-38
 
 .. code-block:: Python
 
@@ -76,13 +79,13 @@ Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-39
+.. GENERATED FROM PYTHON SOURCE LINES 39-42
 
 Step 3: Define flow parameters
 ------------------------------
 Set the flow speed to 80 micrometers per second and a flow area of 1 square micrometer, with a total simulation time of 1 second.
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-45
+.. GENERATED FROM PYTHON SOURCE LINES 42-48
 
 .. code-block:: Python
 
@@ -99,14 +102,14 @@ Set the flow speed to 80 micrometers per second and a flow area of 1 square micr
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 46-50
+.. GENERATED FROM PYTHON SOURCE LINES 49-53
 
 Step 4: Define the particle size distribution
 ---------------------------------------------
 Use a normal size distribution with a mean size of 200 nanometers and a standard deviation of 10 nanometers.
 This represents the population of scatterers (particles) that will interact with the laser source.
 
-.. GENERATED FROM PYTHON SOURCE LINES 50-111
+.. GENERATED FROM PYTHON SOURCE LINES 53-114
 
 .. code-block:: Python
 
@@ -120,8 +123,8 @@ This represents the population of scatterers (particles) that will interact with
         std_dev=0.01 * units.RIU  # Standard deviation: 0.01
     )
 
-    ev = Population(
-        particle_count=1.8e+8 * units.particle / units.milliliter,
+    ev = Sphere(
+        particle_count=20 * units.particle,
         diameter=ev_diameter,               # Particle size distribution
         refractive_index=ev_ri,     # Refractive index distribution
         name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
@@ -131,12 +134,12 @@ This represents the population of scatterers (particles) that will interact with
 
     scatterer_collection.add_population(ev)
 
-    scatterer_collection.dilute(6)
+    scatterer_collection.dilute(2)
 
     # Step 5: Define the detector
     # ---------------------------
     # The detector captures the scattered light. It is positioned at 90 degrees relative to the incident light beam
-    # and configured with a numerical aperture of 0.4 and responsitivity of 1.
+    # and configured with a numerical aperture of 0.4 and responsivity of 1.
     signal_digitizer = SignalDigitizer(
         bit_depth=1024,
         saturation_levels='auto',
@@ -147,14 +150,14 @@ This represents the population of scatterers (particles) that will interact with
         phi_angle=90 * units.degree,              # Detector angle: 90 degrees (Side Scatter)
         numerical_aperture=0.4 * units.AU,        # Numerical aperture of the detector
         name='side',              # Detector name
-        responsitivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
+        responsivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
     )
 
     detector_1 = Detector(
         phi_angle=0 * units.degree,               # Detector angle: 90 degrees (Sid e Scatter)
         numerical_aperture=0.4 * units.AU,        # Numerical aperture of the detector
         name='forward',             # Detector name
-        responsitivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
+        responsivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
     )
 
     # Step 6: Simulate Flow Cytometer Signals
@@ -178,11 +181,11 @@ This represents the population of scatterers (particles) that will interact with
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 112-113
+.. GENERATED FROM PYTHON SOURCE LINES 115-116
 
 Visualize the scatter analog signals from both detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-116
+.. GENERATED FROM PYTHON SOURCE LINES 116-119
 
 .. code-block:: Python
 
@@ -198,14 +201,23 @@ Visualize the scatter analog signals from both detectors
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/dataframe_subclass.py:637: UserWarning: Attempting to set identical low and high ylims makes transformation singular; automatically expanding.
+      ax.set_ylim(self.attrs['saturation_levels'][detector_name])
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/dataframe_subclass.py:637: UserWarning: Attempting to set identical low and high ylims makes transformation singular; automatically expanding.
+      ax.set_ylim(self.attrs['saturation_levels'][detector_name])
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 117-118
+
+.. GENERATED FROM PYTHON SOURCE LINES 120-121
 
 Visualize the scatter digital signals from both detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 118-130
+.. GENERATED FROM PYTHON SOURCE LINES 121-140
 
 .. code-block:: Python
 
@@ -221,6 +233,13 @@ Visualize the scatter digital signals from both detectors
         post_buffer=64
     )
 
+    # # %%
+    # # Visualize the scatter triggered analog signals from both detectors
+    # triggered_acquisition.analog.plot()
+
+    # # %%
+    # # Visualize the scatter triggered digital signals from both detectors
+    # triggered_acquisition.digital.plot()
 
 
 
@@ -230,73 +249,22 @@ Visualize the scatter digital signals from both detectors
    :class: sphx-glr-single-img
 
 
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 131-132
-
-Visualize the scatter triggered analog signals from both detectors
-
-.. GENERATED FROM PYTHON SOURCE LINES 132-134
-
-.. code-block:: Python
-
-    triggered_acquisition.analog.plot()
-
-
-
-
-.. image-sg:: /gallery/extras/images/sphx_glr_triggered_acquisition_003.png
-   :alt: triggered acquisition
-   :srcset: /gallery/extras/images/sphx_glr_triggered_acquisition_003.png
-   :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 135-136
-
-Visualize the scatter triggered digital signals from both detectors
-
-.. GENERATED FROM PYTHON SOURCE LINES 136-148
-
-.. code-block:: Python
-
-    triggered_acquisition.digital.plot()
-
-
-
-
-    """
-    Summary:
-    --------
-    This script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,
-    and extracts important features. The process is visualized through signal plots, and key properties are displayed.
-    """
-
-
-
-
-.. image-sg:: /gallery/extras/images/sphx_glr_triggered_acquisition_004.png
-   :alt: triggered acquisition
-   :srcset: /gallery/extras/images/sphx_glr_triggered_acquisition_004.png
-   :class: sphx-glr-single-img
-
-
 .. rst-class:: sphx-glr-script-out
 
  .. code-block:: none
 
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/acquisition.py:144: UserWarning: No valid triggers found after baseline restoration. Returning empty arrays.
+      times, signals, detectors, segment_ids = triggering_system.run()
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/acquisition.py:158: UserWarning: No signal met the trigger criteria. Try adjusting the threshold. Signal min-max: 0.0 V, 0.0 V
+      warnings.warn(
 
-    '\nSummary:\n--------\nThis script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,\nand extracts important features. The process is visualized through signal plots, and key properties are displayed.\n'
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.411 seconds)
+   **Total running time of the script:** (0 minutes 4.714 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_triggered_acquisition.py:

@@ -508,17 +508,12 @@ document.write(`
 <span></span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pint_pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">PintArray</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">gridspec</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">micrometer</span><span class="p">,</span> <span class="n">particle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.particle_count</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParticleCount</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PyMieSim.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">meter</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.particle_count</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParticleCount</span>
 
 
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -529,25 +524,117 @@ document.write(`
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="Population">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.Population">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BasePopulation</span><span class="p">:</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;refractive_index&#39;</span><span class="p">,</span> <span class="s1">&#39;core_refractive_index&#39;</span><span class="p">,</span> <span class="s1">&#39;shell_refractive_index&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_refractive_index</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate the refractive index input.</span>
+
+<span class="sd">        This validator ensures that the refractive index is provided either as a Quantity with the correct</span>
+<span class="sd">        refractive index units (RIU) or as an instance of distribution.Base. If a Quantity is provided,</span>
+<span class="sd">        it is converted to a Delta distribution.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : Union[distribution.Base, Quantity]</span>
+<span class="sd">            The refractive index value to validate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        distribution.Base</span>
+<span class="sd">            A distribution representation of the refractive index.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If the input is not a Quantity with RIU units or a valid distribution.Base instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">RIU</span><span class="p">),</span> <span class="s2">&quot;The refractive index must have refractive index units [RIU].&quot;</span>
+            <span class="k">return</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;refractive_index must be of type Quantity (with RIU) or distribution.Base, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;core_diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;shell_thickness&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_diameter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate the diameter input.</span>
+
+<span class="sd">        This validator ensures that the particle diameter is provided either as a Quantity with length</span>
+<span class="sd">        units (e.g., meters) or as an instance of distribution.Base. If provided as a Quantity, it is converted</span>
+<span class="sd">        to a Delta distribution.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : Union[distribution.Base, Quantity]</span>
+<span class="sd">            The particle diameter value to validate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        distribution.Base</span>
+<span class="sd">            A distribution representation of the particle diameter.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If the input is not a Quantity with length units or a valid distribution.Base instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">meter</span><span class="p">),</span> <span class="s2">&quot;The diameter must have length units (meter).&quot;</span>
+            <span class="k">return</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Diameter must be of type Quantity or distribution.Base, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dilute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dilute the particle population.</span>
+
+<span class="sd">        This method reduces the particle_count by a given factor, effectively diluting the population.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        factor : float</span>
+<span class="sd">            The dilution factor by which the particle count is divided.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">/=</span> <span class="n">factor</span>
+
+<div class="viewcode-block" id="Sphere">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.Sphere">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Population</span><span class="p">():</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Sphere</span><span class="p">(</span><span class="n">BasePopulation</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A class representing a population of scatterers in a flow cytometry setup.</span>
+<span class="sd">    Represents a population of scatterers (particles) in a flow cytometry setup.</span>
+
+<span class="sd">    This class encapsulates the properties of a particle population including its name,</span>
+<span class="sd">    refractive index, particle diameter, and particle count (density). The refractive index</span>
+<span class="sd">    and diameter can be provided as either fixed values (Quantity) or as statistical distributions</span>
+<span class="sd">    (instances of distribution.Base). The class automatically converts Quantity attributes to their</span>
+<span class="sd">    base SI units during initialization.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    name : str</span>
-<span class="sd">        Name of the population distribution.</span>
+<span class="sd">        The identifier or label for the population.</span>
 <span class="sd">    refractive_index : Union[distribution.Base, Quantity]</span>
-<span class="sd">        Refractive index or refractive index distributions.</span>
+<span class="sd">        The refractive index (or its distribution) of the particles. If provided as a Quantity,</span>
+<span class="sd">        it must have units of refractive index (RIU). If provided as a distribution, it should be an</span>
+<span class="sd">        instance of distribution.Base.</span>
 <span class="sd">    diameter : Union[distribution.Base, Quantity]</span>
-<span class="sd">        Particle diameter or diameter distributions.</span>
-<span class="sd">    particle_count : ParticleCount</span>
-<span class="sd">        Scatterer density in particles per cubic meter, default is 1 particle/m³.</span>
+<span class="sd">        The particle diameter (or its distribution). If provided as a Quantity, it must have units</span>
+<span class="sd">        of length (e.g., meters). If provided as a distribution, it should be an instance of</span>
+<span class="sd">        distribution.Base.</span>
+<span class="sd">    particle_count : ParticleCount | Quantity</span>
+<span class="sd">        The number density of particles (scatterers) per cubic meter. If a Quantity is provided,</span>
+<span class="sd">        it should be convertible to a ParticleCount.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">refractive_index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
     <span class="n">diameter</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
@@ -555,104 +642,233 @@ document.write(`
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Automatically converts all Quantity attributes to their base SI units (i.e., without any prefixes).</span>
-<span class="sd">        This strips units like millimeter to meter, kilogram to gram, etc.</span>
+<span class="sd">        Post-initialization processing.</span>
+
+<span class="sd">        This method converts any Quantity attributes to their base SI units (i.e., removes any prefixes)</span>
+<span class="sd">        and ensures that the particle_count is stored as a ParticleCount instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">=</span> <span class="n">ParticleCount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span><span class="p">)</span>
-        <span class="c1"># Convert all Quantity attributes to base SI units (without any prefixes)</span>
+        <span class="c1"># Convert all attributes that are Quantity instances to their base SI units.</span>
         <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-                <span class="c1"># Convert the quantity to its base unit (strip prefix)</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">())</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;refractive_index&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_refractive_index</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="Sphere.generate_sampling">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.Sphere.generate_sampling">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validates that the refractive index is either a Quantity or a valid distribution.Base instance.</span>
+<span class="sd">        Generate a sampling of particle properties.</span>
+
+<span class="sd">        This method uses the underlying distributions (or fixed quantities) for diameter and refractive index</span>
+<span class="sd">        to generate a sample set for simulation or analysis.</span>
+
+
+<span class="sd">        This method creates a dictionnary with the following entries:</span>
+<span class="sd">            - &#39;Diameter&#39;: The generated diameters.</span>
+<span class="sd">            - &#39;RefractiveIndex&#39;: The generated refractive index values.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        value : Union[distribution.Base, Quantity]</span>
-<span class="sd">            The refractive index to validate.</span>
+<span class="sd">        sampling : int</span>
+<span class="sd">            The sampling parameter (e.g., number of samples or a resolution quantity) used by the distributions.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Union[distribution.Base, Quantity]</span>
-<span class="sd">            The validated refractive index.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        TypeError</span>
-<span class="sd">            If the refractive index is not of type Quantity or distribution.Base.</span>
+<span class="sd">        tuple</span>
+<span class="sd">            A tuple containing the generated diameter sample and refractive index sample.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-            <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">RIU</span><span class="p">),</span> <span class="s2">&quot;The refractive index value provided does not have refractive index units [RIU]&quot;</span>
-            <span class="k">return</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;Diameter&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
+            <span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+        <span class="p">}</span></div>
+</div>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">value</span>
 
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;refractive_index must be of type Quantity&lt;RIU or refractive_index_units&gt; or distribution.Base, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;diameter&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_diameter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="CoreShell">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.CoreShell">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CoreShell</span><span class="p">(</span><span class="n">BasePopulation</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a population of core-shell scatterers in a flow cytometry setup.</span>
+
+<span class="sd">    In a core-shell particle, the inner core is defined by its diameter and the outer shell</span>
+<span class="sd">    is defined by its thickness. The overall particle diameter is given by:</span>
+
+<span class="sd">        overall_diameter = core_diameter + 2 * shell_thickness</span>
+
+<span class="sd">    The refractive indices for the core and shell can be provided either as fixed values (Quantity)</span>
+<span class="sd">    or as statistical distributions (instances of distribution.Base). The particle_count defines the</span>
+<span class="sd">    scatterer density in particles per cubic meter.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        The identifier or label for the population.</span>
+<span class="sd">    core_diameter : Union[distribution.Base, Quantity]</span>
+<span class="sd">        The diameter of the particle core. If provided as a Quantity, it must have length units</span>
+<span class="sd">        (e.g., meter). If provided as a distribution, it must be an instance of distribution.Base.</span>
+<span class="sd">    shell_thickness : Union[distribution.Base, Quantity]</span>
+<span class="sd">        The thickness of the particle shell. If provided as a Quantity, it must have length units.</span>
+<span class="sd">        If provided as a distribution, it must be an instance of distribution.Base.</span>
+<span class="sd">    refractive_index_core : Union[distribution.Base, Quantity]</span>
+<span class="sd">        The refractive index (or its distribution) of the core. If provided as a Quantity, it must have</span>
+<span class="sd">        refractive index units (RIU).</span>
+<span class="sd">    refractive_index_shell : Union[distribution.Base, Quantity]</span>
+<span class="sd">        The refractive index (or its distribution) of the shell. If provided as a Quantity, it must have</span>
+<span class="sd">        refractive index units (RIU).</span>
+<span class="sd">    particle_count : ParticleCount | Quantity</span>
+<span class="sd">        The particle density in particles per cubic meter.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">core_diameter</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
+    <span class="n">shell_thickness</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
+    <span class="n">core_refractive_index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
+    <span class="n">shell_refractive_index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
+    <span class="n">particle_count</span><span class="p">:</span> <span class="n">ParticleCount</span> <span class="o">|</span> <span class="n">Quantity</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validates that the diameter is either a Quantity or a valid distribution.Base instance.</span>
+<span class="sd">        Post-initialization processing.</span>
+
+<span class="sd">        This method ensures that:</span>
+<span class="sd">            - All Quantity attributes are converted to their base SI units.</span>
+<span class="sd">            - The particle_count is stored as a ParticleCount instance.</span>
+<span class="sd">            - The core_diameter, shell_thickness, and refractive indices are validated via their respective field validators.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">=</span> <span class="n">ParticleCount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span><span class="p">)</span>
+        <span class="c1"># Convert any Quantity attribute to its base SI units.</span>
+        <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">())</span>
+
+<div class="viewcode-block" id="CoreShell.overall_diameter">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.CoreShell.overall_diameter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overall_diameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the overall particle diameter.</span>
+
+<span class="sd">        This method calculates the overall particle diameter for a given sampling by generating</span>
+<span class="sd">        the core diameter and shell thickness samples from their respective distributions. The overall</span>
+<span class="sd">        diameter is computed as:</span>
+
+<span class="sd">            overall_diameter = core_diameter + 2 * shell_thickness</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        value : Union[distribution.Base, Quantity]</span>
-<span class="sd">            The diameter to validate.</span>
+<span class="sd">        sampling : Quantity</span>
+<span class="sd">            The sampling parameter used by the distributions to generate values.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Union[distribution.Base, Quantity]</span>
-<span class="sd">            The validated diameter.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        TypeError</span>
-<span class="sd">            If the diameter is not of type Quantity or distribution.Base.</span>
+<span class="sd">        Quantity</span>
+<span class="sd">            The overall diameter of the particles.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-            <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">meter</span><span class="p">),</span> <span class="s2">&quot;The diameter value provided does not have length units [meter]&quot;</span>
-            <span class="k">return</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">value</span>
-
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;suze must be of type Quantity or distribution.Base, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<div class="viewcode-block" id="Population.dilute">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.Population.dilute">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">dilute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">/=</span> <span class="n">factor</span></div>
+        <span class="n">core</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+        <span class="n">shell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_thickness</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">core</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">shell</span></div>
 
 
-<div class="viewcode-block" id="Population.generate_sampling">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.Population.generate_sampling">[docs]</a>
+<div class="viewcode-block" id="CoreShell.generate_sampling">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.CoreShell.generate_sampling">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
-        <span class="n">diameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a sampling of core-shell particle properties.</span>
 
-        <span class="n">ri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+<span class="sd">        This method generates a sample set for the core diameter, shell thickness, core refractive index,</span>
+<span class="sd">        and shell refractive index from their underlying distributions (or fixed values).</span>
 
-        <span class="k">return</span> <span class="n">diameter</span><span class="p">,</span> <span class="n">ri</span></div>
+<span class="sd">        This method creates a dictionnary with the following entries:</span>
+<span class="sd">            - &#39;CoreDiameter&#39;: The generated core diameters.</span>
+<span class="sd">            - &#39;ShellThickness&#39;: The generated shell thickness values.</span>
+<span class="sd">            - &#39;CoreRefractiveIndex&#39;: The generated core refractive indices.</span>
+<span class="sd">            - &#39;ShellRefractiveIndex&#39;: The generated shell refractive indices.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sampling : Quantity</span>
+<span class="sd">            The sampling parameter used by the distributions.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple</span>
+<span class="sd">            A tuple containing the generated samples in the order:</span>
+<span class="sd">            (core_diameter, shell_thickness, refractive_index_core, refractive_index_shell).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;CoreDiameter&#39;</span><span class="p">:</span>  <span class="bp">self</span><span class="o">.</span><span class="n">core_diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
+            <span class="s1">&#39;ShellThickness&#39;</span><span class="p">:</span>  <span class="bp">self</span><span class="o">.</span><span class="n">shell_thickness</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
+            <span class="s1">&#39;CoreRefractiveIndex&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
+            <span class="s1">&#39;ShellRefractiveIndex&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+        <span class="p">}</span></div>
+</div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="n">diameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
 
-        <span class="n">ri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
-
-        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Size&#39;</span><span class="p">,</span> <span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">])</span>
-
-        <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">diameter</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">diameter</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
-        <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">ri</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ri</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">dataframe</span></div>
+<span class="k">class</span><span class="w"> </span><span class="nc">CallablePopulationMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must be called as </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">() to access its population instance.&quot;</span><span class="p">)</span>
 
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.populations_instances</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>  <span class="c1"># noqa F403</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CallablePopulation</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">CallablePopulationMeta</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">diameter_dist</span><span class="p">,</span> <span class="n">ri_dist</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_diameter_distribution</span> <span class="o">=</span> <span class="n">diameter_dist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ri_distribution</span> <span class="o">=</span> <span class="n">ri_dist</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">particle_count</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">particle</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Sphere</span><span class="p">(</span>
+            <span class="n">particle_count</span><span class="o">=</span><span class="n">particle_count</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span>
+            <span class="n">diameter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_diameter_distribution</span><span class="p">,</span>
+            <span class="n">refractive_index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ri_distribution</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="c1"># Define populations</span>
+<span class="n">_populations</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="s1">&#39;Exosome&#39;</span><span class="p">,</span>          <span class="mi">70</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.39</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;MicroVesicle&#39;</span><span class="p">,</span>    <span class="mi">400</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.39</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;ApoptoticBodies&#39;</span><span class="p">,</span>  <span class="mi">2</span> <span class="o">*</span> <span class="n">micrometer</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.40</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="mf">0.03</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;HDL&#39;</span><span class="p">,</span>              <span class="mi">10</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;LDL&#39;</span><span class="p">,</span>              <span class="mi">20</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.35</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;VLDL&#39;</span><span class="p">,</span>             <span class="mi">50</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.445</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="mf">0.0005</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;Platelet&#39;</span><span class="p">,</span>       <span class="mi">2000</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">1.38</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;CellularDebris&#39;</span><span class="p">,</span>   <span class="mi">3</span> <span class="o">*</span> <span class="n">micrometer</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.40</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="mf">0.03</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># Dynamically create population classes</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">diameter</span><span class="p">,</span> <span class="n">diameter_spread</span><span class="p">,</span> <span class="n">ri</span><span class="p">,</span> <span class="n">ri_spread</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_populations</span><span class="p">:</span>
+    <span class="n">diameter_distribution</span> <span class="o">=</span> <span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span>
+        <span class="n">characteristic_property</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span>
+        <span class="n">spread</span><span class="o">=</span><span class="n">diameter_spread</span>
+    <span class="p">)</span>
+
+    <span class="n">ri_distribution</span> <span class="o">=</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span>
+        <span class="n">mean</span><span class="o">=</span><span class="n">ri</span><span class="p">,</span>
+        <span class="n">std_dev</span><span class="o">=</span><span class="n">ri_spread</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Create a class dynamically for each population</span>
+    <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">CallablePopulation</span><span class="p">,),</span> <span class="p">{})</span>
+    <span class="nb">globals</span><span class="p">()[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">diameter_distribution</span><span class="p">,</span> <span class="n">ri_distribution</span><span class="p">)</span>
+
+
+<span class="c1"># Helper function for microbeads</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_microbeads</span><span class="p">(</span><span class="n">diameter</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">refractive_index</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sphere</span><span class="p">:</span>
+    <span class="n">diameter_distribution</span> <span class="o">=</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">diameter</span><span class="p">)</span>
+    <span class="n">ri_distribution</span> <span class="o">=</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">refractive_index</span><span class="p">)</span>
+
+    <span class="n">microbeads</span> <span class="o">=</span> <span class="n">Sphere</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">diameter</span><span class="o">=</span><span class="n">diameter_distribution</span><span class="p">,</span>
+        <span class="n">refractive_index</span><span class="o">=</span><span class="n">ri_distribution</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">microbeads</span>
 </pre></div>
 
                 </article>

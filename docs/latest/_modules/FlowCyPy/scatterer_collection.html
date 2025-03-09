@@ -516,7 +516,7 @@ document.write(`
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">liter</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Population</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePopulation</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">CouplingModel</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -534,11 +534,11 @@ document.write(`
 <span class="sd">    indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">medium_refractive_index</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Population</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">coupling_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CouplingModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">CouplingModel</span><span class="o">.</span><span class="n">MIE</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">medium_refractive_index</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BasePopulation</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">coupling_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CouplingModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">CouplingModel</span><span class="o">.</span><span class="n">MIE</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        populations : List[Population]</span>
+<span class="sd">        populations : List[BasePopulation]</span>
 <span class="sd">            A list of Population instances that define different scatterer populations.</span>
 <span class="sd">        coupling_model : Optional[CouplingModel], optional</span>
 <span class="sd">            The type of coupling factor to use (CouplingModel.MIE, CouplingModel.RAYLEIGH, CouplingModel.UNIFORM). Default is CouplingModel.MIE.</span>
@@ -602,7 +602,7 @@ document.write(`
 
 <div class="viewcode-block" id="ScattererCollection.add_population">
 <a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.add_population">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">population</span><span class="p">:</span> <span class="n">Population</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;ScattererCollection&#39;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">population</span><span class="p">:</span> <span class="n">BasePopulation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;ScattererCollection&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a population to the ScattererCollection instance with the specified attributes.</span>
 
@@ -732,18 +732,17 @@ document.write(`
 <span class="sd">        After filling, the DataFrame will be populated with diameter and refractive index data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
-            <span class="c1"># Check if population.name is in the dataframe&#39;s index</span>
-            <span class="k">if</span> <span class="n">population</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
-                <span class="k">continue</span>  <span class="c1"># Skip this iteration if population.name is not present</span>
+            <span class="c1"># Check if population.name is in the DataFrame&#39;s index at level 0</span>
+            <span class="k">if</span> <span class="n">population</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
+                <span class="k">continue</span>
 
-            <span class="c1"># Safely access the sub-dataframe and proceed</span>
-            <span class="n">sub_dataframe</span> <span class="o">=</span> <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">xs</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="n">sampling</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_dataframe</span><span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span>
+            <span class="c1"># Access the sub-dataframe at level 0</span>
+            <span class="n">sub_dataframe</span> <span class="o">=</span> <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">xs</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">sampling</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_dataframe</span><span class="p">)</span>
 
-            <span class="n">diameter</span><span class="p">,</span> <span class="n">ri</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">generate_sampling</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
-
-            <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Diameter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">diameter</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">diameter</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
-            <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">ri</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ri</span><span class="o">.</span><span class="n">units</span><span class="p">)</span></div>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">population</span><span class="o">.</span><span class="n">generate_sampling</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">,),</span> <span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+                <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">,),</span> <span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ScattererCollection.plot">
@@ -775,8 +774,6 @@ document.write(`
 
         <span class="c1"># Generate the DataFrame with sampling.</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_population_dataframe</span><span class="p">(</span><span class="n">total_sampling</span><span class="p">,</span> <span class="n">use_ratio</span><span class="o">=</span><span class="n">use_ratio</span><span class="p">)</span>
-
-        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
         <span class="c1"># Reset the MultiIndex to obtain a column for population names.</span>
         <span class="n">df_reset</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>

@@ -76,7 +76,7 @@ of the detector.
         # Initialize Detector
         detector = Detector(
             name=str(temperature),
-            responsitivity=1 * units.ampere / units.watt,
+            responsivity=1 * units.ampere / units.watt,
             resistance=50 * units.ohm,
             numerical_aperture=0.2 * units.AU,
             phi_angle=0 * units.degree,
@@ -102,7 +102,7 @@ of the detector.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.445 seconds)
+   **Total running time of the script:** (0 minutes 0.463 seconds)
 
 
 .. _sphx_glr_download_gallery_noise_sources_thermal.py:
