@@ -14,7 +14,7 @@ FlowCyPy: Flow Cytometer Simulation Tool
    * - Testing
      - |ci/cd|
      - |coverage|
-     -
+     - |colab|
    * - PyPi
      - |PyPi|
      - |PyPi_download|
@@ -260,3 +260,7 @@ For inquiries or collaboration, contact `Martin Poinsinet de Sivry-Houle <mailto
 .. |anaconda_date| image:: https://anaconda.org/martinpdes/flowcypy/badges/latest_release_relative_date.svg
     :alt: Latest release date
     :target: https://anaconda.org/martinpdes/flowcypy
+
+.. |colab| image:: https://colab.research.google.com/assets/colab-badge.svg
+    :alt: Google Colab
+    :target: https://colab.research.google.com/github/MartinPdeS/FlowCyPy/blob/master/notebook.ipynb

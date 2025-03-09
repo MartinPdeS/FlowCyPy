@@ -7,7 +7,6 @@ from typing import Optional, List
 from pint_pandas import PintArray
 from enum import Enum
 
-from FlowCyPy import units
 from FlowCyPy.units import Quantity, RIU, particle, liter
 from FlowCyPy.population import BasePopulation
 
