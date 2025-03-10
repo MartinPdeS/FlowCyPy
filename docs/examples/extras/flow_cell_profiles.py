@@ -1,9 +1,12 @@
-import numpy as np
+"""
+Flow Cell geometries
+====================
+
+"""
 import matplotlib.pyplot as plt
 
 from FlowCyPy import units
 from FlowCyPy.flow_cell import CircularFlowCell, RectangularFlowCell, SquareFlowCell
-from FlowCyPy.population import BasePopulation
 
 # Create example FlowCell instances
 volume_flow = 0.3 * units.microliter / units.second

@@ -2,7 +2,8 @@ import numpy as np
 import pytest
 import matplotlib.pyplot as plt
 from unittest.mock import patch
-from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, FlowCell
+from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam
+from FlowCyPy.flow_cell import CircularFlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import distribution
 from FlowCyPy.population import Sphere
@@ -42,18 +43,20 @@ def detector_1():
     )
 
 @pytest.fixture
-def flow_cell():
-    """Fixture for creating a default flow cell."""
-    source = GaussianBeam(
+def source():
+    return GaussianBeam(
         numerical_aperture=1 * units.AU,
         wavelength=1550 * units.nanometer,
         optical_power=100e-3 * units.watt,
     )
 
-    return FlowCell(
-        source=source,
+@pytest.fixture
+def flow_cell():
+    """Fixture for creating a default flow cell."""
+
+    return CircularFlowCell(
         volume_flow=0.1 * units.microliter / units.second,
-        flow_area=(12 * units.micrometer) ** 2,
+        radius=12 * units.micrometer,
         event_scheme='uniform-sequential'
     )
 
@@ -91,9 +94,10 @@ def scatterer_collection(population):
     return scatterer
 
 @pytest.fixture
-def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, default_digitizer):
+def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, source, default_digitizer):
     """Fixture for creating a default Flow Cytometer."""
     return FlowCytometer(
+        source=source,
         signal_digitizer=default_digitizer,
         scatterer_collection=scatterer_collection,
         detectors=[detector_0, detector_1],

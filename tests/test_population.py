@@ -3,7 +3,7 @@ import numpy as np
 from FlowCyPy import distribution
 from FlowCyPy.population import Sphere
 from FlowCyPy.scatterer_collection import ScattererCollection
-from FlowCyPy.flow_cell import FlowCell
+from FlowCyPy.flow_cell import CircularFlowCell
 from FlowCyPy import units
 
 from pint import UnitRegistry
@@ -18,9 +18,9 @@ RUN_TIME = 100e-3 * units.second
 @pytest.fixture
 def flow_cell():
     """Fixture to create a FlowCell object for testing."""
-    return FlowCell(
+    return CircularFlowCell(
         volume_flow=1e-4 * units.microliter / units.second,
-        flow_area=(10 * units.micrometer) ** 2,
+        radius=10 * units.micrometer,
     )
 
 
@@ -86,7 +86,7 @@ def test_particle_arrival_times(flow_cell, population_dataframe):
 def test_invalid_flow_cell():
     """Test if providing invalid flow cell parameters raises an error."""
     with pytest.raises(ValueError):
-        invalid_flow_cell = FlowCell(
+        invalid_flow_cell = CircularFlowCell(
             volume_flow=0 * units.microliter / units.second,  # Invalid flow speed
             flow_area=(10 * units.micrometer) ** 2,
             run_time=1 * units.second,

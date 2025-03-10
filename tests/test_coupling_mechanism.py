@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
-from FlowCyPy import ScattererCollection, Detector, FlowCell
+from FlowCyPy import ScattererCollection, Detector
+from FlowCyPy.flow_cell import CircularFlowCell
 from FlowCyPy import distribution
 from FlowCyPy.coupling_mechanism import rayleigh
 from FlowCyPy.population import Sphere
@@ -39,9 +40,9 @@ def normal_population(normal_size_distribution, normal_ri_distribution):
 
 @pytest.fixture
 def default_flow_cell():
-    return FlowCell(
+    return CircularFlowCell(
         volume_flow=10 * units.microliter / units.second,
-        flow_area=(10 * units.micrometer) ** 2,
+        radius=10 * units.micrometer,
     )
 
 @pytest.fixture

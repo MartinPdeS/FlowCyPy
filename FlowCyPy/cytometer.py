@@ -9,13 +9,14 @@ from pint_pandas import PintArray
 
 from FlowCyPy import units
 from FlowCyPy.units import milliwatt
-from FlowCyPy.flow_cell import FlowCell
+from FlowCyPy.flow_cell import BaseFlowCell
 from FlowCyPy.detector import Detector
 from FlowCyPy.acquisition import Acquisition
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.helper import validate_units
 from FlowCyPy import dataframe_subclass
 from FlowCyPy.circuits import SignalProcessor
+from FlowCyPy.source import BaseBeam
 
 
 # Set up logging configuration
@@ -36,7 +37,7 @@ class FlowCytometer:
 
     Parameters
     ----------
-    flow_cell : FlowCell
+    flow_cell : BaseFlowCell
         The flow cell object representing the fluidic and optical environment through which particles travel.
     detectors : List[Detector]
         A list of `Detector` objects representing the detectors used to measure optical signals (e.g., FSC and SSC). Exactly two detectors must be provided.
@@ -48,7 +49,7 @@ class FlowCytometer:
 
     Attributes
     ----------
-    flow_cell : FlowCell
+    flow_cell : BaseFlowCell
         The flow cell instance representing the system environment.
     scatterer_collection : ScattererCollection
         A collection of particles or scatterers passing through the flow cytometer.
@@ -69,8 +70,9 @@ class FlowCytometer:
     """
     def __init__(
             self,
+            source: BaseBeam,
             scatterer_collection: object,
-            flow_cell: FlowCell,
+            flow_cell: BaseFlowCell,
             signal_digitizer: SignalDigitizer,
             detectors: List[Detector],
             coupling_mechanism: Optional[str] = 'mie',
@@ -78,7 +80,7 @@ class FlowCytometer:
 
         self.scatterer_collection = scatterer_collection
         self.flow_cell = flow_cell
-        self.source = flow_cell.source
+        self.source = source
         self.detectors = detectors
         self.signal_digitizer = signal_digitizer
         self.coupling_mechanism = coupling_mechanism
@@ -295,7 +297,7 @@ class FlowCytometer:
             signal = detector.capture_signal(
                 signal=group['Signal'],
                 optical_power=total_power,
-                wavelength=self.flow_cell.source.wavelength
+                wavelength=self.source.wavelength
             ).pint.to(group['Signal'].pint.units)
 
             signal_dataframe.loc[detector_name, 'Signal'] = signal
