@@ -80,7 +80,6 @@ detector_0 = PMT(name='forward', cache_numerical_aperture=0.0 * units.AU, phi_an
 
 detector_1 = PMT(name='side', phi_angle=90 * units.degree, numerical_aperture=0.3 * units.AU)
 
-
 cytometer = FlowCytometer(
     source=source,
     scatterer_collection=scatterer_collection,

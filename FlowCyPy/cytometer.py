@@ -187,11 +187,8 @@ class FlowCytometer:
         - A `'Widths'` column with the computed pulse widths.
         """
         # Calculate the pulse width (standard deviation in time, σₜ) based on the beam waist and flow speed.
-        pulse_width = self.source.waist / (2 * self.flow_cell.flow_speed)
+        scatterer_dataframe['Widths'] = self.source.waist / (2 * scatterer_dataframe['Velocity'])
 
-        widths = pulse_width * np.ones(len(scatterer_dataframe))
-
-        scatterer_dataframe['Widths'] = PintArray(widths, dtype=widths.units)
 
     def _initialize_signal(self, run_time: units.second) -> None:
         """

@@ -290,7 +290,7 @@ class RectangularFlowCell(BaseFlowCell):
         velocities = v_max * (1 - (2 * X / self.width) ** 2) * (1 - (2 * Y / self.height) ** 2)
         return X, Y, velocities.to(units.meter / units.second)
 
-    def sample_velocity(self, n_sammples: int) -> Quantity:
+    def sample_velocity(self, n_samples: int) -> Quantity:
         """
         Samples a velocity for a particle in a **rectangular flow cell** by choosing
         random (x, y) positions inside the channel and computing the local velocity.
@@ -319,13 +319,13 @@ class RectangularFlowCell(BaseFlowCell):
         x_sample = np.random.uniform(
             - self.width.to(units.meter).magnitude / 2,
             + self.width.to(units.meter).magnitude / 2,
-            size=n_sammples
+            size=n_samples
         ) * units.meter
 
         y_sample = np.random.uniform(
             - self.height.to(units.meter).magnitude / 2,
             + self.height.to(units.meter).magnitude / 2,
-            size=n_sammples
+            size=n_samples
         ) * units.meter
 
         v_avg = self.flow_speed
@@ -405,7 +405,7 @@ class SquareFlowCell(BaseFlowCell):
         velocities = v_max * (1 - (2 * X / self.side) ** 2) * (1 - (2 * Y / self.side) ** 2)
         return X, Y, velocities.to(units.meter / units.second)
 
-    def sample_velocity(self, n_sammples: int) -> Quantity:
+    def sample_velocity(self, n_samples: int) -> Quantity:
         """
         Samples a velocity for a particle in a **square flow cell** by choosing
         random (x, y) positions inside the square cross-section and computing the local velocity.
@@ -433,16 +433,89 @@ class SquareFlowCell(BaseFlowCell):
         x_sample = np.random.uniform(
             - self.side.to(units.meter).magnitude / 2,
             + self.side.to(units.meter).magnitude / 2,
-            size=n_sammples
+            size=n_samples
         ) * units.meter
 
         y_sample = np.random.uniform(
             - self.side.to(units.meter).magnitude / 2,
             + self.side.to(units.meter).magnitude / 2,
-            size=n_sammples
+            size=n_samples
         ) * units.meter
 
         v_avg = self.flow_speed
         v_max = 1.5 * v_avg
         v_sample = v_max * (1 - (2 * x_sample / self.side) ** 2) * (1 - (2 * y_sample / self.side) ** 2)
         return v_sample.to(units.meter / units.second)
+
+
+@dataclass(config=config_dict)
+class IdealFlowCell(BaseFlowCell):
+    """
+    Models an **idealized flow cell** where the **flow speed is directly specified** instead of
+    computing it from the volumetric flow rate and cross-sectional area.
+
+    This class is useful for cases where the velocity is already known from external constraints,
+    such as in **microfluidic setups** where a controlled speed is imposed.
+
+    Attributes:
+    -----------
+    flow_speed : Quantity
+        The specified flow speed (in meters per second).
+    flow_area : Quantity
+        The cross-sectional area of the flow channel (in square meters).
+    event_scheme : str, optional
+        The event timing scheme, by default 'poisson'.
+    """
+    flow_speed: Quantity  # Directly provided velocity (m/s)
+    flow_area: Quantity  # Cross-sectional area (m²)
+    event_scheme: str = 'poisson'
+
+    def __post_init__(self):
+        """
+        Initializes the IdealFlowCell. Since the flow speed is given explicitly,
+        there is **no need to compute it** from volume flow.
+        """
+        self.volume_flow = self.flow_area * self.flow_speed
+        return super().__post_init__()
+
+    def get_velocity_profile(self, num_points: int = 100) -> np.ndarray:
+        """
+        Returns a **uniform velocity profile** across the flow cell.
+
+        In an **ideal flow cell**, we assume a **constant velocity field** where:
+
+            v(x) = v(y) = v(z) = flow_speed  (∀ x, y, z in the cross-section)
+
+        Unlike **parabolic velocity profiles** (Poiseuille flow), the velocity **does not vary**
+        across the cross-section, making this an idealized model.
+
+        Parameters:
+        -----------
+        num_points : int, optional
+            The number of sample points for visualization (default: 100).
+
+        Returns:
+        --------
+        np.ndarray
+            A 1D numpy array of uniform velocity values across all sampled points.
+        """
+        return np.full(num_points, self.flow_speed.to(units.meter / units.second).magnitude)
+
+    def sample_velocity(self, n_samples: int = 1) -> Quantity:
+        """
+        Samples **particle velocities** in an **idealized uniform flow**.
+
+        Since the velocity profile is assumed to be **uniform**, all sampled velocities
+        are identical to the specified `flow_speed`.
+
+        Parameters:
+        -----------
+        n_samples : int, optional
+            The number of velocity samples to generate (default: 1).
+
+        Returns:
+        --------
+        Quantity
+            A Quantity representing the sampled velocities (m/s), all equal to `flow_speed`.
+        """
+        return np.full(n_samples, self.flow_speed.to(units.meter / units.second).magnitude) * units.meter / units.second
