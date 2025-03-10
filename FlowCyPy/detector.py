@@ -381,9 +381,6 @@ class Detector():
         Quantity
             The shot noise voltage distribution (in volts).
         """
-        if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
-            return np.zeros_like(signal) * units.volt
-
         # Step 1: Compute photon energy
         energy_photon = PhysicalConstant.h * PhysicalConstant.c / wavelength  # Photon energy (J)
 
@@ -441,6 +438,9 @@ class Detector():
             - Shot noise voltage: \( V_{\text{shot}} = I_{\text{photon}} \cdot R_{\text{load}} \)
 
         """
+        if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
+            return signal + (optical_power * self.responsivity * self.resistance)
+
         return signal + self.get_shot_noise(
             signal=signal,
             optical_power=optical_power,

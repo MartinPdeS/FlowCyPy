@@ -148,10 +148,31 @@ class CircularFlowCell(BaseFlowCell):
     The velocity profile is derived from Poiseuille flow:
         v(r) = v_max * (1 - (r/R)^2),
     where R is the tube radius and v_max = 2 * v_avg.
+
+    This class now provides an option for hydrodynamic focusing. The parameter
+    'focusing_factor' (between 0 and 1) adjusts the probability density function (PDF)
+    for particle radial positions. With focusing_factor = 0, particles are uniformly distributed
+    over the area, following:
+        P(r) = 2r / R^2.
+    With focusing_factor = 1, particles are ideally focused at the center (r = 0). Intermediate values
+    interpolate between these distributions.
+
+    Parameters
+    ----------
+    volume_flow : Quantity
+        The volumetric flow rate (in m³/s).
+    radius : Quantity
+        The tube radius (in meters).
+    event_scheme : str, optional
+        The event timing scheme, by default 'poisson'.
+    focusing_factor : float, optional
+        A value between 0 (no focusing, uniform distribution) and 1 (ideal focusing at the center).
+        Default is 0.
     """
     volume_flow: Quantity
     radius: Quantity
     event_scheme: str = 'poisson'
+    focusing_factor: float = 1.0  # 0: uniform; 1: all at center
 
     def __post_init__(self):
         self.flow_area = np.pi * self.radius ** 2
@@ -164,10 +185,10 @@ class CircularFlowCell(BaseFlowCell):
         For a circular tube, the velocity profile is given by:
             v(r) = v_max * (1 - (r / R)^2)
         where:
-        - r is the radial distance from the center of the tube,
-        - R is the tube radius (computed as R = sqrt(flow_area / π)),
-        - v_max is the maximum velocity at the center, which is 2 * v_avg,
-        - v_avg is the average flow speed (computed as volume_flow / flow_area).
+            - r is the radial distance from the center of the tube,
+            - R is the tube radius,
+            - v_max is the maximum velocity at the center, which is 2 * v_avg,
+            - v_avg is the average flow speed (computed as volume_flow / flow_area).
 
         Parameters
         ----------
@@ -178,24 +199,26 @@ class CircularFlowCell(BaseFlowCell):
         -------
         Tuple[np.ndarray, np.ndarray]
             r: 1D numpy array of radial positions from 0 to R (in meters).
-            velocities: 1D numpy array of corresponding velocities at each radial position (in m/s),
-                        following the profile v(r) = 2 * v_avg * (1 - (r / R)^2).
+            velocities: 1D numpy array of corresponding velocities (in m/s).
         """
         r = np.linspace(0, self.radius, num_points)
         velocities = 2 * self.flow_speed * (1 - (r / self.radius)**2)
         return r, velocities.to(units.meter / units.second)
 
-    def sample_velocity(self, n_samples: int) -> Quantity:
+    def sample_velocity(self, n_samples: int = 1) -> Quantity:
         """
-        Samples a velocity for a particle in a circular flow cell from the Poiseuille flow distribution.
+        Samples a velocity for a particle in a circular flow cell from the Poiseuille flow distribution,
+        with an option to apply hydrodynamic focusing.
 
-        The probability density function (PDF) for the radial position in a circular channel (assuming uniform
-        distribution over the cross-sectional area) is given by:
+        The standard PDF for the radial position in a uniformly distributed circular channel is:
             P(r) = 2r / R^2   for 0 ≤ r ≤ R,
-        where R is the radius of the channel (R = sqrt(flow_area / π)).
-        Given a sample of r values, the local velocity is computed as:
-            v(r) = v_max * (1 - (r / R)^2),
-        where v_max = 2 * v_avg and v_avg is the average flow speed.
+        where R is the tube radius. To incorporate hydrodynamic focusing, we scale the sampled radial position
+        by (1 - focusing_factor). With focusing_factor = 0, particles are uniformly distributed (r = R * sqrt(u)).
+        With focusing_factor = 1, particles are ideally focused at the center (r = 0).
+
+        The local velocity is computed from the effective radial position using:
+            v(r) = 2 * v_avg * (1 - (r / R)^2),
+        where v_avg is the average flow speed.
 
         Parameters
         ----------
@@ -207,12 +230,15 @@ class CircularFlowCell(BaseFlowCell):
         Quantity
             A Quantity representing the sampled velocity (or velocities) in meters per second.
         """
-        # Sample r from distribution with PDF: 2r/R^2.
+        # Uniform sampling: u ~ U(0,1)
         u = np.random.uniform(0, 1, size=n_samples)
-        r_sample = self.radius * np.sqrt(u)
-        # Compute velocity at r_sample: v(r) = v_max * (1 - (r/R)^2)
+        # Apply hydrodynamic focusing by scaling the sampled radial position.
+        # If focusing_factor = 0: r_sample = R * sqrt(u) (uniform distribution)
+        # If focusing_factor = 1: r_sample = 0 (perfect focusing)
+        r_sample = (1 - self.focusing_factor) * self.radius * np.sqrt(u)
+        # Compute local velocity using the Poiseuille profile: v(r) = 2 * v_avg * (1 - (r/R)^2)
         v_sample = 2 * self.flow_speed * (1 - (r_sample / self.radius)**2)
-        return v_sample.to(units.meter / units.second)
+        return v_sample
 
 
 @dataclass(config=config_dict)
@@ -220,25 +246,21 @@ class RectangularFlowCell(BaseFlowCell):
     """
     Models a rectangular flow cell.
 
-    The velocity profile is assumed to follow a **bi-parabolic** distribution,
-    where the velocity decreases quadratically along both the width (`w`) and height (`h`):
-
+    The velocity profile follows a **bi-parabolic** distribution:
         v(x, y) = v_max * (1 - (2x / w)^2) * (1 - (2y / h)^2)
 
     where:
-        - `w` is the width of the channel (in meters),
-        - `h` is the height of the channel (in meters),
+        - `w` is the channel width (in meters),
+        - `h` is the channel height (in meters),
         - `x` and `y` are coordinates inside the cross-section (-w/2 ≤ x ≤ w/2, -h/2 ≤ y ≤ h/2),
-        - `v_max` is the maximum velocity at the center of the channel,
-        - `v_avg` is the average flow speed, computed as:
-
-          v_avg = volume_flow / (w * h)
-
-        - For rectangular channels in laminar flow, `v_max` is approximately:
-
-          v_max ≈ 1.5 * v_avg
+        - `v_max ≈ 1.5 * v_avg` is the maximum velocity at the center,
+        - `v_avg = volume_flow / (w * h)` is the average flow speed.
 
     This model assumes **low Reynolds number laminar flow** inside the flow cell.
+
+    Hydrodynamic focusing is enabled using the `focusing_factor` parameter, where:
+        - `focusing_factor = 0` results in **uniform** particle distribution across the area.
+        - `focusing_factor = 1` forces **perfect focusing** at the center (`x = y = 0`).
 
     Attributes:
     -----------
@@ -250,11 +272,14 @@ class RectangularFlowCell(BaseFlowCell):
         The total volumetric flow rate (in m³/s).
     event_scheme : str
         The event timing scheme, by default 'poisson'.
+    focusing_factor : float
+        A value between 0 (uniform distribution) and 1 (perfect focusing at the center).
     """
     width: Quantity  # in meters
     height: Quantity  # in meters
     volume_flow: Quantity
     event_scheme: str = 'poisson'
+    focusing_factor: float = 1.0  # Default: perfect focusing
 
     def __post_init__(self):
         self.flow_area = self.width * self.height
@@ -292,46 +317,49 @@ class RectangularFlowCell(BaseFlowCell):
 
     def sample_velocity(self, n_samples: int) -> Quantity:
         """
-        Samples a velocity for a particle in a **rectangular flow cell** by choosing
-        random (x, y) positions inside the channel and computing the local velocity.
+        Samples a velocity for a particle in a **rectangular flow cell**, with optional hydrodynamic focusing.
 
-        The (x, y) positions are **uniformly distributed** over the rectangular cross-section,
-        and the velocity at each sampled position is computed using the bi-parabolic profile:
+        **Standard Uniform Sampling:**
+        - If `focusing_factor = 0`, particles are **uniformly** distributed over the area.
+        - The **(x, y) positions** are drawn from a uniform distribution:
+            x ~ U(-w/2, w/2),  y ~ U(-h/2, h/2).
 
+        **Hydrodynamic Focusing:**
+        - As `focusing_factor → 1`, particles are increasingly concentrated toward (x, y) = (0, 0).
+        - We modify the sampling using an exponential scaling:
+            x_sample = w/2 * (1 - focusing_factor) * sign(U) * |U|^focusing_factor
+            y_sample = h/2 * (1 - focusing_factor) * sign(V) * |V|^focusing_factor
+          where U, V ~ U(-1, 1) (uniform random variables).
+
+        **Velocity Calculation:**
+        - The velocity at (x, y) is computed using:
             v(x, y) = v_max * (1 - (2x / w)^2) * (1 - (2y / h)^2)
-
-        where:
-          - `w` is the channel width.
-          - `h` is the channel height.
-          - `v_max` is approximately 1.5 * v_avg.
 
         Parameters:
         -----------
         n_samples : int, optional
-            The number of velocity samples to generate (default: 1).
+            Number of velocity samples to generate (default: 1).
 
         Returns:
         --------
         Quantity
             A Quantity representing the sampled velocities in meters per second.
         """
-        # Uniform sampling in a rectangle:
-        x_sample = np.random.uniform(
-            - self.width.to(units.meter).magnitude / 2,
-            + self.width.to(units.meter).magnitude / 2,
-            size=n_samples
-        ) * units.meter
-
-        y_sample = np.random.uniform(
-            - self.height.to(units.meter).magnitude / 2,
-            + self.height.to(units.meter).magnitude / 2,
-            size=n_samples
-        ) * units.meter
-
         v_avg = self.flow_speed
-        v_max = 1.5 * v_avg
+        v_max = 1.5 * v_avg  # Max velocity in center
+
+        # Generate uniform random variables U, V in [-1, 1]
+        U = np.random.uniform(-1, 1, size=n_samples)
+        V = np.random.uniform(-1, 1, size=n_samples)
+
+        # Apply hydrodynamic focusing transformation
+        x_sample = (self.width / 2) * (1 - self.focusing_factor) * np.sign(U) * np.abs(U) ** self.focusing_factor
+        y_sample = (self.height / 2) * (1 - self.focusing_factor) * np.sign(V) * np.abs(V) ** self.focusing_factor
+
+        # Compute velocity at sampled positions
         v_sample = v_max * (1 - (2 * x_sample / self.width) ** 2) * (1 - (2 * y_sample / self.height) ** 2)
-        return v_sample.to(units.meter / units.second)
+
+        return v_sample
 
 
 @dataclass(config=config_dict)
@@ -356,7 +384,11 @@ class SquareFlowCell(BaseFlowCell):
 
           v_max ≈ 1.5 * v_avg
 
-    This model assumes **low Reynolds number laminar flow** inside the square channel.
+    This model assumes **low Reynolds number laminar flow** inside the flow cell.
+
+    Hydrodynamic focusing is enabled using the `focusing_factor` parameter, where:
+        - `focusing_factor = 0` results in **uniform** particle distribution across the area.
+        - `focusing_factor = 1` forces **perfect focusing** at the center (`x = y = 0`).
 
     Attributes:
     -----------
@@ -366,10 +398,13 @@ class SquareFlowCell(BaseFlowCell):
         The total volumetric flow rate (in m³/s).
     event_scheme : str
         The event timing scheme, by default 'poisson'.
+    focusing_factor : float
+        A value between 0 (uniform distribution) and 1 (perfect focusing at the center).
     """
     side: Quantity  # in meters
     volume_flow: Quantity
     event_scheme: str = 'poisson'
+    focusing_factor: float = 1.0  # Default: perfect focusing
 
     def __post_init__(self):
         self.flow_area = self.side * self.side
@@ -407,45 +442,49 @@ class SquareFlowCell(BaseFlowCell):
 
     def sample_velocity(self, n_samples: int) -> Quantity:
         """
-        Samples a velocity for a particle in a **square flow cell** by choosing
-        random (x, y) positions inside the square cross-section and computing the local velocity.
+        Samples a velocity for a particle in a **rectangular flow cell**, with optional hydrodynamic focusing.
 
-        The (x, y) positions are **uniformly distributed** over the square cross-section,
-        and the velocity at each sampled position is computed using the bi-parabolic profile:
+        **Standard Uniform Sampling:**
+        - If `focusing_factor = 0`, particles are **uniformly** distributed over the area.
+        - The **(x, y) positions** are drawn from a uniform distribution:
+            x ~ U(-w/2, w/2),  y ~ U(-h/2, h/2).
 
-            v(x, y) = v_max * (1 - (2x / side)^2) * (1 - (2y / side)^2)
+        **Hydrodynamic Focusing:**
+        - As `focusing_factor → 1`, particles are increasingly concentrated toward (x, y) = (0, 0).
+        - We modify the sampling using an exponential scaling:
+            x_sample = w/2 * (1 - focusing_factor) * sign(U) * |U|^focusing_factor
+            y_sample = h/2 * (1 - focusing_factor) * sign(V) * |V|^focusing_factor
+          where U, V ~ U(-1, 1) (uniform random variables).
 
-        where:
-          - `side` is the channel side length.
-          - `v_max` is approximately 1.5 * v_avg.
+        **Velocity Calculation:**
+        - The velocity at (x, y) is computed using:
+            v(x, y) = v_max * (1 - (2x / w)^2) * (1 - (2y / h)^2)
 
         Parameters:
         -----------
         n_samples : int, optional
-            The number of velocity samples to generate (default: 1).
+            Number of velocity samples to generate (default: 1).
 
         Returns:
         --------
         Quantity
             A Quantity representing the sampled velocities in meters per second.
         """
-        # Uniform sampling in a rectangle:
-        x_sample = np.random.uniform(
-            - self.side.to(units.meter).magnitude / 2,
-            + self.side.to(units.meter).magnitude / 2,
-            size=n_samples
-        ) * units.meter
-
-        y_sample = np.random.uniform(
-            - self.side.to(units.meter).magnitude / 2,
-            + self.side.to(units.meter).magnitude / 2,
-            size=n_samples
-        ) * units.meter
-
         v_avg = self.flow_speed
-        v_max = 1.5 * v_avg
+        v_max = 1.5 * v_avg  # Max velocity in center
+
+        # Generate uniform random variables U, V in [-1, 1]
+        U = np.random.uniform(-1, 1, size=n_samples)
+        V = np.random.uniform(-1, 1, size=n_samples)
+
+        # Apply hydrodynamic focusing transformation
+        x_sample = (self.side / 2) * (1 - self.focusing_factor) * np.sign(U) * np.abs(U) ** self.focusing_factor
+        y_sample = (self.side / 2) * (1 - self.focusing_factor) * np.sign(V) * np.abs(V) ** self.focusing_factor
+
+        # Compute velocity at sampled positions
         v_sample = v_max * (1 - (2 * x_sample / self.side) ** 2) * (1 - (2 * y_sample / self.side) ** 2)
-        return v_sample.to(units.meter / units.second)
+
+        return v_sample
 
 
 @dataclass(config=config_dict)

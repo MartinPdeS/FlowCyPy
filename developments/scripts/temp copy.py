@@ -41,6 +41,7 @@ source = GaussianBeam(
 flow_cell = CircularFlowCell(
     volume_flow=0.3 * units.microliter / units.second,  # Flow volume
     radius=10 * units.micrometer,       # Cross-sectional area
+    focusing_factor=1.0
 )
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
