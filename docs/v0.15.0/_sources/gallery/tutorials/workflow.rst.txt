@@ -69,7 +69,7 @@ globally but exclude specific types, such as shot noise and thermal noise.
 
     from FlowCyPy import NoiseSetting
 
-    NoiseSetting.include_noises = True
+    NoiseSetting.include_noises = False
     # NoiseSetting.include_shot_noise = False
     # NoiseSetting.include_thermal_noise = False
     # NoiseSetting.include_dark_current_noise = False
@@ -122,7 +122,7 @@ passing through the cross-sectional area is calculated as:
 .. math::
     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-76
+.. GENERATED FROM PYTHON SOURCE LINES 67-77
 
 .. code-block:: Python
 
@@ -131,7 +131,8 @@ passing through the cross-sectional area is calculated as:
 
     flow_cell = CircularFlowCell(
         volume_flow=0.3 * units.microliter / units.second,  # Flow volume
-        radius=10 * units.micrometer,       # Cross-sectional area
+        radius=20 * units.micrometer,       # Cross-sectional area
+        focusing_factor=0.8
     )
 
 
@@ -142,7 +143,7 @@ passing through the cross-sectional area is calculated as:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 77-84
+.. GENERATED FROM PYTHON SOURCE LINES 78-85
 
 Step 4: Define ScattererCollection and Population
 -------------------------------------------------
@@ -152,7 +153,7 @@ given by:
 .. math::
     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
 
-.. GENERATED FROM PYTHON SOURCE LINES 84-107
+.. GENERATED FROM PYTHON SOURCE LINES 85-108
 
 .. code-block:: Python
 
@@ -174,37 +175,26 @@ given by:
     # Add an Exosome population
     scatterer_collection.add_population(exosome, custom_population)
 
-    scatterer_collection.dilute(factor=1)
+    scatterer_collection.dilute(factor=8)
 
     # Initialize the scatterer with the flow cell
-    scatterer_collection.plot(sampling=600)  # Visualize the particle population
+    # scatterer_collection.plot(sampling=600)  # Visualize the particle population
 
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
-   :alt: Scatterer Collection
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
-   :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <seaborn.axisgrid.JointGrid object at 0x7fc710a00a50>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-112
+
+.. GENERATED FROM PYTHON SOURCE LINES 109-113
 
 Step 5: Define Detectors
 ------------------------
 Detectors measure light intensity. Parameters like responsivity define the conversion of optical
 power to electronic signals, and saturation level represents the maximum signal they can handle.
 
-.. GENERATED FROM PYTHON SOURCE LINES 112-150
+.. GENERATED FROM PYTHON SOURCE LINES 113-151
 
 .. code-block:: Python
 
@@ -253,7 +243,7 @@ power to electronic signals, and saturation level represents the maximum signal 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 151-158
+.. GENERATED FROM PYTHON SOURCE LINES 152-159
 
 Step 6: Simulate Flow Cytometry Experiment
 ------------------------------------------
@@ -263,7 +253,7 @@ and particles follows Mie theory:
 .. math::
     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
 
-.. GENERATED FROM PYTHON SOURCE LINES 158-179
+.. GENERATED FROM PYTHON SOURCE LINES 159-180
 
 .. code-block:: Python
 
@@ -282,29 +272,24 @@ and particles follows Mie theory:
     cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
     acquisition = cytometer.get_acquisition()
 
-    _ = acquisition.scatterer.plot(
-        x='side',
-        y='forward',
-        z='RefractiveIndex'
-    )
-
-
-
-
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
-   :alt: Scatterer Sampling Distribution
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
-   :class: sphx-glr-single-img
+    # _ = acquisition.scatterer.plot(
+    #     x='side',
+    #     y='forward',
+    #     z='RefractiveIndex'
+    # )
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 180-181
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 181-182
 
 Visualize the scatter signals from both detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 181-183
+.. GENERATED FROM PYTHON SOURCE LINES 182-184
 
 .. code-block:: Python
 
@@ -313,23 +298,23 @@ Visualize the scatter signals from both detectors
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_003.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
    :alt: workflow
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_003.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
    :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 184-188
+.. GENERATED FROM PYTHON SOURCE LINES 185-189
 
 Step 7: Analyze Detected Signals
 --------------------------------
 The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 188-199
+.. GENERATED FROM PYTHON SOURCE LINES 189-200
 
 .. code-block:: Python
 
@@ -347,20 +332,20 @@ window size and threshold.
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_004.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
    :alt: workflow
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_004.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
    :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 200-201
+.. GENERATED FROM PYTHON SOURCE LINES 201-202
 
 Getting and plotting the extracted peaks.
 
-.. GENERATED FROM PYTHON SOURCE LINES 201-212
+.. GENERATED FROM PYTHON SOURCE LINES 202-213
 
 .. code-block:: Python
 
@@ -378,9 +363,9 @@ Getting and plotting the extracted peaks.
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_003.png
    :alt: Peaks properties
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_005.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_003.png
    :class: sphx-glr-single-img
 
 
@@ -389,15 +374,15 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7fc7100ae990>
+    <seaborn.axisgrid.JointGrid object at 0x7f3db8156490>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 213-214
+.. GENERATED FROM PYTHON SOURCE LINES 214-215
 
 Step 8: Classifying the collected dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 214-224
+.. GENERATED FROM PYTHON SOURCE LINES 215-225
 
 .. code-block:: Python
 
@@ -414,9 +399,9 @@ Step 8: Classifying the collected dataset
     _ = data.plot(feature='Height', x='side', y='forward')
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_006.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_004.png
    :alt: Event classification
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_006.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_004.png
    :class: sphx-glr-single-img
 
 
@@ -426,7 +411,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.501 seconds)
+   **Total running time of the script:** (0 minutes 5.962 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

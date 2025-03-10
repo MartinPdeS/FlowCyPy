@@ -901,9 +901,6 @@ document.write(`
 <span class="sd">        Quantity</span>
 <span class="sd">            The shot noise voltage distribution (in volts).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span>
-
         <span class="c1"># Step 1: Compute photon energy</span>
         <span class="n">energy_photon</span> <span class="o">=</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">c</span> <span class="o">/</span> <span class="n">wavelength</span>  <span class="c1"># Photon energy (J)</span>
 
@@ -964,6 +961,9 @@ document.write(`
 <span class="sd">            - Shot noise voltage: \( V_{\text{shot}} = I_{\text{photon}} \cdot R_{\text{load}} \)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">signal</span> <span class="o">+</span> <span class="p">(</span><span class="n">optical_power</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">responsivity</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">resistance</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">signal</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shot_noise</span><span class="p">(</span>
             <span class="n">signal</span><span class="o">=</span><span class="n">signal</span><span class="p">,</span>
             <span class="n">optical_power</span><span class="o">=</span><span class="n">optical_power</span><span class="p">,</span>

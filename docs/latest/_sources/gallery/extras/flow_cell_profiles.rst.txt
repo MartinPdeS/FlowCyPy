@@ -153,7 +153,7 @@ Flow Cell geometries
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.477 seconds)
+   **Total running time of the script:** (0 minutes 1.286 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_flow_cell_profiles.py:

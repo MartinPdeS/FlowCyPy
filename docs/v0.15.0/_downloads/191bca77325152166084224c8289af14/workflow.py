@@ -33,7 +33,7 @@ from FlowCyPy import units
 
 from FlowCyPy import NoiseSetting
 
-NoiseSetting.include_noises = True
+NoiseSetting.include_noises = False
 # NoiseSetting.include_shot_noise = False
 # NoiseSetting.include_thermal_noise = False
 # NoiseSetting.include_dark_current_noise = False
@@ -69,7 +69,8 @@ from FlowCyPy.flow_cell import CircularFlowCell
 
 flow_cell = CircularFlowCell(
     volume_flow=0.3 * units.microliter / units.second,  # Flow volume
-    radius=10 * units.micrometer,       # Cross-sectional area
+    radius=20 * units.micrometer,       # Cross-sectional area
+    focusing_factor=0.8
 )
 
 
@@ -99,10 +100,10 @@ custom_population = Sphere(
 # Add an Exosome population
 scatterer_collection.add_population(exosome, custom_population)
 
-scatterer_collection.dilute(factor=1)
+scatterer_collection.dilute(factor=8)
 
 # Initialize the scatterer with the flow cell
-scatterer_collection.plot(sampling=600)  # Visualize the particle population
+# scatterer_collection.plot(sampling=600)  # Visualize the particle population
 
 # %%
 # Step 5: Define Detectors
@@ -170,11 +171,11 @@ cytometer = FlowCytometer(
 cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
 acquisition = cytometer.get_acquisition()
 
-_ = acquisition.scatterer.plot(
-    x='side',
-    y='forward',
-    z='RefractiveIndex'
-)
+# _ = acquisition.scatterer.plot(
+#     x='side',
+#     y='forward',
+#     z='RefractiveIndex'
+# )
 
 # %%
 # Visualize the scatter signals from both detectors
