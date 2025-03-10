@@ -65,12 +65,11 @@ source = GaussianBeam(
 # .. math::
 #     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
 
-from FlowCyPy import FlowCell
+from FlowCyPy.flow_cell import CircularFlowCell
 
-flow_cell = FlowCell(
-    source=source,
+flow_cell = CircularFlowCell(
     volume_flow=0.3 * units.microliter / units.second,  # Flow volume
-    flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
+    radius=10 * units.micrometer,       # Cross-sectional area
 )
 
 
@@ -159,6 +158,7 @@ detector_2 = Detector(
 from FlowCyPy import FlowCytometer
 
 cytometer = FlowCytometer(
+    source=source,
     scatterer_collection=scatterer_collection,
     signal_digitizer=signal_digitizer,
     detectors=[detector_0, detector_1, detector_2],

@@ -539,7 +539,7 @@ document.write(`
 <p>Classes related to the overall configuration of a flow cytometry system.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCytometer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scatterer_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_digitizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coupling_mechanism='mie'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_power=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'milliwatt')&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCytometer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scatterer_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_digitizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coupling_mechanism='mie'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_power=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'milliwatt')&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A simulation class for modeling flow cytometer signals, including Forward Scatter (FSC) and Side Scatter (SSC) channels.</p>
 <p>The FlowCytometer class integrates optical and flow dynamics to simulate signal generation in a flow cytometer.
@@ -549,11 +549,12 @@ particle event and noise modeling for accurate signal representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>flow_cell</strong> (<a class="reference internal" href="flow_cell.html#FlowCyPy.FlowCell" title="FlowCyPy.FlowCell"><em>FlowCell</em></a>) – The flow cell object representing the fluidic and optical environment through which particles travel.</p></li>
+<li><p><strong>flow_cell</strong> (<em>BaseFlowCell</em>) – The flow cell object representing the fluidic and optical environment through which particles travel.</p></li>
 <li><p><strong>detectors</strong> (<em>List</em><em>[</em><a class="reference internal" href="detector.html#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><em>Detector</em></a><em>]</em>) – A list of <cite>Detector</cite> objects representing the detectors used to measure optical signals (e.g., FSC and SSC). Exactly two detectors must be provided.</p></li>
 <li><p><strong>coupling_mechanism</strong> (<em>str</em><em>, </em><em>optional</em>) – The scattering mechanism used to couple the signal from the particles to the detectors.
 Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh’: Rayleigh scattering, ‘uniform’: Uniform signal coupling, ‘empirical’: Empirical data-driven coupling</p></li>
 <li><p><strong>background_power</strong> (<em>units.watt</em><em>, </em><em>optional</em>) – The background optical power added to the detector signal. Defaults to 0 milliwatts.</p></li>
+<li><p><strong>source</strong> (<em>BaseBeam</em>)</p></li>
 <li><p><strong>scatterer_collection</strong> (<em>object</em>)</p></li>
 <li><p><strong>signal_digitizer</strong> (<em>SignalDigitizer</em>)</p></li>
 </ul>
@@ -565,7 +566,7 @@ Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh�
 <dd><p>The flow cell instance representing the system environment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="flow_cell.html#FlowCyPy.FlowCell" title="FlowCyPy.FlowCell">FlowCell</a></p>
+<dd class="field-odd"><p>BaseFlowCell</p>
 </dd>
 </dl>
 </dd></dl>
@@ -631,8 +632,9 @@ Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh�
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
+<li><p><strong>source</strong> (<em>BaseBeam</em>)</p></li>
 <li><p><strong>scatterer_collection</strong> (<em>object</em>)</p></li>
-<li><p><strong>flow_cell</strong> (<a class="reference internal" href="flow_cell.html#FlowCyPy.FlowCell" title="FlowCyPy.flow_cell.FlowCell"><em>FlowCell</em></a>)</p></li>
+<li><p><strong>flow_cell</strong> (<em>BaseFlowCell</em>)</p></li>
 <li><p><strong>signal_digitizer</strong> (<em>SignalDigitizer</em>)</p></li>
 <li><p><strong>detectors</strong> (<em>List</em><em>[</em><a class="reference internal" href="detector.html#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><em>Detector</em></a><em>]</em>)</p></li>
 <li><p><strong>coupling_mechanism</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>

@@ -36,11 +36,12 @@ Workflow:
 
 Step 1: Import necessary modules from FlowCyPy
 
-.. GENERATED FROM PYTHON SOURCE LINES 19-25
+.. GENERATED FROM PYTHON SOURCE LINES 19-26
 
 .. code-block:: Python
 
-    from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
+    from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam
+    from FlowCyPy.flow_cell import CircularFlowCell
     from FlowCyPy import distribution
     from FlowCyPy.population import Sphere
     from FlowCyPy.signal_digitizer import SignalDigitizer
@@ -53,13 +54,13 @@ Step 1: Import necessary modules from FlowCyPy
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 26-29
+.. GENERATED FROM PYTHON SOURCE LINES 27-30
 
 Step 2: Define the laser source
 -------------------------------
 Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and a numerical aperture of 0.3.
 
-.. GENERATED FROM PYTHON SOURCE LINES 29-35
+.. GENERATED FROM PYTHON SOURCE LINES 30-36
 
 .. code-block:: Python
 
@@ -76,20 +77,19 @@ Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-39
+.. GENERATED FROM PYTHON SOURCE LINES 37-40
 
 Step 3: Define flow parameters
 ------------------------------
 Set the flow speed to 80 micrometers per second and a flow area of 1 square micrometer, with a total simulation time of 1 second.
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-45
+.. GENERATED FROM PYTHON SOURCE LINES 40-45
 
 .. code-block:: Python
 
-    flow_cell = FlowCell(
-        source=source,
+    flow_cell = CircularFlowCell(
         volume_flow=0.01 * units.microliter / units.second,        # Flow speed: 10 microliter per second
-        flow_area=(10 * units.micrometer) ** 2,        # Flow area: 10 x 10 micrometers
+        radius=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
     )
 
 
@@ -106,7 +106,7 @@ Step 4: Define the particle diameter distribution
 Use a normal diameter distribution with a mean diameter of 200 nanometers and a standard deviation of 10 nanometers.
 This represents the population of scatterers (particles) that will interact with the laser source.
 
-.. GENERATED FROM PYTHON SOURCE LINES 50-122
+.. GENERATED FROM PYTHON SOURCE LINES 50-123
 
 .. code-block:: Python
 
@@ -160,6 +160,7 @@ This represents the population of scatterers (particles) that will interact with
     # ---------------------------------------
     # Create a FlowCytometer instance to simulate the signals generated as particles pass through the laser beam.
     cytometer = FlowCytometer(
+        source=source,
         signal_digitizer=signal_digitizer,
         scatterer_collection=scatterer_collection,
         flow_cell=flow_cell,                # Particle diameter distribution
@@ -207,7 +208,7 @@ This represents the population of scatterers (particles) that will interact with
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.564 seconds)
+   **Total running time of the script:** (0 minutes 0.599 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_continuous_acquisition.py:

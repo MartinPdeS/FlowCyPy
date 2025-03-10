@@ -33,7 +33,7 @@ forward scatter detector signals. Three acquisitions are performed:
 
 The resulting signals are plotted for comparison.
 
-.. GENERATED FROM PYTHON SOURCE LINES 17-142
+.. GENERATED FROM PYTHON SOURCE LINES 17-143
 
 
 
@@ -54,9 +54,10 @@ The resulting signals are plotted for comparison.
 
     # Import necessary components from FlowCyPy
     from FlowCyPy import (
-        FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell,
+        FlowCytometer, ScattererCollection, Detector, GaussianBeam,
         population, distribution, circuits, units, NoiseSetting
     )
+    from FlowCyPy.flow_cell import CircularFlowCell
     from FlowCyPy.signal_digitizer import SignalDigitizer
 
     # Enable noise settings if desired
@@ -73,10 +74,9 @@ The resulting signals are plotted for comparison.
     )
 
     # Define the flow cell.
-    flow_cell = FlowCell(
-        source=source,
+    flow_cell = CircularFlowCell(
         volume_flow=0.3 * units.microliter / units.second,  # Flow rate: 0.3 µL/s
-        flow_area=(10 * units.micrometer) ** 2              # Flow area: 10 x 10 µm²
+        radius=10 * units.micrometer              # Flow area: 10 x 10 µm²
     )
 
     # Create a scatterer collection with a single population.
@@ -122,6 +122,7 @@ The resulting signals are plotted for comparison.
 
     # Setup the flow cytometer.
     cytometer = FlowCytometer(
+        source=source,
         signal_digitizer=signal_digitizer,
         scatterer_collection=scatterer_collection,
         flow_cell=flow_cell,
@@ -177,7 +178,7 @@ The resulting signals are plotted for comparison.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.258 seconds)
+   **Total running time of the script:** (0 minutes 4.201 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_signal_processing.py:

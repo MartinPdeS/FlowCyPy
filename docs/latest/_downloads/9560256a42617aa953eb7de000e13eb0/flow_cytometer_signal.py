@@ -14,8 +14,9 @@ Steps:
 """
 
 # Step 1: Import the necessary libraries
-from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
+from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam
 from FlowCyPy import distribution, population
+from FlowCyPy.flow_cell import CircularFlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import units
 
@@ -31,10 +32,9 @@ source = GaussianBeam(
 # Step 3: Define the flow parameters
 # ----------------------------------
 # Flow speed is set to 80 micrometers per second, with a flow area of 1 square micrometer and a total simulation time of 1 second.
-flow_cell = FlowCell(
-    source=source,
+flow_cell = CircularFlowCell(
     volume_flow=0.1 * units.microliter / units.second, # Flow speed: 10 microliter per second
-    flow_area=(10 * units.micrometer) ** 2, # Flow area: 40 x 40 micrometers
+    radius=10 * units.micrometer, # Flow area: 40 x 40 micrometers
 )
 
 # Step 4: Define the particle size distribution
@@ -88,6 +88,7 @@ detector_ssc = Detector(
 # The flow cytometer is configured with the source, scatterer distribution, and detectors.
 # The 'mie' coupling mechanism models how the particles interact with the laser beam.
 cytometer = FlowCytometer(
+    source=source,
     signal_digitizer=signal_digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,  # Particle size distribution

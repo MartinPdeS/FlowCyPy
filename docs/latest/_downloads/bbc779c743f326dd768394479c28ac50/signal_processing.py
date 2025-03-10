@@ -20,9 +20,10 @@ import matplotlib.pyplot as plt
 
 # Import necessary components from FlowCyPy
 from FlowCyPy import (
-    FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell,
+    FlowCytometer, ScattererCollection, Detector, GaussianBeam,
     population, distribution, circuits, units, NoiseSetting
 )
+from FlowCyPy.flow_cell import CircularFlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
 
 # Enable noise settings if desired
@@ -39,10 +40,9 @@ source = GaussianBeam(
 )
 
 # Define the flow cell.
-flow_cell = FlowCell(
-    source=source,
+flow_cell = CircularFlowCell(
     volume_flow=0.3 * units.microliter / units.second,  # Flow rate: 0.3 µL/s
-    flow_area=(10 * units.micrometer) ** 2              # Flow area: 10 x 10 µm²
+    radius=10 * units.micrometer              # Flow area: 10 x 10 µm²
 )
 
 # Create a scatterer collection with a single population.
@@ -88,6 +88,7 @@ detector_1 = Detector(
 
 # Setup the flow cytometer.
 cytometer = FlowCytometer(
+    source=source,
     signal_digitizer=signal_digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,

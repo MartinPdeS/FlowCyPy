@@ -122,17 +122,16 @@ passing through the cross-sectional area is calculated as:
 .. math::
     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-77
+.. GENERATED FROM PYTHON SOURCE LINES 67-76
 
 .. code-block:: Python
 
 
-    from FlowCyPy import FlowCell
+    from FlowCyPy.flow_cell import CircularFlowCell
 
-    flow_cell = FlowCell(
-        source=source,
+    flow_cell = CircularFlowCell(
         volume_flow=0.3 * units.microliter / units.second,  # Flow volume
-        flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
+        radius=10 * units.micrometer,       # Cross-sectional area
     )
 
 
@@ -143,7 +142,7 @@ passing through the cross-sectional area is calculated as:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-85
+.. GENERATED FROM PYTHON SOURCE LINES 77-84
 
 Step 4: Define ScattererCollection and Population
 -------------------------------------------------
@@ -153,7 +152,7 @@ given by:
 .. math::
     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
 
-.. GENERATED FROM PYTHON SOURCE LINES 85-108
+.. GENERATED FROM PYTHON SOURCE LINES 84-107
 
 .. code-block:: Python
 
@@ -194,18 +193,18 @@ given by:
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f0a6ce30410>
+    <seaborn.axisgrid.JointGrid object at 0x7f5fc83dbad0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-113
+.. GENERATED FROM PYTHON SOURCE LINES 108-112
 
 Step 5: Define Detectors
 ------------------------
 Detectors measure light intensity. Parameters like responsivity define the conversion of optical
 power to electronic signals, and saturation level represents the maximum signal they can handle.
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-151
+.. GENERATED FROM PYTHON SOURCE LINES 112-150
 
 .. code-block:: Python
 
@@ -254,7 +253,7 @@ power to electronic signals, and saturation level represents the maximum signal 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 152-159
+.. GENERATED FROM PYTHON SOURCE LINES 151-158
 
 Step 6: Simulate Flow Cytometry Experiment
 ------------------------------------------
@@ -264,13 +263,14 @@ and particles follows Mie theory:
 .. math::
     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
 
-.. GENERATED FROM PYTHON SOURCE LINES 159-179
+.. GENERATED FROM PYTHON SOURCE LINES 158-179
 
 .. code-block:: Python
 
     from FlowCyPy import FlowCytometer
 
     cytometer = FlowCytometer(
+        source=source,
         scatterer_collection=scatterer_collection,
         signal_digitizer=signal_digitizer,
         detectors=[detector_0, detector_1, detector_2],
@@ -389,7 +389,7 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f0a710f5910>
+    <seaborn.axisgrid.JointGrid object at 0x7f5fca71acd0>
 
 
 
@@ -426,7 +426,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.704 seconds)
+   **Total running time of the script:** (0 minutes 8.241 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

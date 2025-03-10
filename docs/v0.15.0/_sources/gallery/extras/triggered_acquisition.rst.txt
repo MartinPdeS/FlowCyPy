@@ -36,14 +36,15 @@ Workflow:
 
 Step 1: Import necessary modules from FlowCyPy
 
-.. GENERATED FROM PYTHON SOURCE LINES 19-28
+.. GENERATED FROM PYTHON SOURCE LINES 19-29
 
 .. code-block:: Python
 
-    from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
+    from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam
     from FlowCyPy import distribution
     from FlowCyPy.population import Sphere
     from FlowCyPy.signal_digitizer import SignalDigitizer
+    from FlowCyPy.flow_cell import CircularFlowCell
     from FlowCyPy import units
 
     import numpy
@@ -56,13 +57,13 @@ Step 1: Import necessary modules from FlowCyPy
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 29-32
+.. GENERATED FROM PYTHON SOURCE LINES 30-33
 
 Step 2: Define the laser source
 -------------------------------
 Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and a numerical aperture of 0.3.
 
-.. GENERATED FROM PYTHON SOURCE LINES 32-38
+.. GENERATED FROM PYTHON SOURCE LINES 33-39
 
 .. code-block:: Python
 
@@ -79,20 +80,19 @@ Set up a laser source with a wavelength of 1550 nm, optical power of 200 mW, and
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-42
+.. GENERATED FROM PYTHON SOURCE LINES 40-43
 
 Step 3: Define flow parameters
 ------------------------------
 Set the flow speed to 80 micrometers per second and a flow area of 1 square micrometer, with a total simulation time of 1 second.
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-48
+.. GENERATED FROM PYTHON SOURCE LINES 43-48
 
 .. code-block:: Python
 
-    flow_cell = FlowCell(
-        source=source,
+    flow_cell = CircularFlowCell(
         volume_flow=0.3 * units.microliter / units.second,        # Flow speed: 10 microliter per second
-        flow_area=(20 * units.micrometer) ** 2,        # Flow area: 10 x 10 micrometers
+        radius=20 * units.micrometer,        # Flow area: 10 x 10 micrometers
     )
 
 
@@ -109,7 +109,7 @@ Step 4: Define the particle size distribution
 Use a normal size distribution with a mean size of 200 nanometers and a standard deviation of 10 nanometers.
 This represents the population of scatterers (particles) that will interact with the laser source.
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-114
+.. GENERATED FROM PYTHON SOURCE LINES 53-115
 
 .. code-block:: Python
 
@@ -164,6 +164,7 @@ This represents the population of scatterers (particles) that will interact with
     # ---------------------------------------
     # Create a FlowCytometer instance to simulate the signals generated as particles pass through the laser beam.
     cytometer = FlowCytometer(
+        source=source,
         signal_digitizer=signal_digitizer,
         scatterer_collection=scatterer_collection,
         flow_cell=flow_cell,                # Particle size distribution
@@ -181,11 +182,11 @@ This represents the population of scatterers (particles) that will interact with
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 115-116
+.. GENERATED FROM PYTHON SOURCE LINES 116-117
 
 Visualize the scatter analog signals from both detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 116-119
+.. GENERATED FROM PYTHON SOURCE LINES 117-120
 
 .. code-block:: Python
 
@@ -213,11 +214,11 @@ Visualize the scatter analog signals from both detectors
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 120-121
+.. GENERATED FROM PYTHON SOURCE LINES 121-122
 
 Visualize the scatter digital signals from both detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 121-140
+.. GENERATED FROM PYTHON SOURCE LINES 122-141
 
 .. code-block:: Python
 
@@ -264,7 +265,7 @@ Visualize the scatter digital signals from both detectors
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.650 seconds)
+   **Total running time of the script:** (0 minutes 4.571 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_triggered_acquisition.py:

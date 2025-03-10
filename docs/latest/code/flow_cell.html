@@ -536,75 +536,6 @@ document.write(`
                   
   <section id="flowcell-class">
 <h1>FlowCell Class<a class="headerlink" href="#flowcell-class" title="Link to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="FlowCyPy.FlowCell">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">volume_flow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_area</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'poisson'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.FlowCell" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Models the flow parameters in a flow cytometer.</p>
-<p>This version initializes with a volumetric flow rate (volume_flow) and a flow area,
-and then computes the flow speed as:</p>
-<blockquote>
-<div><p>flow_speed = volume_flow / flow_area</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>volume_flow</strong> (<em>Quantity</em>) – The volumetric flow rate (in m³/s).</p></li>
-<li><p><strong>flow_area</strong> (<em>Quantity</em>) – The cross-sectional area of the flow tube (in m²).</p></li>
-<li><p><strong>event_scheme</strong> (<em>str</em><em>, </em><em>optional</em>) – The event timing scheme, by default ‘poisson’.</p></li>
-<li><p><strong>source</strong> (<em>BaseBeam</em><em>, </em><em>optional</em>) – An optional beam source.</p></li>
-<li><p><strong>flow_speed</strong> (<em>Quantity</em>)</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.FlowCell.event_scheme">
-<span class="sig-name descname"><span class="pre">event_scheme</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'poisson'</span></em><a class="headerlink" href="#FlowCyPy.FlowCell.event_scheme" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.FlowCell.get_population_sampling">
-<span class="sig-name descname"><span class="pre">get_population_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scatterer_collection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell.get_population_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.FlowCell.get_population_sampling" title="Link to this definition">#</a></dt>
-<dd><p>Calculates the number of events (or particle counts) for each population based on the run time.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>run_time</strong> (<em>Quantity</em>)</p></li>
-<li><p><strong>scatterer_collection</strong> (<a class="reference internal" href="scatterer.html#FlowCyPy.ScattererCollection" title="FlowCyPy.scatterer_collection.ScattererCollection"><em>ScattererCollection</em></a>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>list[<em>Quantity</em>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.FlowCell.get_volume">
-<span class="sig-name descname"><span class="pre">get_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell.get_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.FlowCell.get_volume" title="Link to this definition">#</a></dt>
-<dd><p>Computes the volume passing through the flow cell over the given run time.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>run_time</strong> (<em>Quantity</em>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Quantity</em></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.FlowCell.source">
-<span class="sig-name descname"><span class="pre">source</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BaseBeam</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.FlowCell.source" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.FlowCell.volume_flow">
-<span class="sig-name descname"><span class="pre">volume_flow</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.FlowCell.volume_flow" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 </section>
 
 
@@ -620,25 +551,6 @@ and then computes the flow speed as:</p>
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell"><code class="docutils literal notranslate"><span class="pre">FlowCell</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.event_scheme"><code class="docutils literal notranslate"><span class="pre">FlowCell.event_scheme</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.get_population_sampling"><code class="docutils literal notranslate"><span class="pre">FlowCell.get_population_sampling()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.get_volume"><code class="docutils literal notranslate"><span class="pre">FlowCell.get_volume()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.source"><code class="docutils literal notranslate"><span class="pre">FlowCell.source</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.FlowCell.volume_flow"><code class="docutils literal notranslate"><span class="pre">FlowCell.volume_flow</span></code></a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
 
   <div class="sidebar-secondary-item">
 

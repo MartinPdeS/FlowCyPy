@@ -46,7 +46,7 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 
     from FlowCyPy import units
     from FlowCyPy import GaussianBeam
-    from FlowCyPy import FlowCell
+    from FlowCyPy.flow_cell import CircularFlowCell
     from FlowCyPy import ScattererCollection
     from FlowCyPy.population import Exosome, HDL
     from FlowCyPy.detector import PMT
@@ -60,10 +60,9 @@ define physical quantities like meters, seconds, and watts in a concise and cons
     )
 
 
-    flow_cell = FlowCell(
-        source=source,
+    flow_cell = CircularFlowCell(
         volume_flow=0.3 * units.microliter / units.second,  # Flow volume
-        flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
+        radius=10 * units.micrometer,       # Cross-sectional area
     )
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
@@ -91,6 +90,7 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 
 
     cytometer = FlowCytometer(
+        source=source,
         scatterer_collection=scatterer_collection,
         signal_digitizer=signal_digitizer,
         detectors=[detector_0, detector_1],
@@ -139,7 +139,7 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.298 seconds)
+   **Total running time of the script:** (0 minutes 2.213 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_pre_defined_workflow.py:

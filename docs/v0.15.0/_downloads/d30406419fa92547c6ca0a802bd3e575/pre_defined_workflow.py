@@ -23,7 +23,7 @@ Overview:
 
 from FlowCyPy import units
 from FlowCyPy import GaussianBeam
-from FlowCyPy import FlowCell
+from FlowCyPy.flow_cell import CircularFlowCell
 from FlowCyPy import ScattererCollection
 from FlowCyPy.population import Exosome, HDL
 from FlowCyPy.detector import PMT
@@ -37,10 +37,9 @@ source = GaussianBeam(
 )
 
 
-flow_cell = FlowCell(
-    source=source,
+flow_cell = CircularFlowCell(
     volume_flow=0.3 * units.microliter / units.second,  # Flow volume
-    flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
+    radius=10 * units.micrometer,       # Cross-sectional area
 )
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
@@ -68,6 +67,7 @@ detector_1 = PMT(name='side', phi_angle=90 * units.degree, numerical_aperture=0.
 
 
 cytometer = FlowCytometer(
+    source=source,
     scatterer_collection=scatterer_collection,
     signal_digitizer=signal_digitizer,
     detectors=[detector_0, detector_1],
