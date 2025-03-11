@@ -5,6 +5,7 @@ import pandas as pd
 from pydantic.dataclasses import dataclass
 from dataclasses import field
 from pint_pandas import PintArray
+import matplotlib.pyplot as plt
 
 from FlowCyPy.population import BasePopulation
 from FlowCyPy.scatterer_collection import ScattererCollection
@@ -96,9 +97,12 @@ class BaseFlowCell:
         dataframe['Time'] = PintArray(arrival_times, dtype=arrival_times.units)
 
         # Sample velocity for each event using the geometry-specific velocity profile.
-        velocities = self.sample_velocity(len(arrival_times))
+        x, y, velocities = self.sample_parameters(len(arrival_times))
 
-        dataframe['Velocity'] = PintArray(velocities, dtype=velocities[0].units)
+        dataframe['Velocity'] = PintArray(velocities, dtype=velocities.units)
+
+        dataframe['x'] = PintArray(x, dtype=x.units)
+        dataframe['y'] = PintArray(y, dtype=y.units)
 
         if len(dataframe) == 0:
             warnings.warn("Population has been initialized with 0 events.")
@@ -139,6 +143,69 @@ class BaseFlowCell:
         Must be implemented by subclasses.
         """
         raise NotImplementedError("Subclasses must implement sample_velocity.")
+
+    def plot_3d(self, n_samples: int = 300) -> None:
+        """
+        Generates a 3D visualization of particle positions and velocities in a rectangular flow cell.
+
+        This method samples particle positions and their local velocities using the cell's
+        sampling routine, then creates a 3D scatter plot where each particle is represented as a blue dot
+        at \(z = 0\) (the channel cross-section) and its local velocity is depicted as a red vertical line.
+        The boundary of the rectangular channel is overlaid as a green line connecting the four corners.
+
+        The particle positions are sampled over the rectangular area \([-w/2, w/2] \times [-h/2, h/2]\),
+        with hydrodynamic focusing applied via the focusing_factor parameter. The local velocity is computed
+        using the bi-parabolic profile:
+
+        \[
+        v(x, y) = v_{\max} \left(1 - \left(\frac{2x}{w}\right)^2\right) \left(1 - \left(\frac{2y}{h}\right)^2\right),
+        \]
+
+        where \(v_{\max} \approx 1.5\,v_{\text{avg}}\) and \(v_{\text{avg}} = \frac{\text{volume\_flow}}{w \times h}\).
+
+        Parameters
+        ----------
+        n_samples : int
+            The number of particle samples to generate for the visualization.
+
+        Returns
+        -------
+        None
+        """
+        # Sample particle parameters: positions (x, y) and local velocity v.
+        x, y, v = self.sample_parameters(n_samples=n_samples)
+
+        # Create a new 3D figure
+        fig = plt.figure(figsize=(10, 8))
+        ax = fig.add_subplot(111, projection='3d')
+
+        # Plot particle positions at z = 0
+        ax.scatter(x, y, np.zeros_like(x), color='blue', label='Particle Position')
+
+        # Convert Pint quantities to numerical arrays for plotting
+        x_m = x.magnitude
+        y_m = y.to(x.units).magnitude
+        v_m = v.magnitude
+
+        # Plot velocity vectors using quiver without arrowheads; vectors extend vertically.
+        ax.quiver(
+            x_m, y_m, np.zeros_like(x_m),
+            np.zeros_like(x_m), np.zeros_like(y_m), v_m,
+            arrow_length_ratio=0.0, normalize=False, color='red', label='Velocity'
+        )
+
+        self._add_boundary_to_ax(ax=ax, length_units=x.units)
+
+        ax.set_xlabel(f'x [{x.units}]')
+        ax.set_ylabel(f'y [{y.units}]')
+        ax.set_zlabel(f'Velocity [{v.units}]')
+        ax.set_title('3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell')
+        ax.set_zlim([0, v_m.max()])
+        ax.legend()
+
+        plt.tight_layout()
+        plt.show()
+
 
 
 @dataclass(config=config_dict)
@@ -239,6 +306,62 @@ class CircularFlowCell(BaseFlowCell):
         # Compute local velocity using the Poiseuille profile: v(r) = 2 * v_avg * (1 - (r/R)^2)
         v_sample = 2 * self.flow_speed * (1 - (r_sample / self.radius)**2)
         return v_sample
+
+    def sample_parameters(self, n_samples: int = 1) -> Quantity:
+
+        # Uniform sampling: u ~ U(0,1)
+        u = np.random.uniform(0, 1, size=n_samples)
+        # Apply hydrodynamic focusing by scaling the sampled radial position.
+        # If focusing_factor = 0: r_sample = R * sqrt(u) (uniform distribution)
+        # If focusing_factor = 1: r_sample = 0 (perfect focusing)
+        r_sample = (1 - self.focusing_factor) * self.radius * np.sqrt(u)
+
+        theta = np.random.uniform(0, 2 * np.pi, size=n_samples)  # theta uniformly in [0, 2pi]
+        x = r_sample * np.cos(theta)
+        y = r_sample * np.sin(theta)
+
+
+        # Compute local velocity using the Poiseuille profile: v(r) = 2 * v_avg * (1 - (r/R)^2)
+        v_sample = 2 * self.flow_speed * (1 - (r_sample / self.radius)**2)
+        v_max_units = v_sample.max().to('meter/second').to_compact().units
+        return x, y, v_sample.to(v_max_units)
+
+    def _add_boundary_to_ax(self, ax: plt.Axes, length_units: Quantity) -> None:
+        """
+        Adds a visual representation of the circular channel boundary to a 3D Axes object.
+
+        This method draws a circle in the \(xy\)-plane (at \(z=0\)) that represents the boundary
+        of the circular flow cell. The circle is defined by the equation
+        \[
+        x = R \cos(\theta), \quad y = R \sin(\theta), \quad \theta \in [0, 2\pi],
+        \]
+        where \(R\) is the tube radius (converted to the specified length units). The circle is drawn
+        as a green line to delineate the channel boundary.
+
+        Parameters
+        ----------
+        ax : plt.Axes
+            The Matplotlib 3D Axes object on which the boundary will be plotted.
+        length_units : Quantity
+            The desired length unit (e.g., \texttt{units.meter}) to which the radius will be converted.
+
+        Returns
+        -------
+        None
+            This method adds the boundary plot to the provided Axes object in-place.
+        """
+        # Convert the radius to the specified units and extract its numerical value
+        R_val = self.radius.to(length_units).magnitude
+
+        # Generate points on the circle using polar coordinates
+        theta = np.linspace(0, 2 * np.pi, 200)
+        x_circle = R_val * np.cos(theta)
+        y_circle = R_val * np.sin(theta)
+        z_circle = np.zeros_like(x_circle)
+
+        # Plot the circle on the Axes
+        ax.plot(x_circle, y_circle, z_circle, color='green', lw=2, label='Channel Boundary (R)')
+
 
 
 @dataclass(config=config_dict)
@@ -360,6 +483,62 @@ class RectangularFlowCell(BaseFlowCell):
         v_sample = v_max * (1 - (2 * x_sample / self.width) ** 2) * (1 - (2 * y_sample / self.height) ** 2)
 
         return v_sample
+
+    def sample_parameters(self, n_samples: int) -> Quantity:
+        v_avg = self.flow_speed
+        v_max = 1.5 * v_avg  # Max velocity in center
+
+        # Generate uniform random variables U, V in [-1, 1]
+        U = np.random.uniform(-1, 1, size=n_samples)
+        V = np.random.uniform(-1, 1, size=n_samples)
+
+        # Apply hydrodynamic focusing transformation
+        x_sample = (self.width / 2) * (1 - self.focusing_factor) * np.sign(U) * np.abs(U) ** self.focusing_factor
+        y_sample = (self.height / 2) * (1 - self.focusing_factor) * np.sign(V) * np.abs(V) ** self.focusing_factor
+
+        # Compute velocity at sampled positions
+        v_sample = v_max * (1 - (2 * x_sample / self.width) ** 2) * (1 - (2 * y_sample / self.height) ** 2)
+        v_max_units = v_sample.max().to('meter/second').to_compact().units
+        return x_sample, y_sample, v_sample.to(v_max_units)
+
+    def _add_boundary_to_ax(self, ax: plt.Axes, length_units: Quantity) -> None:
+        """
+        Adds a visual representation of the rectangular channel boundary to a 3D Axes object.
+
+        This method plots the boundary of a rectangular flow cell as a green line on the provided
+        Matplotlib Axes object. The boundary is defined by the four corners of the rectangle, calculated
+        using the cell's width \(w\) and height \(h\). Specifically, the rectangle's corners are:
+
+        \[
+        \left(-\frac{w}{2}, -\frac{h}{2}\right), \quad \left(-\frac{w}{2}, \frac{h}{2}\right), \quad
+        \left(\frac{w}{2}, \frac{h}{2}\right), \quad \left(\frac{w}{2}, -\frac{h}{2}\right), \quad
+        \left(-\frac{w}{2}, -\frac{h}{2}\right)
+        \]
+
+        The width and height are converted to the specified `length_units` before plotting. The resulting line is
+        drawn at \(z = 0\) (i.e., in the channel cross-section).
+
+        Parameters
+        ----------
+        ax : plt.Axes
+            The Matplotlib 3D Axes object on which the channel boundary will be plotted.
+        length_units : Quantity
+            The desired length unit (e.g., `units.meter`) for converting the width and height values.
+
+        Returns
+        -------
+        None
+            This method directly adds the boundary plot to the provided Axes object without returning a value.
+        """
+        # Plot the rectangular channel boundary. The rectangle has corners at:
+        # (-w/2, -h/2), (-w/2, h/2), (w/2, h/2), (w/2, -h/2), and back to (-w/2, -h/2).
+        w_val = self.width.to(length_units).magnitude
+        h_val = self.height.to(length_units).magnitude
+        rect_x = [-w_val/2, -w_val/2, w_val/2, w_val/2, -w_val/2]
+        rect_y = [-h_val/2, h_val/2, h_val/2, -h_val/2, -h_val/2]
+        rect_z = np.zeros_like(rect_x)
+        ax.plot(rect_x, rect_y, rect_z, color='green', lw=2, label='Channel Boundary')
+
 
 
 @dataclass(config=config_dict)
@@ -486,75 +665,42 @@ class SquareFlowCell(BaseFlowCell):
 
         return v_sample
 
-
-@dataclass(config=config_dict)
-class IdealFlowCell(BaseFlowCell):
-    """
-    Models an **idealized flow cell** where the **flow speed is directly specified** instead of
-    computing it from the volumetric flow rate and cross-sectional area.
-
-    This class is useful for cases where the velocity is already known from external constraints,
-    such as in **microfluidic setups** where a controlled speed is imposed.
-
-    Attributes:
-    -----------
-    flow_speed : Quantity
-        The specified flow speed (in meters per second).
-    flow_area : Quantity
-        The cross-sectional area of the flow channel (in square meters).
-    event_scheme : str, optional
-        The event timing scheme, by default 'poisson'.
-    """
-    flow_speed: Quantity  # Directly provided velocity (m/s)
-    flow_area: Quantity  # Cross-sectional area (m²)
-    event_scheme: str = 'poisson'
-
-    def __post_init__(self):
+    def _add_boundary_to_ax(self, ax: plt.Axes, length_units: Quantity) -> None:
         """
-        Initializes the IdealFlowCell. Since the flow speed is given explicitly,
-        there is **no need to compute it** from volume flow.
+        Adds a visual representation of the square flow cell boundary to a 3D Axes object.
+
+        This method draws a square in the \(xy\)-plane (at \(z=0\)) that represents the boundary
+        of the square flow cell. The square is defined by its four corners:
+
+        \[
+        \left(-\frac{\text{side}}{2}, -\frac{\text{side}}{2}\right), \quad
+        \left(-\frac{\text{side}}{2}, \frac{\text{side}}{2}\right), \quad
+        \left(\frac{\text{side}}{2}, \frac{\text{side}}{2}\right), \quad
+        \left(\frac{\text{side}}{2}, -\frac{\text{side}}{2}\right)
+        \]
+
+        and then closing the square by returning to the first point. The side length is first
+        converted to the specified `length_units` to ensure consistency with other plotted data.
+
+        Parameters
+        ----------
+        ax : plt.Axes
+            The Matplotlib Axes object (preferably a 3D Axes) on which the square boundary will be plotted.
+        length_units : Quantity
+            The unit to which the side length should be converted (e.g., `units.meter`).
+
+        Returns
+        -------
+        None
+            The method adds the boundary to the provided Axes object in-place.
         """
-        self.volume_flow = self.flow_area * self.flow_speed
-        return super().__post_init__()
+        # Convert the side length to the desired units
+        side_val = self.side.to(length_units).magnitude
 
-    def get_velocity_profile(self, num_points: int = 100) -> np.ndarray:
-        """
-        Returns a **uniform velocity profile** across the flow cell.
+        # Define the square's corners
+        square_x = [-side_val/2, -side_val/2, side_val/2, side_val/2, -side_val/2]
+        square_y = [-side_val/2, side_val/2, side_val/2, -side_val/2, -side_val/2]
+        square_z = np.zeros_like(square_x)
 
-        In an **ideal flow cell**, we assume a **constant velocity field** where:
-
-            v(x) = v(y) = v(z) = flow_speed  (∀ x, y, z in the cross-section)
-
-        Unlike **parabolic velocity profiles** (Poiseuille flow), the velocity **does not vary**
-        across the cross-section, making this an idealized model.
-
-        Parameters:
-        -----------
-        num_points : int, optional
-            The number of sample points for visualization (default: 100).
-
-        Returns:
-        --------
-        np.ndarray
-            A 1D numpy array of uniform velocity values across all sampled points.
-        """
-        return np.full(num_points, self.flow_speed.to(units.meter / units.second).magnitude)
-
-    def sample_velocity(self, n_samples: int = 1) -> Quantity:
-        """
-        Samples **particle velocities** in an **idealized uniform flow**.
-
-        Since the velocity profile is assumed to be **uniform**, all sampled velocities
-        are identical to the specified `flow_speed`.
-
-        Parameters:
-        -----------
-        n_samples : int, optional
-            The number of velocity samples to generate (default: 1).
-
-        Returns:
-        --------
-        Quantity
-            A Quantity representing the sampled velocities (m/s), all equal to `flow_speed`.
-        """
-        return np.full(n_samples, self.flow_speed.to(units.meter / units.second).magnitude) * units.meter / units.second
+        # Plot the square boundary on the Axes
+        ax.plot(square_x, square_y, square_z, color='green', lw=2, label='Channel Boundary (side)')

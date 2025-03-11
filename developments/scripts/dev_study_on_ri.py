@@ -1,156 +1,79 @@
-"""
-Flow Cytometry Simulation with Two Populations: Density Plot of Scattering Intensities
-======================================================================================
-
-This example demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library.
-The simulation includes two populations of particles, and we analyze pulse signals from two detectors
-to generate a 2D density plot of scattering intensities.
-
-Workflow Summary:
-1. Flow Setup: Configure flow parameters and define particle size distributions.
-2. Laser GaussianBeam and Detector Setup: Define the laser source characteristics and configure the forward and side detectors.
-3. Run the Experiment: Simulate the flow cytometry experiment.
-4. Data Analysis: Analyze the pulse signals and generate a 2D density plot of the scattering intensities.
-"""
-
-# Step 1: Configuring Flow Parameters
+import matplotlib.pyplot as plt
 import numpy as np
-from FlowCyPy import FlowCell
-from FlowCyPy.units import meter, micrometer, millisecond, second, degree
-from FlowCyPy import ScattererCollection
-from FlowCyPy.units import particle, milliliter, nanometer, RIU, milliwatt, AU
-from FlowCyPy import FlowCytometer
-from FlowCyPy import Population, distribution
-from FlowCyPy.detector import Detector
-from FlowCyPy.units import ohm, megahertz, ampere, volt, kelvin, watt, microsecond, microvolt
-from FlowCyPy import EventCorrelator, peak_locator
-from FlowCyPy import GaussianBeam
-from FlowCyPy import NoiseSetting
 
-NoiseSetting.include_noises = False
-
-np.random.seed(3)  # Ensure reproducibility
-
-# Define the flow cell parameters
-flow_cell = FlowCell(
-    flow_speed=7.56 * meter / second,        # Flow speed: 7.56 m/s
-    flow_area=(10 * micrometer) ** 2,        # Flow area: 10 x 10 µm²
-    run_time=0.3 * millisecond               # Simulation run time: 0.5 ms
-)
-
-# Step 2: Defining Particle Populations
-# Initialize scatterer with a medium refractive index
-scatterer = ScattererCollection(medium_refractive_index=1.33 * RIU)  # Medium refractive index of 1.33 (water)
-n_particle = 130
-
-size = 150 * nanometer
-std_dev = 80 * nanometer
-# Define populations with size distribution and refractive index
-population_0 = Population(
-    name='RI: 1.39',
-    size=distribution.Normal(mean=size, std_dev=std_dev),
-    refractive_index=distribution.Normal(mean=1.39 * RIU, std_dev=0.0002 * RIU)
-)
-
-population_1 = Population(
-    name='RI: 1.42',
-    size=distribution.Normal(mean=size, std_dev=std_dev),
-    refractive_index=distribution.Normal(mean=1.42 * RIU, std_dev=0.0002 * RIU)
-)
-
-population_2 = Population(
-    name='RI: 1.46',
-    size=distribution.Normal(mean=size, std_dev=std_dev),
-    refractive_index=distribution.Normal(mean=1.46 * RIU, std_dev=0.0002 * RIU)
-)
+from matplotlib.tri import (CubicTriInterpolator, Triangulation,
+                            UniformTriRefiner)
 
 
-# Define populations with size distribution and refractive index
-scatterer.add_population(population_0, particle_count=n_particle * particle)
-scatterer.add_population(population_1, particle_count=n_particle * particle)
-scatterer.add_population(population_2, particle_count=n_particle * particle)
-
-flow_cell.initialize(scatterer=scatterer)
-
-# scatterer.initialize(flow_cell=flow_cell)  # Link populations to flow cell
-flow_cell.distribute_time_linearly(sequential_population=True)
-scatterer._log_properties()               # Display population properties
-# scatterer.plot()                           # Visualize the population distributions
-
-# %%
-# Step 3: Laser GaussianBeam Configuration
-source = GaussianBeam(
-    numerical_aperture=0.3 * AU,          # Laser numerical aperture: 0.3
-    wavelength=488 * nanometer,           # Laser wavelength: 200 nm
-    optical_power=20 * milliwatt          # Laser optical power: 20 mW
-)
-
-# Step 4: Simulating the Flow Cytometry Experiment
-# Initialize the cytometer and configure detectors
-# Add forward scatter detector
-detector_0 = Detector(
-    name='forward',                         # Detector name: Forward scatter
-    phi_angle=0 * degree,                   # Detector angle: 0 degrees (forward scatter)
-    numerical_aperture=.2 * AU,             # Detector numerical aperture: 1.2
-    responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
-    sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
-    noise_level=0.0 * volt,                 # Noise level: 0 V
-    # saturation_level=1600 * microvolt,      # Saturation level: 5000 mV (detector capacity)
-    resistance=150 * ohm,                   # Resistance: 1 ohm
-    temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
-)
-
-# Add side scatter detector
-detector_1 = Detector(
-    name='side',                            # Detector name: Side scatter
-    phi_angle=90 * degree,                  # Detector angle: 90 degrees (side scatter)
-    numerical_aperture=.2 * AU,             # Detector numerical aperture: 1.2
-    responsitivity=1 * ampere / watt,       # Responsitivity: 1 A/W (detector response)
-    sampling_freq=60 * megahertz,           # Sampling frequency: 60 MHz
-    noise_level=0.0 * volt,                 # Noise level: 0 V
-    # saturation_level=1600 * microvolt,      # Saturation level: 5 V (detector capacity)
-    resistance=150 * ohm,                   # Resistance: 1 ohm
-    temperature=300 * kelvin,               # Operating temperature: 300 K (room temperature)
-)
+# ----------------------------------------------------------------------------
+# Electrical potential of a dipole
+# ----------------------------------------------------------------------------
+def dipole_potential(x, y):
+    """The electric dipole potential V, at position *x*, *y*."""
+    r_sq = x**2 + y**2
+    theta = np.arctan2(y, x)
+    z = np.cos(theta)/r_sq
+    return (np.max(z) - z) / (np.max(z) - np.min(z))
 
 
-cytometer = FlowCytometer(
-    flow_cell=flow_cell,
-    detectors=[detector_0, detector_1],
-    source=source,
-)
+# ----------------------------------------------------------------------------
+# Creating a Triangulation
+# ----------------------------------------------------------------------------
+# First create the x and y coordinates of the points.
+n_angles = 30
+n_radii = 10
+min_radius = 0.2
+radii = np.linspace(min_radius, 0.95, n_radii)
 
-# Run the flow cytometry simulation
-cytometer.simulate_pulse()
+angles = np.linspace(0, 2 * np.pi, n_angles, endpoint=False)
+angles = np.repeat(angles[..., np.newaxis], n_radii, axis=1)
+angles[:, 1::2] += np.pi / n_angles
 
-# Visualize the scatter signals from both detectors
-cytometer.plot()
+x = (radii*np.cos(angles)).flatten()
+y = (radii*np.sin(angles)).flatten()
+V = dipole_potential(x, y)
 
-# %%
-# Step 5: Analyzing Pulse Signals
-# Configure peak finding algorithm
-algorithm = peak_locator.MovingAverage(
-    threshold=0.1 * microvolt,           # Signal threshold: 0.1 mV
-    window_size=1 * microsecond,         # Moving average window size: 1 µs
-    min_peak_distance=0.3 * microsecond  # Minimum distance between peaks: 0.3 µs
-)
+# Create the Triangulation; no triangles specified so Delaunay triangulation
+# created.
+triang = Triangulation(x, y)
 
-detector_0.set_peak_locator(algorithm)
-detector_1.set_peak_locator(algorithm)
+# Mask off unwanted triangles.
+triang.set_mask(np.hypot(x[triang.triangles].mean(axis=1),
+                         y[triang.triangles].mean(axis=1))
+                < min_radius)
 
-# Initialize analyzer with the cytometer and algorithm
-analyzer = EventCorrelator(cytometer=cytometer)
+# ----------------------------------------------------------------------------
+# Refine data - interpolates the electrical potential V
+# ----------------------------------------------------------------------------
+refiner = UniformTriRefiner(triang)
+tri_refi, z_test_refi = refiner.refine_field(V, subdiv=3)
 
-# Run the pulse signal analysis
-analyzer.run_analysis(compute_peak_area=False)
+# ----------------------------------------------------------------------------
+# Computes the electrical field (Ex, Ey) as gradient of electrical potential
+# ----------------------------------------------------------------------------
+tci = CubicTriInterpolator(triang, -V)
+# Gradient requested here at the mesh nodes but could be anywhere else:
+(Ex, Ey) = tci.gradient(triang.x, triang.y)
+E_norm = np.sqrt(Ex**2 + Ey**2)
 
-# Step 6: Coincidence Data and 2D Density Plot
-# Extract coincidence data within a defined margin
-coincidence = analyzer.get_coincidence(margin=0.1 * microsecond)
+# ----------------------------------------------------------------------------
+# Plot the triangulation, the potential iso-contours and the vector field
+# ----------------------------------------------------------------------------
+fig, ax = plt.subplots()
+ax.set_aspect('equal')
+# Enforce the margins, and enlarge them to give room for the vectors.
+ax.use_sticky_edges = False
+ax.margins(0.07)
 
-coincidence.loc[:n_particle - 1, 'Label'] = 'RI: 1.39'
-coincidence.loc[n_particle: 2 * n_particle-1, 'Label'] = 'RI: 1.42'
-coincidence.loc[2 * n_particle:, 'Label'] = 'RI: 1.46'
+ax.triplot(triang, color='0.8')
 
-# Generate and plot the 2D density plot of scattering intensities
-analyzer.plot(log_plot=False)
+levels = np.arange(0., 1., 0.01)
+ax.tricontour(tri_refi, z_test_refi, levels=levels, cmap='hot',
+              linewidths=[2.0, 1.0, 1.0, 1.0])
+# Plots direction of the electrical vector field
+ax.quiver(triang.x, triang.y, Ex/E_norm, Ey/E_norm,
+          units='xy', scale=10., zorder=3, color='blue',
+          width=0.007, headwidth=3., headlength=4.)
+
+ax.set_title('Gradient plot: an electrical dipole')
+plt.show()
