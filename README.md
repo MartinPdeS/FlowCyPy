@@ -8,7 +8,7 @@
 | FlowCyPy/circuits.py                                  |       34 |        6 |        0 |        0 |     82% |21, 104-106, 117-125 |
 | FlowCyPy/classifier.py                                |       44 |        0 |        8 |        4 |     92% |32->35, 74->78, 121->125, 172->176 |
 | FlowCyPy/coupling\_mechanism/empirical.py             |        9 |        4 |        0 |        0 |     56% |     39-47 |
-| FlowCyPy/coupling\_mechanism/mie.py                   |       45 |        8 |        6 |        3 |     78% |80->94, 148, 198-235 |
+| FlowCyPy/coupling\_mechanism/mie.py                   |       37 |        8 |        4 |        2 |     76% |62, 118-160 |
 | FlowCyPy/coupling\_mechanism/rayleigh.py              |       23 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/coupling\_mechanism/uniform.py               |        6 |        1 |        0 |        0 |     83% |        40 |
 | FlowCyPy/cytometer.py                                 |      120 |        8 |       40 |        7 |     89% |120, 281->294, 382, 412->exit, 442, 444, 447-450 |
@@ -22,7 +22,7 @@
 | FlowCyPy/distribution/uniform.py                      |       34 |        1 |        0 |        0 |     97% |       117 |
 | FlowCyPy/distribution/weibull.py                      |       36 |       16 |        2 |        0 |     53% |28, 32, 36, 57-62, 79, 102-112, 115 |
 | FlowCyPy/filters.py                                   |       22 |       22 |        4 |        0 |      0% |      1-92 |
-| FlowCyPy/flow\_cell.py                                |      194 |       34 |        8 |        2 |     81% |51-53, 60, 67, 108, 133, 145, 176-207, 488-502 |
+| FlowCyPy/flow\_cell.py                                |      198 |       34 |       12 |        2 |     82% |51-53, 60, 67, 108, 140, 152, 183-214, 495-509 |
 | FlowCyPy/helper.py                                    |       91 |       40 |       30 |        8 |     54% |38, 42, 46, 116-121, 124-127, 130, 132->135, 160-203, 235 |
 | FlowCyPy/noises.py                                    |       27 |       11 |        6 |        1 |     52% |4, 65-67, 77, 81-87 |
 | FlowCyPy/particle\_count.py                           |       45 |       20 |       20 |        4 |     51% |30-31, 41, 64-72, 101-104, 110, 115-120, 127 |
@@ -36,11 +36,11 @@
 | FlowCyPy/population.py                                |       80 |       21 |       18 |        5 |     69% |46-47, 50, 79-80, 83, 145, 227-231, 253-255, 281, 291, 301, 340-349 |
 | FlowCyPy/scatterer\_collection.py                     |       77 |       11 |       26 |        6 |     80% |44-46, 64, 123, 141, 145, 152-157, 210, 275->278 |
 | FlowCyPy/signal\_digitizer.py                         |       45 |        5 |       10 |        4 |     84% |66-67, 90, 99, 121 |
-| FlowCyPy/source.py                                    |      145 |       19 |       54 |       15 |     81% |33, 41, 53, 59-65, 73, 85, 88, 126, 128, 223, 225, 229, 231, 333, 335, 376->379, 379->382 |
+| FlowCyPy/source.py                                    |      157 |       20 |       58 |       17 |     81% |36, 44, 56, 62-68, 76, 88, 91, 129, 131, 206, 210->224, 312, 314, 318, 320, 422, 424, 465->468, 468->471 |
 | FlowCyPy/triggered\_acquisition.py                    |       62 |        7 |       14 |        2 |     83% |46-48, 102-103, 105-106 |
 | FlowCyPy/units.py                                     |       21 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       56 |       56 |       14 |        0 |      0% |     1-134 |
-|                                             **TOTAL** | **2123** |  **610** |  **462** |   **95** | **67%** |           |
+|                                             **TOTAL** | **2131** |  **611** |  **468** |   **96** | **67%** |           |
 
 
 ## Setup coverage badge
