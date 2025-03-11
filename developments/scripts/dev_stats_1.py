@@ -47,13 +47,20 @@ np.random.seed(3)  # Ensure reproducibility
 # The laser source generates light that interacts with the particles. Its parameters, like numerical
 # aperture and wavelength, affect how light scatters, governed by Mie theory.
 
-from FlowCyPy import GaussianBeam
+from FlowCyPy.source import AstigmaticGaussianBeam
 
-source = GaussianBeam(
-    numerical_aperture=0.3 * units.AU,           # Numerical aperture
-    wavelength=450 * units.nanometer,           # Wavelength
-    optical_power=20 * units.milliwatt          # Optical power
+source = AstigmaticGaussianBeam(
+    wavelength=450 * units.nanometer,
+    optical_power=200 * units.milliwatt,
+    waist_z=1 * units.micrometer,
+    waist_y=60 * units.micrometer
 )
+
+# source = AstigmaticGaussianBeam(
+#     numerical_aperture=0.3 * units.AU,           # Numerical aperture
+#     wavelength=450 * units.nanometer,           # Wavelength
+#     optical_power=20 * units.milliwatt          # Optical power
+# )
 
 
 # %%

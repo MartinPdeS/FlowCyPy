@@ -45,7 +45,7 @@ class BaseBeam():
 
         return value
 
-    @field_validator('waist', 'waist_x', 'waist_y', mode='plain')
+    @field_validator('waist', 'waist_y', 'waist_z', mode='plain')
     def validate_waist(cls, value, field):
         if value is None:
             return value
@@ -77,7 +77,7 @@ class BaseBeam():
 
         return value
 
-    @field_validator('numerical_aperture', 'numerical_aperture_x', 'numerical_aperture_y', mode='plain')
+    @field_validator('numerical_aperture', 'numerical_aperture_y', 'numerical_aperture_z', mode='plain')
     def validate_numerical_apertures(cls, value, field):
         if value is None:
             return value
@@ -91,53 +91,23 @@ class BaseBeam():
             raise ValueError(f"{field} must be between 0 and 1, but got {value.magnitude}")
         return value
 
+    def add_rin_to_amplitude(self, amplitude: Quantity, bandwidth: Quantity) -> Quantity:
+        # Convert RIN from dB/Hz to linear scale if necessary
+        rin_linear = 10**(self.RIN / 10)
 
-@dataclass(config=config_dict)
-class GaussianBeam(BaseBeam):
-    """
-    Represents a monochromatic Gaussian laser beam focused by a standard lens.
+        # Compute noise standard deviation, scaled by bandwidth
+        std_dev_amplitude = np.sqrt(rin_linear * bandwidth.to(units.hertz).magnitude) * self.amplitude
 
-    Parameters
-    ----------
-    optical_power : Quantity
-        The optical power of the laser (in watts).
-    wavelength : Quantity
-        The wavelength of the laser (in meters).
-    numerical_aperture : Optional[Quantity]
-        The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).
-    waist : Optional[Quantity]
-        The beam waist at the focus, calculated as `waist = wavelength / (pi * numerical_aperture)` if not provided.
-        Alternatively, if this is provided, the numerical aperture will be computed as `numerical_aperture = wavelength / (pi * waist)`.
-    polarization : Optional[Quantity]
-        The polarization of the laser source in degrees (default is 0 degrees).
-    RIN : Optional[float]
-        The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a stable laser.
-    """
-    optical_power: Quantity
-    wavelength: Quantity
-    numerical_aperture: Optional[Quantity] = None
-    waist: Optional[Quantity] = None
-    polarization: Optional[Quantity] = 0 * degree
-    RIN: Optional[float] = -120.0
+        # Apply Gaussian noise to the amplitude
+        amplitude += np.random.normal(
+            loc=0,
+            scale=std_dev_amplitude.to(self.amplitude.units).magnitude,
+            size=len(amplitude)
+        ) * amplitude.units
 
-    def __post_init__(self):
-        """
-        Ensure that either numerical_aperture or waist is provided (but not both),
-        then compute the missing parameter before initializing other attributes.
-        """
-        if (self.numerical_aperture is None) and (self.waist is None):
-            raise ValueError("Either numerical_aperture or waist must be provided.")
-        if (self.numerical_aperture is not None) and (self.waist is not None):
-            raise ValueError("Provide only one: either numerical_aperture or waist, not both.")
+        return amplitude
 
-        if self.numerical_aperture is not None:
-            self.waist = self.wavelength / (PhysicalConstant.pi * self.numerical_aperture)
-        else:
-            self.numerical_aperture = self.wavelength / (PhysicalConstant.pi * self.waist)
-
-        self.initialization()
-
-    def get_amplitude_signal(self, size: int, bandwidth: float, x: Quantity, y: Quantity) -> np.ndarray:
+    def get_amplitude_signal(self, size: int, bandwidth: float, x: Quantity, y: Quantity, z: Quantity = 0 * units.meter) -> np.ndarray:
         r"""
         Applies Relative Intensity Noise (RIN) to the source amplitude if enabled, accounting for detection bandwidth.
 
@@ -201,27 +171,58 @@ class GaussianBeam(BaseBeam):
         - The bandwidth parameter (\(B\)) must be in Hz and reflects the frequency range of the detection system.
         - The function assumes that RIN is specified in dB/Hz. If RIN is already in linear scale, the conversion step can be skipped.
         """
-
-        if np.any(y > self.waist):
-            warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
-
-        amplitudes = self.amplitude_at(x=x, y=y).values.quantity
+        amplitudes = self.amplitude_at(x=x, y=y, z=z).values.quantity
 
         if NoiseSetting.include_RIN_noise and NoiseSetting.include_noises:
-            # Convert RIN from dB/Hz to linear scale if necessary
-            rin_linear = 10**(self.RIN / 10)
-
-            # Compute noise standard deviation, scaled by bandwidth
-            std_dev_amplitude = np.sqrt(rin_linear * bandwidth.to(units.hertz).magnitude) * self.amplitude
-
-            # Apply Gaussian noise to the amplitude
-            amplitudes += np.random.normal(
-                loc=0,
-                scale=std_dev_amplitude.to(self.amplitude.units).magnitude,
-                size=size
-            ) * self.amplitude.units
+            amplitudes = self.add_rin_to_amplitude(amplitudes, bandwidth=bandwidth)
 
         return amplitudes
+
+
+@dataclass(config=config_dict)
+class GaussianBeam(BaseBeam):
+    """
+    Represents a monochromatic Gaussian laser beam focused by a standard lens.
+
+    Parameters
+    ----------
+    optical_power : Quantity
+        The optical power of the laser (in watts).
+    wavelength : Quantity
+        The wavelength of the laser (in meters).
+    numerical_aperture : Optional[Quantity]
+        The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).
+    waist : Optional[Quantity]
+        The beam waist at the focus, calculated as `waist = wavelength / (pi * numerical_aperture)` if not provided.
+        Alternatively, if this is provided, the numerical aperture will be computed as `numerical_aperture = wavelength / (pi * waist)`.
+    polarization : Optional[Quantity]
+        The polarization of the laser source in degrees (default is 0 degrees).
+    RIN : Optional[float]
+        The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a stable laser.
+    """
+    optical_power: Quantity
+    wavelength: Quantity
+    numerical_aperture: Optional[Quantity] = None
+    waist: Optional[Quantity] = None
+    polarization: Optional[Quantity] = 0 * degree
+    RIN: Optional[float] = -120.0
+
+    def __post_init__(self):
+        """
+        Ensure that either numerical_aperture or waist is provided (but not both),
+        then compute the missing parameter before initializing other attributes.
+        """
+        if (self.numerical_aperture is None) and (self.waist is None):
+            raise ValueError("Either numerical_aperture or waist must be provided.")
+        if (self.numerical_aperture is not None) and (self.waist is not None):
+            raise ValueError("Provide only one: either numerical_aperture or waist, not both.")
+
+        if self.numerical_aperture is not None:
+            self.waist = self.wavelength / (PhysicalConstant.pi * self.numerical_aperture)
+        else:
+            self.numerical_aperture = self.wavelength / (PhysicalConstant.pi * self.waist)
+
+        self.initialization()
 
     def calculate_field_amplitude_at_focus(self) -> Quantity:
         r"""
@@ -248,7 +249,7 @@ class GaussianBeam(BaseBeam):
         E0 = np.sqrt(4 * self.optical_power / (PhysicalConstant.pi * PhysicalConstant.epsilon_0 * PhysicalConstant.c * area))
         return E0.to(volt / meter)
 
-    def amplitude_at(self, x: Quantity, y: Quantity) -> Quantity:
+    def amplitude_at(self, x: Quantity, y: Quantity, z: Quantity = 0 * units.meter) -> Quantity:
         r"""
         Returns the electric field amplitude at a position (x,y) in the focal plane.
 
@@ -260,9 +261,15 @@ class GaussianBeam(BaseBeam):
         Quantity
             The electric field amplitude at the focus in volts per meter.
         """
-        r2 = x**2 + y**2
+        if np.any(y > self.waist):
+            warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+
         E0 = self.calculate_field_amplitude_at_focus()
-        return E0 * np.exp(-r2 / self.waist**2)
+        return E0 * np.exp(-y ** 2 / self.waist ** 2 - z ** 2 / self.waist ** 2)
+
+    def get_particle_width(self, velocity: Quantity) -> Quantity:
+        return self.waist / (2 * velocity)
+
 
 
 @dataclass(config=config_dict)
@@ -276,16 +283,16 @@ class AstigmaticGaussianBeam(BaseBeam):
         The optical power of the laser (in watts).
     wavelength : Quantity
         The wavelength of the laser (in meters).
-    numerical_aperture_x : Optional[Quantity]
-        The numerical aperture of the lens along the x-axis (unitless).
-    waist_x : Optional[Quantity]
-        The beam waist along the x-axis. If not provided, it will be computed as:
-        waist_x = wavelength / (pi * numerical_aperture_x).
     numerical_aperture_y : Optional[Quantity]
-        The numerical aperture of the lens along the y-axis (unitless).
+        The numerical aperture of the lens along the x-axis (unitless).
     waist_y : Optional[Quantity]
-        The beam waist along the y-axis. If not provided, it will be computed as:
+        The beam waist along the x-axis. If not provided, it will be computed as:
         waist_y = wavelength / (pi * numerical_aperture_y).
+    numerical_aperture_z : Optional[Quantity]
+        The numerical aperture of the lens along the y-axis (unitless).
+    waist_z : Optional[Quantity]
+        The beam waist along the y-axis. If not provided, it will be computed as:
+        waist_z = wavelength / (pi * numerical_aperture_z).
     polarization : Optional[Quantity]
         The polarization of the laser source in degrees (default is 0 degrees).
     RIN : Optional[float]
@@ -295,10 +302,10 @@ class AstigmaticGaussianBeam(BaseBeam):
     """
     optical_power: Quantity
     wavelength: Quantity
-    numerical_aperture_x: Optional[Quantity] = None
-    waist_x: Optional[Quantity] = None
     numerical_aperture_y: Optional[Quantity] = None
     waist_y: Optional[Quantity] = None
+    numerical_aperture_z: Optional[Quantity] = None
+    waist_z: Optional[Quantity] = None
     polarization: Optional[Quantity] = 0 * degree
     RIN: Optional[float] = 0.0
 
@@ -308,28 +315,28 @@ class AstigmaticGaussianBeam(BaseBeam):
         and electric field amplitude at the focus.
         """
         # Check for x-axis parameters
-        if (self.numerical_aperture_x is None) and (self.waist_x is None):
-            raise ValueError("Either numerical_aperture_x or waist_x must be provided.")
-        if (self.numerical_aperture_x is not None) and (self.waist_x is not None):
-            raise ValueError("Provide only one: either numerical_aperture_x or waist_x, not both.")
-
-        # Check for y-axis parameters
         if (self.numerical_aperture_y is None) and (self.waist_y is None):
             raise ValueError("Either numerical_aperture_y or waist_y must be provided.")
         if (self.numerical_aperture_y is not None) and (self.waist_y is not None):
             raise ValueError("Provide only one: either numerical_aperture_y or waist_y, not both.")
 
-        # Compute missing values for x-axis
-        if self.numerical_aperture_x is not None:
-            self.waist_x = self.wavelength / (PhysicalConstant.pi * self.numerical_aperture_x)
-        else:
-            self.numerical_aperture_x = self.wavelength / (PhysicalConstant.pi * self.waist_x)
+        # Check for y-axis parameters
+        if (self.numerical_aperture_z is None) and (self.waist_z is None):
+            raise ValueError("Either numerical_aperture_z or waist_z must be provided.")
+        if (self.numerical_aperture_z is not None) and (self.waist_z is not None):
+            raise ValueError("Provide only one: either numerical_aperture_z or waist_z, not both.")
 
         # Compute missing values for y-axis
         if self.numerical_aperture_y is not None:
             self.waist_y = self.wavelength / (PhysicalConstant.pi * self.numerical_aperture_y)
         else:
             self.numerical_aperture_y = self.wavelength / (PhysicalConstant.pi * self.waist_y)
+
+        # Compute missing values for z-axis
+        if self.numerical_aperture_z is not None:
+            self.waist_z = self.wavelength / (PhysicalConstant.pi * self.numerical_aperture_z)
+        else:
+            self.numerical_aperture_z = self.wavelength / (PhysicalConstant.pi * self.waist_z)
 
         self.initialization()
 
@@ -354,11 +361,11 @@ class AstigmaticGaussianBeam(BaseBeam):
         Quantity
             The electric field amplitude at the focus in volts per meter.
         """
-        area = self.waist_x * self.waist_y
+        area = self.waist_y * self.waist_z
         E0 = np.sqrt(4 * self.optical_power / (PhysicalConstant.pi * PhysicalConstant.epsilon_0 * PhysicalConstant.c * area))
         return E0.to(volt / meter)
 
-    def amplitude_at(self, x: Quantity, y: Quantity) -> Quantity:
+    def amplitude_at(self, x: Quantity, y: Quantity, z: Quantity = 0 * units.meter) -> Quantity:
         r"""
         Returns the electric field amplitude at position (x,y) in the focal plane.
 
@@ -370,109 +377,11 @@ class AstigmaticGaussianBeam(BaseBeam):
         Quantity
             The electric field amplitude at the focus in volts per meter.
         """
+        if np.any(y > self.waist_z):
+            warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+
         E0 = self.calculate_field_amplitude_at_focus()
-        return E0 * np.exp(-x**2 / self.waist_x**2 - y**2 / self.waist_y**2)
+        return E0 * np.exp(- y ** 2 / self.waist_y ** 2 - z ** 2 / self.waist_z ** 2)
 
-
-@dataclass(config=config_dict)
-class FlatTop(BaseBeam):
-    """
-    Represents a flat-top laser source focused by an optical system.
-
-    Parameters
-    ----------
-    optical_power : Quantity
-        The optical power of the laser (in watts).
-    wavelength : Quantity
-        The wavelength of the laser (in meters).
-    numerical_aperture : Optional[Quantity]
-        The numerical aperture of the focusing system (unitless).
-    flat_top_radius : Optional[Quantity]
-        The radius of the flat-top beam at the focus. If not provided,
-        it will be computed as: flat_top_radius = wavelength / (pi * numerical_aperture).
-        Alternatively, if provided, the numerical aperture will be computed as:
-        numerical_aperture = wavelength / (pi * flat_top_radius).
-    polarization : Optional[Quantity]
-        The polarization of the laser source in degrees (default is 0 degrees).
-    RIN : Optional[float]
-        The Relative Intensity Noise (RIN) of the laser. Default is 0.0, representing a perfectly stable laser.
-
-    Attributes
-    ----------
-    flat_top_radius : Quantity
-        The beam radius at the focus.
-    numerical_aperture : Quantity
-        The numerical aperture of the focusing system.
-    amplitude : Quantity
-        The electric field amplitude at the focus, derived from the optical power and flat-top beam area.
-    """
-    optical_power: Quantity
-    wavelength: Quantity
-    numerical_aperture: Optional[Quantity] = None
-    flat_top_radius: Optional[Quantity] = None
-    polarization: Optional[Quantity] = 0 * degree
-    RIN: Optional[float] = 0.0
-
-    def __post_init__(self):
-        """
-        Initialize additional parameters like flat-top radius and derived properties.
-        The user must provide exactly one of: numerical_aperture or flat_top_radius.
-        """
-        if (self.numerical_aperture is None) and (self.flat_top_radius is None):
-            raise ValueError("Either numerical_aperture or flat_top_radius must be provided.")
-        if (self.numerical_aperture is not None) and (self.flat_top_radius is not None):
-            raise ValueError("Provide only one: either numerical_aperture or flat_top_radius, not both.")
-
-        if self.numerical_aperture is not None:
-            self.flat_top_radius = self.wavelength / (PhysicalConstant.pi * self.numerical_aperture)
-        else:
-            self.numerical_aperture = self.wavelength / (PhysicalConstant.pi * self.flat_top_radius)
-
-        self.initialization()
-
-    def calculate_field_amplitude_at_focus(self) -> Quantity:
-        r"""
-        Calculate the electric field amplitude (E0) at the focus for a flat-top beam.
-
-        The electric field amplitude at the focus is given by:
-
-        .. math::
-            E_0 = \sqrt{\frac{2 P}{\pi \epsilon_0 c R^2}}
-
-        where:
-            - `P` is the optical power of the beam,
-            - `\epsilon_0` is the permittivity of free space,
-            - `c` is the speed of light,
-            - `R` is the flat-top beam radius at the focus.
-
-        Returns
-        -------
-        Quantity
-            The electric field amplitude at the focus in volts per meter.
-        """
-        # Compute the beam area
-        beam_area = PhysicalConstant.pi * self.flat_top_radius**2
-
-        E0 = np.sqrt(2 * self.optical_power / (PhysicalConstant.epsilon_0 * PhysicalConstant.c * beam_area))
-        return E0.to(volt / meter)
-
-    def amplitude_at(self, x: Quantity, y: Quantity = 0 * meter) -> Quantity:
-        """
-        Returns the electric field amplitude at a position (x,y) in the focal plane.
-        For a flat-top beam, the amplitude is constant (E0) within the beam radius and zero outside.
-        Supports x and y as scalars or NumPy arrays.
-        """
-        if not isinstance(x, np.ndarray):
-            x = np.atleast_1d(x.magnitude) * x.units
-
-        if not isinstance(y, np.ndarray):
-            y = np.atleast_1d(y.magnitude) * y.units
-
-        r = np.sqrt(x**2 + y**2)
-        E0 = self.calculate_field_amplitude_at_focus()
-        # Create an output array with the same shape as r, filled with zeros
-        amplitude = np.zeros_like(r) * E0
-        # Set amplitude to E0 where r is within the flat_top_radius.
-        mask = r <= self.flat_top_radius
-        amplitude[mask] = E0
-        return amplitude
+    def get_particle_width(self, velocity: Quantity) -> Quantity:
+        return self.waist_z / (2 * velocity)

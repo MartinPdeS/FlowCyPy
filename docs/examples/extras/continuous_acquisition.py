@@ -38,7 +38,7 @@ source = GaussianBeam(
 # ------------------------------
 # Set the flow speed to 80 micrometers per second and a flow area of 1 square micrometer, with a total simulation time of 1 second.
 flow_cell = CircularFlowCell(
-    volume_flow=0.01 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+    volume_flow=0.02 * units.microliter / units.second,        # Flow speed: 10 microliter per second
     radius=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
 )
 

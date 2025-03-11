@@ -21,7 +21,7 @@ config_dict = dict(
     extra='forbid'
 )
 
-@dataclass(config=config_dict)
+@dataclass(config=config_dict, kw_only=True)
 class BaseFlowCell:
     """
     Base class for modeling the flow parameters in a flow cytometer.
@@ -215,7 +215,7 @@ class BaseFlowCell:
 
 
 
-@dataclass(config=config_dict)
+@dataclass(config=config_dict, kw_only=True)
 class CircularFlowCell(BaseFlowCell):
     """
     Models a circular flow cell, where the cross-section is assumed to be a circle.
@@ -371,7 +371,7 @@ class CircularFlowCell(BaseFlowCell):
 
 
 
-@dataclass(config=config_dict)
+@dataclass(config=config_dict, kw_only=True)
 class RectangularFlowCell(BaseFlowCell):
     """
     Models a rectangular flow cell.
@@ -549,35 +549,27 @@ class RectangularFlowCell(BaseFlowCell):
 
 
 @dataclass(config=config_dict)
-class SquareFlowCell(BaseFlowCell):
+class SquareFlowCell(RectangularFlowCell):
     """
-    Models a **square flow cell**, which is a special case of a rectangular flow cell where:
+    Models a square flow cell, which is a special case of a rectangular flow cell where:
         width = height = side
 
-    The velocity profile follows a **bi-parabolic** distribution, similar to a rectangular channel:
+    The velocity profile follows a bi-parabolic distribution:
 
         v(x, y) = v_max * (1 - (2x / side)^2) * (1 - (2y / side)^2)
 
     where:
-        - `side` is the side length of the square channel (in meters),
-        - `x` and `y` are positions inside the channel cross-section (-side/2 ≤ x ≤ side/2),
-        - `v_max` is the maximum velocity at the center of the channel,
-        - `v_avg` is the average flow speed, computed as:
+      - side is the side length of the square channel (in meters),
+      - x and y are coordinates in the channel cross-section (-side/2 ≤ x, y ≤ side/2),
+      - v_max ≈ 1.5 * v_avg is the maximum velocity at the center,
+      - v_avg = volume_flow / (side^2) is the average flow speed.
 
-          v_avg = volume_flow / (side^2)
+    Hydrodynamic focusing is enabled using the focusing_factor parameter, where:
+      - focusing_factor = 0 produces a uniform distribution,
+      - focusing_factor = 1 forces perfect focusing at the center.
 
-        - For square channels in laminar flow, `v_max` is approximately:
-
-          v_max ≈ 1.5 * v_avg
-
-    This model assumes **low Reynolds number laminar flow** inside the flow cell.
-
-    Hydrodynamic focusing is enabled using the `focusing_factor` parameter, where:
-        - `focusing_factor = 0` results in **uniform** particle distribution across the area.
-        - `focusing_factor = 1` forces **perfect focusing** at the center (`x = y = 0`).
-
-    Attributes:
-    -----------
+    Attributes
+    ----------
     side : Quantity
         The side length of the square channel (in meters).
     volume_flow : Quantity
@@ -588,126 +580,16 @@ class SquareFlowCell(BaseFlowCell):
         A value between 0 (uniform distribution) and 1 (perfect focusing at the center).
     """
     side: Quantity  # in meters
-    volume_flow: Quantity
-    event_scheme: str = 'poisson'
-    focusing_factor: float = 1.0  # Default: perfect focusing
+    # Override inherited width and height so that they are not required during initialization.
+    width: Quantity = field(init=False)
+    height: Quantity = field(init=False)
 
     def __post_init__(self):
+        """
+        Initializes the square flow cell by setting width and height equal to the provided side,
+        computing the flow area as side^2, and then invoking the parent class initializer.
+        """
+        self.width = self.side
+        self.height = self.side
         self.flow_area = self.side * self.side
         return super().__post_init__()
-
-    def get_velocity_profile(self, num_points: int = 50) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """
-        Computes the **bi-parabolic** velocity profile for a square flow cell.
-
-        The velocity distribution follows the equation:
-
-            v(x, y) = v_max * (1 - (2x / side)^2) * (1 - (2y / side)^2)
-
-        where `x` and `y` represent positions inside the square cross-section.
-
-        Parameters:
-        -----------
-        num_points : int, optional
-            The number of points along each axis for velocity calculation (default: 50).
-
-        Returns:
-        --------
-        Tuple[np.ndarray, np.ndarray, np.ndarray]
-            - `X`: 2D numpy array representing the x-coordinates in the cross-section.
-            - `Y`: 2D numpy array representing the y-coordinates in the cross-section.
-            - `velocities`: 2D numpy array containing the velocity values at each (x, y) position.
-        """
-        x = np.linspace(- self.side / 2, self.side / 2, num_points)
-        y = np.linspace(-self.side / 2, self.side / 2, num_points)
-        X, Y = np.meshgrid(x, y)
-        v_avg = self.flow_speed
-        v_max = 1.5 * v_avg
-        velocities = v_max * (1 - (2 * X / self.side) ** 2) * (1 - (2 * Y / self.side) ** 2)
-        return X, Y, velocities.to(units.meter / units.second)
-
-    def sample_velocity(self, n_samples: int) -> Quantity:
-        """
-        Samples a velocity for a particle in a **rectangular flow cell**, with optional hydrodynamic focusing.
-
-        **Standard Uniform Sampling:**
-        - If `focusing_factor = 0`, particles are **uniformly** distributed over the area.
-        - The **(x, y) positions** are drawn from a uniform distribution:
-            x ~ U(-w/2, w/2),  y ~ U(-h/2, h/2).
-
-        **Hydrodynamic Focusing:**
-        - As `focusing_factor → 1`, particles are increasingly concentrated toward (x, y) = (0, 0).
-        - We modify the sampling using an exponential scaling:
-            x_sample = w/2 * (1 - focusing_factor) * sign(U) * |U|^focusing_factor
-            y_sample = h/2 * (1 - focusing_factor) * sign(V) * |V|^focusing_factor
-          where U, V ~ U(-1, 1) (uniform random variables).
-
-        **Velocity Calculation:**
-        - The velocity at (x, y) is computed using:
-            v(x, y) = v_max * (1 - (2x / w)^2) * (1 - (2y / h)^2)
-
-        Parameters:
-        -----------
-        n_samples : int, optional
-            Number of velocity samples to generate (default: 1).
-
-        Returns:
-        --------
-        Quantity
-            A Quantity representing the sampled velocities in meters per second.
-        """
-        v_avg = self.flow_speed
-        v_max = 1.5 * v_avg  # Max velocity in center
-
-        # Generate uniform random variables U, V in [-1, 1]
-        U = np.random.uniform(-1, 1, size=n_samples)
-        V = np.random.uniform(-1, 1, size=n_samples)
-
-        # Apply hydrodynamic focusing transformation
-        x_sample = (self.side / 2) * (1 - self.focusing_factor) * np.sign(U) * np.abs(U) ** self.focusing_factor
-        y_sample = (self.side / 2) * (1 - self.focusing_factor) * np.sign(V) * np.abs(V) ** self.focusing_factor
-
-        # Compute velocity at sampled positions
-        v_sample = v_max * (1 - (2 * x_sample / self.side) ** 2) * (1 - (2 * y_sample / self.side) ** 2)
-
-        return v_sample
-
-    def _add_boundary_to_ax(self, ax: plt.Axes, length_units: Quantity) -> None:
-        """
-        Adds a visual representation of the square flow cell boundary to a 3D Axes object.
-
-        This method draws a square in the \(xy\)-plane (at \(z=0\)) that represents the boundary
-        of the square flow cell. The square is defined by its four corners:
-
-        \[
-        \left(-\frac{\text{side}}{2}, -\frac{\text{side}}{2}\right), \quad
-        \left(-\frac{\text{side}}{2}, \frac{\text{side}}{2}\right), \quad
-        \left(\frac{\text{side}}{2}, \frac{\text{side}}{2}\right), \quad
-        \left(\frac{\text{side}}{2}, -\frac{\text{side}}{2}\right)
-        \]
-
-        and then closing the square by returning to the first point. The side length is first
-        converted to the specified `length_units` to ensure consistency with other plotted data.
-
-        Parameters
-        ----------
-        ax : plt.Axes
-            The Matplotlib Axes object (preferably a 3D Axes) on which the square boundary will be plotted.
-        length_units : Quantity
-            The unit to which the side length should be converted (e.g., `units.meter`).
-
-        Returns
-        -------
-        None
-            The method adds the boundary to the provided Axes object in-place.
-        """
-        # Convert the side length to the desired units
-        side_val = self.side.to(length_units).magnitude
-
-        # Define the square's corners
-        square_x = [-side_val/2, -side_val/2, side_val/2, side_val/2, -side_val/2]
-        square_y = [-side_val/2, side_val/2, side_val/2, -side_val/2, -side_val/2]
-        square_z = np.zeros_like(square_x)
-
-        # Plot the square boundary on the Axes
-        ax.plot(square_x, square_y, square_z, color='green', lw=2, label='Channel Boundary (side)')
