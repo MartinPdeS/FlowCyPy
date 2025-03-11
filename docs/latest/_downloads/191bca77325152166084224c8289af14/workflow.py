@@ -103,7 +103,7 @@ scatterer_collection.add_population(exosome, custom_population)
 scatterer_collection.dilute(factor=8)
 
 # Initialize the scatterer with the flow cell
-# scatterer_collection.plot(sampling=600)  # Visualize the particle population
+scatterer_collection.plot(sampling=600)  # Visualize the particle population
 
 # %%
 # Step 5: Define Detectors
@@ -171,11 +171,11 @@ cytometer = FlowCytometer(
 cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
 acquisition = cytometer.get_acquisition()
 
-# _ = acquisition.scatterer.plot(
-#     x='side',
-#     y='forward',
-#     z='RefractiveIndex'
-# )
+_ = acquisition.scatterer.plot(
+    x='side',
+    y='forward',
+    z='RefractiveIndex'
+)
 
 # %%
 # Visualize the scatter signals from both detectors
