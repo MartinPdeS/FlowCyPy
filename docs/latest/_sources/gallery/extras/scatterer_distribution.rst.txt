@@ -87,14 +87,14 @@ Import necessary libraries and modules
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f9249dc1390>
+    <seaborn.axisgrid.JointGrid object at 0x7f203163abd0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.483 seconds)
+   **Total running time of the script:** (0 minutes 2.501 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_scatterer_distribution.py:

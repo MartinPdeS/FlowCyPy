@@ -88,7 +88,7 @@ Set the flow speed to 80 micrometers per second and a flow area of 1 square micr
 .. code-block:: Python
 
     flow_cell = CircularFlowCell(
-        volume_flow=0.01 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+        volume_flow=0.02 * units.microliter / units.second,        # Flow speed: 10 microliter per second
         radius=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
     )
 
@@ -204,7 +204,7 @@ This represents the population of scatterers (particles) that will interact with
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.548 seconds)
+   **Total running time of the script:** (0 minutes 0.543 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_continuous_acquisition.py:

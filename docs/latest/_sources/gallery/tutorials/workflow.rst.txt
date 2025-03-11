@@ -100,8 +100,8 @@ aperture and wavelength, affect how light scatters, governed by Mie theory.
 
     source = GaussianBeam(
         numerical_aperture=0.3 * units.AU,           # Numerical aperture
-        wavelength=200 * units.nanometer,           # Wavelength
-        optical_power=20 * units.milliwatt          # Optical power
+        wavelength=450 * units.nanometer,           # Wavelength
+        optical_power=200 * units.milliwatt          # Optical power
     )
 
 
@@ -130,9 +130,9 @@ passing through the cross-sectional area is calculated as:
     from FlowCyPy.flow_cell import CircularFlowCell
 
     flow_cell = CircularFlowCell(
-        volume_flow=0.3 * units.microliter / units.second,  # Flow volume
+        volume_flow=0.8 * units.microliter / units.second,  # Flow volume
         radius=20 * units.micrometer,       # Cross-sectional area
-        focusing_factor=0.8
+        focusing_factor=0.99
     )
 
 
@@ -194,7 +194,7 @@ given by:
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f92499aaf90>
+    <seaborn.axisgrid.JointGrid object at 0x7f2031473450>
 
 
 
@@ -390,7 +390,7 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f9250222ad0>
+    <seaborn.axisgrid.JointGrid object at 0x7f20319c48d0>
 
 
 
@@ -427,7 +427,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 7.769 seconds)
+   **Total running time of the script:** (0 minutes 7.994 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

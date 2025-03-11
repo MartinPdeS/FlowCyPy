@@ -51,8 +51,8 @@ from FlowCyPy import GaussianBeam
 
 source = GaussianBeam(
     numerical_aperture=0.3 * units.AU,           # Numerical aperture
-    wavelength=200 * units.nanometer,           # Wavelength
-    optical_power=20 * units.milliwatt          # Optical power
+    wavelength=450 * units.nanometer,           # Wavelength
+    optical_power=200 * units.milliwatt          # Optical power
 )
 
 
@@ -68,9 +68,9 @@ source = GaussianBeam(
 from FlowCyPy.flow_cell import CircularFlowCell
 
 flow_cell = CircularFlowCell(
-    volume_flow=0.3 * units.microliter / units.second,  # Flow volume
+    volume_flow=0.8 * units.microliter / units.second,  # Flow volume
     radius=20 * units.micrometer,       # Cross-sectional area
-    focusing_factor=0.8
+    focusing_factor=0.99
 )
 
 

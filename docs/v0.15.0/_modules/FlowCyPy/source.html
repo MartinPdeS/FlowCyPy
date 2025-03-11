@@ -509,9 +509,12 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.physical_constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysicalConstant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">meter</span><span class="p">,</span> <span class="n">joule</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">volt</span><span class="p">,</span> <span class="n">AU</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.noises</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoiseSetting</span>
 
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -549,7 +552,7 @@ document.write(`
 
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;waist&#39;</span><span class="p">,</span> <span class="s1">&#39;waist_x&#39;</span><span class="p">,</span> <span class="s1">&#39;waist_y&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;plain&#39;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;waist&#39;</span><span class="p">,</span> <span class="s1">&#39;waist_y&#39;</span><span class="p">,</span> <span class="s1">&#39;waist_z&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;plain&#39;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_waist</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">value</span>
@@ -581,7 +584,7 @@ document.write(`
 
         <span class="k">return</span> <span class="n">value</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;numerical_aperture&#39;</span><span class="p">,</span> <span class="s1">&#39;numerical_aperture_x&#39;</span><span class="p">,</span> <span class="s1">&#39;numerical_aperture_y&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;plain&#39;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;numerical_aperture&#39;</span><span class="p">,</span> <span class="s1">&#39;numerical_aperture_y&#39;</span><span class="p">,</span> <span class="s1">&#39;numerical_aperture_z&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;plain&#39;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_numerical_apertures</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">value</span>
@@ -594,6 +597,93 @@ document.write(`
         <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">value</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> must be between 0 and 1, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">magnitude</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_rin_to_amplitude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+        <span class="c1"># Convert RIN from dB/Hz to linear scale if necessary</span>
+        <span class="n">rin_linear</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RIN</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span>
+
+        <span class="c1"># Compute noise standard deviation, scaled by bandwidth</span>
+        <span class="n">std_dev_amplitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rin_linear</span> <span class="o">*</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">hertz</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span>
+
+        <span class="c1"># Apply Gaussian noise to the amplitude</span>
+        <span class="n">amplitude</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
+            <span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">scale</span><span class="o">=</span><span class="n">std_dev_amplitude</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span><span class="o">.</span><span class="n">units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">amplitude</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="n">amplitude</span><span class="o">.</span><span class="n">units</span>
+
+        <span class="k">return</span> <span class="n">amplitude</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_amplitude_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Applies Relative Intensity Noise (RIN) to the source amplitude if enabled, accounting for detection bandwidth.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        size : int</span>
+<span class="sd">            The number of particles being simulated.</span>
+<span class="sd">        bandwidth : float</span>
+<span class="sd">            The detection bandwidth in Hz.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            Array of amplitudes with RIN noise applied.</span>
+
+<span class="sd">        Equations</span>
+<span class="sd">        ---------</span>
+<span class="sd">        1. Relative Intensity Noise (RIN):</span>
+<span class="sd">            RIN quantifies the fluctuations in the laser&#39;s intensity relative to its mean intensity.</span>
+<span class="sd">            RIN is typically specified as a power spectral density (PSD) in units of dB/Hz:</span>
+<span class="sd">            \[</span>
+<span class="sd">            \text{RIN (dB/Hz)} = 10 \cdot \log_{10}\left(\frac{\text{Noise Power (per Hz)}}{\text{Mean Power}}\right)</span>
+<span class="sd">            \]</span>
+
+<span class="sd">        2. Conversion from dB/Hz to Linear Scale:</span>
+<span class="sd">            To compute noise power, RIN must be converted from dB to a linear scale:</span>
+<span class="sd">            \[</span>
+<span class="sd">            \text{RIN (linear)} = 10^{\text{RIN (dB/Hz)} / 10}</span>
+<span class="sd">            \]</span>
+
+<span class="sd">        3. Total Noise Power:</span>
+<span class="sd">            The total noise power depends on the bandwidth (\(B\)) of the detection system:</span>
+<span class="sd">            \[</span>
+<span class="sd">            P_{\text{noise}} = \text{RIN (linear)} \cdot B</span>
+<span class="sd">            \]</span>
+
+<span class="sd">        4. Standard Deviation of Amplitude Fluctuations:</span>
+<span class="sd">            The noise standard deviation for amplitude is derived from the total noise power:</span>
+<span class="sd">            \[</span>
+<span class="sd">            \sigma_{\text{amplitude}} = \sqrt{P_{\text{noise}}} \cdot \text{Amplitude}</span>
+<span class="sd">            \]</span>
+<span class="sd">            Substituting \(P_{\text{noise}}\), we get:</span>
+<span class="sd">            \[</span>
+<span class="sd">            \sigma_{\text{amplitude}} = \sqrt{\text{RIN (linear)} \cdot B} \cdot \text{Amplitude}</span>
+<span class="sd">            \]</span>
+
+<span class="sd">        Implementation</span>
+<span class="sd">        --------------</span>
+<span class="sd">        - The RIN value from the source is converted to linear scale using:</span>
+<span class="sd">            \[</span>
+<span class="sd">            \text{RIN (linear)} = 10^{\text{source.RIN} / 10}</span>
+<span class="sd">            \]</span>
+<span class="sd">        - The noise standard deviation is scaled by the detection bandwidth (\(B\)) in Hz:</span>
+<span class="sd">            \[</span>
+<span class="sd">            \sigma_{\text{amplitude}} = \sqrt{\text{RIN (linear)} \cdot B} \cdot \text{source.amplitude}</span>
+<span class="sd">            \]</span>
+<span class="sd">        - Gaussian noise with mean \(0\) and standard deviation \(\sigma_{\text{amplitude}}\) is applied to the source amplitude.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - The bandwidth parameter (\(B\)) must be in Hz and reflects the frequency range of the detection system.</span>
+<span class="sd">        - The function assumes that RIN is specified in dB/Hz. If RIN is already in linear scale, the conversion step can be skipped.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">amplitudes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude_at</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span>
+
+        <span class="k">if</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_RIN_noise</span> <span class="ow">and</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+            <span class="n">amplitudes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_rin_to_amplitude</span><span class="p">(</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="n">bandwidth</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">amplitudes</span>
 
 
 <div class="viewcode-block" id="GaussianBeam">
@@ -673,7 +763,7 @@ document.write(`
 
 <div class="viewcode-block" id="GaussianBeam.amplitude_at">
 <a class="viewcode-back" href="../../code/source.html#FlowCyPy.source.GaussianBeam.amplitude_at">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">amplitude_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">meter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">amplitude_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the electric field amplitude at a position (x,y) in the focal plane.</span>
 
@@ -685,10 +775,19 @@ document.write(`
 <span class="sd">        Quantity</span>
 <span class="sd">            The electric field amplitude at the focus in volts per meter.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">r2</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Transverse distribution of particle flow exceed the waist of the source&#39;</span><span class="p">)</span>
+
         <span class="n">E0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_field_amplitude_at_focus</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">E0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">r2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">E0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">y</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">z</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GaussianBeam.get_particle_width">
+<a class="viewcode-back" href="../../code/source.html#FlowCyPy.source.GaussianBeam.get_particle_width">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_particle_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">velocity</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">velocity</span><span class="p">)</span></div>
 </div>
+
 
 
 
@@ -705,16 +804,16 @@ document.write(`
 <span class="sd">        The optical power of the laser (in watts).</span>
 <span class="sd">    wavelength : Quantity</span>
 <span class="sd">        The wavelength of the laser (in meters).</span>
-<span class="sd">    numerical_aperture_x : Optional[Quantity]</span>
-<span class="sd">        The numerical aperture of the lens along the x-axis (unitless).</span>
-<span class="sd">    waist_x : Optional[Quantity]</span>
-<span class="sd">        The beam waist along the x-axis. If not provided, it will be computed as:</span>
-<span class="sd">        waist_x = wavelength / (pi * numerical_aperture_x).</span>
 <span class="sd">    numerical_aperture_y : Optional[Quantity]</span>
-<span class="sd">        The numerical aperture of the lens along the y-axis (unitless).</span>
+<span class="sd">        The numerical aperture of the lens along the x-axis (unitless).</span>
 <span class="sd">    waist_y : Optional[Quantity]</span>
-<span class="sd">        The beam waist along the y-axis. If not provided, it will be computed as:</span>
+<span class="sd">        The beam waist along the x-axis. If not provided, it will be computed as:</span>
 <span class="sd">        waist_y = wavelength / (pi * numerical_aperture_y).</span>
+<span class="sd">    numerical_aperture_z : Optional[Quantity]</span>
+<span class="sd">        The numerical aperture of the lens along the y-axis (unitless).</span>
+<span class="sd">    waist_z : Optional[Quantity]</span>
+<span class="sd">        The beam waist along the y-axis. If not provided, it will be computed as:</span>
+<span class="sd">        waist_z = wavelength / (pi * numerical_aperture_z).</span>
 <span class="sd">    polarization : Optional[Quantity]</span>
 <span class="sd">        The polarization of the laser source in degrees (default is 0 degrees).</span>
 <span class="sd">    RIN : Optional[float]</span>
@@ -724,10 +823,10 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">optical_power</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span>
-    <span class="n">numerical_aperture_x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">waist_x</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">numerical_aperture_y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">waist_y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">numerical_aperture_z</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">waist_z</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">polarization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">degree</span>
     <span class="n">RIN</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
@@ -737,28 +836,28 @@ document.write(`
 <span class="sd">        and electric field amplitude at the focus.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check for x-axis parameters</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waist_x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either numerical_aperture_x or waist_x must be provided.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waist_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provide only one: either numerical_aperture_x or waist_x, not both.&quot;</span><span class="p">)</span>
-
-        <span class="c1"># Check for y-axis parameters</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waist_y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either numerical_aperture_y or waist_y must be provided.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waist_y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provide only one: either numerical_aperture_y or waist_y, not both.&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Compute missing values for x-axis</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">waist_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelength</span> <span class="o">/</span> <span class="p">(</span><span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_x</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelength</span> <span class="o">/</span> <span class="p">(</span><span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_x</span><span class="p">)</span>
+        <span class="c1"># Check for y-axis parameters</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_z</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waist_z</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either numerical_aperture_z or waist_z must be provided.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_z</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waist_z</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provide only one: either numerical_aperture_z or waist_z, not both.&quot;</span><span class="p">)</span>
 
         <span class="c1"># Compute missing values for y-axis</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">waist_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelength</span> <span class="o">/</span> <span class="p">(</span><span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_y</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelength</span> <span class="o">/</span> <span class="p">(</span><span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_y</span><span class="p">)</span>
+
+        <span class="c1"># Compute missing values for z-axis</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_z</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">waist_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelength</span> <span class="o">/</span> <span class="p">(</span><span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_z</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelength</span> <span class="o">/</span> <span class="p">(</span><span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_z</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">initialization</span><span class="p">()</span>
 
@@ -785,14 +884,14 @@ document.write(`
 <span class="sd">        Quantity</span>
 <span class="sd">            The electric field amplitude at the focus in volts per meter.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_x</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_y</span>
+        <span class="n">area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_y</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_z</span>
         <span class="n">E0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">optical_power</span> <span class="o">/</span> <span class="p">(</span><span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">epsilon_0</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">c</span> <span class="o">*</span> <span class="n">area</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">E0</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">volt</span> <span class="o">/</span> <span class="n">meter</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AstigmaticGaussianBeam.amplitude_at">
 <a class="viewcode-back" href="../../code/source.html#FlowCyPy.source.AstigmaticGaussianBeam.amplitude_at">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">amplitude_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">amplitude_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the electric field amplitude at position (x,y) in the focal plane.</span>
 
@@ -804,114 +903,19 @@ document.write(`
 <span class="sd">        Quantity</span>
 <span class="sd">            The electric field amplitude at the focus in volts per meter.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_z</span><span class="p">):</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Transverse distribution of particle flow exceed the waist of the source&#39;</span><span class="p">)</span>
+
         <span class="n">E0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_field_amplitude_at_focus</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">E0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_x</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">E0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span> <span class="n">y</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_y</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">z</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_z</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AstigmaticGaussianBeam.get_particle_width">
+<a class="viewcode-back" href="../../code/source.html#FlowCyPy.source.AstigmaticGaussianBeam.get_particle_width">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_particle_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">velocity</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_z</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">velocity</span><span class="p">)</span></div>
 </div>
 
-
-
-<span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">FlatTop</span><span class="p">(</span><span class="n">BaseBeam</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a flat-top laser source focused by an optical system.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    optical_power : Quantity</span>
-<span class="sd">        The optical power of the laser (in watts).</span>
-<span class="sd">    wavelength : Quantity</span>
-<span class="sd">        The wavelength of the laser (in meters).</span>
-<span class="sd">    numerical_aperture : Optional[Quantity]</span>
-<span class="sd">        The numerical aperture of the focusing system (unitless).</span>
-<span class="sd">    flat_top_radius : Optional[Quantity]</span>
-<span class="sd">        The radius of the flat-top beam at the focus. If not provided,</span>
-<span class="sd">        it will be computed as: flat_top_radius = wavelength / (pi * numerical_aperture).</span>
-<span class="sd">        Alternatively, if provided, the numerical aperture will be computed as:</span>
-<span class="sd">        numerical_aperture = wavelength / (pi * flat_top_radius).</span>
-<span class="sd">    polarization : Optional[Quantity]</span>
-<span class="sd">        The polarization of the laser source in degrees (default is 0 degrees).</span>
-<span class="sd">    RIN : Optional[float]</span>
-<span class="sd">        The Relative Intensity Noise (RIN) of the laser. Default is 0.0, representing a perfectly stable laser.</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    flat_top_radius : Quantity</span>
-<span class="sd">        The beam radius at the focus.</span>
-<span class="sd">    numerical_aperture : Quantity</span>
-<span class="sd">        The numerical aperture of the focusing system.</span>
-<span class="sd">    amplitude : Quantity</span>
-<span class="sd">        The electric field amplitude at the focus, derived from the optical power and flat-top beam area.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">optical_power</span><span class="p">:</span> <span class="n">Quantity</span>
-    <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span>
-    <span class="n">numerical_aperture</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">flat_top_radius</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">polarization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">degree</span>
-    <span class="n">RIN</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize additional parameters like flat-top radius and derived properties.</span>
-<span class="sd">        The user must provide exactly one of: numerical_aperture or flat_top_radius.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flat_top_radius</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either numerical_aperture or flat_top_radius must be provided.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flat_top_radius</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provide only one: either numerical_aperture or flat_top_radius, not both.&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">flat_top_radius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelength</span> <span class="o">/</span> <span class="p">(</span><span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">numerical_aperture</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelength</span> <span class="o">/</span> <span class="p">(</span><span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">flat_top_radius</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">initialization</span><span class="p">()</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_field_amplitude_at_focus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the electric field amplitude (E0) at the focus for a flat-top beam.</span>
-
-<span class="sd">        The electric field amplitude at the focus is given by:</span>
-
-<span class="sd">        .. math::</span>
-<span class="sd">            E_0 = \sqrt{\frac{2 P}{\pi \epsilon_0 c R^2}}</span>
-
-<span class="sd">        where:</span>
-<span class="sd">            - `P` is the optical power of the beam,</span>
-<span class="sd">            - `\epsilon_0` is the permittivity of free space,</span>
-<span class="sd">            - `c` is the speed of light,</span>
-<span class="sd">            - `R` is the flat-top beam radius at the focus.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
-<span class="sd">            The electric field amplitude at the focus in volts per meter.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Compute the beam area</span>
-        <span class="n">beam_area</span> <span class="o">=</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">flat_top_radius</span><span class="o">**</span><span class="mi">2</span>
-
-        <span class="n">E0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">optical_power</span> <span class="o">/</span> <span class="p">(</span><span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">epsilon_0</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">c</span> <span class="o">*</span> <span class="n">beam_area</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">E0</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">volt</span> <span class="o">/</span> <span class="n">meter</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">amplitude_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">meter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the electric field amplitude at a position (x,y) in the focal plane.</span>
-<span class="sd">        For a flat-top beam, the amplitude is constant (E0) within the beam radius and zero outside.</span>
-<span class="sd">        Supports x and y as scalars or NumPy arrays.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">units</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span><span class="o">.</span><span class="n">units</span>
-
-        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">E0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_field_amplitude_at_focus</span><span class="p">()</span>
-        <span class="c1"># Create an output array with the same shape as r, filled with zeros</span>
-        <span class="n">amplitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">*</span> <span class="n">E0</span>
-        <span class="c1"># Set amplitude to E0 where r is within the flat_top_radius.</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">r</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flat_top_radius</span>
-        <span class="n">amplitude</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">E0</span>
-        <span class="k">return</span> <span class="n">amplitude</span>
 </pre></div>
 
                 </article>
