@@ -119,7 +119,14 @@ class BaseFlowCell:
             for population in populations
         ]
 
+        # Loop over each dataframe to make sure they share the same units
+        ref_dataframe = population_event_frames[0]
+        for df in population_event_frames:
+            for col in df.columns:
+                df[col] = df[col].pint.to(ref_dataframe[col].pint.units)
+
         event_dataframe = pd.concat(population_event_frames, keys=[pop.name for pop in populations])
+
         event_dataframe.index.names = ["Population", "Index"]
 
         if self.event_scheme.lower() in ['uniform-random', 'uniform-sequential']:

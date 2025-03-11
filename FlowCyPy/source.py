@@ -2,9 +2,12 @@ import numpy as np
 from typing import Optional
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
+import warnings
 
 from FlowCyPy.physical_constant import PhysicalConstant
+from FlowCyPy import units
 from FlowCyPy.units import Quantity, meter, joule, particle, degree, volt, AU
+from FlowCyPy.noises import NoiseSetting
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -134,6 +137,92 @@ class GaussianBeam(BaseBeam):
 
         self.initialization()
 
+    def get_amplitude_signal(self, size: int, bandwidth: float, x: Quantity, y: Quantity) -> np.ndarray:
+        r"""
+        Applies Relative Intensity Noise (RIN) to the source amplitude if enabled, accounting for detection bandwidth.
+
+        Parameters
+        ----------
+        size : int
+            The number of particles being simulated.
+        bandwidth : float
+            The detection bandwidth in Hz.
+
+        Returns
+        -------
+        np.ndarray
+            Array of amplitudes with RIN noise applied.
+
+        Equations
+        ---------
+        1. Relative Intensity Noise (RIN):
+            RIN quantifies the fluctuations in the laser's intensity relative to its mean intensity.
+            RIN is typically specified as a power spectral density (PSD) in units of dB/Hz:
+            \[
+            \text{RIN (dB/Hz)} = 10 \cdot \log_{10}\left(\frac{\text{Noise Power (per Hz)}}{\text{Mean Power}}\right)
+            \]
+
+        2. Conversion from dB/Hz to Linear Scale:
+            To compute noise power, RIN must be converted from dB to a linear scale:
+            \[
+            \text{RIN (linear)} = 10^{\text{RIN (dB/Hz)} / 10}
+            \]
+
+        3. Total Noise Power:
+            The total noise power depends on the bandwidth (\(B\)) of the detection system:
+            \[
+            P_{\text{noise}} = \text{RIN (linear)} \cdot B
+            \]
+
+        4. Standard Deviation of Amplitude Fluctuations:
+            The noise standard deviation for amplitude is derived from the total noise power:
+            \[
+            \sigma_{\text{amplitude}} = \sqrt{P_{\text{noise}}} \cdot \text{Amplitude}
+            \]
+            Substituting \(P_{\text{noise}}\), we get:
+            \[
+            \sigma_{\text{amplitude}} = \sqrt{\text{RIN (linear)} \cdot B} \cdot \text{Amplitude}
+            \]
+
+        Implementation
+        --------------
+        - The RIN value from the source is converted to linear scale using:
+            \[
+            \text{RIN (linear)} = 10^{\text{source.RIN} / 10}
+            \]
+        - The noise standard deviation is scaled by the detection bandwidth (\(B\)) in Hz:
+            \[
+            \sigma_{\text{amplitude}} = \sqrt{\text{RIN (linear)} \cdot B} \cdot \text{source.amplitude}
+            \]
+        - Gaussian noise with mean \(0\) and standard deviation \(\sigma_{\text{amplitude}}\) is applied to the source amplitude.
+
+        Notes
+        -----
+        - The bandwidth parameter (\(B\)) must be in Hz and reflects the frequency range of the detection system.
+        - The function assumes that RIN is specified in dB/Hz. If RIN is already in linear scale, the conversion step can be skipped.
+        """
+
+        if np.any(y > self.waist):
+            warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+
+        amplitudes = self.amplitude_at(x=x, y=y).values.quantity
+
+        if NoiseSetting.include_RIN_noise and NoiseSetting.include_noises:
+            # Convert RIN from dB/Hz to linear scale if necessary
+            rin_linear = 10**(self.RIN / 10)
+
+            # Compute noise standard deviation, scaled by bandwidth
+            std_dev_amplitude = np.sqrt(rin_linear * bandwidth.to(units.hertz).magnitude) * self.amplitude
+
+            # Apply Gaussian noise to the amplitude
+            amplitudes += np.random.normal(
+                loc=0,
+                scale=std_dev_amplitude.to(self.amplitude.units).magnitude,
+                size=size
+            ) * self.amplitude.units
+
+        return amplitudes
+
     def calculate_field_amplitude_at_focus(self) -> Quantity:
         r"""
         Calculate the electric field amplitude (E0) at the focus for a Gaussian beam.
@@ -159,7 +248,7 @@ class GaussianBeam(BaseBeam):
         E0 = np.sqrt(4 * self.optical_power / (PhysicalConstant.pi * PhysicalConstant.epsilon_0 * PhysicalConstant.c * area))
         return E0.to(volt / meter)
 
-    def amplitude_at(self, x: Quantity, y: Quantity = 0 * meter) -> Quantity:
+    def amplitude_at(self, x: Quantity, y: Quantity) -> Quantity:
         r"""
         Returns the electric field amplitude at a position (x,y) in the focal plane.
 

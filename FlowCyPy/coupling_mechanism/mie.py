@@ -1,97 +1,11 @@
 import numpy as np
 from FlowCyPy import Detector
 from FlowCyPy.source import BaseBeam
-from PyMieSim.units import Quantity, degree, watt, hertz
+from PyMieSim.units import Quantity, degree, watt
 from FlowCyPy import units
-from FlowCyPy.noises import NoiseSetting
 import pandas as pd
 from PyMieSim import experiment as _PyMieSim
 import pint_pandas
-
-
-def apply_rin_noise(source: BaseBeam, total_size: int, bandwidth: float) -> np.ndarray:
-    r"""
-    Applies Relative Intensity Noise (RIN) to the source amplitude if enabled, accounting for detection bandwidth.
-
-    Parameters
-    ----------
-    source : BaseBeam
-        The light source containing amplitude and RIN information.
-    total_size : int
-        The number of particles being simulated.
-    bandwidth : float
-        The detection bandwidth in Hz.
-
-    Returns
-    -------
-    np.ndarray
-        Array of amplitudes with RIN noise applied.
-
-    Equations
-    ---------
-    1. Relative Intensity Noise (RIN):
-        RIN quantifies the fluctuations in the laser's intensity relative to its mean intensity.
-        RIN is typically specified as a power spectral density (PSD) in units of dB/Hz:
-        \[
-        \text{RIN (dB/Hz)} = 10 \cdot \log_{10}\left(\frac{\text{Noise Power (per Hz)}}{\text{Mean Power}}\right)
-        \]
-
-    2. Conversion from dB/Hz to Linear Scale:
-        To compute noise power, RIN must be converted from dB to a linear scale:
-        \[
-        \text{RIN (linear)} = 10^{\text{RIN (dB/Hz)} / 10}
-        \]
-
-    3. Total Noise Power:
-        The total noise power depends on the bandwidth (\(B\)) of the detection system:
-        \[
-        P_{\text{noise}} = \text{RIN (linear)} \cdot B
-        \]
-
-    4. Standard Deviation of Amplitude Fluctuations:
-        The noise standard deviation for amplitude is derived from the total noise power:
-        \[
-        \sigma_{\text{amplitude}} = \sqrt{P_{\text{noise}}} \cdot \text{Amplitude}
-        \]
-        Substituting \(P_{\text{noise}}\), we get:
-        \[
-        \sigma_{\text{amplitude}} = \sqrt{\text{RIN (linear)} \cdot B} \cdot \text{Amplitude}
-        \]
-
-    Implementation
-    --------------
-    - The RIN value from the source is converted to linear scale using:
-        \[
-        \text{RIN (linear)} = 10^{\text{source.RIN} / 10}
-        \]
-    - The noise standard deviation is scaled by the detection bandwidth (\(B\)) in Hz:
-        \[
-        \sigma_{\text{amplitude}} = \sqrt{\text{RIN (linear)} \cdot B} \cdot \text{source.amplitude}
-        \]
-    - Gaussian noise with mean \(0\) and standard deviation \(\sigma_{\text{amplitude}}\) is applied to the source amplitude.
-
-    Notes
-    -----
-    - The bandwidth parameter (\(B\)) must be in Hz and reflects the frequency range of the detection system.
-    - The function assumes that RIN is specified in dB/Hz. If RIN is already in linear scale, the conversion step can be skipped.
-    """
-    amplitude_with_rin = np.ones(total_size) * source.amplitude
-
-    if NoiseSetting.include_RIN_noise and NoiseSetting.include_noises:
-        # Convert RIN from dB/Hz to linear scale if necessary
-        rin_linear = 10**(source.RIN / 10)
-
-        # Compute noise standard deviation, scaled by bandwidth
-        std_dev_amplitude = np.sqrt(rin_linear * bandwidth.to(hertz).magnitude) * source.amplitude
-
-        # Apply Gaussian noise to the amplitude
-        amplitude_with_rin += np.random.normal(
-            loc=0,
-            scale=std_dev_amplitude.to(source.amplitude.units).magnitude,
-            size=total_size
-        ) * source.amplitude.units
-
-    return amplitude_with_rin
 
 
 def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
@@ -148,7 +62,12 @@ def process_sphere(source: BaseBeam, detector: Detector, scatterer_dataframe: pd
         return
 
     # Compute the coupling value array for the selected rows.
-    amplitude_with_rin = apply_rin_noise(source, total_size, detector.signal_digitizer.bandwidth)
+    amplitude_with_rin = source.get_amplitude_signal(
+        size=total_size,
+        bandwidth=detector.signal_digitizer.bandwidth,
+        x=scatterer_dataframe['x'],
+        y=scatterer_dataframe['y']
+    )
 
     pms_source = _PyMieSim.source.PlaneWave.build_sequential(
         total_size=int(total_size),
@@ -195,7 +114,13 @@ def process_coreshell(source: BaseBeam, detector: Detector, scatterer_dataframe:
     if total_size == 0:
         return np.array([]) * watt
 
-    amplitude_with_rin = apply_rin_noise(source, total_size, detector.signal_digitizer.bandwidth)
+    # Compute the coupling value array for the selected rows.
+    amplitude_with_rin = source.get_amplitude_signal(
+        size=total_size,
+        bandwidth=detector.signal_digitizer.bandwidth,
+        x=scatterer_dataframe['x'],
+        y=scatterer_dataframe['y']
+    )
 
     pms_source = _PyMieSim.source.PlaneWave.build_sequential(
         total_size=total_size,
