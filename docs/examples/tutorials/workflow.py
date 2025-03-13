@@ -73,6 +73,8 @@ flow_cell = CircularFlowCell(
     focusing_factor=0.99
 )
 
+flow_cell.plot_transverse_distribution(n_samples=300)
+
 
 # %%
 # Step 4: Define ScattererCollection and Population

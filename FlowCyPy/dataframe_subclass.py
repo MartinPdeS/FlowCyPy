@@ -25,7 +25,11 @@ class ScattererDataFrame(pd.DataFrame):
         """
         if 'z' in kwargs:
             return self.plot_3d(**kwargs)
-        return self.plot_2d(**kwargs)
+
+        if 'y' in kwargs:
+            return self.plot_2d(**kwargs)
+
+        return self.plot_1d(**kwargs)
 
     def get_sub_dataframe(self, *columns: str) -> Tuple[pd.DataFrame, List[Any]]:
         """
@@ -85,7 +89,7 @@ class ScattererDataFrame(pd.DataFrame):
         if len(self) == 1:
             return
 
-        df, (x_unit, y_unit) = self.get_sub_dataframe(x, y)
+        df, (x_unit, y_unit) = self.get_sub_dataframe(y, x)
 
         with plt.style.context(mps):
             grid = sns.jointplot(
@@ -218,6 +222,47 @@ class ScattererDataFrame(pd.DataFrame):
             min_delta_time,
             avg_delta_time,
         ]
+
+    @helper.plot_sns
+    def plot_1d(
+        self,
+        x: str = 'Diameter',
+        kde: bool = False,
+        bins: Optional[int] = 'auto',
+        color: Optional[Union[str, dict]] = None
+    ) -> plt.Figure:
+        """
+        Plot a histogram distribution for a given column using Seaborn.
+
+        Parameters
+        ----------
+        column : str, optional
+            The column name to plot (default: 'Diameter').
+        kde : bool, optional
+            Whether to overlay a KDE curve (default: False).
+        bins : Optional[int], optional
+            Number of bins for the histogram (default: None, which lets Seaborn decide).
+        color : Optional[Union[str, dict]], optional
+            Color specification for the plot (default: None).
+
+        Returns
+        -------
+        plt.Figure
+            The histogram figure.
+        """
+        if len(self) == 1:
+            return
+
+        df, [unit] = self.get_sub_dataframe(x)
+
+        with plt.style.context(mps):
+            fig, ax = plt.subplots(figsize=(7, 5))
+            sns.histplot(data=df, x=x, kde=kde, bins=bins, color=color, hue='Population')
+            ax.set_xlabel(f"{x} [{unit}]")
+            ax.set_title(f"Distribution of {x}")
+            plt.tight_layout()
+
+        return fig
 
 
 class ClassifierDataFrame(pd.DataFrame):

@@ -62,7 +62,7 @@ class RosinRammler(Base):
         u = np.clip(u, 1e-10, 1 - 1e-10)  # Avoid numerical issues
 
         # Apply inverse CDF of Rosin-Rammler distribution
-        return d * (-np.log(1 - u))**(1 / self.spread)
+        return d * (-np.log(1 - u))**(1 / -self.spread)
 
     def _generate_default_x(self, x_min: float, x_max: float, n_samples: int = 100) -> np.ndarray:
         """

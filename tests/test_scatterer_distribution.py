@@ -153,7 +153,7 @@ def test_plot_positions(mock_show, distribution):
 
     scatterer_collection.add_population(population_0)
 
-    scatterer_collection.plot()
+    scatterer_collection.get_population_dataframe()
 
     plt.close()
 

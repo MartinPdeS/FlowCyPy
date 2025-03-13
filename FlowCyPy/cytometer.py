@@ -5,7 +5,6 @@ import logging
 import numpy as np
 from typing import List, Callable, Optional
 import pandas as pd
-from pint_pandas import PintArray
 
 from FlowCyPy import units
 from FlowCyPy.units import milliwatt
@@ -218,7 +217,7 @@ class FlowCytometer:
         return dataframe.sort_index()
 
     @validate_units(run_time=units.second)
-    def prepare_acquisition(self, run_time: units.second) -> None:
+    def prepare_acquisition(self, run_time: units.second) -> pd.DataFrame:
         """
         Set the internal properties for run_time.
 
@@ -237,6 +236,8 @@ class FlowCytometer:
         self._run_coupling_analysis(self.scatterer_dataframe)
 
         self._generate_pulse_parameters(self.scatterer_dataframe)
+
+        return self.scatterer_dataframe
 
     @validate_units(run_time=units.second)
     def get_acquisition(self, processing_steps: list[SignalProcessor] = None) -> None:

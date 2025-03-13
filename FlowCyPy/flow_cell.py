@@ -6,6 +6,7 @@ from pydantic.dataclasses import dataclass
 from dataclasses import field
 from pint_pandas import PintArray
 import matplotlib.pyplot as plt
+from MPSPlots.styles import mps
 
 from FlowCyPy.population import BasePopulation
 from FlowCyPy.scatterer_collection import ScattererCollection
@@ -151,7 +152,7 @@ class BaseFlowCell:
         """
         raise NotImplementedError("Subclasses must implement sample_velocity.")
 
-    def plot_3d(self, n_samples: int = 300) -> None:
+    def plot_transverse_distribution(self, n_samples: int = 300, show: bool = True, ax: plt.Axes = None) -> None:
         """
         Generates a 3D visualization of particle positions and velocities in a rectangular flow cell.
 
@@ -183,8 +184,10 @@ class BaseFlowCell:
         x, y, v = self.sample_parameters(n_samples=n_samples)
 
         # Create a new 3D figure
-        fig = plt.figure(figsize=(10, 8))
-        ax = fig.add_subplot(111, projection='3d')
+        if ax is None:
+            with plt.style.context(mps):
+                figure = plt.figure(figsize=(10, 8))
+                ax = figure.add_subplot(111, projection='3d')
 
         # Plot particle positions at z = 0
         ax.scatter(x, y, np.zeros_like(x), color='blue', label='Particle Position')
@@ -211,7 +214,11 @@ class BaseFlowCell:
         ax.legend()
 
         plt.tight_layout()
-        plt.show()
+
+        if show:
+            plt.show()
+
+        return ax
 
 
 
