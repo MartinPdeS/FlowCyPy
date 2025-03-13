@@ -34,13 +34,13 @@ square_cell = SquareFlowCell(
 
 # %%
 # Plot velocity profile for CircularFlowCell
-circular_cell.plot_3d(n_samples=300)
+circular_cell.plot_transverse_distribution(n_samples=300)
 
 # %%
 # Plot velocity profile for RectangularFlowCell
-rectangular_cell.plot_3d(n_samples=300)
+rectangular_cell.plot_transverse_distribution(n_samples=300)
 
 # %%
 # Plot velocity profile for SquareFlowCell
-square_cell.plot_3d(n_samples=300)
+square_cell.plot_transverse_distribution(n_samples=300)
 
