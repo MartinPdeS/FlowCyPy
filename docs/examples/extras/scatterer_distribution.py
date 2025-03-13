@@ -48,4 +48,7 @@ population_1 = population.Sphere(
 
 scatterer_collection.add_population(population_0, population_1)
 
-scatterer_collection.plot()
+# Initialize the scatterer with the flow cell
+df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
+
+df.plot(x='Diameter', bins='auto')

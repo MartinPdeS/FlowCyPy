@@ -53,7 +53,9 @@ scatterer_collection.add_population(
 scatterer_collection.dilute(factor=1)
 
 # Initialize the scatterer with the flow cell
-scatterer_collection.plot(sampling=600)  # Visualize the particle population
+df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
+
+df.plot(x='Diameter', bins='auto')
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',

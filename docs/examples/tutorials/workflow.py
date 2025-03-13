@@ -105,7 +105,9 @@ scatterer_collection.add_population(exosome, custom_population)
 scatterer_collection.dilute(factor=8)
 
 # Initialize the scatterer with the flow cell
-scatterer_collection.plot(sampling=600)  # Visualize the particle population
+df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
+
+df.plot(x='Diameter', bins='auto')
 
 # %%
 # Step 5: Define Detectors
