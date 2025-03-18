@@ -84,8 +84,6 @@ Plot velocity profile for CircularFlowCell
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/matplotlib/cbook.py:967: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
-      x = np.asarray(x)
 
     <Axes3D: title={'center': '3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell'}, xlabel='x [µm]', ylabel='y [µm]', zlabel='Velocity [m/s]'>
 
@@ -114,8 +112,6 @@ Plot velocity profile for RectangularFlowCell
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/matplotlib/cbook.py:967: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
-      x = np.asarray(x)
 
     <Axes3D: title={'center': '3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell'}, xlabel='x [µm]', ylabel='y [µm]', zlabel='Velocity [m/s]'>
 
@@ -144,8 +140,6 @@ Plot velocity profile for SquareFlowCell
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/matplotlib/cbook.py:967: UnitStrippedWarning: The unit of the quantity is stripped when downcasting to ndarray.
-      x = np.asarray(x)
 
     <Axes3D: title={'center': '3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell'}, xlabel='x [µm]', ylabel='y [µm]', zlabel='Velocity [m/s]'>
 
@@ -154,7 +148,7 @@ Plot velocity profile for SquareFlowCell
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.505 seconds)
+   **Total running time of the script:** (0 minutes 1.481 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_flow_cell_profiles.py:

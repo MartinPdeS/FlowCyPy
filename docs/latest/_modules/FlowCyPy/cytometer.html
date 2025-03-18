@@ -901,12 +901,12 @@ document.write(`
             <span class="n">detector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_detector_by_name</span><span class="p">(</span><span class="n">detector_name</span><span class="p">)</span>
             <span class="n">noises</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">get_noise_parameters</span><span class="p">()</span>
 
-            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">parameters</span> <span class="ow">in</span> <span class="n">noises</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">noise_name</span><span class="p">,</span> <span class="n">parameters</span> <span class="ow">in</span> <span class="n">noises</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">continue</span>
 
                 <span class="n">mean</span> <span class="o">+=</span> <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span>
-                <span class="n">std_2</span> <span class="o">+=</span> <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+                <span class="n">std_2</span> <span class="o">+=</span> <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;std&#39;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
 
 
             <span class="c1"># Generate noise values for this group</span>
