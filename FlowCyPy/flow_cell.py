@@ -189,13 +189,13 @@ class BaseFlowCell:
                 figure = plt.figure(figsize=(10, 8))
                 ax = figure.add_subplot(111, projection='3d')
 
-        # Plot particle positions at z = 0
-        ax.scatter(x, y, np.zeros_like(x), color='blue', label='Particle Position')
-
         # Convert Pint quantities to numerical arrays for plotting
         x_m = x.magnitude
         y_m = y.to(x.units).magnitude
         v_m = v.magnitude
+
+        # Plot particle positions at z = 0
+        ax.scatter(x_m, y_m, np.zeros_like(x_m), color='blue', label='Particle Position')
 
         # Plot velocity vectors using quiver without arrowheads; vectors extend vertically.
         ax.quiver(
@@ -337,8 +337,12 @@ class CircularFlowCell(BaseFlowCell):
 
         # Compute local velocity using the Poiseuille profile: v(r) = 2 * v_avg * (1 - (r/R)^2)
         v_sample = 2 * self.flow_speed * (1 - (r_sample / self.radius)**2)
-        v_max_units = v_sample.max().to('meter/second').to_compact().units
-        return x, y, v_sample.to(v_max_units)
+
+        if len(v_sample) != 0:
+            v_max_units = v_sample.max().to('meter/second').to_compact().units
+            return x, y, v_sample.to(v_max_units)
+
+        return x, y, v_sample
 
     def _add_boundary_to_ax(self, ax: plt.Axes, length_units: Quantity) -> None:
         """
@@ -375,7 +379,6 @@ class CircularFlowCell(BaseFlowCell):
 
         # Plot the circle on the Axes
         ax.plot(x_circle, y_circle, z_circle, color='green', lw=2, label='Channel Boundary (R)')
-
 
 
 @dataclass(config=config_dict, kw_only=True)

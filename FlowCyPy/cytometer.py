@@ -378,12 +378,12 @@ class FlowCytometer:
             detector = self.get_detector_by_name(detector_name)
             noises = detector.get_noise_parameters()
 
-            for _, parameters in noises.items():
+            for noise_name, parameters in noises.items():
                 if parameters is None:
                     continue
 
                 mean += parameters['mean']
-                std_2 += parameters['mean'] ** 2
+                std_2 += parameters['std'] ** 2
 
 
             # Generate noise values for this group

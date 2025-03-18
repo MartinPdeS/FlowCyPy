@@ -1,5 +1,6 @@
 from typing import Optional, Union, List, Tuple, Any
 import pandas as pd
+import numpy
 import matplotlib.pyplot as plt
 import seaborn as sns
 import logging
@@ -257,10 +258,12 @@ class ScattererDataFrame(pd.DataFrame):
 
         with plt.style.context(mps):
             fig, ax = plt.subplots(figsize=(7, 5))
-            sns.histplot(data=df, x=x, kde=kde, bins=bins, color=color, hue='Population')
-            ax.set_xlabel(f"{x} [{unit}]")
-            ax.set_title(f"Distribution of {x}")
-            plt.tight_layout()
+
+        df = df.reset_index('Population').pint.dequantify().droplevel('unit', axis=1)
+        sns.histplot(data=df, x=df[x], kde=kde, bins=bins, color=color, hue=df['Population'])
+        ax.set_xlabel(f"{x} [{unit}]")
+        ax.set_title(f"Distribution of {x}")
+        plt.tight_layout()
 
         return fig
 
@@ -517,6 +520,79 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
         if show:
             plt.show()
 
+    def hist(
+        self,
+        show: bool = True,
+        figure_size: tuple = (10, 6),
+        save_filename: str = None,
+        kde: bool = True,
+        bins: str = 'auto',
+        clip_data: Optional[units.Quantity] = None
+    ) -> None:
+        """
+        Plot histograms of acquisition data for each detector, with optional clipping of extreme values.
+
+        This method generates a histogram for each detector using seaborn's histplot. It optionally clips the
+        signal data to a maximum value provided by `clip_data` (expressed as a pint.Quantity), so that extreme
+        pulses do not skew the binning. The plot can also include a kernel density estimate (KDE).
+
+        Parameters
+        ----------
+        show : bool, optional
+            If True, displays the plot immediately (default: True).
+        figure_size : tuple, optional
+            Size of the figure in inches (default: (10, 6)).
+        save_filename : str, optional
+            If provided, the figure is saved to this filename.
+        kde : bool, optional
+            If True, overlays a KDE on the histogram (default: True).
+        bins : str or int, optional
+            Binning strategy passed to seaborn.histplot (default: 'auto').
+        clip_data : units.Quantity, optional
+            If provided, clips the signal values to this maximum value to mitigate the effect of extreme pulses.
+
+        Returns
+        -------
+        None
+        """
+        n_plots = len(self.detector_names)
+        signal_units = self["Signal"].max().to_compact().units
+
+        with plt.style.context(mps):
+            fig, axes_array = plt.subplots(
+                nrows=n_plots,
+                figsize=figure_size,
+                sharex=True,
+            )
+
+        axes = {name: ax for name, ax in zip(self.detector_names + ['scatterer'], axes_array)}
+
+        _signal_units = signal_units or self["Signal"].max().to_compact().units
+
+        for detector_name, group in self.groupby('Detector'):
+            ax = axes[detector_name]
+            ax.set_ylabel(detector_name)
+
+            # Convert signal to consistent units and get the magnitude
+            if _signal_units.dimensionality == units.bit_bins.dimensionality:
+                signal = group["Signal"].pint.magnitude
+            else:
+                signal = group["Signal"].pint.to(_signal_units).pint.magnitude
+
+            # Clip the data if clip_data is provided
+            if clip_data is not None:
+                clip_value = clip_data.to(_signal_units).magnitude
+                signal = numpy.clip(signal, a_min=None, a_max=clip_value)
+
+            sns.histplot(x=signal, kde=kde, bins=bins, color='C0', ax=ax)
+
+
+        ax.set_xlabel(f'Signal [{_signal_units}]')
+        if save_filename:
+            fig.savefig(fname=save_filename)
+        if show:
+            plt.show()
+
     def plot_combined(self, dataframes: List["BaseAcquisitionDataFrame"], show: bool = True, **kwargs) -> None:
         """
         Plot multiple acquisition data frames together.
@@ -663,12 +739,7 @@ class AnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
         self.attrs.update(attributes)
 
 
-    def _plot_detector_data(
-        self,
-        axes: dict,
-        time_units: units.Quantity,
-        signal_units: Optional[units.Quantity] = None
-    ) -> None:
+    def _plot_detector_data(self, axes: dict, time_units: units.Quantity, signal_units: Optional[units.Quantity] = None) -> None:
         """
         Plot analog signal data for each detector.
         """
@@ -719,8 +790,8 @@ class DigitizedAcquisitionDataFrame(BaseAcquisitionDataFrame):
             ax.set_ylabel(detector_name)
             time_data = group["Time"].pint.to(time_units)
             _signal_units = signal_units or group["Signal"].max().to_compact().units
-            ax.step(time_data, group["Signal"], where='mid', label='Digitized Signal')
-            ax.set_ylim(self.attrs['saturation_levels'][detector_name])
+            ax.step(time_data, group["Signal"], where='mid', color='black', label='Digitized Signal')
+
             ax.set_ylabel(f'{detector_name} [{_signal_units}]', labelpad=20)
 
 
@@ -744,8 +815,8 @@ class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
             time_data = group["Time"].pint.to(time_units)
             _signal_units = signal_units or group["Signal"].max().to_compact().units
             analog_signal = group["Signal"].pint.to(_signal_units)
-            ax.plot(time_data, analog_signal, linestyle='-')
-            ax.set_ylim(self.attrs['saturation_levels'][detector_name])
+            ax.plot(time_data, analog_signal, color='black', linestyle='-')
+
             ax.set_ylabel(f'{detector_name} [{_signal_units}]', labelpad=20)
 
             if detector_name == self.attrs['threshold']['detector']:
