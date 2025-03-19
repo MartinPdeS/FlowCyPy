@@ -17,8 +17,10 @@ CONCENTRATION = 3e+5 * units.particle / units.milliliter
 def default_flow_cell():
     """Fixture for creating a default Flow object."""
     return FlowCell(
-        volume_flow=10 * units.microliter / units.second,
-        radius=1e-6 * units.meter,
+        sample_volume_flow=1 * units.microliter / units.second,
+        sheath_volume_flow=6 * units.microliter / units.second,
+        width=20 * units.micrometer,
+        height=10 * units.micrometer,
     )
 
 
@@ -61,9 +63,7 @@ def test_generate_distribution_size(distribution, default_flow_cell):
     # # Check that sizes were generated and are positive
     assert len(dataframe) > 0, "Generated size array is empty."
 
-
     scatterer_collection.fill_dataframe_with_sampling(dataframe)
-
 
     assert np.all(dataframe['Diameter'] > 0), "Some generated sizes are not positive."
 
