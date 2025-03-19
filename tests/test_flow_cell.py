@@ -1,11 +1,10 @@
 import pytest
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
 
 # Import necessary components from FlowCyPy.
 from FlowCyPy import units, population, distribution
-from FlowCyPy.flow_cell import FlowCell, NameSpace
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import ScattererCollection  # Assuming this is the correct import for scatterer collection
 
 # --- Fixtures ---

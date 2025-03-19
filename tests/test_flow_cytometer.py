@@ -3,7 +3,7 @@ import pytest
 import matplotlib.pyplot as plt
 from unittest.mock import patch
 from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam
-from FlowCyPy.flow_cell import CircularFlowCell
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import distribution
 from FlowCyPy.population import Sphere
@@ -54,7 +54,7 @@ def source():
 def flow_cell():
     """Fixture for creating a default flow cell."""
 
-    return CircularFlowCell(
+    return FlowCell(
         volume_flow=0.1 * units.microliter / units.second,
         radius=12 * units.micrometer,
         event_scheme='uniform-sequential'

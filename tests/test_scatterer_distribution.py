@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from FlowCyPy import ScattererCollection
 from FlowCyPy import distribution as dist
-from FlowCyPy.flow_cell import CircularFlowCell
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Sphere
 from FlowCyPy import units
 
@@ -16,7 +16,7 @@ CONCENTRATION = 3e+5 * units.particle / units.milliliter
 @pytest.fixture
 def default_flow_cell():
     """Fixture for creating a default Flow object."""
-    return CircularFlowCell(
+    return FlowCell(
         volume_flow=10 * units.microliter / units.second,
         radius=1e-6 * units.meter,
     )
