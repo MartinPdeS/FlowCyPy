@@ -42,11 +42,12 @@ source = GaussianBeam(
 # %%
 # Define and plot the flow cell.
 flow_cell = FlowCell(
-    width=30 * units.micrometer,
+    sample_volume_flow=0.02 * units.microliter / units.second,
+    sheath_volume_flow=0.1 * units.microliter / units.second,
+    width=20 * units.micrometer,
     height=10 * units.micrometer,
-    sample_volume_flow=1 * units.microliter / units.second,  # Flow rate: 0.3 µL/s
-    sheath_volume_flow=80 * units.microliter / units.second,  # Flow rate: 0.3 µL/s
 )
+
 flow_cell.plot(n_samples=100)
 
 

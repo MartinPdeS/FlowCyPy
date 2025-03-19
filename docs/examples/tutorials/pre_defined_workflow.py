@@ -36,10 +36,11 @@ source = GaussianBeam(
     optical_power=20 * units.milliwatt          # Optical power
 )
 
-
 flow_cell = FlowCell(
-    volume_flow=0.3 * units.microliter / units.second,  # Flow volume
-    radius=10 * units.micrometer,       # Cross-sectional area
+    sample_volume_flow=0.02 * units.microliter / units.second,
+    sheath_volume_flow=0.1 * units.microliter / units.second,
+    width=20 * units.micrometer,
+    height=10 * units.micrometer,
 )
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
