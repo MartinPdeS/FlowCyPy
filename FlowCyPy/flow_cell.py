@@ -401,7 +401,7 @@ class FlowCell:
             z_vals.to(length_units).magnitude,
             c=velocities.magnitude,
             cmap="viridis",
-            edgecolor="k",
+            edgecolor="black",
             label='Particle sampling'
         )
 
@@ -415,7 +415,7 @@ class FlowCell:
 
         from matplotlib.patches import Rectangle
 
-        # Plot channel boundary (sheath + sample): rectangle with lower left (-a, -b) and dimensions 2a x 2b.
+        # Plot channel boundary.
         channel_rect = Rectangle(
             (-self.width.to(length_units).magnitude / 2, -self.height.to(length_units).magnitude / 2),
             self.width.to(length_units).magnitude,
@@ -430,7 +430,7 @@ class FlowCell:
         )
         ax.add_patch(channel_rect)
 
-        # Plot sample region boundary: rectangle with lower left (-a_sample, -b_sample) and dimensions 2a_sample x 2b_sample.
+        # Plot sample region boundary.
         sample_rect = Rectangle(
             (-self.sample.width.to(length_units).magnitude / 2, -self.sample.height.to(length_units).magnitude / 2),
             self.sample.width.to(length_units).magnitude,
@@ -449,7 +449,6 @@ class FlowCell:
 
         plt.tight_layout()
 
-        # Add a legend for the boundary patches.
         ax.legend(loc='upper right')
 
         plt.show()
