@@ -17,7 +17,7 @@ CONCENTRATION = 3e+5 * units.particle / units.milliliter
 def default_flow_cell():
     """Fixture for creating a default Flow object."""
     return FlowCell(
-        sample_volume_flow=1 * units.microliter / units.second,
+        sample_volume_flow=10 * units.microliter / units.second,
         sheath_volume_flow=6 * units.microliter / units.second,
         width=20 * units.micrometer,
         height=10 * units.micrometer,
