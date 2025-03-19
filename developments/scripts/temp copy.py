@@ -34,9 +34,11 @@ from FlowCyPy import units
 from FlowCyPy import NoiseSetting
 
 NoiseSetting.include_noises = True
-NoiseSetting.include_shot_noise = False
-NoiseSetting.include_thermal_noise = True
+NoiseSetting.include_shot_noise = True
+NoiseSetting.include_thermal_noise = False
 NoiseSetting.include_dark_current_noise = False
+NoiseSetting.include_RIN_noise = False
+
 
 np.random.seed(3)  # Ensure reproducibility
 
@@ -168,11 +170,11 @@ cytometer = FlowCytometer(
     signal_digitizer=signal_digitizer,
     detectors=[detector_0, detector_1, detector_2],
     flow_cell=flow_cell,
-    background_power=0.00 * units.milliwatt
+    background_power=0.1 * units.milliwatt
 )
 
 # Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=0.04 * units.millisecond)
+cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
 acquisition = cytometer.get_acquisition()
 
 # _ = acquisition.scatterer.plot(

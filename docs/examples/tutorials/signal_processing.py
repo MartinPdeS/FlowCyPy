@@ -23,7 +23,7 @@ from FlowCyPy import (
     FlowCytometer, ScattererCollection, Detector, GaussianBeam,
     population, distribution, circuits, units, NoiseSetting
 )
-from FlowCyPy.flow_cell import CircularFlowCell
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
 
 # Enable noise settings if desired
@@ -39,11 +39,16 @@ source = GaussianBeam(
     optical_power=100 * units.milliwatt           # Laser optical power: 100 mW
 )
 
-# Define the flow cell.
-flow_cell = CircularFlowCell(
-    volume_flow=0.3 * units.microliter / units.second,  # Flow rate: 0.3 µL/s
-    radius=10 * units.micrometer              # Flow area: 10 x 10 µm²
+# %%
+# Define and plot the flow cell.
+flow_cell = FlowCell(
+    width=30 * units.micrometer,
+    height=10 * units.micrometer,
+    sample_volume_flow=1 * units.microliter / units.second,  # Flow rate: 0.3 µL/s
+    sheath_volume_flow=80 * units.microliter / units.second,  # Flow rate: 0.3 µL/s
 )
+flow_cell.plot(n_samples=100)
+
 
 # Create a scatterer collection with a single population.
 # For signal processing, we use delta distributions (i.e., no variability).

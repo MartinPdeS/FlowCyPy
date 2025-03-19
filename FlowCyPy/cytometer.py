@@ -8,7 +8,7 @@ import pandas as pd
 
 from FlowCyPy import units
 from FlowCyPy.units import milliwatt
-from FlowCyPy.flow_cell import BaseFlowCell
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.detector import Detector
 from FlowCyPy.acquisition import Acquisition
 from FlowCyPy.signal_digitizer import SignalDigitizer
@@ -36,7 +36,7 @@ class FlowCytometer:
 
     Parameters
     ----------
-    flow_cell : BaseFlowCell
+    flow_cell : FlowCell
         The flow cell object representing the fluidic and optical environment through which particles travel.
     detectors : List[Detector]
         A list of `Detector` objects representing the detectors used to measure optical signals (e.g., FSC and SSC). Exactly two detectors must be provided.
@@ -48,7 +48,7 @@ class FlowCytometer:
 
     Attributes
     ----------
-    flow_cell : BaseFlowCell
+    flow_cell : FlowCell
         The flow cell instance representing the system environment.
     scatterer_collection : ScattererCollection
         A collection of particles or scatterers passing through the flow cytometer.
@@ -71,7 +71,7 @@ class FlowCytometer:
             self,
             source: BaseBeam,
             scatterer_collection: object,
-            flow_cell: BaseFlowCell,
+            flow_cell: FlowCell,
             signal_digitizer: SignalDigitizer,
             detectors: List[Detector],
             coupling_mechanism: Optional[str] = 'mie',

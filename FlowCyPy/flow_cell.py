@@ -1,13 +1,12 @@
-from typing import List, Tuple
+from typing import List
 import numpy as np
 import warnings
 import pandas as pd
 from pydantic.dataclasses import dataclass
-from dataclasses import field
 from pint_pandas import PintArray
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
-
+from pydantic import field_validator
 from FlowCyPy.population import BasePopulation
 from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy.units import Quantity
@@ -22,43 +21,273 @@ config_dict = dict(
     extra='forbid'
 )
 
-@dataclass(config=config_dict, kw_only=True)
-class BaseFlowCell:
-    """
-    Base class for modeling the flow parameters in a flow cytometer.
 
-    This class initializes with a volumetric flow rate (volume_flow) and a flow area,
-    and computes the average flow speed as:
-        flow_speed = volume_flow / flow_area
+class NameSpace():
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+
+
+@dataclass(config=config_dict, kw_only=True)
+class FlowCell:
+    r"""
+    Represents a rectangular flow cell in which the velocity field is computed from an
+    analytical Fourier series solution for pressure-driven flow. The focused sample region
+    is estimated from the volumetric flow rates of the sample and sheath fluids.
+
+    The analytical solution for the x-direction velocity in a rectangular channel is given by:
+
+    .. math::
+
+       u(y,z) = \frac{16b^2}{\pi^3 \mu}\left(-\frac{dp}{dx}\right)
+       \sum_{\substack{n=1,3,5,\ldots}}^{\infty} \frac{1}{n^3}
+       \left[ 1 - \frac{\cosh\left(\frac{n\pi y}{2b}\right)}
+       {\cosh\left(\frac{n\pi a}{2b}\right)} \right]
+       \sin\left(\frac{n\pi (z+b)}{2b}\right)
+
+    where:
+
+       - ``a`` is the half-width of the channel (in the y-direction),
+       - ``b`` is the half-height of the channel (in the z-direction),
+       - ``mu`` is the dynamic viscosity,
+       - ``dp/dx`` is the pressure gradient driving the flow,
+       - the summation is over odd integers (i.e. ``n = 1, 3, 5, ...``).
+
+    The derivation of this solution is based on the method of separation of variables and
+    eigenfunction expansion applied to the Poisson equation for fully developed laminar flow.
+    The validity of this approach and the resulting solution for rectangular ducts is well documented
+    in classical fluid mechanics texts.
+
+    **References**
+
+    - Shah, R.K. & London, A.L. (1978). *Laminar Flow in Ducts*. Academic Press.
+    - White, F.M. (2006). *Viscous Fluid Flow* (3rd ed.). McGraw-Hill.
+    - Happel, J. & Brenner, H. (1983). *Low Reynolds Number Hydrodynamics*. Martinus Nijhoff.
+    - Di Carlo, D. (2009). "Inertial Microfluidics," *Lab on a Chip*, 9, 3038-3046.
+
+    In flow cytometry, hydrodynamic focusing is used to narrow the sample stream for optimal optical interrogation.
+    The same theoretical framework for rectangular duct flow is applied to these microfluidic devices.
 
     Parameters
     ----------
-    volume_flow : Quantity
-        The volumetric flow rate (in m³/s).
-    flow_area : Quantity
-        The cross-sectional area of the flow cell (in m²).
-    event_scheme : str, optional
-        The event timing scheme, by default 'poisson'.
+    width : Quantity
+        Width of the channel in the y-direction (m).
+    height : Quantity
+        Height of the channel in the z-direction (m).
+    mu : Quantity
+        Dynamic viscosity of the fluid (Pa·s).
+    sample_volume_flow : Quantity
+        Volumetric flow rate of the sample fluid (m³/s).
+    sheath_volume_flow : Quantity
+        Volumetric flow rate of the sheath fluid (m³/s).
+    N_terms : int, optional
+        Number of odd terms to use in the Fourier series solution (default: 25).
+    n_int : int, optional
+        Number of grid points for numerical integration over the channel cross-section (default: 200).
+
+    Attributes
+    ----------
+    Q_total : Quantity
+        Total volumetric flow rate (m³/s).
+    dpdx : float
+        Computed pressure gradient (Pa/m) driving the flow.
+    u_center : float
+        Centerline velocity, i.e. u(0,0) (m/s).
+    width_sample : Quantity
+        Width of the focused sample region (m).
+    height_sample : Quantity
+        Height of the focused sample region (m).
     """
-    # Computed in __post_init__
-    flow_speed: Quantity = field(init=False)  # type: ignore
+    width: Quantity
+    height: Quantity
+    sample_volume_flow: Quantity
+    sheath_volume_flow: Quantity
+    mu: Quantity = 1e-3 * units.pascal * units.second
+    N_terms: int = 25
+    n_int: int = 200
 
-    def __post_init__(self):
-        # Compute flow_speed from volume_flow and flow_area
-        self.flow_speed = (self.volume_flow / self.flow_area)
+    event_scheme: str = 'poisson'
 
-    @classmethod
-    def _validate_flow_area(cls, value):
-        if not value.check(units.meter ** 2):
-            raise ValueError(f"flow_area must be in meter**2, but got {value.units}")
+    @field_validator('width', 'height', mode='plain')
+    def validate_polarization(cls, value, field):
+        if not isinstance(value, Quantity):
+            raise ValueError(f"{value} must be a Quantity with length units [<prefix>meter].")
+
+        if not value.check('meter'):
+            raise ValueError(f"{field} must be a Quantity with meter units [<prefix>meter], but got {value.units}.")
+
+        return value
+
+    @field_validator('sample_volume_flow', 'sheath_volume_flow', mode='plain')
+    def validate_polarization(cls, value, field):
+        if not isinstance(value, Quantity):
+            raise ValueError(f"{value} must be a Quantity with volume flow [<prefix>liter / second].")
+
+        if not value.check('liter / second'):
+            raise ValueError(f"{field} must be a Quantity with volume flow units [<prefix>liter / second], but got {value.units}.")
+
         return value
 
     @validate_units(run_time=units.second)
-    def get_volume(self, run_time: Quantity) -> Quantity:
+    def get_sample_volume(self, run_time: Quantity) -> Quantity:
         """
         Computes the volume passing through the flow cell over the given run time.
         """
-        return (self.volume_flow * run_time).to_compact()
+        return (self.sample.area * self.sample.average_flow_speed * run_time).to_compact()
+
+    def __post_init__(self):
+        # Total volumetric flow rate: Q_total = Q_sample + Q_sheath.
+        self.Q_total = self.sample_volume_flow + self.sheath_volume_flow
+
+        # Compute dp/dx using the linearity of the solution (u ∝ -dp/dx)
+        # with a reference pressure gradient of -1 Pa/m.
+        self.dpdx_ref = -1.0  # Reference pressure gradient in Pa/m.
+        Q_ref = self._compute_channel_flow(self.dpdx_ref, self.n_int)
+        # The actual pressure gradient is given by:
+        self.dpdx = self.dpdx_ref * (self.Q_total / Q_ref)
+
+        # Compute the center velocity u(0,0)
+        self.u_center = self.velocity(0.0 * units.meter, 0.0 * units.meter)
+
+        # Estimate the sample region area: A_sample = Q_sample / u(0,0)
+        area_sample = self.sample_volume_flow / self.u_center
+        # Assuming the sample region is a centered rectangle with:
+        #   A_sample = (2 * a_sample) * (2 * b_sample) = 4 * a_sample * b_sample,
+        # and preserving the aspect ratio: a_sample / b_sample = a / b,
+        # compute:
+        height_sample = np.sqrt((area_sample * self.height) / (4 * self.width)) * 2
+        width_sample = (self.width / self.height) * height_sample
+        average_flow_speed_sample = self.sample_volume_flow / area_sample
+
+        self.sample = NameSpace(
+            height=height_sample,
+            width=width_sample,
+            area=area_sample,
+            volume_flow=self.sample_volume_flow,
+            max_flow_speed=self.u_center,
+            average_flow_speed=average_flow_speed_sample
+        )
+
+    def velocity(self, y: float, z: float) -> float:
+        r"""
+        Compute the local x-direction velocity at the point (y, z) using the Fourier series solution.
+
+        The velocity is computed as:
+
+        .. math::
+
+           u(y,z) = \frac{16b^2}{\pi^3 \mu}\left(-\frac{dp}{dx}\right)
+           \sum_{\substack{n=1,3,5,\ldots}}^{\infty} \frac{1}{n^3}
+           \left[ 1 - \frac{\cosh\left(\frac{n\pi y}{2b}\right)}
+           {\cosh\left(\frac{n\pi a}{2b}\right)} \right]
+           \sin\left(\frac{n\pi (z+b)}{2b}\right)
+
+        Parameters
+        ----------
+        y : float or array_like
+            y-coordinate (m). Can be a scalar or a NumPy array.
+        z : float or array_like
+            z-coordinate (m). Can be a scalar or a NumPy array.
+
+        Returns
+        -------
+        u : float or ndarray
+            Local velocity (m/s) at (y, z).
+        """
+        u = np.zeros_like(y, dtype=np.float64)
+        prefactor = (4 * self.height**2 / (np.pi**3 * self.mu)) * (-self.dpdx)
+        n_values = np.arange(1, 2 * self.N_terms, 2)  # n = 1, 3, 5, ...
+        for n in n_values:
+            term_y = 1 - np.cosh((n * np.pi * y) / self.height) / np.cosh((n * np.pi * self.width / 2) / self.height)
+            term_z = np.sin((n * np.pi * (z + (self.height / 2))) / self.height)
+            u += term_y * term_z / n**3
+        return prefactor * u
+
+    def _compute_channel_flow(self, dpdx: float, n_int: int) -> float:
+        r"""
+        Numerically compute the total volumetric flow rate in the channel for a given pressure gradient.
+
+        The volumetric flow rate is defined as:
+
+        .. math::
+
+           Q = \int_{-b}^{b}\int_{-a}^{a} u(y,z) \, dy \, dz
+
+        where :math:`u(y,z)` is the local velocity computed from the Fourier series solution.
+
+        Parameters
+        ----------
+        dpdx : float
+            Pressure gradient (Pa/m).
+        n_int : int
+            Number of grid points per dimension for integration.
+
+        Returns
+        -------
+        Q : float
+            Total volumetric flow rate (m³/s).
+        """
+        # Temporarily set dpdx to the provided value.
+        dpdx_saved = self.dpdx if hasattr(self, 'dpdx') else None
+        self.dpdx = dpdx
+
+        y_vals = np.linspace(-self.width / 2, self.width / 2, n_int)
+        z_vals = np.linspace(-self.height / 2, self.height / 2, n_int)
+        Y, Z = np.meshgrid(y_vals, z_vals)
+        U = self.velocity(Y, Z)
+
+        # Compute the 2D integral over the channel cross-section using the composite trapezoidal rule.
+        Q = np.trapz(np.trapz(U, y_vals, axis=1), z_vals)
+
+        # Restore the original dpdx if it was set.
+        if dpdx_saved is not None:
+            self.dpdx = dpdx_saved
+        return Q
+
+    def sample_particles(self, n_samples: int) -> tuple:
+        r"""
+        Sample particles from the focused sample stream.
+
+        The sample stream is assumed to be uniformly distributed over a centered rectangular region
+        defined by:
+
+        .. math::
+
+           y \in [-a_{\text{sample}}, a_{\text{sample}}] \quad \text{and} \quad
+           z \in [-b_{\text{sample}}, b_{\text{sample}}]
+
+        The area of the sample region is given by:
+
+        .. math::
+
+           A_{\text{sample}} = 4\,a_{\text{sample}}\,b_{\text{sample}}
+
+        and is estimated as:
+
+        .. math::
+
+           A_{\text{sample}} = \frac{Q_{\text{sample}}}{u(0,0)}.
+
+        Parameters
+        ----------
+        n_samples : int
+            Number of particles to sample.
+
+        Returns
+        -------
+        positions : ndarray
+            A NumPy array of shape (n_samples, 2) containing the [y, z] coordinates (in m).
+        velocities : ndarray
+            A NumPy array of shape (n_samples,) containing the local x-direction velocities (in m/s).
+        """
+        # Here we assume that the "Quantity" type has attributes 'magnitude' and 'units'.
+        # Adjust this section for your specific unit system.
+        y_samples = np.random.uniform(-self.sample.width.magnitude / 2, self.sample.width.magnitude / 2, n_samples) * self.sample.width.units
+        z_samples = np.random.uniform(-self.sample.height.magnitude / 2, self.sample.height.magnitude / 2, n_samples) * self.sample.height.units
+
+        velocities = self.velocity(y_samples, z_samples).to('meter / second')
+        return y_samples, z_samples, velocities.to(velocities.max().to_compact().units)
 
     @validate_units(run_time=units.second)
     def get_population_sampling(self, run_time: Quantity, scatterer_collection: ScattererCollection) -> List[Quantity]:
@@ -67,8 +296,8 @@ class BaseFlowCell:
         """
         return [
             p.particle_count.calculate_number_of_events(
-                flow_area=self.flow_area,
-                flow_speed=self.flow_speed,
+                flow_area=self.sample.area,
+                flow_speed=self.sample.average_flow_speed,
                 run_time=run_time
             )
             for p in scatterer_collection.populations
@@ -80,8 +309,8 @@ class BaseFlowCell:
         Generates particle arrival times using a Poisson process and samples a velocity for each event.
         """
         particle_flux = population.particle_count.compute_particle_flux(
-            flow_speed=self.flow_speed,
-            flow_area=self.flow_area,
+            flow_speed=self.sample.average_flow_speed,
+            flow_area=self.sample.area,
             run_time=run_time
         )
         expected_particles = particle_flux * run_time
@@ -98,7 +327,7 @@ class BaseFlowCell:
         dataframe['Time'] = PintArray(arrival_times, dtype=arrival_times.units)
 
         # Sample velocity for each event using the geometry-specific velocity profile.
-        x, y, velocities = self.sample_parameters(len(arrival_times))
+        x, y, velocities = self.sample_particles(len(arrival_times))
 
         dataframe['Velocity'] = PintArray(velocities, dtype=velocities.units)
 
@@ -145,461 +374,82 @@ class BaseFlowCell:
         scatterer_dataframe.attrs['run_time'] = run_time
         return scatterer_dataframe
 
-    def sample_velocity(self) -> Quantity:
-        """
-        Abstract method to sample a velocity from the flow cell's velocity distribution.
-        Must be implemented by subclasses.
-        """
-        raise NotImplementedError("Subclasses must implement sample_velocity.")
+    def plot(self, n_samples: int) -> None:
+        r"""
+        Plot the spatial distribution of sampled particles and color-code them by their local x-direction velocity.
 
-    def plot_transverse_distribution(self, n_samples: int = 300, show: bool = True, ax: plt.Axes = None) -> None:
-        """
-        Generates a 3D visualization of particle positions and velocities in a rectangular flow cell.
-
-        This method samples particle positions and their local velocities using the cell's
-        sampling routine, then creates a 3D scatter plot where each particle is represented as a blue dot
-        at \(z = 0\) (the channel cross-section) and its local velocity is depicted as a red vertical line.
-        The boundary of the rectangular channel is overlaid as a green line connecting the four corners.
-
-        The particle positions are sampled over the rectangular area \([-w/2, w/2] \times [-h/2, h/2]\),
-        with hydrodynamic focusing applied via the focusing_factor parameter. The local velocity is computed
-        using the bi-parabolic profile:
-
-        \[
-        v(x, y) = v_{\max} \left(1 - \left(\frac{2x}{w}\right)^2\right) \left(1 - \left(\frac{2y}{h}\right)^2\right),
-        \]
-
-        where \(v_{\max} \approx 1.5\,v_{\text{avg}}\) and \(v_{\text{avg}} = \frac{\text{volume\_flow}}{w \times h}\).
+        This method samples a specified number of particles from the focused sample stream and
+        generates a scatter plot of their positions in the y-z plane. In addition, the plot includes overlays
+        for the channel boundaries (representing the full flow cell, i.e. sheath + sample regions) and the sample
+        region boundaries.
 
         Parameters
         ----------
         n_samples : int
-            The number of particle samples to generate for the visualization.
-
-        Returns
-        -------
-        None
+            Number of particles to sample and plot.
         """
-        # Sample particle parameters: positions (x, y) and local velocity v.
-        x, y, v = self.sample_parameters(n_samples=n_samples)
+        y_vals, z_vals, velocities = self.sample_particles(n_samples)
 
-        # Create a new 3D figure
-        if ax is None:
-            with plt.style.context(mps):
-                figure = plt.figure(figsize=(10, 8))
-                ax = figure.add_subplot(111, projection='3d')
+        length_units = self.width.units
 
-        # Convert Pint quantities to numerical arrays for plotting
-        x_m = x.magnitude
-        y_m = y.to(x.units).magnitude
-        v_m = v.magnitude
+        # Create plot
+        with plt.style.context(mps):
+            _, ax = plt.subplots()
 
-        # Plot particle positions at z = 0
-        ax.scatter(x_m, y_m, np.zeros_like(x_m), color='blue', label='Particle Position')
-
-        # Plot velocity vectors using quiver without arrowheads; vectors extend vertically.
-        ax.quiver(
-            x_m, y_m, np.zeros_like(x_m),
-            np.zeros_like(x_m), np.zeros_like(y_m), v_m,
-            arrow_length_ratio=0.0, normalize=False, color='red', label='Velocity'
+        sc = ax.scatter(
+            y_vals.to(length_units).magnitude,
+            z_vals.to(length_units).magnitude,
+            c=velocities.magnitude,
+            cmap="viridis",
+            edgecolor="k",
+            label='Particle sampling'
         )
 
-        self._add_boundary_to_ax(ax=ax, length_units=x.units)
+        plt.colorbar(sc, label=f"Velocity [{velocities.units}]")
 
-        ax.set_xlabel(f'x [{x.units}]')
-        ax.set_ylabel(f'y [{y.units}]')
-        ax.set_zlabel(f'Velocity [{v.units}]')
-        ax.set_title('3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell')
-        ax.set_zlim([0, v_m.max()])
-        ax.legend()
+        ax.set(
+            xlabel=f"y [{length_units}]",
+            ylabel=f"z [{length_units}]",
+            title="Particle Spatial Distribution and Speed"
+        )
+
+        from matplotlib.patches import Rectangle
+
+        # Plot channel boundary (sheath + sample): rectangle with lower left (-a, -b) and dimensions 2a x 2b.
+        channel_rect = Rectangle(
+            (-self.width.to(length_units).magnitude / 2, -self.height.to(length_units).magnitude / 2),
+            self.width.to(length_units).magnitude,
+            self.height.to(length_units).magnitude,
+            fill=True,
+            edgecolor='black',
+            facecolor='lightblue',
+            alpha=0.8,
+            zorder=-1,
+            linewidth=1,
+            label="Sheath fluid"
+        )
+        ax.add_patch(channel_rect)
+
+        # Plot sample region boundary: rectangle with lower left (-a_sample, -b_sample) and dimensions 2a_sample x 2b_sample.
+        sample_rect = Rectangle(
+            (-self.sample.width.to(length_units).magnitude / 2, -self.sample.height.to(length_units).magnitude / 2),
+            self.sample.width.to(length_units).magnitude,
+            self.sample.height.to(length_units).magnitude,
+            fill=True,
+            edgecolor='black',
+            alpha=0.8,
+            facecolor='green',
+            linewidth=1,
+            zorder=-1,
+            label="Sample Region"
+        )
+        ax.add_patch(sample_rect)
+
+        ax.set_aspect('equal')
 
         plt.tight_layout()
 
-        if show:
-            plt.show()
+        # Add a legend for the boundary patches.
+        ax.legend(loc='upper right')
 
-        return ax
-
-
-
-@dataclass(config=config_dict, kw_only=True)
-class CircularFlowCell(BaseFlowCell):
-    """
-    Models a circular flow cell, where the cross-section is assumed to be a circle.
-    The velocity profile is derived from Poiseuille flow:
-        v(r) = v_max * (1 - (r/R)^2),
-    where R is the tube radius and v_max = 2 * v_avg.
-
-    This class now provides an option for hydrodynamic focusing. The parameter
-    'focusing_factor' (between 0 and 1) adjusts the probability density function (PDF)
-    for particle radial positions. With focusing_factor = 0, particles are uniformly distributed
-    over the area, following:
-        P(r) = 2r / R^2.
-    With focusing_factor = 1, particles are ideally focused at the center (r = 0). Intermediate values
-    interpolate between these distributions.
-
-    Parameters
-    ----------
-    volume_flow : Quantity
-        The volumetric flow rate (in m³/s).
-    radius : Quantity
-        The tube radius (in meters).
-    event_scheme : str, optional
-        The event timing scheme, by default 'poisson'.
-    focusing_factor : float, optional
-        A value between 0 (no focusing, uniform distribution) and 1 (ideal focusing at the center).
-        Default is 0.
-    """
-    volume_flow: Quantity
-    radius: Quantity
-    event_scheme: str = 'poisson'
-    focusing_factor: float = 1.0  # 0: uniform; 1: all at center
-
-    def __post_init__(self):
-        self.flow_area = np.pi * self.radius ** 2
-        return super().__post_init__()
-
-    def get_velocity_profile(self, num_points: int = 100) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Computes the velocity profile for a circular flow cell using Poiseuille flow.
-
-        For a circular tube, the velocity profile is given by:
-            v(r) = v_max * (1 - (r / R)^2)
-        where:
-            - r is the radial distance from the center of the tube,
-            - R is the tube radius,
-            - v_max is the maximum velocity at the center, which is 2 * v_avg,
-            - v_avg is the average flow speed (computed as volume_flow / flow_area).
-
-        Parameters
-        ----------
-        num_points : int, optional
-            The number of discrete points along the radius to compute the velocity (default is 100).
-
-        Returns
-        -------
-        Tuple[np.ndarray, np.ndarray]
-            r: 1D numpy array of radial positions from 0 to R (in meters).
-            velocities: 1D numpy array of corresponding velocities (in m/s).
-        """
-        r = np.linspace(0, self.radius, num_points)
-        velocities = 2 * self.flow_speed * (1 - (r / self.radius)**2)
-        return r, velocities.to(units.meter / units.second)
-
-    def sample_velocity(self, n_samples: int = 1) -> Quantity:
-        """
-        Samples a velocity for a particle in a circular flow cell from the Poiseuille flow distribution,
-        with an option to apply hydrodynamic focusing.
-
-        The standard PDF for the radial position in a uniformly distributed circular channel is:
-            P(r) = 2r / R^2   for 0 ≤ r ≤ R,
-        where R is the tube radius. To incorporate hydrodynamic focusing, we scale the sampled radial position
-        by (1 - focusing_factor). With focusing_factor = 0, particles are uniformly distributed (r = R * sqrt(u)).
-        With focusing_factor = 1, particles are ideally focused at the center (r = 0).
-
-        The local velocity is computed from the effective radial position using:
-            v(r) = 2 * v_avg * (1 - (r / R)^2),
-        where v_avg is the average flow speed.
-
-        Parameters
-        ----------
-        n_samples : int, optional
-            The number of velocity samples to generate (default is 1).
-
-        Returns
-        -------
-        Quantity
-            A Quantity representing the sampled velocity (or velocities) in meters per second.
-        """
-        # Uniform sampling: u ~ U(0,1)
-        u = np.random.uniform(0, 1, size=n_samples)
-        # Apply hydrodynamic focusing by scaling the sampled radial position.
-        # If focusing_factor = 0: r_sample = R * sqrt(u) (uniform distribution)
-        # If focusing_factor = 1: r_sample = 0 (perfect focusing)
-        r_sample = (1 - self.focusing_factor) * self.radius * np.sqrt(u)
-        # Compute local velocity using the Poiseuille profile: v(r) = 2 * v_avg * (1 - (r/R)^2)
-        v_sample = 2 * self.flow_speed * (1 - (r_sample / self.radius)**2)
-        return v_sample
-
-    def sample_parameters(self, n_samples: int = 1) -> Quantity:
-
-        # Uniform sampling: u ~ U(0,1)
-        u = np.random.uniform(0, 1, size=n_samples)
-        # Apply hydrodynamic focusing by scaling the sampled radial position.
-        # If focusing_factor = 0: r_sample = R * sqrt(u) (uniform distribution)
-        # If focusing_factor = 1: r_sample = 0 (perfect focusing)
-        r_sample = (1 - self.focusing_factor) * self.radius * np.sqrt(u)
-
-        theta = np.random.uniform(0, 2 * np.pi, size=n_samples)  # theta uniformly in [0, 2pi]
-        x = r_sample * np.cos(theta)
-        y = r_sample * np.sin(theta)
-
-
-        # Compute local velocity using the Poiseuille profile: v(r) = 2 * v_avg * (1 - (r/R)^2)
-        v_sample = 2 * self.flow_speed * (1 - (r_sample / self.radius)**2)
-
-        if len(v_sample) != 0:
-            v_max_units = v_sample.max().to('meter/second').to_compact().units
-            return x, y, v_sample.to(v_max_units)
-
-        return x, y, v_sample
-
-    def _add_boundary_to_ax(self, ax: plt.Axes, length_units: Quantity) -> None:
-        """
-        Adds a visual representation of the circular channel boundary to a 3D Axes object.
-
-        This method draws a circle in the \(xy\)-plane (at \(z=0\)) that represents the boundary
-        of the circular flow cell. The circle is defined by the equation
-        \[
-        x = R \cos(\theta), \quad y = R \sin(\theta), \quad \theta \in [0, 2\pi],
-        \]
-        where \(R\) is the tube radius (converted to the specified length units). The circle is drawn
-        as a green line to delineate the channel boundary.
-
-        Parameters
-        ----------
-        ax : plt.Axes
-            The Matplotlib 3D Axes object on which the boundary will be plotted.
-        length_units : Quantity
-            The desired length unit (e.g., \texttt{units.meter}) to which the radius will be converted.
-
-        Returns
-        -------
-        None
-            This method adds the boundary plot to the provided Axes object in-place.
-        """
-        # Convert the radius to the specified units and extract its numerical value
-        R_val = self.radius.to(length_units).magnitude
-
-        # Generate points on the circle using polar coordinates
-        theta = np.linspace(0, 2 * np.pi, 200)
-        x_circle = R_val * np.cos(theta)
-        y_circle = R_val * np.sin(theta)
-        z_circle = np.zeros_like(x_circle)
-
-        # Plot the circle on the Axes
-        ax.plot(x_circle, y_circle, z_circle, color='green', lw=2, label='Channel Boundary (R)')
-
-
-@dataclass(config=config_dict, kw_only=True)
-class RectangularFlowCell(BaseFlowCell):
-    """
-    Models a rectangular flow cell.
-
-    The velocity profile follows a **bi-parabolic** distribution:
-        v(x, y) = v_max * (1 - (2x / w)^2) * (1 - (2y / h)^2)
-
-    where:
-        - `w` is the channel width (in meters),
-        - `h` is the channel height (in meters),
-        - `x` and `y` are coordinates inside the cross-section (-w/2 ≤ x ≤ w/2, -h/2 ≤ y ≤ h/2),
-        - `v_max ≈ 1.5 * v_avg` is the maximum velocity at the center,
-        - `v_avg = volume_flow / (w * h)` is the average flow speed.
-
-    This model assumes **low Reynolds number laminar flow** inside the flow cell.
-
-    Hydrodynamic focusing is enabled using the `focusing_factor` parameter, where:
-        - `focusing_factor = 0` results in **uniform** particle distribution across the area.
-        - `focusing_factor = 1` forces **perfect focusing** at the center (`x = y = 0`).
-
-    Attributes:
-    -----------
-    width : Quantity
-        The width of the rectangular channel (in meters).
-    height : Quantity
-        The height of the rectangular channel (in meters).
-    volume_flow : Quantity
-        The total volumetric flow rate (in m³/s).
-    event_scheme : str
-        The event timing scheme, by default 'poisson'.
-    focusing_factor : float
-        A value between 0 (uniform distribution) and 1 (perfect focusing at the center).
-    """
-    width: Quantity  # in meters
-    height: Quantity  # in meters
-    volume_flow: Quantity
-    event_scheme: str = 'poisson'
-    focusing_factor: float = 1.0  # Default: perfect focusing
-
-    def __post_init__(self):
-        self.flow_area = self.width * self.height
-        return super().__post_init__()
-
-    def get_velocity_profile(self, num_points: int = 50) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """
-        Computes the **bi-parabolic** velocity profile for a rectangular flow cell.
-
-        The velocity distribution is given by:
-
-            v(x, y) = v_max * (1 - (2x / w)^2) * (1 - (2y / h)^2)
-
-        where `x` and `y` represent positions inside the channel cross-section.
-
-        Parameters:
-        -----------
-        num_points : int, optional
-            The number of points along each axis for velocity calculation (default: 50).
-
-        Returns:
-        --------
-        Tuple[np.ndarray, np.ndarray, np.ndarray]
-            - `X`: 2D numpy array representing the x-coordinates in the cross-section.
-            - `Y`: 2D numpy array representing the y-coordinates in the cross-section.
-            - `velocities`: 2D numpy array containing the velocity values at each (x, y) position.
-        """
-        x = np.linspace(- self.width / 2, + self.width / 2, num_points)
-        y = np.linspace(- self.height / 2, + self.height / 2, num_points)
-        X, Y = np.meshgrid(x, y)
-        v_avg = self.flow_speed
-        v_max = 1.5 * v_avg
-        velocities = v_max * (1 - (2 * X / self.width) ** 2) * (1 - (2 * Y / self.height) ** 2)
-        return X, Y, velocities.to(units.meter / units.second)
-
-    def sample_velocity(self, n_samples: int) -> Quantity:
-        """
-        Samples a velocity for a particle in a **rectangular flow cell**, with optional hydrodynamic focusing.
-
-        **Standard Uniform Sampling:**
-        - If `focusing_factor = 0`, particles are **uniformly** distributed over the area.
-        - The **(x, y) positions** are drawn from a uniform distribution:
-            x ~ U(-w/2, w/2),  y ~ U(-h/2, h/2).
-
-        **Hydrodynamic Focusing:**
-        - As `focusing_factor → 1`, particles are increasingly concentrated toward (x, y) = (0, 0).
-        - We modify the sampling using an exponential scaling:
-            x_sample = w/2 * (1 - focusing_factor) * sign(U) * |U|^focusing_factor
-            y_sample = h/2 * (1 - focusing_factor) * sign(V) * |V|^focusing_factor
-          where U, V ~ U(-1, 1) (uniform random variables).
-
-        **Velocity Calculation:**
-        - The velocity at (x, y) is computed using:
-            v(x, y) = v_max * (1 - (2x / w)^2) * (1 - (2y / h)^2)
-
-        Parameters:
-        -----------
-        n_samples : int, optional
-            Number of velocity samples to generate (default: 1).
-
-        Returns:
-        --------
-        Quantity
-            A Quantity representing the sampled velocities in meters per second.
-        """
-        v_avg = self.flow_speed
-        v_max = 1.5 * v_avg  # Max velocity in center
-
-        # Generate uniform random variables U, V in [-1, 1]
-        U = np.random.uniform(-1, 1, size=n_samples)
-        V = np.random.uniform(-1, 1, size=n_samples)
-
-        # Apply hydrodynamic focusing transformation
-        x_sample = (self.width / 2) * (1 - self.focusing_factor) * np.sign(U) * np.abs(U) ** self.focusing_factor
-        y_sample = (self.height / 2) * (1 - self.focusing_factor) * np.sign(V) * np.abs(V) ** self.focusing_factor
-
-        # Compute velocity at sampled positions
-        v_sample = v_max * (1 - (2 * x_sample / self.width) ** 2) * (1 - (2 * y_sample / self.height) ** 2)
-
-        return v_sample
-
-    def sample_parameters(self, n_samples: int) -> Quantity:
-        v_avg = self.flow_speed
-        v_max = 1.5 * v_avg  # Max velocity in center
-
-        # Generate uniform random variables U, V in [-1, 1]
-        U = np.random.uniform(-1, 1, size=n_samples)
-        V = np.random.uniform(-1, 1, size=n_samples)
-
-        # Apply hydrodynamic focusing transformation
-        x_sample = (self.width / 2) * (1 - self.focusing_factor) * np.sign(U) * np.abs(U) ** self.focusing_factor
-        y_sample = (self.height / 2) * (1 - self.focusing_factor) * np.sign(V) * np.abs(V) ** self.focusing_factor
-
-        # Compute velocity at sampled positions
-        v_sample = v_max * (1 - (2 * x_sample / self.width) ** 2) * (1 - (2 * y_sample / self.height) ** 2)
-        v_max_units = v_sample.max().to('meter/second').to_compact().units
-        return x_sample, y_sample, v_sample.to(v_max_units)
-
-    def _add_boundary_to_ax(self, ax: plt.Axes, length_units: Quantity) -> None:
-        """
-        Adds a visual representation of the rectangular channel boundary to a 3D Axes object.
-
-        This method plots the boundary of a rectangular flow cell as a green line on the provided
-        Matplotlib Axes object. The boundary is defined by the four corners of the rectangle, calculated
-        using the cell's width \(w\) and height \(h\). Specifically, the rectangle's corners are:
-
-        \[
-        \left(-\frac{w}{2}, -\frac{h}{2}\right), \quad \left(-\frac{w}{2}, \frac{h}{2}\right), \quad
-        \left(\frac{w}{2}, \frac{h}{2}\right), \quad \left(\frac{w}{2}, -\frac{h}{2}\right), \quad
-        \left(-\frac{w}{2}, -\frac{h}{2}\right)
-        \]
-
-        The width and height are converted to the specified `length_units` before plotting. The resulting line is
-        drawn at \(z = 0\) (i.e., in the channel cross-section).
-
-        Parameters
-        ----------
-        ax : plt.Axes
-            The Matplotlib 3D Axes object on which the channel boundary will be plotted.
-        length_units : Quantity
-            The desired length unit (e.g., `units.meter`) for converting the width and height values.
-
-        Returns
-        -------
-        None
-            This method directly adds the boundary plot to the provided Axes object without returning a value.
-        """
-        # Plot the rectangular channel boundary. The rectangle has corners at:
-        # (-w/2, -h/2), (-w/2, h/2), (w/2, h/2), (w/2, -h/2), and back to (-w/2, -h/2).
-        w_val = self.width.to(length_units).magnitude
-        h_val = self.height.to(length_units).magnitude
-        rect_x = [-w_val/2, -w_val/2, w_val/2, w_val/2, -w_val/2]
-        rect_y = [-h_val/2, h_val/2, h_val/2, -h_val/2, -h_val/2]
-        rect_z = np.zeros_like(rect_x)
-        ax.plot(rect_x, rect_y, rect_z, color='green', lw=2, label='Channel Boundary')
-
-
-
-@dataclass(config=config_dict)
-class SquareFlowCell(RectangularFlowCell):
-    """
-    Models a square flow cell, which is a special case of a rectangular flow cell where:
-        width = height = side
-
-    The velocity profile follows a bi-parabolic distribution:
-
-        v(x, y) = v_max * (1 - (2x / side)^2) * (1 - (2y / side)^2)
-
-    where:
-      - side is the side length of the square channel (in meters),
-      - x and y are coordinates in the channel cross-section (-side/2 ≤ x, y ≤ side/2),
-      - v_max ≈ 1.5 * v_avg is the maximum velocity at the center,
-      - v_avg = volume_flow / (side^2) is the average flow speed.
-
-    Hydrodynamic focusing is enabled using the focusing_factor parameter, where:
-      - focusing_factor = 0 produces a uniform distribution,
-      - focusing_factor = 1 forces perfect focusing at the center.
-
-    Attributes
-    ----------
-    side : Quantity
-        The side length of the square channel (in meters).
-    volume_flow : Quantity
-        The total volumetric flow rate (in m³/s).
-    event_scheme : str
-        The event timing scheme, by default 'poisson'.
-    focusing_factor : float
-        A value between 0 (uniform distribution) and 1 (perfect focusing at the center).
-    """
-    side: Quantity  # in meters
-    # Override inherited width and height so that they are not required during initialization.
-    width: Quantity = field(init=False)
-    height: Quantity = field(init=False)
-
-    def __post_init__(self):
-        """
-        Initializes the square flow cell by setting width and height equal to the provided side,
-        computing the flow area as side^2, and then invoking the parent class initializer.
-        """
-        self.width = self.side
-        self.height = self.side
-        self.flow_area = self.side * self.side
-        return super().__post_init__()
+        plt.show()
