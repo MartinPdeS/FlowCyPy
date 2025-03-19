@@ -553,57 +553,25 @@ to download the full example code.</p>
 <section class="sphx-glr-example-title" id="flow-cell-geometries">
 <span id="sphx-glr-gallery-extras-flow-cell-profiles-py"></span><h1>Flow Cell geometries<a class="headerlink" href="#flow-cell-geometries" title="Link to this heading">#</a></h1>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.flow_cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">CircularFlowCell</span><span class="p">,</span> <span class="n">RectangularFlowCell</span><span class="p">,</span> <span class="n">SquareFlowCell</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.flow_cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCell</span>
 
 <span class="c1"># Create example FlowCell instances</span>
 <span class="n">volume_flow</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span>
 <span class="n">focusing_factor</span> <span class="o">=</span> <span class="mf">0.5</span>
 
-<span class="c1"># CircularFlowCell instance</span>
-<span class="n">circular_cell</span> <span class="o">=</span> <span class="n">CircularFlowCell</span><span class="p">(</span>
-    <span class="n">volume_flow</span><span class="o">=</span><span class="n">volume_flow</span><span class="p">,</span>
-    <span class="n">radius</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
-    <span class="n">focusing_factor</span><span class="o">=</span><span class="n">focusing_factor</span>
+<span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
+    <span class="n">sample_volume_flow</span><span class="o">=</span><span class="mf">0.02</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>        <span class="c1"># Flow speed: 10 microliter per second</span>
+    <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>        <span class="c1"># Flow speed: 10 microliter per second</span>
+    <span class="n">width</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>        <span class="c1"># Flow area: 10 x 10 micrometers</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>        <span class="c1"># Flow area: 10 x 10 micrometers</span>
 <span class="p">)</span>
-
-<span class="c1"># RectangularFlowCell instance with width 20 μm and height 10 μm.</span>
-<span class="n">rectangular_cell</span> <span class="o">=</span> <span class="n">RectangularFlowCell</span><span class="p">(</span>
-    <span class="n">volume_flow</span><span class="o">=</span><span class="n">volume_flow</span><span class="p">,</span>
-    <span class="n">width</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
-    <span class="n">height</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
-    <span class="n">focusing_factor</span><span class="o">=</span><span class="n">focusing_factor</span>
-<span class="p">)</span>
-
-<span class="c1"># SquareFlowCell instance</span>
-<span class="n">square_cell</span> <span class="o">=</span> <span class="n">SquareFlowCell</span><span class="p">(</span>
-    <span class="n">volume_flow</span><span class="o">=</span><span class="n">volume_flow</span><span class="p">,</span>
-    <span class="n">side</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
-    <span class="n">focusing_factor</span><span class="o">=</span><span class="n">focusing_factor</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>Plot velocity profile for CircularFlowCell</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">circular_cell</span><span class="o">.</span><span class="n">plot_transverse_distribution</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
-</pre></div>
-</div>
-<img src="../../_images/sphx_glr_flow_cell_profiles_001.png" srcset="../../_images/sphx_glr_flow_cell_profiles_001.png" alt="3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Axes3D: title={&#39;center&#39;: &#39;3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell&#39;}, xlabel=&#39;x [µm]&#39;, ylabel=&#39;y [µm]&#39;, zlabel=&#39;Velocity [m/s]&#39;&gt;
-</pre></div>
-</div>
-<p>Plot velocity profile for RectangularFlowCell</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">rectangular_cell</span><span class="o">.</span><span class="n">plot_transverse_distribution</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
-</pre></div>
-</div>
-<img src="../../_images/sphx_glr_flow_cell_profiles_002.png" srcset="../../_images/sphx_glr_flow_cell_profiles_002.png" alt="3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Axes3D: title={&#39;center&#39;: &#39;3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell&#39;}, xlabel=&#39;x [µm]&#39;, ylabel=&#39;y [µm]&#39;, zlabel=&#39;Velocity [m/s]&#39;&gt;
 </pre></div>
 </div>
 <p>Plot velocity profile for SquareFlowCell</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">square_cell</span><span class="o">.</span><span class="n">plot_transverse_distribution</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">flow_cell</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_flow_cell_profiles_003.png" srcset="../../_images/sphx_glr_flow_cell_profiles_003.png" alt="3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Axes3D: title={&#39;center&#39;: &#39;3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell&#39;}, xlabel=&#39;x [µm]&#39;, ylabel=&#39;y [µm]&#39;, zlabel=&#39;Velocity [m/s]&#39;&gt;
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.481 seconds)</p>
+<img src="../../_images/sphx_glr_flow_cell_profiles_001.png" srcset="../../_images/sphx_glr_flow_cell_profiles_001.png" alt="Particle Spatial Distribution and Speed" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.373 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-flow-cell-profiles-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/6096504f2fd3400752143bc2ef141723/flow_cell_profiles.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">flow_cell_profiles.ipynb</span></code></a></p>

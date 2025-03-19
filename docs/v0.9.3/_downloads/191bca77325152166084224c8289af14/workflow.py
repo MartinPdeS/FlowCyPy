@@ -50,7 +50,7 @@ np.random.seed(3)  # Ensure reproducibility
 from FlowCyPy import GaussianBeam
 
 source = GaussianBeam(
-    numerical_aperture=0.3 * units.AU,           # Numerical aperture
+    numerical_aperture=0.1 * units.AU,           # Numerical aperture
     wavelength=450 * units.nanometer,           # Wavelength
     optical_power=200 * units.milliwatt          # Optical power
 )
@@ -65,15 +65,16 @@ source = GaussianBeam(
 # .. math::
 #     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
 
-from FlowCyPy.flow_cell import CircularFlowCell
+from FlowCyPy.flow_cell import FlowCell
 
-flow_cell = CircularFlowCell(
-    volume_flow=0.8 * units.microliter / units.second,  # Flow volume
-    radius=20 * units.micrometer,       # Cross-sectional area
-    focusing_factor=0.99
+flow_cell = FlowCell(
+    sample_volume_flow=1 * units.microliter / units.second,
+    sheath_volume_flow=6 * units.microliter / units.second,
+    width=20 * units.micrometer,
+    height=10 * units.micrometer,
 )
 
-flow_cell.plot_transverse_distribution(n_samples=300)
+flow_cell.plot(n_samples=300)
 
 
 # %%

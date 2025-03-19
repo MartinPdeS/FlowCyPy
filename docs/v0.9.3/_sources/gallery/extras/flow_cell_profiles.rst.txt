@@ -21,37 +21,22 @@
 Flow Cell geometries
 ====================
 
-.. GENERATED FROM PYTHON SOURCE LINES 6-35
+.. GENERATED FROM PYTHON SOURCE LINES 6-20
 
 .. code-block:: Python
 
     from FlowCyPy import units
-    from FlowCyPy.flow_cell import CircularFlowCell, RectangularFlowCell, SquareFlowCell
+    from FlowCyPy.flow_cell import FlowCell
 
     # Create example FlowCell instances
     volume_flow = 0.3 * units.microliter / units.second
     focusing_factor = 0.5
 
-    # CircularFlowCell instance
-    circular_cell = CircularFlowCell(
-        volume_flow=volume_flow,
-        radius=10 * units.micrometer,
-        focusing_factor=focusing_factor
-    )
-
-    # RectangularFlowCell instance with width 20 μm and height 10 μm.
-    rectangular_cell = RectangularFlowCell(
-        volume_flow=volume_flow,
-        width=20 * units.micrometer,
-        height=10 * units.micrometer,
-        focusing_factor=focusing_factor
-    )
-
-    # SquareFlowCell instance
-    square_cell = SquareFlowCell(
-        volume_flow=volume_flow,
-        side=3 * units.micrometer,
-        focusing_factor=focusing_factor
+    flow_cell = FlowCell(
+        sample_volume_flow=0.02 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+        sheath_volume_flow=0.1 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+        width=20 * units.micrometer,        # Flow area: 10 x 10 micrometers
+        height=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
     )
 
 
@@ -61,94 +46,32 @@ Flow Cell geometries
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-37
+.. GENERATED FROM PYTHON SOURCE LINES 21-22
 
-Plot velocity profile for CircularFlowCell
+Plot velocity profile for SquareFlowCell
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-39
+.. GENERATED FROM PYTHON SOURCE LINES 22-24
 
 .. code-block:: Python
 
-    circular_cell.plot_transverse_distribution(n_samples=300)
+    flow_cell.plot(n_samples=300)
 
 
 
 
 .. image-sg:: /gallery/extras/images/sphx_glr_flow_cell_profiles_001.png
-   :alt: 3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell
+   :alt: Particle Spatial Distribution and Speed
    :srcset: /gallery/extras/images/sphx_glr_flow_cell_profiles_001.png
    :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <Axes3D: title={'center': '3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell'}, xlabel='x [µm]', ylabel='y [µm]', zlabel='Velocity [m/s]'>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 40-41
-
-Plot velocity profile for RectangularFlowCell
-
-.. GENERATED FROM PYTHON SOURCE LINES 41-43
-
-.. code-block:: Python
-
-    rectangular_cell.plot_transverse_distribution(n_samples=300)
-
-
-
-
-.. image-sg:: /gallery/extras/images/sphx_glr_flow_cell_profiles_002.png
-   :alt: 3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell
-   :srcset: /gallery/extras/images/sphx_glr_flow_cell_profiles_002.png
-   :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <Axes3D: title={'center': '3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell'}, xlabel='x [µm]', ylabel='y [µm]', zlabel='Velocity [m/s]'>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 44-45
-
-Plot velocity profile for SquareFlowCell
-
-.. GENERATED FROM PYTHON SOURCE LINES 45-47
-
-.. code-block:: Python
-
-    square_cell.plot_transverse_distribution(n_samples=300)
-
-
-
-
-.. image-sg:: /gallery/extras/images/sphx_glr_flow_cell_profiles_003.png
-   :alt: 3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell
-   :srcset: /gallery/extras/images/sphx_glr_flow_cell_profiles_003.png
-   :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <Axes3D: title={'center': '3D Visualization of Particle Positions and Velocities in Rectangular Flow Cell'}, xlabel='x [µm]', ylabel='y [µm]', zlabel='Velocity [m/s]'>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.481 seconds)
+   **Total running time of the script:** (0 minutes 0.373 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_flow_cell_profiles.py:

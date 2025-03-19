@@ -549,7 +549,7 @@ particle event and noise modeling for accurate signal representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>flow_cell</strong> (<em>BaseFlowCell</em>) – The flow cell object representing the fluidic and optical environment through which particles travel.</p></li>
+<li><p><strong>flow_cell</strong> (<em>FlowCell</em>) – The flow cell object representing the fluidic and optical environment through which particles travel.</p></li>
 <li><p><strong>detectors</strong> (<em>List</em><em>[</em><a class="reference internal" href="detector.html#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><em>Detector</em></a><em>]</em>) – A list of <cite>Detector</cite> objects representing the detectors used to measure optical signals (e.g., FSC and SSC). Exactly two detectors must be provided.</p></li>
 <li><p><strong>coupling_mechanism</strong> (<em>str</em><em>, </em><em>optional</em>) – The scattering mechanism used to couple the signal from the particles to the detectors.
 Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh’: Rayleigh scattering, ‘uniform’: Uniform signal coupling, ‘empirical’: Empirical data-driven coupling</p></li>
@@ -566,7 +566,7 @@ Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh�
 <dd><p>The flow cell instance representing the system environment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>BaseFlowCell</p>
+<dd class="field-odd"><p>FlowCell</p>
 </dd>
 </dl>
 </dd></dl>
@@ -634,7 +634,7 @@ Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh�
 <dd class="field-even"><ul class="simple">
 <li><p><strong>source</strong> (<em>BaseBeam</em>)</p></li>
 <li><p><strong>scatterer_collection</strong> (<em>object</em>)</p></li>
-<li><p><strong>flow_cell</strong> (<em>BaseFlowCell</em>)</p></li>
+<li><p><strong>flow_cell</strong> (<em>FlowCell</em>)</p></li>
 <li><p><strong>signal_digitizer</strong> (<em>SignalDigitizer</em>)</p></li>
 <li><p><strong>detectors</strong> (<em>List</em><em>[</em><a class="reference internal" href="detector.html#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><em>Detector</em></a><em>]</em>)</p></li>
 <li><p><strong>coupling_mechanism</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>

@@ -31,7 +31,7 @@ Steps:
 3. Simulate the flow cytometer signals.
 4. Visualize and analyze the signals from FSC and SSC detectors.
 
-.. GENERATED FROM PYTHON SOURCE LINES 15-108
+.. GENERATED FROM PYTHON SOURCE LINES 15-110
 
 .. code-block:: Python
 
@@ -39,7 +39,7 @@ Steps:
     # Step 1: Import the necessary libraries
     from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam
     from FlowCyPy import distribution, population
-    from FlowCyPy.flow_cell import CircularFlowCell
+    from FlowCyPy.flow_cell import FlowCell
     from FlowCyPy.signal_digitizer import SignalDigitizer
     from FlowCyPy import units
 
@@ -55,9 +55,11 @@ Steps:
     # Step 3: Define the flow parameters
     # ----------------------------------
     # Flow speed is set to 80 micrometers per second, with a flow area of 1 square micrometer and a total simulation time of 1 second.
-    flow_cell = CircularFlowCell(
-        volume_flow=0.1 * units.microliter / units.second, # Flow speed: 10 microliter per second
-        radius=10 * units.micrometer, # Flow area: 40 x 40 micrometers
+    flow_cell = FlowCell(
+        sample_volume_flow=0.02 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+        sheath_volume_flow=0.1 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+        width=20 * units.micrometer,        # Flow area: 10 x 10 micrometers
+        height=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
     )
 
     # Step 4: Define the particle size distribution
@@ -137,10 +139,19 @@ Steps:
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-112
+
+.. GENERATED FROM PYTHON SOURCE LINES 111-114
 
 The above plot shows the raw simulated signals for Forward Scatter (FSC) and
 Side Scatter (SSC) channels. These signals provide insights into particle size
@@ -149,7 +160,7 @@ and complexity and can be further analyzed for feature extraction, such as peak 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.643 seconds)
+   **Total running time of the script:** (0 minutes 1.193 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_flow_cytometer_signal.py:

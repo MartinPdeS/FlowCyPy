@@ -515,7 +515,7 @@ document.write(`
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">milliwatt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.flow_cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseFlowCell</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.flow_cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCell</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">Detector</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.acquisition</span><span class="w"> </span><span class="kn">import</span> <span class="n">Acquisition</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
@@ -545,7 +545,7 @@ document.write(`
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    flow_cell : BaseFlowCell</span>
+<span class="sd">    flow_cell : FlowCell</span>
 <span class="sd">        The flow cell object representing the fluidic and optical environment through which particles travel.</span>
 <span class="sd">    detectors : List[Detector]</span>
 <span class="sd">        A list of `Detector` objects representing the detectors used to measure optical signals (e.g., FSC and SSC). Exactly two detectors must be provided.</span>
@@ -557,7 +557,7 @@ document.write(`
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    flow_cell : BaseFlowCell</span>
+<span class="sd">    flow_cell : FlowCell</span>
 <span class="sd">        The flow cell instance representing the system environment.</span>
 <span class="sd">    scatterer_collection : ScattererCollection</span>
 <span class="sd">        A collection of particles or scatterers passing through the flow cytometer.</span>
@@ -580,7 +580,7 @@ document.write(`
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">source</span><span class="p">:</span> <span class="n">BaseBeam</span><span class="p">,</span>
             <span class="n">scatterer_collection</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
-            <span class="n">flow_cell</span><span class="p">:</span> <span class="n">BaseFlowCell</span><span class="p">,</span>
+            <span class="n">flow_cell</span><span class="p">:</span> <span class="n">FlowCell</span><span class="p">,</span>
             <span class="n">signal_digitizer</span><span class="p">:</span> <span class="n">SignalDigitizer</span><span class="p">,</span>
             <span class="n">detectors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Detector</span><span class="p">],</span>
             <span class="n">coupling_mechanism</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;mie&#39;</span><span class="p">,</span>

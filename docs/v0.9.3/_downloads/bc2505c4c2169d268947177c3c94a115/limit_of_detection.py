@@ -5,7 +5,7 @@ Limit of detection
 
 import numpy as np
 from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam
-from FlowCyPy.flow_cell import CircularFlowCell
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import units
 from FlowCyPy import NoiseSetting
 from FlowCyPy.population import Sphere
@@ -27,9 +27,11 @@ source = GaussianBeam(
     optical_power=100 * units.milliwatt             # Laser optical power: 10 milliwatts
 )
 
-flow_cell = CircularFlowCell(
-    volume_flow=0.3 * units.microliter / units.second,      # Flow volume speed: 10 microliter per second
-    radius=10 * units.micrometer,      # Flow area: 10 x 10 micrometers
+flow_cell = FlowCell(
+    sample_volume_flow=0.02 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+    sheath_volume_flow=0.1 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+    width=20 * units.micrometer,        # Flow area: 10 x 10 micrometers
+    height=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
 )
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)  # Medium refractive index: 1.33

@@ -21,7 +21,7 @@
 Limit of detection
 ==================
 
-.. GENERATED FROM PYTHON SOURCE LINES 5-105
+.. GENERATED FROM PYTHON SOURCE LINES 5-107
 
 
 
@@ -54,8 +54,12 @@ Limit of detection
 
  .. code-block:: none
 
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
-    <seaborn.axisgrid.JointGrid object at 0x7f025211df50>
+    <seaborn.axisgrid.JointGrid object at 0x7fab20e652d0>
 
 
 
@@ -68,7 +72,7 @@ Limit of detection
 
     import numpy as np
     from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam
-    from FlowCyPy.flow_cell import CircularFlowCell
+    from FlowCyPy.flow_cell import FlowCell
     from FlowCyPy import units
     from FlowCyPy import NoiseSetting
     from FlowCyPy.population import Sphere
@@ -90,9 +94,11 @@ Limit of detection
         optical_power=100 * units.milliwatt             # Laser optical power: 10 milliwatts
     )
 
-    flow_cell = CircularFlowCell(
-        volume_flow=0.3 * units.microliter / units.second,      # Flow volume speed: 10 microliter per second
-        radius=10 * units.micrometer,      # Flow area: 10 x 10 micrometers
+    flow_cell = FlowCell(
+        sample_volume_flow=0.02 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+        sheath_volume_flow=0.1 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+        width=20 * units.micrometer,        # Flow area: 10 x 10 micrometers
+        height=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
     )
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)  # Medium refractive index: 1.33
@@ -169,7 +175,7 @@ Limit of detection
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.890 seconds)
+   **Total running time of the script:** (0 minutes 4.783 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:
