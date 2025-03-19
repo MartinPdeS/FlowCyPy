@@ -41,8 +41,10 @@ def normal_population(normal_size_distribution, normal_ri_distribution):
 @pytest.fixture
 def default_flow_cell():
     return FlowCell(
-        volume_flow=10 * units.microliter / units.second,
-        radius=10 * units.micrometer,
+        sample_volume_flow=1 * units.microliter / units.second,
+        sheath_volume_flow=6 * units.microliter / units.second,
+        width=20 * units.micrometer,
+        height=10 * units.micrometer,
     )
 
 @pytest.fixture

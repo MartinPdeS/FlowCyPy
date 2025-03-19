@@ -45,7 +45,7 @@ def detector_1():
 @pytest.fixture
 def source():
     return GaussianBeam(
-        numerical_aperture=1 * units.AU,
+        numerical_aperture=0.1 * units.AU,
         wavelength=1550 * units.nanometer,
         optical_power=100e-3 * units.watt,
     )
@@ -55,9 +55,10 @@ def flow_cell():
     """Fixture for creating a default flow cell."""
 
     return FlowCell(
-        volume_flow=0.1 * units.microliter / units.second,
-        radius=12 * units.micrometer,
-        event_scheme='uniform-sequential'
+        sample_volume_flow=1 * units.microliter / units.second,
+        sheath_volume_flow=6 * units.microliter / units.second,
+        width=10 * units.micrometer,
+        height=6 * units.micrometer,
     )
 
 @pytest.fixture
@@ -211,9 +212,10 @@ def test_peak_plot(mock_show, flow_cytometer):
     """Ensure peak plots render correctly."""
     flow_cytometer.prepare_acquisition(run_time=2.0 * units.millisecond)
     acquisition = flow_cytometer.get_acquisition()
+    acquisition.analog.plot()
 
     triggered_acquisition = acquisition.run_triggering(
-        threshold=3.0 * units.millivolt,
+        threshold=0.1 * units.millivolt,
         trigger_detector_name='default',
         max_triggers=35,
         pre_buffer=64,

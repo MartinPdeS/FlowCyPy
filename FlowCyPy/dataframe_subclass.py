@@ -750,7 +750,7 @@ class AnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
             _signal_units = signal_units or group["Signal"].max().to_compact().units
             signal = group["Signal"].pint.to(_signal_units)
             ax.plot(time_data, signal, label='Analog Signal', linestyle='-', color='black')
-            ax.set_ylim(self.attrs['saturation_levels'][detector_name])
+
             ax.set_ylabel(f'{detector_name} [{_signal_units}]', labelpad=20)
 
     def log(self, table_format: str = "grid", include_totals: bool = True) -> None:
