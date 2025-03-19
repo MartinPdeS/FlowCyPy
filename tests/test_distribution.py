@@ -9,12 +9,12 @@ import matplotlib.pyplot as plt
 # Common test parameters
 @pytest.fixture
 def n_samples():
-    return 1000
+    return 10000
 
 
 @pytest.fixture
-def x_values():
-    return np.linspace(0.01, 1, 1000) * units.micrometer
+def x_values(n_samples):
+    return np.linspace(0.01, 1, n_samples) * units.micrometer
 
 
 # Parametrize different distributions
