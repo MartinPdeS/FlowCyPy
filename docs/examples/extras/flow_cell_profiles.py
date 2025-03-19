@@ -4,14 +4,14 @@ Flow Cell geometries
 
 """
 from FlowCyPy import units
-from FlowCyPy.flow_cell import CircularFlowCell, RectangularFlowCell, SquareFlowCell
+from FlowCyPy.flow_cell import FlowCell, RectangularFlowCell, SquareFlowCell
 
 # Create example FlowCell instances
 volume_flow = 0.3 * units.microliter / units.second
 focusing_factor = 0.5
 
-# CircularFlowCell instance
-circular_cell = CircularFlowCell(
+# FlowCell instance
+circular_cell = FlowCell(
     volume_flow=volume_flow,
     radius=10 * units.micrometer,
     focusing_factor=focusing_factor
@@ -33,7 +33,7 @@ square_cell = SquareFlowCell(
 )
 
 # %%
-# Plot velocity profile for CircularFlowCell
+# Plot velocity profile for FlowCell
 circular_cell.plot_transverse_distribution(n_samples=300)
 
 # %%

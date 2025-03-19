@@ -65,9 +65,9 @@ source = GaussianBeam(
 # .. math::
 #     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
 
-from FlowCyPy.flow_cell import CircularFlowCell
+from FlowCyPy.flow_cell import FlowCell
 
-flow_cell = CircularFlowCell(
+flow_cell = FlowCell(
     volume_flow=0.8 * units.microliter / units.second,  # Flow volume
     radius=20 * units.micrometer,       # Cross-sectional area
     focusing_factor=0.99

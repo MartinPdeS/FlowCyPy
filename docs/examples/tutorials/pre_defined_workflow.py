@@ -23,7 +23,7 @@ Overview:
 
 from FlowCyPy import units
 from FlowCyPy import GaussianBeam
-from FlowCyPy.flow_cell import CircularFlowCell
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import ScattererCollection
 from FlowCyPy.population import Exosome, HDL
 from FlowCyPy.detector import PMT
@@ -37,7 +37,7 @@ source = GaussianBeam(
 )
 
 
-flow_cell = CircularFlowCell(
+flow_cell = FlowCell(
     volume_flow=0.3 * units.microliter / units.second,  # Flow volume
     radius=10 * units.micrometer,       # Cross-sectional area
 )

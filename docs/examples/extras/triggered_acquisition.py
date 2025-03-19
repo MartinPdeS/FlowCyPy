@@ -20,7 +20,7 @@ from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam
 from FlowCyPy import distribution
 from FlowCyPy.population import Sphere
 from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy.flow_cell import CircularFlowCell
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import units
 
 import numpy
@@ -40,7 +40,7 @@ source = GaussianBeam(
 # Step 3: Define flow parameters
 # ------------------------------
 # Set the flow speed to 80 micrometers per second and a flow area of 1 square micrometer, with a total simulation time of 1 second.
-flow_cell = CircularFlowCell(
+flow_cell = FlowCell(
     volume_flow=0.3 * units.microliter / units.second,        # Flow speed: 10 microliter per second
     radius=20 * units.micrometer,        # Flow area: 10 x 10 micrometers
 )
