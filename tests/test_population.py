@@ -11,7 +11,7 @@ from pint import UnitRegistry
 # Initialize a UnitRegistry
 ureg = UnitRegistry()
 
-RUN_TIME = 100e-3 * units.second
+RUN_TIME = 1e-3 * units.second
 
 
 # Step 1: Define some global variables and objects to be used across tests
@@ -19,9 +19,12 @@ RUN_TIME = 100e-3 * units.second
 def flow_cell():
     """Fixture to create a FlowCell object for testing."""
     return FlowCell(
-        volume_flow=1e-4 * units.microliter / units.second,
-        radius=10 * units.micrometer,
+        sample_volume_flow=1 * units.microliter / units.second,
+        sheath_volume_flow=6 * units.microliter / units.second,
+        width=20 * units.micrometer,
+        height=10 * units.micrometer,
     )
+
 
 
 @pytest.fixture
