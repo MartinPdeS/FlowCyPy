@@ -224,7 +224,6 @@ class ScattererDataFrame(pd.DataFrame):
             avg_delta_time,
         ]
 
-    @helper.plot_sns
     def plot_1d(
         self,
         x: str = 'Diameter',
@@ -257,7 +256,7 @@ class ScattererDataFrame(pd.DataFrame):
         df, [unit] = self.get_sub_dataframe(x)
 
         with plt.style.context(mps):
-            fig, ax = plt.subplots(figsize=(7, 5))
+            figure, ax = plt.subplots(figsize=(7, 5))
 
         df = df.reset_index('Population').pint.dequantify().droplevel('unit', axis=1)
         sns.histplot(data=df, x=df[x], kde=kde, bins=bins, color=color, hue=df['Population'])
@@ -265,7 +264,7 @@ class ScattererDataFrame(pd.DataFrame):
         ax.set_title(f"Distribution of {x}")
         plt.tight_layout()
 
-        return fig
+        return figure
 
 
 class ClassifierDataFrame(pd.DataFrame):
