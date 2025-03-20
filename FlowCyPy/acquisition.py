@@ -57,89 +57,116 @@ class Acquisition:
             pre_buffer: int = 64,
             post_buffer: int = 64,
             max_triggers: int = None,
-            scheme: str = 'fixed-window') -> TriggeredAcquisitions:
+            min_window_duration: units.Quantity = None,
+            lower_threshold: units.Quantity = None,
+            debounce_enabled: bool = True,
+            scheme: str = 'dynamic') -> TriggeredAcquisitions:
         """
         Execute triggered acquisition analysis on signal data.
 
-        This method identifies segments of a signal that exceed a specified threshold
-        using a designated detector, then extracts those segments with additional
-        pre- and post-trigger buffers. The analysis can operate in either "fixed-window"
-        or "dynamic" mode based on the `scheme` parameter.
+        This method processes the analog signal data by identifying segments where the
+        signal exceeds a given threshold using a designated detector. It then extracts
+        these segments with additional pre- and post-trigger buffers. The analysis can
+        operate in either a "fixed-window" or "dynamic" mode depending on the `scheme`
+        parameter, providing flexibility for different signal characteristics.
 
         Parameters
         ----------
         threshold : units.Quantity
-            The signal threshold value. Only signal values that exceed this threshold
-            are considered as trigger events.
+            The signal threshold value. Only signal values exceeding this threshold are
+            considered as trigger events.
         trigger_detector_name : str
-            The name of the detector whose signal is used for detecting trigger events.
+            The name of the detector whose signal is used to detect trigger events.
         pre_buffer : int, optional
-            The number of data points to include before the trigger point in each extracted segment.
-            Default is 64.
+            The number of data points to include before the trigger event in each
+            extracted segment. Default is 64.
         post_buffer : int, optional
-            The number of data points to include after the trigger point in each extracted segment.
-            Default is 64.
+            The number of data points to include after the trigger event in each
+            extracted segment. Default is 64.
         max_triggers : int, optional
             The maximum number of trigger events to process. If set to None, all detected
             trigger events are processed. Default is None.
+        min_window_duration : units.Quantity, optional
+            The minimum duration for which the signal must remain above the threshold
+            to be considered a valid trigger. This duration is converted into a number of
+            samples based on the sampling rate. If set to None, no minimum duration check is applied.
+        lower_threshold : units.Quantity, optional
+            An optional lower threshold for ending a trigger event. If not provided, the
+            same value as `threshold` is used.
+        debounce_enabled : bool, optional
+            If True, the algorithm requires that the signal remains above the threshold
+            for at least `min_window_duration` samples (if specified) to validate a trigger.
+            If False, this debounce check is skipped. Default is True.
         scheme : str, optional
-            The triggering scheme to use. Use 'fixed-window' for a fixed-length window based on the
-            pre_buffer and post_buffer parameters, or 'dynamic' for a window that extends dynamically
-            until the signal falls below the threshold. Default is 'fixed-window'.
+            The triggering scheme to use. Options include:
+            - 'fixed-window': Uses fixed pre_buffer and post_buffer lengths.
+            - 'dynamic': Uses a dynamic window that extends until the signal falls
+                below the threshold (or lower_threshold if specified).
+            Default is 'dynamic'.
 
         Returns
         -------
         TriggeredAcquisitions
-            An object containing the extracted signal segments, associated time values,
-            detector names, and segment IDs.
+            An object that contains the extracted signal segments, their corresponding
+            time values, detector names, and segment IDs packaged in a specialized
+            DataFrame.
 
         Raises
         ------
         ValueError
-            If the specified `trigger_detector_name` is not present in the dataset.
+            If the specified `trigger_detector_name` is not found in the dataset.
+        RuntimeError
+            If no time array is provided (via add_time) and none is available for the
+            trigger detector.
 
         Warns
         -----
         UserWarning
-            If no triggers are detected (i.e., no signal segments meet the threshold criteria),
-            a warning is issued and empty arrays are returned.
+            If no trigger events are detected (i.e., no signal segments meet the threshold
+            criteria), a warning is issued and None is returned.
 
         Notes
         -----
-            - In dynamic mode, the extracted segment includes:
-            pre_buffer points before the trigger, all points where the signal is above threshold,
-            and post_buffer points after the signal falls below the threshold, yielding a segment length
-            of pre_buffer + width + post_buffer - 1.
-            - The method automatically invokes `self.detect_peaks` at the end of the analysis to further
-            process the triggered segments.
+        - In dynamic mode, each extracted segment includes:
+            pre_buffer points before the trigger event,
+            all points where the signal is above the threshold (or remains above lower_threshold),
+            and post_buffer points after the signal falls below the threshold.
+        This results in a segment length of pre_buffer + width + post_buffer - 1.
+        - The method converts input signal and time values from physical units to raw
+        numerical values based on their respective units before passing them to the C++
+        triggering algorithm for fast processing. After processing, the numerical arrays
+        are converted back into PintArray objects with the original units restored.
+        - This method automatically invokes additional processing (e.g., peak detection)
+        on the triggered segments via `self.detect_peaks` (if applicable) after the
+        acquisition analysis.
         """
         # Ensure the trigger detector exists
         if trigger_detector_name not in self.detector_names:
             raise ValueError(f"Detector '{trigger_detector_name}' not found in dataset.")
 
-        signal_length = pre_buffer + post_buffer
-
-        # Convert threshold to plain numeric value
-        threshold_value = threshold.to(self.analog['Signal'].pint.units).magnitude
-
         # Prepare detector-specific signal & time mappings for C++ function
-        signal_units = self.analog.xs(self.detector_names[0])['Signal'].pint.units
         time_units = self.analog.xs(self.detector_names[0])['Time'].pint.units
+        signal_units = self.analog.Signal.max().to_compact().units
 
-        signal_map = {det: self.analog.xs(det)['Signal'].pint.to(signal_units).pint.magnitude.to_numpy(copy=False) for det in self.detector_names}
-        time_map = {det: self.analog.xs(det)['Time'].pint.to(time_units).pint.magnitude.to_numpy(copy=False) for det in self.detector_names}
 
         # Call the C++ function for fast triggering detection
         triggering_system = TriggeringSystem(
             scheme=scheme,
-            signal_map=signal_map,
-            time_map=time_map,
             trigger_detector_name=trigger_detector_name,
-            threshold=threshold_value,
+            threshold=int(threshold.to(signal_units).magnitude),
             pre_buffer=pre_buffer,
             post_buffer=post_buffer,
-            max_triggers=max_triggers or -1
-            )
+            max_triggers=max_triggers or -1,
+            lower_threshold = int(lower_threshold.to(signal_units).magnitude) if lower_threshold is not None else int(threshold.to(signal_units).magnitude),
+            min_window_duration=(min_window_duration * self.signal_digitizer.sampling_rate).magnitude if min_window_duration is not None else -1,
+            debounce_enabled=debounce_enabled
+        )
+
+        triggering_system.add_time(self.analog.xs(self.detector_names[0])['Time'])
+
+        for detector_name in self.detector_names:
+            _signal = self.analog.xs(detector_name)['Signal'].pint.to(signal_units).pint.magnitude.to_numpy(copy=False)
+            triggering_system.add_signal(detector_name, _signal)
 
         times, signals, detectors, segment_ids = triggering_system.run()
 
@@ -149,12 +176,6 @@ class Acquisition:
 
         # If no triggers are found, warn the user and return None
         if len(times) == 0:
-            # raise ValueError(
-            #     # f"{self.analog['Signal'].pint.to(self.analog['Signal'].max().to_compact().units)}"
-            #     # f"{self.analog.Signal.__repr__()}"
-            #     f"No signal met the trigger criteria. Try adjusting the threshold. "
-            #     f"Signal min-max: {self.analog['Signal'].min().to_compact()}, {self.analog['Signal'].max().to_compact()}",
-            # )
             warnings.warn(
                 f"No signal met the trigger criteria. Try adjusting the threshold. "
                 f"Signal min-max: {self.analog['Signal'].min().to_compact()}, {self.analog['Signal'].max().to_compact()}",
@@ -183,7 +204,6 @@ class Acquisition:
         # Wrap inside a TriggeredAcquisitions object
         triggered_acquisition = TriggeredAcquisitions(parent=self, dataframe=triggered_signal)
         triggered_acquisition.scatterer = self.scatterer
-        triggered_acquisition.signal_length = signal_length
 
         return triggered_acquisition
 
