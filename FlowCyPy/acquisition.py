@@ -158,7 +158,7 @@ class Acquisition:
             post_buffer=post_buffer,
             max_triggers=max_triggers or -1,
             lower_threshold = int(lower_threshold.to(signal_units).magnitude) if lower_threshold is not None else int(threshold.to(signal_units).magnitude),
-            min_window_duration=(min_window_duration * self.signal_digitizer.sampling_rate).magnitude if min_window_duration is not None else -1,
+            min_window_duration=int((min_window_duration * self.signal_digitizer.sampling_rate).to('dimensionless').magnitude) if min_window_duration is not None else -1,
             debounce_enabled=debounce_enabled
         )
 

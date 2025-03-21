@@ -374,27 +374,57 @@ class FlowCell:
         scatterer_dataframe.attrs['run_time'] = run_time
         return scatterer_dataframe
 
-    def plot(self, n_samples: int) -> None:
+    def plot(self, n_samples: int, figsize: tuple = (7, 4), ax: plt.Axes = None, show: bool = True) -> None:
         r"""
-        Plot the spatial distribution of sampled particles and color-code them by their local x-direction velocity.
+        Plot the spatial distribution of sampled particles with velocity color-coding.
 
-        This method samples a specified number of particles from the focused sample stream and
-        generates a scatter plot of their positions in the y-z plane. In addition, the plot includes overlays
-        for the channel boundaries (representing the full flow cell, i.e. sheath + sample regions) and the sample
-        region boundaries.
+        This method samples a specified number of particles from the focused sample stream
+        and generates a scatter plot of their positions in the y-z plane. The particles are
+        color-coded by their local x-direction velocity using a continuous colormap. In addition,
+        the plot includes overlays that represent the channel boundaries (sheath + sample regions)
+        and the sample region boundaries.
+
+        A dedicated colorbar is added to the right of the main axes and its height is adjusted
+        to match the plot, using a separate axes created with ``mpl_toolkits.axes_grid1.make_axes_locatable``.
 
         Parameters
         ----------
         n_samples : int
             Number of particles to sample and plot.
+        figsize : tuple, optional
+            Figure size (width, height) in inches. Default is (7, 4).
+        ax : matplotlib.axes.Axes, optional
+            A matplotlib Axes instance to draw the plot on. If not provided, a new figure and axes
+            are created.
+        show : bool, optional
+            Whether to display the plot immediately. Default is True.
+
+        Returns
+        -------
+        matplotlib.axes.Axes
+            The Axes instance with the plot.
+
+        Notes
+        -----
+        - The plot uses orthogonal splines and a horizontal layout (left-to-right).
+        - Global styling parameters such as node style and edge styling are applied.
+        - The method requires that the object defines ``self.width``, ``self.height``,
+        ``self.sample.width``, ``self.sample.height``, and a method ``self.sample_particles(n_samples)``.
+        - The colorbar is created with a dedicated axes to ensure it spans the full height of the plot.
+
+        Examples
+        --------
+        >>> ax = my_object.plot(n_samples=500)
+        >>> # The plot is displayed if show=True, and ax can be used for further customization.
         """
         y_vals, z_vals, velocities = self.sample_particles(n_samples)
 
         length_units = self.width.units
 
         # Create plot
-        with plt.style.context(mps):
-            _, ax = plt.subplots()
+        if ax is None:
+            with plt.style.context(mps):
+                _, ax = plt.subplots(1, 1, figsize=figsize)
 
         sc = ax.scatter(
             y_vals.to(length_units).magnitude,
@@ -405,11 +435,15 @@ class FlowCell:
             label='Particle sampling'
         )
 
-        plt.colorbar(sc, label=f"Velocity [{velocities.units}]")
+        # Create a dedicated colorbar axes next to the main axes:
+        from mpl_toolkits.axes_grid1 import make_axes_locatable
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        plt.colorbar(sc, cax=cax, label=f"Velocity [{velocities.units}]")
 
         ax.set(
-            xlabel=f"y [{length_units}]",
-            ylabel=f"z [{length_units}]",
+            xlabel=f"X [{length_units}]",
+            ylabel=f"Y [{length_units}]",
             title="Particle Spatial Distribution and Speed"
         )
 
@@ -446,9 +480,10 @@ class FlowCell:
         ax.add_patch(sample_rect)
 
         ax.set_aspect('equal')
-
         plt.tight_layout()
-
         ax.legend(loc='upper right')
 
-        plt.show()
+        if show:
+            plt.show()
+
+        return ax
