@@ -287,7 +287,10 @@ class FlowCell:
         z_samples = np.random.uniform(-self.sample.height.magnitude / 2, self.sample.height.magnitude / 2, n_samples) * self.sample.height.units
 
         velocities = self.velocity(y_samples, z_samples).to('meter / second')
-        return y_samples, z_samples, velocities.to(velocities.max().to_compact().units)
+        if len(velocities) !=0:
+            velocities = velocities.to(velocities.max().to_compact().units)
+
+        return y_samples, z_samples, velocities
 
     @validate_units(run_time=units.second)
     def get_population_sampling(self, run_time: Quantity, scatterer_collection: ScattererCollection) -> List[Quantity]:

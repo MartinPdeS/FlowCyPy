@@ -49,12 +49,87 @@ class BasicPeakLocator:
         Initializes the BasicPeakLocator with a specified padding value and options
         to compute additional metrics (width and area).
         """
+        self.max_number_of_peaks = 1
         self.padding_value = padding_value
         self.compute_width = compute_width
         self.compute_area = compute_area
         self.threshold = threshold
 
     def __call__(self, array: np.ndarray) -> dict:
+        """
+        Detects the index of the maximum value in a 1D NumPy array.
+        Optionally computes the width and area of the peak.
+
+        The function finds the index of the maximum value in the array.
+        If compute_width or compute_area is enabled, it computes the boundaries where
+        the data falls below a specified threshold (fraction of the maximum value)
+        and uses that to compute the width (number of samples) and the area under the peak.
+
+        Parameters
+        ----------
+        array : np.ndarray
+            A 1D NumPy array representing the signal for peak detection.
+
+        Returns
+        -------
+        dict
+            A dictionary with key "peak_index" (an integer with the index of the maximum in the array)
+            and, if enabled, keys "width" and/or "area" (scalars with the computed peak width and area).
+
+        Raises
+        ------
+        AssertionError
+            If the input array is not 1-dimensional.
+        """
+        # Ensure the input is 1D.
+        assert array.ndim == 1, "Input array must be 1D."
+
+        # Handle the case of an empty array.
+        if array.size == 0:
+            result = {"peak_index": self.padding_value}
+            if self.compute_width:
+                result["width"] = np.nan
+            if self.compute_area:
+                result["area"] = np.nan
+            return result
+
+        # Find the index of the maximum value in the array.
+        max_idx = np.argmax(array)
+        peak_index = max_idx
+
+        width = None
+        area = None
+        if self.compute_width or self.compute_area:
+            max_val = array[max_idx]
+            threshold_val = self.threshold * max_val
+
+            # Find left boundary: move left until the value falls below threshold.
+            left = max_idx
+            while left > 0 and array[left] >= threshold_val:
+                left -= 1
+            left_boundary = left + 1
+
+            # Find right boundary: move right until the value falls below threshold.
+            right = max_idx
+            while right < array.size - 1 and array[right] >= threshold_val:
+                right += 1
+            right_boundary = right - 1
+
+            if self.compute_width:
+                width = right_boundary - left_boundary + 1
+            if self.compute_area:
+                area = np.sum(array[left_boundary:right_boundary + 1])
+
+        # Build the result dictionary.
+        result = {"Index": peak_index}
+        if self.compute_width:
+            result["width"] = width
+        if self.compute_area:
+            result["area"] = area
+
+        return result
+
+    def run_on_matrix(self, array: np.ndarray) -> dict:
         """
         Detects the index of the maximum value in each row of a 2D NumPy array.
         Optionally computes the width and area of the peak.

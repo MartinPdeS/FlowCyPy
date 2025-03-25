@@ -799,6 +799,10 @@ class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
     DataFrame subclass for triggered analog acquisition data.
     """
 
+    @property
+    def n_segment(self) -> int:
+        return len(self.index.get_level_values('SegmentID').unique())
+
     def _plot_detector_data(
         self,
         axes: dict,
@@ -806,18 +810,31 @@ class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
         signal_units: Optional[units.Quantity] = None
     ) -> None:
         """
-        Plot triggered analog signal data for each detector.
+        Plot triggered analog signal data for each detector and highlight each SegmentID region
+        with a distinct color.
         """
-        for (detector_name, _), group in self.groupby(['Detector', 'SegmentID']):
+        for (detector_name, segment_id), group in self.groupby(['Detector', 'SegmentID']):
             ax = axes[detector_name]
             ax.set_ylabel(detector_name)
             time_data = group["Time"].pint.to(time_units)
             _signal_units = signal_units or group["Signal"].max().to_compact().units
             analog_signal = group["Signal"].pint.to(_signal_units)
+
+            # Determine the time boundaries for this segment.
+            start_time = time_data.min()
+            end_time = time_data.max()
+
+            # Choose a color for this segment using a colormap.
+            color = plt.cm.tab10(int(segment_id) % 10)
+
+
+            # Highlight the segment region.
+            ax.axvspan(start_time, end_time, facecolor=color, alpha=0.3)
+
+            # Optionally, you can still plot the signal on top in a uniform color.
             ax.plot(time_data, analog_signal, color='black', linestyle='-')
 
-            ax.set_ylabel(f'{detector_name} [{_signal_units}]', labelpad=20)
-
+            # Add threshold line and legend for the detector, if applicable.
             if detector_name == self.attrs['threshold']['detector']:
                 _, labels = ax.get_legend_handles_labels()
                 if 'Threshold' not in labels:
@@ -829,6 +846,7 @@ class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
                         linewidth=1
                     )
                 ax.legend(loc='upper right')
+
 
     def _get_log_headers(self) -> List[str]:
         """Return headers for triggered analog acquisition logs."""
@@ -866,6 +884,10 @@ class TriggeredDigitalAcquisitionDataFrame(BaseAcquisitionDataFrame):
     """
     DataFrame subclass for triggered digital acquisition data.
     """
+
+    @property
+    def n_segment(self) -> int:
+        return len(self.index.get_level_values('SegmentID').unique())
 
     def _plot_detector_data(
         self,

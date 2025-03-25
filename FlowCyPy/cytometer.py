@@ -7,7 +7,6 @@ from typing import List, Callable, Optional
 import pandas as pd
 
 from FlowCyPy import units
-from FlowCyPy.units import milliwatt
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.detector import Detector
 from FlowCyPy.acquisition import Acquisition
@@ -75,7 +74,7 @@ class FlowCytometer:
             signal_digitizer: SignalDigitizer,
             detectors: List[Detector],
             coupling_mechanism: Optional[str] = 'mie',
-            background_power: Optional[units.Quantity] = 0 * milliwatt):
+            background_power: Optional[units.Quantity] = 0 * units.milliwatt):
 
         self.scatterer_collection = scatterer_collection
         self.flow_cell = flow_cell
@@ -240,7 +239,7 @@ class FlowCytometer:
         return self.scatterer_dataframe
 
     @validate_units(run_time=units.second)
-    def get_acquisition(self, processing_steps: list[SignalProcessor] = None) -> None:
+    def get_acquisition(self, processing_steps: list[SignalProcessor] = None) -> Acquisition:
         """
         Simulates the generation of optical signal pulses for each particle event.
 
@@ -320,6 +319,8 @@ class FlowCytometer:
             scatterer_dataframe=self.scatterer_dataframe,
             detector_dataframe=signal_dataframe
         )
+
+        experiment.sample_volume = (self.flow_cell.sample.volume_flow * self.run_time).to_compact()
 
         return experiment
 
