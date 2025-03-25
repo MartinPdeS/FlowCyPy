@@ -30,7 +30,7 @@ class ScattererDataFrame(pd.DataFrame):
         if 'y' in kwargs:
             return self.plot_2d(**kwargs)
 
-        return self.plot_1d(**kwargs)
+        return self.hist(**kwargs)
 
     def get_sub_dataframe(self, *columns: str) -> Tuple[pd.DataFrame, List[Any]]:
         """
@@ -224,26 +224,31 @@ class ScattererDataFrame(pd.DataFrame):
             avg_delta_time,
         ]
 
-    def plot_1d(
+    def hist(
         self,
         x: str = 'Diameter',
         kde: bool = False,
         bins: Optional[int] = 'auto',
-        color: Optional[Union[str, dict]] = None
+        color: Optional[Union[str, dict]] = None,
+        clip_data: Optional[Union[str, units.Quantity]] = None
     ) -> plt.Figure:
         """
-        Plot a histogram distribution for a given column using Seaborn.
+        Plot a histogram distribution for a given column using Seaborn, with an option to remove extreme values.
 
         Parameters
         ----------
-        column : str, optional
+        x : str, optional
             The column name to plot (default: 'Diameter').
         kde : bool, optional
             Whether to overlay a KDE curve (default: False).
         bins : Optional[int], optional
-            Number of bins for the histogram (default: None, which lets Seaborn decide).
+            Number of bins for the histogram (default: 'auto', letting Seaborn decide).
         color : Optional[Union[str, dict]], optional
             Color specification for the plot (default: None).
+        clip_data : Optional[Union[str, units.Quantity]], optional
+            If provided, removes data above a threshold. If a string ending with '%' (e.g., "20%") is given,
+            the function removes values above the corresponding quantile (e.g., the top 20% of values).
+            If a pint.Quantity is given, it removes values above that absolute value.
 
         Returns
         -------
@@ -259,6 +264,18 @@ class ScattererDataFrame(pd.DataFrame):
             figure, ax = plt.subplots(figsize=(7, 5))
 
         df = df.reset_index('Population').pint.dequantify().droplevel('unit', axis=1)
+
+        # Remove data above the clipping threshold if clip_data is provided.
+        if clip_data is not None:
+            if isinstance(clip_data, str) and clip_data.endswith('%'):
+                # For a percentage clip, compute the quantile. E.g., "20%" removes the top 20% values.
+                percent = float(clip_data.rstrip('%'))
+                clip_value = df[x].quantile(1 - percent / 100)
+            else:
+                # Assume clip_data is a pint.Quantity; convert to the same unit.
+                clip_value = clip_data.to(unit).magnitude
+            df = df[df[x] <= clip_value]
+
         sns.histplot(data=df, x=df[x], kde=kde, bins=bins, color=color, hue=df['Population'])
         ax.set_xlabel(f"{x} [{unit}]")
         ax.set_title(f"Distribution of {x}")
@@ -368,6 +385,81 @@ class PeakDataFrame(pd.DataFrame):
 
         return df, unit_list
 
+    def hist(
+        self,
+        feature: str,
+        figure_size: tuple = (10, 6),
+        bins: Optional[int] = 'auto',
+        color: Optional[Union[str, dict]] = None,
+        save_filename: str = None,
+        show: bool = True,
+        clip_data: Optional[Union[str, units.Quantity]] = None
+    ) -> plt.Figure:
+        """
+        Plot a histogram distribution for a given column using Seaborn, with an option to remove extreme values.
+
+        Parameters
+        ----------
+        feature : str, optional
+            The column name to plot (default: 'Diameter').
+        figure_size : tuple, optional
+            Size of the figure in inches (default: (10, 6)).
+        bins : Optional[int], optional
+            Number of bins for the histogram (default: 'auto', letting Seaborn decide).
+        color : Optional[Union[str, dict]], optional
+            Color specification for the plot (default: None).
+        save_filename : str, optional
+            If provided, the figure is saved to this filename.
+        show : bool, optional
+            If True, displays the plot immediately (default: True).
+        clip_data : Optional[Union[str, units.Quantity]], optional
+            If provided, removes data above a threshold. If a string ending with '%' (e.g., "20%") is given,
+            values above the corresponding quantile (e.g. the top 20% of values) are excluded.
+            If a pint.Quantity is given, values above that absolute value are removed.
+
+        Returns
+        -------
+        plt.Figure
+            The histogram figure.
+        """
+        if len(self) == 1:
+            return
+
+        detector_names = self.index.get_level_values('Detector').unique()
+
+        with plt.style.context(mps):
+            figure, axes = plt.subplots(
+                ncols=1, nrows=len(detector_names), figsize=figure_size, sharex=True
+            )
+
+        for ax, detector_name in zip(axes, detector_names):
+            data = self.loc[detector_name, [feature]].sort_index()
+
+            # Remove extreme values if clip_data is provided.
+            if clip_data is not None:
+                if isinstance(clip_data, str) and clip_data.endswith('%'):
+                    # For a percentage, compute the quantile.
+                    percent = float(clip_data.rstrip('%'))
+                    clip_value = data[feature].quantile(1 - percent / 100)
+                else:
+                    # Assume clip_data is a pint.Quantity. Conversion can be done here if needed.
+                    clip_value = clip_data.magnitude
+                data = data[data[feature] <= clip_value]
+
+            counts, bin_edges = numpy.histogram(data[feature], bins=bins)
+            bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+
+            ax.bar(bin_centers, counts, width=bin_edges[1] - bin_edges[0],
+                color=color, edgecolor='black')
+            ax.set_ylabel(f"{detector_name}  [count]")
+
+        if save_filename:
+            figure.savefig(fname=save_filename)
+        if show:
+            plt.show()
+
+        return figure
+
     @helper.plot_sns
     def plot_2d(self, x: str, y: str, feature: str = 'Height', bandwidth_adjust: float = 0.8) -> plt.Figure:
         """
@@ -389,8 +481,7 @@ class PeakDataFrame(pd.DataFrame):
         plt.Figure
             The joint KDE plot figure.
         """
-        df, feature_units = self.get_sub_dataframe(columns=[feature], rows=[x, y])
-        feature_unit = feature_units[0]
+        df = self.loc[[x, y], [feature]].sort_index()
 
         with plt.style.context(mps):
             grid = sns.jointplot(
@@ -409,7 +500,7 @@ class PeakDataFrame(pd.DataFrame):
             color='C1',
             alpha=0.6
         )
-        grid.set_axis_labels(f"{x}: {feature} [{feature_unit}]", f"{y}: {feature} [{feature_unit}]", fontsize=12)
+        grid.set_axis_labels(f"{x}: {feature}", f"{y}: {feature}", fontsize=12)
         return grid
 
     @helper.plot_3d
@@ -524,16 +615,15 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
         show: bool = True,
         figure_size: tuple = (10, 6),
         save_filename: str = None,
-        kde: bool = True,
         bins: str = 'auto',
-        clip_data: Optional[units.Quantity] = None
+        clip_data: Optional[Union[str, units.Quantity]] = None
     ) -> None:
         """
-        Plot histograms of acquisition data for each detector, with optional clipping of extreme values.
+        Plot histograms of acquisition data for each detector, with optional removal of extreme values.
 
-        This method generates a histogram for each detector using seaborn's histplot. It optionally clips the
-        signal data to a maximum value provided by `clip_data` (expressed as a pint.Quantity), so that extreme
-        pulses do not skew the binning. The plot can also include a kernel density estimate (KDE).
+        This method generates a histogram for each detector using seaborn's histplot. It optionally removes
+        the signal data above a threshold specified by `clip_data` (expressed as a pint.Quantity or a string
+        like "20%", which removes the top 20% of values).
 
         Parameters
         ----------
@@ -544,11 +634,13 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
         save_filename : str, optional
             If provided, the figure is saved to this filename.
         kde : bool, optional
-            If True, overlays a KDE on the histogram (default: True).
+            If True, overlays a KDE on the histogram (default: False).
         bins : str or int, optional
             Binning strategy passed to seaborn.histplot (default: 'auto').
-        clip_data : units.Quantity, optional
-            If provided, clips the signal values to this maximum value to mitigate the effect of extreme pulses.
+        clip_data : Optional[Union[str, units.Quantity]], optional
+            If provided, removes data above a threshold. If a string ending with '%' (e.g., "20%") is given,
+            values above the corresponding quantile (e.g., top 20% are removed) are excluded.
+            If a pint.Quantity is given, values above that absolute value are removed.
 
         Returns
         -------
@@ -564,29 +656,40 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
                 sharex=True,
             )
 
-        axes = {name: ax for name, ax in zip(self.detector_names + ['scatterer'], axes_array)}
+            axes = {name: ax for name, ax in zip(self.detector_names + ['scatterer'], axes_array)}
 
-        _signal_units = signal_units or self["Signal"].max().to_compact().units
+            _signal_units = signal_units or self["Signal"].max().to_compact().units
 
-        for detector_name, group in self.groupby('Detector'):
-            ax = axes[detector_name]
-            ax.set_ylabel(detector_name)
+            for detector_name, group in self.groupby('Detector'):
+                ax = axes[detector_name]
+                ax.set_ylabel(detector_name)
 
-            # Convert signal to consistent units and get the magnitude
-            if _signal_units.dimensionality == units.bit_bins.dimensionality:
-                signal = group["Signal"].pint.magnitude
-            else:
-                signal = group["Signal"].pint.to(_signal_units).pint.magnitude
+                # Convert signal to consistent units and get the magnitude.
+                if _signal_units.dimensionality == units.bit_bins.dimensionality:
+                    signal = group["Signal"].pint.magnitude
+                else:
+                    signal = group["Signal"].pint.to(_signal_units).pint.magnitude
 
-            # Clip the data if clip_data is provided
-            if clip_data is not None:
-                clip_value = clip_data.to(_signal_units).magnitude
-                signal = numpy.clip(signal, a_min=None, a_max=clip_value)
+                # Remove data above the clip threshold if clip_data is provided.
+                if clip_data is not None:
+                    if isinstance(clip_data, str) and clip_data.endswith('%'):
+                        # For a percentage clip, compute the threshold quantile.
+                        percent = float(clip_data.rstrip('%'))
+                        clip_value = numpy.percentile(signal, 100 - percent)
+                    else:
+                        clip_value = clip_data.to(_signal_units).magnitude
+                    # Remove values above clip_value instead of clipping them.
+                    signal = signal[signal <= clip_value]
 
-            sns.histplot(x=signal, kde=kde, bins=bins, color='C0', ax=ax)
+                counts, bin_edges = numpy.histogram(signal, bins=bins)
 
+                # Compute bin centers for plotting.
+                bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
 
-        ax.set_xlabel(f'Signal [{_signal_units}]')
+                # Plot the histogram using a bar chart.
+                ax.bar(bin_centers, counts, width=bin_edges[1] - bin_edges[0], edgecolor='black')
+
+        axes[detector_name].set_xlabel(f'Signal [{_signal_units}]')
         if save_filename:
             fig.savefig(fname=save_filename)
         if show:
@@ -833,6 +936,7 @@ class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
 
             # Optionally, you can still plot the signal on top in a uniform color.
             ax.plot(time_data, analog_signal, color='black', linestyle='-')
+            ax.set_ylabel(f'{detector_name} [{group["Signal"].pint.units}]', labelpad=20)
 
             # Add threshold line and legend for the detector, if applicable.
             if detector_name == self.attrs['threshold']['detector']:

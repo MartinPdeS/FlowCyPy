@@ -9,7 +9,7 @@ PEAK_CENTERS = [30, 70]
 
 peak_algorithms = [
     peak_locator.BasicPeakLocator(padding_value=-1, compute_width=True, compute_area=True),
-    peak_locator.ScipyPeakLocator(height=500, distance=5, max_number_of_peaks=1, padding_value=-1, compute_width=True, compute_area=True),
+    peak_locator.ScipyPeakLocator(height=500, distance=5, max_number_of_peaks=2, padding_value=-1, compute_width=True, compute_area=True),
 ]
 
 # Helper function: generate a Gaussian pulsed signal.
@@ -33,21 +33,23 @@ def sample_data():
 # ------------------------------
 # Test peak detection with additional metrics (width and area)
 # ------------------------------
-@pytest.mark.parametrize("peak_algorithm", peak_algorithms)
+@pytest.mark.parametrize("peak_algorithm", peak_algorithms, ids=[p.__class__.__name__ for p in peak_algorithms])
 def test_peak_locator_with_metrics(peak_algorithm, sample_data):
     """
     Test that the locator (with width/area enabled) computes additional metrics.
     """
-    result = peak_algorithm(sample_data)
-    peak_idx = result["peak_index"]
-    widths = result["width"]
-    areas = result["area"]
+    result = peak_algorithm(sample_data[0])
+    print(result)
+    peak_idx = result["Index"]
+    widths = result["Width"]
+    areas = result["Area"]
+
+    print(peak_idx)
     # Check detected peak indices are near the expected centers.
-    assert_allclose(peak_idx[0, 0], PEAK_CENTERS[0], atol=3)
-    assert_allclose(peak_idx[1, 0], PEAK_CENTERS[1], atol=3)
+    assert_allclose(peak_idx[0], PEAK_CENTERS[0], atol=3)
     # Verify that computed widths and areas are positive.
-    assert widths[0, 0] > 0
-    assert widths[1, 0] > 0
+    assert widths[0] > 0
+
     # assert areas[0, 0] > 0
     # assert areas[1, 0] > 0
 

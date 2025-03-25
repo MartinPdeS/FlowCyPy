@@ -86,11 +86,11 @@ class BasicPeakLocator:
 
         # Handle the case of an empty array.
         if array.size == 0:
-            result = {"peak_index": self.padding_value}
+            result = {"Index": self.padding_value}
             if self.compute_width:
-                result["width"] = np.nan
+                result["Width"] = np.nan
             if self.compute_area:
-                result["area"] = np.nan
+                result["Area"] = np.nan
             return result
 
         # Find the index of the maximum value in the array.
@@ -123,9 +123,11 @@ class BasicPeakLocator:
         # Build the result dictionary.
         result = {"Index": peak_index}
         if self.compute_width:
-            result["width"] = width
+            result["Width"] = width
         if self.compute_area:
-            result["area"] = area
+            result["Area"] = area
+
+        result["Height"] = np.take(array, peak_index)
 
         return result
 

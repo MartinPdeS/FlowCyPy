@@ -63,6 +63,83 @@ class ScipyPeakLocator:
 
     def __call__(self, array: np.ndarray) -> dict:
         """
+        Detects peaks in a 1D NumPy array using SciPy's find_peaks.
+        Optionally computes the width and area for each detected peak.
+
+        The function applies find_peaks with the specified constraints.
+        If compute_width or compute_area is enabled, the peak_widths function (with rel_height=0.5)
+        is used to determine the boundaries, and the area is computed by summing the signal
+        values between these boundaries.
+
+        Parameters
+        ----------
+        array : np.ndarray
+            A 1D NumPy array representing the signal for peak detection.
+
+        Returns
+        -------
+        dict
+            A dictionary with:
+              - "peak_index": A 1D array of length max_number_of_peaks containing the detected peak indices,
+                              padded with padding_value if fewer than max_number_of_peaks are found.
+              - "width": (Optional) A 1D array with the computed peak widths.
+              - "area": (Optional) A 1D array with the computed peak areas.
+
+        Raises
+        ------
+        AssertionError
+            If the input array is not 1-dimensional.
+        """
+        assert array.ndim == 1, "Input array must be 1D."
+
+        # Detect peaks using SciPy's find_peaks.
+        peaks, properties = find_peaks(
+            array,
+            height=self.height,
+            distance=self.distance,
+            width=self.width,
+            prominence=self.prominence
+        )
+
+        if self.compute_width or self.compute_area:
+            # Compute additional metrics using peak_widths (returns widths, left_ips, right_ips, prominences).
+            widths_result = peak_widths(array, peaks, rel_height=0.5)
+            computed_widths = widths_result[0]
+            left_ips = widths_result[1]
+            right_ips = widths_result[2]
+
+        # Convert detected peaks to a list.
+        row_peak_indices = list(peaks)
+        row_widths = list(computed_widths) if self.compute_width else None
+        row_areas = []
+        if self.compute_area:
+            for j, peak in enumerate(peaks):
+                left = int(np.floor(left_ips[j]))
+                right = int(np.ceil(right_ips[j]))
+                row_areas.append(np.sum(array[left:right+1]))
+
+        # Pad the results to ensure a fixed length (max_number_of_peaks).
+        pad_val = self.padding_value
+        num_found = len(row_peak_indices)
+        padded_peak_indices = np.full(self.max_number_of_peaks, pad_val, dtype=float)
+        padded_peak_indices[:min(num_found, self.max_number_of_peaks)] = row_peak_indices[:self.max_number_of_peaks]
+
+        result = {"Index": padded_peak_indices}
+
+        if self.compute_width:
+            padded_widths = np.full(self.max_number_of_peaks, np.nan, dtype=float)
+            padded_widths[:min(num_found, self.max_number_of_peaks)] = np.array(row_widths)[:self.max_number_of_peaks]
+            result["Width"] = padded_widths
+
+        if self.compute_area:
+            padded_areas = np.full(self.max_number_of_peaks, np.nan, dtype=float)
+            padded_areas[:min(num_found, self.max_number_of_peaks)] = np.array(row_areas)[:self.max_number_of_peaks]
+            result["Area"] = padded_areas
+
+        return result
+
+    def run_on_matrix(self, array: np.ndarray) -> dict:
+        """
         Detects peaks in each row of a 2D NumPy array using SciPy's find_peaks.
         Optionally computes the width and area for each detected peak.
 
