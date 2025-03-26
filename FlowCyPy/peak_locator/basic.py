@@ -44,12 +44,12 @@ class BasicPeakLocator:
     >>> print("Areas:\n", results["area"])
     """
 
-    def __init__(self, padding_value: object = -1, compute_width: bool = False, compute_area: bool = False, threshold: float = 0.5):
+    def __init__(self, padding_value: object = -1, compute_width: bool = False, compute_area: bool = False, threshold: float = 0.5, max_number_of_peaks: int = 1):
         """
         Initializes the BasicPeakLocator with a specified padding value and options
         to compute additional metrics (width and area).
         """
-        self.max_number_of_peaks = 1
+        self.max_number_of_peaks = max_number_of_peaks
         self.padding_value = padding_value
         self.compute_width = compute_width
         self.compute_area = compute_area
@@ -121,13 +121,13 @@ class BasicPeakLocator:
                 area = np.sum(array[left_boundary:right_boundary + 1])
 
         # Build the result dictionary.
-        result = {"Index": peak_index}
+        result = {"Index": np.atleast_1d(peak_index)}
         if self.compute_width:
-            result["Width"] = width
+            result["Width"] = np.atleast_1d(width)
         if self.compute_area:
-            result["Area"] = area
+            result["Area"] = np.atleast_1d(area)
 
-        result["Height"] = np.take(array, peak_index)
+        result["Height"] = np.atleast_1d(np.take(array, peak_index))
 
         return result
 
