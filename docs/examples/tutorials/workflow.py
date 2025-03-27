@@ -68,10 +68,10 @@ source = GaussianBeam(
 from FlowCyPy.flow_cell import FlowCell
 
 flow_cell = FlowCell(
-    sample_volume_flow=1 * units.microliter / units.second,
-    sheath_volume_flow=6 * units.microliter / units.second,
-    width=20 * units.micrometer,
-    height=10 * units.micrometer,
+    sample_volume_flow=80 * units.microliter / units.minute,
+    sheath_volume_flow=1 * units.milliliter / units.minute,
+    width=100 * units.micrometer,
+    height=100 * units.micrometer,
 )
 
 flow_cell.plot(n_samples=300)
@@ -161,7 +161,7 @@ detector_2 = Detector(
 #
 # .. math::
 #     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
-from FlowCyPy import FlowCytometer
+from FlowCyPy import FlowCytometer, circuits
 
 cytometer = FlowCytometer(
     source=source,
@@ -172,9 +172,14 @@ cytometer = FlowCytometer(
     background_power=0.001 * units.milliwatt
 )
 
+processing_steps = [
+    circuits.BaselineRestorator(window_size=1000 * units.microsecond),
+    circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)
+]
+
 # Run the flow cytometry simulation
 cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
-acquisition = cytometer.get_acquisition()
+acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
 _ = acquisition.scatterer.plot(
     x='side',
@@ -192,11 +197,11 @@ acquisition.analog.plot()
 # The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 # window size and threshold.
 triggered_acquisition = acquisition.run_triggering(
-    threshold=0.2 * units.millivolt,
+    threshold=3 * units.microvolt,
     trigger_detector_name='forward',
     max_triggers=35,
-    pre_buffer=64,
-    post_buffer=64
+    pre_buffer=20,
+    post_buffer=20
 )
 
 triggered_acquisition.analog.plot()

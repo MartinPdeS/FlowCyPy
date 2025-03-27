@@ -99,7 +99,7 @@ trigger_acquisition = acquisition.run_triggering(
 
 trigger_acquisition.analog.plot()
 
-peak_algorithm = peak_locator.BasicPeakLocator()
+peak_algorithm = peak_locator.GlobalPeakLocator()
 
 peaks = trigger_acquisition.detect_peaks(peak_algorithm)
 

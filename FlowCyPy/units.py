@@ -25,6 +25,7 @@ volume = ureg.liter.dimensionality
 frequency = ureg.hertz.dimensionality
 dB = ureg.dB
 pascal = ureg.pascal
+minute = ureg.minute
 
 # Define a custom unit 'bit_bins'
 ureg.define("bit_bins = ![detector_resolution]")
