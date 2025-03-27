@@ -210,9 +210,7 @@ triggered_acquisition.analog.plot()
 # %%
 # Getting and plotting the extracted peaks.
 from FlowCyPy import peak_locator
-# peak_algorithm = peak_locator.ScipyPeakLocator(height=10, padding_value=-1)
-# peak_algorithm = peak_locator.BasicPeakLocator(compute_width=True)
-peak_algorithm = peak_locator.SlidingWindowPeakLocator(window_size=10, compute_width=True)
+peak_algorithm = peak_locator.BasicPeakLocator(compute_width=True)
 
 
 peaks = triggered_acquisition.detect_peaks(peak_algorithm)

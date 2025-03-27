@@ -5,13 +5,19 @@
 #include <algorithm>
 #include <limits>
 
-#include<iostream>
-
 namespace py = pybind11;
 
 
 // Helper namespace with common peak processing functions.
 namespace PeakUtils {
+
+    // Structure to hold computed metrics for a peak.
+    struct PeakMetrics {
+        double width;
+        double area;
+    };
+
+
     // Sorts a vector of PeakData in descending order by the peak's value.
     struct PeakData {
         int index;
@@ -66,8 +72,21 @@ namespace PeakUtils {
         while (right < end - 1 && ptr[right] >= thresh_val)
             right++;
         right_boundary = (right > 0 ? right - 1 : 0);
+    }
 
-        std::cout<<left_boundary<<"  "<<right_boundary<<"\n";
+    // Computes both the width and area for a given peak.
+    inline PeakMetrics compute_peak_metrics(const double* ptr, size_t start, size_t end, size_t peak_index, double threshold) {
+        PeakMetrics metrics;
+        size_t left_boundary, right_boundary;
+        compute_boundaries(ptr, start, end, peak_index, threshold, left_boundary, right_boundary);
+        metrics.width = static_cast<double>(right_boundary - left_boundary + 1);
+
+        double area = 0.0;
+        for (size_t i = left_boundary; i <= right_boundary; i++) {
+        area += ptr[i];
+        }
+        metrics.area = area;
+        return metrics;
     }
 
     // Sorts a vector of (index, value) pairs in descending order by value.
@@ -80,9 +99,7 @@ namespace PeakUtils {
     }
 
     // Pads the given peaks (as (index,value) pairs) to fixed size.
-    inline void pad_peaks(const std::vector<std::pair<int, double>>& peaks,
-                            size_t max_number_of_peaks, int padding_value,
-                            std::vector<int>& pad_index, std::vector<double>& pad_height) {
+    inline void pad_peaks(const std::vector<std::pair<int, double>>& peaks, size_t max_number_of_peaks, int padding_value, std::vector<int>& pad_index, std::vector<double>& pad_height) {
         size_t num_found = peaks.size();
         pad_index.assign(max_number_of_peaks, padding_value);
         pad_height.assign(max_number_of_peaks, std::numeric_limits<double>::quiet_NaN());
@@ -144,20 +161,15 @@ class SlidingWindowPeakLocator {
                 double width = std::numeric_limits<double>::quiet_NaN();
                 double area = std::numeric_limits<double>::quiet_NaN();
 
-                // Optionally compute width and area.
+                // Optionally compute width and area using the helper function.
                 if (compute_width || compute_area) {
-                    size_t left_boundary, right_boundary;
-                    PeakUtils::compute_boundaries(ptr, start, end, local_peak_index, threshold, left_boundary, right_boundary);
-
+                    PeakUtils::PeakMetrics metrics = PeakUtils::compute_peak_metrics(ptr, start, end, local_peak_index, threshold);
                     if (compute_width)
-                        width = static_cast<double>(right_boundary - left_boundary + 1);
+                        width = metrics.width;
 
-                    if (compute_area) {
-                        area = 0.0;
-                        for (size_t i = left_boundary; i <= right_boundary; i++)
-                            area += ptr[i];
+                    if (compute_area)
+                        area = metrics.area;
 
-                    }
                 }
                 peaks.emplace_back(static_cast<int>(local_peak_index), peak_value, width, area);
             }
@@ -175,20 +187,17 @@ class SlidingWindowPeakLocator {
             for (size_t i = 0; i < std::min(static_cast<size_t>(max_number_of_peaks), num_found); i++) {
                 pad_index[i] = peaks[i].index;
                 pad_height[i] = peaks[i].value;
-
                 if (compute_width)
                     pad_width[i] = peaks[i].width;
 
                 if (compute_area)
                     pad_area[i] = peaks[i].area;
-
             }
 
             // Build the output dictionary.
             py::dict result;
             result["Index"] = py::array_t<int>(pad_index.size(), pad_index.data());
             result["Height"] = py::array_t<double>(pad_height.size(), pad_height.data());
-
             if (compute_width)
                 result["Width"] = py::array_t<double>(pad_width.size(), pad_width.data());
 
@@ -202,7 +211,7 @@ class SlidingWindowPeakLocator {
 
 
 
-
+// GlobalPeakLocator class that uses the PeakUtils helper functions.
 class GlobalPeakLocator {
     public:
         int max_number_of_peaks;
@@ -235,8 +244,9 @@ class GlobalPeakLocator {
         /// Finds the global (largest) peak in a 1D array.
         ///
         /// The function scans the input array to locate the highest value. Optionally, it computes the
-        /// width and area of the peak using the given threshold. The results are returned as a dictionary
-        /// containing fixed-length arrays for the peak index, height, and optionally width and area.
+        /// width and area of the peak using the given threshold via PeakUtils::compute_peak_metrics.
+        /// The results are returned as a dictionary containing fixed-length arrays for the peak index,
+        /// height, and optionally width and area.
         ///
         /// \param input_array A 1D NumPy array of doubles representing the signal.
         /// \returns A Python dictionary with the following keys:
@@ -253,72 +263,59 @@ class GlobalPeakLocator {
             double* ptr = static_cast<double*>(buf.ptr);
             size_t num_cols = buf.shape[0];
 
-            // Find the global maximum.
-            size_t global_peak_index = 0;
-            double max_val = ptr[0];
-            for (size_t i = 0; i < num_cols; i++) {
-                if (ptr[i] > max_val) {
-                    max_val = ptr[i];
-                    global_peak_index = i;
-                }
-            }
+            // Find the global maximum using PeakUtils::find_local_peak.
+            size_t global_peak_index = PeakUtils::find_local_peak(ptr, 0, num_cols);
+            double max_val = ptr[global_peak_index];
 
-            // Optionally compute width and area.
-            std::vector<double> peak_widths;
-            std::vector<double> peak_areas;
+            double width = std::numeric_limits<double>::quiet_NaN();
+            double area = std::numeric_limits<double>::quiet_NaN();
+
+            // Use the helper function to compute width and area if requested.
             if (compute_width || compute_area) {
-                size_t left_boundary, right_boundary;
-                // Use the entire array range.
-                PeakUtils::compute_boundaries(ptr, 0, num_cols, global_peak_index, threshold, left_boundary, right_boundary);
+                PeakUtils::PeakMetrics metrics = PeakUtils::compute_peak_metrics(ptr, 0, num_cols, global_peak_index, threshold);
                 if (compute_width) {
-                    double width = static_cast<double>(right_boundary - left_boundary + 1);
-                    peak_widths.push_back(width);
+                    width = metrics.width;
                 }
                 if (compute_area) {
-                    double area = 0.0;
-                    for (size_t i = left_boundary; i <= right_boundary; i++) {
-                        area += ptr[i];
-                    }
-                    peak_areas.push_back(area);
+                    area = metrics.area;
                 }
             }
 
-            // Build a vector of (index, value) pairs. (Only one peak is found.)
+            // Build a vector of (index, value) pairs for padding.
             std::vector<std::pair<int, double>> peaks;
             peaks.emplace_back(static_cast<int>(global_peak_index), max_val);
 
-            // Although sorting is not needed for a single element, we call it for consistency.
+            // Sort the peaks (trivial here, but for consistency).
             PeakUtils::sort_peaks_descending(peaks);
 
-            // Pad the results to a fixed size.
+            // Pad the results to fixed size.
             std::vector<int> pad_index;
             std::vector<double> pad_height;
             PeakUtils::pad_peaks(peaks, max_number_of_peaks, padding_value, pad_index, pad_height);
+
+            // Prepare width and area vectors for output.
+            std::vector<double> pad_width(max_number_of_peaks, std::numeric_limits<double>::quiet_NaN());
+            std::vector<double> pad_area(max_number_of_peaks, std::numeric_limits<double>::quiet_NaN());
+            if (compute_width) {
+                pad_width[0] = width;
+            }
+            if (compute_area) {
+                pad_area[0] = area;
+            }
 
             // Build the output dictionary.
             py::dict result;
             result["Index"] = py::array_t<int>(pad_index.size(), pad_index.data());
             result["Height"] = py::array_t<double>(pad_height.size(), pad_height.data());
-
             if (compute_width) {
-                std::vector<double> pad_width(max_number_of_peaks, std::numeric_limits<double>::quiet_NaN());
-                for (size_t i = 0; i < std::min(static_cast<size_t>(max_number_of_peaks), peak_widths.size()); i++) {
-                    pad_width[i] = peak_widths[i];
-                }
                 result["Width"] = py::array_t<double>(pad_width.size(), pad_width.data());
             }
             if (compute_area) {
-                std::vector<double> pad_area(max_number_of_peaks, std::numeric_limits<double>::quiet_NaN());
-                for (size_t i = 0; i < std::min(static_cast<size_t>(max_number_of_peaks), peak_areas.size()); i++) {
-                    pad_area[i] = peak_areas[i];
-                }
                 result["Area"] = py::array_t<double>(pad_area.size(), pad_area.data());
             }
-
             return result;
         }
     };
-
 
 
 PYBIND11_MODULE(peak_locator_binding, m) {
