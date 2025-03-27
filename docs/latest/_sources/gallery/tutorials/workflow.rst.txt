@@ -130,10 +130,10 @@ passing through the cross-sectional area is calculated as:
     from FlowCyPy.flow_cell import FlowCell
 
     flow_cell = FlowCell(
-        sample_volume_flow=1 * units.microliter / units.second,
-        sheath_volume_flow=6 * units.microliter / units.second,
-        width=20 * units.micrometer,
-        height=10 * units.micrometer,
+        sample_volume_flow=80 * units.microliter / units.minute,
+        sheath_volume_flow=1 * units.milliliter / units.minute,
+        width=100 * units.micrometer,
+        height=100 * units.micrometer,
     )
 
     flow_cell.plot(n_samples=300)
@@ -148,6 +148,12 @@ passing through the cross-sectional area is calculated as:
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <Axes: title={'center': 'Particle Spatial Distribution and Speed'}, xlabel='X [µm]', ylabel='Y [µm]'>
 
 
 
@@ -274,11 +280,11 @@ and particles follows Mie theory:
 .. math::
     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
 
-.. GENERATED FROM PYTHON SOURCE LINES 164-185
+.. GENERATED FROM PYTHON SOURCE LINES 164-190
 
 .. code-block:: Python
 
-    from FlowCyPy import FlowCytometer
+    from FlowCyPy import FlowCytometer, circuits
 
     cytometer = FlowCytometer(
         source=source,
@@ -289,9 +295,14 @@ and particles follows Mie theory:
         background_power=0.001 * units.milliwatt
     )
 
+    processing_steps = [
+        circuits.BaselineRestorator(window_size=1000 * units.microsecond),
+        circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)
+    ]
+
     # Run the flow cytometry simulation
     cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
-    acquisition = cytometer.get_acquisition()
+    acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
     _ = acquisition.scatterer.plot(
         x='side',
@@ -308,14 +319,25 @@ and particles follows Mie theory:
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 186-187
+
+.. GENERATED FROM PYTHON SOURCE LINES 191-192
 
 Visualize the scatter signals from both detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 187-189
+.. GENERATED FROM PYTHON SOURCE LINES 192-194
 
 .. code-block:: Python
 
@@ -333,23 +355,23 @@ Visualize the scatter signals from both detectors
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 190-194
+.. GENERATED FROM PYTHON SOURCE LINES 195-199
 
 Step 7: Analyze Detected Signals
 --------------------------------
 The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 194-205
+.. GENERATED FROM PYTHON SOURCE LINES 199-210
 
 .. code-block:: Python
 
     triggered_acquisition = acquisition.run_triggering(
-        threshold=0.2 * units.millivolt,
+        threshold=3 * units.microvolt,
         trigger_detector_name='forward',
         max_triggers=35,
-        pre_buffer=64,
-        post_buffer=64
+        pre_buffer=20,
+        post_buffer=20
     )
 
     triggered_acquisition.analog.plot()
@@ -367,11 +389,11 @@ window size and threshold.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 206-207
+.. GENERATED FROM PYTHON SOURCE LINES 211-212
 
 Getting and plotting the extracted peaks.
 
-.. GENERATED FROM PYTHON SOURCE LINES 207-218
+.. GENERATED FROM PYTHON SOURCE LINES 212-223
 
 .. code-block:: Python
 
@@ -400,15 +422,15 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f5cfa981d50>
+    <seaborn.axisgrid.JointGrid object at 0x7fc4657e5410>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 219-220
+.. GENERATED FROM PYTHON SOURCE LINES 224-225
 
 Step 8: Classifying the collected dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 220-230
+.. GENERATED FROM PYTHON SOURCE LINES 225-235
 
 .. code-block:: Python
 
@@ -437,7 +459,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.455 seconds)
+   **Total running time of the script:** (0 minutes 7.834 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

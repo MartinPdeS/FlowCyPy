@@ -174,7 +174,7 @@ This represents the population of scatterers (particles) that will interact with
     )
 
     # Run the flow cytometry simulation
-    acquisition = cytometer.prepare_acquisition(run_time=1.0 * units.millisecond)
+    acquisition = cytometer.prepare_acquisition(run_time=0.3 * units.millisecond)
     acquisition = cytometer.get_acquisition()
 
 
@@ -193,17 +193,39 @@ This represents the population of scatterers (particles) that will interact with
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 118-119
+.. GENERATED FROM PYTHON SOURCE LINES 118-121
 
 Visualize the scatter analog signals from both detectors
+acquisition.analog.log()
+acquisition.analog.plot()
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-122
+.. GENERATED FROM PYTHON SOURCE LINES 123-126
+
+Visualize the scatter digital signals from both detectors
+acquisition.digital.log()
+acquisition.digital.plot()
+
+.. GENERATED FROM PYTHON SOURCE LINES 126-143
 
 .. code-block:: Python
 
-    acquisition.analog.log()
-    acquisition.analog.plot()
 
+
+    triggered_acquisition = acquisition.run_triggering(
+        threshold = 20 * units.microvolt,
+        trigger_detector_name='forward',
+        max_triggers=8,
+        pre_buffer=10,
+        post_buffer=10
+    )
+
+    # # %%
+    # # Visualize the scatter triggered analog signals from both detectors
+    triggered_acquisition.analog.plot()
+
+    # # %%
+    # # Visualize the scatter triggered digital signals from both detectors
+    # triggered_acquisition.digital.plot()
 
 
 
@@ -216,49 +238,10 @@ Visualize the scatter analog signals from both detectors
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 123-124
-
-Visualize the scatter digital signals from both detectors
-
-.. GENERATED FROM PYTHON SOURCE LINES 124-143
-
-.. code-block:: Python
-
-    acquisition.digital.log()
-    acquisition.digital.plot()
-
-
-    triggered_acquisition = acquisition.run_triggering(
-        threshold = 20 * units.microvolt,
-        trigger_detector_name='forward',
-        max_triggers=8,
-        pre_buffer=64,
-        post_buffer=64
-    )
-
-    # # %%
-    # # Visualize the scatter triggered analog signals from both detectors
-    # triggered_acquisition.analog.plot()
-
-    # # %%
-    # # Visualize the scatter triggered digital signals from both detectors
-    # triggered_acquisition.digital.plot()
-
-
-
-.. image-sg:: /gallery/extras/images/sphx_glr_triggered_acquisition_002.png
-   :alt: triggered acquisition
-   :srcset: /gallery/extras/images/sphx_glr_triggered_acquisition_002.png
-   :class: sphx-glr-single-img
-
-
-
-
-
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.504 seconds)
+   **Total running time of the script:** (0 minutes 0.968 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_triggered_acquisition.py:

@@ -662,7 +662,7 @@ This represents the population of scatterers (particles) that will interact with
 <span class="p">)</span>
 
 <span class="c1"># Run the flow cytometry simulation</span>
-<span class="n">acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
+<span class="n">acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 <span class="n">acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -672,34 +672,30 @@ This represents the population of scatterers (particles) that will interact with
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
 </pre></div>
 </div>
-<p>Visualize the scatter analog signals from both detectors</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">acquisition</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
-<span class="n">acquisition</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-</pre></div>
-</div>
-<img src="../../_images/sphx_glr_triggered_acquisition_001.png" srcset="../../_images/sphx_glr_triggered_acquisition_001.png" alt="triggered acquisition" class = "sphx-glr-single-img"/><p>Visualize the scatter digital signals from both detectors</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">acquisition</span><span class="o">.</span><span class="n">digital</span><span class="o">.</span><span class="n">log</span><span class="p">()</span>
-<span class="n">acquisition</span><span class="o">.</span><span class="n">digital</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-
-
-<span class="n">triggered_acquisition</span> <span class="o">=</span> <span class="n">acquisition</span><span class="o">.</span><span class="n">run_triggering</span><span class="p">(</span>
+<p>Visualize the scatter analog signals from both detectors
+acquisition.analog.log()
+acquisition.analog.plot()</p>
+<p>Visualize the scatter digital signals from both detectors
+acquisition.digital.log()
+acquisition.digital.plot()</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">triggered_acquisition</span> <span class="o">=</span> <span class="n">acquisition</span><span class="o">.</span><span class="n">run_triggering</span><span class="p">(</span>
     <span class="n">threshold</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microvolt</span><span class="p">,</span>
     <span class="n">trigger_detector_name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
     <span class="n">max_triggers</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
-    <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
-    <span class="n">post_buffer</span><span class="o">=</span><span class="mi">64</span>
+    <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">post_buffer</span><span class="o">=</span><span class="mi">10</span>
 <span class="p">)</span>
 
 <span class="c1"># # %%</span>
 <span class="c1"># # Visualize the scatter triggered analog signals from both detectors</span>
-<span class="c1"># triggered_acquisition.analog.plot()</span>
+<span class="n">triggered_acquisition</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
 <span class="c1"># # %%</span>
 <span class="c1"># # Visualize the scatter triggered digital signals from both detectors</span>
 <span class="c1"># triggered_acquisition.digital.plot()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_triggered_acquisition_002.png" srcset="../../_images/sphx_glr_triggered_acquisition_002.png" alt="triggered acquisition" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.504 seconds)</p>
+<img src="../../_images/sphx_glr_triggered_acquisition_001.png" srcset="../../_images/sphx_glr_triggered_acquisition_001.png" alt="triggered acquisition" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.968 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-triggered-acquisition-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/384ceb7bb18f5408c3f8ecb06feeaef4/triggered_acquisition.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">triggered_acquisition.ipynb</span></code></a></p>

@@ -111,31 +111,31 @@ cytometer = FlowCytometer(
 )
 
 # Run the flow cytometry simulation
-acquisition = cytometer.prepare_acquisition(run_time=1.0 * units.millisecond)
+acquisition = cytometer.prepare_acquisition(run_time=0.3 * units.millisecond)
 acquisition = cytometer.get_acquisition()
 
 # %%
 # Visualize the scatter analog signals from both detectors
-acquisition.analog.log()
-acquisition.analog.plot()
+# acquisition.analog.log()
+# acquisition.analog.plot()
 
 # %%
 # Visualize the scatter digital signals from both detectors
-acquisition.digital.log()
-acquisition.digital.plot()
+# acquisition.digital.log()
+# acquisition.digital.plot()
 
 
 triggered_acquisition = acquisition.run_triggering(
     threshold = 20 * units.microvolt,
     trigger_detector_name='forward',
     max_triggers=8,
-    pre_buffer=64,
-    post_buffer=64
+    pre_buffer=10,
+    post_buffer=10
 )
 
 # # %%
 # # Visualize the scatter triggered analog signals from both detectors
-# triggered_acquisition.analog.plot()
+triggered_acquisition.analog.plot()
 
 # # %%
 # # Visualize the scatter triggered digital signals from both detectors

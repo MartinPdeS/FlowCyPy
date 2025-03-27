@@ -506,157 +506,118 @@ document.write(`
                   
   <h1>Source code for FlowCyPy.peak_locator.moving_average</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary</span><span class="w"> </span><span class="kn">import</span> <span class="n">peak_locator_binding</span>
 
 <div class="viewcode-block" id="SlidingWindowPeakLocator">
 <a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.moving_average.SlidingWindowPeakLocator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SlidingWindowPeakLocator</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A peak detection utility that identifies peaks in each row of a 2D array using a sliding window approach.</span>
+<span class="sd">    SlidingWindowPeakLocator(window_size, window_step=-1, max_number_of_peaks=5, padding_value=-1,</span>
+<span class="sd">                               compute_width=False, compute_area=False, threshold=0.5)</span>
 
-<span class="sd">    Each row is segmented into fixed-size windows, and the local maximum is found in each window.</span>
-<span class="sd">    Optionally, the width (number of samples above a threshold) and the area (sum of values) of each</span>
-<span class="sd">    peak within its window are computed.</span>
+<span class="sd">    A sliding-window-based peak detection utility for 1D signals. This class segments the input signal</span>
+<span class="sd">    into fixed-size windows (which can be overlapping if window_step is less than window_size) and identifies</span>
+<span class="sd">    the local maximum in each window. Optionally, it computes additional metrics for each peak:</span>
+<span class="sd">    - Width: the number of contiguous samples above a specified fraction of the peak&#39;s height.</span>
+<span class="sd">    - Area: the sum of signal values under the peak within its window.</span>
+
+<span class="sd">    The results are returned as a dictionary containing fixed-length arrays. If fewer peaks are detected than</span>
+<span class="sd">    max_number_of_peaks, the arrays are padded with padding_value (for indices) or NaN (for numeric values).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    window_size : int</span>
-<span class="sd">        The size of the sliding window used to detect local maxima.</span>
+<span class="sd">        The size of the sliding window used for local peak detection.</span>
+<span class="sd">    window_step : int, optional</span>
+<span class="sd">        The step size between consecutive windows. If not provided or set to -1, defaults to window_size</span>
+<span class="sd">        (i.e., non-overlapping windows). To create overlapping windows, specify a value less than window_size.</span>
 <span class="sd">    max_number_of_peaks : int, optional</span>
-<span class="sd">        The maximum number of peaks to return per row. Default is 5.</span>
+<span class="sd">        The maximum number of peaks to report. If fewer peaks are detected, the results are padded. Default is 5.</span>
 <span class="sd">    padding_value : int, optional</span>
-<span class="sd">        The value used to pad the output when fewer than `max_number_of_peaks` peaks are detected. Default is -1.</span>
+<span class="sd">        The value used to pad the output array for indices when fewer than max_number_of_peaks peaks are found.</span>
+<span class="sd">        Default is -1.</span>
 <span class="sd">    compute_width : bool, optional</span>
-<span class="sd">        If True, compute the width (in samples) of each detected peak. Default is False.</span>
+<span class="sd">        If True, compute and return the width of each detected peak (in samples). Default is False.</span>
 <span class="sd">    compute_area : bool, optional</span>
-<span class="sd">        If True, compute the area (sum of signal values) under each detected peak. Default is False.</span>
+<span class="sd">        If True, compute and return the area (sum of signal values) under each detected peak. Default is False.</span>
 <span class="sd">    threshold : float, optional</span>
-<span class="sd">        Fraction of the peak height used to determine the boundaries for width and area calculations.</span>
-<span class="sd">        Default is 0.5.</span>
+<span class="sd">        The fraction of the peak&#39;s height used to determine the boundaries for width and area calculations.</span>
+<span class="sd">        For example, a threshold of 0.5 uses 50% of the peak height as the cutoff. Default is 0.5.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        A dictionary containing the following keys:</span>
+<span class="sd">          - &quot;Index&quot;: A fixed-length array of detected peak indices, padded as necessary.</span>
+<span class="sd">          - &quot;Height&quot;: A fixed-length array of the corresponding peak values.</span>
+<span class="sd">          - &quot;Width&quot;: (optional) A fixed-length array of computed peak widths (if compute_width is True).</span>
+<span class="sd">          - &quot;Area&quot;: (optional) A fixed-length array of computed peak areas (if compute_area is True).</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">    &gt;&gt;&gt; data = np.array([</span>
-<span class="sd">    ...     [1, 3, 2, 5, 4, 2, 8, 1],</span>
-<span class="sd">    ...     [2, 1, 4, 3, 7, 0, 6, 2]</span>
-<span class="sd">    ... ])</span>
-<span class="sd">    &gt;&gt;&gt; # Without additional metrics:</span>
+<span class="sd">    &gt;&gt;&gt; # Example signal</span>
+<span class="sd">    &gt;&gt;&gt; data = np.array([1, 3, 2, 5, 4, 2, 8, 1], dtype=float)</span>
+<span class="sd">    &gt;&gt;&gt; # Create a peak locator without additional metrics (non-overlapping windows).</span>
 <span class="sd">    &gt;&gt;&gt; locator = SlidingWindowPeakLocator(window_size=2, max_number_of_peaks=4, padding_value=-1)</span>
 <span class="sd">    &gt;&gt;&gt; result = locator(data)</span>
-<span class="sd">    &gt;&gt;&gt; print(result[&quot;peak_index&quot;])</span>
-<span class="sd">    [[1 3 4 6]</span>
-<span class="sd">     [0 2 4 6]]</span>
-<span class="sd">    &gt;&gt;&gt; # With width and area computations enabled:</span>
-<span class="sd">    &gt;&gt;&gt; locator_metrics = SlidingWindowPeakLocator(window_size=2, max_number_of_peaks=4, padding_value=-1,</span>
-<span class="sd">    ...                                             compute_width=True, compute_area=True, threshold=0.5)</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Indices:&quot;, result[&quot;Index&quot;])</span>
+<span class="sd">    [1, 3, 4, 6]</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Heights:&quot;, result[&quot;Height&quot;])</span>
+<span class="sd">    [3.0, 5.0, 4.0, 8.0]</span>
+<span class="sd">    &gt;&gt;&gt; # Create a peak locator with overlapping windows and with width and area computations.</span>
+<span class="sd">    &gt;&gt;&gt; locator_metrics = SlidingWindowPeakLocator(window_size=4, window_step=2, max_number_of_peaks=4,</span>
+<span class="sd">    ...                                             padding_value=-1, compute_width=True, compute_area=True, threshold=0.5)</span>
 <span class="sd">    &gt;&gt;&gt; result = locator_metrics(data)</span>
-<span class="sd">    &gt;&gt;&gt; print(&quot;Peak indices:\n&quot;, result[&quot;peak_index&quot;])</span>
-<span class="sd">    &gt;&gt;&gt; print(&quot;Widths:\n&quot;, result[&quot;width&quot;])</span>
-<span class="sd">    &gt;&gt;&gt; print(&quot;Areas:\n&quot;, result[&quot;area&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Peak indices:&quot;, result[&quot;Index&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Heights:&quot;, result[&quot;Height&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Widths:&quot;, result[&quot;Width&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Areas:&quot;, result[&quot;Area&quot;])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+        <span class="n">window_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">max_number_of_peaks</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">padding_value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">window_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">compute_width</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">compute_area</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">max_number_of_peaks</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">padding_value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
-                 <span class="n">compute_width</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">compute_area</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">=</span> <span class="n">window_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span> <span class="o">=</span> <span class="n">max_number_of_peaks</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">padding_value</span> <span class="o">=</span> <span class="n">padding_value</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span> <span class="o">=</span> <span class="n">compute_width</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span> <span class="o">=</span> <span class="n">compute_area</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">peak_locator_binding</span><span class="o">.</span><span class="n">SlidingWindowPeakLocator</span><span class="p">(</span>
+            <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span>
+            <span class="n">window_step</span><span class="o">=</span><span class="n">window_step</span><span class="p">,</span>
+            <span class="n">max_number_of_peaks</span><span class="o">=</span><span class="n">max_number_of_peaks</span><span class="p">,</span>
+            <span class="n">padding_value</span><span class="o">=</span><span class="n">padding_value</span><span class="p">,</span>
+            <span class="n">compute_width</span><span class="o">=</span><span class="n">compute_width</span><span class="p">,</span>
+            <span class="n">compute_area</span><span class="o">=</span><span class="n">compute_area</span><span class="p">,</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Detects peaks in each row of a 2D NumPy array using a sliding window approach.</span>
+<span class="sd">        Detects peaks in a 1D NumPy array using a sliding window approach.</span>
 
-<span class="sd">        Each row is divided into non-overlapping windows of size `window_size`, and the index of the local</span>
-<span class="sd">        maximum within each window is recorded. Optionally, for each detected peak the width and area are computed.</span>
+<span class="sd">        The signal is divided into non-overlapping windows of size `window_size`, and within each window,</span>
+<span class="sd">        the index of the local maximum is recorded. Optionally, for each detected peak, the width and area</span>
+<span class="sd">        are computed based on a threshold (a fraction of the peak&#39;s height).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        array : np.ndarray</span>
-<span class="sd">            A 2D NumPy array where each row represents a dataset for peak detection.</span>
+<span class="sd">            A 1D NumPy array representing the signal for peak detection.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
 <span class="sd">            A dictionary containing:</span>
-<span class="sd">              - &quot;peak_index&quot;: A 2D array of shape (num_rows, max_number_of_peaks) with detected peak indices.</span>
-<span class="sd">              - &quot;width&quot;: (Optional) A 2D array with computed widths, if compute_width is True.</span>
-<span class="sd">              - &quot;area&quot;: (Optional) A 2D array with computed areas, if compute_area is True.</span>
+<span class="sd">              - &quot;Index&quot;: A 1D array of fixed length (max_number_of_peaks) with detected peak indices.</span>
+<span class="sd">              - &quot;Height&quot;: A 1D array with the corresponding peak heights.</span>
+<span class="sd">              - &quot;Width&quot;: (Optional) A 1D array with computed widths, if compute_width is True.</span>
+<span class="sd">              - &quot;Area&quot;: (Optional) A 1D array with computed areas, if compute_area is True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Input array must be 2D.&quot;</span>
-        <span class="n">num_rows</span><span class="p">,</span> <span class="n">num_cols</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span>
-        <span class="n">num_windows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">num_cols</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="p">))</span>
-
-        <span class="c1"># Prepare lists to collect per-row results.</span>
-        <span class="n">all_peak_indices</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">all_widths</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">all_areas</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span> <span class="k">else</span> <span class="kc">None</span>
-
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_rows</span><span class="p">):</span>
-            <span class="n">row</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">window_starts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_cols</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="p">)</span>
-            <span class="n">window_ends</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">window_starts</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="p">,</span> <span class="n">num_cols</span><span class="p">)</span>
-
-            <span class="n">local_peak_indices</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">local_widths</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span> <span class="k">else</span> <span class="kc">None</span>
-            <span class="n">local_areas</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span> <span class="k">else</span> <span class="kc">None</span>
-
-            <span class="c1"># Process each window.</span>
-            <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">window_starts</span><span class="p">,</span> <span class="n">window_ends</span><span class="p">):</span>
-                <span class="n">window</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">window</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="k">continue</span>
-                <span class="c1"># Global index of the local maximum.</span>
-                <span class="n">local_peak</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
-                <span class="n">local_peak_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">local_peak</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span><span class="p">:</span>
-                    <span class="n">peak_value</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">local_peak</span><span class="p">]</span>
-                    <span class="n">thresh_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">*</span> <span class="n">peak_value</span>
-
-                    <span class="c1"># Compute left boundary within the window.</span>
-                    <span class="n">left</span> <span class="o">=</span> <span class="n">local_peak</span>
-                    <span class="k">while</span> <span class="n">left</span> <span class="o">&gt;</span> <span class="n">start</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="n">left</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">thresh_val</span><span class="p">:</span>
-                        <span class="n">left</span> <span class="o">-=</span> <span class="mi">1</span>
-                    <span class="n">left_boundary</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># first index above threshold</span>
-
-                    <span class="c1"># Compute right boundary within the window.</span>
-                    <span class="n">right</span> <span class="o">=</span> <span class="n">local_peak</span>
-                    <span class="k">while</span> <span class="n">right</span> <span class="o">&lt;</span> <span class="n">end</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="n">right</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">thresh_val</span><span class="p">:</span>
-                        <span class="n">right</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="n">right_boundary</span> <span class="o">=</span> <span class="n">right</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># last index above threshold</span>
-
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span><span class="p">:</span>
-                        <span class="n">local_widths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">right_boundary</span> <span class="o">-</span> <span class="n">left_boundary</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span><span class="p">:</span>
-                        <span class="n">local_areas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">left_boundary</span><span class="p">:</span><span class="n">right_boundary</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
-
-            <span class="c1"># Pad results to ensure fixed size output per row.</span>
-            <span class="n">num_found</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">local_peak_indices</span><span class="p">)</span>
-            <span class="n">pad_peak</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-            <span class="n">pad_peak</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="n">num_found</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span><span class="p">)]</span> <span class="o">=</span> <span class="n">local_peak_indices</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span><span class="p">]</span>
-            <span class="n">all_peak_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pad_peak</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span><span class="p">:</span>
-                <span class="n">pad_width</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">local_widths</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">pad_width</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="n">num_found</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">local_widths</span><span class="p">)[:</span><span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span><span class="p">]</span>
-                <span class="n">all_widths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pad_width</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span><span class="p">:</span>
-                <span class="n">pad_area</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">local_areas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">pad_area</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="n">num_found</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">local_areas</span><span class="p">)[:</span><span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span><span class="p">]</span>
-                <span class="n">all_areas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pad_area</span><span class="p">)</span>
-
-        <span class="c1"># Convert lists to arrays.</span>
-        <span class="n">peak_indices_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">all_peak_indices</span><span class="p">)</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;peak_index&quot;</span><span class="p">:</span> <span class="n">peak_indices_arr</span><span class="p">}</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span><span class="p">:</span>
-            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">all_widths</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span><span class="p">:</span>
-            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">all_areas</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">result</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">(</span><span class="n">array</span><span class="p">)</span></div>
 
 </pre></div>
 
