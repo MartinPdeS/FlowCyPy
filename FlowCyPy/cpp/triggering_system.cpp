@@ -34,10 +34,10 @@ public:
     std::string scheme;
     std::string trigger_detector_name;
     double threshold;
+    double lower_threshold;
     int pre_buffer;
     int post_buffer;
     int max_triggers;
-    double lower_threshold;
     bool debounce_enabled;
     int min_window_duration;
 
