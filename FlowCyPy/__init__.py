@@ -12,3 +12,4 @@ from .detector import Detector
 from .source import GaussianBeam, AstigmaticGaussianBeam
 from .noises import NoiseSetting
 from .signal_digitizer import SignalDigitizer
+from .amplifier import TransimpedanceAmplifier

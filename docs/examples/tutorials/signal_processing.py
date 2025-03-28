@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 # Import necessary components from FlowCyPy
 from FlowCyPy import (
     FlowCytometer, ScattererCollection, Detector, GaussianBeam,
-    population, distribution, circuits, units, NoiseSetting
+    population, distribution, circuits, units, NoiseSetting, TransimpedanceAmplifier
 )
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
@@ -77,9 +77,7 @@ detector_0 = Detector(
     phi_angle=90 * units.degree,
     numerical_aperture=0.2 * units.AU,
     responsivity=1 * units.ampere / units.watt,
-    resistance=13000 * units.ohm,
     dark_current=1 * units.microampere,
-    temperature=100 * units.kelvin,
 )
 
 detector_1 = Detector(
@@ -87,14 +85,18 @@ detector_1 = Detector(
     phi_angle=0 * units.degree,
     numerical_aperture=0.2 * units.AU,
     responsivity=1 * units.ampere / units.watt,
-    resistance=13000 * units.ohm,
     dark_current=1 * units.microampere,
-    temperature=100 * units.kelvin,
+)
+
+transimpedance_amplifier = TransimpedanceAmplifier(
+    gain=100 * units.volt / units.ampere,
+    bandwidth = 10 * units.megahertz
 )
 
 # Setup the flow cytometer.
 cytometer = FlowCytometer(
     source=source,
+    transimpedance_amplifier=transimpedance_amplifier,
     signal_digitizer=signal_digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,

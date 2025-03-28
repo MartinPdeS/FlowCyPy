@@ -16,7 +16,7 @@ Workflow:
 
 # %%
 # Step 1: Import necessary modules from FlowCyPy
-from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam
+from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, TransimpedanceAmplifier
 from FlowCyPy import distribution
 from FlowCyPy.population import Sphere
 from FlowCyPy.signal_digitizer import SignalDigitizer
@@ -99,11 +99,17 @@ detector_1 = Detector(
     responsivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
 )
 
+transimpedance_amplifier = TransimpedanceAmplifier(
+    gain=100 * units.volt / units.ampere,
+    bandwidth = 10 * units.megahertz
+)
+
 # Step 6: Simulate Flow Cytometer Signals
 # ---------------------------------------
 # Create a FlowCytometer instance to simulate the signals generated as particles pass through the laser beam.
 cytometer = FlowCytometer(
     source=source,
+    transimpedance_amplifier=transimpedance_amplifier,
     signal_digitizer=signal_digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,                # Particle size distribution

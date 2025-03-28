@@ -70,7 +70,8 @@ class NoiseSetting(metaclass=RestrictiveMeta):
     include_shot_noise = True
     include_dark_current_noise = True
     include_thermal_noise = True
-    include_RIN_noise = True
+    include_source_noise = True
+    include_amplifier_noise = True
 
     @property
     def include_noises(self):
@@ -84,4 +85,5 @@ class NoiseSetting(metaclass=RestrictiveMeta):
             self.include_shot_noise = False
             self.include_dark_current_noise = False
             self.include_thermal_noise = False
-            self.include_RIN_noise = False
+            self.include_source_noise = False
+            self.include_amplifier_noise = False

@@ -4,7 +4,7 @@ Limit of detection
 """
 
 import numpy as np
-from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam
+from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, TransimpedanceAmplifier
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import units
 from FlowCyPy import NoiseSetting
@@ -15,7 +15,7 @@ from FlowCyPy import peak_locator
 
 NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
-NoiseSetting.include_RIN_noise = False
+NoiseSetting.include_source_noise = False
 NoiseSetting.include_dark_current_noise = False
 NoiseSetting.include_thermal_noise = False
 
@@ -58,9 +58,7 @@ detector_0 = Detector(
     phi_angle=90 * units.degree,                   # Angle: 90 degrees (Side Scatter)
     numerical_aperture=.2 * units.AU,             # Numerical aperture: 1.2
     responsivity=1 * units.ampere / units.watt,        # Responsitivity: 1 ampere per watt
-    resistance=13000 * units.ohm,                     # Detector resistance: 50 ohms
     dark_current=0.01 * units.milliampere,          # Dark current: 0.1 milliamps
-    temperature=300 * units.kelvin                 # Operating temperature: 300 Kelvin
 )
 
 detector_1 = Detector(
@@ -68,13 +66,17 @@ detector_1 = Detector(
     phi_angle=0 * units.degree,                    # Angle: 0 degrees (Forward Scatter)
     numerical_aperture=.2 * units.AU,             # Numerical aperture: 1.2
     responsivity=1 * units.ampere / units.watt,        # Responsitivity: 1 ampere per watt
-    resistance=13000 * units.ohm,                     # Detector resistance: 50 ohms
     dark_current=0.01 * units.milliampere,          # Dark current: 0.1 milliamps
-    temperature=300 * units.kelvin                 # Operating temperature: 300 Kelvin
+)
+
+transimpedance_amplifier = TransimpedanceAmplifier(
+    gain=10000 * units.volt / units.ampere,
+    bandwidth = 10 * units.megahertz
 )
 
 cytometer = FlowCytometer(
     source=source,
+    transimpedance_amplifier=transimpedance_amplifier,
     signal_digitizer=signal_digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,                     # Populations used in the experiment

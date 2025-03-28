@@ -7,7 +7,6 @@ import pint_pandas
 
 from PyMieSim.units import Quantity
 from FlowCyPy import units
-from FlowCyPy.noises import NoiseSetting
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy.helper import validate_units
 
@@ -42,10 +41,6 @@ class Detector():
         Detector responsivity (in ampere per watt). Default is 1 A/W.
     dark_current : Quantity, optional
         The dark current of the detector (in amperes). Default is 0 A.
-    resistance : Quantity, optional
-        The load resistance of the detector used in thermal noise simulation (in ohms). Default is 50 Ω.
-    temperature : Quantity, optional
-        Operating temperature of the detector (in kelvin) for thermal noise simulation.
     gamma_angle : Quantity, optional
         An additional angular parameter (in degrees), if applicable.
     sampling : Quantity, optional
@@ -59,8 +54,6 @@ class Detector():
     sampling: Optional[Quantity] = Quantity(100, units.AU)
     responsivity: Optional[Quantity] = Quantity(1, units.ampere / units.watt)
     dark_current: Optional[Quantity] = Quantity(0.0, units.ampere)
-    resistance: Optional[Quantity] = Quantity(50.0, units.ohm)
-    temperature: Optional[Quantity] = Quantity(0.0, units.kelvin)
     name: Optional[str] = None
 
 
@@ -84,50 +77,6 @@ class Detector():
         """
         if not value.check(units.ampere):
             raise ValueError(f"dark_current must be in Ampere, but got {value.units}")
-        return value
-
-    @field_validator('resistance')
-    def _validate_resistance(cls, value):
-        """
-        Validates that the provided angles are in ohm units.
-
-        Parameters
-        ----------
-        value : Quantity
-            The angle value to validate.
-
-        Returns
-        -------
-        Quantity
-            The validated angle.
-
-        Raises:
-            ValueError: If the angle is not in degrees.
-        """
-        if not value.check(units.ohm):
-            raise ValueError(f"Resistance must be in Ohm, but got {value.units}")
-        return value
-
-    @field_validator('temperature')
-    def _validate_temperature(cls, value):
-        """
-        Validates that the provided angles are in arbitrary units.
-
-        Parameters
-        ----------
-        value : Quantity
-            The angle value to validate.
-
-        Returns
-        -------
-        Quantity
-            The validated angle.
-
-        Raises:
-            ValueError: If the angle is not in degrees.
-        """
-        if not value.check(units.kelvin):
-            raise ValueError(f"Angle must be in kelvin, but got {value.units}")
         return value
 
     @field_validator('numerical_aperture', 'numerical_aperture')
@@ -214,7 +163,7 @@ class Detector():
         return self.cytometer.dataframe.xs(self.name)
 
     @validate_units(run_time=units.second)
-    def get_initialized_signal(self, run_time: Quantity) -> pd.DataFrame:
+    def get_initialized_signal(self, run_time: Quantity, sampling_rate: Quantity) -> pd.DataFrame:
         """
         Initializes a placeholder for the detector's raw signal over a specified runtime.
 
@@ -232,7 +181,7 @@ class Detector():
             A DataFrame with a time column (in seconds) and a signal column (in volts),
             initialized to zero.
         """
-        time_points = int(self.signal_digitizer.sampling_rate * run_time)
+        time_points = int(sampling_rate * run_time)
         time = np.linspace(0, run_time, time_points)
 
         return pd.DataFrame(
@@ -280,21 +229,9 @@ class Detector():
 
         return signal
 
-    def get_noise_parameters(self) -> dict:
+    def get_dark_current_noise(self, sequence_length: int, bandwidth: Quantity) -> Quantity:
         r"""
-        Compute and return the noise parameters for thermal and dark current noise.
-
-        Thermal noise (Johnson-Nyquist noise) results from the thermal agitation of charge carriers
-        and is computed using the formula:
-
-        .. math::
-            \sigma_{\text{thermal}} = \sqrt{4 k_B T B R}
-
-        where:
-            - :math:`k_B` is the Boltzmann constant (1.38 x 10⁻²³ J/K),
-            - :math:`T` is the temperature in Kelvin,
-            - :math:`B` is the bandwidth,
-            - :math:`R` is the resistance.
+        Compute and return the dark current noise.
 
         Dark current noise is computed as:
 
@@ -311,40 +248,26 @@ class Detector():
         dict
             Dictionary containing noise parameters for 'thermal' and 'dark_current'.
         """
-        noises = dict(
-            thermal=None,
-            dark_current=None
-        )
+        mean = self.dark_current
 
-        if not NoiseSetting.include_noises:
-            return noises
+        std = np.sqrt(2 * 1.602176634e-19 * units.coulomb * self.dark_current * bandwidth)
 
-        if NoiseSetting.include_thermal_noise:
-            noises['thermal'] = {
-                'mean': 0 * units.volt,
-                'std':np.sqrt(4 * PhysicalConstant.kb * self.temperature * self.resistance * self.signal_digitizer.bandwidth)
-            }
-
-        if NoiseSetting.include_dark_current_noise:
-            noises['dark_current'] = {
-                'mean': 0 * units.volt,
-                'std': np.sqrt(2 * 1.602176634e-19 * units.coulomb * self.dark_current * self.signal_digitizer.bandwidth) * self.resistance
-            }
-
-
-        return noises
+        return np.random.normal(
+            mean.to('ampere').magnitude,
+            std.to('ampere').magnitude,
+            size=sequence_length
+        ) * units.ampere
 
     @validate_units(optical_power=units.watt, wavelength=units.meter)
-    def get_shot_noise(self, signal: pd.Series, optical_power: Quantity, wavelength: Quantity) -> Quantity:
+    def get_shot_noise(self, optical_power: Quantity, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
         r"""
-        Computes the shot noise voltage arising from photon statistics.
+        Computes the shot noise photocurrent arising from photon statistics.
 
         Shot noise is due to the discrete nature of photon arrivals. The process includes:
             1. Calculating the energy per photon.
             2. Estimating the mean number of photons arriving per sampling interval.
             3. Simulating photon counts via Poisson statistics (or a normal approximation for high counts).
             4. Converting photon counts to photocurrent using the detector responsivity.
-            5. Converting the photocurrent to voltage noise using the detector resistance.
 
 
         Physics:
@@ -381,71 +304,30 @@ class Detector():
         Quantity
             The shot noise voltage distribution (in volts).
         """
+        size = len(optical_power)
         # Step 1: Compute photon energy
         energy_photon = PhysicalConstant.h * PhysicalConstant.c / wavelength  # Photon energy (J)
 
         # Step 2: Compute mean photon count per sampling interval
         photon_rate = optical_power / energy_photon  # Photon rate (photons/s)
 
-        sampling_interval = 1 / self.signal_digitizer.sampling_rate  # Sampling interval (s)
+        sampling_interval = 1 / (bandwidth * 2)  # Sampling interval (s)
         mean_photon_count = photon_rate * sampling_interval  # Mean photons per sample
 
         # Step 3: Simulate photon arrivals using Poisson statistics
         mean = mean_photon_count.to('').magnitude
         if np.max(mean) > 1e6:  # Threshold where Poisson becomes unstable
-            photon_counts_distribution = np.random.normal(mean, np.sqrt(mean), size=len(signal)).astype(int)
+            photon_counts_distribution = np.random.normal(mean, np.sqrt(mean), size=size).astype(int)
         else:
-            photon_counts_distribution = np.random.poisson(mean, size=len(signal))
+            photon_counts_distribution = np.random.poisson(mean, size=size)
 
 
         # Step 4: Convert photon counts to photocurrent
-        photon_power_distribution = photon_counts_distribution * energy_photon * self.signal_digitizer.sampling_rate
+        photon_power_distribution = photon_counts_distribution * energy_photon * (bandwidth * 2)
 
         photocurrent_distribution = self.responsivity * photon_power_distribution  # Current (A)
-        # Step 5: Convert photocurrent to shot noise voltage
-        shot_noise_voltage_distribution = photocurrent_distribution * self.resistance  # Voltage (V)
 
-        return shot_noise_voltage_distribution
-
-    @validate_units(optical_power=units.watt, wavelength=units.meter)
-    def capture_signal(self, signal: pd.Series, optical_power: Quantity, wavelength: Quantity) -> pd.Series:
-        r"""
-        Simulates the capture of a signal by adding photon shot noise to the raw signal.
-
-        This method calculates the shot noise voltage (based on the given optical power and wavelength)
-        and adds it to the existing raw signal to simulate the detector's output.
-
-        Parameters
-        ----------
-        signal : pd.Series
-            The original raw signal data (in volts).
-        optical_power : Quantity
-            The optical power incident on the detector (in watts).
-        wavelength : Quantity
-            The wavelength of the incident light (in meters).
-
-        Returns
-        -------
-        None
-            The raw signal is updated in place with the added shot noise.
-
-        Physics Background
-        ------------------
-        Photon shot noise arises due to the random arrival of photons. The following relationships are used:
-            - Photon energy: \( E_{\text{photon}} = \frac{h c}{\lambda} \)
-            - Photon rate: \( N_{\text{ph}} = \frac{P_{\text{opt}}}{E_{\text{photon}}} \)
-            - Photocurrent: \( I_{\text{photon}} = R_{\text{det}} \cdot N_{\text{photon}} \)
-            - Shot noise voltage: \( V_{\text{shot}} = I_{\text{photon}} \cdot R_{\text{load}} \)
-
-        """
-        if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
-            return signal + (optical_power * self.responsivity * self.resistance)
-
-        return signal + self.get_shot_noise(
-            signal=signal,
-            optical_power=optical_power,
-            wavelength=wavelength
-        )
+        return photocurrent_distribution
 
 class PMT():
     def __new__(cls,
@@ -454,8 +336,6 @@ class PMT():
         numerical_aperture: Quantity,
         responsivity: Quantity = Quantity(0.2, units.ampere / units.watt),
         dark_current: Quantity = Quantity(1e-9, units.ampere),
-        resistance: Quantity = Quantity(50, units.ohm),
-        temperature: Quantity = Quantity(293, units.kelvin),
         **kwargs):
         return Detector(
             name=name,
@@ -463,8 +343,6 @@ class PMT():
             numerical_aperture=numerical_aperture,
             responsivity=responsivity,
             dark_current=dark_current,
-            resistance=resistance,
-            temperature=temperature,
             **kwargs
         )
 
@@ -476,8 +354,6 @@ class PIN():
         numerical_aperture: Quantity,
         responsivity=Quantity(0.5, units.ampere / units.watt),  # Higher responsivity for PIN
         dark_current=Quantity(1e-8, units.ampere),               # Slightly higher dark current
-        resistance=Quantity(100, units.ohm),
-        temperature=Quantity(293, units.kelvin),
         **kwargs):
         return Detector(
             name=name,
@@ -485,8 +361,6 @@ class PIN():
             numerical_aperture=numerical_aperture,
             responsivity=responsivity,
             dark_current=dark_current,
-            resistance=resistance,
-            temperature=temperature,
             **kwargs
         )
 
@@ -499,8 +373,6 @@ class APD():
         numerical_aperture: Quantity,
         responsivity=Quantity(0.7, units.ampere / units.watt),  # APDs often have high responsivity
         dark_current=Quantity(5e-9, units.ampere),
-        resistance=Quantity(75, units.ohm),
-        temperature=Quantity(293, units.kelvin),
         **kwargs):
         return Detector(
             name=name,
@@ -508,7 +380,5 @@ class APD():
             numerical_aperture=numerical_aperture,
             responsivity=responsivity,
             dark_current=dark_current,
-            resistance=resistance,
-            temperature=temperature,
             **kwargs
         )

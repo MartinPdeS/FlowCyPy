@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import matplotlib.pyplot as plt
 from unittest.mock import patch
-from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam
+from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, TransimpedanceAmplifier
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import distribution
@@ -12,6 +12,14 @@ from FlowCyPy import peak_locator
 from FlowCyPy import circuits
 
 # ----------------- FIXTURES -----------------
+
+
+@pytest.fixture
+def amplifier():
+    return TransimpedanceAmplifier(
+        gain=100 * units.volt / units.ampere,
+        bandwidth=10 * units.megahertz
+    )
 
 @pytest.fixture
 def default_digitizer():
@@ -95,10 +103,11 @@ def scatterer_collection(population):
     return scatterer
 
 @pytest.fixture
-def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, source, default_digitizer):
+def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, source, amplifier, default_digitizer):
     """Fixture for creating a default Flow Cytometer."""
     return FlowCytometer(
         source=source,
+        transimpedance_amplifier=amplifier,
         signal_digitizer=default_digitizer,
         scatterer_collection=scatterer_collection,
         detectors=[detector_0, detector_1],

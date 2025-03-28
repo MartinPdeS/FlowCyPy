@@ -114,10 +114,8 @@ class SignalDigitizer:
 
         digitized_signal = np.digitize(signal.pint.magnitude, bins, right=True)
 
-        self.is_saturated = np.any((signal < min_level) | (signal > max_level))
-
         # Throw a warning if saturated
-        if self.is_saturated:
+        if np.any((signal < min_level) | (signal > max_level)):
             logging.info("Signal values have been clipped to the saturation boundaries.")
 
         return digitized_signal, (min_level, max_level)

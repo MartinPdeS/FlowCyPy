@@ -15,7 +15,9 @@ from FlowCyPy.helper import validate_units
 from FlowCyPy import dataframe_subclass
 from FlowCyPy.circuits import SignalProcessor
 from FlowCyPy.source import BaseBeam
-
+from FlowCyPy.binary import flowcypy_sim
+from FlowCyPy.noises import NoiseSetting
+from FlowCyPy.amplifier import TransimpedanceAmplifier
 
 # Set up logging configuration
 logging.basicConfig(
@@ -73,10 +75,12 @@ class FlowCytometer:
             flow_cell: FlowCell,
             signal_digitizer: SignalDigitizer,
             detectors: List[Detector],
+            transimpedance_amplifier: TransimpedanceAmplifier,
             coupling_mechanism: Optional[str] = 'mie',
             background_power: Optional[units.Quantity] = 0 * units.milliwatt):
 
         self.scatterer_collection = scatterer_collection
+        self.transimpedance_amplifier = transimpedance_amplifier
         self.flow_cell = flow_cell
         self.source = source
         self.detectors = detectors
@@ -205,7 +209,7 @@ class FlowCytometer:
 
         # Initialize the detectors
         for detector in self.detectors:
-            dataframe = detector.get_initialized_signal(run_time=run_time)
+            dataframe = detector.get_initialized_signal(run_time=run_time, sampling_rate=self.signal_digitizer.sampling_rate)
 
             dataframes.append(dataframe)
 
@@ -268,48 +272,40 @@ class FlowCytometer:
         ValueError
             If the scatterer collection lacks required data columns ('Widths', 'Time').
         """
-        _widths = self.scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude
-        _centers = self.scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude
-
         signal_dataframe = self._initialize_signal(run_time=self.run_time)
 
         for detector_name, group in signal_dataframe.groupby('Detector'):
+            sequence_length = len(signal_dataframe.loc[detector_name, 'Signal'])
             detector = self.get_detector_by_name(detector_name)
             total_power = self.background_power
 
             # Broadcast the time array to the shape of (number of signals, len(detector.time))
             if not self.scatterer_dataframe.empty:
-                _coupling_power = self.scatterer_dataframe[detector_name].values
+                core = flowcypy_sim.FlowCyPySim(
+                    time_array=signal_dataframe.loc[detector_name, 'Time'].pint.magnitude.values,
+                    widths=self.scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude,
+                    centers=self.scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude,
+                    coupling_power=self.scatterer_dataframe[detector_name].pint.to('watt').pint.quantity.magnitude,
+                    background_power=self.background_power.to('watt').magnitude
+                )
 
-                time_grid = np.expand_dims(group['Time'].pint.magnitude, axis=0) * units.second
-                centers = np.expand_dims(_centers, axis=1) * units.second
-                widths = np.expand_dims(_widths, axis=1) * units.second
+                total_power = core.getAcquisition() * units.watt
 
-                # Compute the Gaussian for each height, center, and width using broadcasting. To be noted that widths is defined as: waist / (2 * flow_speed)
-                power_gaussians = _coupling_power[:, np.newaxis] * np.exp(- (time_grid - centers) ** 2 / (2 * widths ** 2))
+            if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
+                photocurrent = (total_power * detector.responsivity)
+            else:
+                photocurrent = detector.get_shot_noise(optical_power=total_power, wavelength=self.source.wavelength, bandwidth=self.signal_digitizer.bandwidth)
 
-                total_power += np.sum(power_gaussians, axis=0)
+            if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
+                photocurrent += detector.get_dark_current_noise(sequence_length=sequence_length, bandwidth=self.signal_digitizer.bandwidth)
 
-            # Sum all the Gaussians and add them to the detector.raw_signal
-            signal = detector.capture_signal(
-                signal=group['Signal'],
-                optical_power=total_power,
-                wavelength=self.source.wavelength
-            ).pint.to(group['Signal'].pint.units)
-
-            signal_dataframe.loc[detector_name, 'Signal'] = signal
+            signal_dataframe.loc[detector_name, 'Signal'] = self.transimpedance_amplifier.amplify(photocurrent)
 
         # Apply user-defined processing steps
         self.circuit_process_data(signal_dataframe, processing_steps)
 
-        # Generate noise components
-        self.add_noises_to_signal(signal_dataframe)
-
-        saturation_levels = self.get_saturation_levels(signal_dataframe)
-
         signal_dataframe = dataframe_subclass.AnalogAcquisitionDataFrame(
             signal_dataframe,
-            saturation_levels=saturation_levels,
             scatterer_dataframe=self.scatterer_dataframe
         )
 
@@ -323,13 +319,6 @@ class FlowCytometer:
         experiment.sample_volume = (self.flow_cell.sample.volume_flow * self.run_time).to_compact()
 
         return experiment
-
-    def get_saturation_levels(self, signal_dataframe: pd.DataFrame) -> dict:
-        saturation_levels = dict()
-        for detector_name, group in signal_dataframe.groupby('Detector'):
-            saturation_levels[detector_name] = self.signal_digitizer.get_saturation_values(signal=group['Signal'])
-
-        return saturation_levels
 
     def circuit_process_data(self, signal_dataframe: pd.DataFrame, processing_steps: list) -> None:
         """

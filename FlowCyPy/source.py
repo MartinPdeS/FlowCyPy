@@ -173,7 +173,7 @@ class BaseBeam():
         """
         amplitudes = self.amplitude_at(x=x, y=y, z=z).values.quantity
 
-        if NoiseSetting.include_RIN_noise and NoiseSetting.include_noises:
+        if NoiseSetting.include_source_noise and NoiseSetting.include_noises:
             amplitudes = self.add_rin_to_amplitude(amplitudes, bandwidth=bandwidth)
 
         return amplitudes
