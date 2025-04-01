@@ -17,6 +17,6 @@ jobs:
     with:
       python-version: "3.11"
       brew-package: fftw
-      apt-package: libfftw3-double3
+      apt-package: libfftw3-double3 libfftw3-dev
     secrets:
       PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
