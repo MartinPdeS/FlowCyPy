@@ -115,12 +115,14 @@ test-extras = ["testing"]
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64"]
+before_build = "yum install -y fftw3 fftw3-devel"
 build = ["cp310-manylinux*", "cp311-manylinux*", "cp312-manylinux*"]
 manylinux-x86_64-image = "manylinux2014"
 repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.macos]
 archs = ["arm64"]
+before_build = "brew install fftw"
 build = ["cp310-*", "cp311-*", "cp312-*"]
 repair-wheel-command = "delocate-wheel -w {dest_dir} -v {wheel}"
 test-command = "echo 'Skipping tests on macOS'"
