@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 # Import the C++ module exposed via pybind11.
-from FlowCyPy.binary.triggering_system import TriggeringSystem # type: ignore
+from FlowCyPy.binary.interface_triggering_system import TriggeringSystem # type: ignore
 
 # ---------------------------------------------------------------------------
 # Fixtures for synthetic signals and time arrays

@@ -77,18 +77,3 @@ private:
     py::array_t<double> m_time_array;
     double m_background_power;
 };
-
-// PYBIND11 MODULE
-PYBIND11_MODULE(flowcypy_sim, m) {
-    m.doc() = "Pybind11 example with no std::vector, only py::array_t<double>";
-
-    py::class_<FlowCyPySim>(m, "FlowCyPySim")
-        .def(py::init<const py::array_t<double>&, const py::array_t<double>&, const py::array_t<double>&, const py::array_t<double>&, double>(),
-             py::arg("widths"),
-             py::arg("centers"),
-             py::arg("coupling_power"),
-             py::arg("time_array"),
-             py::arg("background_power")
-        )
-        .def("getAcquisition", &FlowCyPySim::getAcquisition, "Sums background power plus Gaussian pulses for each scatterer.");
-}

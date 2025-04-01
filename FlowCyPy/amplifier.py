@@ -3,6 +3,8 @@ from pydantic import field_validator
 from FlowCyPy import units
 import numpy as np
 from FlowCyPy.noises import NoiseSetting
+from FlowCyPy.helper import validate_units
+import numpy.fft as fft  # Using numpy's FFT routines
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -32,9 +34,6 @@ class TransimpedanceAmplifier:
     bandwidth: units.Quantity
     voltage_noise_density: units.Quantity = 0 * units.volt / units.sqrt_hertz
     current_noise_density: units.Quantity = 0 * units.ampere / units.sqrt_hertz
-
-    # voltage_noise_density: units.Quantity = 5e-9 * (1 * units.volt / units.sqrt_hertz)
-    # current_noise_density: units.Quantity = 2e-12 * (1 * units.ampere / units.sqrt_hertz)
 
     @field_validator('gain')
     def _validate_gain(cls, value):
@@ -71,32 +70,66 @@ class TransimpedanceAmplifier:
         i_rms = self.current_rms_noise
         return np.sqrt(v_rms**2 + i_rms**2)
 
-    def amplify(self, current_signal: units.Quantity) -> units.Quantity:
+    @validate_units(signal=units.ampere, dt=units.second)
+    def amplify(self, signal: units.Quantity, dt: units.Quantity) -> units.Quantity:
         """
-        Converts photocurrent to voltage via transimpedance gain.
+        Converts photocurrent to voltage via transimpedance gain,
+        adds noise, and applies an FFT-based low-pass filter to simulate
+        the finite bandwidth of the amplifier.
 
         Parameters
         ----------
-        current_signal : units.Quantity
+        signal : units.Quantity
             The input photocurrent to amplify (in Amperes).
+        dt : float
+            The time step (in seconds) between consecutive samples in the signal.
 
         Returns
         -------
         units.Quantity
-            The amplified voltage signal.
+            The amplified and filtered voltage signal.
         """
-        if not current_signal.check('A'):
-            raise ValueError(f"Signal must be in Amperes, got {current_signal.units}")
+        # Convert current to voltage via the amplifier gain
+        voltage_signal = signal * self.gain
+
+        # Add noise if enabled
+        if NoiseSetting.include_amplifier_noise and NoiseSetting.include_noises:
+            amp_noise_std = self.total_output_noise.to('volt').magnitude
+            # Generate random amplifier noise (Gaussian distributed) with the same shape as voltage_signal
+            amp_noise = np.random.normal(loc=0.0, scale=amp_noise_std, size=voltage_signal.shape) * units.volt
+            amplified_signal = voltage_signal + amp_noise
+        else:
+            amplified_signal = voltage_signal
+
+        if self.bandwidth is not None:
+            return self._apply_bandwidth(signal=amplified_signal, dt=dt)
+
+        return amplified_signal
 
 
-        if not NoiseSetting.include_amplifier_noise or not NoiseSetting.include_noises:
-            return current_signal * self.gain
+    def _apply_bandwidth(self, signal: units.Quantity, dt: units.Quantity) -> units.Quantity:
+        # --- FFT-based filtering ---
+        # Remove units for FFT processing (voltage_signal is in volts)
+        signal_magnitude = signal.magnitude
+        N = len(signal_magnitude)
 
-        voltage_signal = current_signal * self.gain
+        # Compute the FFT of the signal
+        signal_fft = fft.fft(signal_magnitude)
+        # Create frequency bins (in Hz)
+        freqs = fft.fftfreq(N, d=dt.to('second').magnitude)
 
-        amp_noise_std = self.total_output_noise.to('volt').magnitude
+        # Define the filter's cutoff frequency (bandwidth)
+        fc = self.bandwidth.to("Hz").magnitude
 
-        # Generate random amplifier noise (Gaussian distributed) with the same shape as voltage_signal
-        amp_noise = np.random.normal(loc=0.0, scale=amp_noise_std, size=voltage_signal.shape) * units.volt
+        # Build the frequency response of a first-order low-pass filter:
+        # H(f) = 1/sqrt(1 + (f/fc)^2)
+        H = 1 / np.sqrt(1 + (freqs / fc)**2)
 
-        return voltage_signal + amp_noise
+        # Apply the filter in the frequency domain
+        filtered_fft = signal_fft * H
+
+        # Inverse FFT to convert back to the time domain and take the real part
+        filtered_signal = np.real(fft.ifft(filtered_fft))
+
+        # Reapply the units (volts)
+        return filtered_signal * signal.units

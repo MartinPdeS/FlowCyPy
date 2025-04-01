@@ -5,7 +5,7 @@
 #include <tuple>
 #include <string>
 #include <map>
-#include "filter.h"
+#include "../filter/filter.h"
 #include <cmath>      // for std::isnan
 #include <limits>     // for quiet_NaN
 
@@ -342,24 +342,3 @@ private:
             py::array_t<int>(segment_ids_out.size(), segment_ids_out.data()));
     }
 };
-
-PYBIND11_MODULE(triggering_system, module) {
-    module.doc() = "Module for efficient signal processing and triggered acquisition using C++";
-    py::class_<TriggeringSystem>(module, "TriggeringSystem")
-        .def(py::init<const std::string&, const std::string&, const double, const double, const int, const int, const int, const bool, const int>(),
-            py::arg("scheme"),
-            py::arg("trigger_detector_name"),
-            py::arg("threshold"),
-            py::arg("lower_threshold"),
-            py::arg("pre_buffer") = 64,
-            py::arg("post_buffer") = 64,
-            py::arg("max_triggers") = -1,
-            py::arg("debounce_enabled") = true,
-            py::arg("min_window_duration") = -1
-        )
-        .def("add_time", &TriggeringSystem::add_time, "Adds a global time array to the system.")
-        .def("add_signal", &TriggeringSystem::add_signal, "Adds a new signal to the system.")
-        .def("run", &TriggeringSystem::run, "Executes the triggered acquisition analysis.")
-        .def_readonly("global_time", &TriggeringSystem::global_time, "Time vector used for computation")
-        .def("run_dynamic", &TriggeringSystem::run_dynamic, "Executes dynamic triggered acquisition analysis.");
-}

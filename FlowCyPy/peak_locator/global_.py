@@ -1,5 +1,5 @@
 import numpy as np
-from FlowCyPy.binary import peak_locator_binding
+from FlowCyPy.binary import interface_peak_locator
 
 class GlobalPeakLocator:
     r"""
@@ -52,7 +52,7 @@ class GlobalPeakLocator:
         """
         self.max_number_of_peaks = max_number_of_peaks
 
-        self.instance = peak_locator_binding.GlobalPeakLocator(
+        self.instance = interface_peak_locator.GlobalPeakLocator(
             max_number_of_peaks=max_number_of_peaks,
             padding_value=padding_value,
             compute_width=compute_width,

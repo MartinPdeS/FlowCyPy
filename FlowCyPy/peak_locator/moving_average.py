@@ -1,5 +1,5 @@
 import numpy as np
-from FlowCyPy.binary import peak_locator_binding
+from FlowCyPy.binary import interface_peak_locator
 
 class SlidingWindowPeakLocator:
     r"""
@@ -76,7 +76,7 @@ class SlidingWindowPeakLocator:
 
         self.max_number_of_peaks = max_number_of_peaks
 
-        self.instance = peak_locator_binding.SlidingWindowPeakLocator(
+        self.instance = interface_peak_locator.SlidingWindowPeakLocator(
             window_size=window_size,
             window_step=window_step,
             max_number_of_peaks=max_number_of_peaks,

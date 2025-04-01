@@ -50,12 +50,14 @@ endfunction()
 
 add_compile_options(-Wall -Wextra -pedantic-errors)
 
-add_project_module(filtering "filter.cpp")
+add_subdirectory(FlowCyPy/cpp/filter)
 
-# add_project_module(triggering_system "triggering.cpp" "filter.cpp")
+# add_project_module(triggering_system "triggering_system.cpp" "filter/filter.cpp")
 
-add_project_module(triggering_system "triggering_system.cpp" "filter.cpp")
+add_subdirectory(FlowCyPy/cpp/triggering_system)
 
-add_project_module(peak_locator_binding "peak_locator.cpp")
+add_subdirectory(FlowCyPy/cpp/core)
 
-add_project_module(flowcypy_sim "core.cpp")
+add_subdirectory(FlowCyPy/cpp/peak_locator)
+
+add_subdirectory(FlowCyPy/cpp/utils)

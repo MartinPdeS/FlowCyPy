@@ -30,7 +30,7 @@ exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
 custom_population = Sphere(
     name='Pop 0',
     particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
+    diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=3000),
     refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
 )
 
@@ -69,7 +69,7 @@ detector_2 = Detector(
 
 transimpedance_amplifier = TransimpedanceAmplifier(
     gain=100 * units.volt / units.ampere,
-    bandwidth = 10 * units.megahertz
+    bandwidth = 100 * units.megahertz
 )
 
 cytometer = FlowCytometer(
@@ -84,7 +84,7 @@ cytometer = FlowCytometer(
 
 processing_steps = [
     circuits.BaselineRestorator(window_size=1000 * units.microsecond),
-    # circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)
+    circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)
 ]
 
 cytometer.prepare_acquisition(run_time=0.01 * units.millisecond)

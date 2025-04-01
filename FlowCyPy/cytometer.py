@@ -15,7 +15,7 @@ from FlowCyPy.helper import validate_units
 from FlowCyPy import dataframe_subclass
 from FlowCyPy.circuits import SignalProcessor
 from FlowCyPy.source import BaseBeam
-from FlowCyPy.binary import flowcypy_sim
+from FlowCyPy.binary import interface_core
 from FlowCyPy.noises import NoiseSetting
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 
@@ -281,7 +281,7 @@ class FlowCytometer:
 
             # Broadcast the time array to the shape of (number of signals, len(detector.time))
             if not self.scatterer_dataframe.empty:
-                core = flowcypy_sim.FlowCyPySim(
+                core = interface_core.FlowCyPySim(
                     time_array=signal_dataframe.loc[detector_name, 'Time'].pint.magnitude.values,
                     widths=self.scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude,
                     centers=self.scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude,
@@ -299,7 +299,7 @@ class FlowCytometer:
             if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
                 photocurrent += detector.get_dark_current_noise(sequence_length=sequence_length, bandwidth=self.signal_digitizer.bandwidth)
 
-            signal_dataframe.loc[detector_name, 'Signal'] = self.transimpedance_amplifier.amplify(photocurrent)
+            signal_dataframe.loc[detector_name, 'Signal'] = self.transimpedance_amplifier.amplify(signal=photocurrent, dt=1 / self.signal_digitizer.sampling_rate)
 
         # Apply user-defined processing steps
         self.circuit_process_data(signal_dataframe, processing_steps)
