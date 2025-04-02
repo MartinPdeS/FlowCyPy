@@ -59,7 +59,7 @@ Limit of detection
     /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
-    <seaborn.axisgrid.JointGrid object at 0x7fe2a1abadd0>
+    <seaborn.axisgrid.JointGrid object at 0x7f3b1282d3d0>
 
 
 
@@ -177,7 +177,7 @@ Limit of detection
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.774 seconds)
+   **Total running time of the script:** (0 minutes 3.632 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:
