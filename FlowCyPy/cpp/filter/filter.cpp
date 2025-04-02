@@ -142,6 +142,56 @@ void apply_bessel_lowpass_filter_(std::vector<double>& signal, double sampling_r
     }
 }
 
+
+
+
+
+// /**
+//  * @brief Applies an in-place cascaded first-order low-pass filter (approximating a Bessel filter) using FFT.
+//  *
+//  * This function converts the input signal into a NumPy array, applies an FFT-based low-pass filter that
+//  * cascades a first-order response 'order' times (emulating a Bessel-like filter), and then writes the filtered
+//  * signal back to the original vector with an overall gain applied.
+//  *
+//  * @param signal The signal vector to be filtered (modified in place).
+//  * @param sampling_rate The sampling rate in Hz.
+//  * @param cutoff_freq The cutoff frequency in Hz.
+//  * @param order The number of first-order stages to cascade (default: 4).
+//  * @param gain The gain factor to be applied after filtering (default: 1.0).
+//  *
+//  * @throws std::invalid_argument if cutoff_freq >= (sampling_rate / 2).
+//  */
+// void apply_bessel_lowpass_filter_(std::vector<double>& signal, double sampling_rate, double cutoff_freq, int order = 4, double gain = 1.0)
+// {
+//     if (cutoff_freq >= (sampling_rate / 2.0))
+//     {
+//         throw std::invalid_argument("Cutoff frequency must be less than Nyquist frequency (sampling_rate / 2).");
+//     }
+
+//     size_t n_samples = signal.size();
+//     if(n_samples == 0)
+//         return;
+
+//     double dt = 1.0 / sampling_rate;
+
+//     // Wrap the input vector into a NumPy array (using the vector's data without copying).
+//     py::array_t<double> py_signal(n_samples, signal.data());
+
+//     // Call the FFT-based filter that now accepts an 'order' parameter to emulate cascaded filtering.
+//     py::array_t<double> filtered = fft_filter(py_signal, dt, cutoff_freq, order);
+
+//     // Retrieve the filtered result and apply the overall gain.
+//     py::buffer_info buf = filtered.request();
+//     double* filtered_data = static_cast<double*>(buf.ptr);
+//     for (size_t i = 0; i < n_samples; i++)
+//         signal[i] = filtered_data[i] * gain;
+
+// }
+
+
+
+
+
 /**
  * @brief Pybind11 wrapper for in-place Bessel-like low-pass filtering of a NumPy array.
  *

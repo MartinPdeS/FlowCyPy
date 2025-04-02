@@ -33,9 +33,7 @@ void add_gaussian_noise(py::array_t<double> &py_signal, double mean = 0.0, doubl
 
     // Add Gaussian noise to each element of the signal.
     for (size_t i = 0; i < n_samples; ++i)
-    {
         data[i] += distribution(generator);
-    }
 }
 
 // py::array_t<double> fft_filter(py::array_t<double> input, double dt, double fc, int order = 1) {
