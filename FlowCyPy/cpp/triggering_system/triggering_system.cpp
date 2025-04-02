@@ -5,11 +5,25 @@
 #include <tuple>
 #include <string>
 #include <map>
-#include "../filter/filter.h"
 #include <cmath>      // for std::isnan
-#include <limits>     // for quiet_NaN
-
 namespace py = pybind11;
+
+
+struct trigger {
+    const std::string detector_name;
+    const py::array_t<double> signal;
+    std::vector<double> time_out;
+    std::vector<double> signal_out;
+    std::vector<int> segment_ids_out;
+    double* buffer_ptr;
+    size_t buffer_size;
+
+    trigger(const std::string &detector_name, const py::array_t<double> &signal): detector_name(detector_name), signal(signal)
+    {
+        this->buffer_ptr = static_cast<double *>(signal.request().ptr);
+        this->buffer_size = static_cast<size_t>(signal.request().shape[0]);
+    }
+};
 
 class TriggeringSystem {
     /**
@@ -41,12 +55,15 @@ public:
     bool debounce_enabled;
     int min_window_duration;
 
+    std::vector<struct trigger> triggers;
+
     // The maps will be filled using the add_signal method.
     std::map<std::string, py::array_t<double>> signal_map;
     // For time arrays, the user can add a global one.
     py::array_t<double> global_time;
     // Optionally, a per-detector time map can be supported.
     std::map<std::string, py::array_t<double>> time_map;
+    std::vector<double> times_out, signals_out;
 
     TriggeringSystem(
         const std::string &scheme,
@@ -72,6 +89,9 @@ public:
      * @param time The time array as a py::array_t<double>.
      */
     void add_time(const py::array_t<double> &time) {
+        if (time.request().ndim != 1)
+            throw std::runtime_error("Time arrays must be 1D");
+
         global_time = time;
     }
 
@@ -81,36 +101,51 @@ public:
      * @param name The name of the detector/signal.
      * @param signal The signal as a py::array_t<double>.
      */
-    void add_signal(const std::string &name, const py::array_t<double> &signal) {
-        signal_map[name] = signal;
+    void add_signal(const std::string &detector_name, const py::array_t<double> &signal) {
+        if (signal.request().ndim != 1)
+            throw std::runtime_error("Signal arrays must be 1D");
+
+        this->triggers.emplace_back(detector_name, signal);
+        signal_map[detector_name] = signal;
     }
 
-    std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>> run() {
-        if (this->scheme == "fixed-window")
-            return this->run_fixed_window();
-        else if (this->scheme == "dynamic")
-            return this->run_dynamic_single_threshold();
-        else if (this->scheme == "dynamic-simple")
-            return this->run_dynamic();
-        else
-            PyErr_WarnEx(PyExc_UserWarning, "Invalid triggering scheme, options are: 'fixed-window', 'dynamic', or 'dynamic-simple'.", 1);
-    }
-
-    // Fixed-window triggered acquisition.
-    std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>> run_fixed_window() {
+    void run() {
         // Validate that the trigger detector exists.
         validate_detector_existence(signal_map, trigger_detector_name, "Trigger detector not found in signal map.");
+
         // For time, try the per-detector map; if not found, check global_time.
         if (time_map.find(trigger_detector_name) == time_map.end() && global_time.size() == 0)
             throw std::runtime_error("No time array found. Please add a time array using add_time().");
 
-        auto trigger_signal_array = signal_map.at(trigger_detector_name);
+        std::vector<std::pair<int, int>> valid_triggers;
+
+        if (this->scheme == "fixed-window")
+            valid_triggers = this->run_fixed_window();
+        else if (this->scheme == "dynamic")
+            valid_triggers = this->run_dynamic_single_threshold();
+        else if (this->scheme == "dynamic-simple")
+            valid_triggers = this->run_dynamic();
+        else
+            PyErr_WarnEx(PyExc_UserWarning, "Invalid triggering scheme, options are: 'fixed-window', 'dynamic', or 'dynamic-simple'.", 1);
+
+        if (valid_triggers.empty())
+            PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found in dynamic mode (single threshold). Returning empty arrays.", 1);
+
+
         // Use per-detector time if available, otherwise use global_time.
         py::array_t<double> trigger_time_array;
-        if (time_map.find(trigger_detector_name) != time_map.end())
-            trigger_time_array = time_map.at(trigger_detector_name);
+        if (this->time_map.find(trigger_detector_name) != this->time_map.end())
+            trigger_time_array = this->time_map.at(trigger_detector_name);
         else
             trigger_time_array = global_time;
+
+        extract_signal_segments(valid_triggers);
+    }
+
+    // Fixed-window triggered acquisition.
+    std::vector<std::pair<int, int>> run_fixed_window() {
+
+        auto trigger_signal_array = this->signal_map.at(trigger_detector_name);
 
         py::buffer_info trigger_signal_buf = trigger_signal_array.request();
         size_t n_trigger = trigger_signal_buf.shape[0];
@@ -122,20 +157,12 @@ public:
             trigger_indices, pre_buffer - 1, post_buffer, static_cast<int>(n_trigger), max_triggers
         );
 
-        if (valid_triggers.empty()) {
-            PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found after baseline restoration. Returning empty arrays.", 1);
-            return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
-        }
-        return extract_signal_segments(signal_map, trigger_time_array, valid_triggers);
+        return valid_triggers;
     }
 
     // Simple dynamic triggered acquisition.
-    std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>> run_dynamic() {
-        validate_detector_existence(signal_map, trigger_detector_name, "Trigger detector not found in signal map.");
-        if (time_map.find(trigger_detector_name) == time_map.end() && global_time.size() == 0)
-            throw std::runtime_error("No time array found. Please add a time array using add_time().");
-
-        auto trigger_signal_array = signal_map.at(trigger_detector_name);
+    std::vector<std::pair<int, int>> run_dynamic() {
+        auto trigger_signal_array = this->signal_map.at(trigger_detector_name);
         py::buffer_info trigger_signal_buf = trigger_signal_array.request();
         size_t n_trigger = trigger_signal_buf.shape[0];
         double *trigger_signal_ptr = static_cast<double *>(trigger_signal_buf.ptr);
@@ -164,29 +191,15 @@ public:
             }
         }
 
-        if (valid_triggers.empty()) {
-            PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found in dynamic mode. Returning empty arrays.", 1);
-            return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
-        }
-        // Use per-detector time if available, otherwise use global_time.
-        py::array_t<double> trigger_time_array;
-        if (time_map.find(trigger_detector_name) != time_map.end())
-            trigger_time_array = time_map.at(trigger_detector_name);
-        else
-            trigger_time_array = global_time;
-        return extract_signal_segments(signal_map, trigger_time_array, valid_triggers);
+        return valid_triggers;
     }
 
     // Dynamic triggered acquisition with single threshold (with optional lower_threshold and debounce).
-    std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>> run_dynamic_single_threshold() {
-        if (std::isnan(lower_threshold)) {
+    std::vector<std::pair<int, int>> run_dynamic_single_threshold() {
+        if (std::isnan(lower_threshold))
             this->lower_threshold = this->threshold;
-        }
-        validate_detector_existence(signal_map, trigger_detector_name, "Trigger detector not found in signal map.");
-        if (time_map.find(trigger_detector_name) == time_map.end() && global_time.size() == 0)
-            throw std::runtime_error("No time array found. Please add a time array using add_time().");
 
-        auto trigger_signal_array = signal_map.at(trigger_detector_name);
+        auto trigger_signal_array = this->signal_map.at(trigger_detector_name);
         py::buffer_info trigger_signal_buf = trigger_signal_array.request();
         size_t n_trigger = trigger_signal_buf.shape[0];
         double *trigger_signal_ptr = static_cast<double *>(trigger_signal_buf.ptr);
@@ -232,18 +245,27 @@ public:
             }
         }
 
-        if (valid_triggers.empty()) {
-            PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found in dynamic mode (single threshold). Returning empty arrays.", 1);
-            return std::make_tuple(py::array_t<double>(0), py::array_t<double>(0), py::list(), py::array_t<int>(0));
-        }
-        // Use per-detector time if available, otherwise use global_time.
-        py::array_t<double> trigger_time_array;
-        if (time_map.find(trigger_detector_name) != time_map.end())
-            trigger_time_array = time_map.at(trigger_detector_name);
-        else
-            trigger_time_array = global_time;
-        return extract_signal_segments(signal_map, trigger_time_array, valid_triggers);
+        return valid_triggers;
     }
+
+    std::vector<double> get_signal_out(const std::string &detector_name) {
+        for (struct trigger &trigger : this->triggers)
+            if (trigger.detector_name == detector_name)
+                return trigger.signal_out;
+    }
+
+    std::vector<double> get_time_out(const std::string &detector_name) {
+        for (struct trigger &trigger : this->triggers)
+            if (trigger.detector_name == detector_name)
+                return trigger.time_out;
+    }
+
+    std::vector<int> get_segment_ID(const std::string &detector_name) {
+        for (struct trigger &trigger : this->triggers)
+            if (trigger.detector_name == detector_name)
+                return trigger.segment_ids_out;
+    }
+
 
 private:
     // Helper function: Validate that the detector exists in the map.
@@ -295,50 +317,31 @@ private:
     }
 
     // Helper function: Extract signal segments given valid trigger indices.
-    static std::tuple<py::array_t<double>, py::array_t<double>, py::list, py::array_t<int>>
-    extract_signal_segments(
-        const std::map<std::string, py::array_t<double>> &signal_map,
-        const py::array_t<double> &time_array,
-        const std::vector<std::pair<int, int>> &valid_triggers)
+    void extract_signal_segments(const std::vector<std::pair<int, int>> &valid_triggers)
     {
-        std::vector<double> times_out, signals_out;
         std::vector<std::string> detectors_out;
         std::vector<int> segment_ids_out;
-        for (const auto &[detector_name, signal_array] : signal_map) {
-            // Use per-detector time if available; otherwise, use the provided time_array.
-            py::array_t<double> t_array;
-            if (time_array.size() > 0)
-                t_array = time_array;
-            else
-                throw std::runtime_error("No time array available for extraction.");
 
-            py::buffer_info signal_buf = signal_array.request();
-            py::buffer_info time_buf = t_array.request();
-            if (signal_buf.ndim != 1 || time_buf.ndim != 1)
-                throw std::runtime_error("Signal and time arrays must be 1D");
-            size_t signal_size = signal_buf.shape[0];
-            double *signal_ptr = static_cast<double *>(signal_buf.ptr);
-            double *time_ptr = static_cast<double *>(time_buf.ptr);
+        double* time_ptr = static_cast<double *>(global_time.request().ptr);
+
+        for (struct trigger &trigger : this->triggers) {
             size_t segment_id = 0;
             for (const auto &[start, end] : valid_triggers) {
                 for (int i = start; i <= end; ++i) {
-                    if (i >= static_cast<int>(signal_size))
+                    if (i >= static_cast<int>(trigger.buffer_size))
                         break;
-                    times_out.push_back(time_ptr[i]);
-                    signals_out.push_back(signal_ptr[i]);
-                    detectors_out.push_back(detector_name);
-                    segment_ids_out.push_back(segment_id);
+
+                    trigger.signal_out.push_back(trigger.buffer_ptr[i]);
+                    trigger.time_out.push_back(time_ptr[i]);
+                    trigger.segment_ids_out.push_back(segment_id);
                 }
                 segment_id++;
             }
         }
-        py::list detector_list;
-        for (const auto &detector : detectors_out)
-            detector_list.append(detector);
-        return std::make_tuple(
-            py::array_t<double>(times_out.size(), times_out.data()),
-            py::array_t<double>(signals_out.size(), signals_out.data()),
-            detector_list,
-            py::array_t<int>(segment_ids_out.size(), segment_ids_out.data()));
     }
+
+
+
+
+
 };

@@ -5,6 +5,7 @@
 #include <cmath>
 #include <map>
 #include <limits>
+#include "../utils/utils.h"
 
 namespace py = pybind11;
 
@@ -88,6 +89,48 @@ std::tuple<py::array_t<int>, py::array_t<int>> get_trigger_indices(
     return std::make_tuple(np_start, np_end);
 }
 
+/**
+ * @brief Applies an in-place cascaded first-order low-pass filter (approximating a Bessel filter) using FFT.
+ *
+ * This function converts the input signal into a NumPy array, applies an FFT-based low-pass filter that
+ * cascades a first-order response 'order' times (emulating a Bessel-like filter), and then writes the filtered
+ * signal back to the original vector with an overall gain applied.
+ *
+ * @param signal The signal vector to be filtered (modified in place).
+ * @param sampling_rate The sampling rate in Hz.
+ * @param cutoff_freq The cutoff frequency in Hz.
+ * @param order The number of first-order stages to cascade (default: 4).
+ * @param gain The gain factor to be applied after filtering (default: 1.0).
+ *
+ * @throws std::invalid_argument if cutoff_freq >= (sampling_rate / 2).
+ */
+void apply_bessel_lowpass_filter_fft(std::vector<double>& signal, double sampling_rate, double cutoff_freq, int order = 4, double gain = 1.0)
+{
+    if (cutoff_freq >= (sampling_rate / 2.0))
+    {
+        throw std::invalid_argument("Cutoff frequency must be less than Nyquist frequency (sampling_rate / 2).");
+    }
+
+    size_t n_samples = signal.size();
+    if(n_samples == 0)
+        return;
+
+    double dt = 1.0 / sampling_rate;
+
+    // Wrap the input vector into a NumPy array (using the vector's data without copying).
+    py::array_t<double> py_signal(n_samples, signal.data());
+
+    // Call the FFT-based filter that now accepts an 'order' parameter to emulate cascaded filtering.
+    py::array_t<double> filtered = fft_filter(py_signal, dt, cutoff_freq, order);
+
+    // Retrieve the filtered result and apply the overall gain.
+    py::buffer_info buf = filtered.request();
+    double* filtered_data = static_cast<double*>(buf.ptr);
+    for (size_t i = 0; i < n_samples; i++)
+        signal[i] = filtered_data[i] * gain;
+
+}
+
 
 /**
  * @brief Applies an in-place cascaded first-order low-pass filter to approximate a Bessel filter.
@@ -104,7 +147,7 @@ std::tuple<py::array_t<int>, py::array_t<int>> get_trigger_indices(
  *
  * @throws std::invalid_argument if cutoff_freq >= (sampling_rate / 2).
  */
-void apply_bessel_lowpass_filter_(std::vector<double>& signal, double sampling_rate, double cutoff_freq, int order = 4, double gain = 1.0)
+void apply_bessel_lowpass_filter_td(std::vector<double>& signal, double sampling_rate, double cutoff_freq, int order = 4, double gain = 1.0)
 {
     if (cutoff_freq >= (sampling_rate / 2.0))
     {
@@ -145,53 +188,6 @@ void apply_bessel_lowpass_filter_(std::vector<double>& signal, double sampling_r
 
 
 
-
-// /**
-//  * @brief Applies an in-place cascaded first-order low-pass filter (approximating a Bessel filter) using FFT.
-//  *
-//  * This function converts the input signal into a NumPy array, applies an FFT-based low-pass filter that
-//  * cascades a first-order response 'order' times (emulating a Bessel-like filter), and then writes the filtered
-//  * signal back to the original vector with an overall gain applied.
-//  *
-//  * @param signal The signal vector to be filtered (modified in place).
-//  * @param sampling_rate The sampling rate in Hz.
-//  * @param cutoff_freq The cutoff frequency in Hz.
-//  * @param order The number of first-order stages to cascade (default: 4).
-//  * @param gain The gain factor to be applied after filtering (default: 1.0).
-//  *
-//  * @throws std::invalid_argument if cutoff_freq >= (sampling_rate / 2).
-//  */
-// void apply_bessel_lowpass_filter_(std::vector<double>& signal, double sampling_rate, double cutoff_freq, int order = 4, double gain = 1.0)
-// {
-//     if (cutoff_freq >= (sampling_rate / 2.0))
-//     {
-//         throw std::invalid_argument("Cutoff frequency must be less than Nyquist frequency (sampling_rate / 2).");
-//     }
-
-//     size_t n_samples = signal.size();
-//     if(n_samples == 0)
-//         return;
-
-//     double dt = 1.0 / sampling_rate;
-
-//     // Wrap the input vector into a NumPy array (using the vector's data without copying).
-//     py::array_t<double> py_signal(n_samples, signal.data());
-
-//     // Call the FFT-based filter that now accepts an 'order' parameter to emulate cascaded filtering.
-//     py::array_t<double> filtered = fft_filter(py_signal, dt, cutoff_freq, order);
-
-//     // Retrieve the filtered result and apply the overall gain.
-//     py::buffer_info buf = filtered.request();
-//     double* filtered_data = static_cast<double*>(buf.ptr);
-//     for (size_t i = 0; i < n_samples; i++)
-//         signal[i] = filtered_data[i] * gain;
-
-// }
-
-
-
-
-
 /**
  * @brief Pybind11 wrapper for in-place Bessel-like low-pass filtering of a NumPy array.
  *
@@ -205,7 +201,7 @@ void apply_bessel_lowpass_filter_(std::vector<double>& signal, double sampling_r
  * @param order The number of first-order stages to cascade (default: 4).
  * @param gain The gain factor applied after filtering (default: 1.0).
  */
-void apply_bessel_lowpass_filter(py::array_t<double>& py_signal, double sampling_rate, double cutoff_freq, int order = 4, double gain = 1.0)
+void apply_bessel_lowpass_filter_py(py::array_t<double>& py_signal, double sampling_rate, double cutoff_freq, int order = 4, double gain = 1.0)
 {
     py::buffer_info signal_buf = py_signal.request();
     size_t n_samples = signal_buf.shape[0];
@@ -215,7 +211,7 @@ void apply_bessel_lowpass_filter(py::array_t<double>& py_signal, double sampling
     std::vector<double> signal(signal_ptr, signal_ptr + n_samples);
 
     // Apply cascaded first-order low-pass filters (Bessel-like)
-    apply_bessel_lowpass_filter_(signal, sampling_rate, cutoff_freq, order, gain);
+    apply_bessel_lowpass_filter_fft(signal, sampling_rate, cutoff_freq, order, gain);
 
     // Write back the modified data in-place
     std::memcpy(signal_ptr, signal.data(), n_samples * sizeof(double));
@@ -236,7 +232,7 @@ void apply_bessel_lowpass_filter(py::array_t<double>& py_signal, double sampling
  * @param cutoff_freq The cutoff frequency in Hz.
  * @param gain The gain applied to the filtered signal (default: 1.0).
  */
-void apply_first_order_butterworth_filter(std::vector<double>& signal, double sampling_rate, double cutoff_freq, double gain = 1.0)
+void apply_first_order_butterworth_filter_td(std::vector<double>& signal, double sampling_rate, double cutoff_freq, double gain = 1.0)
 {
     if (cutoff_freq >= (sampling_rate / 2.0)) {
         throw std::invalid_argument("Cutoff frequency must be less than Nyquist frequency (sampling_rate / 2).");
@@ -260,40 +256,46 @@ void apply_first_order_butterworth_filter(std::vector<double>& signal, double sa
 
 /**
  * @brief Applies an in-place Butterworth low-pass filter to the signal stored in a NumPy array,
- *        by cascading first-order filters.
+ *        by cascading first-order filters using FFT.
  *
- * This function modifies the provided NumPy array in-place. It converts the array to a vector,
- * applies a cascade of first-order Butterworth filters (e.g. 4 in cascade for a 4th order effect),
- * and then writes the modified data back into the array.
+ * This function modifies the provided NumPy array in-place. It calls an FFT-based filter function
+ * that emulates the cascading of first-order Butterworth filters (e.g., 4 cascaded filters for a 4th order effect)
+ * and then writes the filtered data back to the original array.
  *
  * @param py_signal NumPy array containing the signal to be filtered.
  * @param sampling_rate The sampling rate in Hz.
  * @param cutoff_freq The cutoff frequency in Hz.
  * @param num_stages The number of first-order filters to cascade (default: 4).
  * @param gain The gain factor applied after filtering (default: 1.0).
+ *
+ * @throws std::invalid_argument if cutoff_freq >= (sampling_rate / 2).
  */
-void apply_butterworth_lowpass_filter(py::array_t<double>& py_signal, double sampling_rate, double cutoff_freq, int num_stages = 4, double gain = 1.0)
+void apply_butterworth_lowpass_filter_py(py::array_t<double>& py_signal, double sampling_rate, double cutoff_freq, int num_stages = 4, double gain = 1.0)
 {
-    // Get the underlying NumPy array buffer
+    if (cutoff_freq >= (sampling_rate / 2.0)) {
+        throw std::invalid_argument("Cutoff frequency must be less than Nyquist frequency (sampling_rate / 2).");
+    }
+
+    // Get the underlying NumPy array buffer.
     py::buffer_info signal_buf = py_signal.request();
     size_t n_samples = signal_buf.shape[0];
     double* signal_ptr = static_cast<double*>(signal_buf.ptr);
 
-    // Copy data into a vector for processing
-    std::vector<double> signal(signal_ptr, signal_ptr + n_samples);
+    // Compute the sampling period.
+    double dt = 1.0 / sampling_rate;
 
-    // Cascade num_stages first-order Butterworth filters
-    for (int stage = 0; stage < num_stages; stage++) {
-        apply_first_order_butterworth_filter(signal, sampling_rate, cutoff_freq, 1.0);
-    }
+    // Call the FFT-based filter with 'num_stages' (cascaded effect) using the order parameter.
+    py::array_t<double> filtered = fft_filter(py_signal, dt, cutoff_freq, num_stages);
 
-    // Apply overall gain after cascading
+    // Retrieve the filtered data and apply the overall gain.
+    py::buffer_info filtered_buf = filtered.request();
+    double* filtered_data = static_cast<double*>(filtered_buf.ptr);
     for (size_t i = 0; i < n_samples; i++) {
-        signal[i] *= gain;
+        filtered_data[i] *= gain;
     }
 
-    // Write back to the original array (in-place modification)
-    std::memcpy(signal_ptr, signal.data(), n_samples * sizeof(double));
+    // Write the filtered data back into the original array (in-place modification).
+    std::memcpy(signal_ptr, filtered_data, n_samples * sizeof(double));
 }
 
 

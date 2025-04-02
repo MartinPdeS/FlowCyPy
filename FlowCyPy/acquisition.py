@@ -168,14 +168,10 @@ class Acquisition:
             _signal = self.analog.xs(detector_name)['Signal'].pint.to(signal_units).pint.magnitude.to_numpy(copy=False)
             triggering_system.add_signal(detector_name, _signal)
 
-        times, signals, detectors, segment_ids = triggering_system.run()
+        # times, signals, detectors, segment_ids = triggering_system.run()
+        triggering_system.run()
 
-        # Convert back to PintArray (restore units)
-        times = pint_pandas.PintArray(times, time_units)
-        signals = pint_pandas.PintArray(signals, signal_units)
-
-        # If no triggers are found, warn the user and return None
-        if len(times) == 0:
+        if len(triggering_system.get_signal_out(trigger_detector_name)) == 0:
             warnings.warn(
                 f"No signal met the trigger criteria. Try adjusting the threshold. "
                 f"Signal min-max: {self.analog['Signal'].min().to_compact()}, {self.analog['Signal'].max().to_compact()}",
@@ -185,24 +181,35 @@ class Acquisition:
             return None
 
         # Convert NumPy arrays to Pandas DataFrame
-        triggered_signal = pd.DataFrame({
-            "Time": times,
-            "Signal": signals,
-            "Detector": detectors,
-            "SegmentID": segment_ids
-        }).set_index(['Detector', 'SegmentID'])
+        multi_col = pd.MultiIndex.from_product(
+            [[d.name for d in self.cytometer.detectors], ["Time", "Signal", "SegmentID"]], names=['Detector', 'Data']
+        )
+        df = pd.DataFrame(columns=multi_col)
+
+        for d in self.cytometer.detectors:
+            df[(d.name, 'Signal')] = pint_pandas.PintArray(triggering_system.get_signal_out(d.name), signal_units)
+            df[(d.name, 'Time')] = pint_pandas.PintArray(triggering_system.get_time_out(d.name), time_units)
+            df[(d.name, 'SegmentID')] = triggering_system.get_segment_ID(d.name)
+
+        df = df.stack(level='Detector').reset_index()
+
+        # Set the MultiIndex with Detector as the first level and segment as the second:
+        df = df.set_index(['Detector', 'SegmentID'])
+
+        # Sort the index by both levels so that for each detector, segments are in order:
+        df = df.sort_index(level=['Detector', 'SegmentID'])
 
         # Create a specialized DataFrame class
-        triggered_signal = dataframe_subclass.TriggeredAnalogAcquisitionDataFrame(triggered_signal)
+        df = dataframe_subclass.TriggeredAnalogAcquisitionDataFrame(df)
 
         # Copy metadata attributes
-        triggered_signal.attrs['bit_depth'] = self.analog.attrs.get('bit_depth', None)
-        triggered_signal.attrs['saturation_levels'] = self.analog.attrs.get('saturation_levels', None)
-        triggered_signal.attrs['scatterer_dataframe'] = self.analog.attrs.get('scatterer_dataframe', None)
-        triggered_signal.attrs['threshold'] = {'detector': trigger_detector_name, 'value': threshold}
+        df.attrs['bit_depth'] = self.analog.attrs.get('bit_depth', None)
+        df.attrs['saturation_levels'] = self.analog.attrs.get('saturation_levels', None)
+        df.attrs['scatterer_dataframe'] = self.analog.attrs.get('scatterer_dataframe', None)
+        df.attrs['threshold'] = {'detector': trigger_detector_name, 'value': threshold}
 
         # Wrap inside a TriggeredAcquisitions object
-        triggered_acquisition = TriggeredAcquisitions(parent=self, dataframe=triggered_signal)
+        triggered_acquisition = TriggeredAcquisitions(parent=self, dataframe=df)
         triggered_acquisition.scatterer = self.scatterer
 
         return triggered_acquisition

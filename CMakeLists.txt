@@ -13,7 +13,6 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Type of build" FORCE)
 set(LOCAL_CXX_DIR "${PROJECT_NAME}/cpp")
 set(LOCAL_BIN_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/binary")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${LOCAL_BIN_DIR}")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
 
 # Include directories
 include_directories("${LOCAL_CXX_DIR}")
@@ -26,10 +25,6 @@ if (WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     message("MinGW detected on Windows")
     set(STATIC_LINK_OPTIONS "-static")
     add_link_options(-static)
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    message("AppleClang compiler detected")
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    message("GNU compiler detected")
 endif()
 
 
@@ -50,14 +45,12 @@ endfunction()
 
 add_compile_options(-Wall -Wextra -pedantic-errors)
 
-add_subdirectory(FlowCyPy/cpp/filter)
+add_subdirectory(FlowCyPy/cpp/utils)
 
-# add_project_module(triggering_system "triggering_system.cpp" "filter/filter.cpp")
+add_subdirectory(FlowCyPy/cpp/filter)
 
 add_subdirectory(FlowCyPy/cpp/triggering_system)
 
 add_subdirectory(FlowCyPy/cpp/core)
 
 add_subdirectory(FlowCyPy/cpp/peak_locator)
-
-add_subdirectory(FlowCyPy/cpp/utils)

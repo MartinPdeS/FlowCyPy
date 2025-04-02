@@ -9,7 +9,7 @@ PYBIND11_MODULE(interface_filter, module) {
     module.doc() = "Module for efficient signal processing and triggered acquisition using C++";
 
     // Expose Bessel low-pass filter function for direct use if needed
-    module.def("apply_bessel_lowpass_filter", &apply_bessel_lowpass_filter,
+    module.def("apply_bessel_lowpass_filter", &apply_bessel_lowpass_filter_py,
         py::arg("signal"),
         py::arg("sampling_rate"),
         py::arg("cutoff"),
@@ -18,7 +18,7 @@ PYBIND11_MODULE(interface_filter, module) {
         "Applies an in-place Bessel low-pass filter to the provided signals.");
 
     // Expose Bessel low-pass filter function for direct use if needed
-    module.def("apply_butterworth_lowpass_filter", &apply_butterworth_lowpass_filter,
+    module.def("apply_butterworth_lowpass_filter", &apply_butterworth_lowpass_filter_py,
         py::arg("signal"),
         py::arg("sampling_rate"),
         py::arg("cutoff"),
