@@ -5,9 +5,6 @@
 #include <cmath>
 #include <map>
 #include <limits>
-#include <stdexcept>
-#include "../utils/utils.cpp"
-
 
 namespace py = pybind11;
 
@@ -93,50 +90,58 @@ std::tuple<py::array_t<int>, py::array_t<int>> get_trigger_indices(
 
 
 /**
- * @brief Applies an FFT-based low-pass filter to the input signal.
+ * @brief Applies an in-place cascaded first-order low-pass filter to approximate a Bessel filter.
  *
- * This function converts the input std::vector<double> into a NumPy array, applies an FFT-based
- * low-pass filter (using the fft_filter function from your utils), applies a gain factor, and copies
- * the result back into the original vector.
+ * This function modifies the input signal directly. It applies a cascade of first-order RC low-pass filters,
+ * which often provides a smoother (and more linear phase) response than a single high‑order filter.
+ * The filter is implemented in a stable manner and includes a gain factor applied after filtering.
  *
  * @param signal The signal vector to be filtered (modified in place).
  * @param sampling_rate The sampling rate in Hz.
  * @param cutoff_freq The cutoff frequency in Hz.
+ * @param order The number of first-order stages to cascade (default: 4).
  * @param gain The gain factor to be applied after filtering (default: 1.0).
  *
  * @throws std::invalid_argument if cutoff_freq >= (sampling_rate / 2).
  */
-void apply_fft_lowpass_filter(std::vector<double>& signal, double sampling_rate, double cutoff_freq, double gain = 1.0)
+void apply_bessel_lowpass_filter_(std::vector<double>& signal, double sampling_rate, double cutoff_freq, int order = 4, double gain = 1.0)
 {
-    // Check for valid cutoff frequency.
     if (cutoff_freq >= (sampling_rate / 2.0))
     {
         throw std::invalid_argument("Cutoff frequency must be less than Nyquist frequency (sampling_rate / 2).");
     }
 
     size_t n_samples = signal.size();
-    if (n_samples == 0)
+    if(n_samples == 0)
         return;
 
-    // Calculate the sampling period.
-    double dt = 1.0 / sampling_rate;
+    // Sampling period and RC constant
+    double T = 1.0 / sampling_rate;
+    double RC = 1.0 / (2.0 * M_PI * cutoff_freq);
+    double alpha = T / (RC + T);
 
-    // Create a NumPy array that wraps the data in the vector.
-    // Note: This array references the same memory as 'signal'.
-    py::array_t<double> py_signal(n_samples, signal.data());
+    // Create a temporary buffer to hold the intermediate filtered signal
+    std::vector<double> temp(signal);
 
-    // Call the FFT filter function from your utils.cpp.
-    py::array_t<double> filtered = fft_filter(py_signal, dt, cutoff_freq);
+    // Cascade the first-order filter "order" times
+    for (int stage = 0; stage < order; stage++)
+    {
+        double y_prev = temp[0];
+        for (size_t i = 0; i < n_samples; i++)
+        {
+            double y = alpha * temp[i] + (1.0 - alpha) * y_prev;
+            temp[i] = y;
+            y_prev = y;
+        }
+    }
 
-    // Retrieve the filtered data from the NumPy array.
-    py::buffer_info buf = filtered.request();
-    double* filtered_data = static_cast<double*>(buf.ptr);
-
-    // Copy the filtered result back into the original signal and apply the gain.
-    for (size_t i = 0; i < n_samples; i++) {
-         signal[i] = filtered_data[i] * gain;
+    // Apply overall gain and copy the result back to the original signal
+    for (size_t i = 0; i < n_samples; i++)
+    {
+        signal[i] = temp[i] * gain;
     }
 }
+
 /**
  * @brief Pybind11 wrapper for in-place Bessel-like low-pass filtering of a NumPy array.
  *

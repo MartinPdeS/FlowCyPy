@@ -9,12 +9,12 @@ PYBIND11_MODULE(Interface, module) {
 
     module.doc() = "Module for in-place signal processing operations using C++ and pybind11";
 
-    module.def("fft_filter", &fft_filter,
-        "Apply FFT-based low-pass filter to emulate amplifier bandwidth",
-        py::arg("input"),
-        py::arg("dt"),
-        py::arg("fc")
-    );
+    // module.def("fft_filter", &fft_filter,
+    //     "Apply FFT-based low-pass filter to emulate amplifier bandwidth",
+    //     py::arg("input"),
+    //     py::arg("dt"),
+    //     py::arg("fc")
+    // );
 
     module.def("add_gaussian_noise", &add_gaussian_noise,
           py::arg("signal"),
