@@ -16,19 +16,46 @@ config_dict = dict(
 @dataclass(config=config_dict)
 class TransimpedanceAmplifier:
     """
-    Models a transimpedance amplifier (TIA) that converts photocurrent to voltage
-    and introduces thermal and voltage noise based on gain and bandwidth.
+    Represents a transimpedance amplifier (TIA) used to convert photocurrent signals into voltage.
+
+    This model simulates a TIA with a specified gain and bandwidth while incorporating
+    input-referred noise sources. Both voltage (thermal) noise and current noise are modeled
+    to account for the effects these factors have on the overall signal-to-noise ratio in
+    photodetection systems, particularly in low-light or high-sensitivity applications.
+
+    Parameters
+    ----------
+    gain : Quantity
+        The amplifier gain in ohms (Ω), which sets the conversion factor from photocurrent
+        to voltage. Typical values range from 1e3 Ω to 1e7 Ω, depending on the detector type
+        (e.g., photomultiplier tubes or photodiodes).
+    bandwidth : Quantity
+        The -3 dB bandwidth of the amplifier in Hertz (Hz). This defines the frequency
+        range over which the amplifier effectively converts current to voltage.
+    voltage_noise_density : Quantity
+        The input-referred voltage noise spectral density (in V/√Hz). Typical values are
+        in the range of 1 nV/√Hz to 10 nV/√Hz.
+    current_noise_density : Quantity
+        The input-referred current noise spectral density (in A/√Hz). Typical values are
+        on the order of 2 fA/√Hz to 20 fA/√Hz.
 
     Attributes
     ----------
-    gain : units.Quantity
-        Amplifier gain (Ohms), typically 10^3-10^7 Ohm for PMTs or photodiodes.
-    bandwidth : units.Quantity
-        -3dB bandwidth of the amplifier, usually in Hz.
-    voltage_noise_density : units.Quantity
-        Input-referred voltage noise spectral density (V/√Hz). Typical values revolve around [1nV - 10nV] / √Hz
-    current_noise_density : units.Quantity
-        Input-referred current noise spectral density (A/√Hz). Typical values revolve around [2fA - 20fA] / √Hz
+    gain : Quantity
+        The amplifier gain (Ω) used to convert photocurrent into voltage.
+    bandwidth : Quantity
+        The -3 dB frequency bandwidth (Hz) of the amplifier.
+    voltage_noise_density : Quantity
+        The spectral density of voltage noise at the amplifier input (V/√Hz).
+    current_noise_density : Quantity
+        The spectral density of current noise at the amplifier input (A/√Hz).
+
+    Notes
+    -----
+    In applications such as flow cytometry or low-light detection, the noise characteristics
+    of the TIA play a crucial role in determining the overall sensitivity and performance
+    of the detection system. This model allows simulation of how the gain and noise parameters
+    affect the output voltage and the signal-to-noise ratio.
     """
     gain: units.Quantity
     bandwidth: units.Quantity

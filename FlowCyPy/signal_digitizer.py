@@ -16,16 +16,42 @@ config_dict = dict(
 @dataclass(config=config_dict)
 class SignalDigitizer:
     """
-    Handles signal digitization and saturation for a detector.
+    Simulates the digitization and saturation process for detector signals.
+
+    This class models the conversion of continuous (analog) detector signals into discrete
+    digital values, accounting for the sampling rate and bit-depth of the digitizer. It also
+    handles saturation effects by limiting the signal within defined bounds, which is critical
+    for preventing unrealistic values when the input signal exceeds the device's dynamic range.
+
+    Parameters
+    ----------
+    sampling_rate : Quantity
+        The sampling frequency of the digitizer in hertz (Hz), defining how frequently the
+        analog signal is sampled.
+    bit_depth : Union[int, str]
+        The number of quantization levels for the digitizer. This can be provided either as an
+        integer (e.g., 12) or as a descriptive string (e.g., '12bit').
+    saturation_levels : Union[str, Tuple[Quantity, Quantity]]
+        The saturation limits for the digitizer. This can be specified as a tuple containing
+        the lower and upper bounds (each a Quantity with appropriate units), or as 'auto' to allow
+        the digitizer to set these bounds dynamically based on the signal characteristics.
 
     Attributes
     ----------
     sampling_rate : Quantity
-        The sampling frequency of the detector in hertz.
+        The digitizer's sampling rate in Hz.
     bit_depth : Union[int, str]
-        The number of discretization bins or bit-depth (e.g., '12bit').
+        The bit-depth or the number of discrete levels available for digitizing the analog signal.
     saturation_levels : Union[str, Tuple[Quantity, Quantity]]
-        A tuple defining the lower and upper bounds for saturation, or 'auto' to set bounds dynamically.
+        The defined saturation range as a tuple (lower bound, upper bound) or 'auto' if the limits
+        are determined dynamically.
+
+    Notes
+    -----
+    Accurate digitization is essential for faithfully representing the detector's output, while
+    proper handling of saturation prevents clipping of the signal when it exceeds the digitizer's
+    dynamic range. This class provides the flexibility to configure both the sampling resolution
+    and saturation behavior for simulation purposes.
     """
     sampling_rate: Quantity
     bit_depth: Union[int, str] = '10bit'
