@@ -5,7 +5,7 @@
 | Name                                                  |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |------------------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
 | FlowCyPy/acquisition.py                               |       58 |        4 |        8 |        2 |     91% |44, 145, 179-185 |
-| FlowCyPy/amplifier.py                                 |       56 |        4 |        8 |        4 |     88% |41, 47, 102, 107 |
+| FlowCyPy/amplifier.py                                 |       56 |        4 |        8 |        4 |     88% |68, 74, 129, 134 |
 | FlowCyPy/circuits.py                                  |       34 |        6 |        0 |        0 |     82% |21, 104-106, 117-125 |
 | FlowCyPy/classifier.py                                |       44 |        0 |        8 |        4 |     92% |32->35, 74->78, 121->125, 172->176 |
 | FlowCyPy/coupling\_mechanism/empirical.py             |        9 |        4 |        0 |        0 |     56% |     39-47 |
@@ -35,7 +35,7 @@
 | FlowCyPy/physical\_constant.py                        |       10 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/population.py                                |       80 |       21 |       18 |        5 |     69% |46-47, 50, 79-80, 83, 145, 227-231, 253-255, 281, 291, 301, 340-349 |
 | FlowCyPy/scatterer\_collection.py                     |       65 |        9 |       24 |        5 |     80% |64, 121, 139, 143, 150-155, 209 |
-| FlowCyPy/signal\_digitizer.py                         |       44 |        5 |       10 |        4 |     83% |66-67, 90, 99, 119 |
+| FlowCyPy/signal\_digitizer.py                         |       44 |        5 |       10 |        4 |     83% |92-93, 116, 125, 145 |
 | FlowCyPy/source.py                                    |      133 |       25 |       50 |       14 |     77% |36, 44, 56, 62-68, 76, 88, 91, 96-108, 177, 216, 218, 265, 319, 321, 325, 327, 381, 387 |
 | FlowCyPy/triggered\_acquisition.py                    |       38 |       13 |       10 |        0 |     60% |30, 46-48, 102-121 |
 | FlowCyPy/units.py                                     |       26 |        0 |        4 |        0 |    100% |           |
