@@ -123,6 +123,7 @@ repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.macos]
 archs = ["arm64"]
+before-build = "brew install fftw"
 build = ["cp310-*", "cp311-*", "cp312-*"]
 repair-wheel-command = "delocate-wheel -w {dest_dir} -v {wheel}"
 

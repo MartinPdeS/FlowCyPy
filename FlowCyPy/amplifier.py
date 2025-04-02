@@ -26,9 +26,9 @@ class TransimpedanceAmplifier:
     bandwidth : units.Quantity
         -3dB bandwidth of the amplifier, usually in Hz.
     voltage_noise_density : units.Quantity
-        Input-referred voltage noise spectral density (V/√Hz).
+        Input-referred voltage noise spectral density (V/√Hz). Typical values revolve around [1nV - 10nV] / √Hz
     current_noise_density : units.Quantity
-        Input-referred current noise spectral density (A/√Hz).
+        Input-referred current noise spectral density (A/√Hz). Typical values revolve around [2fA - 20fA] / √Hz
     """
     gain: units.Quantity
     bandwidth: units.Quantity
