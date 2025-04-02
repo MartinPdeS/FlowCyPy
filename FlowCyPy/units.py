@@ -8,7 +8,7 @@ _scaled_units_str_list = [
 ]
 
 for _units_str in _scaled_units_str_list:
-    for scale in ['nano', 'micro', 'milli', '', 'kilo', 'mega']:
+    for scale in ['femto', 'pico', 'nano', 'micro', 'milli', '', 'kilo', 'mega']:
         _unit = scale + _units_str
         globals()[_unit] = getattr(ureg, _unit)
 
