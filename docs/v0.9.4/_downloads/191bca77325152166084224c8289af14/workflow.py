@@ -74,7 +74,7 @@ flow_cell = FlowCell(
     height=100 * units.micrometer,
 )
 
-flow_cell.plot(n_samples=300)
+# flow_cell.plot(n_samples=300)
 
 
 # %%
@@ -108,7 +108,7 @@ scatterer_collection.dilute(factor=8)
 # Initialize the scatterer with the flow cell
 df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
 
-df.plot(x='Diameter', bins='auto')
+# df.plot(x='Diameter', bins='auto')
 
 # %%
 # Step 5: Define Detectors
@@ -184,15 +184,15 @@ processing_steps = [
 cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
 acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
-_ = acquisition.scatterer.plot(
-    x='side',
-    y='forward',
-    z='RefractiveIndex'
-)
+# _ = acquisition.scatterer.plot(
+#     x='side',
+#     y='forward',
+#     z='RefractiveIndex'
+# )
 
 # %%
 # Visualize the scatter signals from both detectors
-acquisition.analog.plot()
+# acquisition.analog.plot()
 
 # %%
 # Step 7: Analyze Detected Signals
