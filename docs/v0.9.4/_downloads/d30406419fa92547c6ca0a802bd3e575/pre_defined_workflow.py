@@ -28,7 +28,7 @@ from FlowCyPy import ScattererCollection
 from FlowCyPy.population import Exosome, HDL
 from FlowCyPy.detector import PMT
 from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy import FlowCytometer
+from FlowCyPy import FlowCytometer, TransimpedanceAmplifier
 
 source = GaussianBeam(
     numerical_aperture=0.3 * units.AU,           # Numerical aperture
@@ -68,9 +68,15 @@ detector_0 = PMT(name='forward', phi_angle=0 * units.degree, numerical_aperture=
 
 detector_1 = PMT(name='side', phi_angle=90 * units.degree, numerical_aperture=0.3 * units.AU)
 
+transimpedance_amplifier = TransimpedanceAmplifier(
+    gain=100 * units.volt / units.ampere,
+    bandwidth = 10 * units.megahertz
+)
+
 
 cytometer = FlowCytometer(
     source=source,
+    transimpedance_amplifier=transimpedance_amplifier,
     scatterer_collection=scatterer_collection,
     signal_digitizer=signal_digitizer,
     detectors=[detector_0, detector_1],

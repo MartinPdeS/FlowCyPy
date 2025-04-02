@@ -40,7 +40,7 @@ Step 1: Import necessary modules from FlowCyPy
 
 .. code-block:: Python
 
-    from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam
+    from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, TransimpedanceAmplifier
     from FlowCyPy import distribution
     from FlowCyPy.population import Sphere
     from FlowCyPy.signal_digitizer import SignalDigitizer
@@ -111,7 +111,7 @@ Step 4: Define the particle size distribution
 Use a normal size distribution with a mean size of 200 nanometers and a standard deviation of 10 nanometers.
 This represents the population of scatterers (particles) that will interact with the laser source.
 
-.. GENERATED FROM PYTHON SOURCE LINES 55-117
+.. GENERATED FROM PYTHON SOURCE LINES 55-123
 
 .. code-block:: Python
 
@@ -162,11 +162,17 @@ This represents the population of scatterers (particles) that will interact with
         responsivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
     )
 
+    transimpedance_amplifier = TransimpedanceAmplifier(
+        gain=100 * units.volt / units.ampere,
+        bandwidth = 10 * units.megahertz
+    )
+
     # Step 6: Simulate Flow Cytometer Signals
     # ---------------------------------------
     # Create a FlowCytometer instance to simulate the signals generated as particles pass through the laser beam.
     cytometer = FlowCytometer(
         source=source,
+        transimpedance_amplifier=transimpedance_amplifier,
         signal_digitizer=signal_digitizer,
         scatterer_collection=scatterer_collection,
         flow_cell=flow_cell,                # Particle size distribution
@@ -193,19 +199,19 @@ This represents the population of scatterers (particles) that will interact with
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 118-121
+.. GENERATED FROM PYTHON SOURCE LINES 124-127
 
 Visualize the scatter analog signals from both detectors
 acquisition.analog.log()
 acquisition.analog.plot()
 
-.. GENERATED FROM PYTHON SOURCE LINES 123-126
+.. GENERATED FROM PYTHON SOURCE LINES 129-132
 
 Visualize the scatter digital signals from both detectors
 acquisition.digital.log()
 acquisition.digital.plot()
 
-.. GENERATED FROM PYTHON SOURCE LINES 126-143
+.. GENERATED FROM PYTHON SOURCE LINES 132-149
 
 .. code-block:: Python
 
@@ -241,7 +247,7 @@ acquisition.digital.plot()
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.909 seconds)
+   **Total running time of the script:** (0 minutes 0.709 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_triggered_acquisition.py:

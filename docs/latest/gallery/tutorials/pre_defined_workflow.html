@@ -473,7 +473,6 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../noise_sources/index.html">Examples: Noises</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/dark_current.html">Dark Current</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/shot_noise.html">Shot noise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../noise_sources/thermal.html">Thermal Noise</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../extras/index.html">Examples: extras</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -575,7 +574,7 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Exosome</span><span class="p">,</span> <span class="n">HDL</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">PMT</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">TransimpedanceAmplifier</span>
 
 <span class="n">source</span> <span class="o">=</span> <span class="n">GaussianBeam</span><span class="p">(</span>
     <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>           <span class="c1"># Numerical aperture</span>
@@ -615,9 +614,15 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 
 <span class="n">detector_1</span> <span class="o">=</span> <span class="n">PMT</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">)</span>
 
+<span class="n">transimpedance_amplifier</span> <span class="o">=</span> <span class="n">TransimpedanceAmplifier</span><span class="p">(</span>
+    <span class="n">gain</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span>
+    <span class="n">bandwidth</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span>
+<span class="p">)</span>
+
 
 <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+    <span class="n">transimpedance_amplifier</span><span class="o">=</span><span class="n">transimpedance_amplifier</span><span class="p">,</span>
     <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
     <span class="n">signal_digitizer</span><span class="o">=</span><span class="n">signal_digitizer</span><span class="p">,</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">],</span>
@@ -647,7 +652,7 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 &lt;Figure size 800x500 with 1 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.854 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.912 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-pre-defined-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/2048f4e8a3fcccab34320d69681f3e9a/pre_defined_workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">pre_defined_workflow.ipynb</span></code></a></p>

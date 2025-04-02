@@ -14,7 +14,7 @@ Steps:
 """
 
 # Step 1: Import the necessary libraries
-from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam
+from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, TransimpedanceAmplifier
 from FlowCyPy import distribution, population
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
@@ -85,12 +85,19 @@ detector_ssc = Detector(
     phi_angle=90 * units.degree,              # Angle: 90 degrees for side scatter
 )
 
+transimpedance_amplifier = TransimpedanceAmplifier(
+    gain=100 * units.volt / units.ampere,
+    bandwidth = 10 * units.megahertz
+)
+
+
 # Step 6: Create a FlowCytometer instance
 # ---------------------------------------
 # The flow cytometer is configured with the source, scatterer distribution, and detectors.
 # The 'mie' coupling mechanism models how the particles interact with the laser beam.
 cytometer = FlowCytometer(
     source=source,
+    transimpedance_amplifier=transimpedance_amplifier,
     signal_digitizer=signal_digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,  # Particle size distribution

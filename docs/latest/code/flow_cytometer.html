@@ -539,7 +539,7 @@ document.write(`
 <p>Classes related to the overall configuration of a flow cytometry system.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCytometer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scatterer_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_digitizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coupling_mechanism='mie'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_power=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'milliwatt')&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCytometer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scatterer_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_digitizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transimpedance_amplifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coupling_mechanism='mie'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_power=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'milliwatt')&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A simulation class for modeling flow cytometer signals, including Forward Scatter (FSC) and Side Scatter (SSC) channels.</p>
 <p>The FlowCytometer class integrates optical and flow dynamics to simulate signal generation in a flow cytometer.
@@ -557,6 +557,7 @@ Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh�
 <li><p><strong>source</strong> (<em>BaseBeam</em>)</p></li>
 <li><p><strong>scatterer_collection</strong> (<em>object</em>)</p></li>
 <li><p><strong>signal_digitizer</strong> (<em>SignalDigitizer</em>)</p></li>
+<li><p><strong>transimpedance_amplifier</strong> (<em>TransimpedanceAmplifier</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -637,6 +638,7 @@ Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh�
 <li><p><strong>flow_cell</strong> (<em>FlowCell</em>)</p></li>
 <li><p><strong>signal_digitizer</strong> (<em>SignalDigitizer</em>)</p></li>
 <li><p><strong>detectors</strong> (<em>List</em><em>[</em><a class="reference internal" href="detector.html#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><em>Detector</em></a><em>]</em>)</p></li>
+<li><p><strong>transimpedance_amplifier</strong> (<em>TransimpedanceAmplifier</em>)</p></li>
 <li><p><strong>coupling_mechanism</strong> (<em>str</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>background_power</strong> (<em>Quantity</em><em> | </em><em>None</em>)</p></li>
 </ul>
@@ -726,19 +728,6 @@ to each detector’s raw signal.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.get_saturation_levels">
-<span class="sig-name descname"><span class="pre">get_saturation_levels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.get_saturation_levels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.get_saturation_levels" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>signal_dataframe</strong> (<em>DataFrame</em>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.prepare_acquisition">
 <span class="sig-name descname"><span class="pre">prepare_acquisition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.prepare_acquisition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.prepare_acquisition" title="Link to this definition">#</a></dt>
 <dd><p>Set the internal properties for run_time.</p>
@@ -789,7 +778,6 @@ to each detector’s raw signal.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.circuit_process_data"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.circuit_process_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.get_acquisition"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.get_acquisition()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.get_detector_by_name"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.get_detector_by_name()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.get_saturation_levels"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.get_saturation_levels()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.prepare_acquisition"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.prepare_acquisition()</span></code></a></li>
 </ul>
 </li>

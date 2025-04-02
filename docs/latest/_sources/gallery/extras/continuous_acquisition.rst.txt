@@ -40,7 +40,7 @@ Step 1: Import necessary modules from FlowCyPy
 
 .. code-block:: Python
 
-    from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam
+    from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, TransimpedanceAmplifier
     from FlowCyPy.flow_cell import FlowCell
     from FlowCyPy import distribution
     from FlowCyPy.population import Sphere
@@ -108,7 +108,7 @@ Step 4: Define the particle diameter distribution
 Use a normal diameter distribution with a mean diameter of 200 nanometers and a standard deviation of 10 nanometers.
 This represents the population of scatterers (particles) that will interact with the laser source.
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-125
+.. GENERATED FROM PYTHON SOURCE LINES 52-131
 
 .. code-block:: Python
 
@@ -158,11 +158,17 @@ This represents the population of scatterers (particles) that will interact with
         responsivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
     )
 
+    transimpedance_amplifier = TransimpedanceAmplifier(
+        gain=100 * units.volt / units.ampere,
+        bandwidth = 10 * units.megahertz
+    )
+
     # Step 6: Simulate Flow Cytometer Signals
     # ---------------------------------------
     # Create a FlowCytometer instance to simulate the signals generated as particles pass through the laser beam.
     cytometer = FlowCytometer(
         source=source,
+        transimpedance_amplifier=transimpedance_amplifier,
         signal_digitizer=signal_digitizer,
         scatterer_collection=scatterer_collection,
         flow_cell=flow_cell,                # Particle diameter distribution
@@ -198,6 +204,10 @@ This represents the population of scatterers (particles) that will interact with
 
  .. code-block:: none
 
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
     '\nSummary:\n--------\nThis script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,\nand extracts important features. The process is visualized through signal plots, and key properties are displayed.\n'
 
@@ -206,7 +216,7 @@ This represents the population of scatterers (particles) that will interact with
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.613 seconds)
+   **Total running time of the script:** (0 minutes 0.596 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_continuous_acquisition.py:

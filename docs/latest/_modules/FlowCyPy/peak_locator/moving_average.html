@@ -506,7 +506,7 @@ document.write(`
                   
   <h1>Source code for FlowCyPy.peak_locator.moving_average</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary</span><span class="w"> </span><span class="kn">import</span> <span class="n">peak_locator_binding</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary</span><span class="w"> </span><span class="kn">import</span> <span class="n">interface_peak_locator</span>
 
 <div class="viewcode-block" id="SlidingWindowPeakLocator">
 <a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.moving_average.SlidingWindowPeakLocator">[docs]</a>
@@ -585,7 +585,7 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span> <span class="o">=</span> <span class="n">max_number_of_peaks</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">peak_locator_binding</span><span class="o">.</span><span class="n">SlidingWindowPeakLocator</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">interface_peak_locator</span><span class="o">.</span><span class="n">SlidingWindowPeakLocator</span><span class="p">(</span>
             <span class="n">window_size</span><span class="o">=</span><span class="n">window_size</span><span class="p">,</span>
             <span class="n">window_step</span><span class="o">=</span><span class="n">window_step</span><span class="p">,</span>
             <span class="n">max_number_of_peaks</span><span class="o">=</span><span class="n">max_number_of_peaks</span><span class="p">,</span>

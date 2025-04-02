@@ -118,6 +118,7 @@ df.plot(x='Diameter', bins='auto')
 
 from FlowCyPy.detector import Detector
 from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy.amplifier import TransimpedanceAmplifier
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
@@ -130,8 +131,6 @@ detector_0 = Detector(
     phi_angle=0 * units.degree,                  # Forward scatter angle
     numerical_aperture=0.3 * units.AU,
     responsivity=1 * units.ampere / units.watt,
-    resistance=50 * units.ohm,
-    temperature=300 * units.kelvin
 )
 
 detector_1 = Detector(
@@ -139,19 +138,22 @@ detector_1 = Detector(
     phi_angle=90 * units.degree,                 # Side scatter angle
     numerical_aperture=0.3 * units.AU,
     responsivity=1 * units.ampere / units.watt,
-    resistance=50 * units.ohm,
-    temperature=300 * units.kelvin,
 )
-
 
 detector_2 = Detector(
     name='det_2',
     phi_angle=30 * units.degree,                 # Side scatter angle
     numerical_aperture=0.3 * units.AU,
     responsivity=1 * units.ampere / units.watt,
-    resistance=50 * units.ohm,
-    temperature=300 * units.kelvin,
 )
+
+amplifier = TransimpedanceAmplifier(
+    gain=10 * units.volt / units.ampere,
+    bandwidth=10 * units.megahertz,
+    voltage_noise_density=1 * units.nanovolt / units.sqrt_hertz,
+    current_noise_density=2 * units.femtoampere / units.sqrt_hertz
+)
+
 
 # %%
 # Step 6: Simulate Flow Cytometry Experiment
@@ -165,6 +167,7 @@ from FlowCyPy import FlowCytometer, circuits
 
 cytometer = FlowCytometer(
     source=source,
+    transimpedance_amplifier=amplifier,
     scatterer_collection=scatterer_collection,
     signal_digitizer=signal_digitizer,
     detectors=[detector_0, detector_1, detector_2],
@@ -197,7 +200,7 @@ acquisition.analog.plot()
 # The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 # window size and threshold.
 triggered_acquisition = acquisition.run_triggering(
-    threshold=3 * units.microvolt,
+    threshold=5 * units.microvolt,
     trigger_detector_name='forward',
     max_triggers=35,
     pre_buffer=20,
