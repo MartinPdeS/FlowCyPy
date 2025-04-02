@@ -5,7 +5,7 @@
 | Name                                                  |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |------------------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
 | FlowCyPy/acquisition.py                               |       58 |        4 |        8 |        2 |     91% |44, 145, 179-185 |
-| FlowCyPy/amplifier.py                                 |       42 |        4 |        8 |        4 |     84% |42, 48, 89, 93 |
+| FlowCyPy/amplifier.py                                 |       56 |        4 |        8 |        4 |     88% |41, 47, 102, 107 |
 | FlowCyPy/circuits.py                                  |       34 |        6 |        0 |        0 |     82% |21, 104-106, 117-125 |
 | FlowCyPy/classifier.py                                |       44 |        0 |        8 |        4 |     92% |32->35, 74->78, 121->125, 172->176 |
 | FlowCyPy/coupling\_mechanism/empirical.py             |        9 |        4 |        0 |        0 |     56% |     39-47 |
@@ -40,7 +40,7 @@
 | FlowCyPy/triggered\_acquisition.py                    |       38 |       13 |       10 |        0 |     60% |30, 46-48, 102-121 |
 | FlowCyPy/units.py                                     |       26 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       56 |       56 |       14 |        0 |      0% |     1-134 |
-|                                             **TOTAL** | **1995** |  **623** |  **448** |   **88** | **64%** |           |
+|                                             **TOTAL** | **2009** |  **623** |  **448** |   **88** | **64%** |           |
 
 
 ## Setup coverage badge
