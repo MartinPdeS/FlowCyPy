@@ -530,30 +530,55 @@ document.write(`
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">unsafe_hash</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Detector</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a photodetector in a flow cytometry simulation.</span>
+<span class="sd">    Represents a photodetector for flow cytometry simulations.</span>
 
-<span class="sd">    This class simulates a detector that captures light scattering signals, incorporating</span>
-<span class="sd">    the effects of noise sources (shot noise, thermal noise, and dark current noise) as part</span>
-<span class="sd">    of the signal processing workflow.</span>
+<span class="sd">    This class simulates a photodetector that captures light scattering signals in a flow</span>
+<span class="sd">    cytometry setup. It models the detector&#39;s response by incorporating various noise sources</span>
+<span class="sd">    (shot noise, thermal noise, and dark current noise) into the signal processing workflow,</span>
+<span class="sd">    thereby providing a realistic representation of detector performance.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    name : str, optional</span>
-<span class="sd">        Identifier for the detector. If not provided, a unique ID is assigned.</span>
+<span class="sd">        A unique identifier for the detector. If not provided, a unique ID is generated.</span>
 <span class="sd">    phi_angle : Quantity</span>
-<span class="sd">        The detector&#39;s primary angle of incidence (in degrees).</span>
+<span class="sd">        The primary azimuthal angle of incidence for the detector (in degrees).</span>
 <span class="sd">    numerical_aperture : Quantity</span>
 <span class="sd">        The numerical aperture of the detector (dimensionless).</span>
 <span class="sd">    cache_numerical_aperture : Quantity, optional</span>
-<span class="sd">        The numerical aperture of the cache positioned in front of the detector (dimensionless).</span>
+<span class="sd">        The numerical aperture of the caching element placed in front of the detector</span>
+<span class="sd">        (dimensionless). Default is 0 AU.</span>
 <span class="sd">    responsivity : Quantity, optional</span>
-<span class="sd">        Detector responsivity (in ampere per watt). Default is 1 A/W.</span>
+<span class="sd">        The responsivity of the detector (in amperes per watt). Default is 1 A/W. Typical</span>
+<span class="sd">        ranges include 0.4–0.7 A/W for silicon-based detectors and 0.8–0.9 A/W for InGaAs-based</span>
+<span class="sd">        detectors.</span>
 <span class="sd">    dark_current : Quantity, optional</span>
-<span class="sd">        The dark current of the detector (in amperes). Default is 0 A.</span>
+<span class="sd">        The dark current of the detector (in amperes). Default is 0 A. Typical values are in the</span>
+<span class="sd">        range of 1–100 nA.</span>
 <span class="sd">    gamma_angle : Quantity, optional</span>
-<span class="sd">        An additional angular parameter (in degrees), if applicable.</span>
+<span class="sd">        The complementary (longitudinal) angle of incidence, if applicable (in degrees).</span>
+<span class="sd">        Default is 0°.</span>
 <span class="sd">    sampling : Quantity, optional</span>
-<span class="sd">        Sampling rate or related parameter (unitless or arbitrary units), default is 100.</span>
+<span class="sd">        The number of spatial sampling points defining the detector’s resolution. Default is 100 AU.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    phi_angle : Quantity</span>
+<span class="sd">        The detector&#39;s primary azimuthal angle (in degrees).</span>
+<span class="sd">    numerical_aperture : Quantity</span>
+<span class="sd">        The detector&#39;s numerical aperture (dimensionless).</span>
+<span class="sd">    cache_numerical_aperture : Quantity</span>
+<span class="sd">        The numerical aperture of the cache element (dimensionless).</span>
+<span class="sd">    responsivity : Quantity</span>
+<span class="sd">        The responsivity of the detector (in amperes per watt).</span>
+<span class="sd">    dark_current : Quantity</span>
+<span class="sd">        The dark current of the detector (in amperes).</span>
+<span class="sd">    gamma_angle : Quantity</span>
+<span class="sd">        The complementary (longitudinal) angle (in degrees).</span>
+<span class="sd">    sampling : Quantity</span>
+<span class="sd">        The number of spatial sampling points.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        The identifier for the detector.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">phi_angle</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">numerical_aperture</span><span class="p">:</span> <span class="n">Quantity</span>

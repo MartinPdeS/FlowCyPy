@@ -542,27 +542,121 @@ document.write(`
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Detector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phi_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_numerical_aperture=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'dimensionless')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma_angle=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'degree')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling=&lt;Quantity(100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'dimensionless')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">responsivity=&lt;Quantity(1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ampere</span> <span class="pre">/</span> <span class="pre">watt')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_current=&lt;Quantity(0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'ampere')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Represents a photodetector in a flow cytometry simulation.</p>
-<p>This class simulates a detector that captures light scattering signals, incorporating
-the effects of noise sources (shot noise, thermal noise, and dark current noise) as part
-of the signal processing workflow.</p>
+<p>Represents a photodetector for flow cytometry simulations.</p>
+<p>This class simulates a photodetector that captures light scattering signals in a flow
+cytometry setup. It models the detector’s response by incorporating various noise sources
+(shot noise, thermal noise, and dark current noise) into the signal processing workflow,
+thereby providing a realistic representation of detector performance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Identifier for the detector. If not provided, a unique ID is assigned.</p></li>
-<li><p><strong>phi_angle</strong> (<em>Quantity</em>) – The detector’s primary angle of incidence (in degrees).</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – A unique identifier for the detector. If not provided, a unique ID is generated.</p></li>
+<li><p><strong>phi_angle</strong> (<em>Quantity</em>) – The primary azimuthal angle of incidence for the detector (in degrees).</p></li>
 <li><p><strong>numerical_aperture</strong> (<em>Quantity</em>) – The numerical aperture of the detector (dimensionless).</p></li>
-<li><p><strong>cache_numerical_aperture</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The numerical aperture of the cache positioned in front of the detector (dimensionless).</p></li>
-<li><p><strong>responsivity</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – Detector responsivity (in ampere per watt). Default is 1 A/W.</p></li>
-<li><p><strong>dark_current</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The dark current of the detector (in amperes). Default is 0 A.</p></li>
-<li><p><strong>gamma_angle</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – An additional angular parameter (in degrees), if applicable.</p></li>
-<li><p><strong>sampling</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – Sampling rate or related parameter (unitless or arbitrary units), default is 100.</p></li>
+<li><p><strong>cache_numerical_aperture</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The numerical aperture of the caching element placed in front of the detector
+(dimensionless). Default is 0 AU.</p></li>
+<li><p><strong>responsivity</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The responsivity of the detector (in amperes per watt). Default is 1 A/W. Typical
+ranges include 0.4–0.7 A/W for silicon-based detectors and 0.8–0.9 A/W for InGaAs-based
+detectors.</p></li>
+<li><p><strong>dark_current</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The dark current of the detector (in amperes). Default is 0 A. Typical values are in the
+range of 1–100 nA.</p></li>
+<li><p><strong>gamma_angle</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The complementary (longitudinal) angle of incidence, if applicable (in degrees).
+Default is 0°.</p></li>
+<li><p><strong>sampling</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The number of spatial sampling points defining the detector’s resolution. Default is 100 AU.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.phi_angle">
+<span class="sig-name descname"><span class="pre">phi_angle</span></span><a class="headerlink" href="#FlowCyPy.detector.Detector.phi_angle" title="Link to this definition">#</a></dt>
+<dd><p>The detector’s primary azimuthal angle (in degrees).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.numerical_aperture">
+<span class="sig-name descname"><span class="pre">numerical_aperture</span></span><a class="headerlink" href="#FlowCyPy.detector.Detector.numerical_aperture" title="Link to this definition">#</a></dt>
+<dd><p>The detector’s numerical aperture (dimensionless).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.detector.Detector.cache_numerical_aperture">
-<span class="sig-name descname"><span class="pre">cache_numerical_aperture</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(0,</span> <span class="pre">'dimensionless')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.cache_numerical_aperture" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">cache_numerical_aperture</span></span><a class="headerlink" href="#FlowCyPy.detector.Detector.cache_numerical_aperture" title="Link to this definition">#</a></dt>
+<dd><p>The numerical aperture of the cache element (dimensionless).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.responsivity">
+<span class="sig-name descname"><span class="pre">responsivity</span></span><a class="headerlink" href="#FlowCyPy.detector.Detector.responsivity" title="Link to this definition">#</a></dt>
+<dd><p>The responsivity of the detector (in amperes per watt).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.dark_current">
+<span class="sig-name descname"><span class="pre">dark_current</span></span><a class="headerlink" href="#FlowCyPy.detector.Detector.dark_current" title="Link to this definition">#</a></dt>
+<dd><p>The dark current of the detector (in amperes).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.gamma_angle">
+<span class="sig-name descname"><span class="pre">gamma_angle</span></span><a class="headerlink" href="#FlowCyPy.detector.Detector.gamma_angle" title="Link to this definition">#</a></dt>
+<dd><p>The complementary (longitudinal) angle (in degrees).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.sampling">
+<span class="sig-name descname"><span class="pre">sampling</span></span><a class="headerlink" href="#FlowCyPy.detector.Detector.sampling" title="Link to this definition">#</a></dt>
+<dd><p>The number of spatial sampling points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#FlowCyPy.detector.Detector.name" title="Link to this definition">#</a></dt>
+<dd><p>The identifier for the detector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">cache_numerical_aperture</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(0,</span> <span class="pre">'dimensionless')&gt;</span></em><a class="headerlink" href="#id0" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -712,8 +806,8 @@ initialized to zero.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.responsivity">
-<span class="sig-name descname"><span class="pre">responsivity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(1,</span> <span class="pre">'ampere</span> <span class="pre">/</span> <span class="pre">watt')&gt;</span></em><a class="headerlink" href="#FlowCyPy.detector.Detector.responsivity" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">responsivity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Quantity(1,</span> <span class="pre">'ampere</span> <span class="pre">/</span> <span class="pre">watt')&gt;</span></em><a class="headerlink" href="#id2" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -743,13 +837,21 @@ initialized to zero.</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector"><code class="docutils literal notranslate"><span class="pre">Detector</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.phi_angle"><code class="docutils literal notranslate"><span class="pre">Detector.phi_angle</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.numerical_aperture"><code class="docutils literal notranslate"><span class="pre">Detector.numerical_aperture</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.cache_numerical_aperture"><code class="docutils literal notranslate"><span class="pre">Detector.cache_numerical_aperture</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.responsivity"><code class="docutils literal notranslate"><span class="pre">Detector.responsivity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.dark_current"><code class="docutils literal notranslate"><span class="pre">Detector.dark_current</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.gamma_angle"><code class="docutils literal notranslate"><span class="pre">Detector.gamma_angle</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.sampling"><code class="docutils literal notranslate"><span class="pre">Detector.sampling</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.name"><code class="docutils literal notranslate"><span class="pre">Detector.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id0"><code class="docutils literal notranslate"><span class="pre">Detector.cache_numerical_aperture</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.dataframe"><code class="docutils literal notranslate"><span class="pre">Detector.dataframe</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.get_dark_current_noise"><code class="docutils literal notranslate"><span class="pre">Detector.get_dark_current_noise()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.get_initialized_signal"><code class="docutils literal notranslate"><span class="pre">Detector.get_initialized_signal()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.get_noise_signal"><code class="docutils literal notranslate"><span class="pre">Detector.get_noise_signal()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.get_shot_noise"><code class="docutils literal notranslate"><span class="pre">Detector.get_shot_noise()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.responsivity"><code class="docutils literal notranslate"><span class="pre">Detector.responsivity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><code class="docutils literal notranslate"><span class="pre">Detector.responsivity</span></code></a></li>
 </ul>
 </li>
 </ul>
