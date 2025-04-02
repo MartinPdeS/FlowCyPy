@@ -14,14 +14,14 @@ link_libraries(PkgConfig::FFTW)
 
 
 
-find_package(FFTW3 REQUIRED)
+# find_package(FFTW3 REQUIRED)
 
-message(STATUS "FFTW3_LIBRARIES = ${FFTW3_LIBRARIES}")
-message(STATUS "FFTW3_INCLUDE_DIRS = ${FFTW3_INCLUDE_DIRS}")
+# message(STATUS "FFTW3_LIBRARIES = ${FFTW3_LIBRARIES}")
+# message(STATUS "FFTW3_INCLUDE_DIRS = ${FFTW3_INCLUDE_DIRS}")
 
-if(NOT FFTW3_FOUND)
-    message(FATAL_ERROR "FFTW3 not found. Please install FFTW3 or set CMAKE_PREFIX_PATH accordingly.")
-endif()
+# if(NOT FFTW3_FOUND)
+#     message(FATAL_ERROR "FFTW3 not found. Please install FFTW3 or set CMAKE_PREFIX_PATH accordingly.")
+# endif()
 
 
 # Create your library target
