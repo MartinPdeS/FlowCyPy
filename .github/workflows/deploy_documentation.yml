@@ -22,3 +22,4 @@ jobs:
     with:
       python-version: "3.11"
       package-name: "FlowCyPy"
+      apt-package: xvfb jq libfftw3-double3 libfftw3-dev
