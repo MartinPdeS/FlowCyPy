@@ -8,6 +8,11 @@ find_package(PkgConfig REQUIRED)
 pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
 include_directories(PkgConfig::FFTW)
 
+if(MINGW)
+  # Enable declarations for C11 and POSIX functions
+  add_compile_definitions(__STDC_WANT_LIB_EXT1__=1)
+  add_compile_definitions(_POSIX_C_SOURCE=200809L)
+endif()
 
 # Create your library target
 add_library("cpp_${NAME}" STATIC "${NAME}.cpp")

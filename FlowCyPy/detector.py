@@ -21,30 +21,55 @@ config_dict = dict(
 @dataclass(config=config_dict, unsafe_hash=True)
 class Detector():
     """
-    Represents a photodetector in a flow cytometry simulation.
+    Represents a photodetector for flow cytometry simulations.
 
-    This class simulates a detector that captures light scattering signals, incorporating
-    the effects of noise sources (shot noise, thermal noise, and dark current noise) as part
-    of the signal processing workflow.
+    This class simulates a photodetector that captures light scattering signals in a flow
+    cytometry setup. It models the detector's response by incorporating various noise sources
+    (shot noise, thermal noise, and dark current noise) into the signal processing workflow,
+    thereby providing a realistic representation of detector performance.
 
     Parameters
     ----------
     name : str, optional
-        Identifier for the detector. If not provided, a unique ID is assigned.
+        A unique identifier for the detector. If not provided, a unique ID is generated.
     phi_angle : Quantity
-        The detector's primary angle of incidence (in degrees).
+        The primary azimuthal angle of incidence for the detector (in degrees).
     numerical_aperture : Quantity
         The numerical aperture of the detector (dimensionless).
     cache_numerical_aperture : Quantity, optional
-        The numerical aperture of the cache positioned in front of the detector (dimensionless).
+        The numerical aperture of the caching element placed in front of the detector
+        (dimensionless). Default is 0 AU.
     responsivity : Quantity, optional
-        Detector responsivity (in ampere per watt). Default is 1 A/W.
+        The responsivity of the detector (in amperes per watt). Default is 1 A/W. Typical
+        ranges include 0.4–0.7 A/W for silicon-based detectors and 0.8–0.9 A/W for InGaAs-based
+        detectors.
     dark_current : Quantity, optional
-        The dark current of the detector (in amperes). Default is 0 A.
+        The dark current of the detector (in amperes). Default is 0 A. Typical values are in the
+        range of 1–100 nA.
     gamma_angle : Quantity, optional
-        An additional angular parameter (in degrees), if applicable.
+        The complementary (longitudinal) angle of incidence, if applicable (in degrees).
+        Default is 0°.
     sampling : Quantity, optional
-        Sampling rate or related parameter (unitless or arbitrary units), default is 100.
+        The number of spatial sampling points defining the detector’s resolution. Default is 100 AU.
+
+    Attributes
+    ----------
+    phi_angle : Quantity
+        The detector's primary azimuthal angle (in degrees).
+    numerical_aperture : Quantity
+        The detector's numerical aperture (dimensionless).
+    cache_numerical_aperture : Quantity
+        The numerical aperture of the cache element (dimensionless).
+    responsivity : Quantity
+        The responsivity of the detector (in amperes per watt).
+    dark_current : Quantity
+        The dark current of the detector (in amperes).
+    gamma_angle : Quantity
+        The complementary (longitudinal) angle (in degrees).
+    sampling : Quantity
+        The number of spatial sampling points.
+    name : str
+        The identifier for the detector.
     """
     phi_angle: Quantity
     numerical_aperture: Quantity
