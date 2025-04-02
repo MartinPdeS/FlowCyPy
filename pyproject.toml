@@ -106,6 +106,9 @@ testpaths = [
     "tests/*",
 ]
 
+[tool.scikit-build.cmake.define]
+# Add this only for Windows - it's safe even on other OS
+PKG_CONFIG_EXECUTABLE = "C:/msys64/mingw64/bin/pkg-config.exe"
 
 [tool.cibuildwheel]
 build-frontend = "build"
