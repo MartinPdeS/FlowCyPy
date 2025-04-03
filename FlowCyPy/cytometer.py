@@ -289,7 +289,7 @@ class FlowCytometer:
                     background_power=self.background_power.to('watt').magnitude
                 )
 
-                total_power = core.getAcquisition() * units.watt
+                # total_power = core.getAcquisition() * units.watt
 
         #     if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
         #         photocurrent = (total_power * detector.responsivity)
