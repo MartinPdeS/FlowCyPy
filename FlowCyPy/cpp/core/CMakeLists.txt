@@ -11,6 +11,6 @@ target_link_libraries("cpp_${NAME}" PUBLIC pybind11::module)
 # Create your Python module
 pybind11_add_module("interface_${NAME}" MODULE interface.cpp)
 
-target_link_libraries("interface_${NAME}" PUBLIC pybind11::module)
+target_link_libraries("interface_${NAME}" PUBLIC "cpp_${NAME}")
 
 set_target_properties("interface_${NAME}" PROPERTIES OUTPUT_NAME "interface_${NAME}")

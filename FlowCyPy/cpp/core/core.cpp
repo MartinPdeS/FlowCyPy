@@ -79,16 +79,9 @@
 // };
 
 
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
+#include "core.h"
 
-namespace py = pybind11;
-
-class FlowCyPySim {
-    py::array_t<double> widths;
-
-public:
-    // Take the array by value (and then move it if desired)
-    FlowCyPySim(py::array_t<double> widths)
-        : widths(std::move(widths)) {}
-};
+FlowCyPySim::FlowCyPySim(py::array_t<double> widths)
+    : widths(std::move(widths))
+{
+}
