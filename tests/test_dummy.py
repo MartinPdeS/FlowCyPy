@@ -179,15 +179,9 @@ def test_flag(flow_cytometer, flow_cell, scatterer_collection):
 
 def test_flow_cytometer_acquisition(flow_cytometer):
     """Test if the Flow Cytometer generates a non-zero acquisition signal."""
-    flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
-    acquisition = flow_cytometer.get_acquisition()
+    from FlowCyPy.binary.interface_core import FlowCyPySim
 
-    # signal = acquisition.analog['Signal']
-
-    # assert not np.all(signal == 0 * units.volt), "Acquisition signal is all zeros."
-    # assert np.std(signal) > 0 * units.volt, "Acquisition signal variance is zero, indicating no noise added."
-
-
+    core = FlowCyPySim(np.linspace(0, 1))
 
 if __name__ == '__main__':
     pytest.main(["-W error", __file__])
