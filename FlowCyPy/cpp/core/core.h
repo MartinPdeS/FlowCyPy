@@ -9,7 +9,9 @@ class FlowCyPySim {
 public:
     std::vector<double> widths;
     // Constructor taking a py::array_t<double> by value.
-    FlowCyPySim(std::vector<double> widths);
+    FlowCyPySim(
+        const std::vector<double> &widths
+    );
 
     // (Optional) Other public methods can go here.
 
