@@ -30,10 +30,7 @@
 
 namespace py = pybind11;
 
-// A simple function that creates a new 2D array and returns its shape as a string.
 std::string create_array() {
-    // Acquire the GIL (this is normally needed when manipulating Python objects)
-    py::gil_scoped_acquire gil;
 
     // Create a new 2D array with shape (3, 5)
     py::array_t<double> arr({3, 5});
@@ -47,7 +44,7 @@ PYBIND11_MODULE(minimal_function, m) {
     m.doc() = "Minimal module to reproduce py::array_t segfault";
 
     // Uncommenting the following line forces the initialization of NumPy's C API.
-    // py::module::import("numpy");
+    py::module::import("numpy");
 
     m.def("create_array", &create_array, "A function that creates a 2D array and returns its shape.");
 }
