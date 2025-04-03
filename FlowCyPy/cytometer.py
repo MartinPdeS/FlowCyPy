@@ -291,34 +291,34 @@ class FlowCytometer:
 
                 total_power = core.getAcquisition() * units.watt
 
-            if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
-                photocurrent = (total_power * detector.responsivity)
-            else:
-                photocurrent = detector.get_shot_noise(optical_power=total_power, wavelength=self.source.wavelength, bandwidth=self.signal_digitizer.bandwidth)
+        #     if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
+        #         photocurrent = (total_power * detector.responsivity)
+        #     else:
+        #         photocurrent = detector.get_shot_noise(optical_power=total_power, wavelength=self.source.wavelength, bandwidth=self.signal_digitizer.bandwidth)
 
-            if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
-                photocurrent += detector.get_dark_current_noise(sequence_length=sequence_length, bandwidth=self.signal_digitizer.bandwidth)
+        #     if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
+        #         photocurrent += detector.get_dark_current_noise(sequence_length=sequence_length, bandwidth=self.signal_digitizer.bandwidth)
 
-            signal_dataframe.loc[detector_name, 'Signal'] = self.transimpedance_amplifier.amplify(signal=photocurrent, dt=1 / self.signal_digitizer.sampling_rate)
+        #     signal_dataframe.loc[detector_name, 'Signal'] = self.transimpedance_amplifier.amplify(signal=photocurrent, dt=1 / self.signal_digitizer.sampling_rate)
 
-        # Apply user-defined processing steps
-        self.circuit_process_data(signal_dataframe, processing_steps)
+        # # Apply user-defined processing steps
+        # self.circuit_process_data(signal_dataframe, processing_steps)
 
-        signal_dataframe = dataframe_subclass.AnalogAcquisitionDataFrame(
-            signal_dataframe,
-            scatterer_dataframe=self.scatterer_dataframe
-        )
+        # signal_dataframe = dataframe_subclass.AnalogAcquisitionDataFrame(
+        #     signal_dataframe,
+        #     scatterer_dataframe=self.scatterer_dataframe
+        # )
 
-        experiment = Acquisition(
-            cytometer=self,
-            run_time=self.run_time,
-            scatterer_dataframe=self.scatterer_dataframe,
-            detector_dataframe=signal_dataframe
-        )
+        # experiment = Acquisition(
+        #     cytometer=self,
+        #     run_time=self.run_time,
+        #     scatterer_dataframe=self.scatterer_dataframe,
+        #     detector_dataframe=signal_dataframe
+        # )
 
-        experiment.sample_volume = (self.flow_cell.sample.volume_flow * self.run_time).to_compact()
+        # experiment.sample_volume = (self.flow_cell.sample.volume_flow * self.run_time).to_compact()
 
-        return experiment
+        # return experiment
 
     def circuit_process_data(self, signal_dataframe: pd.DataFrame, processing_steps: list) -> None:
         """
