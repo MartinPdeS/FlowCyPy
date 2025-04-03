@@ -7,7 +7,7 @@
 namespace py = pybind11;
 
 class FlowCyPySim {
-    py::array_t<double> m_widths;
+    py::array_t<double> widths;
     // py::array_t<double> m_centers;
     // py::array_t<double> m_coupling_power;
     // py::array_t<double> m_time_array;
@@ -15,6 +15,10 @@ class FlowCyPySim {
 
 public:
     FlowCyPySim() = default;
+
+    FlowCyPySim(
+        const py::array_t<double> &widths
+    ) : widths(widths) {}
 
     // FlowCyPySim(
     //     const py::array_t<double> &widths,
@@ -75,3 +79,5 @@ public:
     //     return total_power;
     // }
 };
+
+
