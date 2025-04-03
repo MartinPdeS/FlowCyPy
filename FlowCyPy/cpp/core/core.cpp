@@ -1,8 +1,5 @@
 #include "core.h"
 #include <stdexcept>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -22,6 +19,7 @@ FlowCyPySim::FlowCyPySim(
 }
 
 void FlowCyPySim::get_acquisition() {
+    py::gil_scoped_acquire gil;
     // py::array_t<double> total_power(time_array.size());
     py::array_t<double> arr({ 3, 5 });
 }
