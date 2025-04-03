@@ -9,7 +9,9 @@ add_library("cpp_${NAME}" STATIC "${NAME}.cpp")
 target_link_libraries("cpp_${NAME}" PUBLIC pybind11::module)
 
 
-
+if(APPLE)
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -undefined dynamic_lookup")
+endif()
 
 
 # Create the module "interface_core" from the source files.
