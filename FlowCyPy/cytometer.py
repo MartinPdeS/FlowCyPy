@@ -281,13 +281,14 @@ class FlowCytometer:
 
             # Broadcast the time array to the shape of (number of signals, len(detector.time))
             if not self.scatterer_dataframe.empty:
-                core = interface_core.FlowCyPySim(
-                    time_array=signal_dataframe.loc[detector_name, 'Time'].pint.magnitude.values,
-                    widths=self.scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude,
-                    centers=self.scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude,
-                    coupling_power=self.scatterer_dataframe[detector_name].pint.to('watt').pint.quantity.magnitude,
-                    background_power=self.background_power.to('watt').magnitude
-                )
+                core = interface_core.FlowCyPySim()
+                # core = interface_core.FlowCyPySim(
+                #     time_array=signal_dataframe.loc[detector_name, 'Time'].pint.magnitude.values,
+                #     widths=self.scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude,
+                #     centers=self.scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude,
+                #     coupling_power=self.scatterer_dataframe[detector_name].pint.to('watt').pint.quantity.magnitude,
+                #     background_power=self.background_power.to('watt').magnitude
+                # )
 
                 # total_power = core.getAcquisition() * units.watt
 

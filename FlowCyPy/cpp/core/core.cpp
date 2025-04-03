@@ -1,8 +1,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <stdexcept>
-#include <cmath>
-#include <algorithm>
+// #include <cmath>
+// #include <algorithm>
 
 namespace py = pybind11;
 
@@ -16,15 +16,15 @@ class FlowCyPySim {
 public:
     FlowCyPySim() = default;
 
-    FlowCyPySim(
-        const py::array_t<double> &widths,
-        const py::array_t<double> &centers,
-        const py::array_t<double> &coupling_power,
-        const py::array_t<double> &time_array,
-        double background_power
-    )
-    : m_widths(widths), m_centers(centers), m_coupling_power(coupling_power), m_time_array(time_array), m_background_power(background_power)
-    {
+    // FlowCyPySim(
+    //     const py::array_t<double> &widths,
+    //     const py::array_t<double> &centers,
+    //     const py::array_t<double> &coupling_power,
+    //     const py::array_t<double> &time_array,
+    //     double background_power
+    // )
+    // : m_widths(widths), m_centers(centers), m_coupling_power(coupling_power), m_time_array(time_array), m_background_power(background_power)
+    // {
         // // --- Basic shape checks ---
         // auto w = m_widths.unchecked<1>();
         // auto c = m_centers.unchecked<1>();
@@ -36,7 +36,7 @@ public:
         // if (m_time_array.ndim() != 1) {
         //     throw std::runtime_error("time_array must be 1D.");
         // }
-    }
+    // }
 
     // py::array_t<double> getAcquisition() {
     //     // Get unchecked access to the time array.
