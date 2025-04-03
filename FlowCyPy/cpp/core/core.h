@@ -23,6 +23,6 @@ public:
         const double background_power
     );
 
-    py::array_t<double> get_acquisition();
+    // py::array_t<double> get_acquisition();
 
 };
