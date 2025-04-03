@@ -7,7 +7,15 @@
 namespace py = pybind11;
 
 class FlowCyPySim {
+    py::array_t<double> m_widths;
+    py::array_t<double> m_centers;
+    py::array_t<double> m_coupling_power;
+    py::array_t<double> m_time_array;
+    double m_background_power;
+
 public:
+    FlowCyPySim() = default;
+
     FlowCyPySim(
         const py::array_t<double> &widths,
         const py::array_t<double> &centers,
@@ -30,47 +38,40 @@ public:
         // }
     }
 
-    py::array_t<double> getAcquisition() {
-        // Get unchecked access to the time array.
-        auto t = m_time_array.unchecked<1>();
-        size_t nTimes = t.shape(0);
+    // py::array_t<double> getAcquisition() {
+    //     // Get unchecked access to the time array.
+    //     auto t = m_time_array.unchecked<1>();
+    //     size_t nTimes = t.shape(0);
 
-        // Create output array, initialized to background_power.
-        py::array_t<double> total_power(nTimes);
-        auto r = total_power.mutable_unchecked<1>();
-        for (size_t i = 0; i < nTimes; ++i) {
-            r(i) = m_background_power;
-        }
+    //     // Create output array, initialized to background_power.
+    //     py::array_t<double> total_power(nTimes);
+    //     auto r = total_power.mutable_unchecked<1>();
+    //     for (size_t i = 0; i < nTimes; ++i) {
+    //         r(i) = m_background_power;
+    //     }
 
-        // Get unchecked access to particle parameters.
-        auto w = m_widths.unchecked<1>();
-        auto c = m_centers.unchecked<1>();
-        auto p_arr = m_coupling_power.unchecked<1>();
-        size_t nParticles = w.shape(0);
+    //     // Get unchecked access to particle parameters.
+    //     auto w = m_widths.unchecked<1>();
+    //     auto c = m_centers.unchecked<1>();
+    //     auto p_arr = m_coupling_power.unchecked<1>();
+    //     size_t nParticles = w.shape(0);
 
-        // Parallelize the outer loop over particles.
-        // #pragma omp parallel for
-        for (size_t i = 0; i < nParticles; ++i) {
-            double w_val = w(i);
-            double c_val = c(i);
-            double p_val = p_arr(i);
-            double inv_denom = 1.0 / (2.0 * w_val * w_val);
+    //     // Parallelize the outer loop over particles.
+    //     // #pragma omp parallel for
+    //     for (size_t i = 0; i < nParticles; ++i) {
+    //         double w_val = w(i);
+    //         double c_val = c(i);
+    //         double p_val = p_arr(i);
+    //         double inv_denom = 1.0 / (2.0 * w_val * w_val);
 
-            for (size_t t_idx = 0; t_idx < nTimes; ++t_idx) {
-                double dt = t(t_idx) - c_val;
-                double gauss_val = p_val * std::exp(- (dt * dt) * inv_denom);
-                // Use atomic update to avoid race conditions
-                // #pragma omp atomic
-                r(t_idx) += gauss_val;
-            }
-        }
-        return total_power;
-    }
-
-private:
-    py::array_t<double> m_widths;
-    py::array_t<double> m_centers;
-    py::array_t<double> m_coupling_power;
-    py::array_t<double> m_time_array;
-    double m_background_power;
+    //         for (size_t t_idx = 0; t_idx < nTimes; ++t_idx) {
+    //             double dt = t(t_idx) - c_val;
+    //             double gauss_val = p_val * std::exp(- (dt * dt) * inv_denom);
+    //             // Use atomic update to avoid race conditions
+    //             // #pragma omp atomic
+    //             r(t_idx) += gauss_val;
+    //         }
+    //     }
+    //     return total_power;
+    // }
 };
