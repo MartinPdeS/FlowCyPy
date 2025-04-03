@@ -23,37 +23,31 @@
 
 
 
-// minimal.cpp
+// minimal_function.cpp
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include <iostream>
 
 namespace py = pybind11;
 
-class FlowCyPySim {
-public:
-    FlowCyPySim() = default;
+// A simple function that creates a new 2D array and returns its shape as a string.
+std::string create_array() {
+    // Acquire the GIL (this is normally needed when manipulating Python objects)
+    py::gil_scoped_acquire gil;
 
-    // This method creates a new 2D array.
-    void get_acquisition() {
-        // Ensure we hold the GIL.
-        py::gil_scoped_acquire gil;
-        // Create a new 2D py::array_t with shape (3, 5).
-        py::array_t<double> arr({3, 5});
-        // Print out the shape to verify.
-        std::cout << "Created array with shape: "
-                  << arr.shape(0) << " x " << arr.shape(1) << std::endl;
-    }
-};
+    // Create a new 2D array with shape (3, 5)
+    py::array_t<double> arr({3, 5});
 
-PYBIND11_MODULE(minimal, m) {
-    m.doc() = "Minimal reproduction module for py::array_t segfault issue";
+    // Return the shape as a string
+    return "Created array with shape: " + std::to_string(arr.shape(0)) +
+           " x " + std::to_string(arr.shape(1));
+}
 
-    // Note: Not calling py::module::import("numpy") here may lead to a segfault on macOS.
-    // Uncommenting the following line forces the NumPy C API initialization:
+PYBIND11_MODULE(minimal_function, m) {
+    m.doc() = "Minimal module to reproduce py::array_t segfault";
+
+    // Uncommenting the following line forces the initialization of NumPy's C API.
     // py::module::import("numpy");
 
-    py::class_<FlowCyPySim>(m, "FlowCyPySim")
-        .def(py::init<>())
-        .def("get_acquisition", &FlowCyPySim::get_acquisition);
+    m.def("create_array", &create_array, "A function that creates a 2D array and returns its shape.");
 }
