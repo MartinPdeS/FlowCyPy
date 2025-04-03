@@ -81,7 +81,7 @@
 
 #include "core.h"
 
-FlowCyPySim::FlowCyPySim(const std::vector<double> &widths, const std::vector<double> &centers)
-    : widths(widths), centers(centers)
+FlowCyPySim::FlowCyPySim(const std::vector<double> &widths, const std::vector<double> &centers, const std::vector<double> &coupling_power, const std::vector<double> &time_array)
+    : widths(widths), centers(centers), coupling_power(coupling_power), time_array(time_array)
 {
 }

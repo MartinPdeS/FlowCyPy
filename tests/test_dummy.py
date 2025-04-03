@@ -181,7 +181,12 @@ def test_flow_cytometer_acquisition(flow_cytometer):
     """Test if the Flow Cytometer generates a non-zero acquisition signal."""
     from FlowCyPy.binary.interface_core import FlowCyPySim
 
-    core = FlowCyPySim(np.linspace(0, 1))
+    core = FlowCyPySim(
+        widths=np.linspace(0, 1),
+        centers=np.linspace(0, 1),
+        coupling_power=np.linspace(0, 1),
+        time_array=np.linspace(0, 1)
+        )
 
 if __name__ == '__main__':
     pytest.main(["-W error", __file__])
