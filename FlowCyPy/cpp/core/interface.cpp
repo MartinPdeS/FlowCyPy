@@ -17,6 +17,6 @@ PYBIND11_MODULE(interface_core, m) {
         py::arg("time_array"),
         py::arg("background_power")
     )
-    // .def("get_acquisition", &FlowCyPySim::get_acquisition, "Sums background power plus Gaussian pulses for each scatterer.")
+    .def("get_acquisition", &FlowCyPySim::get_acquisition, "Sums background power plus Gaussian pulses for each scatterer.")
     ;
 }
