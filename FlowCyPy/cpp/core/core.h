@@ -7,11 +7,10 @@ namespace py = pybind11;
 
 class FlowCyPySim {
 public:
+    std::vector<double> widths;
     // Constructor taking a py::array_t<double> by value.
-    FlowCyPySim(py::array_t<double> widths);
+    FlowCyPySim(std::vector<double> widths);
 
     // (Optional) Other public methods can go here.
 
-private:
-    py::array_t<double> widths;
 };

@@ -81,7 +81,7 @@
 
 #include "core.h"
 
-FlowCyPySim::FlowCyPySim(py::array_t<double> widths)
-    : widths(std::move(widths))
+FlowCyPySim::FlowCyPySim(const std::vector<double> &widths)
+    : widths(widths)
 {
 }
