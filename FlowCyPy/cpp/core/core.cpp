@@ -81,7 +81,7 @@
 
 #include "core.h"
 
-FlowCyPySim::FlowCyPySim(const std::vector<double> &widths)
-    : widths(widths)
+FlowCyPySim::FlowCyPySim(const std::vector<double> &widths, const std::vector<double> &centers)
+    : widths(widths), centers(centers)
 {
 }
