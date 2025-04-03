@@ -9,7 +9,7 @@
 namespace py = pybind11;
 
 
-struct trigger {
+struct Trigger {
     const std::string detector_name;
     const py::array_t<double> signal;
     std::vector<double> time_out;
@@ -18,7 +18,7 @@ struct trigger {
     double* buffer_ptr;
     size_t buffer_size;
 
-    trigger(const std::string &detector_name, const py::array_t<double> &signal): detector_name(detector_name), signal(signal)
+    Trigger(const std::string &detector_name, const py::array_t<double> &signal): detector_name(detector_name), signal(signal)
     {
         this->buffer_ptr = static_cast<double *>(signal.request().ptr);
         this->buffer_size = static_cast<size_t>(signal.request().shape[0]);
@@ -55,15 +55,9 @@ public:
     bool debounce_enabled;
     int min_window_duration;
 
-    std::vector<struct trigger> triggers;
-
-    // The maps will be filled using the add_signal method.
-    std::map<std::string, py::array_t<double>> signal_map;
+    std::vector<struct Trigger> triggers;
     // For time arrays, the user can add a global one.
     py::array_t<double> global_time;
-    // Optionally, a per-detector time map can be supported.
-    std::map<std::string, py::array_t<double>> time_map;
-    std::vector<double> times_out, signals_out;
 
     TriggeringSystem(
         const std::string &scheme,
@@ -106,15 +100,14 @@ public:
             throw std::runtime_error("Signal arrays must be 1D");
 
         this->triggers.emplace_back(detector_name, signal);
-        signal_map[detector_name] = signal;
     }
 
     void run() {
         // Validate that the trigger detector exists.
-        validate_detector_existence(signal_map, trigger_detector_name, "Trigger detector not found in signal map.");
+        this->validate_detector_existence(trigger_detector_name);
 
         // For time, try the per-detector map; if not found, check global_time.
-        if (time_map.find(trigger_detector_name) == time_map.end() && global_time.size() == 0)
+        if (global_time.size() == 0)
             throw std::runtime_error("No time array found. Please add a time array using add_time().");
 
         std::vector<std::pair<int, int>> valid_triggers;
@@ -131,56 +124,55 @@ public:
         if (valid_triggers.empty())
             PyErr_WarnEx(PyExc_UserWarning, "No valid triggers found in dynamic mode (single threshold). Returning empty arrays.", 1);
 
-
-        // Use per-detector time if available, otherwise use global_time.
-        py::array_t<double> trigger_time_array;
-        if (this->time_map.find(trigger_detector_name) != this->time_map.end())
-            trigger_time_array = this->time_map.at(trigger_detector_name);
-        else
-            trigger_time_array = global_time;
-
         extract_signal_segments(valid_triggers);
     }
 
     // Fixed-window triggered acquisition.
     std::vector<std::pair<int, int>> run_fixed_window() {
+        struct Trigger trigger_channel = this->get_trigger(trigger_detector_name);
 
-        auto trigger_signal_array = this->signal_map.at(trigger_detector_name);
+        std::vector<std::pair<int, int>> valid_triggers;
 
-        py::buffer_info trigger_signal_buf = trigger_signal_array.request();
-        size_t n_trigger = trigger_signal_buf.shape[0];
-        double *trigger_signal_ptr = static_cast<double *>(trigger_signal_buf.ptr);
-        std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
+        std::vector<int> trigger_indices;
+        for (size_t i = 1; i < trigger_channel.buffer_size; ++i)
+            if (trigger_channel.buffer_ptr[i - 1] <= threshold && trigger_channel.buffer_ptr[i] > threshold)
+                trigger_indices.push_back(i - 1);
 
-        std::vector<int> trigger_indices = find_trigger_indices(trigger_signal.data(), n_trigger, threshold);
-        std::vector<std::pair<int, int>> valid_triggers = apply_buffer_constraints(
-            trigger_indices, pre_buffer - 1, post_buffer, static_cast<int>(n_trigger), max_triggers
-        );
+        int last_end = -1;
+        for (int idx : trigger_indices) {
+            int start = idx - pre_buffer - 1;
+            int end = idx + post_buffer;
+            if (start < 0 || end >= static_cast<int>(trigger_channel.buffer_size))
+                continue;
+            if (start > last_end) {
+                valid_triggers.emplace_back(start, end);
+                last_end = end;
+            }
+            if (max_triggers > 0 && valid_triggers.size() >= static_cast<size_t>(max_triggers))
+                break;
+        }
 
         return valid_triggers;
     }
 
     // Simple dynamic triggered acquisition.
     std::vector<std::pair<int, int>> run_dynamic() {
-        auto trigger_signal_array = this->signal_map.at(trigger_detector_name);
-        py::buffer_info trigger_signal_buf = trigger_signal_array.request();
-        size_t n_trigger = trigger_signal_buf.shape[0];
-        double *trigger_signal_ptr = static_cast<double *>(trigger_signal_buf.ptr);
-        std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
-        std::vector<std::pair<int, int>> valid_triggers;
-        int last_end = -1;
+        struct Trigger trigger_channel = this->get_trigger(trigger_detector_name);
 
-        for (size_t i = 1; i < n_trigger; ++i) {
-            if (trigger_signal[i - 1] <= threshold && trigger_signal[i] > threshold) {
+        std::vector<std::pair<int, int>> valid_triggers;
+
+        int last_end = -1;
+        for (size_t i = 1; i < trigger_channel.buffer_size; ++i) {
+            if (trigger_channel.buffer_ptr[i - 1] <= threshold && trigger_channel.buffer_ptr[i] > threshold) {
                 int start = static_cast<int>(i) - pre_buffer;
                 if (start < 0)
                     start = 0;
                 size_t j = i;
-                while (j < n_trigger && trigger_signal[j] > threshold)
+                while (j < trigger_channel.buffer_size && trigger_channel.buffer_ptr[j] > threshold)
                     j++;
                 int end = static_cast<int>(j) - 1 + post_buffer;
-                if (end >= static_cast<int>(n_trigger))
-                    end = static_cast<int>(n_trigger) - 1;
+                if (end >= static_cast<int>(trigger_channel.buffer_size))
+                    end = static_cast<int>(trigger_channel.buffer_size) - 1;
                 if (start > last_end) {
                     valid_triggers.emplace_back(start, end);
                     last_end = end;
@@ -196,23 +188,20 @@ public:
 
     // Dynamic triggered acquisition with single threshold (with optional lower_threshold and debounce).
     std::vector<std::pair<int, int>> run_dynamic_single_threshold() {
+        struct Trigger trigger_channel = this->get_trigger(trigger_detector_name);
+
+        std::vector<std::pair<int, int>> valid_triggers;
+
         if (std::isnan(lower_threshold))
             this->lower_threshold = this->threshold;
 
-        auto trigger_signal_array = this->signal_map.at(trigger_detector_name);
-        py::buffer_info trigger_signal_buf = trigger_signal_array.request();
-        size_t n_trigger = trigger_signal_buf.shape[0];
-        double *trigger_signal_ptr = static_cast<double *>(trigger_signal_buf.ptr);
-        std::vector<double> trigger_signal(trigger_signal_ptr, trigger_signal_ptr + n_trigger);
-        std::vector<std::pair<int, int>> valid_triggers;
         int last_end = -1;
-
-        for (size_t i = 1; i < n_trigger; ++i) {
-            if (trigger_signal[i - 1] <= this->threshold && trigger_signal[i] > this->threshold) {
+        for (size_t i = 1; i < trigger_channel.buffer_size; ++i) {
+            if (trigger_channel.buffer_ptr[i - 1] <= this->threshold && trigger_channel.buffer_ptr[i] > this->threshold) {
                 size_t j = i;
                 if (debounce_enabled && min_window_duration != -1) {
                     size_t count = 0;
-                    while (j < n_trigger && trigger_signal[j] > this->threshold) {
+                    while (j < trigger_channel.buffer_size && trigger_channel.buffer_ptr[j] > this->threshold) {
                         ++count;
                         ++j;
                         if (count >= static_cast<size_t>(min_window_duration))
@@ -223,18 +212,18 @@ public:
                         continue;
                     }
                 } else {
-                    while (j < n_trigger && trigger_signal[j] > this->threshold)
+                    while (j < trigger_channel.buffer_size && trigger_channel.buffer_ptr[j] > this->threshold)
                         ++j;
                 }
                 int start = static_cast<int>(i) - pre_buffer;
                 if (start < 0)
                     start = 0;
                 size_t k = j;
-                while (k < n_trigger && trigger_signal[k] > this->lower_threshold)
+                while (k < trigger_channel.buffer_size && trigger_channel.buffer_ptr[k] > this->lower_threshold)
                     ++k;
                 int end = static_cast<int>(k) - 1 + post_buffer;
-                if (end >= static_cast<int>(n_trigger))
-                    end = static_cast<int>(n_trigger) - 1;
+                if (end >= static_cast<int>(trigger_channel.buffer_size))
+                    end = static_cast<int>(trigger_channel.buffer_size) - 1;
                 if (start > last_end) {
                     valid_triggers.emplace_back(start, end);
                     last_end = end;
@@ -248,83 +237,67 @@ public:
         return valid_triggers;
     }
 
-    std::vector<double> get_signal_out(const std::string &detector_name) {
-        for (struct trigger &trigger : this->triggers)
+    struct Trigger get_trigger(const std::string &detector_name) {
+        for (struct Trigger &trigger : this->triggers)
             if (trigger.detector_name == detector_name)
-                return trigger.signal_out;
+                return trigger;
+
+        throw std::runtime_error("Detector not found");
     }
 
-    std::vector<double> get_time_out(const std::string &detector_name) {
-        for (struct trigger &trigger : this->triggers)
-            if (trigger.detector_name == detector_name)
-                return trigger.time_out;
+    template <typename T>
+    py::array_t<T> to_numpy_array(const std::vector<T>& vector) {
+        // Transfer ownership of the vector by moving it into a new heap allocation.
+        auto* vec_ptr = new std::vector<T>(std::move(vector));
+        // Create a capsule that will free the vector when the array is destroyed.
+        py::capsule free_when_done(vec_ptr, [](void *v) {
+            delete reinterpret_cast<std::vector<T>*>(v);
+        });
+        // Construct a py::array_t<double> that wraps the vector's data.
+        return py::array_t<T>(
+            {vec_ptr->size()},            // shape: one dimension of length = vector size
+            {sizeof(T)},                  // stride: size of double in bytes
+            vec_ptr->data(),              // pointer to the data
+            free_when_done                // capsule holding our vector pointer
+        );
     }
 
-    std::vector<int> get_segment_ID(const std::string &detector_name) {
-        for (struct trigger &trigger : this->triggers)
-            if (trigger.detector_name == detector_name)
-                return trigger.segment_ids_out;
+    py::array_t<double> get_signal_out_py(const std::string &detector_name) {
+        struct Trigger trigger = this->get_trigger(detector_name);
+
+        return this->to_numpy_array(trigger.signal_out);
+    }
+
+    py::array_t<double> get_time_out_py(const std::string &detector_name) {
+        struct Trigger trigger = this->get_trigger(detector_name);
+
+        return this->to_numpy_array(trigger.time_out);
+    }
+
+    py::array_t<int> get_segment_ID_py(const std::string &detector_name) {
+        struct Trigger trigger = this->get_trigger(detector_name);
+
+        return this->to_numpy_array(trigger.segment_ids_out);
     }
 
 
 private:
     // Helper function: Validate that the detector exists in the map.
-    static void validate_detector_existence(
-        const std::map<std::string, py::array_t<double>> &map,
-        const std::string &detector_name,
-        const std::string &error_message)
+    void validate_detector_existence(const std::string &detector_name)
     {
-        if (map.find(detector_name) == map.end())
-            throw std::runtime_error(error_message);
-    }
+        for (struct Trigger trigger: this->triggers)
+            if (detector_name == trigger.detector_name)
+                return;
 
-    // Helper function: Find trigger indices based on fixed-window threshold crossing.
-    static std::vector<int> find_trigger_indices(
-        double *trigger_signal,
-        size_t signal_size,
-        double threshold)
-    {
-        std::vector<int> trigger_indices;
-        for (size_t i = 1; i < signal_size; ++i)
-            if (trigger_signal[i - 1] <= threshold && trigger_signal[i] > threshold)
-                trigger_indices.push_back(i - 1);
-        return trigger_indices;
-    }
-
-    // Helper function: Apply pre- and post-buffer constraints (fixed-window mode).
-    static std::vector<std::pair<int, int>> apply_buffer_constraints(
-        const std::vector<int> &trigger_indices,
-        int pre_buffer,
-        int post_buffer,
-        int signal_size,
-        int max_triggers)
-    {
-        std::vector<std::pair<int, int>> valid_triggers;
-        int last_end = -1;
-        for (int idx : trigger_indices) {
-            int start = idx - pre_buffer;
-            int end = idx + post_buffer;
-            if (start < 0 || end >= signal_size)
-                continue;
-            if (start > last_end) {
-                valid_triggers.emplace_back(start, end);
-                last_end = end;
-            }
-            if (max_triggers > 0 && valid_triggers.size() >= static_cast<size_t>(max_triggers))
-                break;
-        }
-        return valid_triggers;
+        std::runtime_error("Trigger detector not found in signal map.");
     }
 
     // Helper function: Extract signal segments given valid trigger indices.
     void extract_signal_segments(const std::vector<std::pair<int, int>> &valid_triggers)
     {
-        std::vector<std::string> detectors_out;
-        std::vector<int> segment_ids_out;
-
         double* time_ptr = static_cast<double *>(global_time.request().ptr);
 
-        for (struct trigger &trigger : this->triggers) {
+        for (struct Trigger &trigger : this->triggers) {
             size_t segment_id = 0;
             for (const auto &[start, end] : valid_triggers) {
                 for (int i = start; i <= end; ++i) {
@@ -339,9 +312,4 @@ private:
             }
         }
     }
-
-
-
-
-
 };

@@ -23,9 +23,9 @@ PYBIND11_MODULE(interface_triggering_system, module) {
         .def("add_time", &TriggeringSystem::add_time, "Adds a global time array to the system.")
         .def("add_signal", &TriggeringSystem::add_signal, "Adds a new signal to the system.")
         .def("run", &TriggeringSystem::run, "Executes the triggered acquisition analysis.")
-        .def("get_signal_out", &TriggeringSystem::get_signal_out, "")
-        .def("get_time_out", &TriggeringSystem::get_time_out, "")
-        .def("get_segment_ID", &TriggeringSystem::get_segment_ID, "")
+        .def("get_signal_out", &TriggeringSystem::get_signal_out_py, "")
+        .def("get_time_out", &TriggeringSystem::get_time_out_py, "")
+        .def("get_segment_ID", &TriggeringSystem::get_segment_ID_py, "")
         .def_readonly("global_time", &TriggeringSystem::global_time, "Time vector used for computation")
         .def("run_dynamic", &TriggeringSystem::run_dynamic, "Executes dynamic triggered acquisition analysis.")
         ;

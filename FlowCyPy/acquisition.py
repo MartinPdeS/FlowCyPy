@@ -191,7 +191,7 @@ class Acquisition:
             df[(d.name, 'Time')] = pint_pandas.PintArray(triggering_system.get_time_out(d.name), time_units)
             df[(d.name, 'SegmentID')] = triggering_system.get_segment_ID(d.name)
 
-        df = df.stack(level='Detector').reset_index()
+        df = df.stack(level='Detector', future_stack=True).reset_index()
 
         # Set the MultiIndex with Detector as the first level and segment as the second:
         df = df.set_index(['Detector', 'SegmentID'])

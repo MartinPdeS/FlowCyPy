@@ -84,10 +84,10 @@ def test_no_trigger(no_trigger_signal):
     ts.add_signal("detector1", signal)
 
     with pytest.warns(UserWarning):
-        times, signals, detectors, segment_ids = ts.run()
+        ts.run()
     # Expect that no triggers are found (empty arrays returned)
-    assert times.size == 0
-    assert signals.size == 0
+    assert ts.get_time_out("detector1").size == 0
+    assert ts.get_signal_out("detector1").size == 0
 
 def test_trigger_fixed_window(simple_signal):
     """
@@ -111,12 +111,10 @@ def test_trigger_fixed_window(simple_signal):
     )
     ts.add_time(t)
     ts.add_signal("detector1", signal)
-    times, signals, detectors, segment_ids = ts.run()
+    ts.run()
     # Expect non-empty output arrays (i.e. at least one trigger is detected).
-    assert times.size > 0
-    assert signals.size > 0
-    # Optionally, check that the detectors list is not empty.
-    assert len(detectors) > 0
+    assert ts.get_time_out("detector1").size > 0
+    assert ts.get_signal_out("detector1").size > 0
 
 def test_trigger_dynamic_single_threshold(simple_signal):
     """
@@ -142,12 +140,12 @@ def test_trigger_dynamic_single_threshold(simple_signal):
     )
     ts.add_time(t)
     ts.add_signal("detector1", signal)
-    times, signals, detectors, segment_ids = ts.run()
+    ts.run()
     # Ensure that triggers are detected.
-    assert times.size > 0
-    assert signals.size > 0
+    assert ts.get_time_out("detector1").size > 0
+    assert ts.get_signal_out("detector1").size > 0
     # Check that at least one segment is present by examining segment IDs.
-    unique_ids = np.unique(segment_ids)
+    unique_ids = np.unique(ts.get_segment_ID("detector1"))
     assert len(unique_ids) >= 1
 
 if __name__ == "__main__":
