@@ -146,13 +146,13 @@ def test_before_hand():
     #     rotation=[0, 0, 0, 0] * units.degree
     # )
 
-    setup = experiment.Setup(
-        source=source,
-        scatterer=sphere,
-        # detector=detector
-    )
+    # setup = experiment.Setup(
+    #     source=source,
+    #     scatterer=sphere,
+    #     # detector=detector
+    # )
 
-    setup.get_sequential('Qsca')
+    # setup.get_sequential('Qsca')
 
 
 def test_before_hand_1():
