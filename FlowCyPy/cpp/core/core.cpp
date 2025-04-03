@@ -16,6 +16,10 @@ FlowCyPySim::FlowCyPySim(
         throw std::runtime_error("widths, centers, coupling_power must have the same length.");
 }
 
+void FlowCyPySim::get_acquisition() {
+    py::array_t<double> total_power(time_array.size());
+}
+
 // py::array_t<double> FlowCyPySim::get_acquisition() {
 //     // Create output array, initialized to background_power.
 //     py::array_t<double> total_power(time_array.size());
