@@ -1,10 +1,10 @@
+from PyMieSim import experiment as _PyMieSim
 import numpy as np
 from FlowCyPy import Detector
 from FlowCyPy.source import BaseBeam
 from PyMieSim.units import Quantity, degree, watt
 from FlowCyPy import units
 import pandas as pd
-from PyMieSim import experiment as _PyMieSim
 import pint_pandas
 
 
