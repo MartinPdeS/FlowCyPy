@@ -60,7 +60,7 @@ public:
                 double dt = t(t_idx) - c_val;
                 double gauss_val = p_val * std::exp(- (dt * dt) * inv_denom);
                 // Use atomic update to avoid race conditions
-                #pragma omp atomic
+                // #pragma omp atomic
                 r(t_idx) += gauss_val;
             }
         }
