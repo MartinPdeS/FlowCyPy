@@ -1,3 +1,4 @@
+ from PyMieSim import experiment
 import numpy as np
 import pytest
 import matplotlib.pyplot as plt
@@ -121,7 +122,6 @@ def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, sour
 
 
 def test_before_hand():
-    from PyMieSim import experiment
     source = experiment.source.PlaneWave(
         polarization=[0, 0, 0, 0] * units.degree,
         amplitude = [1, 1, 1, 1] * units.volt / units.meter,
@@ -156,7 +156,6 @@ def test_before_hand():
 
 
 def test_before_hand_1():
-    from PyMieSim import experiment
     SIZE = 4
     source = experiment.source.PlaneWave.build_sequential(
         total_size=SIZE,
