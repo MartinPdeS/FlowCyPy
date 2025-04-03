@@ -1,17 +1,17 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-#include <stdexcept>
+// #include <stdexcept>
 // #include <cmath>
 // #include <algorithm>
 
 namespace py = pybind11;
 
 class FlowCyPySim {
-    py::array_t<double> m_widths;
-    py::array_t<double> m_centers;
-    py::array_t<double> m_coupling_power;
-    py::array_t<double> m_time_array;
-    double m_background_power;
+    // py::array_t<double> m_widths;
+    // py::array_t<double> m_centers;
+    // py::array_t<double> m_coupling_power;
+    // py::array_t<double> m_time_array;
+    // double m_background_power;
 
 public:
     FlowCyPySim() = default;
