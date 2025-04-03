@@ -40,7 +40,7 @@ std::string create_array() {
            " x " + std::to_string(arr.shape(1));
 }
 
-PYBIND11_MODULE(minimal_function, m) {
+PYBIND11_MODULE(interface_core, m) {
     m.doc() = "Minimal module to reproduce py::array_t segfault";
 
     // Uncommenting the following line forces the initialization of NumPy's C API.

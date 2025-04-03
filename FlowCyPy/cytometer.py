@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-from FlowCyPy.binary.interface_core import FlowCyPySim
-
 import logging
 import numpy as np
 from typing import List, Callable, Optional
