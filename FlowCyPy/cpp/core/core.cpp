@@ -1,8 +1,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-// #include <stdexcept>
-// #include <cmath>
-// #include <algorithm>
+#include <stdexcept>
+#include <cmath>
+#include <algorithm>
 
 namespace py = pybind11;
 

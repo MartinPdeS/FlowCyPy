@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from FlowCyPy.binary.interface_core import FlowCyPySim
+
 import logging
 import numpy as np
 from typing import List, Callable, Optional
@@ -281,7 +283,7 @@ class FlowCytometer:
 
             # Broadcast the time array to the shape of (number of signals, len(detector.time))
             if not self.scatterer_dataframe.empty:
-                core = interface_core.FlowCyPySim()
+                core = FlowCyPySim()
                 # core = interface_core.FlowCyPySim(
                 #     time_array=signal_dataframe.loc[detector_name, 'Time'].pint.magnitude.values,
                 #     widths=self.scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude,
