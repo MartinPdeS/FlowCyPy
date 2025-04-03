@@ -7,7 +7,7 @@
 namespace py = pybind11;
 
 class FlowCyPySim {
-    // py::array_t<double> m_widths;
+    py::array_t<double> m_widths;
     // py::array_t<double> m_centers;
     // py::array_t<double> m_coupling_power;
     // py::array_t<double> m_time_array;
