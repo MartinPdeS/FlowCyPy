@@ -4,6 +4,11 @@
 #include <omp.h>
 #endif
 
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/numpy.h>
+namespace py = pybind11;
+
 FlowCyPySim::FlowCyPySim(
     const std::vector<double> &widths,
     const std::vector<double> &centers,
