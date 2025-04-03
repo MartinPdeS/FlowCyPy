@@ -174,7 +174,7 @@ def test_flag(flow_cytometer, flow_cell, scatterer_collection):
         medium_refractive_index=1.0 * units.RIU
     )
 
-    print(res)
+    print(res )
 
 
 def test_flow_cytometer_acquisition(flow_cytometer):
