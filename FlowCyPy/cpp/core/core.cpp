@@ -20,17 +20,17 @@ public:
     )
     : m_widths(widths), m_centers(centers), m_coupling_power(coupling_power), m_time_array(time_array), m_background_power(background_power)
     {
-        // --- Basic shape checks ---
-        auto w = m_widths.unchecked<1>();
-        auto c = m_centers.unchecked<1>();
-        auto p = m_coupling_power.unchecked<1>();
+        // // --- Basic shape checks ---
+        // auto w = m_widths.unchecked<1>();
+        // auto c = m_centers.unchecked<1>();
+        // auto p = m_coupling_power.unchecked<1>();
 
-        if (w.shape(0) != c.shape(0) || w.shape(0) != p.shape(0)) {
-            throw std::runtime_error("widths, centers, coupling_power must have the same length.");
-        }
-        if (m_time_array.ndim() != 1) {
-            throw std::runtime_error("time_array must be 1D.");
-        }
+        // if (w.shape(0) != c.shape(0) || w.shape(0) != p.shape(0)) {
+        //     throw std::runtime_error("widths, centers, coupling_power must have the same length.");
+        // }
+        // if (m_time_array.ndim() != 1) {
+        //     throw std::runtime_error("time_array must be 1D.");
+        // }
     }
 
     py::array_t<double> getAcquisition() {
