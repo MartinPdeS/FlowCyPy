@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:17.206** total execution time for 12 files **from all galleries**:
+**00:16.723** total execution time for 12 files **from all galleries**:
 
 .. container::
 
@@ -33,38 +33,38 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_gallery_tutorials_limit_of_detection.py` (``../examples/tutorials/limit_of_detection.py``)
-     - 00:03.977
+     - 00:03.791
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_workflow.py` (``../examples/tutorials/workflow.py``)
-     - 00:03.449
+     - 00:03.548
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_signal_processing.py` (``../examples/tutorials/signal_processing.py``)
-     - 00:03.054
+     - 00:03.016
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_distributions.py` (``../examples/extras/distributions.py``)
-     - 00:01.663
-     - 0.0
-   * - :ref:`sphx_glr_gallery_extras_flow_cytometer_signal.py` (``../examples/extras/flow_cytometer_signal.py``)
-     - 00:00.985
+     - 00:01.584
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_pre_defined_workflow.py` (``../examples/tutorials/pre_defined_workflow.py``)
-     - 00:00.933
+     - 00:00.937
+     - 0.0
+   * - :ref:`sphx_glr_gallery_extras_flow_cytometer_signal.py` (``../examples/extras/flow_cytometer_signal.py``)
+     - 00:00.932
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_triggered_acquisition.py` (``../examples/extras/triggered_acquisition.py``)
-     - 00:00.659
+     - 00:00.638
      - 0.0
    * - :ref:`sphx_glr_gallery_noise_sources_shot_noise.py` (``../examples/noise_sources/shot_noise.py``)
-     - 00:00.600
+     - 00:00.547
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_continuous_acquisition.py` (``../examples/extras/continuous_acquisition.py``)
-     - 00:00.574
+     - 00:00.533
      - 0.0
    * - :ref:`sphx_glr_gallery_noise_sources_dark_current.py` (``../examples/noise_sources/dark_current.py``)
-     - 00:00.564
+     - 00:00.511
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_scatterer_distribution.py` (``../examples/extras/scatterer_distribution.py``)
-     - 00:00.382
+     - 00:00.375
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_flow_cell_profiles.py` (``../examples/extras/flow_cell_profiles.py``)
-     - 00:00.366
+     - 00:00.311
      - 0.0
