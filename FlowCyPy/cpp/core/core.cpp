@@ -3,9 +3,6 @@
 #include <stdexcept>
 #include <cmath>
 #include <algorithm>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 
 namespace py = pybind11;
 
@@ -52,7 +49,7 @@ public:
         size_t nParticles = w.shape(0);
 
         // Parallelize the outer loop over particles.
-        #pragma omp parallel for
+        // #pragma omp parallel for
         for (size_t i = 0; i < nParticles; ++i) {
             double w_val = w(i);
             double c_val = c(i);
