@@ -219,7 +219,7 @@ peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=True)
 peaks = triggered_acquisition.detect_peaks(peak_algorithm)
 
 
-peaks.plot(feature='Height', x='side', y='forward')
+# peaks.plot(feature='Height', x='side', y='forward')
 
 # %%
 # Step 8: Classifying the collected dataset
@@ -233,4 +233,4 @@ data = classifier.run(
     detectors=['side', 'forward']
 )
 
-_ = data.plot(feature='Height', x='side', y='forward')
+# _ = data.plot(feature='Height', x='side', y='forward')

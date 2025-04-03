@@ -363,23 +363,12 @@ Getting and plotting the extracted peaks.
     peaks = triggered_acquisition.detect_peaks(peak_algorithm)
 
 
-    peaks.plot(feature='Height', x='side', y='forward')
+    # peaks.plot(feature='Height', x='side', y='forward')
 
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
-   :alt: Peaks properties
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
-   :class: sphx-glr-single-img
 
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <seaborn.axisgrid.JointGrid object at 0x7f1436361cd0>
 
 
 
@@ -401,13 +390,8 @@ Step 8: Classifying the collected dataset
         detectors=['side', 'forward']
     )
 
-    _ = data.plot(feature='Height', x='side', y='forward')
+    # _ = data.plot(feature='Height', x='side', y='forward')
 
-
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_003.png
-   :alt: Event classification
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_003.png
-   :class: sphx-glr-single-img
 
 
 
@@ -416,7 +400,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.254 seconds)
+   **Total running time of the script:** (0 minutes 3.106 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:
