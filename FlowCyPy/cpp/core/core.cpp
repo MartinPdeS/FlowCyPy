@@ -3,21 +3,21 @@
 #include <stdexcept>
 #include <cmath>
 #include <algorithm>
+#include <vector>
 
 namespace py = pybind11;
 
 class FlowCyPySim {
-    py::array_t<double> widths;
+    std::vector<double> widths;
     // py::array_t<double> m_centers;
     // py::array_t<double> m_coupling_power;
     // py::array_t<double> m_time_array;
     // double m_background_power;
 
 public:
-    FlowCyPySim() = default;
 
     FlowCyPySim(
-        const py::array_t<double> &widths
+        const std::vector<double> &widths
     ) : widths(widths) {}
 
     // FlowCyPySim(

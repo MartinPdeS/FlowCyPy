@@ -11,7 +11,7 @@ PYBIND11_MODULE(interface_core, m) {
     m.doc() = "Pybind11 example with no std::vector, only py::array_t<double>";
 
     py::class_<FlowCyPySim>(m, "FlowCyPySim")
-        .def(py::init<const py::array_t<double>&>())
+        .def(py::init<const std::vector<double>&>())
         // .def(py::init<const py::array_t<double>&, const py::array_t<double>&, const py::array_t<double>&, const py::array_t<double>&, double>(),
         //      py::arg("widths"),
         //      py::arg("centers"),
