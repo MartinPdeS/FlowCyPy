@@ -118,6 +118,7 @@ def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, sour
 
 # ----------------- UNIT TESTS -----------------
 
+
 def test_before_hand_1():
     SIZE = 4
     source = experiment.source.PlaneWave.build_sequential(
@@ -154,7 +155,44 @@ def test_before_hand_1():
 
     setup.get_sequential('coupling')
 
+def test_flow_cytometer_acquisition(flow_cytometer):
+    """Test if the Flow Cytometer generates a non-zero acquisition signal."""
+    flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
+    acquisition = flow_cytometer.get_acquisition()
 
+    signal = acquisition.analog['Signal']
+
+    assert not np.all(signal == 0 * units.volt), "Acquisition signal is all zeros."
+    assert np.std(signal) > 0 * units.volt, "Acquisition signal variance is zero, indicating no noise added."
+
+
+def test_flow_cytometer_multiple_detectors(flow_cytometer):
+    """Ensure that both detectors generate non-zero signals."""
+    flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
+    acquisition = flow_cytometer.get_acquisition()
+
+    signal_0 = acquisition.analog['Signal']
+    signal_1 = acquisition.analog['Signal']
+
+    assert not np.all(signal_0 == 0 * units.volt), "Detector 0 signal is all zeros."
+    assert not np.all(signal_1 == 0 * units.volt), "Detector 1 signal is all zeros."
+
+
+@patch('matplotlib.pyplot.show')
+def test_flow_cytometer_plot(mock_show, flow_cytometer):
+    """Test if the flow cytometer plots without error."""
+    flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
+    acquisition = flow_cytometer.get_acquisition()
+
+    acquisition.analog.plot()
+    acquisition.analog.log()
+    plt.close()
+
+    acquisition.digital.plot()
+    acquisition.digital.log()
+    plt.close()
+
+    acquisition.scatterer.log()
 
 
 if __name__ == '__main__':

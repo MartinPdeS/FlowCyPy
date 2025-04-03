@@ -80,4 +80,4 @@ dot.edge('Acquisition', 'TriggeringSystem', style='solid', fontsize='10')
 
 
 # Render and view the graph.
-dot.render('Architecture', view=True)
+dot.render('Architecture', view=True, format='svg')
