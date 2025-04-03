@@ -22,7 +22,8 @@ FlowCyPySim::FlowCyPySim(
 }
 
 void FlowCyPySim::get_acquisition() {
-    py::array_t<double> total_power(time_array.size());
+    // py::array_t<double> total_power(time_array.size());
+    py::array_t<double> arr({ 3, 5 });
 }
 
 // py::array_t<double> FlowCyPySim::get_acquisition() {
