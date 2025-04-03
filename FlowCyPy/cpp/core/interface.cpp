@@ -29,14 +29,15 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(interface_core, m) {
-    m.doc() = "Pybind11 example module for FlowCyPySim";
+PYBIND11_MODULE(interface_core, module) {
+    module.doc() = "Pybind11 example module for FlowCyPySim";
 
-    py::class_<FlowCyPySim>(m, "FlowCyPySim")
-        .def(py::init<const std::vector<double> &, const std::vector<double> &, const py::array_t<double>&, const py::array_t<double>&>(),
+    py::class_<FlowCyPySim>(module, "FlowCyPySim")
+        .def(py::init<const std::vector<double> &, const std::vector<double> &, const std::vector<double>&, const std::vector<double>&, const double>(),
         py::arg("widths"),
         py::arg("centers"),
         py::arg("coupling_power"),
-        py::arg("time_array")
+        py::arg("time_array"),
+        py::arg("background_power")
     );
 }

@@ -10,16 +10,19 @@ class FlowCyPySim {
 public:
     std::vector<double> widths;
     std::vector<double> centers;
-    py::array_t<double> coupling_power;
-    py::array_t<double> time_array;
+    std::vector<double> coupling_power;
+    std::vector<double> time_array;
+    double background_power;
+
     // Constructor taking a py::array_t<double> by value.
     FlowCyPySim(
         const std::vector<double> &widths,
         const std::vector<double> &centers,
         const std::vector<double> &coupling_power,
-        const std::vector<double> &time_array
+        const std::vector<double> &time_array,
+        const double background_power
     );
 
-    // (Optional) Other public methods can go here.
+    py::array_t<double> get_acquisition();
 
 };
