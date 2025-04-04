@@ -100,11 +100,11 @@ def process_sphere(source: BaseBeam, detector: Detector, scatterer_dataframe: pd
     experiment = _PyMieSim.Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
 
     # Compute coupling values (an array of length equal to total_size)
-    coupling_value = experiment.get_sequential('coupling')
+    # coupling_value = experiment.get_sequential('coupling')
 
     # Here we update the original DataFrame in-place using the mask.
 
-    scatterer_dataframe.loc[sphere_mask, detector.name] = pint_pandas.PintArray(coupling_value, dtype=units.watt)
+    # scatterer_dataframe.loc[sphere_mask, detector.name] = pint_pandas.PintArray(coupling_value, dtype=units.watt)
 
 
 def process_coreshell(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, coreshell_mask: pd.Series, medium_refractive_index: Quantity) -> None:
@@ -155,6 +155,6 @@ def process_coreshell(source: BaseBeam, detector: Detector, scatterer_dataframe:
     experiment = _PyMieSim.Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
 
     # Compute coupling values
-    # coupling_value = experiment.get_sequential('coupling')
+    coupling_value = experiment.get_sequential('coupling')
 
-    # scatterer_dataframe.loc[coreshell_mask, detector.name] = pint_pandas.PintArray(coupling_value, dtype=units.watt)
+    scatterer_dataframe.loc[coreshell_mask, detector.name] = pint_pandas.PintArray(coupling_value, dtype=units.watt)
