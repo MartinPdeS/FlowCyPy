@@ -4,7 +4,7 @@ import pandas as pd
 from FlowCyPy import units
 from FlowCyPy import dataframe_subclass
 from FlowCyPy.triggered_acquisition import TriggeredAcquisitions
-# from FlowCyPy.binary.interface_triggering_system import TriggeringSystem # type: ignore
+from FlowCyPy.binary.interface_triggering_system import TriggeringSystem # type: ignore
 import pint_pandas
 
 class Acquisition:

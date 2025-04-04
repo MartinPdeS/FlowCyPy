@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import logging
 import numpy as np
 from typing import List, Callable, Optional
 import pandas as pd
@@ -17,12 +16,6 @@ from FlowCyPy.source import BaseBeam
 from FlowCyPy.binary import interface_core
 from FlowCyPy.noises import NoiseSetting
 from FlowCyPy.amplifier import TransimpedanceAmplifier
-
-# Set up logging configuration
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(levelname)s - %(message)s'
-)
 
 
 class FlowCytometer:
