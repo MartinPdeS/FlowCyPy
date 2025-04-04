@@ -5,11 +5,6 @@ import pytest
 
 
 import numpy
-import pandas as pd
-from pydantic.dataclasses import dataclass
-from PyMieSim.binary.interface_experiment import EXPERIMENT
-from PyMieSim.units import AU, meter, watt
-from typing import Union, Optional, List
 from PyMieSim.experiment.scatterer import Sphere, Cylinder, CoreShell
 from PyMieSim.experiment.detector import Photodiode, CoherentMode
 from PyMieSim.experiment.source import Gaussian, PlaneWave
