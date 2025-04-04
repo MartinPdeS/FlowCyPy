@@ -1,4 +1,5 @@
 import pytest
+from PyMieSim.units import ureg, Quantity
 from PyMieSim import experiment as _PyMieSim
 import numpy
 from FlowCyPy import units
