@@ -1,5 +1,7 @@
 import pytest
-from PyMieSim import experiment as _PyMieSim
+# from PyMieSim import experiment as _PyMieSim
+# from PyMieSim import experiment as _PyMieSim
+from PyMieSim.units import Quantity
 from FlowCyPy.binary.interface_core import FlowCyPySim
 from PyMieSim.binary.interface_source import BindedPlanewave
 
