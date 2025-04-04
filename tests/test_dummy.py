@@ -1,8 +1,8 @@
 import pytest
-from FlowCyPy import units
+# from FlowCyPy import units
 from PyMieSim import experiment as _PyMieSim
 import numpy
-from FlowCyPy import units
+from PyMieSim import units
 
 def test_basic():
 
