@@ -237,9 +237,9 @@ class FlowCytometer:
 
         self._run_coupling_analysis(self.scatterer_dataframe)
 
-        # self._generate_pulse_parameters(self.scatterer_dataframe)
+        self._generate_pulse_parameters(self.scatterer_dataframe)
 
-        # return self.scatterer_dataframe
+        return self.scatterer_dataframe
 
     @validate_units(run_time=units.second)
     def get_acquisition(self, processing_steps: list[SignalProcessor] = None) -> Acquisition:

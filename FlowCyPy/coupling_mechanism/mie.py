@@ -155,6 +155,6 @@ def process_coreshell(source: BaseBeam, detector: Detector, scatterer_dataframe:
     experiment = _PyMieSim.Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
 
     # Compute coupling values
-    coupling_value = experiment.get_sequential('coupling')
+    # coupling_value = experiment.get_sequential('coupling')
 
-    scatterer_dataframe.loc[coreshell_mask, detector.name] = pint_pandas.PintArray(coupling_value, dtype=units.watt)
+    # scatterer_dataframe.loc[coreshell_mask, detector.name] = pint_pandas.PintArray(coupling_value, dtype=units.watt)
