@@ -1,7 +1,7 @@
 import pytest
 
 
-# from PyMieSim.experiment.utils import config_dict, Sequential
+from PyMieSim.experiment.utils import config_dict, Sequential
 
 
 from FlowCyPy.binary.interface_core import FlowCyPySim
