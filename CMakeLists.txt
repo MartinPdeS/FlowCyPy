@@ -33,7 +33,7 @@ add_compile_options(-Wall -Wextra -pedantic-errors)
 
 # add_subdirectory(FlowCyPy/cpp/filter)
 
-# add_subdirectory(FlowCyPy/cpp/triggering_system)
+add_subdirectory(FlowCyPy/cpp/triggering_system)
 
 add_subdirectory(FlowCyPy/cpp/core)
 
