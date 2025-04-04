@@ -1,13 +1,21 @@
 import pytest
-from FlowCyPy import units
 
 from PyMieSim.binary.interface_source import BindedPlanewave
+from FlowCyPy.binary.interface_core import FlowCyPySim
 
 import numpy
 
-def test_basic():
-    sphere = BindedPlanewave()
+def test_flow_cytometer_acquisition():
+    a = numpy.linspace(0, 1)
+    core = FlowCyPySim(a, a, a, a, 2)
 
+def test_basic():
+    sphere = BindedPlanewave(1, [0, 1], 1)
+
+
+
+
+# def test_basic():
     # from PyMieSim import experiment as _PyMieSim
 
     # pms_source = _PyMieSim.source.PlaneWave.build_sequential(
@@ -41,13 +49,6 @@ def test_basic():
     # experiment = _PyMieSim.Setup(source=pms_source, scatterer=pms_scatterer, detector=pms_detector)
 
     # coupling_value = experiment.get_sequential('coupling')
-
-
-def test_flow_cytometer_acquisition():
-    from FlowCyPy.binary import interface_core
-    a = numpy.linspace(0, 1)
-    core = interface_core.FlowCyPySim(a, a, a, a, 2)
-
 
 if __name__ == '__main__':
     pytest.main(["-W error", __file__])
