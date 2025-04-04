@@ -76,7 +76,7 @@ PYBIND11_MODULE(interface_core, m) {
         py::arg("coupling_power"),
         py::arg("time_array"),
         py::arg("background_power")
-    )
+    );
 
     // Uncommenting the following line forces the initialization of NumPy's C API.
     py::module::import("numpy");
