@@ -1,6 +1,7 @@
 import pytest
 
-from PyMieSim.experiment.scatterer import Sphere
+# from PyMieSim.experiment.scatterer import Sphere
+from PyMieSim.binary.interface_sets import CppSphereSet
 from FlowCyPy.binary.interface_core import FlowCyPySim
 from PyMieSim.binary.interface_source import BindedPlanewave
 
