@@ -15,10 +15,10 @@ import numpy
 # import pytest
 # import matplotlib.pyplot as plt
 # from unittest.mock import patch
-from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, TransimpedanceAmplifier, SignalDigitizer
+from FlowCyPy import FlowCytometer#, Detector, ScattererCollection, GaussianBeam, TransimpedanceAmplifier, SignalDigitizer
 # from FlowCyPy.flow_cell import FlowCell
 # from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy import distribution
+# from FlowCyPy import distribution
 # from FlowCyPy.population import Sphere
 # from FlowCyPy import units
 # from FlowCyPy import peak_locator
