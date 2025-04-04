@@ -1,11 +1,9 @@
 import pytest
-from FlowCyPy import units
-
-# ----------------- UNIT TESTS -----------------
-
+from PyMieSim import experiment as _PyMieSim
+from PyMieSim import units
+import numpy
 def test_basic():
-    from PyMieSim import experiment as _PyMieSim
-    import numpy
+
 
     pms_source = _PyMieSim.source.PlaneWave.build_sequential(
         total_size=10,
