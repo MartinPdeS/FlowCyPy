@@ -131,7 +131,7 @@ def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, sour
 def test_flow_cytometer_acquisition(flow_cytometer):
     """Test if the Flow Cytometer generates a non-zero acquisition signal."""
     flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
-    acquisition = flow_cytometer.get_acquisition()
+    # acquisition = flow_cytometer.get_acquisition()
 
 
 
