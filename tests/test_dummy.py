@@ -1,18 +1,6 @@
 import pytest
-# from PyMieSim import experiment as _PyMieSim
-# from PyMieSim import experiment as _PyMieSim
 
-
-
-import numpy
-from PyMieSim.experiment.scatterer import Sphere, Cylinder, CoreShell
-# from PyMieSim.experiment.detector import Photodiode, CoherentMode
-# from PyMieSim.experiment.source import Gaussian, PlaneWave
-# from PyMieSim.experiment.dataframe_subclass import PyMieSimDataFrame
-import PyMieSim
-
-
-
+from PyMieSim.experiment.scatterer import Sphere
 from FlowCyPy.binary.interface_core import FlowCyPySim
 from PyMieSim.binary.interface_source import BindedPlanewave
 
