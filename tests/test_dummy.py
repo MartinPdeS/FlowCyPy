@@ -1,8 +1,7 @@
 import pytest
 
 
-# from PyMieSim.experiment.source.base import BaseSource
-from PyMieSim.experiment.utils import config_dict, Sequential
+# from PyMieSim.experiment.utils import config_dict, Sequential
 
 from FlowCyPy.binary.interface_core import FlowCyPySim
 from PyMieSim.binary.interface_source import BindedPlanewave
