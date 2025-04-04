@@ -37,4 +37,4 @@ add_compile_options(-Wall -Wextra -pedantic-errors)
 
 add_subdirectory(FlowCyPy/cpp/core)
 
-# add_subdirectory(FlowCyPy/cpp/peak_locator)
+add_subdirectory(FlowCyPy/cpp/peak_locator)
