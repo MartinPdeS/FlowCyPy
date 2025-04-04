@@ -2,7 +2,7 @@ import pytest
 
 
 
-
+from PyMieSim import experiment as _PyMieSim
 from FlowCyPy.binary.interface_core import FlowCyPySim
 # from FlowCyPy.binary.interface_peak_locator import SlidingWindowPeakLocator, GlobalPeakLocator
 # from PyMieSim.binary.interface_source import BindedPlanewave
@@ -21,7 +21,7 @@ import numpy
 
 
 def test_basic_1():
-    from PyMieSim import experiment as _PyMieSim
+
 
     pms_source = _PyMieSim.source.PlaneWave.build_sequential(
         total_size=10,
