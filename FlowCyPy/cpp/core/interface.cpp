@@ -34,7 +34,7 @@ namespace py = pybind11;
 
 class FlowCyPySim{
     std::vector<double> widths;
-}
+};
 
 
 
