@@ -3,6 +3,25 @@ import pytest
 
 # from PyMieSim.experiment.utils import config_dict, Sequential
 
+import numpy as np
+from typing import Union, List, Dict, Optional, TypeVar
+from PyMieSim.units import Quantity
+from PyOptik.material.base_class import BaseMaterial
+
+
+T = TypeVar('T')
+
+from pydantic import ConfigDict
+
+# Configuration dictionary for the Pydantic dataclass
+config_dict = ConfigDict(
+    kw_only=True,
+    slots=True,
+    extra='forbid',
+    arbitrary_types_allowed=True
+)
+
+
 from FlowCyPy.binary.interface_core import FlowCyPySim
 from PyMieSim.binary.interface_source import BindedPlanewave
 
