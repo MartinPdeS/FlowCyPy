@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 # from FlowCyPy.binary import interface_filter
-from FlowCyPy.helper import validate_units
+# from FlowCyPy.helper import validate_units
 # from FlowCyPy import units
 
 class SignalProcessor(ABC):
