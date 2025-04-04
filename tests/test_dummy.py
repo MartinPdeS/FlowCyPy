@@ -3,7 +3,6 @@ import pytest
 
 # from PyMieSim.experiment.utils import config_dict, Sequential
 
-from PyMieSim.experiment.setup import Setup  # noqa: F401, W292
 
 from FlowCyPy.binary.interface_core import FlowCyPySim
 from PyMieSim.binary.interface_source import BindedPlanewave
