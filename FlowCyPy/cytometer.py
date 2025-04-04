@@ -6,7 +6,7 @@
 # import pandas as pd
 
 # from FlowCyPy import units
-from FlowCyPy.flow_cell import FlowCell
+# from FlowCyPy.flow_cell import FlowCell
 # from FlowCyPy.detector import Detector
 # from FlowCyPy.acquisition import Acquisition
 # from FlowCyPy.signal_digitizer import SignalDigitizer
