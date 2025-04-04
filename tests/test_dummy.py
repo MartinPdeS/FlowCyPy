@@ -5,10 +5,10 @@ import pytest
 
 
 import numpy
-from PyMieSim.experiment.scatterer import Sphere, Cylinder, CoreShell
-from PyMieSim.experiment.detector import Photodiode, CoherentMode
-from PyMieSim.experiment.source import Gaussian, PlaneWave
-from PyMieSim.experiment.dataframe_subclass import PyMieSimDataFrame
+# from PyMieSim.experiment.scatterer import Sphere, Cylinder, CoreShell
+# from PyMieSim.experiment.detector import Photodiode, CoherentMode
+# from PyMieSim.experiment.source import Gaussian, PlaneWave
+# from PyMieSim.experiment.dataframe_subclass import PyMieSimDataFrame
 import PyMieSim
 
 
