@@ -7,10 +7,10 @@
 namespace py = pybind11;
 
 FlowCyPySim::FlowCyPySim(
-    const std::vector<double> &widths,
-    const std::vector<double> &centers,
-    const std::vector<double> &coupling_power,
-    const std::vector<double> &time_array,
+    const py::array_t<double> &widths,
+    const py::array_t<double> &centers,
+    const py::array_t<double> &coupling_power,
+    const py::array_t<double> &time_array,
     const double background_power
 ) : widths(widths), centers(centers), coupling_power(coupling_power), time_array(time_array), background_power(background_power)
 {
