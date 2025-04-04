@@ -1,4 +1,14 @@
 from PyMieSim import experiment as _PyMieSim
+from PyMieSim.binary.interface_experiment import *
+from PyMieSim.binary.interface_fibonacci import *
+from PyMieSim.binary.interface_sets import *
+from PyMieSim.binary.interface_mode_field import *
+from PyMieSim.binary.interface_cylinder import *
+from PyMieSim.binary.interface_sphere import *
+from PyMieSim.binary.interface_detector import *
+from PyMieSim.binary.interface_experiment import *
+
+
 import numpy as np
 from FlowCyPy import Detector
 from FlowCyPy.source import BaseBeam
@@ -85,8 +95,8 @@ def process_sphere(source: BaseBeam, detector: Detector, scatterer_dataframe: pd
     )
 
     pms_detector = _PyMieSim.detector.Photodiode.build_sequential(
-        mode_number='NC00',
         total_size=total_size,
+        mode_number='NC00',
         NA=detector.numerical_aperture,
         cache_NA=detector.cache_numerical_aperture,
         gamma_offset=detector.gamma_angle,
@@ -103,7 +113,6 @@ def process_sphere(source: BaseBeam, detector: Detector, scatterer_dataframe: pd
     # coupling_value = experiment.get_sequential('coupling')
 
     # Here we update the original DataFrame in-place using the mask.
-
     # scatterer_dataframe.loc[sphere_mask, detector.name] = pint_pandas.PintArray(coupling_value, dtype=units.watt)
 
 
@@ -140,8 +149,8 @@ def process_coreshell(source: BaseBeam, detector: Detector, scatterer_dataframe:
     )
 
     pms_detector = _PyMieSim.detector.Photodiode.build_sequential(
-        mode_number='NC00',
         total_size=total_size,
+        mode_number='NC00',
         NA=detector.numerical_aperture,
         cache_NA=detector.cache_numerical_aperture,
         gamma_offset=detector.gamma_angle,
