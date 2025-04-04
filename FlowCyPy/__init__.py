@@ -4,7 +4,7 @@ try:
 except ImportError:
     __version__ = "0.0.0"
 
-
+from PyMieSim import experiment as _PyMieSim
 from .cytometer import FlowCytometer
 from .scatterer_collection import ScattererCollection, CouplingModel
 # from .population import Population
