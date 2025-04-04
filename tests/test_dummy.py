@@ -3,27 +3,19 @@ import pytest
 
 
 from PyMieSim import experiment as _PyMieSim
-
-# from FlowCyPy.binary.interface_peak_locator import SlidingWindowPeakLocator, GlobalPeakLocator
-# from PyMieSim.binary.interface_source import BindedPlanewave
+from FlowCyPy.binary.interface_core import FlowCyPySim
 
 from PyMieSim import units
 import numpy
 
-def test_flow_cytometer_acquisition():
-    from FlowCyPy.binary.interface_core import FlowCyPySim
+def test_0():
     a = numpy.linspace(0, 1)
     core = FlowCyPySim(a, a, a, a, 2)
 
-# def test_basic():
-#     sphere = BindedPlanewave(1, [0, 1], 1)
 
 
 
-
-def test_basic_1():
-
-
+def test_1():
     pms_source = _PyMieSim.source.PlaneWave.build_sequential(
         total_size=10,
         wavelength=500 * units.nanometer,
