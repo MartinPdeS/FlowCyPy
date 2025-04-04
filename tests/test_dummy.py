@@ -1,8 +1,7 @@
 import pytest
 
-# from PyMieSim.units import Quantity
-# from PyMieSim.experiment.scatterer.base import BaseScatterer
-from PyMieSim.experiment.source.base import BaseSource
+
+# from PyMieSim.experiment.source.base import BaseSource
 from PyMieSim.experiment.utils import config_dict, Sequential
 
 from FlowCyPy.binary.interface_core import FlowCyPySim
