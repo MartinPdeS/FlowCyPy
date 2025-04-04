@@ -12,18 +12,15 @@
 # if __name__ == '__main__':
 #     pytest.main(["-W error", __file__])
 
-import numpy as np
 import pytest
-import matplotlib.pyplot as plt
-from unittest.mock import patch
 from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, TransimpedanceAmplifier
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import distribution
 from FlowCyPy.population import Sphere
 from FlowCyPy import units
-from FlowCyPy import peak_locator
-from FlowCyPy import circuits
+from FlowCyPy.binary.interface_core import FlowCyPySim
+
 
 # ----------------- FIXTURES -----------------
 
