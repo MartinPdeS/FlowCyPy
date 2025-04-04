@@ -15,7 +15,7 @@ import numpy
 # import pytest
 # import matplotlib.pyplot as plt
 # from unittest.mock import patch
-from FlowCyPy import FlowCytometer#, Detector, ScattererCollection, GaussianBeam, TransimpedanceAmplifier, SignalDigitizer
+from FlowCyPy.cytometer import FlowCytometer#, Detector, ScattererCollection, GaussianBeam, TransimpedanceAmplifier, SignalDigitizer
 # from FlowCyPy.flow_cell import FlowCell
 # from FlowCyPy.signal_digitizer import SignalDigitizer
 # from FlowCyPy import distribution
