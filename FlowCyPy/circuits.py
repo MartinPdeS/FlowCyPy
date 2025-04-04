@@ -1,24 +1,27 @@
-from abc import ABC, abstractmethod
-import numpy as np
+# from abc import ABC, abstractmethod
+# import numpy as np
 # from FlowCyPy.binary import interface_filter
 # from FlowCyPy.helper import validate_units
 # from FlowCyPy import units
 
-class SignalProcessor(ABC):
-    """
-    Abstract base class for signal processing operations.
-    """
-    @abstractmethod
-    def apply(self, signal: np.ndarray) -> None:
-        """
-        Applies a signal processing transformation **in-place**.
+class SignalProcessor():
+    pass
 
-        Parameters
-        ----------
-        signal : np.ndarray
-            The signal to be modified in-place.
-        """
-        pass
+# class SignalProcessor(ABC):
+#     """
+#     Abstract base class for signal processing operations.
+#     """
+#     @abstractmethod
+#     def apply(self, signal: np.ndarray) -> None:
+#         """
+#         Applies a signal processing transformation **in-place**.
+
+#         Parameters
+#         ----------
+#         signal : np.ndarray
+#             The signal to be modified in-place.
+#         """
+#         pass
 
 # class BaselineRestorator(SignalProcessor):
 #     """
