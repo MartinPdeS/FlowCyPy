@@ -24,6 +24,9 @@ logging.basicConfig(
     format='%(levelname)s - %(message)s'
 )
 
+class SignalProcessor:
+    pass
+
 
 class FlowCytometer:
     """
