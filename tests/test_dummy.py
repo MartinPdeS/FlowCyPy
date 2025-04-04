@@ -1,9 +1,9 @@
 import pytest
 
 def test_before_hand():
-    from FlowCyPy.binary.interface_core import create_array
+    from FlowCyPy.binary.interface_core import FlowCyPySim
 
-    create_array()
+    FlowCyPySim()
 
 
 if __name__ == '__main__':

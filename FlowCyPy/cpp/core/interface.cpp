@@ -36,6 +36,7 @@ PYBIND11_MODULE(interface_core, m) {
     m.doc() = "Pybind11 example with no std::vector, only py::array_t<double>";
 
     py::class_<FlowCyPySim>(m, "FlowCyPySim")
+    .def(py::init<>())
     .def(
         py::init<const std::vector<double> &, const std::vector<double> &, const std::vector<double>&, const std::vector<double>&, const double>(),
         py::arg("widths"),
@@ -43,7 +44,8 @@ PYBIND11_MODULE(interface_core, m) {
         py::arg("coupling_power"),
         py::arg("time_array"),
         py::arg("background_power")
-    );
+    )
+    ;
 
     py::module::import("numpy");
 }

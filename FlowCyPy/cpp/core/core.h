@@ -15,6 +15,7 @@ public:
     double background_power;
 
     // Constructor taking a py::array_t<double> by value.
+    FlowCyPySim() = default;
     FlowCyPySim(
         const std::vector<double> &widths,
         const std::vector<double> &centers,
