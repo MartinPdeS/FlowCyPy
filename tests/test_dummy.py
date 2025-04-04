@@ -10,9 +10,9 @@ from FlowCyPy.binary.interface_core import FlowCyPySim
 from PyMieSim import units
 import numpy
 
-# def test_flow_cytometer_acquisition():
-#     a = numpy.linspace(0, 1)
-#     core = FlowCyPySim(a, a, a, a, 2)
+def test_flow_cytometer_acquisition():
+    a = numpy.linspace(0, 1)
+    core = FlowCyPySim(a, a, a, a, 2)
 
 # def test_basic():
 #     sphere = BindedPlanewave(1, [0, 1], 1)
