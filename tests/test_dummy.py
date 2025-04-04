@@ -3,7 +3,7 @@ import pytest
 
 
 from PyMieSim import experiment as _PyMieSim
-from FlowCyPy.binary.interface_core import FlowCyPySim
+
 # from FlowCyPy.binary.interface_peak_locator import SlidingWindowPeakLocator, GlobalPeakLocator
 # from PyMieSim.binary.interface_source import BindedPlanewave
 
@@ -11,6 +11,7 @@ from PyMieSim import units
 import numpy
 
 def test_flow_cytometer_acquisition():
+    from FlowCyPy.binary.interface_core import FlowCyPySim
     a = numpy.linspace(0, 1)
     core = FlowCyPySim(a, a, a, a, 2)
 
