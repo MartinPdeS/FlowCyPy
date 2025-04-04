@@ -30,6 +30,14 @@
 
 namespace py = pybind11;
 
+
+
+class FlowCyPySim{
+    std::vector<double> widths;
+}
+
+
+
 std::string create_array() {
 
     // Create a new 2D array with shape (3, 5)
