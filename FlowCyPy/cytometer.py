@@ -14,7 +14,7 @@ from FlowCyPy.helper import validate_units
 from FlowCyPy import dataframe_subclass
 from FlowCyPy.circuits import SignalProcessor
 from FlowCyPy.source import BaseBeam
-# from FlowCyPy.binary import interface_core
+from FlowCyPy.binary import interface_core
 from FlowCyPy.noises import NoiseSetting
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 
