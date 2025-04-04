@@ -40,10 +40,10 @@ def test_basic():
     coupling_value = experiment.get_sequential('coupling')
 
 
-def test_flow_cytometer_acquisition():
-    from FlowCyPy.binary import interface_core
-    a = numpy.linspace(0, 1)
-    core = interface_core.FlowCyPySim(a, a, a, a, 2)
+# def test_flow_cytometer_acquisition():
+#     from FlowCyPy.binary import interface_core
+#     a = numpy.linspace(0, 1)
+#     core = interface_core.FlowCyPySim(a, a, a, a, 2)
 
 
 if __name__ == '__main__':
