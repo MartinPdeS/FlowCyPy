@@ -8,7 +8,7 @@ from FlowCyPy.binary.interface_peak_locator import SlidingWindowPeakLocator, Glo
 from PyMieSim.binary.interface_source import BindedPlanewave
 
 # from PyMieSim.experiment.utils import config_dict, Sequential
-from FlowCyPy import units
+from PyMieSim import units
 import numpy
 
 # import numpy as np
