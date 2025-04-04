@@ -1,7 +1,16 @@
 import pytest
 
 # from PyMieSim.experiment.scatterer import Sphere
+
+from typing import List
+from pydantic.dataclasses import dataclass
 from PyMieSim.binary.interface_sets import CppSphereSet
+from PyOptik.material.base_class import BaseMaterial
+from PyMieSim.units import Quantity
+from PyMieSim.experiment.scatterer.base import BaseScatterer
+from PyMieSim.experiment.source.base import BaseSource
+from PyMieSim.experiment.utils import config_dict, Sequential
+
 from FlowCyPy.binary.interface_core import FlowCyPySim
 from PyMieSim.binary.interface_source import BindedPlanewave
 
