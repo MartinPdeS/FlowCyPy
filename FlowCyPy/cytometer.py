@@ -9,8 +9,8 @@ from FlowCyPy import units
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.detector import Detector
 # from FlowCyPy.acquisition import Acquisition
-from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy.helper import validate_units
+# from FlowCyPy.signal_digitizer import SignalDigitizer
+# from FlowCyPy.helper import validate_units
 # from FlowCyPy import dataframe_subclass
 # from FlowCyPy.circuits import SignalProcessor
 # from FlowCyPy.source import BaseBeam
