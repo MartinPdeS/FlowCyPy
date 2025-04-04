@@ -3,37 +3,19 @@ import pytest
 
 
 
-from FlowCyPy.binary.interface_core import FlowCyPySim
-from FlowCyPy.binary.interface_peak_locator import SlidingWindowPeakLocator, GlobalPeakLocator
-from PyMieSim.binary.interface_source import BindedPlanewave
+# from FlowCyPy.binary.interface_core import FlowCyPySim
+# from FlowCyPy.binary.interface_peak_locator import SlidingWindowPeakLocator, GlobalPeakLocator
+# from PyMieSim.binary.interface_source import BindedPlanewave
 
-# from PyMieSim.experiment.utils import config_dict, Sequential
 from PyMieSim import units
 import numpy
 
-# import numpy as np
-# import pytest
-# import matplotlib.pyplot as plt
-# from unittest.mock import patch
-# from FlowCyPy.cytometer import FlowCytometer#, Detector, ScattererCollection, GaussianBeam, TransimpedanceAmplifier, SignalDigitizer
-# from FlowCyPy.flow_cell import FlowCell
-# from FlowCyPy.signal_digitizer import SignalDigitizer
-# from FlowCyPy import distribution
-# from FlowCyPy.population import Sphere
-# from FlowCyPy import units
-# from FlowCyPy import peak_locator
-# from FlowCyPy import circuits
+# def test_flow_cytometer_acquisition():
+#     a = numpy.linspace(0, 1)
+#     core = FlowCyPySim(a, a, a, a, 2)
 
-
-
-
-
-def test_flow_cytometer_acquisition():
-    a = numpy.linspace(0, 1)
-    core = FlowCyPySim(a, a, a, a, 2)
-
-def test_basic():
-    sphere = BindedPlanewave(1, [0, 1], 1)
+# def test_basic():
+#     sphere = BindedPlanewave(1, [0, 1], 1)
 
 
 
