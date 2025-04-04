@@ -1,7 +1,7 @@
 import pytest
 
-from PyMieSim.binary.interface_source import BindedPlanewave
 from FlowCyPy.binary.interface_core import FlowCyPySim
+from PyMieSim.binary.interface_source import BindedPlanewave
 
 import numpy
 
