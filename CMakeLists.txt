@@ -29,12 +29,12 @@ endif()
 
 add_compile_options(-Wall -Wextra -pedantic-errors)
 
-# add_subdirectory(FlowCyPy/cpp/utils)
+add_subdirectory(FlowCyPy/cpp/utils)
 
-# add_subdirectory(FlowCyPy/cpp/filter)
+add_subdirectory(FlowCyPy/cpp/filter)
 
 add_subdirectory(FlowCyPy/cpp/triggering_system)
 
 add_subdirectory(FlowCyPy/cpp/core)
 
-# add_subdirectory(FlowCyPy/cpp/peak_locator)
+add_subdirectory(FlowCyPy/cpp/peak_locator)
