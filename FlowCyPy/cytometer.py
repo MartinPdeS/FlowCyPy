@@ -231,15 +231,15 @@ class FlowCytometer:
         """
         self.run_time = run_time
 
-        self.scatterer_dataframe = self.flow_cell._generate_event_dataframe(self.scatterer_collection.populations, run_time=run_time)
+        # self.scatterer_dataframe = self.flow_cell._generate_event_dataframe(self.scatterer_collection.populations, run_time=run_time)
 
-        self.scatterer_collection.fill_dataframe_with_sampling(self.scatterer_dataframe)
+        # self.scatterer_collection.fill_dataframe_with_sampling(self.scatterer_dataframe)
 
-        self._run_coupling_analysis(self.scatterer_dataframe)
+        # self._run_coupling_analysis(self.scatterer_dataframe)
 
-        self._generate_pulse_parameters(self.scatterer_dataframe)
+        # self._generate_pulse_parameters(self.scatterer_dataframe)
 
-        return self.scatterer_dataframe
+        # return self.scatterer_dataframe
 
     @validate_units(run_time=units.second)
     def get_acquisition(self, processing_steps: list[SignalProcessor] = None) -> Acquisition:
