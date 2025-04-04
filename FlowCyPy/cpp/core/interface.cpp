@@ -66,7 +66,17 @@ std::string create_array() {
 }
 
 PYBIND11_MODULE(interface_core, m) {
-    m.doc() = "Minimal module to reproduce py::array_t segfault";
+    m.doc() = "Pybind11 example with no std::vector, only py::array_t<double>";
+
+    py::class_<FlowCyPySim>(m, "FlowCyPySim")
+    .def(
+        py::init<const std::vector<double> &, const std::vector<double> &, const std::vector<double>&, const std::vector<double>&, const double>(),
+        py::arg("widths"),
+        py::arg("centers"),
+        py::arg("coupling_power"),
+        py::arg("time_array"),
+        py::arg("background_power")
+    )
 
     // Uncommenting the following line forces the initialization of NumPy's C API.
     py::module::import("numpy");
