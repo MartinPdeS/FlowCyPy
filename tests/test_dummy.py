@@ -1,12 +1,12 @@
 import pytest
 
 
-from PyMieSim.experiment.utils import config_dict, Sequential
 
 
 from FlowCyPy.binary.interface_core import FlowCyPySim
 from PyMieSim.binary.interface_source import BindedPlanewave
 
+from PyMieSim.experiment.utils import config_dict, Sequential
 import numpy
 
 def test_flow_cytometer_acquisition():
