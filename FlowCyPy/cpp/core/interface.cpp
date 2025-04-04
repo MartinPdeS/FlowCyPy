@@ -26,23 +26,11 @@
 // minimal_function.cpp
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-#include <iostream>
 #include "core.h"
 
 
 namespace py = pybind11;
 
-
-
-std::string create_array() {
-
-    // Create a new 2D array with shape (3, 5)
-    py::array_t<double> arr({3, 5});
-
-    // Return the shape as a string
-    return "Created array with shape: " + std::to_string(arr.shape(0)) +
-           " x " + std::to_string(arr.shape(1));
-}
 
 PYBIND11_MODULE(interface_core, m) {
     m.doc() = "Pybind11 example with no std::vector, only py::array_t<double>";
@@ -57,8 +45,5 @@ PYBIND11_MODULE(interface_core, m) {
         py::arg("background_power")
     );
 
-    // Uncommenting the following line forces the initialization of NumPy's C API.
     py::module::import("numpy");
-
-    m.def("create_array", &create_array, "A function that creates a 2D array and returns its shape.");
 }
