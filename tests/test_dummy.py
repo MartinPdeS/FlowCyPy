@@ -3,14 +3,27 @@ import pytest
 
 
 from PyMieSim import experiment as _PyMieSim
-from FlowCyPy.binary.interface_core import FlowCyPySim
+from FlowCyPy.binary.interface_core import SignalConstructor
 
 from PyMieSim import units
 import numpy
 
+
+a = numpy.linspace(0, 1, 100)
+core = SignalConstructor(a, a, a, a, 2)
+
+b = numpy.zeros(100)
+# core.get_acquisition(b)
+core.add_gaussian_noise(output=b, mean=10, standard_deviation=2)
+print(b)
+
 def test_0():
-    a = numpy.linspace(0, 1)
-    core = FlowCyPySim(a, a, a, a, 2)
+    a = numpy.linspace(0, 1, 100)
+    core = SignalConstructor(a, a, a, a, 2)
+
+    b = numpy.zeros(100)
+    core.get_acquisition(b)
+    print(b)
 
 
 
