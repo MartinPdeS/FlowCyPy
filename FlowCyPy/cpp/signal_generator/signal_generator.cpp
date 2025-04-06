@@ -15,11 +15,7 @@ void SignalGenerator::pulse_generation(
     const py::buffer &time,
     const double background_power
 ) {
-    py::buffer_info info = this->signal.request();
     double* output_ptr = static_cast<double*>(this->signal.request().ptr);
-
-    if (info.ndim != 1 || info.format != py::format_descriptor<double>::format())
-        throw std::runtime_error("Expected a 1D float64 output array");
 
     if (widths.request().size != centers.request().size || widths.request().size != coupling_power.request().size)
         throw std::runtime_error("widths, centers, coupling_power must have the same length.");

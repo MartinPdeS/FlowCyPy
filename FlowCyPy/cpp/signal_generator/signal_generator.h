@@ -12,7 +12,13 @@ public:
     py::buffer signal;
 
     // Constructor taking a std::vector<double> by value.
-    SignalGenerator(py::buffer signal) : signal(signal) {};
+    SignalGenerator(py::buffer signal) : signal(signal) {
+        py::buffer_info info = this->signal.request();
+
+        if (info.ndim != 1 || info.format != py::format_descriptor<double>::format())
+            throw std::runtime_error("Expected a 1D float64 output array");
+
+    };
 
     void pulse_generation(
         const py::buffer &widths,

@@ -40,9 +40,9 @@ PYBIND11_MODULE(interface_signal_generator, module) {
             py::arg("order") = 1,
             "In-place low-pass FFT filter on output array")
 
-            .def("apply_baseline_restoration",
-                &SignalGenerator::apply_baseline_restoration,
-                py::arg("window_size"),
-                "In-place baseline restoration")
-            ;
+        .def("apply_baseline_restoration",
+            &SignalGenerator::apply_baseline_restoration,
+            py::arg("window_size"),
+            "In-place baseline restoration")
+        ;
 }
