@@ -143,7 +143,7 @@ def test_global_peak_with_width_and_area():
         mode="gaussian"
     )
     locator = GlobalPeakLocator(compute_width=True, compute_area=True)
-    result = locator(signal)
+    locator(signal)
 
     widths = locator.get_widths()
     areas = locator.get_areas()

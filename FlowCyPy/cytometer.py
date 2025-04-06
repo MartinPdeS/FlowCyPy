@@ -13,7 +13,7 @@ from FlowCyPy.helper import validate_units
 from FlowCyPy import dataframe_subclass
 from FlowCyPy.circuits import SignalProcessor
 from FlowCyPy.source import BaseBeam
-from FlowCyPy.binary import interface_core
+from FlowCyPy.binary import interface_signal_generator
 from FlowCyPy.noises import NoiseSetting
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 
@@ -272,16 +272,29 @@ class FlowCytometer:
             total_power = self.background_power
 
             # Broadcast the time array to the shape of (number of signals, len(detector.time))
+            signal = np.zeros_like(sequence_length)
             if not self.scatterer_dataframe.empty:
-                core = interface_core.FlowCyPySim(
-                    time_array=signal_dataframe.loc[detector_name, 'Time'].pint.magnitude.values,
-                    widths=self.scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude,
-                    centers=self.scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude,
-                    coupling_power=self.scatterer_dataframe[detector_name].pint.to('watt').pint.quantity.magnitude,
+                core = interface_signal_generator.SignalGenerator(signal)
+
+                core.pulse_generation(
+                    widths=self.scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude,,
+                    centers=self.scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude,,
+                    coupling_power=self.scatterer_dataframe[detector_name].pint.to('watt').pint.quantity.magnitude,,
+                    time=signal_dataframe.loc[detector_name, 'Time'].pint.magnitude.values,,
                     background_power=self.background_power.to('watt').magnitude
                 )
 
-                total_power = core.get_acquisition() * units.watt
+                total_power = signal * units.watt
+
+                # core = interface_signal_generator.SignalGenerator(
+                #     time_array=signal_dataframe.loc[detector_name, 'Time'].pint.magnitude.values,
+                #     widths=self.scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude,
+                #     centers=self.scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude,
+                #     coupling_power=self.scatterer_dataframe[detector_name].pint.to('watt').pint.quantity.magnitude,
+                #     background_power=self.background_power.to('watt').magnitude
+                # )
+
+                # total_power = core.get_acquisition() * units.watt
 
             if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
                 photocurrent = (total_power * detector.responsivity)

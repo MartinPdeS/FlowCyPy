@@ -17,7 +17,7 @@ PYBIND11_MODULE(interface_signal_generator, module) {
             py::arg("widths"),
             py::arg("centers"),
             py::arg("coupling_power"),
-            py::arg("time_array"),
+            py::arg("time"),
             py::arg("background_power"),
             "Sums background power plus Gaussian pulses for each scatterer."
         )
