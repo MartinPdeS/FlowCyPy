@@ -37,4 +37,4 @@ add_subdirectory(FlowCyPy/cpp/triggering_system)
 
 add_subdirectory(FlowCyPy/cpp/signal_generator)
 
-# add_subdirectory(FlowCyPy/cpp/peak_locator)
+add_subdirectory(FlowCyPy/cpp/peak_locator)

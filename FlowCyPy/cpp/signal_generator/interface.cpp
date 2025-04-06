@@ -3,7 +3,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(interface_core, module) {
+PYBIND11_MODULE(interface_signal_generator, module) {
     module.doc() = "SignalGenerator bindings";
 
     py::class_<SignalGenerator>(module, "SignalGenerator")

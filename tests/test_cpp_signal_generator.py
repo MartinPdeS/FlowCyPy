@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from FlowCyPy.binary.interface_core import SignalGenerator
+from FlowCyPy.binary.interface_signal_generator import SignalGenerator
 
 # === Shared signal model setup (used by most tests) ===
 
