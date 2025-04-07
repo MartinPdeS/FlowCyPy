@@ -510,7 +510,6 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pint_pandas</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PyMieSim.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
@@ -695,38 +694,6 @@ document.write(`
 <span class="sd">            A dataframe corresponding to the detector&#39;s recorded data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cytometer</span><span class="o">.</span><span class="n">dataframe</span><span class="o">.</span><span class="n">xs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-
-<div class="viewcode-block" id="Detector.get_initialized_signal">
-<a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector.get_initialized_signal">[docs]</a>
-    <span class="nd">@validate_units</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_initialized_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes a placeholder for the detector&#39;s raw signal over a specified runtime.</span>
-
-<span class="sd">        This method creates a time-dependent DataFrame with columns for time and the</span>
-<span class="sd">        corresponding signal (initialized to zero volts).</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        run_time : Quantity</span>
-<span class="sd">            The total acquisition time for the signal (in seconds).</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        pd.DataFrame</span>
-<span class="sd">            A DataFrame with a time column (in seconds) and a signal column (in volts),</span>
-<span class="sd">            initialized to zero.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">time_points</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sampling_rate</span> <span class="o">*</span> <span class="n">run_time</span><span class="p">)</span>
-        <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">run_time</span><span class="p">,</span> <span class="n">time_points</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                <span class="n">Time</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">),</span>
-                <span class="n">Signal</span><span class="o">=</span><span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">volt</span><span class="p">),</span>
-            <span class="p">)</span>
-        <span class="p">)</span></div>
-
 
 <div class="viewcode-block" id="Detector.get_noise_signal">
 <a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector.get_noise_signal">[docs]</a>

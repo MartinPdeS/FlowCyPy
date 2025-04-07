@@ -645,45 +645,8 @@ Supported mechanisms include: ‘mie’ (default): Mie scattering, ‘rayleigh�
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.add_noises_to_signal">
-<span class="sig-name descname"><span class="pre">add_noises_to_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.add_noises_to_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.add_noises_to_signal" title="Link to this definition">#</a></dt>
-<dd><p>Add noise components to the signal data in the given dataframe.</p>
-<p>For each detector, this method retrieves noise parameters (e.g., thermal and dark current noise),
-generates corresponding noise values using a normal distribution, and adds the noise to the existing
-signal data in place.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>signal_dataframe</strong> (<em>pd.DataFrame</em>) – DataFrame containing the signal data where noise will be added.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.circuit_process_data">
-<span class="sig-name descname"><span class="pre">circuit_process_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processing_steps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.circuit_process_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.circuit_process_data" title="Link to this definition">#</a></dt>
-<dd><p>Apply a sequence of user-defined processing steps to the signal data in place.</p>
-<p>This method iterates through the signal dataframe grouped by detector, retrieves the
-raw signal data as a writable NumPy array, and applies each processing step sequentially.
-After processing, it reintroduces the original units and updates the dataframe.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>signal_dataframe</strong> (<em>pd.DataFrame</em>) – DataFrame containing the signal data to be processed.</p></li>
-<li><p><strong>processing_steps</strong> (<em>list</em>) – A list of signal processing steps (SignalProcessor instances) that modify the signal data in place.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.get_acquisition">
-<span class="sig-name descname"><span class="pre">get_acquisition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processing_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.get_acquisition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.get_acquisition" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_acquisition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">processing_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.get_acquisition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.get_acquisition" title="Link to this definition">#</a></dt>
 <dd><p>Simulates the generation of optical signal pulses for each particle event.</p>
 <p>This method calculates Gaussian signal pulses based on particle positions, coupling power, and
 widths. It adds the generated pulses, background power, and noise components (thermal and dark current)
@@ -741,6 +704,16 @@ to each detector’s raw signal.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.run_processing">
+<span class="sig-name descname"><span class="pre">run_processing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">processing_steps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.run_processing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.run_processing" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -774,11 +747,10 @@ to each detector’s raw signal.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.detectors"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.detectors</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.coupling_mechanism"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.coupling_mechanism</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.background_power"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.background_power</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.add_noises_to_signal"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.add_noises_to_signal()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.circuit_process_data"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.circuit_process_data()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.get_acquisition"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.get_acquisition()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.get_detector_by_name"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.get_detector_by_name()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.prepare_acquisition"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.prepare_acquisition()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.run_processing"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.run_processing()</span></code></a></li>
 </ul>
 </li>
 </ul>

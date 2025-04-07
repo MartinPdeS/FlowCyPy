@@ -579,10 +579,12 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 globally but exclude specific types, such as shot noise and thermal noise.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoiseSetting</span>
 
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="c1"># NoiseSetting.include_shot_noise = False</span>
-<span class="c1"># NoiseSetting.include_thermal_noise = False</span>
-<span class="c1"># NoiseSetting.include_dark_current_noise = False</span>
+<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_dark_current_noise</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_source_noise</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_amplifier_noise</span> <span class="o">=</span> <span class="kc">True</span>
+
 
 <a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># Ensure reproducibility</span>
 </pre></div>
@@ -597,7 +599,8 @@ aperture and wavelength, affect how light scatters, governed by Mie theory.</p>
 <span class="n">source</span> <span class="o">=</span> <span class="n">GaussianBeam</span><span class="p">(</span>
     <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>           <span class="c1"># Numerical aperture</span>
     <span class="n">wavelength</span><span class="o">=</span><span class="mi">450</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>           <span class="c1"># Wavelength</span>
-    <span class="n">optical_power</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span>          <span class="c1"># Optical power</span>
+    <span class="n">optical_power</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>          <span class="c1"># Optical power</span>
+    <span class="n">RIN</span><span class="o">=-</span><span class="mi">140</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -642,7 +645,7 @@ given by:</p>
 <span class="p">)</span>
 
 <span class="c1"># Add an Exosome population</span>
-<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">exosome</span><span class="p">,</span> <span class="n">custom_population</span><span class="p">)</span>
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">custom_population</span><span class="p">)</span>
 
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 
@@ -691,8 +694,8 @@ power to electronic signals, and saturation level represents the maximum signal 
 <span class="n">amplifier</span> <span class="o">=</span> <span class="n">TransimpedanceAmplifier</span><span class="p">(</span>
     <span class="n">gain</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span>
     <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
-    <span class="n">voltage_noise_density</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanovolt</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">sqrt_hertz</span><span class="p">,</span>
-    <span class="n">current_noise_density</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">femtoampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">sqrt_hertz</span>
+    <span class="n">voltage_noise_density</span><span class="o">=</span><span class="mf">.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanovolt</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">sqrt_hertz</span><span class="p">,</span>
+    <span class="n">current_noise_density</span><span class="o">=</span><span class="mf">.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">femtoampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">sqrt_hertz</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -712,26 +715,26 @@ and particles follows Mie theory:</p>
     <span class="n">signal_digitizer</span><span class="o">=</span><span class="n">signal_digitizer</span><span class="p">,</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">,</span> <span class="n">detector_2</span><span class="p">],</span>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>
-    <span class="n">background_power</span><span class="o">=</span><span class="mf">0.001</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span>
+    <span class="n">background_power</span><span class="o">=</span><span class="mf">0.000</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span>
 <span class="p">)</span>
 
 <span class="n">processing_steps</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">1000</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microsecond</span><span class="p">),</span>
-    <span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microsecond</span><span class="p">),</span>
+    <span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="p">]</span>
 
 <span class="c1"># Run the flow cytometry simulation</span>
-<span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
+<span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 <span class="n">acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span><span class="n">processing_steps</span><span class="o">=</span><span class="n">processing_steps</span><span class="p">)</span>
 
-<span class="c1"># _ = acquisition.scatterer.plot(</span>
-<span class="c1">#     x=&#39;side&#39;,</span>
-<span class="c1">#     y=&#39;forward&#39;,</span>
-<span class="c1">#     z=&#39;RefractiveIndex&#39;</span>
-<span class="c1"># )</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">acquisition</span><span class="o">.</span><span class="n">scatterer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
+    <span class="n">z</span><span class="o">=</span><span class="s1">&#39;RefractiveIndex&#39;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
 /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
@@ -739,17 +742,19 @@ and particles follows Mie theory:</p>
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
 </pre></div>
 </div>
-<p>Visualize the scatter signals from both detectors
-acquisition.analog.plot()</p>
-</section>
+<p>Visualize the scatter signals from both detectors</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">acquisition</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_workflow_002.png" srcset="../../_images/sphx_glr_workflow_002.png" alt="workflow" class = "sphx-glr-single-img"/></section>
 <section id="step-7-analyze-detected-signals">
 <h2>Step 7: Analyze Detected Signals<a class="headerlink" href="#step-7-analyze-detected-signals" title="Link to this heading">#</a></h2>
 <p>The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">triggered_acquisition</span> <span class="o">=</span> <span class="n">acquisition</span><span class="o">.</span><span class="n">run_triggering</span><span class="p">(</span>
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microvolt</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microvolt</span><span class="p">,</span>
     <span class="n">trigger_detector_name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
-    <span class="n">max_triggers</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>
+    <span class="n">max_triggers</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
     <span class="n">post_buffer</span><span class="o">=</span><span class="mi">20</span>
 <span class="p">)</span>
@@ -757,15 +762,18 @@ window size and threshold.</p>
 <span class="n">triggered_acquisition</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="workflow" class = "sphx-glr-single-img"/><p>Getting and plotting the extracted peaks.</p>
+<img src="../../_images/sphx_glr_workflow_003.png" srcset="../../_images/sphx_glr_workflow_003.png" alt="workflow" class = "sphx-glr-single-img"/><p>Getting and plotting the extracted peaks.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">peak_locator</span>
-<span class="n">peak_algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span><span class="p">(</span><span class="n">compute_width</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">peak_algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span><span class="p">(</span><span class="n">compute_width</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
 <span class="n">peaks</span> <span class="o">=</span> <span class="n">triggered_acquisition</span><span class="o">.</span><span class="n">detect_peaks</span><span class="p">(</span><span class="n">peak_algorithm</span><span class="p">)</span>
 
 
-<span class="c1"># peaks.plot(feature=&#39;Height&#39;, x=&#39;side&#39;, y=&#39;forward&#39;)</span>
+<span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;Height&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_workflow_004.png" srcset="../../_images/sphx_glr_workflow_004.png" alt="Peaks properties" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7f3b3363de90&gt;
 </pre></div>
 </div>
 <p>Step 8: Classifying the collected dataset</p>
@@ -779,10 +787,10 @@ window size and threshold.</p>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="s1">&#39;forward&#39;</span><span class="p">]</span>
 <span class="p">)</span>
 
-<span class="c1"># _ = data.plot(feature=&#39;Height&#39;, x=&#39;side&#39;, y=&#39;forward&#39;)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;Height&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.076 seconds)</p>
+<img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 10.249 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/67e0cd555ca79f8bdb69184b227f40a4/workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow.ipynb</span></code></a></p>
