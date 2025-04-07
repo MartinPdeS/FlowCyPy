@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for FlowCyPy/triggered_acquisition.py: 60%</title>
+    <title>Coverage for FlowCyPy/triggered_acquisition.py: 62%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
     <link rel="stylesheet" href="style_cb_8e611ae1.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>FlowCyPy/triggered_acquisition.py</b>:
-            <span class="pc_cov">60%</span>
+            <span class="pc_cov">62%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_2404691b0fd86af0_units_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-04-04 20:10 +0000
+            created at 2025-04-07 13:44 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -159,7 +159,7 @@
     <p class="pln"><span class="n"><a id="t75" href="#t75">75</a></span><span class="t"><span class="str">            A MultiIndex DataFrame (Detector, Segment, Peak_Number) with the computed metrics and original units restored.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t76" href="#t76">76</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t77" href="#t77">77</a></span><span class="t">        <span class="nam">multi_index</span> <span class="op">=</span> <span class="nam">pd</span><span class="op">.</span><span class="nam">MultiIndex</span><span class="op">.</span><span class="nam">from_product</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t78" href="#t78">78</a></span><span class="t">            <span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">analog</span><span class="op">.</span><span class="nam">index</span><span class="op">.</span><span class="nam">get_level_values</span><span class="op">(</span><span class="str">'Detector'</span><span class="op">)</span><span class="op">.</span><span class="nam">unique</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t78" href="#t78">78</a></span><span class="t">            <span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">analog</span><span class="op">.</span><span class="nam">detector_names</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t79" href="#t79">79</a></span><span class="t">            <span class="nam">self</span><span class="op">.</span><span class="nam">analog</span><span class="op">.</span><span class="nam">index</span><span class="op">.</span><span class="nam">get_level_values</span><span class="op">(</span><span class="str">'SegmentID'</span><span class="op">)</span><span class="op">.</span><span class="nam">unique</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t80" href="#t80">80</a></span><span class="t">            <span class="nam">range</span><span class="op">(</span><span class="nam">peak_algorithm</span><span class="op">.</span><span class="nam">max_number_of_peaks</span><span class="op">)</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t">            <span class="nam">names</span><span class="op">=</span><span class="op">[</span><span class="str">"Detector"</span><span class="op">,</span> <span class="str">"SegmentID"</span><span class="op">,</span> <span class="str">"PeakID"</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
@@ -167,16 +167,16 @@
     <p class="pln"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t">        <span class="nam">df</span> <span class="op">=</span> <span class="nam">pd</span><span class="op">.</span><span class="nam">DataFrame</span><span class="op">(</span><span class="nam">columns</span><span class="op">=</span><span class="op">[</span><span class="str">'Height'</span><span class="op">,</span> <span class="str">'Width'</span><span class="op">,</span> <span class="str">'Area'</span><span class="op">]</span><span class="op">,</span> <span class="nam">index</span><span class="op">=</span><span class="nam">multi_index</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t">        <span class="key">for</span> <span class="nam">group_name</span><span class="op">,</span> <span class="nam">group</span> <span class="key">in</span> <span class="nam">self</span><span class="op">.</span><span class="nam">analog</span><span class="op">.</span><span class="nam">groupby</span><span class="op">(</span><span class="op">[</span><span class="str">'Detector'</span><span class="op">,</span> <span class="str">'SegmentID'</span><span class="op">]</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t">            <span class="nam">signal</span> <span class="op">=</span> <span class="nam">group</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">dequantify</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">Signal</span><span class="op">.</span><span class="nam">values</span><span class="op">.</span><span class="nam">squeeze</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t">            <span class="nam">time</span>  <span class="op">=</span> <span class="nam">group</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">dequantify</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">Time</span><span class="op">.</span><span class="nam">values</span><span class="op">.</span><span class="nam">squeeze</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t">            <span class="nam">peaks_dict</span> <span class="op">=</span> <span class="nam">peak_algorithm</span><span class="op">(</span><span class="nam">signal</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t">        <span class="nam">df</span><span class="op">.</span><span class="nam">sort_index</span><span class="op">(</span><span class="nam">inplace</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t">        <span class="key">for</span> <span class="nam">detector_name</span> <span class="key">in</span> <span class="nam">self</span><span class="op">.</span><span class="nam">analog</span><span class="op">.</span><span class="nam">detector_names</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t">            <span class="key">for</span> <span class="nam">segment_id</span><span class="op">,</span> <span class="nam">group</span> <span class="key">in</span> <span class="nam">self</span><span class="op">.</span><span class="nam">analog</span><span class="op">[</span><span class="nam">detector_name</span><span class="op">]</span><span class="op">.</span><span class="nam">groupby</span><span class="op">(</span><span class="str">'SegmentID'</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t">                <span class="nam">signal</span> <span class="op">=</span> <span class="nam">group</span><span class="op">.</span><span class="nam">values</span><span class="op">.</span><span class="nam">quantity</span><span class="op">.</span><span class="nam">magnitude</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t92" href="#t92">92</a></span><span class="t">            <span class="key">for</span> <span class="nam">key</span><span class="op">,</span> <span class="nam">value</span> <span class="key">in</span> <span class="nam">peaks_dict</span><span class="op">.</span><span class="nam">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t">                <span class="nam">df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">group_name</span><span class="op">,</span> <span class="nam">key</span><span class="op">]</span> <span class="op">=</span> <span class="nam">value</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t">            <span class="nam">df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">group_name</span><span class="op">,</span> <span class="str">'Time'</span><span class="op">]</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">take</span><span class="op">(</span><span class="nam">time</span><span class="op">,</span> <span class="nam">peaks_dict</span><span class="op">[</span><span class="str">'Index'</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t92" href="#t92">92</a></span><span class="t">                <span class="nam">peak_dict</span> <span class="op">=</span> <span class="nam">peak_algorithm</span><span class="op">(</span><span class="nam">signal</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t">                <span class="key">for</span> <span class="nam">key</span><span class="op">,</span> <span class="nam">value</span> <span class="key">in</span> <span class="nam">peak_dict</span><span class="op">.</span><span class="nam">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t">                    <span class="nam">df</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="op">(</span><span class="nam">detector_name</span><span class="op">,</span> <span class="nam">segment_id</span><span class="op">)</span><span class="op">,</span> <span class="nam">key</span><span class="op">]</span> <span class="op">=</span> <span class="nam">value</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t">        <span class="key">return</span> <span class="nam">dataframe_subclass</span><span class="op">.</span><span class="nam">PeakDataFrame</span><span class="op">(</span><span class="nam">df</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -212,7 +212,7 @@
             <a class="nav" href="z_2404691b0fd86af0_units_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-04-04 20:10 +0000
+            created at 2025-04-07 13:44 +0000
         </p>
     </div>
 </footer>
