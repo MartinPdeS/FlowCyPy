@@ -561,7 +561,7 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
     @property
     def detector_names(self) -> List[str]:
         """Return a list of unique detector names."""
-        return self.index.get_level_values('Detector').unique().to_list()
+        return [col for col in self.columns if col != 'Time']
 
     def plot(self, show: bool = True, filter_population: Union[str, List[str]] = None, **kwargs) -> None:
         """
@@ -577,7 +577,8 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
         n_plots = len(self.detector_names) + 1  # One extra plot for events
         figure_size = kwargs.get("figure_size", (10, 6))
         time_units = self["Time"].max().to_compact().units
-        signal_units = self["Signal"].max().to_compact().units
+
+        signal_units = self[self.detector_names].max(axis=None).to_compact().units
 
         with plt.style.context(mps):
             fig, axes_array = plt.subplots(
@@ -845,12 +846,14 @@ class AnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
         """
         Plot analog signal data for each detector.
         """
-        for detector_name, group in self.groupby('Detector'):
+        # for detector_name, group in self.groupby('Detector'):
+
+        for detector_name in self.detector_names:
             ax = axes[detector_name]
             ax.set_ylabel(detector_name)
-            time_data = group["Time"].pint.to(time_units)
-            _signal_units = signal_units or group["Signal"].max().to_compact().units
-            signal = group["Signal"].pint.to(_signal_units)
+            time_data = self["Time"].pint.to(time_units)
+            _signal_units = signal_units or self[detector_name].max().to_compact().units
+            signal = self[detector_name].pint.to(_signal_units)
             ax.plot(time_data, signal, label='Analog Signal', linestyle='-', color='black')
 
             ax.set_ylabel(f'{detector_name} [{_signal_units}]', labelpad=20)
@@ -903,6 +906,11 @@ class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
     """
 
     @property
+    def detector_names(self) -> List[str]:
+        """Return a list of unique detector names."""
+        return [col for col in self.columns if col not in ['Time', 'SegmentID']]
+
+    @property
     def n_segment(self) -> int:
         return len(self.index.get_level_values('SegmentID').unique())
 
@@ -916,41 +924,36 @@ class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
         Plot triggered analog signal data for each detector and highlight each SegmentID region
         with a distinct color.
         """
-        for (detector_name, segment_id), group in self.groupby(['Detector', 'SegmentID']):
+        signal_units = signal_units or self[self.detector_names].max().to_compact().units
+
+        for detector_name in self.detector_names:
             ax = axes[detector_name]
-            ax.set_ylabel(detector_name)
-            time_data = group["Time"].pint.to(time_units)
-            _signal_units = signal_units or group["Signal"].max().to_compact().units
-            analog_signal = group["Signal"].pint.to(_signal_units)
+            ax.set_ylabel(f"{detector_name} [{signal_units}]")
 
-            # Determine the time boundaries for this segment.
-            start_time = time_data.min()
-            end_time = time_data.max()
+            for segment_id, group in self.groupby('SegmentID'):
+                time_series = group["Time"].pint.to(time_units)
+                signal = group[detector_name].pint.to(signal_units)
+                start_time = time_series.min()
+                end_time = time_series.max()
 
-            # Choose a color for this segment using a colormap.
-            color = plt.cm.tab10(int(segment_id) % 10)
+                color = plt.cm.tab10(int(segment_id) % 10)
 
+                ax.axvspan(start_time, end_time, facecolor=color, alpha=0.3)
 
-            # Highlight the segment region.
-            ax.axvspan(start_time, end_time, facecolor=color, alpha=0.3)
+                ax.plot(time_series, signal, color='black', linestyle='-')
 
-            # Optionally, you can still plot the signal on top in a uniform color.
-            ax.plot(time_data, analog_signal, color='black', linestyle='-')
-            ax.set_ylabel(f'{detector_name} [{group["Signal"].pint.units}]', labelpad=20)
-
-            # Add threshold line and legend for the detector, if applicable.
-            if detector_name == self.attrs['threshold']['detector']:
-                _, labels = ax.get_legend_handles_labels()
-                if 'Threshold' not in labels:
-                    ax.axhline(
-                        y=self.attrs['threshold']['value'].to(_signal_units),
-                        label='Threshold',
-                        linestyle='--',
-                        color='black',
-                        linewidth=1
-                    )
-                ax.legend(loc='upper right')
-
+                # Add threshold line and legend for the detector, if applicable.
+                if detector_name == self.attrs['threshold']['detector']:
+                    _, labels = ax.get_legend_handles_labels()
+                    if 'Threshold' not in labels:
+                        ax.axhline(
+                            y=self.attrs['threshold']['value'].to(signal_units),
+                            label='Threshold',
+                            linestyle='--',
+                            color='black',
+                            linewidth=1
+                        )
+                    ax.legend(loc='upper right')
 
     def _get_log_headers(self) -> List[str]:
         """Return headers for triggered analog acquisition logs."""

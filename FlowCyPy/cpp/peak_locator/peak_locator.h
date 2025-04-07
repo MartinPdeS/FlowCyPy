@@ -22,7 +22,20 @@ class BasePeakLocator {
 
         BasePeakLocator(bool compute_width, bool compute_area) : compute_width(compute_width), compute_area(compute_area) {}
 
-        // py::dict operator()(const py::buffer input_array);
+        py::array get_metric_py(const std::string &metric_name){
+            if (metric_name == "Index")
+                return this->get_indices_py();
+            if (metric_name == "Height")
+                return this->get_height_py();
+            if (metric_name == "Width")
+                return this->get_widths_py();
+            if (metric_name == "Area")
+                return this->get_areas_py();
+
+            throw py::value_error(std::string("No valid metric chosen: ") + metric_name);
+        }
+
+        virtual ~BasePeakLocator(){};
 };
 
 class SlidingWindowPeakLocator : public BasePeakLocator {

@@ -6,13 +6,14 @@
 
 namespace py = pybind11;
 
+void lowpass_filter(py::array signal, double dt, double cutoff_freq, int order = 1);
+
 class SignalGenerator {
 public:
 
     py::buffer signal;
 
-    // Constructor taking a std::vector<double> by value.
-    SignalGenerator(py::buffer signal) : signal(signal) {
+    SignalGenerator(py::buffer &signal) : signal(signal) {
         py::buffer_info info = this->signal.request();
 
         if (info.ndim != 1 || info.format != py::format_descriptor<double>::format())
@@ -32,7 +33,7 @@ public:
 
     void add_poisson_noise();
 
-    void fft_filtering(double dt, double cutoff_freq, int order = 1);
+    void lowpass_filter(double dt, double cutoff_freq, int order = 1);
 
 
     /**

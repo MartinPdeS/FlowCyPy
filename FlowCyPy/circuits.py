@@ -34,7 +34,7 @@ class BaselineRestorator(SignalProcessor):
     def __init__(self, window_size: int):
         self.window_size = window_size
 
-    def apply(self, signal: np.ndarray, sampling_rate: units.Quantity, **kwargs) -> np.ndarray:
+    def apply(self, signal: units.Quantity, sampling_rate: units.Quantity, **kwargs) -> units.Quantity:
         """
         Applies baseline restoration in-place.
 
@@ -44,9 +44,11 @@ class BaselineRestorator(SignalProcessor):
             The signal to be modified in-place.
         """
         window_size_bin = int((self.window_size * sampling_rate).to('').magnitude)
-        interface_filter.apply_baseline_restoration(signal=signal, window_size=window_size_bin)
+        signal_units = signal.units
 
-        return signal
+        interface_filter.apply_baseline_restoration(signal=signal.magnitude, window_size=window_size_bin)
+
+        return signal * signal_units
 
 
 class BesselLowPass(SignalProcessor):
@@ -68,7 +70,7 @@ class BesselLowPass(SignalProcessor):
         self.order = order
         self.gain = gain
 
-    def apply(self, signal: np.ndarray, sampling_rate: units.Quantity, **kwargs) -> None:
+    def apply(self, signal: units.Quantity, sampling_rate: units.Quantity, **kwargs) -> units.Quantity:
         """
         Applies Bessel low-pass filtering in-place.
 
@@ -77,15 +79,16 @@ class BesselLowPass(SignalProcessor):
         signal : np.ndarray
             The signal to be modified in-place.
         """
+        signal_units = signal.units
         interface_filter.apply_bessel_lowpass_filter(
-            signal=signal,
+            signal=signal.magnitude,
             sampling_rate=sampling_rate.to('hertz').magnitude,
             cutoff=self.cutoff.to('hertz').magnitude,
             order=self.order,
             gain=self.gain
         )
 
-        return signal
+        return signal * signal_units
 
 class ButterworthlLowPass(SignalProcessor):
     """

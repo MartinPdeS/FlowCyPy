@@ -7,6 +7,52 @@
 
 namespace py = pybind11;
 
+void lowpass_filter(py::array signal, double dt, double cutoff_frequency, int order) {
+    auto buf = signal.request();
+
+    if (buf.ndim != 1 || buf.format != py::format_descriptor<double>::format()) {
+        throw std::runtime_error("Output must be a 1D float64 NumPy array.");
+    }
+
+    const size_t N = buf.shape[0];
+    double* data = static_cast<double*>(buf.ptr);
+
+    // Allocate temporary FFT buffers
+    double* in = (double*) fftw_malloc(sizeof(double) * N);
+    fftw_complex* out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * (N/2 + 1));
+
+    // Copy data to FFT input buffer
+    std::copy(data, data + N, in);
+
+    // Create forward FFT plan
+    fftw_plan forward = fftw_plan_dft_r2c_1d(static_cast<int>(N), in, out, FFTW_ESTIMATE);
+    fftw_execute(forward);
+
+    const double df = 1.0 / (N * dt);
+
+    for (size_t k = 0; k <= N / 2; ++k) {
+        double f = k * df;
+        double H_single = 1.0 / std::sqrt(1.0 + std::pow(f / cutoff_frequency, 2));
+        double H = std::pow(H_single, order);
+        out[k][0] *= H;
+        out[k][1] *= H;
+    }
+
+    // Create backward FFT plan (inverse FFT)
+    fftw_plan backward = fftw_plan_dft_c2r_1d(static_cast<int>(N), out, in, FFTW_ESTIMATE);
+    fftw_execute(backward);
+
+    // Normalize and write back into original buffer
+    for (size_t i = 0; i < N; ++i) {
+        data[i] = in[i] / static_cast<double>(N);
+    }
+
+    // Clean up
+    fftw_destroy_plan(forward);
+    fftw_destroy_plan(backward);
+    fftw_free(in);
+    fftw_free(out);
+}
 
 void SignalGenerator::pulse_generation(
     const py::buffer &widths,
@@ -25,26 +71,26 @@ void SignalGenerator::pulse_generation(
         n_pulses = widths.request().size;
 
 
-
     for (size_t i = 0; i < time_size; ++i)
         output_ptr[i] = background_power;
 
+    double
+        *widths_ptr = static_cast<double*>(widths.request().ptr),
+        *centers_ptr = static_cast<double*>(centers.request().ptr),
+        *coupling_power_ptr = static_cast<double*>(coupling_power.request().ptr),
+        *time_ptr = static_cast<double*>(time.request().ptr);
 
-    double *widths_ptr = static_cast<double*>(widths.request().ptr);
-    double *centers_ptr = static_cast<double*>(widths.request().ptr);
-    double *coupling_power_ptr = static_cast<double*>(widths.request().ptr);
-    double *time_ptr = static_cast<double*>(time.request().ptr);
 
-
-    #pragma omp parallel for  // Parallelize the outer loop over particles.
+    // #pragma omp parallel for  // Parallelize the outer loop over particles.
     for (size_t i = 0; i < n_pulses; ++i) {
         double inv_denom = 1.0 / (2.0 * widths_ptr[i] * widths_ptr[i]);
 
         for (size_t t_idx = 0; t_idx < time_size; ++t_idx) {
+
             double dt = time_ptr[t_idx] - centers_ptr[i];
             double gauss_val = coupling_power_ptr[i] * std::exp(- (dt * dt) * inv_denom);
 
-            #pragma omp atomic  // Use atomic update to avoid race conditions
+            // #pragma omp atomic  // Use atomic update to avoid race conditions
             output_ptr[t_idx] += gauss_val;
         }
     }
@@ -92,7 +138,7 @@ void SignalGenerator::add_poisson_noise() {
 }
 
 
-void SignalGenerator::fft_filtering(double dt, double fc, int order) {
+void SignalGenerator::lowpass_filter(double dt, double cutoff_frequency, int order) {
     auto buf = this->signal.request();
 
     if (buf.ndim != 1 || buf.format != py::format_descriptor<double>::format()) {
@@ -117,7 +163,7 @@ void SignalGenerator::fft_filtering(double dt, double fc, int order) {
 
     for (size_t k = 0; k <= N / 2; ++k) {
         double f = k * df;
-        double H_single = 1.0 / std::sqrt(1.0 + std::pow(f / fc, 2));
+        double H_single = 1.0 / std::sqrt(1.0 + std::pow(f / cutoff_frequency, 2));
         double H = std::pow(H_single, order);
         out[k][0] *= H;
         out[k][1] *= H;

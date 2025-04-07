@@ -75,7 +75,7 @@ class TriggeredAcquisitions:
             A MultiIndex DataFrame (Detector, Segment, Peak_Number) with the computed metrics and original units restored.
         """
         multi_index = pd.MultiIndex.from_product(
-            (self.analog.index.get_level_values('Detector').unique(),
+            (self.analog.detector_names,
             self.analog.index.get_level_values('SegmentID').unique(),
             range(peak_algorithm.max_number_of_peaks)),
             names=["Detector", "SegmentID", "PeakID"]
@@ -83,16 +83,16 @@ class TriggeredAcquisitions:
 
         df = pd.DataFrame(columns=['Height', 'Width', 'Area'], index=multi_index)
 
-        for group_name, group in self.analog.groupby(['Detector', 'SegmentID']):
-            signal = group.pint.dequantify().Signal.values.squeeze()
-            time  = group.pint.dequantify().Time.values.squeeze()
+        df.sort_index(inplace=True)
 
-            peaks_dict = peak_algorithm(signal)
+        for detector_name in self.analog.detector_names:
+            for segment_id, group in self.analog[detector_name].groupby('SegmentID'):
+                signal = group.values.quantity.magnitude
 
-            for key, value in peaks_dict.items():
-                df.loc[group_name, key] = value
+                peak_dict = peak_algorithm(signal)
 
-            df.loc[group_name, 'Time'] = np.take(time, peaks_dict['Index'])
+                for key, value in peak_dict.items():
+                    df.loc[(detector_name, segment_id), key] = value
 
         return dataframe_subclass.PeakDataFrame(df)
 

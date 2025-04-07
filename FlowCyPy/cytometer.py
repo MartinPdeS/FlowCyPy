@@ -212,7 +212,7 @@ class FlowCytometer:
 
         df = pd.DataFrame(index=range(sequence_length), columns=[*detector_names, 'Time'])
 
-        df['Time'] = pint_pandas.PintArray(time_series, dtype='second')
+        df['Time'] = time_series
 
         for detector in detector_names:
             df[detector] = pint_pandas.PintArray(signal, dtype='volt')
@@ -276,24 +276,24 @@ class FlowCytometer:
         """
         signal_dataframe = self._initialize_signal(run_time=self.run_time)
 
-        for detector_name in signal_dataframe:
-            if detector_name == 'Time':
+        for column in signal_dataframe:
+            if column == 'Time':
                 continue
 
-            detector = self.get_detector_by_name(detector_name)
+            detector = self.get_detector_by_name(column)
 
             if not self.scatterer_dataframe.empty:
-                coupling_power = signal_dataframe[detector_name].values.quantity.magnitude
+                coupling_power = np.zeros(self.sequence_length, dtype='float64')
 
                 core = interface_signal_generator.SignalGenerator(
                     signal=coupling_power
                 )
 
                 core.pulse_generation(
-                    widths=self.scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude,
-                    centers=self.scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude,
-                    coupling_power=self.scatterer_dataframe[detector_name].pint.to('watt').pint.quantity.magnitude,
-                    time=signal_dataframe['Time'].values.quantity.magnitude,
+                    widths=self.scatterer_dataframe['Widths'].pint.to('second').values.quantity.magnitude,
+                    centers=self.scatterer_dataframe['Time'].pint.to('second').values.quantity.magnitude,
+                    coupling_power=self.scatterer_dataframe[column].pint.to('watt').values.quantity.magnitude,
+                    time=signal_dataframe['Time'].pint.to('second').values.quantity.magnitude,
                     background_power=self.background_power.to('watt').magnitude
                 )
 
@@ -307,12 +307,13 @@ class FlowCytometer:
             if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
                 photocurrent += detector.get_dark_current_noise(sequence_length=self.sequence_length, bandwidth=self.signal_digitizer.bandwidth)
 
-            signal = self.transimpedance_amplifier.amplify(signal=photocurrent, dt=1 / self.signal_digitizer.sampling_rate)
+            signal = self.transimpedance_amplifier.amplify(signal=photocurrent, dt=1 / self.signal_digitizer.sampling_rate).to('volt')
 
-            signal_dataframe['Signal'] = pint_pandas.PintArray(signal.to('volt'), dtype='volt')
+            for step in processing_steps:
+                step.apply(signal, sampling_rate=self.signal_digitizer.sampling_rate)  # Apply processing in-place
 
-        # Apply user-defined processing steps
-        self.circuit_process_data(signal_dataframe, processing_steps)
+            signal_dataframe[column] = pd.Series(signal, dtype="pint[volt]")
+
 
         signal_dataframe = dataframe_subclass.AnalogAcquisitionDataFrame(
             signal_dataframe,
@@ -329,164 +330,6 @@ class FlowCytometer:
         experiment.sample_volume = (self.flow_cell.sample.volume_flow * self.run_time).to_compact()
 
         return experiment
-
-    @validate_units(run_time=units.second)
-    def _deprecated_get_acquisition(self, processing_steps: list[SignalProcessor] = None) -> Acquisition:
-        """
-        Simulates the generation of optical signal pulses for each particle event.
-
-        This method calculates Gaussian signal pulses based on particle positions, coupling power, and
-        widths. It adds the generated pulses, background power, and noise components (thermal and dark current)
-        to each detector's raw signal.
-
-        Notes
-        -----
-        - Adds Gaussian pulses to each detector's `raw_signal`.
-        - Includes noise and background power in the simulated signals.
-        - Updates detector dataframes with captured signal information.
-
-        Parameters
-        ----------
-        processing_steps : list of SignalProcessor, optional
-            List of signal processing steps to apply in order.
-
-        Returns
-        -------
-        Acquisition
-            The simulated acquisition experiment.
-
-        Raises
-        ------
-        ValueError
-            If the scatterer collection lacks required data columns ('Widths', 'Time').
-        """
-        signal_dataframe = self._initialize_signal(run_time=self.run_time)
-
-        for detector_name, group in signal_dataframe.groupby('Detector'):
-            sequence_length = len(signal_dataframe.loc[detector_name, 'Signal'])
-            detector = self.get_detector_by_name(detector_name)
-            total_power = self.background_power
-
-            # Broadcast the time array to the shape of (number of signals, len(detector.time))
-            signal = np.zeros_like(sequence_length)
-            if not self.scatterer_dataframe.empty:
-                core = interface_signal_generator.SignalGenerator(signal)
-
-                core.pulse_generation(
-                    widths=self.scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude,
-                    centers=self.scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude,
-                    coupling_power=self.scatterer_dataframe[detector_name].pint.to('watt').pint.quantity.magnitude,
-                    time=signal_dataframe.loc[detector_name, 'Time'].pint.magnitude.values,
-                    background_power=self.background_power.to('watt').magnitude
-                )
-
-                total_power = signal * units.watt
-
-
-                # core = interface_signal_generator.SignalGenerator(
-                #     time_array=signal_dataframe.loc[detector_name, 'Time'].pint.magnitude.values,
-                #     widths=self.scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude,
-                #     centers=self.scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude,
-                #     coupling_power=self.scatterer_dataframe[detector_name].pint.to('watt').pint.quantity.magnitude,
-                #     background_power=self.background_power.to('watt').magnitude
-                # )
-
-                # total_power = core.get_acquisition() * units.watt
-
-            if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
-                photocurrent = (total_power * detector.responsivity)
-            else:
-                photocurrent = detector.get_shot_noise(optical_power=total_power, wavelength=self.source.wavelength, bandwidth=self.signal_digitizer.bandwidth)
-
-            if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
-                photocurrent += detector.get_dark_current_noise(sequence_length=sequence_length, bandwidth=self.signal_digitizer.bandwidth)
-
-            signal_dataframe.loc[detector_name, 'Signal'] = self.transimpedance_amplifier.amplify(signal=photocurrent, dt=1 / self.signal_digitizer.sampling_rate)
-
-        # Apply user-defined processing steps
-        self.circuit_process_data(signal_dataframe, processing_steps)
-
-        signal_dataframe = dataframe_subclass.AnalogAcquisitionDataFrame(
-            signal_dataframe,
-            scatterer_dataframe=self.scatterer_dataframe
-        )
-
-        experiment = Acquisition(
-            cytometer=self,
-            run_time=self.run_time,
-            scatterer_dataframe=self.scatterer_dataframe,
-            detector_dataframe=signal_dataframe
-        )
-
-        experiment.sample_volume = (self.flow_cell.sample.volume_flow * self.run_time).to_compact()
-
-        return experiment
-
-    def circuit_process_data(self, signal_dataframe: pd.DataFrame, processing_steps: list) -> None:
-        """
-        Apply a sequence of user-defined processing steps to the signal data in place.
-
-        This method iterates through the signal dataframe grouped by detector, retrieves the
-        raw signal data as a writable NumPy array, and applies each processing step sequentially.
-        After processing, it reintroduces the original units and updates the dataframe.
-
-        Parameters
-        ----------
-        signal_dataframe : pd.DataFrame
-            DataFrame containing the signal data to be processed.
-        processing_steps : list
-            A list of signal processing steps (SignalProcessor instances) that modify the signal data in place.
-        """
-        for detector_name, group in signal_dataframe.groupby('Detector'):
-            detector = self.get_detector_by_name(detector_name)
-
-            if processing_steps:
-                temporary = group['Signal'].values.numpy_data  # Get writable NumPy array
-
-                for step in processing_steps:
-                    step.apply(temporary, sampling_rate=detector.signal_digitizer.sampling_rate)  # Apply processing in-place
-
-                # Reintroduce units after processing
-                signal_dataframe.loc[group.index, 'Signal'] = temporary * group['Signal'].pint.units
-
-    def add_noises_to_signal(self, signal_dataframe: pd.DataFrame) -> None:
-        """
-        Add noise components to the signal data in the given dataframe.
-
-        For each detector, this method retrieves noise parameters (e.g., thermal and dark current noise),
-        generates corresponding noise values using a normal distribution, and adds the noise to the existing
-        signal data in place.
-
-        Parameters
-        ----------
-        signal_dataframe : pd.DataFrame
-            DataFrame containing the signal data where noise will be added.
-        """
-        # Generate noise components
-        for detector_name, group in signal_dataframe.groupby('Detector'):
-            mean = 0 * units.volt
-            std_2 = 0 * units.volt ** 2
-            signal_units = group['Signal'].pint.units
-            detector = self.get_detector_by_name(detector_name)
-            noises = detector.get_noise_parameters()
-
-            for noise_name, parameters in noises.items():
-                if parameters is None:
-                    continue
-
-                mean += parameters['mean']
-                std_2 += parameters['std'] ** 2
-
-
-            # Generate noise values for this group
-            noise = np.random.normal(
-                mean.to(signal_units).magnitude,
-                np.sqrt(std_2).to(signal_units).magnitude,
-                size=len(group)
-            ) * signal_units
-
-            # Update the 'Signal' column in the original DataFrame using .loc
-            signal_dataframe.loc[group.index, 'Signal'] = group['Signal'] + noise
 
     def get_detector_by_name(self, name: str) -> Detector:
         """

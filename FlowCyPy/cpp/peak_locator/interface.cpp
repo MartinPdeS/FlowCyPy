@@ -13,6 +13,7 @@ PYBIND11_MODULE(interface_peak_locator, m) {
         .def("get_heights", &BasePeakLocator::get_height_py)
         .def("get_areas", &BasePeakLocator::get_areas_py)
         .def("get_widths", &BasePeakLocator::get_widths_py)
+        .def("get_metric", &BasePeakLocator::get_metric_py)
     ;
 
     py::class_<SlidingWindowPeakLocator, BasePeakLocator>(m, "SlidingWindowPeakLocator")
@@ -26,7 +27,7 @@ PYBIND11_MODULE(interface_peak_locator, m) {
             py::arg("compute_area") = false,
             py::arg("threshold") = 0.5
         )
-        .def("__call__", &SlidingWindowPeakLocator::operator())
+        .def("compute", &SlidingWindowPeakLocator::compute)
         ;
 
     py::class_<GlobalPeakLocator, BasePeakLocator>(m, "GlobalPeakLocator")
@@ -37,6 +38,6 @@ PYBIND11_MODULE(interface_peak_locator, m) {
             py::arg("compute_area") = false,
             py::arg("threshold") = 0.5
         )
-        .def("__call__", &GlobalPeakLocator::operator())
+        .def("compute", &GlobalPeakLocator::compute)
         ;
 }

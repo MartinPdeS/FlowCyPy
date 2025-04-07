@@ -181,7 +181,7 @@ processing_steps = [
 ]
 
 # Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
+cytometer.prepare_acquisition(run_time=0.03 * units.millisecond)
 acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
 # _ = acquisition.scatterer.plot(
@@ -207,19 +207,19 @@ triggered_acquisition = acquisition.run_triggering(
     post_buffer=20
 )
 
-triggered_acquisition.analog.plot()
+# triggered_acquisition.analog.plot()
 
 
 # %%
 # Getting and plotting the extracted peaks.
 from FlowCyPy import peak_locator
-peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=True)
+peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
 
 
 peaks = triggered_acquisition.detect_peaks(peak_algorithm)
 
 
-# peaks.plot(feature='Height', x='side', y='forward')
+peaks.plot(feature='Height', x='side', y='forward')
 
 # %%
 # Step 8: Classifying the collected dataset
@@ -233,4 +233,4 @@ data = classifier.run(
     detectors=['side', 'forward']
 )
 
-# _ = data.plot(feature='Height', x='side', y='forward')
+_ = data.plot(feature='Height', x='side', y='forward')

@@ -71,7 +71,7 @@ def test_fft_filtering_runs_and_modifies_signal():
 
     sim = SignalGenerator(processed_signal)
     dt = time[1] - time[0]
-    sim.fft_filtering(dt=dt, cutoff_freq=10.0, order=2)
+    sim.lowpass_filter(dt=dt, cutoff_freq=10.0, order=2)
 
     assert processed_signal.shape == unprocessed_signal.shape
     assert processed_signal.dtype == np.float64

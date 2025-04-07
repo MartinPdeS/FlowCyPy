@@ -6,9 +6,18 @@ namespace py = pybind11;
 PYBIND11_MODULE(interface_signal_generator, module) {
     module.doc() = "SignalGenerator bindings";
 
+    module.def(
+        "lowpass_filter",
+        &lowpass_filter,
+        py::arg("array"),
+        py::arg("dt"),
+        py::arg("cutoff_frequency"),
+        py::arg("order")
+    );
+
     py::class_<SignalGenerator>(module, "SignalGenerator")
         .def(
-            py::init<py::buffer>(),
+            py::init<py::buffer&>(),
             py::arg("signal")
         )
         .def(
@@ -33,8 +42,8 @@ PYBIND11_MODULE(interface_signal_generator, module) {
             &SignalGenerator::add_poisson_noise,
             "Applies Poisson-distributed noise in-place to a non-negative signal buffer.")
 
-        .def("fft_filtering",
-            &SignalGenerator::fft_filtering,
+        .def("lowpass_filter",
+            &SignalGenerator::lowpass_filter,
             py::arg("dt"),
             py::arg("cutoff_freq"),
             py::arg("order") = 1,

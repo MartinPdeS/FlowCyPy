@@ -60,17 +60,13 @@ void SlidingWindowPeakLocator::compute(const py::array input_array) {
     }
 }
 
-
-
-void GlobalPeakLocator::compute(const py::array input_array) {
-    auto buf = input_array.request();
-    double* ptr = static_cast<double*>(buf.ptr);
-    size_t num_cols = buf.shape[0];
+void GlobalPeakLocator::compute(const py::array signal) {
+    auto buffer = signal.request();
+    double* ptr = static_cast<double*>(buffer.ptr);
+    size_t num_cols = buffer.shape[0];
 
     // Find the global maximum using PeakUtils::find_local_peak.
     size_t global_peak_index = PeakUtils::find_local_peak(ptr, 0, num_cols);
-    double max_val = ptr[global_peak_index];
-
     double width = std::numeric_limits<double>::quiet_NaN();
     double area = std::numeric_limits<double>::quiet_NaN();
 
@@ -85,19 +81,13 @@ void GlobalPeakLocator::compute(const py::array input_array) {
 
     }
 
-    // Build a vector of (index, value) pairs for padding.
-    std::vector<std::pair<int, double>> peaks;
-    peaks.emplace_back(static_cast<int>(global_peak_index), max_val);
-
-    // Sort the peaks (trivial here, but for consistency).
-    PeakUtils::sort_peaks_descending(peaks);
-
     peak_indices = std::vector<int>(max_number_of_peaks, padding_value);
     peak_heights = std::vector<double>(max_number_of_peaks, padding_value);
     peak_widths = std::vector<double>(max_number_of_peaks, padding_value);
     peak_areas = std::vector<double>(max_number_of_peaks, padding_value);
 
-    PeakUtils::pad_peaks(peaks, max_number_of_peaks, padding_value, this->peak_indices, this->peak_heights);
+    peak_indices[0] = global_peak_index;
+    peak_heights[0] = ptr[global_peak_index];
 
     // Prepare width and area vectors for output.
     if (compute_width)

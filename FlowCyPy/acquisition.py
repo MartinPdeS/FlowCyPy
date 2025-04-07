@@ -45,7 +45,7 @@ class Acquisition:
 
     @property
     def detector_names(self) -> List[str]:
-        return self.analog.index.get_level_values('Detector').unique()
+        return [element for element in self.analog.columns if element is not 'Time']
 
     @property
     def signal_digitizer(self) -> object:
@@ -56,7 +56,7 @@ class Acquisition:
             trigger_detector_name: str,
             pre_buffer: int = 64,
             post_buffer: int = 64,
-            max_triggers: int = None,
+            max_triggers: int = -1,
             min_window_duration: units.Quantity = None,
             lower_threshold: units.Quantity = None,
             debounce_enabled: bool = True,
@@ -84,8 +84,8 @@ class Acquisition:
             The number of data points to include after the trigger event in each
             extracted segment. Default is 64.
         max_triggers : int, optional
-            The maximum number of trigger events to process. If set to None, all detected
-            trigger events are processed. Default is None.
+            The maximum number of trigger events to process. If set to -1, all detected
+            trigger events are processed. Default is -1.
         min_window_duration : units.Quantity, optional
             The minimum duration for which the signal must remain above the threshold
             to be considered a valid trigger. This duration is converted into a number of
@@ -145,59 +145,56 @@ class Acquisition:
             raise ValueError(f"Detector '{trigger_detector_name}' not found in dataset.")
 
         # Prepare detector-specific signal & time mappings for C++ function
-        time_units = self.analog.xs(self.detector_names[0])['Time'].pint.units
-        signal_units = self.analog.Signal.max().to_compact().units
+        self.analog['Time'] = self.analog['Time'].pint.to('second')
+        for detector_name in self.detector_names:
+            self.analog[detector_name] = self.analog[detector_name].pint.to('volt')
 
+        lower_threshold = (lower_threshold or threshold).to('volt').magnitude
+
+        min_window_duration = int(
+            (min_window_duration * self.signal_digitizer.sampling_rate).to('dimensionless').magnitude if min_window_duration is not None else -1
+        )
 
         # Call the C++ function for fast triggering detection
         triggering_system = TriggeringSystem(
-            scheme=scheme,
             trigger_detector_name=trigger_detector_name,
-            threshold=int(threshold.to(signal_units).magnitude),
+            threshold=threshold.to('volt').magnitude,
             pre_buffer=pre_buffer,
             post_buffer=post_buffer,
-            max_triggers=max_triggers or -1,
-            lower_threshold = int(lower_threshold.to(signal_units).magnitude) if lower_threshold is not None else int(threshold.to(signal_units).magnitude),
-            min_window_duration=int((min_window_duration * self.signal_digitizer.sampling_rate).to('dimensionless').magnitude) if min_window_duration is not None else -1,
+            max_triggers=max_triggers,
+            lower_threshold=lower_threshold,
+            min_window_duration=min_window_duration,
             debounce_enabled=debounce_enabled
         )
 
-        triggering_system.add_time(self.analog.xs(self.detector_names[0])['Time'])
+        triggering_system.add_time(self.analog['Time'].pint.quantity.magnitude)
 
         for detector_name in self.detector_names:
-            _signal = self.analog.xs(detector_name)['Signal'].pint.to(signal_units).pint.magnitude.to_numpy(copy=False)
-            triggering_system.add_signal(detector_name, _signal)
+            signal = self.analog[detector_name].pint.to('volt').values.quantity.magnitude
+            triggering_system.add_signal(detector_name, signal)
 
-        # times, signals, detectors, segment_ids = triggering_system.run()
-        triggering_system.run()
+        triggering_system.run(algorithm=scheme)
 
-        if len(triggering_system.get_signal_out(trigger_detector_name)) == 0:
+        if len(triggering_system.get_signals(trigger_detector_name)) == 0:
             warnings.warn(
                 f"No signal met the trigger criteria. Try adjusting the threshold. "
-                f"Signal min-max: {self.analog['Signal'].min().to_compact()}, {self.analog['Signal'].max().to_compact()}",
+                f"Signal min-max: {self.analog[trigger_detector_name].min().to_compact()}, {self.analog[trigger_detector_name].max().to_compact()}",
                 UserWarning
             )
 
             return None
 
-        # Convert NumPy arrays to Pandas DataFrame
-        multi_col = pd.MultiIndex.from_product(
-            [[d.name for d in self.cytometer.detectors], ["Time", "Signal", "SegmentID"]], names=['Detector', 'Data']
+        df = pd.DataFrame(
+            columns=['Time', 'SegmentID', *self.analog.detector_names]
         )
-        df = pd.DataFrame(columns=multi_col)
 
         for d in self.cytometer.detectors:
-            df[(d.name, 'Signal')] = pint_pandas.PintArray(triggering_system.get_signal_out(d.name), signal_units)
-            df[(d.name, 'Time')] = pint_pandas.PintArray(triggering_system.get_time_out(d.name), time_units)
-            df[(d.name, 'SegmentID')] = triggering_system.get_segment_ID(d.name)
+            df[d.name] = pint_pandas.PintArray(triggering_system.get_signals(d.name), 'volt')
 
-        df = df.stack(level='Detector', future_stack=True).reset_index()
+        df['Time'] = pint_pandas.PintArray(triggering_system.get_times(d.name), 'second')
+        df['SegmentID'] = triggering_system.get_segments_ID(d.name)
 
-        # Set the MultiIndex with Detector as the first level and segment as the second:
-        df = df.set_index(['Detector', 'SegmentID'])
-
-        # Sort the index by both levels so that for each detector, segments are in order:
-        df = df.sort_index(level=['Detector', 'SegmentID'])
+        df = df.set_index('SegmentID')
 
         # Create a specialized DataFrame class
         df = dataframe_subclass.TriggeredAnalogAcquisitionDataFrame(df)

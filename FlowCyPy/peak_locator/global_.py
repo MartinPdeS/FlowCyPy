@@ -52,13 +52,25 @@ class GlobalPeakLocator:
         """
         self.max_number_of_peaks = max_number_of_peaks
 
-        self.instance = interface_peak_locator.GlobalPeakLocator(
+        self.binding = interface_peak_locator.GlobalPeakLocator(
             max_number_of_peaks=max_number_of_peaks,
-            padding_value=padding_value,
             compute_width=compute_width,
             compute_area=compute_area,
-            threshold=threshold
+            threshold=threshold,
+            padding_value=padding_value
+
         )
+
+        self.output = dict(
+            Index=None,
+            Height=None,
+        )
+
+        if compute_area:
+            self.output['Area'] = None
+
+        if compute_width:
+            self.output['Width'] = None
 
     def __call__(self, array: np.ndarray) -> dict:
         """
@@ -86,4 +98,9 @@ class GlobalPeakLocator:
         AssertionError
             If the input array is not 1-dimensional.
         """
-        return self.instance(array)
+        self.binding.compute(array)
+
+        for key in self.output.keys():
+            self.output[key] = self.binding.get_metric(key)
+
+        return self.output
