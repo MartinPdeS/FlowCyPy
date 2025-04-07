@@ -245,7 +245,7 @@ class FlowCytometer:
 
 
     @validate_units(run_time=units.second)
-    def get_acquisition(self, processing_steps: list[SignalProcessor] = None) -> Acquisition:
+    def get_acquisition(self, processing_steps: list[SignalProcessor] = []) -> Acquisition:
         """
         Simulates the generation of optical signal pulses for each particle event.
 

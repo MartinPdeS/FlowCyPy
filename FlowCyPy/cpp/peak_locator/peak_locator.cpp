@@ -26,7 +26,9 @@ void SlidingWindowPeakLocator::compute(const py::array signal) {
         size_t local_peak_index = PeakUtils::find_local_peak(ptr, start, end);
         double peak_value = ptr[local_peak_index];
 
-        double width, area;
+        double
+            width = padding_value,
+            area = padding_value;
 
         // Optionally compute width and area using the helper function.
         if (compute_width || compute_area) {
@@ -73,7 +75,9 @@ void GlobalPeakLocator::compute(const py::array signal) {
 
     // Find the global maximum using PeakUtils::find_local_peak.
     size_t global_peak_index = PeakUtils::find_local_peak(ptr, 0, num_cols);
-    double width, area;
+    double
+        width = padding_value,
+        area = padding_value;
 
     // Use the helper function to compute width and area if requested.
     if (compute_width || compute_area) {
