@@ -70,7 +70,7 @@ namespace PeakUtils {
     }
 
     // Computes both the width and area for a given peak.
-    inline PeakMetrics compute_peak_metrics(const double* ptr, size_t start, size_t end, size_t peak_index, double threshold) {
+    inline PeakMetrics compute_segment_metrics(const double* ptr, size_t start, size_t end, size_t peak_index, double threshold) {
         PeakMetrics metrics;
         size_t left_boundary, right_boundary;
         compute_boundaries(ptr, start, end, peak_index, threshold, left_boundary, right_boundary);

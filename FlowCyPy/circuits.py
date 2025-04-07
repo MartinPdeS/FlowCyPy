@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
-from FlowCyPy.binary import interface_filter
+from FlowCyPy.binary import interface_signal_generator
 from FlowCyPy.helper import validate_units
 from FlowCyPy import units
 
@@ -46,7 +46,7 @@ class BaselineRestorator(SignalProcessor):
         window_size_bin = int((self.window_size * sampling_rate).to('').magnitude)
         signal_units = signal.units
 
-        interface_filter.apply_baseline_restoration(signal=signal.magnitude, window_size=window_size_bin)
+        interface_signal_generator.baseline_restoration(signal=signal.magnitude, window_size=window_size_bin)
 
         return signal * signal_units
 
@@ -80,10 +80,10 @@ class BesselLowPass(SignalProcessor):
             The signal to be modified in-place.
         """
         signal_units = signal.units
-        interface_filter.apply_bessel_lowpass_filter(
+        interface_signal_generator.bessel_lowpass_filter(
             signal=signal.magnitude,
             sampling_rate=sampling_rate.to('hertz').magnitude,
-            cutoff=self.cutoff.to('hertz').magnitude,
+            cutoff_frequency=self.cutoff.to('hertz').magnitude,
             order=self.order,
             gain=self.gain
         )
@@ -118,7 +118,7 @@ class ButterworthlLowPass(SignalProcessor):
         signal : np.ndarray
             The signal to be modified in-place.
         """
-        interface_filter.apply_butterworth_lowpass_filter(
+        interface_signal_generator.butterworth_lowpass_filter(
             signal=signal,
             sampling_rate=sampling_rate.to('hertz').magnitude,
             cutoff=self.cutoff.to('hertz').magnitude,

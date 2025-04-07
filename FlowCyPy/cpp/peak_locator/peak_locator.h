@@ -65,14 +65,6 @@ class SlidingWindowPeakLocator : public BasePeakLocator {
             this->window_step = (window_step == -1) ? window_size : window_step;
         }
 
-        void operator()(const py::array array) {
-            // Ensure the input is 1D.
-            if (array.ndim() != 1)
-                throw std::runtime_error("Input array must be 1D.");
-
-            return this->compute(array);
-        };
-
         void compute(const py::array array);
     };
 
@@ -105,15 +97,6 @@ class GlobalPeakLocator : public BasePeakLocator {
                 padding_value(padding_value),
                 threshold(threshold)
         {}
-
-
-        void operator()(const py::array array) {
-            // Ensure the input is 1D.
-            if (array.ndim() != 1)
-                throw std::runtime_error("Input array must be 1D.");
-
-            return this->compute(array);
-        };
 
         void compute(const py::array array);
     };

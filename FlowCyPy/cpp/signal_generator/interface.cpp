@@ -7,51 +7,58 @@ PYBIND11_MODULE(interface_signal_generator, module) {
     module.doc() = "SignalGenerator bindings";
 
     module.def(
-        "lowpass_filter",
-        &lowpass_filter,
-        py::arg("array"),
-        py::arg("dt"),
+        "butterworth_lowpass_filter",
+        &butterworth_lowpass_filter,
+        py::arg("signal"),
+        py::arg("sampling_rate"),
         py::arg("cutoff_frequency"),
-        py::arg("order")
+        py::arg("order"),
+        py::arg("gain")
     );
 
-    py::class_<SignalGenerator>(module, "SignalGenerator")
-        .def(
-            py::init<py::buffer&>(),
-            py::arg("signal")
-        )
-        .def(
-            "pulse_generation",
-            &SignalGenerator::pulse_generation,
-            py::arg("widths"),
-            py::arg("centers"),
-            py::arg("coupling_power"),
-            py::arg("time"),
-            py::arg("background_power"),
-            "Sums background power plus Gaussian pulses for each scatterer."
-        )
+    module.def(
+        "bessel_lowpass_filter",
+        &bessel_lowpass_filter,
+        py::arg("signal"),
+        py::arg("sampling_rate"),
+        py::arg("cutoff_frequency"),
+        py::arg("order"),
+        py::arg("gain")
+    );
 
-        .def(
-            "add_gaussian_noise",
-            &SignalGenerator::add_gaussian_noise,
-            py::arg("mean"),
-            py::arg("standard_deviation"),
-            "Adds Gaussian noise in-place to the given output buffer.")
+    module.def("baseline_restoration",
+        &baseline_restoration,
+        py::arg("signal"),
+        py::arg("window_size"),
+        "In-place baseline restoration"
+    );
 
-        .def("add_poisson_noise",
-            &SignalGenerator::add_poisson_noise,
-            "Applies Poisson-distributed noise in-place to a non-negative signal buffer.")
+    module.def(
+        "generate_pulses",
+        &generate_pulses,
+        py::arg("signal"),
+        py::arg("widths"),
+        py::arg("centers"),
+        py::arg("coupling_power"),
+        py::arg("time"),
+        py::arg("background_power"),
+        "Sums background power plus Gaussian pulses for each scatterer."
+    );
 
-        .def("lowpass_filter",
-            &SignalGenerator::lowpass_filter,
-            py::arg("dt"),
-            py::arg("cutoff_freq"),
-            py::arg("order") = 1,
-            "In-place low-pass FFT filter on output array")
 
-        .def("apply_baseline_restoration",
-            &SignalGenerator::apply_baseline_restoration,
-            py::arg("window_size"),
-            "In-place baseline restoration")
-        ;
+    module.def(
+        "add_gaussian_noise",
+        &add_gaussian_noise,
+        py::arg("signal"),
+        py::arg("mean"),
+        py::arg("standard_deviation"),
+        "Adds Gaussian noise in-place to the given output buffer."
+    );
+
+    module.def("add_poisson_noise",
+        &add_poisson_noise,
+        py::arg("signal"),
+        "Applies Poisson-distributed noise in-place to a non-negative signal buffer."
+    );
+
 }

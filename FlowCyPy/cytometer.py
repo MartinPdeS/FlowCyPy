@@ -285,11 +285,8 @@ class FlowCytometer:
             if not self.scatterer_dataframe.empty:
                 coupling_power = np.zeros(self.sequence_length, dtype='float64')
 
-                core = interface_signal_generator.SignalGenerator(
-                    signal=coupling_power
-                )
-
-                core.pulse_generation(
+                interface_signal_generator.generate_pulses(
+                    signal=coupling_power,
                     widths=self.scatterer_dataframe['Widths'].pint.to('second').values.quantity.magnitude,
                     centers=self.scatterer_dataframe['Time'].pint.to('second').values.quantity.magnitude,
                     coupling_power=self.scatterer_dataframe[column].pint.to('watt').values.quantity.magnitude,
