@@ -404,7 +404,7 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7fc225ec1a50>
+    <seaborn.axisgrid.JointGrid object at 0x7f85cd8b9d50>
 
 
 
