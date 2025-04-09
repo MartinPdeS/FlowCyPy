@@ -21,7 +21,6 @@ requirements:
     - setuptools_scm[toml] ~=8.0
     - fftw
     - pybind11
-    - openmp
   build:
     - fftw
   run:
