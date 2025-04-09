@@ -5,8 +5,8 @@
 namespace py = pybind11;
 
 
-void SlidingWindowPeakLocator::compute(const py::array signal) {
-    if (signal.ndim() != 1)
+void SlidingWindowPeakLocator::compute(const py::buffer signal) {
+    if (signal.request().ndim != 1)
         throw std::runtime_error("Input array must be 1D.");
 
     auto buffer = signal.request();
@@ -65,8 +65,8 @@ void SlidingWindowPeakLocator::compute(const py::array signal) {
     }
 }
 
-void GlobalPeakLocator::compute(const py::array signal) {
-    if (signal.ndim() != 1)
+void GlobalPeakLocator::compute(const py::buffer signal) {
+    if (signal.request().ndim != 1)
         throw std::runtime_error("Input array must be 1D.");
 
     auto buffer = signal.request();

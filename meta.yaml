@@ -19,7 +19,14 @@ requirements:
     - pybind11 ~=2.13
     - python-build ~=1.2
     - setuptools_scm[toml] ~=8.0
+    - fftw
+    - pybind11
+    - openmp
+  build:
+    - fftw
   run:
+    - fftw
+    - pybind11
     - python {{PY_VER}}*
     - pandas ~=2.2
     - pint-pandas ~=0.6

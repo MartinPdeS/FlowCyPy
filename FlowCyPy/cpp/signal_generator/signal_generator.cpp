@@ -4,11 +4,12 @@
 #include <random>
 #include <fftw3.h>
 #include <cmath>
+#include <complex>
 
 namespace py = pybind11;
 
 
-void baseline_restoration(py::array signal, const int window_size)
+void baseline_restoration(py::buffer signal, const int window_size)
 {
     size_t n = signal.request().size;
     double* signal_ptr = static_cast<double*>(signal.request().ptr);
@@ -42,7 +43,7 @@ void baseline_restoration(py::array signal, const int window_size)
 }
 
 
-void butterworth_lowpass_filter(const py::array signal, const double sampling_rate, const double cutoff_frequency, const int order, const double gain) {
+void butterworth_lowpass_filter(const py::buffer signal, const double sampling_rate, const double cutoff_frequency, const int order, const double gain) {
     double dt = 1. / sampling_rate;
 
     py::buffer_info buf = signal.request();
@@ -95,7 +96,7 @@ void butterworth_lowpass_filter(const py::array signal, const double sampling_ra
 
 
 void generate_pulses(
-    py::array signal,
+    py::buffer signal,
     const py::buffer &widths,
     const py::buffer &centers,
     const py::buffer &coupling_power,
@@ -140,7 +141,7 @@ void generate_pulses(
 
 
 
-void add_gaussian_noise(py::array signal, const double mean, const double standard_deviation) {
+void add_gaussian_noise(py::buffer signal, const double mean, const double standard_deviation) {
     py::buffer_info info = signal.request();
 
     if (info.ndim != 1 || info.format != py::format_descriptor<double>::format()) {
@@ -159,7 +160,7 @@ void add_gaussian_noise(py::array signal, const double mean, const double standa
 
 
 
-void bessel_lowpass_filter(const py::array signal, const double sampling_rate, const double cutoff_frequency, const int order, const double gain) {
+void bessel_lowpass_filter(const py::buffer signal, const double sampling_rate, const double cutoff_frequency, const int order, const double gain) {
     double dt = 1. / sampling_rate;
 
     py::buffer_info buf = signal.request();
@@ -239,7 +240,7 @@ void bessel_lowpass_filter(const py::array signal, const double sampling_rate, c
 
 
 
-void add_poisson_noise(py::array signal) {
+void add_poisson_noise(py::buffer signal) {
     auto info = signal.request();
 
     if (info.ndim != 1 || info.format != py::format_descriptor<double>::format()) {

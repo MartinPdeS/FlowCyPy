@@ -45,7 +45,7 @@ class Acquisition:
 
     @property
     def detector_names(self) -> List[str]:
-        return [element for element in self.analog.columns if element is not 'Time']
+        return [element for element in self.analog.columns if element != 'Time']
 
     @property
     def signal_digitizer(self) -> object:
@@ -222,11 +222,9 @@ class Acquisition:
         dataframe.attrs['saturation_levels'] = dict()
         dataframe.attrs['scatterer_dataframe'] = self.analog.attrs.get('scatterer_dataframe', None)
 
-        for detector_name, group in self.analog.groupby('Detector'):
-            digitized_signal, _ = self.signal_digitizer.capture_signal(signal=group['Signal'])
+        for detector_name in self.analog.detector_names:
+            digitized_signal, _ = self.signal_digitizer.capture_signal(signal=self.analog[detector_name])
 
-            dataframe.attrs['saturation_levels'][detector_name] = [0, self.signal_digitizer.bit_depth]
-
-            dataframe.loc[detector_name, 'Signal'] = pint_pandas.PintArray(digitized_signal, units.bit_bins)
+            dataframe[detector_name] = pint_pandas.PintArray(digitized_signal, units.bit_bins)
 
         return dataframe

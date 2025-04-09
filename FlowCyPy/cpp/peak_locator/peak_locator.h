@@ -1,5 +1,4 @@
 #include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 #include <vector>
 #include "../utils.h"
@@ -15,22 +14,22 @@ class BasePeakLocator {
         std::vector<double> peak_widths;
         std::vector<double> peak_areas;
 
-        py::array get_indices_py() const {return to_array_int(this->peak_indices);}
-        py::array get_height_py() const {return to_array_double(this->peak_heights);}
-        py::array get_areas_py() const {return to_array_double(this->peak_areas);}
-        py::array get_widths_py() const {return to_array_double(this->peak_widths);}
+        // py::array get_indices_py() const {return to_array_int(this->peak_indices);}
+        // py::array get_height_py() const {return to_array_double(this->peak_heights);}
+        // py::array get_areas_py() const {return to_array_double(this->peak_areas);}
+        // py::array get_widths_py() const {return to_array_double(this->peak_widths);}
 
         BasePeakLocator(bool compute_width, bool compute_area) : compute_width(compute_width), compute_area(compute_area) {}
 
-        py::array get_metric_py(const std::string &metric_name){
+        std::vector<double> get_metric_py(const std::string &metric_name){
             if (metric_name == "Index")
-                return this->get_indices_py();
+                return std::vector<double>(this->peak_indices.begin(), this->peak_indices.end());
             if (metric_name == "Height")
-                return this->get_height_py();
+                return this->peak_heights;
             if (metric_name == "Width")
-                return this->get_widths_py();
+                return this->peak_widths;
             if (metric_name == "Area")
-                return this->get_areas_py();
+                return this->peak_areas;
 
             throw py::value_error(std::string("No valid metric chosen: ") + metric_name);
         }
@@ -65,7 +64,7 @@ class SlidingWindowPeakLocator : public BasePeakLocator {
             this->window_step = (window_step == -1) ? window_size : window_step;
         }
 
-        void compute(const py::array array);
+        void compute(const py::buffer array);
     };
 
 
@@ -98,7 +97,7 @@ class GlobalPeakLocator : public BasePeakLocator {
                 threshold(threshold)
         {}
 
-        void compute(const py::array array);
+        void compute(const py::buffer array);
     };
 
 

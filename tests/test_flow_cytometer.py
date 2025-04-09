@@ -112,17 +112,17 @@ def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, sour
         scatterer_collection=scatterer_collection,
         detectors=[detector_0, detector_1],
         flow_cell=flow_cell,
-        coupling_mechanism='mie'
     )
 
 # ----------------- UNIT TESTS -----------------
+
 
 def test_flow_cytometer_acquisition(flow_cytometer):
     """Test if the Flow Cytometer generates a non-zero acquisition signal."""
     flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
     acquisition = flow_cytometer.get_acquisition()
 
-    signal = acquisition.analog['Signal']
+    signal = acquisition.analog['default']
 
     assert not np.all(signal == 0 * units.volt), "Acquisition signal is all zeros."
     assert np.std(signal) > 0 * units.volt, "Acquisition signal variance is zero, indicating no noise added."
@@ -133,8 +133,8 @@ def test_flow_cytometer_multiple_detectors(flow_cytometer):
     flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
     acquisition = flow_cytometer.get_acquisition()
 
-    signal_0 = acquisition.analog['Signal']
-    signal_1 = acquisition.analog['Signal']
+    signal_0 = acquisition.analog['default']
+    signal_1 = acquisition.analog['default']
 
     assert not np.all(signal_0 == 0 * units.volt), "Detector 0 signal is all zeros."
     assert not np.all(signal_1 == 0 * units.volt), "Detector 1 signal is all zeros."
@@ -187,7 +187,7 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
         post_buffer=64
     )
 
-    assert np.std(triggered_acquisition.analog['Signal']) > 0, "Filtered signal has zero variance."
+    assert np.std(triggered_acquisition.analog['default']) > 0, "Filtered signal has zero variance."
 
 
 def test_peak_detection(flow_cytometer):
@@ -241,4 +241,4 @@ def test_peak_plot(mock_show, flow_cytometer):
 
 
 if __name__ == '__main__':
-    pytest.main(["-W error", __file__])
+    pytest.main(["-W error", "-s", __file__])

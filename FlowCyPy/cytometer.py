@@ -17,7 +17,7 @@ from FlowCyPy.source import BaseBeam
 from FlowCyPy.binary import interface_signal_generator
 from FlowCyPy.noises import NoiseSetting
 from FlowCyPy.amplifier import TransimpedanceAmplifier
-
+from FlowCyPy.coupling import compute_detected_signal
 
 class FlowCytometer:
     """
@@ -34,9 +34,6 @@ class FlowCytometer:
         The flow cell object representing the fluidic and optical environment through which particles travel.
     detectors : List[Detector]
         A list of `Detector` objects representing the detectors used to measure optical signals (e.g., FSC and SSC). Exactly two detectors must be provided.
-    coupling_mechanism : str, optional
-        The scattering mechanism used to couple the signal from the particles to the detectors.
-        Supported mechanisms include: 'mie' (default): Mie scattering, 'rayleigh': Rayleigh scattering, 'uniform': Uniform signal coupling, 'empirical': Empirical data-driven coupling
     background_power : units.watt, optional
         The background optical power added to the detector signal. Defaults to 0 milliwatts.
 
@@ -50,8 +47,6 @@ class FlowCytometer:
         The laser beam source providing illumination to the flow cytometer.
     detectors : List[Detector]
         The detectors used to collect and process signals from the scatterers.
-    coupling_mechanism : str
-        The selected mechanism for signal coupling.
     background_power : units.watt
         The optical background power added to the detector signals.
 
@@ -69,7 +64,6 @@ class FlowCytometer:
             signal_digitizer: SignalDigitizer,
             detectors: List[Detector],
             transimpedance_amplifier: TransimpedanceAmplifier,
-            coupling_mechanism: Optional[str] = 'mie',
             background_power: Optional[units.Quantity] = 0 * units.milliwatt):
 
         self.scatterer_collection = scatterer_collection
@@ -78,7 +72,6 @@ class FlowCytometer:
         self.source = source
         self.detectors = detectors
         self.signal_digitizer = signal_digitizer
-        self.coupling_mechanism = coupling_mechanism
         self.background_power = background_power
 
         # assert len(self.detectors) == 2, 'For now, FlowCytometer can only take two detectors for the analysis.'
@@ -109,13 +102,11 @@ class FlowCytometer:
         ValueError
             If an invalid coupling mechanism is specified during initialization.
         """
-        detection_mechanism = self._get_detection_mechanism()
-
         if scatterer_dataframe.empty:
             return
 
         for detector in self.detectors:
-            detection_mechanism(
+            compute_detected_signal(
                 source=self.source,
                 detector=detector,
                 scatterer_dataframe=scatterer_dataframe,
@@ -204,13 +195,13 @@ class FlowCytometer:
             run_time=run_time
         )
 
-        self.sequence_length = sequence_length = len(time_series)
+        self.sequence_length = len(time_series)
 
-        signal = np.zeros(sequence_length)
+        signal = np.zeros(self.sequence_length)
 
         time_series = pint_pandas.PintArray(time_series.magnitude, time_series.units)
 
-        df = pd.DataFrame(index=range(sequence_length), columns=[*detector_names, 'Time'])
+        df = pd.DataFrame(index=range(self.sequence_length), columns=[*detector_names, 'Time'])
 
         df['Time'] = time_series
 
@@ -276,6 +267,8 @@ class FlowCytometer:
         """
         signal_dataframe = self._initialize_signal(run_time=self.run_time)
 
+        # signal_dict = dict()
+
         for column in signal_dataframe:
             if column == 'Time':
                 continue
@@ -328,6 +321,15 @@ class FlowCytometer:
 
         return experiment
 
+    def run_processing(self, *processing_steps) -> None:
+        signal = self.signal.copy()
+        for step in processing_steps:
+            step.apply(signal, sampling_rate=self.signal_digitizer.sampling_rate)  # Apply processing in-place
+
+        return signal
+        signal_dataframe[column] = pd.Series(signal, dtype="pint[volt]")
+
+
     def get_detector_by_name(self, name: str) -> Detector:
         """
         Retrieve a detector object by its name.
@@ -345,40 +347,4 @@ class FlowCytometer:
         for detector in self.detectors:
             if detector.name == name:
                 return detector
-
-    def _get_detection_mechanism(self) -> Callable:
-        """
-        Retrieves the detection mechanism function for signal coupling based on the selected method.
-
-        Supported Coupling Mechanisms
-        -----------------------------
-        - 'mie': Mie scattering.
-        - 'rayleigh': Rayleigh scattering.
-        - 'uniform': Uniform scattering.
-        - 'empirical': Empirical (data-driven) scattering.
-
-        Returns
-        -------
-        Callable
-            A function that computes the detected signal for scatterer diameters and particle distributions.
-
-        Raises
-        ------
-        ValueError
-            If an unsupported coupling mechanism is specified.
-        """
-        from FlowCyPy import coupling_mechanism
-
-        # Determine which coupling mechanism to use and compute the corresponding factors
-        match self.coupling_mechanism.lower():
-            case 'rayleigh':
-                return coupling_mechanism.rayleigh.compute_detected_signal
-            case 'uniform':
-                return coupling_mechanism.uniform.compute_detected_signal
-            case 'mie':
-                return coupling_mechanism.mie.compute_detected_signal
-            case 'empirical':
-                return coupling_mechanism.empirical.compute_detected_signal
-            case _:
-                raise ValueError("Invalid coupling mechanism. Choose 'rayleigh' or 'uniform'.")
 

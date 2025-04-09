@@ -1,5 +1,4 @@
 #include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 #include <vector>
 #include <string>
@@ -98,11 +97,11 @@ public:
 
     struct Trigger get_trigger(const std::string &detector_name);
 
-    py::array get_signals_py(const std::string &detector_name);
+    std::vector<double> get_signals_py(const std::string &detector_name);
 
-    py::array get_times_py(const std::string &detector_name);
+    std::vector<double> get_times_py(const std::string &detector_name);
 
-    py::array get_segments_ID_py(const std::string &detector_name);
+    std::vector<int> get_segments_ID_py(const std::string &detector_name);
 
 
 private:

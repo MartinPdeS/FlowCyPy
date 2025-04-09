@@ -749,14 +749,7 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
 
     def log(self, table_format: str = "grid", include_totals: bool = True) -> None:
         """
-        Log acquisition statistics.
-
-        Parameters
-        ----------
-        table_format : str, optional
-            Table display format (default: 'grid').
-        include_totals : bool, optional
-            Whether to include totals in the log (default: True).
+        Log statistics for analog acquisition.
         """
         logging.info(f"\n=== {self.__class__.__name__} Statistics ===")
         if self.empty:
@@ -764,17 +757,12 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
             return
 
         table_data = [
-            self._get_detector_stats(detector_name, self.xs(detector_name, level="Detector"))
-            for detector_name in self.index.get_level_values("Detector").unique()
+            self._get_detector_stats(detector_name, self[detector_name])
+            for detector_name in self.detector_names
         ]
         headers = self._get_log_headers()
         formatted_table = tabulate(table_data, headers=headers, tablefmt=table_format, floatfmt=".3f")
         logging.info("\n" + formatted_table)
-
-        if include_totals:
-            total_points = sum(stat[1] for stat in table_data)
-            logging.info(f"\nTotal number of events across all detectors: {total_points}")
-
     def _get_log_headers(self) -> List[str]:
         """Return headers for the log table; can be overridden in subclasses."""
         return [
@@ -808,15 +796,15 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
         if group.empty:
             return [detector_name, 0, None, None, None, None, None, None, None]
 
-        num_points = len(group["Time"])
-        first_time = group["Time"].min()
-        last_time = group["Time"].max()
-        time_diffs = group["Time"].diff().dropna()
+        num_points = len(self["Time"])
+        first_time = self["Time"].min()
+        last_time = self["Time"].max()
+        time_diffs = self["Time"].diff().dropna()
         mean_delta = time_diffs.mean() if not time_diffs.empty else None
-        max_signal = group["Signal"].max()
-        min_signal = group["Signal"].min()
-        mean_signal = group["Signal"].mean()
-        std_signal = group["Signal"].std()
+        max_signal = self[detector_name].max()
+        min_signal = self[detector_name].min()
+        mean_signal = self[detector_name].mean()
+        std_signal = self[detector_name].std()
 
         return [
             detector_name,
@@ -858,29 +846,11 @@ class AnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
 
             ax.set_ylabel(f'{detector_name} [{_signal_units}]', labelpad=20)
 
-    def log(self, table_format: str = "grid", include_totals: bool = True) -> None:
-        """
-        Log statistics for analog acquisition.
-        """
-        logging.info(f"\n=== {self.__class__.__name__} Statistics ===")
-        if self.empty:
-            logging.warning("No data available for detectors.")
-            return
-
-        table_data = [
-            self._get_detector_stats(detector_name, self.xs(detector_name, level="Detector"))
-            for detector_name in self.index.get_level_values("Detector").unique()
-        ]
-        headers = self._get_log_headers()
-        formatted_table = tabulate(table_data, headers=headers, tablefmt=table_format, floatfmt=".3f")
-        logging.info("\n" + formatted_table)
-
 
 class DigitizedAcquisitionDataFrame(BaseAcquisitionDataFrame):
     """
     DataFrame subclass for digitized acquisition data.
     """
-
     def _plot_detector_data(
         self,
         axes: dict,
@@ -890,14 +860,15 @@ class DigitizedAcquisitionDataFrame(BaseAcquisitionDataFrame):
         """
         Plot digitized signal data for each detector.
         """
-        for detector_name, group in self.groupby('Detector'):
+        for detector_name in self.detector_names:
             ax = axes[detector_name]
-            ax.set_ylabel(detector_name)
-            time_data = group["Time"].pint.to(time_units)
-            _signal_units = signal_units or group["Signal"].max().to_compact().units
-            ax.step(time_data, group["Signal"], where='mid', color='black', label='Digitized Signal')
+            time_data = self["Time"].pint.to(time_units)
+            _signal_units = signal_units or self[detector_name].max().to_compact().units
+
+            ax.step(time_data, self[detector_name], where='mid', color='black', label='Digitized Signal')
 
             ax.set_ylabel(f'{detector_name} [{_signal_units}]', labelpad=20)
+
 
 
 class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
@@ -972,10 +943,10 @@ class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
         if group.empty:
             return [detector_name, 0, None, None, None]
 
-        num_acquisition = len(group["Time"])
-        first_event_time = group["Time"].min()
-        last_event_time = group["Time"].max()
-        time_diffs = group["Time"].diff().dropna()
+        num_acquisition = len(self["Time"])
+        first_event_time = self["Time"].min()
+        last_event_time = self["Time"].max()
+        time_diffs = self["Time"].diff().dropna()
         time_between_events = time_diffs.mean() if not time_diffs.empty else None
 
         return [

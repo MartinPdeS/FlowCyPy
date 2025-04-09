@@ -1,7 +1,4 @@
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <pybind11/stl.h>
-#include "triggering_system.cpp"
+#include "triggering_system.h"
 
 namespace py = pybind11;
 

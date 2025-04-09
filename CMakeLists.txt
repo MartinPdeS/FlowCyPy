@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Type of build" FORCE)
 
+
 # Directories
 set(LOCAL_CXX_DIR "${PROJECT_NAME}/cpp")
 set(LOCAL_BIN_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/binary")
@@ -19,6 +20,7 @@ include_directories("${LOCAL_CXX_DIR}")
 
 find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
 find_package(pybind11 CONFIG REQUIRED)
+message(STATUS "Found pybind11 version: ${pybind11_VERSION}")
 
 # Platform-specific settings for static linking
 if (WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -29,9 +31,7 @@ endif()
 
 add_compile_options(-Wall -Wextra -pedantic-errors)
 
-# add_subdirectory(FlowCyPy/cpp/utils)
-
-# add_subdirectory(FlowCyPy/cpp/filter)
+add_subdirectory(FlowCyPy/cpp/dummy)
 
 add_subdirectory(FlowCyPy/cpp/triggering_system)
 

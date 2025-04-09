@@ -19,13 +19,14 @@ void TriggeringSystem::add_signal(const std::string &detector_name, const py::bu
     this->triggers.emplace_back(detector_name, signal);
 }
 
+
 void TriggeringSystem::run(const std::string &algorithm) {
     // Validate that the trigger detector exists.
     this->validate_detector_existence(trigger_detector_name);
 
     // For time, try the per-detector map; if not found, check global_time.
-    if (global_time.request().size == 0)
-        throw std::runtime_error("No time array found. Please add a time array using add_time().");
+    if (!global_time)
+        throw py::value_error("No time array found. Please add a time array using add_time().");
 
     std::vector<std::pair<int, int>> trigger_indices;
 
@@ -162,22 +163,28 @@ struct Trigger TriggeringSystem::get_trigger(const std::string &detector_name) {
     throw std::runtime_error("Detector not found");
 }
 
-py::array TriggeringSystem::get_signals_py(const std::string &detector_name) {
+std::vector<double> TriggeringSystem::get_signals_py(const std::string &detector_name) {
     struct Trigger trigger = this->get_trigger(detector_name);
 
-    return to_array_double(trigger.signal_out);
+    return trigger.signal_out;
+
+    // return to_array_double(trigger.signal_out);
 }
 
-py::array TriggeringSystem::get_times_py(const std::string &detector_name) {
+std::vector<double> TriggeringSystem::get_times_py(const std::string &detector_name) {
     struct Trigger trigger = this->get_trigger(detector_name);
 
-    return to_array_double(trigger.time_out);
+    return trigger.time_out;
+
+    // return to_array_double(trigger.time_out);
 }
 
-py::array TriggeringSystem::get_segments_ID_py(const std::string &detector_name) {
+std::vector<int> TriggeringSystem::get_segments_ID_py(const std::string &detector_name) {
     struct Trigger trigger = this->get_trigger(detector_name);
 
-    return to_array_int(trigger.segment_ids_out);
+    return trigger.segment_ids_out;
+
+    // return to_array_int(trigger.segment_ids_out);
 }
 
 void TriggeringSystem::validate_detector_existence(const std::string &detector_name)

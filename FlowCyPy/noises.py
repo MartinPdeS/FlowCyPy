@@ -28,7 +28,7 @@ class NoiseSetting(metaclass=RestrictiveMeta):
         Whether to include dark current noise in simulations. Default is True.
     include_thermal_noise : bool
         Whether to include thermal noise in simulations. Default is True.
-    include_RIN_noise : bool
+    include_source_noise : bool
         Whether to include Relative Intensity Noise (RIN) in simulations. Default is True.
 
     Methods

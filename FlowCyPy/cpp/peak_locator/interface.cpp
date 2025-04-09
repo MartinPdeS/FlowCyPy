@@ -1,7 +1,4 @@
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <pybind11/stl.h>
-#include "peak_locator.cpp"
+#include "peak_locator.h"
 
 namespace py = pybind11;
 
@@ -9,10 +6,6 @@ PYBIND11_MODULE(interface_peak_locator, m) {
     m.doc() = "An overlapping sliding window peak locator implemented in C++ with pybind11. If window_step is not provided, it defaults to window_size.";
 
     py::class_<BasePeakLocator>(m, "BasePeakLocator")
-        .def("get_indices", &BasePeakLocator::get_indices_py)
-        .def("get_heights", &BasePeakLocator::get_height_py)
-        .def("get_areas", &BasePeakLocator::get_areas_py)
-        .def("get_widths", &BasePeakLocator::get_widths_py)
         .def("get_metric", &BasePeakLocator::get_metric_py)
     ;
 
