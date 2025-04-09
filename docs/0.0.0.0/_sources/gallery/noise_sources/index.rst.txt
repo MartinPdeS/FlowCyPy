@@ -44,23 +44,6 @@ Examples: Noises
     </div>
 
 
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how thermal noise influences the raw signal in a flow cytometer detector. We simulate thermal noise for detectors at two different temperatures and compare the resulting signal characteristics.">
-
-.. only:: html
-
-  .. image:: /gallery/noise_sources/images/thumb/sphx_glr_thermal_thumb.png
-    :alt:
-
-  :ref:`sphx_glr_gallery_noise_sources_thermal.py`
-
-.. raw:: html
-
-      <div class="sphx-glr-thumbnail-title">Thermal Noise</div>
-    </div>
-
-
 .. thumbnail-parent-div-close
 
 .. raw:: html
@@ -73,7 +56,6 @@ Examples: Noises
 
    /gallery/noise_sources/dark_current
    /gallery/noise_sources/shot_noise
-   /gallery/noise_sources/thermal
 
 
 

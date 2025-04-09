@@ -29,7 +29,7 @@ Examples: extras
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This script demonstrates how to visualize various particle size distributions from the FlowCyPy library. It generates and plots particle sizes based on different statistical distributions, such as Normal, LogNormal, Weibull, and more.">
+    <div class="sphx-glr-thumbcontainer" tooltip="This script demonstrates how to visualize various particle diameter distributions from the FlowCyPy library. It generates and plots particle diameters based on different statistical distributions, such as Normal, LogNormal, Weibull, and more.">
 
 .. only:: html
 
@@ -41,6 +41,23 @@ Examples: extras
 .. raw:: html
 
       <div class="sphx-glr-thumbnail-title">Particle Distribution</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Flow Cell geometries">
+
+.. only:: html
+
+  .. image:: /gallery/extras/images/thumb/sphx_glr_flow_cell_profiles_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_gallery_extras_flow_cell_profiles.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Flow Cell geometries</div>
     </div>
 
 
@@ -107,6 +124,7 @@ Examples: extras
 
    /gallery/extras/continuous_acquisition
    /gallery/extras/distributions
+   /gallery/extras/flow_cell_profiles
    /gallery/extras/flow_cytometer_signal
    /gallery/extras/scatterer_distribution
    /gallery/extras/triggered_acquisition

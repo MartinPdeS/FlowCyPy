@@ -519,8 +519,8 @@ document.write(`
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a Particle Size Distribution using the Rosin-Rammler model.</span>
 
-<span class="sd">    The Rosin-Rammler distribution is described by its characteristic size and</span>
-<span class="sd">    spread parameter, and is used to model particle sizes in systems such as</span>
+<span class="sd">    The Rosin-Rammler distribution is described by its characteristic property and</span>
+<span class="sd">    spread parameter, and is used to model particle properties in systems such as</span>
 <span class="sd">    powders or granular materials.</span>
 
 <span class="sd">    The distribution function is given by:</span>
@@ -529,61 +529,61 @@ document.write(`
 <span class="sd">        F(x) = 1 - \exp \left( - \left( \frac{x}{d} \right)^k \right)</span>
 
 <span class="sd">    where:</span>
-<span class="sd">        - :math:`x` is the particle size.</span>
-<span class="sd">        - :math:`d` is the characteristic particle size.</span>
+<span class="sd">        - :math:`x` is the particle property.</span>
+<span class="sd">        - :math:`d` is the characteristic particle property.</span>
 <span class="sd">        - :math:`k` is the spread parameter.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    characteristic_size : Quantity</span>
-<span class="sd">        The characteristic particle size in meters.</span>
+<span class="sd">    characteristic_property : Quantity</span>
+<span class="sd">        The characteristic particle property.</span>
 <span class="sd">    spread : float</span>
 <span class="sd">        The spread parameter (shape factor).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">characteristic_size</span><span class="p">:</span> <span class="n">Quantity</span>
+    <span class="n">characteristic_property</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">spread</span><span class="p">:</span> <span class="nb">float</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">characteristic_size</span><span class="o">.</span><span class="n">units</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">characteristic_property</span><span class="o">.</span><span class="n">units</span>
 
     <span class="nd">@Base</span><span class="o">.</span><span class="n">pre_generate</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generates a particle size distribution based on the Rosin-Rammler model.</span>
+<span class="sd">        Generates a particle property distribution based on the Rosin-Rammler model.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        n_samples : Quantity</span>
-<span class="sd">            The number of particle sizes to generate (dimensionless).</span>
+<span class="sd">            The number of particle properties to generate (dimensionless).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Quantity</span>
-<span class="sd">            An array of particle sizes in meters (or other units).</span>
+<span class="sd">            An array of particle properties in meters (or other units).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Convert characteristic size to main units</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">characteristic_size</span><span class="o">.</span><span class="n">magnitude</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">characteristic_property</span><span class="o">.</span><span class="n">magnitude</span>
 
         <span class="c1"># Generate uniform random samples in [0, 1)</span>
         <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">n_samples</span><span class="p">)</span>
         <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="mf">1e-10</span><span class="p">)</span>  <span class="c1"># Avoid numerical issues</span>
 
         <span class="c1"># Apply inverse CDF of Rosin-Rammler distribution</span>
-        <span class="k">return</span> <span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">u</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">spread</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">u</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">spread</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_generate_default_x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">x_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generates a default range for x-values based on the characteristic size</span>
+<span class="sd">        Generates a default range for x-values based on the characteristic property</span>
 <span class="sd">        and spread of the Rosin-Rammler distribution.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x_min : float</span>
-<span class="sd">            Factor for the minimum x-value as a fraction of the characteristic size.</span>
+<span class="sd">            Factor for the minimum x-value as a fraction of the characteristic property.</span>
 <span class="sd">        x_max : float</span>
-<span class="sd">            Factor for the maximum x-value as a multiple of the characteristic size.</span>
+<span class="sd">            Factor for the maximum x-value as a multiple of the characteristic property.</span>
 <span class="sd">        n_samples : int, optional</span>
 <span class="sd">            Number of points in the generated range. Default is 500.</span>
 
@@ -597,16 +597,16 @@ document.write(`
         <span class="k">if</span> <span class="n">x_max</span> <span class="o">&lt;=</span> <span class="n">x_min</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x_max must be greater than x_min.&quot;</span><span class="p">)</span>
 
-        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">characteristic_size</span><span class="o">.</span><span class="n">magnitude</span>  <span class="c1"># Characteristic size in base units</span>
-        <span class="n">x_min</span> <span class="o">=</span> <span class="n">d</span> <span class="o">*</span> <span class="n">x_min</span>  <span class="c1"># Scale x_min by characteristic size</span>
-        <span class="n">x_max</span> <span class="o">=</span> <span class="n">d</span> <span class="o">*</span> <span class="n">x_max</span>  <span class="c1"># Scale x_max by characteristic size</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">characteristic_property</span><span class="o">.</span><span class="n">magnitude</span>  <span class="c1"># Characteristic property in base units</span>
+        <span class="n">x_min</span> <span class="o">=</span> <span class="n">d</span> <span class="o">*</span> <span class="n">x_min</span>  <span class="c1"># Scale x_min by characteristic property</span>
+        <span class="n">x_max</span> <span class="o">=</span> <span class="n">d</span> <span class="o">*</span> <span class="n">x_max</span>  <span class="c1"># Scale x_max by characteristic property</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
 
 <div class="viewcode-block" id="RosinRammler.get_pdf">
 <a class="viewcode-back" href="../../../code/distributions.html#FlowCyPy.distribution.RosinRammler.get_pdf">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_pdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span> <span class="n">x_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_pdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">x_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the x-values and the scaled PDF values for the particle size distribution.</span>
+<span class="sd">        Returns the x-values and the scaled PDF values for the particle property distribution.</span>
 
 <span class="sd">        The PDF for the Rosin-Rammler distribution is derived from the CDF:</span>
 
@@ -616,9 +616,9 @@ document.write(`
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x_min : float, optional</span>
-<span class="sd">            Factor for the minimum x-value as a fraction of the characteristic size. Default is 0.01.</span>
+<span class="sd">            Factor for the minimum x-value as a fraction of the characteristic property. Default is 0.01.</span>
 <span class="sd">        x_max : float, optional</span>
-<span class="sd">            Factor for the maximum x-value as a multiple of the characteristic size. Default is 5.</span>
+<span class="sd">            Factor for the maximum x-value as a multiple of the characteristic property. Default is 5.</span>
 <span class="sd">        n_samples : int, optional</span>
 <span class="sd">            Number of points in the generated range. Default is 500.</span>
 
@@ -632,7 +632,7 @@ document.write(`
 
         <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_units</span><span class="p">)</span>
         <span class="n">_x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">magnitude</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">characteristic_size</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">characteristic_property</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
         <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spread</span>
 
         <span class="c1"># Rosin-Rammler PDF formula</span>
@@ -642,7 +642,7 @@ document.write(`
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;RR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">characteristic_size</span><span class="si">:</span><span class="s2">.3f~P</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">spread</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;RR(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">characteristic_property</span><span class="si">:</span><span class="s2">.3f~P</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">spread</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">)&quot;</span></div>
 
 </pre></div>
 
@@ -694,7 +694,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

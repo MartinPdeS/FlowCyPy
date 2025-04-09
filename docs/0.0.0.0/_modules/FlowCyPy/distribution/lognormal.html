@@ -518,7 +518,7 @@ document.write(`
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LogNormal</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a log-normal distribution for particle sizes.</span>
+<span class="sd">    Represents a log-normal distribution for particle properties.</span>
 
 <span class="sd">    The log-normal distribution is described by its mean and standard deviation of the logarithm of the values:</span>
 
@@ -526,17 +526,17 @@ document.write(`
 <span class="sd">        f(x) = \frac{1}{x \sigma \sqrt{2 \pi}} \exp \left( - \frac{(\ln(x) - \mu)^2}{2 \sigma^2} \right)</span>
 
 <span class="sd">    where:</span>
-<span class="sd">    - :math:`\mu` is the mean of the natural logarithm of the particle sizes.</span>
-<span class="sd">    - :math:`\sigma` is the standard deviation of the logarithm of particle sizes.</span>
+<span class="sd">    - :math:`\mu` is the mean of the natural logarithm of the particle properties.</span>
+<span class="sd">    - :math:`\sigma` is the standard deviation of the logarithm of particle properties.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    mean : Quantity</span>
-<span class="sd">        The mean particle size in meters.</span>
+<span class="sd">        The mean particle properties.</span>
 <span class="sd">    std_dev : Quantity</span>
-<span class="sd">        The standard deviation of the logarithm of particle sizes.</span>
+<span class="sd">        The standard deviation of the logarithm of particle properties.</span>
 <span class="sd">    scale_factor : float, optional</span>
-<span class="sd">        A scaling factor applied to the PDF (not the sizes).</span>
+<span class="sd">        A scaling factor applied to the PDF (not the properties).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">mean</span><span class="p">:</span> <span class="n">Quantity</span>
@@ -557,19 +557,19 @@ document.write(`
     <span class="nd">@Base</span><span class="o">.</span><span class="n">pre_generate</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generates a log-normal distribution of scatterer sizes.</span>
+<span class="sd">        Generates a log-normal distribution of scatterer properties.</span>
 
-<span class="sd">        The generated sizes follow a log-normal distribution, where the logarithm of the sizes is normally distributed.</span>
+<span class="sd">        The generated properties follow a log-normal distribution, where the logarithm of the properties is normally distributed.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        n_samples : Quantity</span>
-<span class="sd">            The number of particle sizes to generate.</span>
+<span class="sd">            The number of particle properties to generate.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Quantity</span>
-<span class="sd">            An array of scatterer sizes in meters.</span>
+<span class="sd">            An array of scatterer properties in meters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span>
             <span class="n">mean</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mean</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
@@ -685,7 +685,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

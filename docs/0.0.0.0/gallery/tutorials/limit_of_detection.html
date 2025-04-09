@@ -54,7 +54,7 @@
     <link rel="icon" href="../../_static/thumbnail.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Workflow" href="workflow.html" />
+    <link rel="next" title="Workflow" href="pre_defined_workflow.html" />
     <link rel="prev" title="Examples: Tutorials" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -465,18 +465,20 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Limit of detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pre_defined_workflow.html">Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="workflow.html">Workflow</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../noise_sources/index.html">Examples: Noises</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/dark_current.html">Dark Current</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/shot_noise.html">Shot noise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../noise_sources/thermal.html">Thermal Noise</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../extras/index.html">Examples: extras</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../extras/continuous_acquisition.html">WorkFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../extras/distributions.html">Particle Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../extras/flow_cell_profiles.html">Flow Cell geometries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../extras/flow_cytometer_signal.html">Generating Signal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../extras/scatterer_distribution.html">Scatterer Collection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../extras/triggered_acquisition.html">WorkFlow</a></li>
@@ -554,23 +556,30 @@ to download the full example code.</p>
 <li><img src="../../_images/sphx_glr_limit_of_detection_002.png" srcset="../../_images/sphx_glr_limit_of_detection_002.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_limit_of_detection_003.png" srcset="../../_images/sphx_glr_limit_of_detection_003.png" alt="Peaks properties" class = "sphx-glr-multi-img"/></li>
 </ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7fcc17f7de50&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+  warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
+/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+  warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
+
+&lt;seaborn.axisgrid.JointGrid object at 0x7f52e5962190&gt;
 </pre></div>
 </div>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">GaussianBeam</span><span class="p">,</span> <span class="n">FlowCell</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">GaussianBeam</span><span class="p">,</span> <span class="n">TransimpedanceAmplifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.flow_cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCell</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoiseSetting</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Population</span><span class="p">,</span> <span class="n">distribution</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sphere</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">peak_locator</span>
 
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_RIN_noise</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_source_noise</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_dark_current_noise</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_thermal_noise</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -583,19 +592,20 @@ to download the full example code.</p>
 <span class="p">)</span>
 
 <span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
-    <span class="n">volume_flow</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>      <span class="c1"># Flow volume speed: 10 microliter per second</span>
-    <span class="n">flow_area</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>      <span class="c1"># Flow area: 10 x 10 micrometers</span>
+    <span class="n">sample_volume_flow</span><span class="o">=</span><span class="mf">0.02</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>        <span class="c1"># Flow speed: 10 microliter per second</span>
+    <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>        <span class="c1"># Flow speed: 10 microliter per second</span>
+    <span class="n">width</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>        <span class="c1"># Flow area: 10 x 10 micrometers</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>        <span class="c1"># Flow area: 10 x 10 micrometers</span>
 <span class="p">)</span>
 
 <span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>  <span class="c1"># Medium refractive index: 1.33</span>
 
 <span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">30</span><span class="p">]:</span>
 
-    <span class="n">population</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
+    <span class="n">population</span> <span class="o">=</span> <span class="n">Sphere</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s1"> nanometer&#39;</span><span class="p">,</span>
         <span class="n">particle_count</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span><span class="p">,</span>
-        <span class="n">size</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">size</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">),</span>
+        <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">size</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">),</span>
         <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="mf">1.39</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
     <span class="p">)</span>
 
@@ -611,23 +621,26 @@ to download the full example code.</p>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>                             <span class="c1"># Detector name: Side scatter detector</span>
     <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>                   <span class="c1"># Angle: 90 degrees (Side Scatter)</span>
     <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>             <span class="c1"># Numerical aperture: 1.2</span>
-    <span class="n">responsitivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>        <span class="c1"># Responsitivity: 1 ampere per watt</span>
-    <span class="n">resistance</span><span class="o">=</span><span class="mi">13000</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ohm</span><span class="p">,</span>                     <span class="c1"># Detector resistance: 50 ohms</span>
+    <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>        <span class="c1"># Responsitivity: 1 ampere per watt</span>
     <span class="n">dark_current</span><span class="o">=</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliampere</span><span class="p">,</span>          <span class="c1"># Dark current: 0.1 milliamps</span>
-    <span class="n">temperature</span><span class="o">=</span><span class="mi">300</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">kelvin</span>                 <span class="c1"># Operating temperature: 300 Kelvin</span>
 <span class="p">)</span>
 
 <span class="n">detector_1</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>                          <span class="c1"># Detector name: Forward scatter detector</span>
     <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>                    <span class="c1"># Angle: 0 degrees (Forward Scatter)</span>
     <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>             <span class="c1"># Numerical aperture: 1.2</span>
-    <span class="n">responsitivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>        <span class="c1"># Responsitivity: 1 ampere per watt</span>
-    <span class="n">resistance</span><span class="o">=</span><span class="mi">13000</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ohm</span><span class="p">,</span>                     <span class="c1"># Detector resistance: 50 ohms</span>
+    <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>        <span class="c1"># Responsitivity: 1 ampere per watt</span>
     <span class="n">dark_current</span><span class="o">=</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliampere</span><span class="p">,</span>          <span class="c1"># Dark current: 0.1 milliamps</span>
-    <span class="n">temperature</span><span class="o">=</span><span class="mi">300</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">kelvin</span>                 <span class="c1"># Operating temperature: 300 Kelvin</span>
+<span class="p">)</span>
+
+<span class="n">transimpedance_amplifier</span> <span class="o">=</span> <span class="n">TransimpedanceAmplifier</span><span class="p">(</span>
+    <span class="n">gain</span><span class="o">=</span><span class="mi">10000</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span>
+    <span class="n">bandwidth</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span>
 <span class="p">)</span>
 
 <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+    <span class="n">transimpedance_amplifier</span><span class="o">=</span><span class="n">transimpedance_amplifier</span><span class="p">,</span>
     <span class="n">signal_digitizer</span><span class="o">=</span><span class="n">signal_digitizer</span><span class="p">,</span>
     <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>                     <span class="c1"># Populations used in the experiment</span>
@@ -636,7 +649,8 @@ to download the full example code.</p>
 <span class="p">)</span>
 
 <span class="c1"># Run the flow cytometry simulation</span>
-<span class="n">acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
+<span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
+<span class="n">acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">()</span>
 
 <span class="c1"># Visualize the scatter signals from both detectors</span>
 <span class="n">acquisition</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -651,17 +665,14 @@ to download the full example code.</p>
 
 <span class="n">trigger_acquisition</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
-<span class="n">peak_algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">BasicPeakLocator</span><span class="p">()</span>
+<span class="n">peak_algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span><span class="p">()</span>
 
 <span class="n">peaks</span> <span class="o">=</span> <span class="n">trigger_acquisition</span><span class="o">.</span><span class="n">detect_peaks</span><span class="p">(</span><span class="n">peak_algorithm</span><span class="p">)</span>
 
-<span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">x_detector</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>
-    <span class="n">y_detector</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span>
-<span class="p">)</span>
+<span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.727 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.000 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-limit-of-detection-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc141053ca87c293e1689882fb19bce1/limit_of_detection.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">limit_of_detection.ipynb</span></code></a></p>
@@ -739,7 +750,7 @@ to download the full example code.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

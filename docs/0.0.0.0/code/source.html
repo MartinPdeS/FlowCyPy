@@ -540,7 +540,7 @@ document.write(`
 <p>Classes representing laser beam sources.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GaussianBeam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optical_power</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polarization=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'degree')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RIN=-120.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/source.html#GaussianBeam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.GaussianBeam" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GaussianBeam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optical_power</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waist=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polarization=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'degree')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RIN=-120.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/source.html#GaussianBeam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.GaussianBeam" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseBeam</span></code></p>
 <p>Represents a monochromatic Gaussian laser beam focused by a standard lens.</p>
 <dl class="field-list simple">
@@ -548,73 +548,11 @@ document.write(`
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>optical_power</strong> (<em>Quantity</em>) – The optical power of the laser (in watts).</p></li>
 <li><p><strong>wavelength</strong> (<em>Quantity</em>) – The wavelength of the laser (in meters).</p></li>
-<li><p><strong>numerical_aperture</strong> (<em>Quantity</em>) – The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).</p></li>
+<li><p><strong>numerical_aperture</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).</p></li>
+<li><p><strong>waist</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The beam waist at the focus, calculated as <cite>waist = wavelength / (pi * numerical_aperture)</cite> if not provided.
+Alternatively, if this is provided, the numerical aperture will be computed as <cite>numerical_aperture = wavelength / (pi * waist)</cite>.</p></li>
 <li><p><strong>polarization</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The polarization of the laser source in degrees (default is 0 degrees).</p></li>
-<li><p><strong>RIN</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a pretty stable laser.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.waist">
-<span class="sig-name descname"><span class="pre">waist</span></span><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.waist" title="Link to this definition">#</a></dt>
-<dd><p>The beam waist at the focus, calculated as <cite>waist = wavelength / (pi * numerical_aperture)</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Quantity</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.frequency">
-<span class="sig-name descname"><span class="pre">frequency</span></span><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.frequency" title="Link to this definition">#</a></dt>
-<dd><p>The frequency of the laser, calculated as <cite>frequency = c / wavelength</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Quantity</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.photon_energy">
-<span class="sig-name descname"><span class="pre">photon_energy</span></span><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.photon_energy" title="Link to this definition">#</a></dt>
-<dd><p>The energy of a single photon, calculated as <cite>photon_energy = h * frequency</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Quantity</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.amplitude">
-<span class="sig-name descname"><span class="pre">amplitude</span></span><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.amplitude" title="Link to this definition">#</a></dt>
-<dd><p>The electric field amplitude at the focus, derived from optical power, waist, and fundamental constants.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Quantity</p>
-</dd>
-</dl>
-</dd></dl>
-
-<p class="rubric">Notes</p>
-<dl class="simple">
-<dt>RIN Interpretation:</dt><dd><ul class="simple">
-<li><p>The Relative Intensity Noise (RIN) represents fluctuations in the laser’s intensity relative to its mean optical power.</p></li>
-<li><p>For a Gaussian beam, the instantaneous intensity at any given time can be modeled as: I(t) = &lt;I&gt; * (1 + ΔI)</p></li>
-</ul>
-</dd>
-<dt>where:</dt><dd><ul class="simple">
-<li><p><cite>&lt;I&gt;</cite> is the mean intensity derived from the optical power.</p></li>
-<li><dl class="simple">
-<dt><cite>ΔI</cite> is the noise component, modeled as a Gaussian random variable with:</dt><dd><ul>
-<li><p>Mean = 0 (fluctuations are around the mean intensity).</p></li>
-<li><p>Variance = RIN * &lt;I&gt;².</p></li>
-</ul>
-</dd>
-</dl>
-</li>
+<li><p><strong>RIN</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a stable laser.</p></li>
 </ul>
 </dd>
 </dl>
@@ -624,12 +562,37 @@ document.write(`
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.amplitude_at">
+<span class="sig-name descname"><span class="pre">amplitude_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'meter')&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/source.html#GaussianBeam.amplitude_at"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.amplitude_at" title="Link to this definition">#</a></dt>
+<dd><p>Returns the electric field amplitude at a position (x,y) in the focal plane.</p>
+<dl class="simple">
+<dt>For a Gaussian beam, the spatial distribution is:</dt><dd><p>E(x,y) = E(0) * exp[-(x^2+y^2)/w_0^2]</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The electric field amplitude at the focus in volts per meter.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Quantity</p>
+</dd>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Quantity</em>)</p></li>
+<li><p><strong>y</strong> (<em>Quantity</em>)</p></li>
+<li><p><strong>z</strong> (<em>Quantity</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.calculate_field_amplitude_at_focus">
 <span class="sig-name descname"><span class="pre">calculate_field_amplitude_at_focus</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/source.html#GaussianBeam.calculate_field_amplitude_at_focus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.calculate_field_amplitude_at_focus" title="Link to this definition">#</a></dt>
 <dd><p>Calculate the electric field amplitude (E0) at the focus for a Gaussian beam.</p>
 <p>The electric field amplitude at the focus is given by:</p>
 <div class="math notranslate nohighlight">
-\[E_0 = \sqrt{\frac{2 P}{\pi \epsilon_0 c w_0^2}}\]</div>
+\[E_0 = \sqrt{\frac{4 P}{\pi \epsilon_0 c w_0^2}}\]</div>
 <dl class="simple">
 <dt>where:</dt><dd><ul class="simple">
 <li><p><cite>P</cite> is the optical power of the beam,</p></li>
@@ -649,11 +612,29 @@ document.write(`
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.get_particle_width">
+<span class="sig-name descname"><span class="pre">get_particle_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">velocity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/source.html#GaussianBeam.get_particle_width"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.get_particle_width" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>velocity</strong> (<em>Quantity</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Quantity</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.waist">
+<span class="sig-name descname"><span class="pre">waist</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.waist" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AstigmaticGaussianBeam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optical_power</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polarization=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'degree')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RIN=0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/source.html#AstigmaticGaussianBeam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AstigmaticGaussianBeam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optical_power</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture_y=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waist_y=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_aperture_z=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waist_z=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polarization=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'degree')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RIN=0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/source.html#AstigmaticGaussianBeam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseBeam</span></code></p>
 <p>Represents an astigmatic Gaussian laser beam focused by a cylindrical lens system.</p>
 <dl class="field-list simple">
@@ -661,65 +642,15 @@ document.write(`
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>optical_power</strong> (<em>Quantity</em>) – The optical power of the laser (in watts).</p></li>
 <li><p><strong>wavelength</strong> (<em>Quantity</em>) – The wavelength of the laser (in meters).</p></li>
-<li><p><strong>numerical_aperture_x</strong> (<em>Quantity</em>) – The numerical aperture of the lens along the x-axis (unitless).</p></li>
-<li><p><strong>numerical_aperture_y</strong> (<em>Quantity</em>) – The numerical aperture of the lens along the y-axis (unitless).</p></li>
+<li><p><strong>numerical_aperture_y</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The numerical aperture of the lens along the x-axis (unitless).</p></li>
+<li><p><strong>waist_y</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The beam waist along the x-axis. If not provided, it will be computed as:
+waist_y = wavelength / (pi * numerical_aperture_y).</p></li>
+<li><p><strong>numerical_aperture_z</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The numerical aperture of the lens along the y-axis (unitless).</p></li>
+<li><p><strong>waist_z</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The beam waist along the y-axis. If not provided, it will be computed as:
+waist_z = wavelength / (pi * numerical_aperture_z).</p></li>
 <li><p><strong>polarization</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The polarization of the laser source in degrees (default is 0 degrees).</p></li>
-<li><p><strong>RIN</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – The Relative Intensity Noise (RIN) of the laser, specified as a fractional value (e.g., 0.01 for 1% RIN).
+<li><p><strong>RIN</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The Relative Intensity Noise (RIN) of the laser, specified as a fractional value.
 Default is 0.0, representing a perfectly stable laser.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.waist_x">
-<span class="sig-name descname"><span class="pre">waist_x</span></span><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_x" title="Link to this definition">#</a></dt>
-<dd><p>The beam waist at the focus along the x-axis, calculated as <cite>waist_x = wavelength / (pi * numerical_aperture_x)</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Quantity</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.waist_y">
-<span class="sig-name descname"><span class="pre">waist_y</span></span><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_y" title="Link to this definition">#</a></dt>
-<dd><p>The beam waist at the focus along the y-axis, calculated as <cite>waist_y = wavelength / (pi * numerical_aperture_y)</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Quantity</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.amplitude">
-<span class="sig-name descname"><span class="pre">amplitude</span></span><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.amplitude" title="Link to this definition">#</a></dt>
-<dd><p>The electric field amplitude at the focus, derived from optical power, waist_x, waist_y, and fundamental constants.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Quantity</p>
-</dd>
-</dl>
-</dd></dl>
-
-<p class="rubric">Notes</p>
-<dl>
-<dt>RIN Interpretation:</dt><dd><ul class="simple">
-<li><p>The Relative Intensity Noise (RIN) represents fluctuations in the laser’s intensity relative to its mean optical power.</p></li>
-<li><p>For a Gaussian beam, the instantaneous intensity at any given time can be modeled as:</p></li>
-</ul>
-<p>I(t) = &lt;I&gt; * (1 + ΔI)</p>
-</dd>
-<dt>where:</dt><dd><ul class="simple">
-<li><p><cite>&lt;I&gt;</cite> is the mean intensity derived from the optical power.</p></li>
-<li><dl class="simple">
-<dt><cite>ΔI</cite> is the noise component, modeled as a Gaussian random variable with:</dt><dd><ul>
-<li><p>Mean = 0 (fluctuations are around the mean intensity).</p></li>
-<li><p>Variance = RIN * &lt;I&gt;².</p></li>
-</ul>
-</dd>
-</dl>
-</li>
 </ul>
 </dd>
 </dl>
@@ -727,6 +658,31 @@ Default is 0.0, representing a perfectly stable laser.</p></li>
 <dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.RIN">
 <span class="sig-name descname"><span class="pre">RIN</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.RIN" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.amplitude_at">
+<span class="sig-name descname"><span class="pre">amplitude_at</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'meter')&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/source.html#AstigmaticGaussianBeam.amplitude_at"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.amplitude_at" title="Link to this definition">#</a></dt>
+<dd><p>Returns the electric field amplitude at position (x,y) in the focal plane.</p>
+<dl class="simple">
+<dt>For an astigmatic Gaussian beam, the distribution is:</dt><dd><p>E(x,y) = E(0,0) * exp[-(x^2/w_{0x}^2) - (y^2/w_{0y}^2)]</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The electric field amplitude at the focus in volts per meter.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Quantity</p>
+</dd>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Quantity</em>)</p></li>
+<li><p><strong>y</strong> (<em>Quantity</em>)</p></li>
+<li><p><strong>z</strong> (<em>Quantity</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.calculate_field_amplitude_at_focus">
@@ -755,6 +711,34 @@ Default is 0.0, representing a perfectly stable laser.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.get_particle_width">
+<span class="sig-name descname"><span class="pre">get_particle_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">velocity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/source.html#AstigmaticGaussianBeam.get_particle_width"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.get_particle_width" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>velocity</strong> (<em>Quantity</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Quantity</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.numerical_aperture_z">
+<span class="sig-name descname"><span class="pre">numerical_aperture_z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.numerical_aperture_z" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.waist_y">
+<span class="sig-name descname"><span class="pre">waist_y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_y" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.waist_z">
+<span class="sig-name descname"><span class="pre">waist_z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_z" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -782,20 +766,21 @@ Default is 0.0, representing a perfectly stable laser.</p></li>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam"><code class="docutils literal notranslate"><span class="pre">GaussianBeam</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.waist"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.waist</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.frequency"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.frequency</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.photon_energy"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.photon_energy</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.amplitude"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.amplitude</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.RIN"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.RIN</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.amplitude_at"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.amplitude_at()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.calculate_field_amplitude_at_focus"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.calculate_field_amplitude_at_focus()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.get_particle_width"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.get_particle_width()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.GaussianBeam.waist"><code class="docutils literal notranslate"><span class="pre">GaussianBeam.waist</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_x"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.waist_x</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_y"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.waist_y</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.amplitude"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.amplitude</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.RIN"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.RIN</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.amplitude_at"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.amplitude_at()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.calculate_field_amplitude_at_focus"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.calculate_field_amplitude_at_focus()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.get_particle_width"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.get_particle_width()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.numerical_aperture_z"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.numerical_aperture_z</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_y"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.waist_y</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_z"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam.waist_z</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -850,7 +835,7 @@ Default is 0.0, representing a perfectly stable laser.</p></li>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

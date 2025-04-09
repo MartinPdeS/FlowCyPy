@@ -548,26 +548,26 @@ document.write(`
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Normal">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std_dev</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/normal.html#Normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Normal" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
-<p>Represents a normal (Gaussian) distribution for particle sizes.</p>
+<p>Represents a normal (Gaussian) distribution for particle properties.</p>
 <p>The normal distribution is described by its mean and standard deviation:</p>
 <div class="math notranslate nohighlight">
 \[f(x) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp \left( - \frac{(x - \mu)^2}{2 \sigma^2} \right)\]</div>
 <p>where:
-- <span class="math notranslate nohighlight">\(\mu\)</span> is the mean of the distribution (average particle size).
+- <span class="math notranslate nohighlight">\(\mu\)</span> is the mean of the distribution (average particle property).
 - <span class="math notranslate nohighlight">\(\sigma\)</span> is the standard deviation (width of the distribution).
-- <span class="math notranslate nohighlight">\(x\)</span> represents particle sizes.</p>
+- <span class="math notranslate nohighlight">\(x\)</span> represents particle properties.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mean</strong> (<em>Quantity</em>) – The mean (average) particle size in meters.</p></li>
-<li><p><strong>std_dev</strong> (<em>Quantity</em>) – The standard deviation of particle sizes in meters.</p></li>
+<li><p><strong>mean</strong> (<em>Quantity</em>) – The mean (average) particle property in meters.</p></li>
+<li><p><strong>std_dev</strong> (<em>Quantity</em>) – The standard deviation of particle properties in meters.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Normal.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.distribution.Normal.generate" title="Link to this definition">#</a></dt>
-<dd><p>Generate a distribution of scatterer sizes.</p>
+<dd><p>Generate a distribution of scatterer diameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
@@ -582,7 +582,7 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – The input x-values (particle sizes) over which to compute the PDF. If not provided, a range is generated.</p></li>
+<li><p><strong>x</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – The input x-values (particle properties) over which to compute the PDF. If not provided, a range is generated.</p></li>
 <li><p><strong>x_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the minimum x-value as a multiple of the standard deviation from the mean. Default is -3.</p></li>
 <li><p><strong>x_max</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the maximum x-value as a multiple of the standard deviation from the mean. Default is 3.</p></li>
 <li><p><strong>n_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points in the generated range. Default is 500.</p></li>
@@ -619,26 +619,26 @@ document.write(`
 <dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LogNormal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std_dev</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/lognormal.html#LogNormal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.LogNormal" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
-<p>Represents a log-normal distribution for particle sizes.</p>
+<p>Represents a log-normal distribution for particle properties.</p>
 <p>The log-normal distribution is described by its mean and standard deviation of the logarithm of the values:</p>
 <div class="math notranslate nohighlight">
 \[f(x) = \frac{1}{x \sigma \sqrt{2 \pi}} \exp \left( - \frac{(\ln(x) - \mu)^2}{2 \sigma^2} \right)\]</div>
 <p>where:
-- <span class="math notranslate nohighlight">\(\mu\)</span> is the mean of the natural logarithm of the particle sizes.
-- <span class="math notranslate nohighlight">\(\sigma\)</span> is the standard deviation of the logarithm of particle sizes.</p>
+- <span class="math notranslate nohighlight">\(\mu\)</span> is the mean of the natural logarithm of the particle properties.
+- <span class="math notranslate nohighlight">\(\sigma\)</span> is the standard deviation of the logarithm of particle properties.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mean</strong> (<em>Quantity</em>) – The mean particle size in meters.</p></li>
-<li><p><strong>std_dev</strong> (<em>Quantity</em>) – The standard deviation of the logarithm of particle sizes.</p></li>
-<li><p><strong>scale_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – A scaling factor applied to the PDF (not the sizes).</p></li>
+<li><p><strong>mean</strong> (<em>Quantity</em>) – The mean particle properties.</p></li>
+<li><p><strong>std_dev</strong> (<em>Quantity</em>) – The standard deviation of the logarithm of particle properties.</p></li>
+<li><p><strong>scale_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – A scaling factor applied to the PDF (not the properties).</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.generate" title="Link to this definition">#</a></dt>
-<dd><p>Generate a distribution of scatterer sizes.</p>
+<dd><p>Generate a distribution of scatterer diameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
@@ -687,19 +687,19 @@ document.write(`
 </a>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RosinRammler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">characteristic_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spread</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/particle_size_distribution.html#RosinRammler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RosinRammler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">characteristic_property</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spread</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/particle_size_distribution.html#RosinRammler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
 <p>Represents a Particle Size Distribution using the Rosin-Rammler model.</p>
-<p>The Rosin-Rammler distribution is described by its characteristic size and
-spread parameter, and is used to model particle sizes in systems such as
+<p>The Rosin-Rammler distribution is described by its characteristic property and
+spread parameter, and is used to model particle properties in systems such as
 powders or granular materials.</p>
 <p>The distribution function is given by:</p>
 <div class="math notranslate nohighlight">
 \[F(x) = 1 - \exp \left( - \left( \frac{x}{d} \right)^k \right)\]</div>
 <dl class="simple">
 <dt>where:</dt><dd><ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(x\)</span> is the particle size.</p></li>
-<li><p><span class="math notranslate nohighlight">\(d\)</span> is the characteristic particle size.</p></li>
+<li><p><span class="math notranslate nohighlight">\(x\)</span> is the particle property.</p></li>
+<li><p><span class="math notranslate nohighlight">\(d\)</span> is the characteristic particle property.</p></li>
 <li><p><span class="math notranslate nohighlight">\(k\)</span> is the spread parameter.</p></li>
 </ul>
 </dd>
@@ -707,20 +707,20 @@ powders or granular materials.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>characteristic_size</strong> (<em>Quantity</em>) – The characteristic particle size in meters.</p></li>
+<li><p><strong>characteristic_property</strong> (<em>Quantity</em>) – The characteristic particle property.</p></li>
 <li><p><strong>spread</strong> (<em>float</em>) – The spread parameter (shape factor).</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.characteristic_size">
-<span class="sig-name descname"><span class="pre">characteristic_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.characteristic_size" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.characteristic_property">
+<span class="sig-name descname"><span class="pre">characteristic_property</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.characteristic_property" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.generate" title="Link to this definition">#</a></dt>
-<dd><p>Generate a distribution of scatterer sizes.</p>
+<dd><p>Generate a distribution of scatterer diameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
@@ -730,16 +730,16 @@ powders or granular materials.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.get_pdf">
-<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/particle_size_distribution.html#RosinRammler.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.get_pdf" title="Link to this definition">#</a></dt>
-<dd><p>Returns the x-values and the scaled PDF values for the particle size distribution.</p>
+<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/particle_size_distribution.html#RosinRammler.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.get_pdf" title="Link to this definition">#</a></dt>
+<dd><p>Returns the x-values and the scaled PDF values for the particle property distribution.</p>
 <p>The PDF for the Rosin-Rammler distribution is derived from the CDF:</p>
 <div class="math notranslate nohighlight">
 \[f(x) = \frac{k}{d} \left( \frac{x}{d} \right)^{k-1} \exp \left( - \left( \frac{x}{d} \right)^k \right)\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the minimum x-value as a fraction of the characteristic size. Default is 0.01.</p></li>
-<li><p><strong>x_max</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the maximum x-value as a multiple of the characteristic size. Default is 5.</p></li>
+<li><p><strong>x_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the minimum x-value as a fraction of the characteristic property. Default is 0.01.</p></li>
+<li><p><strong>x_max</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the maximum x-value as a multiple of the characteristic property. Default is 5.</p></li>
 <li><p><strong>n_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points in the generated range. Default is 500.</p></li>
 </ul>
 </dd>
@@ -769,8 +769,8 @@ powders or granular materials.</p>
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Weibull">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Weibull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/weibull.html#Weibull"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Weibull" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
-<p>Represents a Weibull distribution for particle sizes.</p>
-<p>The Weibull distribution is commonly used for modeling size distributions in biological systems.</p>
+<p>Represents a Weibull distribution for particle properties.</p>
+<p>The Weibull distribution is commonly used for modeling property distributions in biological systems.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -782,7 +782,7 @@ powders or granular materials.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Weibull.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.distribution.Weibull.generate" title="Link to this definition">#</a></dt>
-<dd><p>Generate a distribution of scatterer sizes.</p>
+<dd><p>Generate a distribution of scatterer diameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
@@ -798,7 +798,7 @@ powders or granular materials.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The input x-values (particle sizes) over which to compute the PDF. If not provided, a range is generated.</p></li>
+<li><p><strong>x</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The input x-values (particle properties) over which to compute the PDF. If not provided, a range is generated.</p></li>
 <li><p><strong>n_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points in the generated range if <cite>x</cite> is not provided. Default is 100.</p></li>
 <li><p><strong>n_samples</strong> (<em>int</em>)</p></li>
 </ul>
@@ -834,21 +834,21 @@ powders or granular materials.</p>
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Delta">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Delta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/delta.html#Delta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Delta" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
-<p>Represents a delta Dirac distribution for particle sizes.</p>
-<p>In a delta Dirac distribution, all particle sizes are the same, represented by the Dirac delta function:</p>
+<p>Represents a delta Dirac distribution for particle properties.</p>
+<p>In a delta Dirac distribution, all particle properties are the same, represented by the Dirac delta function:</p>
 <div class="math notranslate nohighlight">
 \[f(x) = \delta(x - x_0)\]</div>
 <p>where:
-- <span class="math notranslate nohighlight">\(x_0\)</span> is the singular particle size.</p>
+- <span class="math notranslate nohighlight">\(x_0\)</span> is the singular particle property.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>position</strong> (<em>Quantity</em>) – The particle size for the delta distribution in meters.</p>
+<dd class="field-odd"><p><strong>position</strong> (<em>Quantity</em>) – The particle property for the delta distribution in meters.</p>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Delta.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.distribution.Delta.generate" title="Link to this definition">#</a></dt>
-<dd><p>Generate a distribution of scatterer sizes.</p>
+<dd><p>Generate a distribution of scatterer diameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
@@ -894,8 +894,8 @@ powders or granular materials.</p>
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Uniform">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Uniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower_bound</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_bound</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/uniform.html#Uniform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Uniform" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
-<p>Represents a uniform distribution for particle sizes.</p>
-<p>The uniform distribution assigns equal probability to all particle sizes within a specified range:</p>
+<p>Represents a uniform distribution for particle properties.</p>
+<p>The uniform distribution assigns equal probability to all particle properties within a specified range:</p>
 <div class="math notranslate nohighlight">
 \[f(x) = \frac{1}{b - a} \quad \text{for} \quad a \leq x \leq b\]</div>
 <p>where:
@@ -904,15 +904,15 @@ powders or granular materials.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lower_bound</strong> (<em>Quantity</em>) – The lower bound for particle sizes in meters.</p></li>
-<li><p><strong>upper_bound</strong> (<em>Quantity</em>) – The upper bound for particle sizes in meters.</p></li>
+<li><p><strong>lower_bound</strong> (<em>Quantity</em>) – The lower bound for particle properties in meters.</p></li>
+<li><p><strong>upper_bound</strong> (<em>Quantity</em>) – The upper bound for particle properties in meters.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Uniform.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.distribution.Uniform.generate" title="Link to this definition">#</a></dt>
-<dd><p>Generate a distribution of scatterer sizes.</p>
+<dd><p>Generate a distribution of scatterer diameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
@@ -999,7 +999,7 @@ powders or granular materials.</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rosin-rammler-distribution">Rosin-Rammler Distribution</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler"><code class="docutils literal notranslate"><span class="pre">RosinRammler</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler.characteristic_size"><code class="docutils literal notranslate"><span class="pre">RosinRammler.characteristic_size</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler.characteristic_property"><code class="docutils literal notranslate"><span class="pre">RosinRammler.characteristic_property</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler.generate"><code class="docutils literal notranslate"><span class="pre">RosinRammler.generate()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler.get_pdf"><code class="docutils literal notranslate"><span class="pre">RosinRammler.get_pdf()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler.spread"><code class="docutils literal notranslate"><span class="pre">RosinRammler.spread</span></code></a></li>
@@ -1091,7 +1091,7 @@ powders or granular materials.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

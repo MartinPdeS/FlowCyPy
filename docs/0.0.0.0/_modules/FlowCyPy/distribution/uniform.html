@@ -517,9 +517,9 @@ document.write(`
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Uniform</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a uniform distribution for particle sizes.</span>
+<span class="sd">    Represents a uniform distribution for particle properties.</span>
 
-<span class="sd">    The uniform distribution assigns equal probability to all particle sizes within a specified range:</span>
+<span class="sd">    The uniform distribution assigns equal probability to all particle properties within a specified range:</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        f(x) = \frac{1}{b - a} \quad \text{for} \quad a \leq x \leq b</span>
@@ -531,9 +531,9 @@ document.write(`
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    lower_bound : Quantity</span>
-<span class="sd">        The lower bound for particle sizes in meters.</span>
+<span class="sd">        The lower bound for particle properties in meters.</span>
 <span class="sd">    upper_bound : Quantity</span>
-<span class="sd">        The upper bound for particle sizes in meters.</span>
+<span class="sd">        The upper bound for particle properties in meters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">lower_bound</span><span class="p">:</span> <span class="n">Quantity</span>
@@ -576,19 +576,19 @@ document.write(`
     <span class="nd">@Base</span><span class="o">.</span><span class="n">pre_generate</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generates a uniform distribution of scatterer sizes.</span>
+<span class="sd">        Generates a uniform distribution of scatterer properties.</span>
 
-<span class="sd">        The generated sizes are uniformly distributed between the specified `lower_bound` and `upper_bound`.</span>
+<span class="sd">        The generated properties are uniformly distributed between the specified `lower_bound` and `upper_bound`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        n_samples : int</span>
-<span class="sd">            The number of particle sizes to generate.</span>
+<span class="sd">            The number of particle properties to generate.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Quantity</span>
-<span class="sd">            An array of scatterer sizes in meters.</span>
+<span class="sd">            An array of scatterer properties in meters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_lower_bound</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
@@ -678,7 +678,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

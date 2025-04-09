@@ -517,9 +517,9 @@ document.write(`
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Weibull</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a Weibull distribution for particle sizes.</span>
+<span class="sd">    Represents a Weibull distribution for particle properties.</span>
 
-<span class="sd">    The Weibull distribution is commonly used for modeling size distributions in biological systems.</span>
+<span class="sd">    The Weibull distribution is commonly used for modeling property distributions in biological systems.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -573,17 +573,17 @@ document.write(`
     <span class="nd">@Base</span><span class="o">.</span><span class="n">pre_generate</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generates a Weibull distribution of scatterer sizes.</span>
+<span class="sd">        Generates a Weibull distribution of scatterer properties.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        n_samples : int</span>
-<span class="sd">            The number of particle sizes to generate.</span>
+<span class="sd">            The number of particle properties to generate.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Quantity</span>
-<span class="sd">            An array of particle sizes in meters.</span>
+<span class="sd">            An array of particle properties in meters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">weibull</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
@@ -601,7 +601,7 @@ document.write(`
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x : Quantity, optional</span>
-<span class="sd">            The input x-values (particle sizes) over which to compute the PDF. If not provided, a range is generated.</span>
+<span class="sd">            The input x-values (particle properties) over which to compute the PDF. If not provided, a range is generated.</span>
 <span class="sd">        n_points : int, optional</span>
 <span class="sd">            Number of points in the generated range if `x` is not provided. Default is 100.</span>
 
@@ -676,7 +676,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

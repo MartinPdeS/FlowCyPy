@@ -62,7 +62,7 @@ Step 1: Configure Noise Settings
 Noise settings are configured to simulate real-world imperfections. In this example, we include noise
 globally but exclude specific types, such as shot noise and thermal noise.
 
-.. GENERATED FROM PYTHON SOURCE LINES 33-44
+.. GENERATED FROM PYTHON SOURCE LINES 33-46
 
 .. code-block:: Python
 
@@ -70,9 +70,11 @@ globally but exclude specific types, such as shot noise and thermal noise.
     from FlowCyPy import NoiseSetting
 
     NoiseSetting.include_noises = True
-    NoiseSetting.include_shot_noise = False
-    NoiseSetting.include_thermal_noise = False
-    NoiseSetting.include_dark_current_noise = False
+    NoiseSetting.include_shot_noise = True
+    NoiseSetting.include_dark_current_noise = True
+    NoiseSetting.include_source_noise = True
+    NoiseSetting.include_amplifier_noise = True
+
 
     np.random.seed(3)  # Ensure reproducibility
 
@@ -84,14 +86,14 @@ globally but exclude specific types, such as shot noise and thermal noise.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 45-49
+.. GENERATED FROM PYTHON SOURCE LINES 47-51
 
 Step 2: Configure the Laser Source
 ----------------------------------
 The laser source generates light that interacts with the particles. Its parameters, like numerical
 aperture and wavelength, affect how light scatters, governed by Mie theory.
 
-.. GENERATED FROM PYTHON SOURCE LINES 49-59
+.. GENERATED FROM PYTHON SOURCE LINES 51-62
 
 .. code-block:: Python
 
@@ -99,9 +101,10 @@ aperture and wavelength, affect how light scatters, governed by Mie theory.
     from FlowCyPy import GaussianBeam
 
     source = GaussianBeam(
-        numerical_aperture=0.3 * units.AU,           # Numerical aperture
-        wavelength=200 * units.nanometer,           # Wavelength
-        optical_power=20 * units.milliwatt          # Optical power
+        numerical_aperture=0.1 * units.AU,           # Numerical aperture
+        wavelength=450 * units.nanometer,           # Wavelength
+        optical_power=200 * units.milliwatt,          # Optical power
+        RIN=-140
     )
 
 
@@ -112,7 +115,7 @@ aperture and wavelength, affect how light scatters, governed by Mie theory.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 60-67
+.. GENERATED FROM PYTHON SOURCE LINES 63-70
 
 Step 3: Set Up the Flow Cell
 ----------------------------
@@ -122,19 +125,21 @@ passing through the cross-sectional area is calculated as:
 .. math::
     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
 
-.. GENERATED FROM PYTHON SOURCE LINES 67-77
+.. GENERATED FROM PYTHON SOURCE LINES 70-83
 
 .. code-block:: Python
 
 
-    from FlowCyPy import FlowCell
+    from FlowCyPy.flow_cell import FlowCell
 
     flow_cell = FlowCell(
-        source=source,
-        volume_flow=0.3 * units.microliter / units.second,  # Flow volume
-        flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
+        sample_volume_flow=80 * units.microliter / units.minute,
+        sheath_volume_flow=1 * units.milliliter / units.minute,
+        width=100 * units.micrometer,
+        height=100 * units.micrometer,
     )
 
+    # flow_cell.plot(n_samples=300)
 
 
 
@@ -143,7 +148,8 @@ passing through the cross-sectional area is calculated as:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-85
+
+.. GENERATED FROM PYTHON SOURCE LINES 84-91
 
 Step 4: Define ScattererCollection and Population
 -------------------------------------------------
@@ -153,32 +159,34 @@ given by:
 .. math::
     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
 
-.. GENERATED FROM PYTHON SOURCE LINES 85-108
+.. GENERATED FROM PYTHON SOURCE LINES 91-116
 
 .. code-block:: Python
 
 
     from FlowCyPy import ScattererCollection
-    from FlowCyPy.population import Exosome, Population, distribution
+    from FlowCyPy.population import Exosome, Sphere, distribution
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
     exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
 
-    custom_population = Population(
+    custom_population = Sphere(
         name='Pop 0',
         particle_count=5e9 * units.particle / units.milliliter,
-        size=distribution.RosinRammler(characteristic_size=150 * units.nanometer, spread=30),
+        diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
         refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
     )
 
     # Add an Exosome population
-    scatterer_collection.add_population(exosome, custom_population)
+    scatterer_collection.add_population(custom_population)
 
-    scatterer_collection.dilute(factor=4)
+    scatterer_collection.dilute(factor=8)
 
     # Initialize the scatterer with the flow cell
-    # scatterer_collection.plot()  # Visualize the particle population
+    df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
+
+    # df.plot(x='Diameter', bins='auto')
 
 
 
@@ -187,20 +195,21 @@ given by:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-113
+.. GENERATED FROM PYTHON SOURCE LINES 117-121
 
 Step 5: Define Detectors
 ------------------------
-Detectors measure light intensity. Parameters like responsitivity define the conversion of optical
+Detectors measure light intensity. Parameters like responsivity define the conversion of optical
 power to electronic signals, and saturation level represents the maximum signal they can handle.
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-141
+.. GENERATED FROM PYTHON SOURCE LINES 121-161
 
 .. code-block:: Python
 
 
     from FlowCyPy.detector import Detector
     from FlowCyPy.signal_digitizer import SignalDigitizer
+    from FlowCyPy.amplifier import TransimpedanceAmplifier
 
     signal_digitizer = SignalDigitizer(
         bit_depth='14bit',
@@ -211,19 +220,29 @@ power to electronic signals, and saturation level represents the maximum signal 
     detector_0 = Detector(
         name='forward',
         phi_angle=0 * units.degree,                  # Forward scatter angle
-        numerical_aperture=1.2 * units.AU,
-        responsitivity=1 * units.ampere / units.watt,
-        resistance=50 * units.ohm,
-        temperature=300 * units.kelvin
+        numerical_aperture=0.3 * units.AU,
+        responsivity=1 * units.ampere / units.watt,
     )
 
     detector_1 = Detector(
         name='side',
         phi_angle=90 * units.degree,                 # Side scatter angle
-        numerical_aperture=1.2 * units.AU,
-        responsitivity=1 * units.ampere / units.watt,
-        resistance=50 * units.ohm,
-        temperature=300 * units.kelvin,
+        numerical_aperture=0.3 * units.AU,
+        responsivity=1 * units.ampere / units.watt,
+    )
+
+    detector_2 = Detector(
+        name='det_2',
+        phi_angle=30 * units.degree,                 # Side scatter angle
+        numerical_aperture=0.3 * units.AU,
+        responsivity=1 * units.ampere / units.watt,
+    )
+
+    amplifier = TransimpedanceAmplifier(
+        gain=10 * units.volt / units.ampere,
+        bandwidth=10 * units.megahertz,
+        voltage_noise_density=.1 * units.nanovolt / units.sqrt_hertz,
+        current_noise_density=.2 * units.femtoampere / units.sqrt_hertz
     )
 
 
@@ -233,7 +252,8 @@ power to electronic signals, and saturation level represents the maximum signal 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 142-149
+
+.. GENERATED FROM PYTHON SOURCE LINES 162-169
 
 Step 6: Simulate Flow Cytometry Experiment
 ------------------------------------------
@@ -243,26 +263,35 @@ and particles follows Mie theory:
 .. math::
     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
 
-.. GENERATED FROM PYTHON SOURCE LINES 149-167
+.. GENERATED FROM PYTHON SOURCE LINES 169-196
 
 .. code-block:: Python
 
-    from FlowCyPy import FlowCytometer
+    from FlowCyPy import FlowCytometer, circuits
 
     cytometer = FlowCytometer(
+        source=source,
+        transimpedance_amplifier=amplifier,
         scatterer_collection=scatterer_collection,
         signal_digitizer=signal_digitizer,
-        detectors=[detector_0, detector_1],
+        detectors=[detector_0, detector_1, detector_2],
         flow_cell=flow_cell,
-        background_power=0.001 * units.milliwatt
+        background_power=0.000 * units.milliwatt
     )
 
+    processing_steps = [
+        circuits.BaselineRestorator(window_size=100 * units.microsecond),
+        circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
+    ]
+
     # Run the flow cytometry simulation
-    acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+    cytometer.prepare_acquisition(run_time=0.5 * units.millisecond)
+    acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
     _ = acquisition.scatterer.plot(
         x='side',
-        y='forward'
+        y='forward',
+        z='RefractiveIndex'
     )
 
 
@@ -274,14 +303,25 @@ and particles follows Mie theory:
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 168-169
+
+.. GENERATED FROM PYTHON SOURCE LINES 197-198
 
 Visualize the scatter signals from both detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 169-171
+.. GENERATED FROM PYTHON SOURCE LINES 198-200
 
 .. code-block:: Python
 
@@ -299,23 +339,23 @@ Visualize the scatter signals from both detectors
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 172-176
+.. GENERATED FROM PYTHON SOURCE LINES 201-205
 
 Step 7: Analyze Detected Signals
 --------------------------------
 The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 176-187
+.. GENERATED FROM PYTHON SOURCE LINES 205-216
 
 .. code-block:: Python
 
     triggered_acquisition = acquisition.run_triggering(
-        threshold=0.2 * units.millivolt,
+        threshold=2 * units.microvolt,
         trigger_detector_name='forward',
-        max_triggers=35,
-        pre_buffer=64,
-        post_buffer=64
+        max_triggers=-1,
+        pre_buffer=20,
+        post_buffer=20
     )
 
     triggered_acquisition.analog.plot()
@@ -333,25 +373,22 @@ window size and threshold.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 188-189
+.. GENERATED FROM PYTHON SOURCE LINES 217-218
 
 Getting and plotting the extracted peaks.
 
-.. GENERATED FROM PYTHON SOURCE LINES 189-201
+.. GENERATED FROM PYTHON SOURCE LINES 218-227
 
 .. code-block:: Python
 
     from FlowCyPy import peak_locator
-    # peak_locator = peak_locator.ScipyPeakLocator(height=10 * units.bit_bins, padding_value=-1)
-    peak_algorithm = peak_locator.BasicPeakLocator()
+    peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
+
 
     peaks = triggered_acquisition.detect_peaks(peak_algorithm)
 
-    peaks.plot(
-        feature='Height',
-        x_detector='side',
-        y_detector='forward'
-    )
+
+    peaks.plot(feature='Height', x='side', y='forward')
 
 
 
@@ -367,15 +404,15 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7fcc15208cd0>
+    <seaborn.axisgrid.JointGrid object at 0x7f52e4ee1910>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 202-203
+.. GENERATED FROM PYTHON SOURCE LINES 228-229
 
 Step 8: Classifying the collected dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 203-217
+.. GENERATED FROM PYTHON SOURCE LINES 229-239
 
 .. code-block:: Python
 
@@ -389,11 +426,7 @@ Step 8: Classifying the collected dataset
         detectors=['side', 'forward']
     )
 
-    _ = data.plot(
-        feature='Height',
-        x_detector='side',
-        y_detector='forward'
-    )
+    _ = data.plot(feature='Height', x='side', y='forward')
 
 
 .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
@@ -408,7 +441,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.788 seconds)
+   **Total running time of the script:** (0 minutes 10.320 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

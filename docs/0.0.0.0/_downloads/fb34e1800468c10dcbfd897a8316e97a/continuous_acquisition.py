@@ -8,7 +8,7 @@ provide insights into the physical properties of particles passing through the l
 
 Workflow:
 ---------
-1. Define a particle size distribution using `ScattererCollection`.
+1. Define a particle diameter distribution using `ScattererCollection`.
 2. Simulate flow cytometer signals using `FlowCytometer`.
 3. Analyze the forward scatter signal with `PulseAnalyzer` to extract features like peak height, width, and area.
 4. Visualize the generated signals and display the extracted pulse features.
@@ -16,9 +16,10 @@ Workflow:
 
 # %%
 # Step 1: Import necessary modules from FlowCyPy
-from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
+from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, TransimpedanceAmplifier
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import distribution
-from FlowCyPy.population import Population
+from FlowCyPy.population import Sphere
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import units
 
@@ -37,18 +38,19 @@ source = GaussianBeam(
 # ------------------------------
 # Set the flow speed to 80 micrometers per second and a flow area of 1 square micrometer, with a total simulation time of 1 second.
 flow_cell = FlowCell(
-    source=source,
-    volume_flow=0.01 * units.microliter / units.second,        # Flow speed: 10 microliter per second
-    flow_area=(10 * units.micrometer) ** 2,        # Flow area: 10 x 10 micrometers
+    sample_volume_flow=0.02 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+    sheath_volume_flow=0.1 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+    width=20 * units.micrometer,        # Flow area: 10 x 10 micrometers
+    height=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
 )
 
 # %%
-# Step 4: Define the particle size distribution
-# ---------------------------------------------
-# Use a normal size distribution with a mean size of 200 nanometers and a standard deviation of 10 nanometers.
+# Step 4: Define the particle diameter distribution
+# -------------------------------------------------
+# Use a normal diameter distribution with a mean diameter of 200 nanometers and a standard deviation of 10 nanometers.
 # This represents the population of scatterers (particles) that will interact with the laser source.
-ev_size = distribution.Normal(
-    mean=200 * units.nanometer,       # Mean particle size: 200 nanometers
+ev_diameter = distribution.Normal(
+    mean=200 * units.nanometer,       # Mean particle diameter: 200 nanometers
     std_dev=10 * units.nanometer      # Standard deviation: 10 nanometers
 )
 
@@ -57,9 +59,9 @@ ev_ri = distribution.Normal(
     std_dev=0.01 * units.RIU  # Standard deviation: 0.01
 )
 
-ev = Population(
-    particle_count=1.8e+9 * units.particle / units.milliliter,
-    size=ev_size,               # Particle size distribution
+ev = Sphere(
+    particle_count=10 * units.particle,
+    diameter=ev_diameter,           # Particle diameter distribution
     refractive_index=ev_ri,     # Refractive index distribution
     name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
 )
@@ -72,7 +74,7 @@ scatterer_collection.add_population(ev)
 # Step 5: Define the detector
 # ---------------------------
 # The detector captures the scattered light. It is positioned at 90 degrees relative to the incident light beam
-# and configured with a numerical aperture of 0.4 and responsitivity of 1.
+# and configured with a numerical aperture of 0.4 and responsivity of 1.
 signal_digitizer = SignalDigitizer(
     bit_depth=1024,
     saturation_levels='auto',
@@ -83,28 +85,37 @@ detector_0 = Detector(
     phi_angle=90 * units.degree,              # Detector angle: 90 degrees (Side Scatter)
     numerical_aperture=0.4 * units.AU,        # Numerical aperture of the detector
     name='first detector',              # Detector name
-    responsitivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
+    responsivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
 )
 
 detector_1 = Detector(
     phi_angle=0 * units.degree,               # Detector angle: 90 degrees (Sid e Scatter)
     numerical_aperture=0.4 * units.AU,        # Numerical aperture of the detector
-    name='second detector',             # Detector name
-    responsitivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
+    name='second detector',                   # Detector name
+    responsivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
+)
+
+transimpedance_amplifier = TransimpedanceAmplifier(
+    gain=100 * units.volt / units.ampere,
+    bandwidth = 10 * units.megahertz
 )
 
 # Step 6: Simulate Flow Cytometer Signals
 # ---------------------------------------
 # Create a FlowCytometer instance to simulate the signals generated as particles pass through the laser beam.
 cytometer = FlowCytometer(
+    source=source,
+    transimpedance_amplifier=transimpedance_amplifier,
     signal_digitizer=signal_digitizer,
     scatterer_collection=scatterer_collection,
-    flow_cell=flow_cell,                # Particle size distribution
+    flow_cell=flow_cell,                # Particle diameter distribution
     detectors=[detector_0, detector_1]  # List of detectors used in the simulation
 )
 
 # Run the flow cytometry simulation
-acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
+
+acquisition = cytometer.get_acquisition()
 
 # Visualize the scatter signals from both detectors
 acquisition.analog.plot()

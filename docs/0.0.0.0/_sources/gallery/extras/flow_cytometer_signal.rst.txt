@@ -31,14 +31,15 @@ Steps:
 3. Simulate the flow cytometer signals.
 4. Visualize and analyze the signals from FSC and SSC detectors.
 
-.. GENERATED FROM PYTHON SOURCE LINES 15-106
+.. GENERATED FROM PYTHON SOURCE LINES 15-117
 
 .. code-block:: Python
 
 
     # Step 1: Import the necessary libraries
-    from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
-    from FlowCyPy import distribution, Population
+    from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, TransimpedanceAmplifier
+    from FlowCyPy import distribution, population
+    from FlowCyPy.flow_cell import FlowCell
     from FlowCyPy.signal_digitizer import SignalDigitizer
     from FlowCyPy import units
 
@@ -55,9 +56,10 @@ Steps:
     # ----------------------------------
     # Flow speed is set to 80 micrometers per second, with a flow area of 1 square micrometer and a total simulation time of 1 second.
     flow_cell = FlowCell(
-        source=source,
-        volume_flow=0.1 * units.microliter / units.second, # Flow speed: 10 microliter per second
-        flow_area=(10 * units.micrometer) ** 2, # Flow area: 40 x 40 micrometers
+        sample_volume_flow=0.02 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+        sheath_volume_flow=0.1 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+        width=20 * units.micrometer,        # Flow area: 10 x 10 micrometers
+        height=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
     )
 
     # Step 4: Define the particle size distribution
@@ -66,17 +68,17 @@ Steps:
     # and a refractive index of 1.39 with a small variation of 0.01.
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
-    population_0 = Population(
+    population_0 = population.Sphere(
         name='EV',
         particle_count=1e+9 * units.particle / units.milliliter,
-        size=distribution.RosinRammler(characteristic_size=200 * units.nanometer, spread=4.5),
+        diameter=distribution.RosinRammler(characteristic_property=200 * units.nanometer, spread=4.5),
         refractive_index=distribution.Normal(mean=1.42 * units.RIU, std_dev=0.05 * units.RIU)
     )
 
-    population_1 = Population(
+    population_1 = population.Sphere(
         name='LP',
         particle_count=1e+11 * units.particle / units.milliliter,
-        size=distribution.RosinRammler(characteristic_size=100 * units.nanometer, spread=4.5),
+        diameter=distribution.RosinRammler(characteristic_property=100 * units.nanometer, spread=4.5),
         refractive_index=distribution.Normal(mean=1.39 * units.RIU, std_dev=0.05 * units.RIU)
     )
 
@@ -87,7 +89,7 @@ Steps:
     # Step 5: Set up the detectors
     # ----------------------------
     # Two detectors are used: Forward Scatter (FSC) and Side Scatter (SSC). Each detector is configured
-    # with its own numerical aperture, responsitivity, noise level, and acquisition frequency.
+    # with its own numerical aperture, responsivity, noise level, and acquisition frequency.
     signal_digitizer = SignalDigitizer(
         bit_depth=1024,
         saturation_levels='auto',
@@ -106,11 +108,19 @@ Steps:
         phi_angle=90 * units.degree,              # Angle: 90 degrees for side scatter
     )
 
+    transimpedance_amplifier = TransimpedanceAmplifier(
+        gain=100 * units.volt / units.ampere,
+        bandwidth = 10 * units.megahertz
+    )
+
+
     # Step 6: Create a FlowCytometer instance
     # ---------------------------------------
     # The flow cytometer is configured with the source, scatterer distribution, and detectors.
     # The 'mie' coupling mechanism models how the particles interact with the laser beam.
     cytometer = FlowCytometer(
+        source=source,
+        transimpedance_amplifier=transimpedance_amplifier,
         signal_digitizer=signal_digitizer,
         scatterer_collection=scatterer_collection,
         flow_cell=flow_cell,  # Particle size distribution
@@ -121,7 +131,8 @@ Steps:
     # ---------------------------------------
     # Simulate the signals for both detectors (FSC and SSC) as particles pass through the laser beam.
     # Run the flow cytometry simulation
-    acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+    acquisition = cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
+    acquisition = cytometer.get_acquisition()
 
     # Visualize the scatter signals from both detectors
     acquisition.digital.plot(filter_population=['EV'])
@@ -135,10 +146,19 @@ Steps:
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:265: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 107-110
+
+.. GENERATED FROM PYTHON SOURCE LINES 118-121
 
 The above plot shows the raw simulated signals for Forward Scatter (FSC) and
 Side Scatter (SSC) channels. These signals provide insights into particle size
@@ -147,7 +167,7 @@ and complexity and can be further analyzed for feature extraction, such as peak 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.609 seconds)
+   **Total running time of the script:** (0 minutes 0.854 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_flow_cytometer_signal.py:

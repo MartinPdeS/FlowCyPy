@@ -19,7 +19,7 @@ Steps in the Workflow:
 # %%
 # Import necessary libraries and modules
 from FlowCyPy import ScattererCollection
-from FlowCyPy import distribution, Population
+from FlowCyPy import distribution, population
 from FlowCyPy.units import nanometer, RIU, particle, milliliter
 import numpy as np
 
@@ -32,28 +32,23 @@ np.random.seed(20)
 # Two particle populations are defined with different sizes and refractive indices.
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * RIU)
 
-population_0 = Population(
+population_0 = population.Sphere(
     name='EV',
     particle_count=2e+9 * particle / milliliter,
-    size=distribution.RosinRammler(characteristic_size=50 * nanometer, spread=4.5),
+    diameter=distribution.RosinRammler(characteristic_property=50 * nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.39 * RIU, std_dev=0.05 * RIU)
 )
 
-population_1 = Population(
+population_1 = population.Sphere(
     name='LP',
     particle_count=1e+10 * particle / milliliter,
-    size=distribution.RosinRammler(characteristic_size=200 * nanometer, spread=4.5),
+    diameter=distribution.RosinRammler(characteristic_property=200 * nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.45 * RIU, std_dev=0.05 * RIU)
 )
 
 scatterer_collection.add_population(population_0, population_1)
 
-scatterer_collection.plot()
+# Initialize the scatterer with the flow cell
+df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
 
-"""
-Summary:
---------
-This script defines a flow cytometer simulation, sets up the particle size and refractive index distributions,
-and visualizes the scatterer distribution in a 2D density plot. It provides insight into the scattering properties
-of two different particle populations.
-"""
+df.plot(x='Diameter', bins='auto')

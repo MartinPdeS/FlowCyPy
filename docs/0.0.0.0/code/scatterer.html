@@ -541,14 +541,14 @@ document.write(`
 <dt class="sig sig-object py" id="FlowCyPy.ScattererCollection">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ScattererCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">medium_refractive_index=&lt;Quantity(1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'refractive_index_unit')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">populations=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coupling_model=CouplingModel.MIE</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Defines and manages the size and refractive index distributions of scatterers (particles)
-passing through a flow cytometer. This class generates random scatterer sizes and refractive
+<p>Defines and manages the diameter and refractive index distributions of scatterers (particles)
+passing through a flow cytometer. This class generates random scatterer diameters and refractive
 indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>medium_refractive_index</strong> (<em>Quantity</em>)</p></li>
-<li><p><strong>populations</strong> (<em>List</em><em>[</em><a class="reference internal" href="#FlowCyPy.population.Population" title="FlowCyPy.population.Population"><em>Population</em></a><em>]</em>)</p></li>
+<li><p><strong>populations</strong> (<em>List</em><em>[</em><em>BasePopulation</em><em>]</em>)</p></li>
 <li><p><strong>coupling_model</strong> (<em>CouplingModel</em><em> | </em><em>None</em>)</p></li>
 </ul>
 </dd>
@@ -561,9 +561,9 @@ indices based on a list of provided distributions (e.g., Normal, LogNormal, Unif
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – The name of the population.</p></li>
-<li><p><strong>size</strong> (<em>BaseDistribution</em>) – The size distribution of the population.</p></li>
+<li><p><strong>diameter</strong> (<em>BaseDistribution</em>) – The diameter distribution of the population.</p></li>
 <li><p><strong>refractive_index</strong> (<em>BaseDistribution</em>) – The refractive index distribution of the population.</p></li>
-<li><p><strong>population</strong> (<a class="reference internal" href="#FlowCyPy.population.Population" title="FlowCyPy.population.Population"><em>Population</em></a>)</p></li>
+<li><p><strong>population</strong> (<em>BasePopulation</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -621,18 +621,18 @@ of 0.5 reduces the population density by half.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.fill_dataframe_with_sampling">
 <span class="sig-name descname"><span class="pre">fill_dataframe_with_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scatterer_dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.fill_dataframe_with_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.fill_dataframe_with_sampling" title="Link to this definition">#</a></dt>
-<dd><p>Fills a DataFrame with size and refractive index sampling data for each population.</p>
+<dd><p>Fills a DataFrame with diameter and refractive index sampling data for each population.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>scatterer_dataframe</strong> (<em>pd.DataFrame</em>) – A DataFrame indexed by population names (first level) and containing the
-following columns: <cite>‘Size’</cite>: To be filled with particle size data. <cite>‘RefractiveIndex’</cite>:
+following columns: <cite>‘Diameter’</cite>: To be filled with particle diameter data. <cite>‘RefractiveIndex’</cite>:
 To be filled with refractive index data. The DataFrame must already have the required structure.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><em>None</em> – The method modifies the <cite>scatterer_dataframe</cite> in place, adding size and
+<li><p><em>None</em> – The method modifies the <cite>scatterer_dataframe</cite> in place, adding diameter and
 refractive index sampling data.</p></li>
-<li><p><em>After filling, the DataFrame will be populated with size and refractive index data.</em></p></li>
+<li><p><em>After filling, the DataFrame will be populated with diameter and refractive index data.</em></p></li>
 </ul>
 </p>
 </dd>
@@ -644,11 +644,14 @@ refractive index sampling data.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.get_population_dataframe">
-<span class="sig-name descname"><span class="pre">get_population_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_sampling</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.get_population_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.get_population_dataframe" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_population_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.get_population_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.get_population_dataframe" title="Link to this definition">#</a></dt>
 <dd><p>Generate a DataFrame by sampling particles from populations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>total_sampling</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – Total number of samples to draw, distributed across populations based on their ratios.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>total_sampling</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – Total number of samples to draw, distributed across populations based on their ratios.</p></li>
+<li><p><strong>use_ratio</strong> (<em>bool</em>)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A MultiIndex DataFrame containing the sampled data from all populations. The first
@@ -671,39 +674,6 @@ index level indicates the population name, and the second level indexes the samp
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.plot" title="Link to this definition">#</a></dt>
-<dd><p>Visualizes the joint and marginal distributions of size and refractive index
-for multiple populations in the scatterer collection.</p>
-<p>This method creates a joint plot using <cite>sns.JointGrid</cite>, where:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>The joint area displays filled contours representing the PDF values of size and refractive index.</p></li>
-<li><p>The marginal areas display the size and refractive index PDFs as filled plots.</p></li>
-</ul>
-</div></blockquote>
-<p>Each population is plotted with a distinct color using a transparent colormap for the joint area.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_points</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of points used to compute the size and refractive index PDFs. Default is 100.
-Increasing this value results in smoother distributions but increases computation time.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<ul class="simple">
-<li><p>The joint area uses a transparent colormap, transitioning from fully transparent to fully opaque for better visualization of overlapping populations.</p></li>
-<li><p>Marginal plots show semi-transparent filled curves for clarity.</p></li>
-</ul>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n_points</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.ScattererCollection.set_concentrations">
 <span class="sig-name descname"><span class="pre">set_concentrations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.set_concentrations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.ScattererCollection.set_concentrations" title="Link to this definition">#</a></dt>
 <dd><p>Sets the concentration of each population in the ScattererCollection instance.</p>
@@ -723,49 +693,174 @@ Increasing this value results in smoother distributions but increases computatio
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="FlowCyPy.population.Population">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refractive_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_count</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Population" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class representing a population of scatterers in a flow cytometry setup.</p>
+<dt class="sig sig-object py" id="FlowCyPy.population.Sphere">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refractive_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_count</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Sphere" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePopulation</span></code></p>
+<p>Represents a population of scatterers (particles) in a flow cytometry setup.</p>
+<p>This class encapsulates the properties of a particle population including its name,
+refractive index, particle diameter, and particle count (density). The refractive index
+and diameter can be provided as either fixed values (Quantity) or as statistical distributions
+(instances of distribution.Base). The class automatically converts Quantity attributes to their
+base SI units during initialization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – Name of the population distribution.</p></li>
-<li><p><strong>refractive_index</strong> (<em>Union</em><em>[</em><em>distribution.Base</em><em>, </em><em>Quantity</em><em>]</em>) – Refractive index or refractive index distributions.</p></li>
-<li><p><strong>size</strong> (<em>Union</em><em>[</em><em>distribution.Base</em><em>, </em><em>Quantity</em><em>]</em>) – Particle size or size distributions.</p></li>
-<li><p><strong>particle_count</strong> (<em>ParticleCount</em>) – Scatterer density in particles per cubic meter, default is 1 particle/m³.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The identifier or label for the population.</p></li>
+<li><p><strong>refractive_index</strong> (<em>Union</em><em>[</em><em>distribution.Base</em><em>, </em><em>Quantity</em><em>]</em>) – The refractive index (or its distribution) of the particles. If provided as a Quantity,
+it must have units of refractive index (RIU). If provided as a distribution, it should be an
+instance of distribution.Base.</p></li>
+<li><p><strong>diameter</strong> (<em>Union</em><em>[</em><em>distribution.Base</em><em>, </em><em>Quantity</em><em>]</em>) – The particle diameter (or its distribution). If provided as a Quantity, it must have units
+of length (e.g., meters). If provided as a distribution, it should be an instance of
+distribution.Base.</p></li>
+<li><p><strong>particle_count</strong> (<em>ParticleCount</em><em> | </em><em>Quantity</em>) – The number density of particles (scatterers) per cubic meter. If a Quantity is provided,
+it should be convertible to a ParticleCount.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.population.Population.dilute">
-<span class="sig-name descname"><span class="pre">dilute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Population.dilute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Population.dilute" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>factor</strong> (<em>float</em>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.population.Sphere.diameter">
+<span class="sig-name descname"><span class="pre">diameter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Base</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.population.Sphere.diameter" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.population.Population.generate_sampling">
-<span class="sig-name descname"><span class="pre">generate_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sampling</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Population.generate_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Population.generate_sampling" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>sampling</strong> (<em>Quantity</em>)</p>
+<dt class="sig sig-object py" id="FlowCyPy.population.Sphere.generate_sampling">
+<span class="sig-name descname"><span class="pre">generate_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sampling</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Sphere.generate_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Sphere.generate_sampling" title="Link to this definition">#</a></dt>
+<dd><p>Generate a sampling of particle properties.</p>
+<p>This method uses the underlying distributions (or fixed quantities) for diameter and refractive index
+to generate a sample set for simulation or analysis.</p>
+<dl class="simple">
+<dt>This method creates a dictionnary with the following entries:</dt><dd><ul class="simple">
+<li><p>‘Diameter’: The generated diameters.</p></li>
+<li><p>‘RefractiveIndex’: The generated refractive index values.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sampling</strong> (<em>int</em>) – The sampling parameter (e.g., number of samples or a resolution quantity) used by the distributions.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the generated diameter sample and refractive index sample.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.population.Population.particle_count">
-<span class="sig-name descname"><span class="pre">particle_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ParticleCount</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.population.Population.particle_count" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="FlowCyPy.population.Sphere.particle_count">
+<span class="sig-name descname"><span class="pre">particle_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ParticleCount</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.population.Sphere.particle_count" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.population.CoreShell">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CoreShell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">core_diameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shell_thickness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">core_refractive_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shell_refractive_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_count</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#CoreShell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.CoreShell" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePopulation</span></code></p>
+<p>Represents a population of core-shell scatterers in a flow cytometry setup.</p>
+<p>In a core-shell particle, the inner core is defined by its diameter and the outer shell
+is defined by its thickness. The overall particle diameter is given by:</p>
+<blockquote>
+<div><p>overall_diameter = core_diameter + 2 * shell_thickness</p>
+</div></blockquote>
+<p>The refractive indices for the core and shell can be provided either as fixed values (Quantity)
+or as statistical distributions (instances of distribution.Base). The particle_count defines the
+scatterer density in particles per cubic meter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The identifier or label for the population.</p></li>
+<li><p><strong>core_diameter</strong> (<em>Union</em><em>[</em><em>distribution.Base</em><em>, </em><em>Quantity</em><em>]</em>) – The diameter of the particle core. If provided as a Quantity, it must have length units
+(e.g., meter). If provided as a distribution, it must be an instance of distribution.Base.</p></li>
+<li><p><strong>shell_thickness</strong> (<em>Union</em><em>[</em><em>distribution.Base</em><em>, </em><em>Quantity</em><em>]</em>) – The thickness of the particle shell. If provided as a Quantity, it must have length units.
+If provided as a distribution, it must be an instance of distribution.Base.</p></li>
+<li><p><strong>refractive_index_core</strong> (<em>Union</em><em>[</em><em>distribution.Base</em><em>, </em><em>Quantity</em><em>]</em>) – The refractive index (or its distribution) of the core. If provided as a Quantity, it must have
+refractive index units (RIU).</p></li>
+<li><p><strong>refractive_index_shell</strong> (<em>Union</em><em>[</em><em>distribution.Base</em><em>, </em><em>Quantity</em><em>]</em>) – The refractive index (or its distribution) of the shell. If provided as a Quantity, it must have
+refractive index units (RIU).</p></li>
+<li><p><strong>particle_count</strong> (<em>ParticleCount</em><em> | </em><em>Quantity</em>) – The particle density in particles per cubic meter.</p></li>
+<li><p><strong>core_refractive_index</strong> (<em>Base</em><em> | </em><em>Quantity</em>)</p></li>
+<li><p><strong>shell_refractive_index</strong> (<em>Base</em><em> | </em><em>Quantity</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.population.CoreShell.core_diameter">
+<span class="sig-name descname"><span class="pre">core_diameter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Base</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.population.CoreShell.core_diameter" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.population.CoreShell.core_refractive_index">
+<span class="sig-name descname"><span class="pre">core_refractive_index</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Base</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.population.CoreShell.core_refractive_index" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.population.CoreShell.generate_sampling">
+<span class="sig-name descname"><span class="pre">generate_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sampling</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#CoreShell.generate_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.CoreShell.generate_sampling" title="Link to this definition">#</a></dt>
+<dd><p>Generate a sampling of core-shell particle properties.</p>
+<p>This method generates a sample set for the core diameter, shell thickness, core refractive index,
+and shell refractive index from their underlying distributions (or fixed values).</p>
+<dl class="simple">
+<dt>This method creates a dictionnary with the following entries:</dt><dd><ul class="simple">
+<li><p>‘CoreDiameter’: The generated core diameters.</p></li>
+<li><p>‘ShellThickness’: The generated shell thickness values.</p></li>
+<li><p>‘CoreRefractiveIndex’: The generated core refractive indices.</p></li>
+<li><p>‘ShellRefractiveIndex’: The generated shell refractive indices.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sampling</strong> (<em>Quantity</em>) – The sampling parameter used by the distributions.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the generated samples in the order:
+(core_diameter, shell_thickness, refractive_index_core, refractive_index_shell).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.population.CoreShell.overall_diameter">
+<span class="sig-name descname"><span class="pre">overall_diameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sampling</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#CoreShell.overall_diameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.CoreShell.overall_diameter" title="Link to this definition">#</a></dt>
+<dd><p>Generate the overall particle diameter.</p>
+<p>This method calculates the overall particle diameter for a given sampling by generating
+the core diameter and shell thickness samples from their respective distributions. The overall
+diameter is computed as:</p>
+<blockquote>
+<div><p>overall_diameter = core_diameter + 2 * shell_thickness</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sampling</strong> (<em>Quantity</em>) – The sampling parameter used by the distributions to generate values.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The overall diameter of the particles.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.population.CoreShell.particle_count">
+<span class="sig-name descname"><span class="pre">particle_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ParticleCount</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.population.CoreShell.particle_count" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.population.CoreShell.shell_refractive_index">
+<span class="sig-name descname"><span class="pre">shell_refractive_index</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Base</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.population.CoreShell.shell_refractive_index" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.population.CoreShell.shell_thickness">
+<span class="sig-name descname"><span class="pre">shell_thickness</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Base</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.population.CoreShell.shell_thickness" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -801,14 +896,23 @@ Increasing this value results in smoother distributions but increases computatio
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.fill_dataframe_with_sampling"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.fill_dataframe_with_sampling()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.get_population_dataframe"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.get_population_dataframe()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.get_population_ratios"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.get_population_ratios()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.plot"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.plot()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.ScattererCollection.set_concentrations"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.set_concentrations()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population"><code class="docutils literal notranslate"><span class="pre">Population</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population.dilute"><code class="docutils literal notranslate"><span class="pre">Population.dilute()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population.generate_sampling"><code class="docutils literal notranslate"><span class="pre">Population.generate_sampling()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Population.particle_count"><code class="docutils literal notranslate"><span class="pre">Population.particle_count</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Sphere"><code class="docutils literal notranslate"><span class="pre">Sphere</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Sphere.diameter"><code class="docutils literal notranslate"><span class="pre">Sphere.diameter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Sphere.generate_sampling"><code class="docutils literal notranslate"><span class="pre">Sphere.generate_sampling()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Sphere.particle_count"><code class="docutils literal notranslate"><span class="pre">Sphere.particle_count</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.CoreShell"><code class="docutils literal notranslate"><span class="pre">CoreShell</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.CoreShell.core_diameter"><code class="docutils literal notranslate"><span class="pre">CoreShell.core_diameter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.CoreShell.core_refractive_index"><code class="docutils literal notranslate"><span class="pre">CoreShell.core_refractive_index</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.CoreShell.generate_sampling"><code class="docutils literal notranslate"><span class="pre">CoreShell.generate_sampling()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.CoreShell.overall_diameter"><code class="docutils literal notranslate"><span class="pre">CoreShell.overall_diameter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.CoreShell.particle_count"><code class="docutils literal notranslate"><span class="pre">CoreShell.particle_count</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.CoreShell.shell_refractive_index"><code class="docutils literal notranslate"><span class="pre">CoreShell.shell_refractive_index</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.CoreShell.shell_thickness"><code class="docutils literal notranslate"><span class="pre">CoreShell.shell_thickness</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -863,7 +967,7 @@ Increasing this value results in smoother distributions but increases computatio
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

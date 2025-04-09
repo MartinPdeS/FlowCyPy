@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FlowCyPy.peak_locator.basic &#8212; FlowCyPy  documentation</title>
+    <title>FlowCyPy.peak_locator.derivative &#8212; FlowCyPy  documentation</title>
   
   
   
@@ -43,7 +43,7 @@
     <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/FlowCyPy/peak_locator/basic';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/FlowCyPy/peak_locator/derivative';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.15.4';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
@@ -504,112 +504,146 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for FlowCyPy.peak_locator.basic</h1><div class="highlight"><pre>
+  <h1>Source code for FlowCyPy.peak_locator.derivative</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<div class="viewcode-block" id="BasicPeakLocator">
-<a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.basic.BasicPeakLocator">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">BasicPeakLocator</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A peak detection utility that identifies the maximum value in each row of a 2D array.</span>
+<div class="viewcode-block" id="DerivativePeakLocator">
+<a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.derivative.DerivativePeakLocator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DerivativePeakLocator</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A peak detection utility based on the zero-crossing of the first derivative.</span>
 
-<span class="sd">    This class provides a callable object that detects the index of the maximum value in each</span>
-<span class="sd">    row of a 2D NumPy array. Unlike methods that rely on thresholding or derivative-based techniques,</span>
-<span class="sd">    this locator simply returns the index corresponding to the highest value in each row. The result</span>
-<span class="sd">    is a 2D array with one peak index per row, padded with a specified value if necessary.</span>
+<span class="sd">    This class detects peaks by computing the first and second derivatives of each row of a 2D array.</span>
+<span class="sd">    A peak is defined where the first derivative changes sign from positive to negative and the second derivative is negative.</span>
+<span class="sd">    Optionally, for each detected peak, the width (number of samples above a threshold) and area (sum of values over the peak region)</span>
+<span class="sd">    can be computed using a simple threshold-based approach.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    max_number_of_peaks : int, optional</span>
+<span class="sd">        Maximum number of peaks to return per row. If fewer peaks are detected, missing values are padded with padding_value.</span>
+<span class="sd">        Default is 5.</span>
 <span class="sd">    padding_value : object, optional</span>
-<span class="sd">        Value used to pad the output if a row contains no data. Default is -1.</span>
+<span class="sd">        Value to pad missing peaks in output. Default is -1.</span>
+<span class="sd">    compute_width : bool, optional</span>
+<span class="sd">        If True, compute the width (in samples) of each detected peak. Default is False.</span>
+<span class="sd">    compute_area : bool, optional</span>
+<span class="sd">        If True, compute the area (sum of values) under each detected peak. Default is False.</span>
+<span class="sd">    threshold : float, optional</span>
+<span class="sd">        Fraction of the peak height used to determine the boundaries for width and area calculations.</span>
+<span class="sd">        Default is 0.5.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">    &gt;&gt;&gt; data = np.array([</span>
-<span class="sd">    ...     [0, 800, 100, 2000, 150, 9000],</span>
-<span class="sd">    ...     [50, 1000, 200, 3000, 4000, 100]</span>
-<span class="sd">    ... ])</span>
-<span class="sd">    &gt;&gt;&gt; peak_locator = MaxPeakLocator(padding_value=-1)</span>
-<span class="sd">    &gt;&gt;&gt; peaks = peak_locator(data)</span>
-<span class="sd">    &gt;&gt;&gt; print(peaks)</span>
-<span class="sd">    [[5.]</span>
-<span class="sd">     [4.]]</span>
+<span class="sd">    &gt;&gt;&gt; # Without additional metrics:</span>
+<span class="sd">    &gt;&gt;&gt; peak_locator = DerivativePeakLocator(max_number_of_peaks=3)</span>
+<span class="sd">    &gt;&gt;&gt; data = np.array([[0, 100, 500, 200, 50, 1000],</span>
+<span class="sd">    ...                  [200, 400, 100, 900, 500, 700]])</span>
+<span class="sd">    &gt;&gt;&gt; result = peak_locator(data)</span>
+<span class="sd">    &gt;&gt;&gt; print(result[&quot;peak_index&quot;])</span>
+<span class="sd">    [[2. 5. nan]</span>
+<span class="sd">     [1. 3. 5.]]</span>
 
-<span class="sd">    Methods</span>
-<span class="sd">    -------</span>
-<span class="sd">    __call__(array)</span>
-<span class="sd">        Returns a 2D array where each row contains the index of the maximum value in the corresponding</span>
-<span class="sd">        row of the input array.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    - The function expects a 2D NumPy array as input.</span>
-<span class="sd">    - If a row is empty (i.e. has zero columns), the padding value is returned.</span>
+<span class="sd">    &gt;&gt;&gt; # With width and area computations enabled:</span>
+<span class="sd">    &gt;&gt;&gt; peak_locator_metrics = DerivativePeakLocator(max_number_of_peaks=3, compute_width=True, compute_area=True, threshold=0.5)</span>
+<span class="sd">    &gt;&gt;&gt; result = peak_locator_metrics(data)</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Peak indices:\n&quot;, result[&quot;peak_index&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Widths:\n&quot;, result[&quot;width&quot;])</span>
+<span class="sd">    &gt;&gt;&gt; print(&quot;Areas:\n&quot;, result[&quot;area&quot;])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">padding_value</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes the MaxPeakLocator with a specified padding value.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        padding_value : object, optional</span>
-<span class="sd">            Value used to pad missing peaks. Default is -1.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_number_of_peaks</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">padding_value</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">compute_width</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">compute_area</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span> <span class="o">=</span> <span class="n">max_number_of_peaks</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">padding_value</span> <span class="o">=</span> <span class="n">padding_value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span> <span class="o">=</span> <span class="n">compute_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span> <span class="o">=</span> <span class="n">compute_area</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
 
-<div class="viewcode-block" id="BasicPeakLocator.__call__">
-<a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.basic.BasicPeakLocator.__call__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Detects the index of the maximum value in each row of a 2D NumPy array.</span>
+<span class="sd">        Detects peaks using derivative-based zero-crossing.</span>
 
-<span class="sd">        This function computes the index of the maximum value for each row in the input array.</span>
-<span class="sd">        The output is a 2D NumPy array of shape (number_of_rows, 1). If a row is empty, the</span>
-<span class="sd">        padding value is returned.</span>
+<span class="sd">        For each row, the function computes the first and second derivatives to identify peaks where the</span>
+<span class="sd">        first derivative crosses zero (from positive to negative) and the second derivative is negative.</span>
+<span class="sd">        Optionally, if compute_width or compute_area is enabled, for each detected peak the function scans</span>
+<span class="sd">        left and right until the signal falls below a fraction (threshold) of the peak value. The width is</span>
+<span class="sd">        defined as the number of samples within this region and the area is the sum over that region.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        array : np.ndarray</span>
-<span class="sd">            A 2D NumPy array where each row represents a separate dataset for peak detection.</span>
+<span class="sd">            A 2D NumPy array where each row represents a dataset for peak detection.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        np.ndarray</span>
-<span class="sd">            A 2D NumPy array of shape (array.shape[0], 1) where each entry contains the index of the</span>
-<span class="sd">            maximum value in the corresponding row. Rows with no data are filled with the padding value.</span>
+<span class="sd">        dict</span>
+<span class="sd">            A dictionary containing:</span>
+<span class="sd">              - &quot;peak_index&quot;: 2D array of shape (n_rows, max_number_of_peaks) with detected peak indices.</span>
+<span class="sd">              - &quot;width&quot;: (Optional) 2D array with computed peak widths, if compute_width is True.</span>
+<span class="sd">              - &quot;area&quot;: (Optional) 2D array with computed peak areas, if compute_area is True.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        AssertionError</span>
-<span class="sd">            If the input array is not 2-dimensional.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">        &gt;&gt;&gt; data = np.array([</span>
-<span class="sd">        ...     [0, 800, 100, 2000, 150, 9000],</span>
-<span class="sd">        ...     [50, 1000, 200, 3000, 4000, 100]</span>
-<span class="sd">        ... ])</span>
-<span class="sd">        &gt;&gt;&gt; peak_locator = MaxPeakLocator(padding_value=-1)</span>
-<span class="sd">        &gt;&gt;&gt; peaks = peak_locator(data)</span>
-<span class="sd">        &gt;&gt;&gt; print(peaks)</span>
-<span class="sd">        [[5.]</span>
-<span class="sd">         [4.]]</span>
+<span class="sd">            If the input array is not 2D.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Input array must be 2D.&quot;</span>
+        <span class="k">assert</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Input must be a 2D NumPy array.&quot;</span>
         <span class="n">num_rows</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">num_rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">peak_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">num_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">widths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">num_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">areas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">num_rows</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span> <span class="k">else</span> <span class="kc">None</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_rows</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">continue</span>
-            <span class="n">max_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">output</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_idx</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="c1"># Compute first and second derivatives.</span>
+            <span class="n">first_derivative</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="n">second_derivative</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">first_derivative</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">output</span></div>
-</div>
+            <span class="c1"># Identify indices where the first derivative changes sign from positive to negative and second derivative is negative.</span>
+            <span class="c1"># Note: Since derivatives have reduced lengths, adjust indices by +1.</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">first_derivative</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">first_derivative</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span> <span class="o">&amp;</span>
+                                  <span class="p">(</span><span class="n">second_derivative</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="c1"># If no candidates found, continue.</span>
+            <span class="k">if</span> <span class="n">candidates</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Limit number of detected peaks to max_number_of_peaks.</span>
+            <span class="n">selected_peaks</span> <span class="o">=</span> <span class="n">candidates</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">max_number_of_peaks</span><span class="p">]</span>
+            <span class="n">num_found</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">selected_peaks</span><span class="p">)</span>
+            <span class="n">peak_indices</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span><span class="n">num_found</span><span class="p">]</span> <span class="o">=</span> <span class="n">selected_peaks</span>
+
+            <span class="c1"># Optionally compute width and area.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">peak</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">selected_peaks</span><span class="p">):</span>
+                    <span class="n">peak_value</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">peak</span><span class="p">]</span>
+                    <span class="n">thresh_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">*</span> <span class="n">peak_value</span>
+
+                    <span class="c1"># Find left boundary: move left until value falls below threshold.</span>
+                    <span class="n">left</span> <span class="o">=</span> <span class="n">peak</span>
+                    <span class="k">while</span> <span class="n">left</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="n">left</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">thresh_val</span><span class="p">:</span>
+                        <span class="n">left</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="n">left_boundary</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="mi">1</span>
+
+                    <span class="c1"># Find right boundary: move right until value falls below threshold.</span>
+                    <span class="n">right</span> <span class="o">=</span> <span class="n">peak</span>
+                    <span class="k">while</span> <span class="n">right</span> <span class="o">&lt;</span> <span class="n">row</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="n">right</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">thresh_val</span><span class="p">:</span>
+                        <span class="n">right</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">right_boundary</span> <span class="o">=</span> <span class="n">right</span> <span class="o">-</span> <span class="mi">1</span>
+
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span><span class="p">:</span>
+                        <span class="n">widths</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">right_boundary</span> <span class="o">-</span> <span class="n">left_boundary</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span><span class="p">:</span>
+                        <span class="n">areas</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">left_boundary</span><span class="p">:</span><span class="n">right_boundary</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;peak_index&quot;</span><span class="p">:</span> <span class="n">peak_indices</span><span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_width</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;width&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">widths</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_area</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;area&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">areas</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
 </pre></div>
 
@@ -661,7 +695,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

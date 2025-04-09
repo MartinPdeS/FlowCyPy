@@ -4,16 +4,18 @@ Limit of detection
 """
 
 import numpy as np
-from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
+from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, TransimpedanceAmplifier
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import units
 from FlowCyPy import NoiseSetting
-from FlowCyPy import Population, distribution
+from FlowCyPy.population import Sphere
+from FlowCyPy import distribution
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import peak_locator
 
 NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
-NoiseSetting.include_RIN_noise = False
+NoiseSetting.include_source_noise = False
 NoiseSetting.include_dark_current_noise = False
 NoiseSetting.include_thermal_noise = False
 
@@ -26,19 +28,20 @@ source = GaussianBeam(
 )
 
 flow_cell = FlowCell(
-    source=source,
-    volume_flow=0.3 * units.microliter / units.second,      # Flow volume speed: 10 microliter per second
-    flow_area=(10 * units.micrometer) ** 2,      # Flow area: 10 x 10 micrometers
+    sample_volume_flow=0.02 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+    sheath_volume_flow=0.1 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+    width=20 * units.micrometer,        # Flow area: 10 x 10 micrometers
+    height=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
 )
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)  # Medium refractive index: 1.33
 
 for size in [150, 100, 50, 30]:
 
-    population = Population(
+    population = Sphere(
         name=f'{size} nanometer',
         particle_count=20 * units.particle,
-        size=distribution.Delta(position=size * units.nanometer),
+        diameter=distribution.Delta(position=size * units.nanometer),
         refractive_index=distribution.Delta(position=1.39 * units.RIU)
     )
 
@@ -54,23 +57,26 @@ detector_0 = Detector(
     name='side',                             # Detector name: Side scatter detector
     phi_angle=90 * units.degree,                   # Angle: 90 degrees (Side Scatter)
     numerical_aperture=.2 * units.AU,             # Numerical aperture: 1.2
-    responsitivity=1 * units.ampere / units.watt,        # Responsitivity: 1 ampere per watt
-    resistance=13000 * units.ohm,                     # Detector resistance: 50 ohms
+    responsivity=1 * units.ampere / units.watt,        # Responsitivity: 1 ampere per watt
     dark_current=0.01 * units.milliampere,          # Dark current: 0.1 milliamps
-    temperature=300 * units.kelvin                 # Operating temperature: 300 Kelvin
 )
 
 detector_1 = Detector(
     name='forward',                          # Detector name: Forward scatter detector
     phi_angle=0 * units.degree,                    # Angle: 0 degrees (Forward Scatter)
     numerical_aperture=.2 * units.AU,             # Numerical aperture: 1.2
-    responsitivity=1 * units.ampere / units.watt,        # Responsitivity: 1 ampere per watt
-    resistance=13000 * units.ohm,                     # Detector resistance: 50 ohms
+    responsivity=1 * units.ampere / units.watt,        # Responsitivity: 1 ampere per watt
     dark_current=0.01 * units.milliampere,          # Dark current: 0.1 milliamps
-    temperature=300 * units.kelvin                 # Operating temperature: 300 Kelvin
+)
+
+transimpedance_amplifier = TransimpedanceAmplifier(
+    gain=10000 * units.volt / units.ampere,
+    bandwidth = 10 * units.megahertz
 )
 
 cytometer = FlowCytometer(
+    source=source,
+    transimpedance_amplifier=transimpedance_amplifier,
     signal_digitizer=signal_digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,                     # Populations used in the experiment
@@ -79,7 +85,8 @@ cytometer = FlowCytometer(
 )
 
 # Run the flow cytometry simulation
-acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
+acquisition = cytometer.get_acquisition()
 
 # Visualize the scatter signals from both detectors
 acquisition.analog.plot()
@@ -94,11 +101,8 @@ trigger_acquisition = acquisition.run_triggering(
 
 trigger_acquisition.analog.plot()
 
-peak_algorithm = peak_locator.BasicPeakLocator()
+peak_algorithm = peak_locator.GlobalPeakLocator()
 
 peaks = trigger_acquisition.detect_peaks(peak_algorithm)
 
-peaks.plot(
-    x_detector='side',
-    y_detector='forward'
-)
+peaks.plot(x='side', y='forward')

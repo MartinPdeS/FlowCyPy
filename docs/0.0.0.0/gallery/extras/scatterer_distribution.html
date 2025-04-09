@@ -465,18 +465,20 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/limit_of_detection.html">Limit of detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/pre_defined_workflow.html">Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/signal_processing.html">Signal Processing in Flow Cytometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Workflow</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../noise_sources/index.html">Examples: Noises</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/dark_current.html">Dark Current</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/shot_noise.html">Shot noise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../noise_sources/thermal.html">Thermal Noise</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: extras</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="continuous_acquisition.html">WorkFlow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="distributions.html">Particle Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flow_cell_profiles.html">Flow Cell geometries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flow_cytometer_signal.html">Generating Signal</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Scatterer Collection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="triggered_acquisition.html">WorkFlow</a></li>
@@ -563,7 +565,7 @@ detected by two detectors (Forward Scatter and Side Scatter) and visualizes the 
 </ol>
 <p>Import necessary libraries and modules</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererCollection</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span><span class="p">,</span> <span class="n">Population</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span><span class="p">,</span> <span class="n">population</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">milliliter</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -576,37 +578,32 @@ detected by two detectors (Forward Scatter and Side Scatter) and visualizes the 
 <span class="c1"># Two particle populations are defined with different sizes and refractive indices.</span>
 <span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
 
-<span class="n">population_0</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
+<span class="n">population_0</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EV&#39;</span><span class="p">,</span>
     <span class="n">particle_count</span><span class="o">=</span><span class="mf">2e+9</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">,</span>
-    <span class="n">size</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="n">characteristic_size</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">4.5</span><span class="p">),</span>
+    <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="n">characteristic_property</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">4.5</span><span class="p">),</span>
     <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">1.39</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.05</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
 <span class="p">)</span>
 
-<span class="n">population_1</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
+<span class="n">population_1</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LP&#39;</span><span class="p">,</span>
     <span class="n">particle_count</span><span class="o">=</span><span class="mf">1e+10</span> <span class="o">*</span> <span class="n">particle</span> <span class="o">/</span> <span class="n">milliliter</span><span class="p">,</span>
-    <span class="n">size</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="n">characteristic_size</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">4.5</span><span class="p">),</span>
+    <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="n">characteristic_property</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">4.5</span><span class="p">),</span>
     <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">1.45</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.05</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">)</span>
 <span class="p">)</span>
 
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population_0</span><span class="p">,</span> <span class="n">population_1</span><span class="p">)</span>
 
-<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="c1"># Initialize the scatterer with the flow cell</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">get_population_dataframe</span><span class="p">(</span><span class="n">total_sampling</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">use_ratio</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Visualize the particle population</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Summary:</span>
-<span class="sd">--------</span>
-<span class="sd">This script defines a flow cytometer simulation, sets up the particle size and refractive index distributions,</span>
-<span class="sd">and visualizes the scatterer distribution in a 2D density plot. It provides insight into the scattering properties</span>
-<span class="sd">of two different particle populations.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;Diameter&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_scatterer_distribution_001.png" srcset="../../_images/sphx_glr_scatterer_distribution_001.png" alt="scatterer distribution" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;\nSummary:\n--------\nThis script defines a flow cytometer simulation, sets up the particle size and refractive index distributions,\nand visualizes the scatterer distribution in a 2D density plot. It provides insight into the scattering properties\nof two different particle populations.\n&#39;
+<img src="../../_images/sphx_glr_scatterer_distribution_001.png" srcset="../../_images/sphx_glr_scatterer_distribution_001.png" alt="Distribution of Diameter" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 700x500 with 1 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.387 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.435 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-extras-scatterer-distribution-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/2feeb5621a24cc8e6e422b0ec7e47b6c/scatterer_distribution.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">scatterer_distribution.ipynb</span></code></a></p>
@@ -697,7 +694,7 @@ detected by two detectors (Forward Scatter and Side Scatter) and visualizes the 
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.1.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>

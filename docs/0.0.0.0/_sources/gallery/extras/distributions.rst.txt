@@ -21,20 +21,20 @@
 Particle Distribution
 =====================
 
-This script demonstrates how to visualize various particle size distributions from the FlowCyPy library.
-It generates and plots particle sizes based on different statistical distributions, such as Normal, LogNormal, Weibull, and more.
+This script demonstrates how to visualize various particle diameter distributions from the FlowCyPy library.
+It generates and plots particle diameters based on different statistical distributions, such as Normal, LogNormal, Weibull, and more.
 
 Workflow Summary:
-1. Initialize particle size distributions (Normal, LogNormal, Rosin-Rammler, Weibull, Delta, Uniform).
-2. Generate random particle sizes for each distribution.
-3. Plot the histograms of each distribution to visualize the spread of particle sizes.
+1. Initialize particle diameter distributions (Normal, LogNormal, Rosin-Rammler, Weibull, Delta, Uniform).
+2. Generate random particle diameters for each distribution.
+3. Plot the histograms of each distribution to visualize the spread of particle diameters.
 
 Distributions Covered:
 - Normal Distribution: Sizes follow a normal (Gaussian) distribution.
 - LogNormal Distribution: Sizes follow a log-normal distribution.
-- Rosin-Rammler Distribution: Skewed distribution commonly used for particle size modeling.
+- Rosin-Rammler Distribution: Skewed distribution commonly used for particle diameter modeling.
 - Weibull Distribution: Flexible distribution used in particle modeling.
-- Delta Distribution: All particles are of a fixed size.
+- Delta Distribution: All particles are of a fixed diameter.
 - Uniform Distribution: Sizes are uniformly distributed between a minimum and maximum value.
 
 .. GENERATED FROM PYTHON SOURCE LINES 23-24
@@ -48,13 +48,13 @@ Import necessary libraries
     import numpy as np
     import matplotlib.pyplot as plt
     from FlowCyPy import distribution
-    from FlowCyPy.units import nanometer, particle
+    from FlowCyPy.units import nanometer
 
     # Set random seed for reproducibility
     np.random.seed(3)
 
     # Define the number of particles to generate
-    n_particles = 10000 * particle
+    n_particles = 10000
 
     # Initialize subplots for the distribution plots
     fig, axes = plt.subplots(3, 2, figsize=(12, 10))
@@ -62,8 +62,8 @@ Import necessary libraries
 
     # 1. Normal Distribution
     normal_dist = distribution.Normal(mean=100 * nanometer, std_dev=10 * nanometer)
-    normal_sizes = normal_dist.generate(n_particles)
-    axes[0].hist(normal_sizes, bins=50, color='skyblue', edgecolor='black')
+    normal_diameters = normal_dist.generate(n_particles)
+    axes[0].hist(normal_diameters, bins=50, color='skyblue', edgecolor='black')
     axes[0].set_title('Normal Distribution')
     axes[0].set_xlabel('Size (nm)')
     axes[0].set_ylabel('Frequency')
@@ -77,7 +77,7 @@ Import necessary libraries
     axes[1].set_ylabel('Frequency')
 
     # 3. Rosin-Rammler Distribution
-    rosinrammler_dist = distribution.RosinRammler(characteristic_size=50 * nanometer, spread=2.0)
+    rosinrammler_dist = distribution.RosinRammler(characteristic_property=50 * nanometer, spread=2.0)
     rosinrammler_sizes = rosinrammler_dist.generate(n_particles)
     axes[2].hist(rosinrammler_sizes, bins=50, color='lightcoral', edgecolor='black')
     axes[2].set_title('Rosin-Rammler Distribution')
@@ -126,7 +126,7 @@ Import necessary libraries
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.599 seconds)
+   **Total running time of the script:** (0 minutes 1.649 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_distributions.py:
