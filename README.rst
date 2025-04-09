@@ -14,7 +14,7 @@ FlowCyPy: Flow Cytometer Simulation Tool
    * - Testing
      - |ci/cd|
      - |coverage|
-     -
+     - |colab|
    * - PyPi
      - |PyPi|
      - |PyPi_download|
@@ -148,6 +148,18 @@ Simulate a simple flow cytometer experiment:
 
 Explore more examples in the `FlowCyPy Examples <https://martinpdes.github.io/FlowCyPy/gallery/index.html>`_.
 
+
+
+Code structure
+--------------
+
+Here is the architecture for a standard workflow using FlowCyPy:
+
+
+|arch|
+
+
+
 Development and Contribution
 -----------------------------
 
@@ -210,6 +222,10 @@ For inquiries or collaboration, contact `Martin Poinsinet de Sivry-Houle <mailto
     :align: middle
     :alt: FlowCyPy Logo
 
+.. |arch| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/architecture.png
+    :align: middle
+    :alt: FlowCyPy Logo
+
 .. |python| image:: https://img.shields.io/pypi/pyversions/flowcypy.svg
     :alt: Python
     :target: https://www.python.org/
@@ -244,3 +260,7 @@ For inquiries or collaboration, contact `Martin Poinsinet de Sivry-Houle <mailto
 .. |anaconda_date| image:: https://anaconda.org/martinpdes/flowcypy/badges/latest_release_relative_date.svg
     :alt: Latest release date
     :target: https://anaconda.org/martinpdes/flowcypy
+
+.. |colab| image:: https://colab.research.google.com/assets/colab-badge.svg
+    :alt: Google Colab
+    :target: https://colab.research.google.com/github/MartinPdeS/FlowCyPy/blob/master/notebook.ipynb

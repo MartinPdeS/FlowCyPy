@@ -34,9 +34,11 @@ from FlowCyPy import units
 from FlowCyPy import NoiseSetting
 
 NoiseSetting.include_noises = True
-NoiseSetting.include_shot_noise = False
-NoiseSetting.include_thermal_noise = False
-NoiseSetting.include_dark_current_noise = False
+NoiseSetting.include_shot_noise = True
+NoiseSetting.include_dark_current_noise = True
+NoiseSetting.include_source_noise = True
+NoiseSetting.include_amplifier_noise = True
+
 
 np.random.seed(3)  # Ensure reproducibility
 
@@ -50,9 +52,10 @@ np.random.seed(3)  # Ensure reproducibility
 from FlowCyPy import GaussianBeam
 
 source = GaussianBeam(
-    numerical_aperture=0.3 * units.AU,           # Numerical aperture
-    wavelength=200 * units.nanometer,           # Wavelength
-    optical_power=20 * units.milliwatt          # Optical power
+    numerical_aperture=0.1 * units.AU,           # Numerical aperture
+    wavelength=450 * units.nanometer,           # Wavelength
+    optical_power=200 * units.milliwatt,          # Optical power
+    RIN=-140
 )
 
 
@@ -65,13 +68,16 @@ source = GaussianBeam(
 # .. math::
 #     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
 
-from FlowCyPy import FlowCell
+from FlowCyPy.flow_cell import FlowCell
 
 flow_cell = FlowCell(
-    source=source,
-    volume_flow=0.3 * units.microliter / units.second,  # Flow volume
-    flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
+    sample_volume_flow=80 * units.microliter / units.minute,
+    sheath_volume_flow=1 * units.milliliter / units.minute,
+    width=100 * units.micrometer,
+    height=100 * units.micrometer,
 )
+
+# flow_cell.plot(n_samples=300)
 
 
 # %%
@@ -84,13 +90,13 @@ flow_cell = FlowCell(
 #     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
 
 from FlowCyPy import ScattererCollection
-from FlowCyPy.population import Exosome, Population, distribution
+from FlowCyPy.population import Exosome, Sphere, distribution
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
 exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
 
-custom_population = Population(
+custom_population = Sphere(
     name='Pop 0',
     particle_count=5e9 * units.particle / units.milliliter,
     diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
@@ -98,21 +104,24 @@ custom_population = Population(
 )
 
 # Add an Exosome population
-scatterer_collection.add_population(exosome, custom_population)
+scatterer_collection.add_population(custom_population)
 
-scatterer_collection.dilute(factor=4)
+scatterer_collection.dilute(factor=8)
 
 # Initialize the scatterer with the flow cell
-scatterer_collection.plot()  # Visualize the particle population
+df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
+
+# df.plot(x='Diameter', bins='auto')
 
 # %%
 # Step 5: Define Detectors
 # ------------------------
-# Detectors measure light intensity. Parameters like responsitivity define the conversion of optical
+# Detectors measure light intensity. Parameters like responsivity define the conversion of optical
 # power to electronic signals, and saturation level represents the maximum signal they can handle.
 
 from FlowCyPy.detector import Detector
 from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy.amplifier import TransimpedanceAmplifier
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
@@ -123,20 +132,31 @@ signal_digitizer = SignalDigitizer(
 detector_0 = Detector(
     name='forward',
     phi_angle=0 * units.degree,                  # Forward scatter angle
-    numerical_aperture=1.2 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
-    resistance=50 * units.ohm,
-    temperature=300 * units.kelvin
+    numerical_aperture=0.3 * units.AU,
+    responsivity=1 * units.ampere / units.watt,
 )
 
 detector_1 = Detector(
     name='side',
     phi_angle=90 * units.degree,                 # Side scatter angle
-    numerical_aperture=1.2 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
-    resistance=50 * units.ohm,
-    temperature=300 * units.kelvin,
+    numerical_aperture=0.3 * units.AU,
+    responsivity=1 * units.ampere / units.watt,
 )
+
+detector_2 = Detector(
+    name='det_2',
+    phi_angle=30 * units.degree,                 # Side scatter angle
+    numerical_aperture=0.3 * units.AU,
+    responsivity=1 * units.ampere / units.watt,
+)
+
+amplifier = TransimpedanceAmplifier(
+    gain=10 * units.volt / units.ampere,
+    bandwidth=10 * units.megahertz,
+    voltage_noise_density=.1 * units.nanovolt / units.sqrt_hertz,
+    current_noise_density=.2 * units.femtoampere / units.sqrt_hertz
+)
+
 
 # %%
 # Step 6: Simulate Flow Cytometry Experiment
@@ -146,23 +166,31 @@ detector_1 = Detector(
 #
 # .. math::
 #     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
-from FlowCyPy import FlowCytometer
+from FlowCyPy import FlowCytometer, circuits
 
 cytometer = FlowCytometer(
+    source=source,
+    transimpedance_amplifier=amplifier,
     scatterer_collection=scatterer_collection,
     signal_digitizer=signal_digitizer,
-    detectors=[detector_0, detector_1],
+    detectors=[detector_0, detector_1, detector_2],
     flow_cell=flow_cell,
-    background_power=0.001 * units.milliwatt
+    background_power=0.000 * units.milliwatt
 )
 
+processing_steps = [
+    circuits.BaselineRestorator(window_size=100 * units.microsecond),
+    circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
+]
+
 # Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
-acquisition = cytometer.get_acquisition()
+cytometer.prepare_acquisition(run_time=0.5 * units.millisecond)
+acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
 _ = acquisition.scatterer.plot(
     x='side',
-    y='forward'
+    y='forward',
+    z='RefractiveIndex'
 )
 
 # %%
@@ -175,11 +203,11 @@ acquisition.analog.plot()
 # The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 # window size and threshold.
 triggered_acquisition = acquisition.run_triggering(
-    threshold=0.2 * units.millivolt,
+    threshold=2 * units.microvolt,
     trigger_detector_name='forward',
-    max_triggers=35,
-    pre_buffer=64,
-    post_buffer=64
+    max_triggers=-1,
+    pre_buffer=20,
+    post_buffer=20
 )
 
 triggered_acquisition.analog.plot()
@@ -188,10 +216,11 @@ triggered_acquisition.analog.plot()
 # %%
 # Getting and plotting the extracted peaks.
 from FlowCyPy import peak_locator
-# peak_locator = peak_locator.ScipyPeakLocator(height=10 * units.bit_bins, padding_value=-1)
-peak_algorithm = peak_locator.BasicPeakLocator()
+peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
+
 
 peaks = triggered_acquisition.detect_peaks(peak_algorithm)
+
 
 peaks.plot(feature='Height', x='side', y='forward')
 

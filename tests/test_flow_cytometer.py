@@ -2,14 +2,24 @@ import numpy as np
 import pytest
 import matplotlib.pyplot as plt
 from unittest.mock import patch
-from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, FlowCell
+from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, TransimpedanceAmplifier
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import distribution
-from FlowCyPy.population import Population
+from FlowCyPy.population import Sphere
 from FlowCyPy import units
 from FlowCyPy import peak_locator
+from FlowCyPy import circuits
 
 # ----------------- FIXTURES -----------------
+
+
+@pytest.fixture
+def amplifier():
+    return TransimpedanceAmplifier(
+        gain=100 * units.volt / units.ampere,
+        bandwidth=10 * units.megahertz
+    )
 
 @pytest.fixture
 def default_digitizer():
@@ -27,7 +37,7 @@ def detector_0():
         name='default',
         numerical_aperture=1 * units.AU,
         phi_angle=90 * units.degree,
-        responsitivity=1 * units.ampere / units.watt,
+        responsivity=1 * units.ampere / units.watt,
     )
 
 @pytest.fixture
@@ -37,23 +47,26 @@ def detector_1():
         name='default_bis',
         numerical_aperture=1 * units.AU,
         phi_angle=90 * units.degree,
-        responsitivity=1 * units.ampere / units.watt,
+        responsivity=1 * units.ampere / units.watt,
+    )
+
+@pytest.fixture
+def source():
+    return GaussianBeam(
+        numerical_aperture=0.1 * units.AU,
+        wavelength=1550 * units.nanometer,
+        optical_power=100e-3 * units.watt,
     )
 
 @pytest.fixture
 def flow_cell():
     """Fixture for creating a default flow cell."""
-    source = GaussianBeam(
-        numerical_aperture=1 * units.AU,
-        wavelength=1550 * units.nanometer,
-        optical_power=100e-3 * units.watt,
-    )
 
     return FlowCell(
-        source=source,
-        volume_flow=0.1 * units.microliter / units.second,
-        flow_area=(12 * units.micrometer) ** 2,
-        event_scheme='uniform-sequential'
+        sample_volume_flow=1 * units.microliter / units.second,
+        sheath_volume_flow=6 * units.microliter / units.second,
+        width=10 * units.micrometer,
+        height=6 * units.micrometer,
     )
 
 @pytest.fixture
@@ -75,7 +88,7 @@ def ri_distribution():
 @pytest.fixture
 def population(diameter_distribution, ri_distribution):
     """Fixture for creating a default population."""
-    return Population(
+    return Sphere(
         particle_count=110 * units.particle,
         diameter=diameter_distribution,
         refractive_index=ri_distribution,
@@ -90,24 +103,26 @@ def scatterer_collection(population):
     return scatterer
 
 @pytest.fixture
-def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, default_digitizer):
+def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, source, amplifier, default_digitizer):
     """Fixture for creating a default Flow Cytometer."""
     return FlowCytometer(
+        source=source,
+        transimpedance_amplifier=amplifier,
         signal_digitizer=default_digitizer,
         scatterer_collection=scatterer_collection,
         detectors=[detector_0, detector_1],
         flow_cell=flow_cell,
-        coupling_mechanism='mie'
     )
 
 # ----------------- UNIT TESTS -----------------
+
 
 def test_flow_cytometer_acquisition(flow_cytometer):
     """Test if the Flow Cytometer generates a non-zero acquisition signal."""
     flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
     acquisition = flow_cytometer.get_acquisition()
 
-    signal = acquisition.analog['Signal']
+    signal = acquisition.analog['default']
 
     assert not np.all(signal == 0 * units.volt), "Acquisition signal is all zeros."
     assert np.std(signal) > 0 * units.volt, "Acquisition signal variance is zero, indicating no noise added."
@@ -118,8 +133,8 @@ def test_flow_cytometer_multiple_detectors(flow_cytometer):
     flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
     acquisition = flow_cytometer.get_acquisition()
 
-    signal_0 = acquisition.analog['Signal']
-    signal_1 = acquisition.analog['Signal']
+    signal_0 = acquisition.analog['default']
+    signal_1 = acquisition.analog['default']
 
     assert not np.all(signal_0 == 0 * units.volt), "Detector 0 signal is all zeros."
     assert not np.all(signal_1 == 0 * units.volt), "Detector 1 signal is all zeros."
@@ -172,22 +187,19 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
         post_buffer=64
     )
 
-    # Apply filtering
-    triggered_acquisition.apply_filters(
-        lowpass_cutoff=1.5 * units.megahertz,
-        highpass_cutoff=0.01 * units.kilohertz
-    )
-
-    # Apply baseline restoration
-    triggered_acquisition.apply_baseline_restauration()
-
-    assert np.std(triggered_acquisition.analog['Signal']) > 0, "Filtered signal has zero variance."
+    assert np.std(triggered_acquisition.analog['default']) > 0, "Filtered signal has zero variance."
 
 
 def test_peak_detection(flow_cytometer):
     """Ensure peak detection works correctly on the triggered acquisition."""
     flow_cytometer.prepare_acquisition(run_time=2.0 * units.millisecond)
-    acquisition = flow_cytometer.get_acquisition()
+
+    processing_steps = [
+        circuits.BaselineRestorator(window_size=1000 * units.microsecond),
+        circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
+    ]
+
+    acquisition = flow_cytometer.get_acquisition(processing_steps=processing_steps)
 
     triggered_acquisition = acquisition.run_triggering(
         threshold=3.0 * units.millivolt,
@@ -197,7 +209,7 @@ def test_peak_detection(flow_cytometer):
         post_buffer=64
     )
 
-    algorithm = peak_locator.BasicPeakLocator()
+    algorithm = peak_locator.GlobalPeakLocator()
 
     peaks = triggered_acquisition.detect_peaks(algorithm)
 
@@ -209,16 +221,17 @@ def test_peak_plot(mock_show, flow_cytometer):
     """Ensure peak plots render correctly."""
     flow_cytometer.prepare_acquisition(run_time=2.0 * units.millisecond)
     acquisition = flow_cytometer.get_acquisition()
+    acquisition.analog.plot()
 
     triggered_acquisition = acquisition.run_triggering(
-        threshold=3.0 * units.millivolt,
+        threshold=0.1 * units.millivolt,
         trigger_detector_name='default',
         max_triggers=35,
         pre_buffer=64,
         post_buffer=64
     )
 
-    algorithm = peak_locator.BasicPeakLocator()
+    algorithm = peak_locator.GlobalPeakLocator()
 
     peaks = triggered_acquisition.detect_peaks(algorithm)
 
@@ -228,4 +241,4 @@ def test_peak_plot(mock_show, flow_cytometer):
 
 
 if __name__ == '__main__':
-    pytest.main(["-W error", __file__])
+    pytest.main(["-W error", "-s", __file__])

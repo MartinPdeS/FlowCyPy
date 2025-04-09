@@ -1,131 +1,161 @@
 import pytest
+import numpy as np
 from FlowCyPy import units
 from FlowCyPy.physical_constant import PhysicalConstant
+pi = PhysicalConstant.pi
+epsilon_0 = PhysicalConstant.epsilon_0
+c = PhysicalConstant.c
+
+# These imports assume your classes are defined in a module called "laser_beams"
 from FlowCyPy.source import GaussianBeam, AstigmaticGaussianBeam
 
+# GaussianBeam Tests
+def test_gaussian_beam_with_numerical_aperture():
+    # Parameters: 1 W laser, 500 nm wavelength, numerical_aperture=0.1
+    P = 1.0  * units.watt  # watt
+    wavelength = 500 * units.nanometer  # nanometers
+    NA = 0.1  * units.AU
+    beam = GaussianBeam(optical_power=P, wavelength=wavelength, numerical_aperture=NA)
 
-def test_GaussianBeam_initialization():
-    """
-    Test the initialization and calculations of the GaussianBeam class.
-    """
-    # Define test parameters for a basic Gaussian beam
-    optical_power = 1 * units.watt  # 1 W power
-    wavelength = 532e-9 * units.meter  # 532 nm (green laser)
-    numerical_aperture = 0.1 * units.AU  # Small numerical aperture
-    polarization = 0 * units.degree  # Linear polarization
+    # Compute waist and expected field amplitude:
+    waist = wavelength / (pi * NA)
 
-    # Initialize the GaussianBeam object
-    beam = GaussianBeam(
-        optical_power=optical_power,
-        wavelength=wavelength,
-        numerical_aperture=numerical_aperture,
-        polarization=polarization
-    )
+    # Gaussian on-axis amplitude: E(0) = sqrt(4P/(pi * w0^2 * epsilon0 * c))
+    expected_E = np.sqrt(4 * P / (pi * waist**2 * epsilon_0 * c)).to('volt/meter')
+    computed_E = beam.calculate_field_amplitude_at_focus().to('volt/meter')
 
-    # Assert waist calculation is correct
-    expected_waist = beam.wavelength / (PhysicalConstant.pi * beam.numerical_aperture)
-    assert beam.waist.units == expected_waist.units, "Waist should have correct units"
-    assert abs(beam.waist - expected_waist) < 1e-12 * units.meter, "Calculated waist does not match expected value"
+    np.testing.assert_allclose(computed_E, expected_E, rtol=1e-6)
 
-    # Assert electric field amplitude is calculated correctly
-    amplitude = beam.calculate_field_amplitude_at_focus()
-    assert amplitude.units == units.volt / units.meter, "Amplitude should be in volts per meter"
-    assert amplitude > 0, "Amplitude should be positive"
+def test_gaussian_beam_with_waist():
+    # Parameters: 1 W laser, 500 nm wavelength, waist provided instead of numerical_aperture.
+    P = 1.0  * units.watt
+    wavelength = 500  * units.nanometer
+    waist = wavelength / (pi * 0.1)  # equivalent to NA=0.1
+    beam = GaussianBeam(optical_power=P, wavelength=wavelength, numerical_aperture=None, waist=waist)
 
+    expected_E = np.sqrt(4 * P / (pi * waist**2 * epsilon_0 * c)).to('volt/meter')
+    computed_E = beam.calculate_field_amplitude_at_focus().to('volt/meter')
 
-def test_astigmatic_gaussian_beam_initialization():
-    """
-    Test the initialization and calculations of the AstigmaticGaussianBeam class.
-    """
-    # Define test parameters for an astigmatic beam
-    optical_power = 1 * units.watt  # 1 W power
-    wavelength = 532e-9 * units.meter  # 532 nm (green laser)
-    numerical_aperture_x = 0.15 * units.AU  # NA in x-direction
-    numerical_aperture_y = 0.1 * units.AU  # NA in y-direction
-    polarization = 0 * units.degree  # Linear polarization
+    np.testing.assert_allclose(computed_E, expected_E, rtol=1e-6)
 
-    # Initialize the AstigmaticGaussianBeam object
-    beam = AstigmaticGaussianBeam(
-        optical_power=optical_power,
-        wavelength=wavelength,
-        numerical_aperture_x=numerical_aperture_x,
-        numerical_aperture_y=numerical_aperture_y,
-        polarization=polarization
-    )
-
-    # Calculate expected waists
-    expected_waist_x = wavelength / (PhysicalConstant.pi * numerical_aperture_x)
-    expected_waist_y = wavelength / (PhysicalConstant.pi * numerical_aperture_y)
-
-    # Assert that the calculated waists match the expected values
-    assert beam.waist_x.units == expected_waist_x.units, "Waist_x should have correct units"
-    assert abs(beam.waist_x - expected_waist_x) < 1e-12 * units.meter, "Calculated waist_x does not match expected value"
-
-    assert beam.waist_y.units == expected_waist_y.units, "Waist_y should have correct units"
-
-    assert abs(beam.waist_y - expected_waist_y) < 1e-12 * units.meter, "Calculated waist_y does not match expected value"
-
-    # Assert electric field amplitude at focus is calculated correctly
-    amplitude = beam.calculate_field_amplitude_at_focus()
-
-    assert amplitude.units == units.volt / units.meter, "Amplitude should be in volts per meter"
-    assert amplitude > 0, "Amplitude should be positive"
-
-
-def test_validate_astygmatic_equal_gaussian():
-    optical_power = 1 * units.watt  # 1 W power
-    wavelength = 532e-9 * units.meter  # 532 nm (green laser)
-    numerical_aperture = 0.15 * units.AU  # NA in x-direction
-    polarization = 0 * units.degree  # Linear polarization
-
-    # Initialize the AstigmaticGaussianBeam object
-    beam_0 = AstigmaticGaussianBeam(
-        optical_power=optical_power,
-        wavelength=wavelength,
-        numerical_aperture_x=numerical_aperture,
-        numerical_aperture_y=numerical_aperture,
-        polarization=polarization
-    )
-
-    beam_1 = GaussianBeam(
-        optical_power=optical_power,
-        wavelength=wavelength,
-        numerical_aperture=numerical_aperture,
-        polarization=polarization
-    )
-
-    assert beam_0.waist_y == beam_0.waist_x == beam_1.waist, "Mismatch between two equivalent beam definitions"
-
-
-def test_invalid_units():
-    """
-    Test that invalid units raise appropriate validation errors.
-    """
-    optical_power = 1 * units.watt  # Valid power
-    wavelength = 532e-9 * units.meter  # Valid wavelength
-    numerical_aperture_y = 0.1 * units.AU  # Valid NA
-
-    # Attempt to create GaussianBeam with invalid wavelength unit
+def test_gaussian_beam_invalid_inputs():
     with pytest.raises(ValueError):
-        GaussianBeam(optical_power=optical_power, wavelength=532 * units.watt, numerical_aperture=0.1, polarization=0 * units.degree)
-
-    # Attempt to create AstigmaticGaussianBeam with invalid numerical aperture units
+        GaussianBeam(optical_power=1.0, wavelength=500e-9, numerical_aperture=None, waist=None)
     with pytest.raises(ValueError):
-        AstigmaticGaussianBeam(
-            optical_power=optical_power,
-            wavelength=wavelength,
-            numerical_aperture_x=-0.1 * units.AU,  # Invalid NA (negative)
-            numerical_aperture_y=numerical_aperture_y
-        )
+        GaussianBeam(optical_power=1.0, wavelength=500e-9, numerical_aperture=0.1, waist=500e-9/(pi*0.1))
 
-    # Attempt to create AstigmaticGaussianBeam with NA greater than 1
+# Additional tests for amplitude_at in GaussianBeam
+def test_gaussian_beam_amplitude_at_scalar():
+    # Create a Gaussian beam
+    P = 1.0  * units.watt
+    wavelength = 500 * units.nanometer
+    NA = 0.1 * units.AU
+    beam = GaussianBeam(optical_power=P, wavelength=wavelength, numerical_aperture=NA)
+    waist = wavelength / (pi * NA)
+    E0 = beam.calculate_field_amplitude_at_focus().to('volt/meter')
+
+    # At the center (0,0), amplitude should equal E0
+    amp_center = beam.amplitude_at(0 * units.meter, 0 * units.meter).to('volt/meter')
+    np.testing.assert_allclose(amp_center, E0, rtol=1e-6)
+
+    # At an offset, using the Gaussian decay: E(x,0) = E0 * exp(-x^2/waist^2)
+    y_val = 100 * units.nanometer
+    expected_amp = E0 * np.exp(- (y_val ** 2) / waist ** 2)
+    amp_offset = beam.amplitude_at(0 * units.meter, y_val).to('volt/meter')
+    np.testing.assert_allclose(amp_offset, expected_amp, rtol=1e-6)
+
+def test_gaussian_beam_amplitude_at_array():
+    # Test with vectorized inputs
+    P = 1.0  * units.watt
+    wavelength = 500 * units.nanometer
+    NA = 0.1 * units.AU
+    beam = GaussianBeam(optical_power=P, wavelength=wavelength, numerical_aperture=NA)
+    waist = wavelength / (pi * NA)
+    E0 = beam.calculate_field_amplitude_at_focus().to('volt/meter')
+
+    # Create arrays of x and y positions (in meters)
+    x = np.linspace(-1e-6, 1e-6, 50) * units.meter
+    y = np.linspace(-1e-6, 1e-6, 50) * units.meter
+    X, Y = np.meshgrid(x.magnitude, y.magnitude)  # assume units are stored in .magnitude
+    # Reapply units
+    X = X * units.meter
+    Y = Y * units.meter
+
+    # Compute expected amplitude (element-wise)
+    r2 = X**2 + Y**2
+    expected_amp = E0 * np.exp(-Y**2 / waist**2)
+    computed_amp = beam.amplitude_at(X, Y).to('volt/meter')
+    np.testing.assert_allclose(computed_amp.magnitude, expected_amp.magnitude, rtol=1e-6)
+
+# AstigmaticGaussianBeam Tests
+def test_astigmatic_beam_with_numerical_apertures():
+    P = 1.0  * units.watt
+    wavelength = 500 * units.nanometer
+    NAx = 0.1 * units.AU
+    NAy = 0.12 * units.AU
+    beam = AstigmaticGaussianBeam(optical_power=P, wavelength=wavelength, numerical_aperture_z=NAx, numerical_aperture_y=NAy)
+    waist_z = wavelength / (pi * NAx)
+    waist_y = wavelength / (pi * NAy)
+    expected_E = np.sqrt(4 * P / (pi * waist_z * waist_y * epsilon_0 * c)).to('volt/meter')
+    computed_E = beam.calculate_field_amplitude_at_focus().to('volt/meter')
+    np.testing.assert_allclose(computed_E, expected_E, rtol=1e-6)
+
+def test_astigmatic_beam_with_waists():
+    P = 1.0  * units.watt
+    wavelength = 500 * units.nanometer
+    waist_z = wavelength / (pi * 0.1)
+    waist_y = wavelength / (pi * 0.12)
+    beam = AstigmaticGaussianBeam(optical_power=P, wavelength=wavelength, numerical_aperture_z=None, waist_z=waist_z, numerical_aperture_y=None, waist_y=waist_y)
+    expected_E = np.sqrt(4 * P / (pi * waist_z * waist_y * epsilon_0 * c)).to('volt/meter')
+    computed_E = beam.calculate_field_amplitude_at_focus().to('volt/meter')
+    np.testing.assert_allclose(computed_E, expected_E, rtol=1e-6)
+
+def test_astigmatic_beam_invalid_inputs():
     with pytest.raises(ValueError):
-        AstigmaticGaussianBeam(
-            optical_power=optical_power,
-            wavelength=wavelength,
-            numerical_aperture_x=1.5,  # Invalid NA (>1)
-            numerical_aperture_y=numerical_aperture_y
-        )
+        AstigmaticGaussianBeam(optical_power=1.0, wavelength=500e-9, numerical_aperture_z=None, waist_z=None, numerical_aperture_y=0.12, waist_y=None)
+    with pytest.raises(ValueError):
+        AstigmaticGaussianBeam(optical_power=1.0, wavelength=500e-9, numerical_aperture_z=0.1, waist_z=None, numerical_aperture_y=0.12, waist_y=10)
+
+# Additional tests for amplitude_at in AstigmaticGaussianBeam
+def test_astigmatic_beam_amplitude_at_scalar():
+    P = 1.0  * units.watt
+    wavelength = 500 * units.nanometer
+    NAz = 0.1 * units.AU
+    NAy = 0.12 * units.AU
+    beam = AstigmaticGaussianBeam(optical_power=P, wavelength=wavelength, numerical_aperture_z=NAz, numerical_aperture_y=NAy)
+    waist_y = wavelength / (pi * NAy)
+    E0 = beam.calculate_field_amplitude_at_focus().to('volt/meter')
+
+    # At the center (0,0)
+    amp_center = beam.amplitude_at(0 * units.meter, 0 * units.meter).to('volt/meter')
+    np.testing.assert_allclose(amp_center, E0, rtol=1e-6)
+
+    # At an offset (x=100 nm, y=50 nm)
+    x_val = 100 * units.nanometer
+    y_val = 50 * units.nanometer
+    expected_amp = E0 * np.exp(- (y_val**2 / waist_y**2))
+    amp_offset = beam.amplitude_at(x_val, y_val).to('volt/meter')
+    np.testing.assert_allclose(amp_offset, expected_amp, rtol=1e-6)
+
+def test_astigmatic_beam_amplitude_at_array():
+    P = 1.0  * units.watt
+    wavelength = 500 * units.nanometer
+    NAz = 0.1 * units.AU
+    NAy = 0.12 * units.AU
+    beam = AstigmaticGaussianBeam(optical_power=P, wavelength=wavelength, numerical_aperture_z=NAz, numerical_aperture_y=NAy)
+
+    waist_y = wavelength / (pi * NAy)
+    E0 = beam.calculate_field_amplitude_at_focus().to('volt/meter')
+
+    x = np.linspace(-1e-6, 1e-6, 50) * units.meter
+    y = np.linspace(-1e-6, 1e-6, 50) * units.meter
+    X, Y = np.meshgrid(x.magnitude, y.magnitude)
+    X = X * units.meter
+    Y = Y * units.meter
+
+    expected_amp = E0 * np.exp(-(Y ** 2 / waist_y ** 2))
+    computed_amp = beam.amplitude_at(X, Y).to('volt/meter')
+    np.testing.assert_allclose(computed_amp.magnitude, expected_amp.magnitude, rtol=1e-6)
 
 
 if __name__ == "__main__":

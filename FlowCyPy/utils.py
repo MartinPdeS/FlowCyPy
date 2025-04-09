@@ -74,17 +74,6 @@ def generate_dummy_detector(time: np.ndarray, centers: List[float], heights: Lis
 
     return ProxyDetector(time=time, signal=signal)
 
-
-import numpy as np
-from typing import List
-from FlowCyPy.units import second, Quantity
-import pandas as pd
-import pint_pandas
-from FlowCyPy.peak_locator import BasePeakLocator
-from copy import copy
-import matplotlib.pyplot as plt
-from MPSPlots.styles import mps
-
 def plot_signal_and_peaks(signal_dataframe: pd.DataFrame, peaks_dataframe: pd.DataFrame) -> None:
     """
     Plots signal data with detected peaks for multiple detectors.

@@ -1,18 +1,12 @@
 from typing import List, Optional, Union
-from MPSPlots.styles import mps
 import pandas as pd
-import numpy as np
-import matplotlib.patches as mpatches
-import matplotlib.pyplot as plt
-import seaborn as sns
 from typing import Optional, List
 from pint_pandas import PintArray
-from matplotlib.colors import LinearSegmentedColormap
 from enum import Enum
 
-from FlowCyPy import units
 from FlowCyPy.units import Quantity, RIU, particle, liter
-from FlowCyPy.population import Population
+from FlowCyPy.population import BasePopulation
+from FlowCyPy.dataframe_subclass import ScattererDataFrame
 
 
 class CouplingModel(Enum):
@@ -28,11 +22,11 @@ class ScattererCollection():
     indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).
 
     """
-    def __init__(self, medium_refractive_index: Quantity = 1.0 * RIU, populations: List[Population] = None, coupling_model: Optional[CouplingModel] = CouplingModel.MIE):
+    def __init__(self, medium_refractive_index: Quantity = 1.0 * RIU, populations: List[BasePopulation] = None, coupling_model: Optional[CouplingModel] = CouplingModel.MIE):
         """
         Parameters
         ----------
-        populations : List[Population]
+        populations : List[BasePopulation]
             A list of Population instances that define different scatterer populations.
         coupling_model : Optional[CouplingModel], optional
             The type of coupling factor to use (CouplingModel.MIE, CouplingModel.RAYLEIGH, CouplingModel.UNIFORM). Default is CouplingModel.MIE.
@@ -49,7 +43,7 @@ class ScattererCollection():
 
         return [(p.particle_count.value / total_concentration).magnitude for p in self.populations]
 
-    def get_population_dataframe(self, total_sampling: Optional[Quantity], use_ratio: bool = True) -> pd.DataFrame:
+    def get_population_dataframe(self, total_sampling: int = 200, use_ratio: bool = True) -> pd.DataFrame:
         """
         Generate a DataFrame by sampling particles from populations.
 
@@ -69,7 +63,7 @@ class ScattererCollection():
         else:
             ratios = [1] * len(self.populations)
 
-        sampling_list = [int(ratio * total_sampling.magnitude) for ratio in ratios]
+        sampling_list = [int(ratio * total_sampling) for ratio in ratios]
 
         population_names = [p.name for p in self.populations]
 
@@ -86,9 +80,9 @@ class ScattererCollection():
 
         self.fill_dataframe_with_sampling(scatterer_dataframe=scatterer_dataframe)
 
-        return scatterer_dataframe
+        return ScattererDataFrame(scatterer_dataframe)
 
-    def add_population(self, *population: Population) -> 'ScattererCollection':
+    def add_population(self, *population: BasePopulation) -> 'ScattererCollection':
         """
         Adds a population to the ScattererCollection instance with the specified attributes.
 
@@ -209,74 +203,18 @@ class ScattererCollection():
         After filling, the DataFrame will be populated with diameter and refractive index data.
         """
         for population in self.populations:
-            # Check if population.name is in the dataframe's index
-            if population.name not in scatterer_dataframe.index:
-                continue  # Skip this iteration if population.name is not present
+            # Create a boolean mask for rows where the first index level equals population.name
+            mask = scatterer_dataframe.index.get_level_values(0) == population.name
+            if not mask.any():
+                continue
 
-            # Safely access the sub-dataframe and proceed
-            sub_dataframe = scatterer_dataframe.xs(population.name)
-            sampling = len(sub_dataframe) * units.particle
+            # Access the sub-dataframe using the mask
+            sub_dataframe = scatterer_dataframe.loc[mask]
+            sampling = len(sub_dataframe)
 
-            diameter, ri = population.generate_sampling(sampling)
+            # Generate sampling data for this population
+            sampling_data = population.generate_sampling(sampling)
 
-            scatterer_dataframe.loc[population.name, 'Diameter'] = PintArray(diameter, dtype=diameter.units)
-            scatterer_dataframe.loc[population.name, 'RefractiveIndex'] = PintArray(ri, dtype=ri.units)
-
-    def plot(self, sampling: int = 1000, show: bool = True, use_ratio: bool = False):
-        """
-        Visualizes the joint and marginal distributions of diameter and refractive index
-        for all populations in the scatterer collection using sampled data and seaborn's jointplot.
-
-        This method generates a DataFrame with samples drawn from each population (distributed
-        according to their relative particle counts), then creates a KDE joint plot with marginal
-        distributions. Each population is distinguished by color.
-
-        Parameters
-        ----------
-        sampling : int, optional
-            Total number of samples to draw across all populations. The samples are distributed
-            among populations based on their concentration ratios. Default is 1000.
-        show : bool, optional
-            If True, displays the plot immediately.
-
-        Returns
-        -------
-        g : seaborn.axisgrid.JointGrid
-            The JointGrid object containing the plot.
-        """
-        # Convert the total sample count into a Quantity.
-        total_sampling = sampling * particle  # Assumes 'particle' is a valid unit from PyMieSim.units
-
-        # Generate the DataFrame with sampling.
-        df = self.get_population_dataframe(total_sampling, use_ratio=use_ratio)
-
-        # Reset the MultiIndex to obtain a column for population names.
-        df_reset = df.reset_index()
-
-        # Create the joint plot using seaborn's jointplot.
-        # Note: As of seaborn 0.11+, jointplot supports the hue parameter.
-        with plt.style.context(mps):
-            g = sns.jointplot(
-                data=df_reset,
-                y='Diameter',
-                x='RefractiveIndex',
-                hue='Population',
-                kind='kde',
-                fill=True,
-                height=8,
-            )
-
-        # Set axis labels (using the units from the first population; assumes consistency across populations).
-        g.set_axis_labels(
-            f"Diameter [{self.populations[0].diameter._units}]",
-            f"Refractive Index [{self.populations[0].refractive_index._units}]"
-        )
-
-        # Set a title for the plot.
-        plt.suptitle("Scatterer Collection", fontsize=16, y=1.02)
-        plt.tight_layout()
-
-        if show:
-            plt.show()
-
-        return g
+            for key, value in sampling_data.items():
+                scatterer_dataframe.loc[mask, key] = PintArray(value, dtype=value.units)
+                scatterer_dataframe.loc[mask, 'type'] = str(population.__class__.__name__)

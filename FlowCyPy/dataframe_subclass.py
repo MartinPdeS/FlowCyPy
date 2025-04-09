@@ -1,5 +1,6 @@
 from typing import Optional, Union, List, Tuple, Any
 import pandas as pd
+import numpy
 import matplotlib.pyplot as plt
 import seaborn as sns
 import logging
@@ -25,7 +26,11 @@ class ScattererDataFrame(pd.DataFrame):
         """
         if 'z' in kwargs:
             return self.plot_3d(**kwargs)
-        return self.plot_2d(**kwargs)
+
+        if 'y' in kwargs:
+            return self.plot_2d(**kwargs)
+
+        return self.hist(**kwargs)
 
     def get_sub_dataframe(self, *columns: str) -> Tuple[pd.DataFrame, List[Any]]:
         """
@@ -85,7 +90,7 @@ class ScattererDataFrame(pd.DataFrame):
         if len(self) == 1:
             return
 
-        df, (x_unit, y_unit) = self.get_sub_dataframe(x, y)
+        df, (x_unit, y_unit) = self.get_sub_dataframe(y, x)
 
         with plt.style.context(mps):
             grid = sns.jointplot(
@@ -219,6 +224,69 @@ class ScattererDataFrame(pd.DataFrame):
             avg_delta_time,
         ]
 
+    def hist(
+        self,
+        x: str = 'Diameter',
+        kde: bool = False,
+        bins: Optional[int] = 'auto',
+        color: Optional[Union[str, dict]] = None,
+        clip_data: Optional[Union[str, units.Quantity]] = None,
+        show: bool = True
+    ) -> plt.Figure:
+        """
+        Plot a histogram distribution for a given column using Seaborn, with an option to remove extreme values.
+
+        Parameters
+        ----------
+        x : str, optional
+            The column name to plot (default: 'Diameter').
+        kde : bool, optional
+            Whether to overlay a KDE curve (default: False).
+        bins : Optional[int], optional
+            Number of bins for the histogram (default: 'auto', letting Seaborn decide).
+        color : Optional[Union[str, dict]], optional
+            Color specification for the plot (default: None).
+        clip_data : Optional[Union[str, units.Quantity]], optional
+            If provided, removes data above a threshold. If a string ending with '%' (e.g., "20%") is given,
+            the function removes values above the corresponding quantile (e.g., the top 20% of values).
+            If a pint.Quantity is given, it removes values above that absolute value.
+
+        Returns
+        -------
+        plt.Figure
+            The histogram figure.
+        """
+        if len(self) == 1:
+            return
+
+        df, [unit] = self.get_sub_dataframe(x)
+
+        with plt.style.context(mps):
+            figure, ax = plt.subplots(figsize=(7, 5))
+
+        df = df.reset_index('Population').pint.dequantify().droplevel('unit', axis=1)
+
+        # Remove data above the clipping threshold if clip_data is provided.
+        if clip_data is not None:
+            if isinstance(clip_data, str) and clip_data.endswith('%'):
+                # For a percentage clip, compute the quantile. E.g., "20%" removes the top 20% values.
+                percent = float(clip_data.rstrip('%'))
+                clip_value = df[x].quantile(1 - percent / 100)
+            else:
+                # Assume clip_data is a pint.Quantity; convert to the same unit.
+                clip_value = clip_data.to(unit).magnitude
+            df = df[df[x] <= clip_value]
+
+        sns.histplot(data=df, x=df[x], kde=kde, bins=bins, color=color, hue=df['Population'])
+        ax.set_xlabel(f"{x} [{unit}]")
+        ax.set_title(f"Distribution of {x}")
+        plt.tight_layout()
+
+        if show:
+            plt.show()
+
+        return figure
+
 
 class ClassifierDataFrame(pd.DataFrame):
     """
@@ -308,14 +376,93 @@ class PeakDataFrame(pd.DataFrame):
         unit_list = []
 
         for col_name, col_data in df.items():
-            unit = col_data.max().to_compact().units
-            if unit.dimensionality == units.bit_bins.dimensionality:
-                unit = units.bit_bins
-            # df.loc[:, col_name] = col_data.pint.to(unit)
-            df[col_name] = col_data.pint.to(unit)
-            unit_list.append(unit)
+            if not hasattr(col_data, 'pint'):
+                df[col_name] = col_data
+                unit_list.append('None')
+            else:
+                unit = col_data.max().to_compact().units
+                if unit.dimensionality == units.bit_bins.dimensionality:
+                    unit = units.bit_bins
+                # df.loc[:, col_name] = col_data.pint.to(unit)
+                df[col_name] = col_data.pint.to(unit)
+                unit_list.append(unit)
 
         return df, unit_list
+
+    def hist(
+        self,
+        feature: str,
+        figure_size: tuple = (10, 6),
+        bins: Optional[int] = 'auto',
+        color: Optional[Union[str, dict]] = None,
+        save_filename: str = None,
+        show: bool = True,
+        clip_data: Optional[Union[str, units.Quantity]] = None
+    ) -> plt.Figure:
+        """
+        Plot a histogram distribution for a given column using Seaborn, with an option to remove extreme values.
+
+        Parameters
+        ----------
+        feature : str, optional
+            The column name to plot (default: 'Diameter').
+        figure_size : tuple, optional
+            Size of the figure in inches (default: (10, 6)).
+        bins : Optional[int], optional
+            Number of bins for the histogram (default: 'auto', letting Seaborn decide).
+        color : Optional[Union[str, dict]], optional
+            Color specification for the plot (default: None).
+        save_filename : str, optional
+            If provided, the figure is saved to this filename.
+        show : bool, optional
+            If True, displays the plot immediately (default: True).
+        clip_data : Optional[Union[str, units.Quantity]], optional
+            If provided, removes data above a threshold. If a string ending with '%' (e.g., "20%") is given,
+            values above the corresponding quantile (e.g. the top 20% of values) are excluded.
+            If a pint.Quantity is given, values above that absolute value are removed.
+
+        Returns
+        -------
+        plt.Figure
+            The histogram figure.
+        """
+        if len(self) == 1:
+            return
+
+        detector_names = self.index.get_level_values('Detector').unique()
+
+        with plt.style.context(mps):
+            figure, axes = plt.subplots(
+                ncols=1, nrows=len(detector_names), figsize=figure_size, sharex=True
+            )
+
+        for ax, detector_name in zip(axes, detector_names):
+            data = self.loc[detector_name, [feature]].sort_index()
+
+            # Remove extreme values if clip_data is provided.
+            if clip_data is not None:
+                if isinstance(clip_data, str) and clip_data.endswith('%'):
+                    # For a percentage, compute the quantile.
+                    percent = float(clip_data.rstrip('%'))
+                    clip_value = data[feature].quantile(1 - percent / 100)
+                else:
+                    # Assume clip_data is a pint.Quantity. Conversion can be done here if needed.
+                    clip_value = clip_data.magnitude
+                data = data[data[feature] <= clip_value]
+
+            counts, bin_edges = numpy.histogram(data[feature], bins=bins)
+            bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+
+            ax.bar(bin_centers, counts, width=bin_edges[1] - bin_edges[0],
+                color=color, edgecolor='black')
+            ax.set_ylabel(f"{detector_name}  [count]")
+
+        if save_filename:
+            figure.savefig(fname=save_filename)
+        if show:
+            plt.show()
+
+        return figure
 
     @helper.plot_sns
     def plot_2d(self, x: str, y: str, feature: str = 'Height', bandwidth_adjust: float = 0.8) -> plt.Figure:
@@ -338,8 +485,7 @@ class PeakDataFrame(pd.DataFrame):
         plt.Figure
             The joint KDE plot figure.
         """
-        df, feature_units = self.get_sub_dataframe(columns=[feature], rows=[x, y])
-        feature_unit = feature_units[0]
+        df = self.loc[[x, y], [feature]].sort_index()
 
         with plt.style.context(mps):
             grid = sns.jointplot(
@@ -358,7 +504,7 @@ class PeakDataFrame(pd.DataFrame):
             color='C1',
             alpha=0.6
         )
-        grid.set_axis_labels(f"{x}: {feature} [{feature_unit}]", f"{y}: {feature} [{feature_unit}]", fontsize=12)
+        grid.set_axis_labels(f"{x}: {feature}", f"{y}: {feature}", fontsize=12)
         return grid
 
     @helper.plot_3d
@@ -419,7 +565,7 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
     @property
     def detector_names(self) -> List[str]:
         """Return a list of unique detector names."""
-        return self.index.get_level_values('Detector').unique().to_list()
+        return [col for col in self.columns if col != 'Time']
 
     def plot(self, show: bool = True, filter_population: Union[str, List[str]] = None, **kwargs) -> None:
         """
@@ -435,14 +581,14 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
         n_plots = len(self.detector_names) + 1  # One extra plot for events
         figure_size = kwargs.get("figure_size", (10, 6))
         time_units = self["Time"].max().to_compact().units
-        signal_units = self["Signal"].max().to_compact().units
+
+        signal_units = self[self.detector_names].max(axis=None).to_compact().units
 
         with plt.style.context(mps):
             fig, axes_array = plt.subplots(
                 nrows=n_plots,
                 figsize=figure_size,
                 sharex=True,
-                sharey=True,
                 gridspec_kw={'height_ratios': [1] * (n_plots - 1) + [0.5]}
             )
 
@@ -466,6 +612,92 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
 
         if kwargs.get("save_filename"):
             fig.savefig(fname=kwargs["save_filename"])
+        if show:
+            plt.show()
+
+    def hist(
+        self,
+        show: bool = True,
+        figure_size: tuple = (10, 6),
+        save_filename: str = None,
+        bins: str = 'auto',
+        clip_data: Optional[Union[str, units.Quantity]] = None
+    ) -> None:
+        """
+        Plot histograms of acquisition data for each detector, with optional removal of extreme values.
+
+        This method generates a histogram for each detector using seaborn's histplot. It optionally removes
+        the signal data above a threshold specified by `clip_data` (expressed as a pint.Quantity or a string
+        like "20%", which removes the top 20% of values).
+
+        Parameters
+        ----------
+        show : bool, optional
+            If True, displays the plot immediately (default: True).
+        figure_size : tuple, optional
+            Size of the figure in inches (default: (10, 6)).
+        save_filename : str, optional
+            If provided, the figure is saved to this filename.
+        kde : bool, optional
+            If True, overlays a KDE on the histogram (default: False).
+        bins : str or int, optional
+            Binning strategy passed to seaborn.histplot (default: 'auto').
+        clip_data : Optional[Union[str, units.Quantity]], optional
+            If provided, removes data above a threshold. If a string ending with '%' (e.g., "20%") is given,
+            values above the corresponding quantile (e.g., top 20% are removed) are excluded.
+            If a pint.Quantity is given, values above that absolute value are removed.
+
+        Returns
+        -------
+        None
+        """
+        n_plots = len(self.detector_names)
+        signal_units = self["Signal"].max().to_compact().units
+
+        with plt.style.context(mps):
+            fig, axes_array = plt.subplots(
+                nrows=n_plots,
+                figsize=figure_size,
+                sharex=True,
+            )
+
+            axes = {name: ax for name, ax in zip(self.detector_names + ['scatterer'], axes_array)}
+
+            _signal_units = signal_units or self["Signal"].max().to_compact().units
+
+            for detector_name, group in self.groupby('Detector'):
+                ax = axes[detector_name]
+                ax.set_ylabel(detector_name)
+
+                # Convert signal to consistent units and get the magnitude.
+                if _signal_units.dimensionality == units.bit_bins.dimensionality:
+                    signal = group["Signal"].pint.magnitude
+                else:
+                    signal = group["Signal"].pint.to(_signal_units).pint.magnitude
+
+                # Remove data above the clip threshold if clip_data is provided.
+                if clip_data is not None:
+                    if isinstance(clip_data, str) and clip_data.endswith('%'):
+                        # For a percentage clip, compute the threshold quantile.
+                        percent = float(clip_data.rstrip('%'))
+                        clip_value = numpy.percentile(signal, 100 - percent)
+                    else:
+                        clip_value = clip_data.to(_signal_units).magnitude
+                    # Remove values above clip_value instead of clipping them.
+                    signal = signal[signal <= clip_value]
+
+                counts, bin_edges = numpy.histogram(signal, bins=bins)
+
+                # Compute bin centers for plotting.
+                bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+
+                # Plot the histogram using a bar chart.
+                ax.bar(bin_centers, counts, width=bin_edges[1] - bin_edges[0], edgecolor='black')
+
+        axes[detector_name].set_xlabel(f'Signal [{_signal_units}]')
+        if save_filename:
+            fig.savefig(fname=save_filename)
+
         if show:
             plt.show()
 
@@ -522,14 +754,7 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
 
     def log(self, table_format: str = "grid", include_totals: bool = True) -> None:
         """
-        Log acquisition statistics.
-
-        Parameters
-        ----------
-        table_format : str, optional
-            Table display format (default: 'grid').
-        include_totals : bool, optional
-            Whether to include totals in the log (default: True).
+        Log statistics for analog acquisition.
         """
         logging.info(f"\n=== {self.__class__.__name__} Statistics ===")
         if self.empty:
@@ -537,17 +762,12 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
             return
 
         table_data = [
-            self._get_detector_stats(detector_name, self.xs(detector_name, level="Detector"))
-            for detector_name in self.index.get_level_values("Detector").unique()
+            self._get_detector_stats(detector_name, self[detector_name])
+            for detector_name in self.detector_names
         ]
         headers = self._get_log_headers()
         formatted_table = tabulate(table_data, headers=headers, tablefmt=table_format, floatfmt=".3f")
         logging.info("\n" + formatted_table)
-
-        if include_totals:
-            total_points = sum(stat[1] for stat in table_data)
-            logging.info(f"\nTotal number of events across all detectors: {total_points}")
-
     def _get_log_headers(self) -> List[str]:
         """Return headers for the log table; can be overridden in subclasses."""
         return [
@@ -581,15 +801,15 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
         if group.empty:
             return [detector_name, 0, None, None, None, None, None, None, None]
 
-        num_points = len(group["Time"])
-        first_time = group["Time"].min()
-        last_time = group["Time"].max()
-        time_diffs = group["Time"].diff().dropna()
+        num_points = len(self["Time"])
+        first_time = self["Time"].min()
+        last_time = self["Time"].max()
+        time_diffs = self["Time"].diff().dropna()
         mean_delta = time_diffs.mean() if not time_diffs.empty else None
-        max_signal = group["Signal"].max()
-        min_signal = group["Signal"].min()
-        mean_signal = group["Signal"].mean()
-        std_signal = group["Signal"].std()
+        max_signal = self[detector_name].max()
+        min_signal = self[detector_name].min()
+        mean_signal = self[detector_name].mean()
+        std_signal = self[detector_name].std()
 
         return [
             detector_name,
@@ -615,48 +835,27 @@ class AnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
         self.attrs.update(attributes)
 
 
-    def _plot_detector_data(
-        self,
-        axes: dict,
-        time_units: units.Quantity,
-        signal_units: Optional[units.Quantity] = None
-    ) -> None:
+    def _plot_detector_data(self, axes: dict, time_units: units.Quantity, signal_units: Optional[units.Quantity] = None) -> None:
         """
         Plot analog signal data for each detector.
         """
-        for detector_name, group in self.groupby('Detector'):
+        # for detector_name, group in self.groupby('Detector'):
+
+        for detector_name in self.detector_names:
             ax = axes[detector_name]
             ax.set_ylabel(detector_name)
-            time_data = group["Time"].pint.to(time_units)
-            _signal_units = signal_units or group["Signal"].max().to_compact().units
-            signal = group["Signal"].pint.to(_signal_units)
-            ax.plot(time_data, signal, label='Analog Signal', linestyle='-')
-            ax.set_ylim(self.attrs['saturation_levels'][detector_name])
+            time_data = self["Time"].pint.to(time_units)
+            _signal_units = signal_units or self[detector_name].max().to_compact().units
+            signal = self[detector_name].pint.to(_signal_units)
+            ax.plot(time_data, signal, label='Analog Signal', linestyle='-', color='black')
+
             ax.set_ylabel(f'{detector_name} [{_signal_units}]', labelpad=20)
-
-    def log(self, table_format: str = "grid", include_totals: bool = True) -> None:
-        """
-        Log statistics for analog acquisition.
-        """
-        logging.info(f"\n=== {self.__class__.__name__} Statistics ===")
-        if self.empty:
-            logging.warning("No data available for detectors.")
-            return
-
-        table_data = [
-            self._get_detector_stats(detector_name, self.xs(detector_name, level="Detector"))
-            for detector_name in self.index.get_level_values("Detector").unique()
-        ]
-        headers = self._get_log_headers()
-        formatted_table = tabulate(table_data, headers=headers, tablefmt=table_format, floatfmt=".3f")
-        logging.info("\n" + formatted_table)
 
 
 class DigitizedAcquisitionDataFrame(BaseAcquisitionDataFrame):
     """
     DataFrame subclass for digitized acquisition data.
     """
-
     def _plot_detector_data(
         self,
         axes: dict,
@@ -666,20 +865,30 @@ class DigitizedAcquisitionDataFrame(BaseAcquisitionDataFrame):
         """
         Plot digitized signal data for each detector.
         """
-        for detector_name, group in self.groupby('Detector'):
+        for detector_name in self.detector_names:
             ax = axes[detector_name]
-            ax.set_ylabel(detector_name)
-            time_data = group["Time"].pint.to(time_units)
-            _signal_units = signal_units or group["Signal"].max().to_compact().units
-            ax.step(time_data, group["Signal"], where='mid', label='Digitized Signal')
-            ax.set_ylim(self.attrs['saturation_levels'][detector_name])
+            time_data = self["Time"].pint.to(time_units)
+            _signal_units = signal_units or self[detector_name].max().to_compact().units
+
+            ax.step(time_data, self[detector_name], where='mid', color='black', label='Digitized Signal')
+
             ax.set_ylabel(f'{detector_name} [{_signal_units}]', labelpad=20)
+
 
 
 class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
     """
     DataFrame subclass for triggered analog acquisition data.
     """
+
+    @property
+    def detector_names(self) -> List[str]:
+        """Return a list of unique detector names."""
+        return [col for col in self.columns if col not in ['Time', 'SegmentID']]
+
+    @property
+    def n_segment(self) -> int:
+        return len(self.index.get_level_values('SegmentID').unique())
 
     def _plot_detector_data(
         self,
@@ -688,29 +897,39 @@ class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
         signal_units: Optional[units.Quantity] = None
     ) -> None:
         """
-        Plot triggered analog signal data for each detector.
+        Plot triggered analog signal data for each detector and highlight each SegmentID region
+        with a distinct color.
         """
-        for (detector_name, _), group in self.groupby(['Detector', 'SegmentID']):
-            ax = axes[detector_name]
-            ax.set_ylabel(detector_name)
-            time_data = group["Time"].pint.to(time_units)
-            _signal_units = signal_units or group["Signal"].max().to_compact().units
-            analog_signal = group["Signal"].pint.to(_signal_units)
-            ax.plot(time_data, analog_signal, linestyle='-')
-            ax.set_ylim(self.attrs['saturation_levels'][detector_name])
-            ax.set_ylabel(f'{detector_name} [{_signal_units}]', labelpad=20)
+        signal_units = signal_units or self[self.detector_names].max().to_compact().units
 
-            if detector_name == self.attrs['threshold']['detector']:
-                handles, labels = ax.get_legend_handles_labels()
-                if 'Threshold' not in labels:
-                    ax.axhline(
-                        y=self.attrs['threshold']['value'].to(_signal_units),
-                        label='Threshold',
-                        linestyle='--',
-                        color='black',
-                        linewidth=1
-                    )
-                ax.legend(loc='upper right')
+        for detector_name in self.detector_names:
+            ax = axes[detector_name]
+            ax.set_ylabel(f"{detector_name} [{signal_units}]")
+
+            for segment_id, group in self.groupby('SegmentID'):
+                time_series = group["Time"].pint.to(time_units)
+                signal = group[detector_name].pint.to(signal_units)
+                start_time = time_series.min()
+                end_time = time_series.max()
+
+                color = plt.cm.tab10(int(segment_id) % 10)
+
+                ax.axvspan(start_time, end_time, facecolor=color, alpha=0.3)
+
+                ax.plot(time_series, signal, color='black', linestyle='-')
+
+                # Add threshold line and legend for the detector, if applicable.
+                if detector_name == self.attrs['threshold']['detector']:
+                    _, labels = ax.get_legend_handles_labels()
+                    if 'Threshold' not in labels:
+                        ax.axhline(
+                            y=self.attrs['threshold']['value'].to(signal_units),
+                            label='Threshold',
+                            linestyle='--',
+                            color='black',
+                            linewidth=1
+                        )
+                    ax.legend(loc='upper right')
 
     def _get_log_headers(self) -> List[str]:
         """Return headers for triggered analog acquisition logs."""
@@ -729,10 +948,10 @@ class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
         if group.empty:
             return [detector_name, 0, None, None, None]
 
-        num_acquisition = len(group["Time"])
-        first_event_time = group["Time"].min()
-        last_event_time = group["Time"].max()
-        time_diffs = group["Time"].diff().dropna()
+        num_acquisition = len(self["Time"])
+        first_event_time = self["Time"].min()
+        last_event_time = self["Time"].max()
+        time_diffs = self["Time"].diff().dropna()
         time_between_events = time_diffs.mean() if not time_diffs.empty else None
 
         return [
@@ -748,6 +967,10 @@ class TriggeredDigitalAcquisitionDataFrame(BaseAcquisitionDataFrame):
     """
     DataFrame subclass for triggered digital acquisition data.
     """
+
+    @property
+    def n_segment(self) -> int:
+        return len(self.index.get_level_values('SegmentID').unique())
 
     def _plot_detector_data(
         self,

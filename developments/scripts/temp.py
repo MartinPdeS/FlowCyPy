@@ -1,256 +1,92 @@
-"""
-Workflow
-========
-
-This tutorial demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library.
-The simulation involves configuring a flow setup, defining a single population of particles, and
-analyzing scattering signals from two detectors to produce a 2D density plot of scattering intensities.
-
-Overview:
----------
-1. Configure the flow cell and particle population.
-2. Define the laser source and detector parameters.
-3. Simulate the flow cytometry experiment.
-4. Analyze the generated signals and visualize results.
-
-"""
-
-# %%
-# Step 0: Import Necessary Libraries
-# -----------------------------------
-# Here, we import the necessary libraries and units for the simulation. The units module helps us
-# define physical quantities like meters, seconds, and watts in a concise and consistent manner.
-
 import numpy as np
+import matplotlib.pyplot as plt
+
 from FlowCyPy import units
-import PyMieSim
-PyMieSim.debug_mode = False
+from FlowCyPy.flow_cell import CircularFlowCell, RectangularFlowCell, SquareFlowCell
+from FlowCyPy.population import BasePopulation
 
-# %%
-# Step 1: Configure Noise Settings
-# ---------------------------------
-# Noise settings are configured to simulate real-world imperfections. In this example, we include noise
-# globally but exclude specific types, such as shot noise and thermal noise.
+# Create example FlowCell instances
+volume_flow = 0.3 * units.microliter / units.second
 
-from FlowCyPy import NoiseSetting
-
-NoiseSetting.include_noises = True
-NoiseSetting.include_shot_noise = False
-NoiseSetting.include_thermal_noise = False
-NoiseSetting.include_dark_current_noise = False
-
-np.random.seed(3)  # Ensure reproducibility
-
-
-# %%
-# Step 2: Configure the Laser Source
-# ----------------------------------
-# The laser source generates light that interacts with the particles. Its parameters, like numerical
-# aperture and wavelength, affect how light scatters, governed by Mie theory.
-
-from FlowCyPy import GaussianBeam
-
-source = GaussianBeam(
-    numerical_aperture=0.3 * units.AU,           # Numerical aperture
-    wavelength=455 * units.nanometer,           # Wavelength
-    optical_power=20000 * units.milliwatt          # Optical power
+# CircularFlowCell instance
+circular_cell = CircularFlowCell(
+    volume_flow=volume_flow,
+    radius=10 * units.micrometer
 )
 
-
-# %%
-# Step 3: Set Up the Flow Cell
-# ----------------------------
-# The flow cell models the movement of particles in the cytometer. For example, the volume of fluid
-# passing through the cross-sectional area is calculated as:
-#
-# .. math::
-#     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
-
-from FlowCyPy import FlowCell
-
-flow_cell = FlowCell(
-    source=source,
-    volume_flow=0.3 * units.microliter / units.second,  # Flow volume
-    flow_area=(10 * units.micrometer) ** 2,       # Cross-sectional area
+# RectangularFlowCell instance with width 20 μm and height 10 μm.
+rectangular_cell = RectangularFlowCell(
+    volume_flow=volume_flow,
+    width=20 * units.micrometer,
+    height=10 * units.micrometer
 )
 
-
-# %%
-# Step 4: Define ScattererCollection and Population
-# -------------------------------------------------
-# The scatterer represents particles in the flow. The concentration of particles in the flow cell is
-# given by:
-#
-# .. math::
-#     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
-
-from FlowCyPy import ScattererCollection
-from FlowCyPy.population import Exosome, Population, distribution
-
-scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
-
-population_0 = Population(
-    name='Pop 0',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
-    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
-)
-population_1 = Population(
-    name='Pop 1',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=100 * units.nanometer, spread=30),
-    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
+# SquareFlowCell instance
+square_cell = SquareFlowCell(
+    volume_flow=volume_flow,
+    side=3 * units.micrometer
 )
 
-population_2 = Population(
-    name='Pop 2',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=50 * units.nanometer, spread=30),
-    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
-)
+# Create a figure with subplots for velocity profiles
+fig, axs = plt.subplots(1, 3, figsize=(18, 5))
 
-# Add an Exosome population
-scatterer_collection.add_population(population_0, population_1, population_2)
+# Plot velocity profile for CircularFlowCell
+r, velocities_circ = circular_cell.get_velocity_profile(num_points=100)
+axs[0].plot(r, velocities_circ, color='blue')
+axs[0].set_title('Circular Flow Cell Velocity Profile')
+axs[0].set_xlabel(f'Radial Position [{r.units}]')
+axs[0].set_ylabel(f'Velocity [{velocities_circ.units}]')
+axs[0].grid(True)
 
-scatterer_collection.dilute(factor=4)
+# Plot velocity profile for RectangularFlowCell
+X_rect, Y_rect, velocities_rect = rectangular_cell.get_velocity_profile(num_points=50)
+c1 = axs[1].contourf(X_rect, Y_rect, velocities_rect, cmap='viridis')
+axs[1].set_title('Rectangular Flow Cell Velocity Profile')
+axs[1].set_xlabel('x (m)')
+axs[1].set_ylabel('y (m)')
+fig.colorbar(c1, ax=axs[1])
 
-# Initialize the scatterer with the flow cell
-# scatterer_collection.plot()  # Visualize the particle population
+# Plot velocity profile for SquareFlowCell
+X_sq, Y_sq, velocities_sq = square_cell.get_velocity_profile(num_points=50)
+c2 = axs[2].contourf(X_sq, Y_sq, velocities_sq, cmap='plasma')
+axs[2].set_title('Square Flow Cell Velocity Profile')
+axs[2].set_xlabel('x (m)')
+axs[2].set_ylabel('y (m)')
+fig.colorbar(c2, ax=axs[2])
 
-# %%
-# Step 5: Define Detectors
-# ------------------------
-# Detectors measure light intensity. Parameters like responsitivity define the conversion of optical
-# power to electronic signals, and saturation level represents the maximum signal they can handle.
-
-from FlowCyPy.detector import Detector
-from FlowCyPy.signal_digitizer import SignalDigitizer
-
-signal_digitizer = SignalDigitizer(
-    bit_depth='14bit',
-    saturation_levels='auto',
-    sampling_rate=60 * units.megahertz,
-)
-
-detector_0 = Detector(
-    name='forward',
-    phi_angle=0 * units.degree,                  # Forward scatter angle
-    numerical_aperture=0.4 * units.AU,
-    cache_numerical_aperture=0.00 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
-    resistance=1500 * units.ohm,
-    temperature=300 * units.kelvin
-)
-
-detector_1 = Detector(
-    name='side',
-    phi_angle=90 * units.degree,                 # Side scatter angle
-    numerical_aperture=0.4 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
-    resistance=50 * units.ohm,
-    temperature=300 * units.kelvin,
-)
-
-detector_2 = Detector(
-    name='det_2',
-    phi_angle=90 * units.degree,                 # Side scatter angle
-    numerical_aperture=0.1 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
-    resistance=50 * units.ohm,
-    temperature=300 * units.kelvin,
-)
-
-# %%
-# Step 6: Simulate Flow Cytometry Experiment
-# ------------------------------------------
-# The FlowCytometer combines all components to simulate scattering. The interaction between light
-# and particles follows Mie theory:
-#
-# .. math::
-#     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
-from FlowCyPy import FlowCytometer
-
-cytometer = FlowCytometer(
-    scatterer_collection=scatterer_collection,
-    signal_digitizer=signal_digitizer,
-    detectors=[detector_0, detector_1, detector_2],
-    flow_cell=flow_cell,
-    background_power=0.001 * units.milliwatt
-)
-
-# Run the flow cytometry simulation
-acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
-
-# acquisition.scatterer.plot(x='forward', y='side', z='det_2')
-# acquisition.scatterer.plot(x='forward', y='side')
-acquisition.scatterer.plot(x='forward', y='side', z='Diameter')
-
-# dsa
-
-# _ = acquisition.scatterer.plot_3d(
-#     x='side',
-#     y='forward',
-#     z='det_2'
-# )
-
-# _ = acquisition.scatterer.plot(
-#     x='side',
-#     y='forward',
-#     # z='det_2'
-# )
-
-# %%
-# Visualize the scatter signals from both detectors
-acquisition.analog.plot()
-
-# %%
-# Step 7: Analyze Detected Signals
-# --------------------------------
-# The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
-# window size and threshold.
-triggered_acquisition = acquisition.run_triggering(
-    threshold=10 * units.millivolt,
-    trigger_detector_name='forward',
-    max_triggers=35,
-    pre_buffer=64,
-    post_buffer=64
-)
-
-triggered_acquisition.analog.plot()
+plt.tight_layout()
+plt.show()
 
 
-# %%
-# Getting and plotting the extracted peaks.
-from FlowCyPy import peak_locator
-# peak_locator = peak_locator.ScipyPeakLocator(height=10 * units.bit_bins, padding_value=-1)
-peak_algorithm = peak_locator.BasicPeakLocator()
+# Generate events for the CircularFlowCell, which includes sampling velocity.
+velocities_sampled_circ = circular_cell.sample_velocity(500)
 
-peaks = triggered_acquisition.detect_peaks(peak_algorithm)
-# print(peaks)
-peaks.plot(x='forward', y='side')
-peaks.plot(x='forward', y='side', z='det_2')
+# Generate events for the RectangularFlowCell.
+velocities_sampled_rect = rectangular_cell.sample_velocity(500)
 
-# peaks.plot_3d(
-#     feature='Height',
-#     x_detector='side',
-#     y_detector='forward',
-#     z_detector='det_2'
-# )
+# Generate events for the SquareFlowCell.
+velocities_sampled_sq = square_cell.sample_velocity(500)
 
-# # %%
-# # Step 8: Classifying the collected dataset
-# from FlowCyPy.classifier import KmeansClassifier
+# Create a figure with subplots for histograms of sampled velocities.
+fig2, axs2 = plt.subplots(1, 3, figsize=(18, 5))
 
-# classifier = KmeansClassifier(number_of_cluster=2)
+axs2[0].hist(velocities_sampled_circ, edgecolor='black', color='skyblue')
+axs2[0].set_title('Sampled Velocities (Circular)')
+axs2[0].set_xlabel('Velocity (m/s)')
+axs2[0].set_ylabel('Frequency')
+axs2[0].grid(True)
 
-# data = classifier.run(
-#     dataframe=peaks.unstack('Detector'),
-#     features=['Height'],
-#     detectors=['side', 'forward']
-# )
+axs2[1].hist(velocities_sampled_rect, edgecolor='black', color='lightgreen')
+axs2[1].set_title('Sampled Velocities (Rectangular)')
+axs2[1].set_xlabel('Velocity (m/s)')
+axs2[1].set_ylabel('Frequency')
+axs2[1].grid(True)
 
-# _ = data.plot(
-#     feature='Height',
-#     x_detector='side',
-#     y_detector='forward'
-# )
+axs2[2].hist(velocities_sampled_sq, edgecolor='black', color='salmon')
+axs2[2].set_title('Sampled Velocities (Square)')
+axs2[2].set_xlabel('Velocity (m/s)')
+axs2[2].set_ylabel('Frequency')
+axs2[2].grid(True)
+
+plt.tight_layout()
+plt.show()

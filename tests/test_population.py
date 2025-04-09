@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from FlowCyPy import distribution
-from FlowCyPy.population import Population
+from FlowCyPy.population import Sphere
 from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import units
@@ -11,7 +11,7 @@ from pint import UnitRegistry
 # Initialize a UnitRegistry
 ureg = UnitRegistry()
 
-RUN_TIME = 100e-3 * units.second
+RUN_TIME = 1e-3 * units.second
 
 
 # Step 1: Define some global variables and objects to be used across tests
@@ -19,9 +19,12 @@ RUN_TIME = 100e-3 * units.second
 def flow_cell():
     """Fixture to create a FlowCell object for testing."""
     return FlowCell(
-        volume_flow=1e-4 * units.microliter / units.second,
-        flow_area=(10 * units.micrometer) ** 2,
+        sample_volume_flow=1 * units.microliter / units.second,
+        sheath_volume_flow=6 * units.microliter / units.second,
+        width=20 * units.micrometer,
+        height=10 * units.micrometer,
     )
+
 
 
 @pytest.fixture
@@ -34,14 +37,14 @@ def populations():
         mean=1.4 * units.RIU,
         std_dev=0.01 * units.RIU
     )
-    population_0 = Population(
+    population_0 = Sphere(
         particle_count=1.8e11 * units.particle / units.milliliter,
         diameter=diameter_dist,
         refractive_index=refractive_index_dist,
         name="Test Population 0"
     )
 
-    population_1 = Population(
+    population_1 = Sphere(
         particle_count=1.8e11 * units.particle / units.milliliter,
         diameter=diameter_dist,
         refractive_index=refractive_index_dist,
@@ -91,7 +94,7 @@ def test_invalid_flow_cell():
             flow_area=(10 * units.micrometer) ** 2,
             run_time=1 * units.second,
         )
-        population = Population(
+        population = Sphere(
             size=distribution.Normal(mean=500 * units.nanometer, std_dev=50 * units.nanometer),
             refractive_index=distribution.Normal(mean=1.4, std_dev=0.01),
             name="Invalid Test"

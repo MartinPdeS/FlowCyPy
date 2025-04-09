@@ -16,11 +16,15 @@ Workflow:
 
 # %%
 # Step 1: Import necessary modules from FlowCyPy
-from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
+from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, TransimpedanceAmplifier
 from FlowCyPy import distribution
-from FlowCyPy.population import Population
+from FlowCyPy.population import Sphere
 from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import units
+
+import numpy
+numpy.random.seed(3)
 
 # %%
 # Step 2: Define the laser source
@@ -37,9 +41,10 @@ source = GaussianBeam(
 # ------------------------------
 # Set the flow speed to 80 micrometers per second and a flow area of 1 square micrometer, with a total simulation time of 1 second.
 flow_cell = FlowCell(
-    source=source,
-    volume_flow=0.3 * units.microliter / units.second,        # Flow speed: 10 microliter per second
-    flow_area=(20 * units.micrometer) ** 2,        # Flow area: 10 x 10 micrometers
+    sample_volume_flow=0.02 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+    sheath_volume_flow=0.1 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+    width=20 * units.micrometer,        # Flow area: 10 x 10 micrometers
+    height=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
 )
 
 # %%
@@ -57,8 +62,8 @@ ev_ri = distribution.Normal(
     std_dev=0.01 * units.RIU  # Standard deviation: 0.01
 )
 
-ev = Population(
-    particle_count=1.8e+8 * units.particle / units.milliliter,
+ev = Sphere(
+    particle_count=20 * units.particle,
     diameter=ev_diameter,               # Particle size distribution
     refractive_index=ev_ri,     # Refractive index distribution
     name='EV'                   # Name of the particle population: Extracellular Vesicles (EV)
@@ -68,12 +73,12 @@ scatterer_collection = ScattererCollection()
 
 scatterer_collection.add_population(ev)
 
-scatterer_collection.dilute(6)
+scatterer_collection.dilute(2)
 
 # Step 5: Define the detector
 # ---------------------------
 # The detector captures the scattered light. It is positioned at 90 degrees relative to the incident light beam
-# and configured with a numerical aperture of 0.4 and responsitivity of 1.
+# and configured with a numerical aperture of 0.4 and responsivity of 1.
 signal_digitizer = SignalDigitizer(
     bit_depth=1024,
     saturation_levels='auto',
@@ -84,20 +89,27 @@ detector_0 = Detector(
     phi_angle=90 * units.degree,              # Detector angle: 90 degrees (Side Scatter)
     numerical_aperture=0.4 * units.AU,        # Numerical aperture of the detector
     name='side',              # Detector name
-    responsitivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
+    responsivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
 )
 
 detector_1 = Detector(
     phi_angle=0 * units.degree,               # Detector angle: 90 degrees (Sid e Scatter)
     numerical_aperture=0.4 * units.AU,        # Numerical aperture of the detector
     name='forward',             # Detector name
-    responsitivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
+    responsivity=1 * units.ampere / units.watt,   # Responsitivity of the detector (light to signal conversion efficiency)
+)
+
+transimpedance_amplifier = TransimpedanceAmplifier(
+    gain=100 * units.volt / units.ampere,
+    bandwidth = 10 * units.megahertz
 )
 
 # Step 6: Simulate Flow Cytometer Signals
 # ---------------------------------------
 # Create a FlowCytometer instance to simulate the signals generated as particles pass through the laser beam.
 cytometer = FlowCytometer(
+    source=source,
+    transimpedance_amplifier=transimpedance_amplifier,
     signal_digitizer=signal_digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,                # Particle size distribution
@@ -105,50 +117,32 @@ cytometer = FlowCytometer(
 )
 
 # Run the flow cytometry simulation
-acquisition = cytometer.prepare_acquisition(run_time=1.0 * units.millisecond)
+acquisition = cytometer.prepare_acquisition(run_time=0.3 * units.millisecond)
 acquisition = cytometer.get_acquisition()
 
 # %%
 # Visualize the scatter analog signals from both detectors
-acquisition.analog.log()
-acquisition.analog.plot()
+# acquisition.analog.log()
+# acquisition.analog.plot()
 
 # %%
 # Visualize the scatter digital signals from both detectors
-acquisition.digital.log()
-acquisition.digital.plot()
+# acquisition.digital.log()
+# acquisition.digital.plot()
 
 
 triggered_acquisition = acquisition.run_triggering(
     threshold = 20 * units.microvolt,
     trigger_detector_name='forward',
     max_triggers=8,
-    pre_buffer=64,
-    post_buffer=64
+    pre_buffer=10,
+    post_buffer=10
 )
 
-triggered_acquisition.apply_filters(
-    lowpass_cutoff=1.5 * units.megahertz,
-    highpass_cutoff=0.01 * units.kilohertz
-)
-
-triggered_acquisition.apply_baseline_restauration()
-
-# %%
-# Visualize the scatter triggered analog signals from both detectors
+# # %%
+# # Visualize the scatter triggered analog signals from both detectors
 triggered_acquisition.analog.plot()
 
-# %%
-# Visualize the scatter triggered digital signals from both detectors
-triggered_acquisition.digital.plot()
-
-
-
-
-"""
-Summary:
---------
-This script simulates flow cytometer signals, processes them to detect peaks in the forward scatter channel,
-and extracts important features. The process is visualized through signal plots, and key properties are displayed.
-"""
-
+# # %%
+# # Visualize the scatter triggered digital signals from both detectors
+# triggered_acquisition.digital.plot()

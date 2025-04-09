@@ -1,6 +1,6 @@
 package:
   name: flowcypy
-  version: {{ GIT_DESCRIBE_TAG }}
+  version: "{{ GIT_DESCRIBE_TAG | replace('v', '', 1) }}"
 
 source:
   git_url: https://github.com/MartinPdeS/FlowCyPy.git
@@ -19,7 +19,13 @@ requirements:
     - pybind11 ~=2.13
     - python-build ~=1.2
     - setuptools_scm[toml] ~=8.0
+    - fftw
+    - pybind11
+  build:
+    - fftw
   run:
+    - fftw
+    - pybind11
     - python {{PY_VER}}*
     - pandas ~=2.2
     - pint-pandas ~=0.6
@@ -30,7 +36,7 @@ requirements:
     - pint ~=0.24
     - scipy ~=1.14
     - scikit-learn
-    - martinpdes::pymiesim
+    - martinpdes::pymiesim =v3.4.0
     - martinpdes::mpsplots
 
 about:

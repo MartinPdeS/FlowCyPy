@@ -1,121 +1,127 @@
 import numpy as np
+from FlowCyPy.binary import interface_peak_locator
 
 class SlidingWindowPeakLocator:
-    """
-    A peak detection utility that identifies peaks in each row of a 2D array using a sliding window approach.
+    r"""
+    SlidingWindowPeakLocator(window_size, window_step=-1, max_number_of_peaks=5, padding_value=-1,
+                               compute_width=False, compute_area=False, threshold=0.5)
 
-    This class segments each row of a 2D NumPy array into fixed-size windows and identifies the index of the
-    local maximum within each window. The detected peak indices are returned in a structured 2D array.
+    A sliding-window-based peak detection utility for 1D signals. This class segments the input signal
+    into fixed-size windows (which can be overlapping if window_step is less than window_size) and identifies
+    the local maximum in each window. Optionally, it computes additional metrics for each peak:
+    - Width: the number of contiguous samples above a specified fraction of the peak's height.
+    - Area: the sum of signal values under the peak within its window.
 
-    Unlike global peak-finding methods, this approach ensures that peaks are sampled evenly across the signal.
+    The results are returned as a dictionary containing fixed-length arrays. If fewer peaks are detected than
+    max_number_of_peaks, the arrays are padded with padding_value (for indices) or NaN (for numeric values).
 
     Parameters
     ----------
     window_size : int
-        The size of the sliding window used to detect local maxima.
+        The size of the sliding window used for local peak detection.
+    window_step : int, optional
+        The step size between consecutive windows. If not provided or set to -1, defaults to window_size
+        (i.e., non-overlapping windows). To create overlapping windows, specify a value less than window_size.
     max_number_of_peaks : int, optional
-        The maximum number of peaks to return per row. Default is 5.
+        The maximum number of peaks to report. If fewer peaks are detected, the results are padded. Default is 5.
     padding_value : int, optional
-        The value used to pad the output when fewer than `max_number_of_peaks` peaks are detected. Default is -1.
+        The value used to pad the output array for indices when fewer than max_number_of_peaks peaks are found.
+        Default is -1.
+    compute_width : bool, optional
+        If True, compute and return the width of each detected peak (in samples). Default is False.
+    compute_area : bool, optional
+        If True, compute and return the area (sum of signal values) under each detected peak. Default is False.
+    threshold : float, optional
+        The fraction of the peak's height used to determine the boundaries for width and area calculations.
+        For example, a threshold of 0.5 uses 50% of the peak height as the cutoff. Default is 0.5.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the following keys:
+          - "Index": A fixed-length array of detected peak indices, padded as necessary.
+          - "Height": A fixed-length array of the corresponding peak values.
+          - "Width": (optional) A fixed-length array of computed peak widths (if compute_width is True).
+          - "Area": (optional) A fixed-length array of computed peak areas (if compute_area is True).
 
     Examples
     --------
     >>> import numpy as np
-    >>> data = np.array([
-    ...     [1, 3, 2, 5, 4, 2, 8, 1],
-    ...     [2, 1, 4, 3, 7, 0, 6, 2]
-    ... ])
-    >>> peak_locator = SlidingWindowPeakLocator(window_size=2, max_number_of_peaks=4, padding_value=-1)
-    >>> peaks = peak_locator(data)
-    >>> print(peaks)
-    [[1. 3. 4. 6.]
-     [0. 2. 4. 6.]]
-
-    Notes
-    -----
-    - This method is particularly useful for signals containing multiple distinct regions of interest
-      that need to be sampled at regular intervals.
-    - If a row contains fewer peaks than `max_number_of_peaks`, the remaining entries are padded with `padding_value`.
+    >>> # Example signal
+    >>> data = np.array([1, 3, 2, 5, 4, 2, 8, 1], dtype=float)
+    >>> # Create a peak locator without additional metrics (non-overlapping windows).
+    >>> locator = SlidingWindowPeakLocator(window_size=2, max_number_of_peaks=4, padding_value=-1)
+    >>> result = locator(data)
+    >>> print("Indices:", result["Index"])
+    [1, 3, 4, 6]
+    >>> print("Heights:", result["Height"])
+    [3.0, 5.0, 4.0, 8.0]
+    >>> # Create a peak locator with overlapping windows and with width and area computations.
+    >>> locator_metrics = SlidingWindowPeakLocator(window_size=4, window_step=2, max_number_of_peaks=4,
+    ...                                             padding_value=-1, compute_width=True, compute_area=True, threshold=0.5)
+    >>> result = locator_metrics(data)
+    >>> print("Peak indices:", result["Index"])
+    >>> print("Heights:", result["Height"])
+    >>> print("Widths:", result["Width"])
+    >>> print("Areas:", result["Area"])
     """
+    def __init__(self,
+        window_size: int,
+        max_number_of_peaks: int = 5,
+        padding_value: int = -1,
+        window_step: int = -1,
+        compute_width: bool = False,
+        compute_area: bool = False,
+        threshold: float = 0.5):
 
-    def __init__(self, window_size: int, max_number_of_peaks: int = 5, padding_value: int = -1):
-        """
-        Initializes the SlidingWindowPeakLocator with the given parameters.
-
-        Parameters
-        ----------
-        window_size : int
-            The size of each sliding window.
-        max_number_of_peaks : int, optional
-            The maximum number of peaks to return per row. Default is 5.
-        padding_value : int, optional
-            The value used to pad missing peaks. Default is -1.
-        """
-        self.window_size = window_size
         self.max_number_of_peaks = max_number_of_peaks
-        self.padding_value = padding_value
 
-    def __call__(self, array: np.ndarray) -> np.ndarray:
+        self.binding = interface_peak_locator.SlidingWindowPeakLocator(
+            window_size=window_size,
+            window_step=window_step,
+            max_number_of_peaks=max_number_of_peaks,
+            padding_value=padding_value,
+            compute_width=compute_width,
+            compute_area=compute_area,
+            threshold=threshold
+        )
+
+        self.output = dict(
+            Index=None,
+            Height=None,
+        )
+
+        if compute_area:
+            self.output['Area'] = None
+
+        if compute_width:
+            self.output['Width'] = None
+
+    def __call__(self, array: np.ndarray) -> dict:
         """
-        Detects peaks in each row of a 2D NumPy array using a sliding window.
+        Detects peaks in a 1D NumPy array using a sliding window approach.
 
-        Each row is divided into non-overlapping windows of size `window_size`, and the index of the
-        maximum value in each window is recorded.
+        The signal is divided into non-overlapping windows of size `window_size`, and within each window,
+        the index of the local maximum is recorded. Optionally, for each detected peak, the width and area
+        are computed based on a threshold (a fraction of the peak's height).
 
         Parameters
         ----------
         array : np.ndarray
-            A 2D NumPy array where each row represents a separate dataset for peak detection.
+            A 1D NumPy array representing the signal for peak detection.
 
         Returns
         -------
-        np.ndarray
-            A 2D NumPy array of shape `(number_of_rows, max_number_of_peaks)`, where each entry contains
-            the global index of the detected peak in the corresponding window. Rows with fewer detected
-            peaks are padded with `padding_value`.
-
-        Raises
-        ------
-        AssertionError
-            If the input array is not a 2D NumPy array.
-
-        Examples
-        --------
-        >>> import numpy as np
-        >>> data = np.array([
-        ...     [1, 3, 2, 5, 4, 2, 8, 1],
-        ...     [2, 1, 4, 3, 7, 0, 6, 2]
-        ... ])
-        >>> peak_locator = SlidingWindowPeakLocator(window_size=2, max_number_of_peaks=4, padding_value=-1)
-        >>> peaks = peak_locator(data)
-        >>> print(peaks)
-        [[1. 3. 4. 6.]
-         [0. 2. 4. 6.]]
+        dict
+            A dictionary containing:
+              - "Index": A 1D array of fixed length (max_number_of_peaks) with detected peak indices.
+              - "Height": A 1D array with the corresponding peak heights.
+              - "Width": (Optional) A 1D array with computed widths, if compute_width is True.
+              - "Area": (Optional) A 1D array with computed areas, if compute_area is True.
         """
-        assert array.ndim == 2, "Input array must be 2D."
+        self.binding.compute(array)
 
-        num_rows, num_cols = array.shape
-        num_windows = np.ceil(num_cols / self.window_size).astype(int)
+        for key in self.output.keys():
+            self.output[key] = self.binding.get_metric(key)
 
-        # Create an array to store peak indices
-        peak_indices = np.full((num_rows, self.max_number_of_peaks), self.padding_value, dtype=int)
-
-        for i in range(num_rows):
-            row = array[i]
-
-            # Generate window start and end indices
-            window_starts = np.arange(0, num_cols, self.window_size)
-            window_ends = np.minimum(window_starts + self.window_size, num_cols)
-
-            # Extract indices of the local maxima within each window
-            local_max_indices = []
-            for start, end in zip(window_starts, window_ends):
-                local_max_indices.append(start + np.argmax(row[start:end]))
-
-            local_max_indices = np.array(local_max_indices)
-
-            # Store the top max_number_of_peaks peaks, padding if necessary
-            num_detected = min(len(local_max_indices), self.max_number_of_peaks)
-            peak_indices[i, :num_detected] = local_max_indices[:num_detected]
-
-        return peak_indices
+        return self.output

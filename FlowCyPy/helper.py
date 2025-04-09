@@ -155,15 +155,17 @@ def plot_3d(function: Callable) -> Callable:
     Callable
         A wrapped function that returns a matplotlib Figure containing the 3D plot.
     """
-    def wrapper(self, show: bool = True, equal_axes: bool = False, save_filename: str = None, **kwargs) -> plt.Figure:
+    def wrapper(self, show: bool = True, equal_axes: bool = False, save_filename: str = None, figsize = (8, 8), **kwargs) -> plt.Figure:
         # If an Axes3D object is not provided, create one using our style context.
         ax = kwargs.get('ax', None)
         if ax is None:
-            with plt.style.context(mps):
-                fig = plt.figure()
-                ax = fig.add_subplot(111, projection='3d')
+            # with plt.style.context(mps):
+            fig = plt.figure(figsize=figsize)
+            ax = fig.add_subplot(111, projection='3d')
+
         else:
             fig = ax.figure
+
 
         # Update kwargs with the created or provided ax.
         kwargs['ax'] = ax

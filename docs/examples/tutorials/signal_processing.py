@@ -20,9 +20,10 @@ import matplotlib.pyplot as plt
 
 # Import necessary components from FlowCyPy
 from FlowCyPy import (
-    FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell,
-    Population, distribution, circuits, units, NoiseSetting
+    FlowCytometer, ScattererCollection, Detector, GaussianBeam,
+    population, distribution, circuits, units, NoiseSetting, TransimpedanceAmplifier
 )
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
 
 # Enable noise settings if desired
@@ -38,16 +39,21 @@ source = GaussianBeam(
     optical_power=100 * units.milliwatt           # Laser optical power: 100 mW
 )
 
-# Define the flow cell.
+# %%
+# Define and plot the flow cell.
 flow_cell = FlowCell(
-    source=source,
-    volume_flow=0.3 * units.microliter / units.second,  # Flow rate: 0.3 µL/s
-    flow_area=(10 * units.micrometer) ** 2              # Flow area: 10 x 10 µm²
+    sample_volume_flow=0.02 * units.microliter / units.second,
+    sheath_volume_flow=0.1 * units.microliter / units.second,
+    width=20 * units.micrometer,
+    height=10 * units.micrometer,
 )
+
+flow_cell.plot(n_samples=100)
+
 
 # Create a scatterer collection with a single population.
 # For signal processing, we use delta distributions (i.e., no variability).
-population = Population(
+population = population.Sphere(
     name='Population',
     particle_count=10 * units.particle,
     diameter=distribution.Delta(position=150 * units.nanometer),
@@ -70,28 +76,31 @@ detector_0 = Detector(
     name='side',
     phi_angle=90 * units.degree,
     numerical_aperture=0.2 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
-    resistance=13000 * units.ohm,
-    dark_current=1 * units.microampere,
-    temperature=100 * units.kelvin,
+    responsivity=1 * units.ampere / units.watt,
+    dark_current=10 * units.microampere,
 )
 
 detector_1 = Detector(
     name='forward',
     phi_angle=0 * units.degree,
     numerical_aperture=0.2 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
-    resistance=13000 * units.ohm,
+    responsivity=1 * units.ampere / units.watt,
     dark_current=1 * units.microampere,
-    temperature=100 * units.kelvin,
+)
+
+transimpedance_amplifier = TransimpedanceAmplifier(
+    gain=100 * units.volt / units.ampere,
+    bandwidth = 10 * units.megahertz
 )
 
 # Setup the flow cytometer.
 cytometer = FlowCytometer(
+    source=source,
+    transimpedance_amplifier=transimpedance_amplifier,
     signal_digitizer=signal_digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,
-    background_power=0.2 * units.microwatt,
+    background_power=2 * units.microwatt,
     detectors=[detector_0, detector_1]
 )
 
@@ -106,8 +115,8 @@ processing_steps_none = []
 cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
 acquisition_none = cytometer.get_acquisition(processing_steps=processing_steps_none)
 ax.plot(
-    acquisition_none.analog.loc['forward', 'Time'].pint.to('microsecond'),
-    acquisition_none.analog.loc['forward', 'Signal'],
+    acquisition_none.analog['Time'].pint.to('microsecond'),
+    acquisition_none.analog['forward'].pint.to('millivolt'),
     linestyle='-',
     label='Raw Signal'
 )
@@ -116,8 +125,8 @@ ax.plot(
 processing_steps_baseline = [circuits.BaselineRestorator(window_size=1000 * units.microsecond)]
 acquisition_baseline = cytometer.get_acquisition(processing_steps=processing_steps_baseline)
 ax.plot(
-    acquisition_baseline.analog.loc['forward', 'Time'].pint.to('microsecond'),
-    acquisition_baseline.analog.loc['forward', 'Signal'],
+    acquisition_baseline.analog['Time'].pint.to('microsecond'),
+    acquisition_baseline.analog['forward'].pint.to('millivolt'),
     linestyle='--',
     label='Baseline Restored'
 )
@@ -126,8 +135,8 @@ ax.plot(
 processing_steps_bessel = [circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)]
 acquisition_bessel = cytometer.get_acquisition(processing_steps=processing_steps_bessel)
 ax.plot(
-    acquisition_bessel.analog.loc['forward', 'Time'].pint.to('microsecond'),
-    acquisition_bessel.analog.loc['forward', 'Signal'],
+    acquisition_bessel.analog['Time'].pint.to('microsecond'),
+    acquisition_bessel.analog['forward'].pint.to('millivolt'),
     linestyle='-.',
     label='Bessel LowPass'
 )
@@ -135,7 +144,7 @@ ax.plot(
 # Configure the plot.
 ax.set_title("Flow Cytometry Signal Processing")
 ax.set_xlabel("Time [microsecond]")
-ax.set_ylabel("Signal Amplitude (a.u.)")
+ax.set_ylabel("Signal Amplitude [millivolt]")
 ax.legend()
 plt.tight_layout()
 plt.show()

@@ -13,7 +13,14 @@ Base Class
 Moving-average Class
 --------------------
 
-.. autoclass:: FlowCyPy.peak_locator.moving_average.MovingAverage
+.. autoclass:: FlowCyPy.peak_locator.moving_average.SlidingWindowPeakLocator
+   :members:
+   :show-inheritance:
+
+Derivative based Class
+----------------------
+
+.. autoclass:: FlowCyPy.peak_locator.derivative.DerivativePeakLocator
    :members:
    :show-inheritance:
 

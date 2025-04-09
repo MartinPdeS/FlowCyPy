@@ -1,5 +1,5 @@
 [build-system]
-requires = ["scikit-build-core>=0.3.3", "pybind11", "setuptools_scm[toml]>=8.0"]
+requires = ["scikit-build-core>=0.3.3", "pybind11", "setuptools==76.1.0", "setuptools_scm[toml]>=8.0"]
 build-backend = "scikit_build_core.build"
 
 [tool.scikit-build]
@@ -25,10 +25,7 @@ name = "FlowCyPy"
 dynamic = ["version"]
 description = "A package for light scattering computation."
 license = {file = "LICENSE"}
-# documentation = 'https://martinpdes.github.io/FlowCyPy/'
-# platforms = ['unix', 'linux', 'osx']
 readme = "README.rst"
-# url = 'https://github.com/MartinPdeS/FlowCyPy'
 requires-python = ">=3.10"
 authors = [{ name="Martin Poinsinet de Sivry-Houle", email="martin.poinsinet.de.sivry@gmail.com"}]
 classifiers = [
@@ -109,24 +106,24 @@ testpaths = [
     "tests/*",
 ]
 
-
 [tool.cibuildwheel]
 build-frontend = "build"
 before-test = ""
-test-command = "python -m pytest -rA {project}/tests --ignore={project}/tests/test_classifiers.py --ignore={project}/tests/test_coupling_mechanism.py --ignore={project}/tests/test_detector_noise.py --ignore={project}/tests/test_distribution.py"
+test-command = "python -m pytest -rA {project}/tests"
 test-extras = ["testing"]
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64"]
+before-build = "yum install -y fftw-devel"
 build = ["cp310-manylinux*", "cp311-manylinux*", "cp312-manylinux*"]
 manylinux-x86_64-image = "manylinux2014"
 repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.macos]
 archs = ["arm64"]
+before-build = "brew install fftw"
 build = ["cp310-*", "cp311-*", "cp312-*"]
 repair-wheel-command = "delocate-wheel -w {dest_dir} -v {wheel}"
-test-command = "echo 'Skipping tests on macOS'"
 
 [tool.cibuildwheel.windows]
 archs = ["AMD64"]

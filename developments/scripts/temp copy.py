@@ -1,53 +1,42 @@
 import numpy as np
 from FlowCyPy import units
-from FlowCyPy import GaussianBeam, FlowCell, ScattererCollection, Population
-from FlowCyPy import distribution, Detector, SignalDigitizer, FlowCytometer, peak_locator
-from FlowCyPy import NoiseSetting
-
-NoiseSetting.include_noises = True
-NoiseSetting.include_shot_noise = False
-NoiseSetting.include_thermal_noise = False
-NoiseSetting.include_dark_current_noise = False
+from FlowCyPy import FlowCytometer, circuits
+from FlowCyPy.flow_cell import FlowCell
+from FlowCyPy import GaussianBeam
+from FlowCyPy import ScattererCollection
+from FlowCyPy.population import Exosome, Sphere, distribution
+from FlowCyPy.detector import Detector
+from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy import TransimpedanceAmplifier
 
 source = GaussianBeam(
-    numerical_aperture=0.3 * units.AU,
-    wavelength=400 * units.nanometer,
-    optical_power=200 * units.milliwatt
+    numerical_aperture=0.1 * units.AU,           # Numerical aperture
+    wavelength=450 * units.nanometer,           # Wavelength
+    optical_power=200 * units.milliwatt          # Optical power
 )
-
 
 flow_cell = FlowCell(
-    source=source,
-    volume_flow=0.3 * units.microliter / units.second,
-    flow_area=(10 * units.micrometer) ** 2,
+    sample_volume_flow=80 * units.microliter / units.minute,
+    sheath_volume_flow=1 * units.milliliter / units.minute,
+    width=100 * units.micrometer,
+    height=100 * units.micrometer,
 )
+
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
-population_0 = Population(
-    name='250 nm | 1.40 RI',
+exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
+
+custom_population = Sphere(
+    name='Pop 0',
     particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=250 * units.nanometer, spread=30),
-    refractive_index=distribution.Normal(mean=1.40 * units.RIU, std_dev=0.002 * units.RIU)
-)
-population_1 = Population(
-    name='200 nm | 1.42 RI',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=200 * units.nanometer, spread=30),
-    refractive_index=distribution.Normal(mean=1.42 * units.RIU, std_dev=0.002 * units.RIU)
-)
-population_2 = Population(
-    name='150 nm | 1.44 RI',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=5),
+    diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=3000),
     refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
 )
 
-scatterer_collection.add_population(population_0, population_1, population_2)
+scatterer_collection.add_population(exosome, custom_population)
 
-scatterer_collection.dilute(factor=4)
-
-scatterer_collection.plot(sampling=5000, use_ratio=False)
+scatterer_collection.dilute(factor=8)
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
@@ -58,59 +47,54 @@ signal_digitizer = SignalDigitizer(
 detector_0 = Detector(
     name='forward',
     phi_angle=0 * units.degree,                  # Forward scatter angle
-    numerical_aperture=0.4 * units.AU,
-    cache_numerical_aperture=0.00 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
-    resistance=1500 * units.ohm,
-    temperature=300 * units.kelvin
+    numerical_aperture=0.3 * units.AU,
+    responsivity=1 * units.ampere / units.watt,
 )
 
 detector_1 = Detector(
     name='side',
     phi_angle=90 * units.degree,                 # Side scatter angle
-    numerical_aperture=0.4 * units.AU,
-    responsitivity=1 * units.ampere / units.watt,
-    resistance=50 * units.ohm,
-    temperature=300 * units.kelvin,
+    numerical_aperture=0.3 * units.AU,
+    responsivity=1 * units.ampere / units.watt,
+)
+
+
+detector_2 = Detector(
+    name='det_2',
+    phi_angle=30 * units.degree,                 # Side scatter angle
+    numerical_aperture=0.3 * units.AU,
+    responsivity=1 * units.ampere / units.watt,
+)
+
+
+transimpedance_amplifier = TransimpedanceAmplifier(
+    gain=100 * units.volt / units.ampere,
+    bandwidth = 100 * units.megahertz
 )
 
 cytometer = FlowCytometer(
+    source=source,
+    transimpedance_amplifier=transimpedance_amplifier,
     scatterer_collection=scatterer_collection,
     signal_digitizer=signal_digitizer,
-    detectors=[detector_0, detector_1],
+    detectors=[detector_0, detector_1, detector_2],
     flow_cell=flow_cell,
     background_power=0.001 * units.milliwatt
 )
 
-# Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=0.2 * 3 * units.millisecond)
-acquisition = cytometer.get_acquisition()
+processing_steps = [
+    circuits.BaselineRestorator(window_size=1000 * units.microsecond),
+    circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)
+]
 
-cytometer.scatterer_collection.dataframe.plot(x='RefractiveIndex', y='Diameter')
-
-# acquisition.scatterer.plot(x='RefractiveIndex', y='Diameter')
-
-# acquisition.scatterer.plot(x='forward', y='side', z='det_2')
-acquisition.scatterer.plot(x='forward', y='side')
-# acquisition.scatterer.plot(x='forward', y='side', z='Diameter')
-
+cytometer.prepare_acquisition(run_time=0.01 * units.millisecond)
+acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 acquisition.analog.plot()
 
-triggered_acquisition = acquisition.run_triggering(
-    threshold=10 * units.millivolt,
-    trigger_detector_name='forward',
-    max_triggers=35,
-    pre_buffer=64,
-    post_buffer=64
-)
-
-triggered_acquisition.analog.plot()
-
-peak_algorithm = peak_locator.BasicPeakLocator()
-
-peaks = triggered_acquisition.detect_peaks(peak_algorithm)
-# print(peaks)
-peaks.plot(x='forward', y='side')
-peaks.plot(x='forward', y='side', z='det_2')
+# cpp code: 0.0007882118225097656
+# numpy code: 0.0002582073211669922
 
 
+
+# cpp code: 2.5987625122070312e-05
+# numpy code: 0.0002808570861816406

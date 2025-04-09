@@ -14,8 +14,9 @@ Steps:
 """
 
 # Step 1: Import the necessary libraries
-from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell
-from FlowCyPy import distribution, Population
+from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, TransimpedanceAmplifier
+from FlowCyPy import distribution, population
+from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import units
 
@@ -32,9 +33,10 @@ source = GaussianBeam(
 # ----------------------------------
 # Flow speed is set to 80 micrometers per second, with a flow area of 1 square micrometer and a total simulation time of 1 second.
 flow_cell = FlowCell(
-    source=source,
-    volume_flow=0.1 * units.microliter / units.second, # Flow speed: 10 microliter per second
-    flow_area=(10 * units.micrometer) ** 2, # Flow area: 40 x 40 micrometers
+    sample_volume_flow=0.02 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+    sheath_volume_flow=0.1 * units.microliter / units.second,        # Flow speed: 10 microliter per second
+    width=20 * units.micrometer,        # Flow area: 10 x 10 micrometers
+    height=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
 )
 
 # Step 4: Define the particle size distribution
@@ -43,14 +45,14 @@ flow_cell = FlowCell(
 # and a refractive index of 1.39 with a small variation of 0.01.
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
-population_0 = Population(
+population_0 = population.Sphere(
     name='EV',
     particle_count=1e+9 * units.particle / units.milliliter,
     diameter=distribution.RosinRammler(characteristic_property=200 * units.nanometer, spread=4.5),
     refractive_index=distribution.Normal(mean=1.42 * units.RIU, std_dev=0.05 * units.RIU)
 )
 
-population_1 = Population(
+population_1 = population.Sphere(
     name='LP',
     particle_count=1e+11 * units.particle / units.milliliter,
     diameter=distribution.RosinRammler(characteristic_property=100 * units.nanometer, spread=4.5),
@@ -64,7 +66,7 @@ scatterer_collection.add_population(population_1, population_0)
 # Step 5: Set up the detectors
 # ----------------------------
 # Two detectors are used: Forward Scatter (FSC) and Side Scatter (SSC). Each detector is configured
-# with its own numerical aperture, responsitivity, noise level, and acquisition frequency.
+# with its own numerical aperture, responsivity, noise level, and acquisition frequency.
 signal_digitizer = SignalDigitizer(
     bit_depth=1024,
     saturation_levels='auto',
@@ -83,11 +85,19 @@ detector_ssc = Detector(
     phi_angle=90 * units.degree,              # Angle: 90 degrees for side scatter
 )
 
+transimpedance_amplifier = TransimpedanceAmplifier(
+    gain=100 * units.volt / units.ampere,
+    bandwidth = 10 * units.megahertz
+)
+
+
 # Step 6: Create a FlowCytometer instance
 # ---------------------------------------
 # The flow cytometer is configured with the source, scatterer distribution, and detectors.
 # The 'mie' coupling mechanism models how the particles interact with the laser beam.
 cytometer = FlowCytometer(
+    source=source,
+    transimpedance_amplifier=transimpedance_amplifier,
     signal_digitizer=signal_digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,  # Particle size distribution

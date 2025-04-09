@@ -5,7 +5,7 @@ import numpy as np
 from FlowCyPy import ScattererCollection
 from FlowCyPy import distribution as dist
 from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy.population import Population
+from FlowCyPy.population import Sphere
 from FlowCyPy import units
 
 
@@ -17,8 +17,10 @@ CONCENTRATION = 3e+5 * units.particle / units.milliliter
 def default_flow_cell():
     """Fixture for creating a default Flow object."""
     return FlowCell(
-        volume_flow=10 * units.microliter / units.second,
-        flow_area=1e-6 * units.meter ** 2,
+        sample_volume_flow=10 * units.microliter / units.second,
+        sheath_volume_flow=6 * units.microliter / units.second,
+        width=20 * units.micrometer,
+        height=10 * units.micrometer,
     )
 
 
@@ -41,7 +43,7 @@ def test_generate_distribution_size(distribution, default_flow_cell):
         std_dev=0.01 * units.RIU
     )
 
-    population_0 = Population(
+    population_0 = Sphere(
         particle_count=CONCENTRATION,
         diameter=distribution,
         refractive_index=ri_distribution,
@@ -61,9 +63,7 @@ def test_generate_distribution_size(distribution, default_flow_cell):
     # # Check that sizes were generated and are positive
     assert len(dataframe) > 0, "Generated size array is empty."
 
-
     scatterer_collection.fill_dataframe_with_sampling(dataframe)
-
 
     assert np.all(dataframe['Diameter'] > 0), "Some generated sizes are not positive."
 
@@ -104,7 +104,7 @@ def test_generate_longitudinal_positions(default_flow_cell, distribution):
         std_dev=0.01 * units.RIU
     )
 
-    population_0 = Population(
+    population_0 = Sphere(
         particle_count=CONCENTRATION,
         diameter=distribution,
         refractive_index=ri_distribution,
@@ -142,7 +142,7 @@ def test_plot_positions(mock_show, distribution):
         std_dev=0.01 * units.RIU
     )
 
-    population_0 = Population(
+    population_0 = Sphere(
         particle_count=CONCENTRATION,
         diameter=distribution,
         refractive_index=ri_distribution,
@@ -153,7 +153,7 @@ def test_plot_positions(mock_show, distribution):
 
     scatterer_collection.add_population(population_0)
 
-    scatterer_collection.plot()
+    scatterer_collection.get_population_dataframe()
 
     plt.close()
 
@@ -165,14 +165,14 @@ def test_extra(distribution):
         std_dev=0.01 * units.RIU
     )
 
-    population_0 = Population(
+    population_0 = Sphere(
         particle_count=CONCENTRATION,
         diameter=distribution,
         refractive_index=ri_distribution,
         name="Default population"
     )
 
-    population_1 = Population(
+    population_1 = Sphere(
         particle_count=CONCENTRATION,
         diameter=distribution,
         refractive_index=ri_distribution,
