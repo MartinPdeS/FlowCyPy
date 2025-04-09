@@ -17,7 +17,6 @@ NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
 NoiseSetting.include_source_noise = False
 NoiseSetting.include_dark_current_noise = False
-NoiseSetting.include_thermal_noise = False
 
 np.random.seed(3)
 

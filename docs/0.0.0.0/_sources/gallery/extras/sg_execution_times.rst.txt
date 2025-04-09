@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:04.492** total execution time for 6 files **from gallery/extras**:
+**00:04.175** total execution time for 6 files **from gallery/extras**:
 
 .. container::
 
@@ -33,20 +33,20 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_gallery_extras_distributions.py` (``distributions.py``)
-     - 00:01.649
+     - 00:01.591
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_flow_cytometer_signal.py` (``flow_cytometer_signal.py``)
-     - 00:00.854
+     - 00:00.798
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_triggered_acquisition.py` (``triggered_acquisition.py``)
-     - 00:00.617
+     - 00:00.550
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_continuous_acquisition.py` (``continuous_acquisition.py``)
-     - 00:00.565
+     - 00:00.533
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_scatterer_distribution.py` (``scatterer_distribution.py``)
-     - 00:00.435
+     - 00:00.385
      - 0.0
    * - :ref:`sphx_glr_gallery_extras_flow_cell_profiles.py` (``flow_cell_profiles.py``)
-     - 00:00.373
+     - 00:00.317
      - 0.0
