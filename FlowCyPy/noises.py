@@ -30,6 +30,8 @@ class NoiseSetting(metaclass=RestrictiveMeta):
         Whether to include thermal noise in simulations. Default is True.
     include_source_noise : bool
         Whether to include Relative Intensity Noise (RIN) in simulations. Default is True.
+    include_flowcell_noise: bool
+        Whether to include the noise coming for the transversal sampling of the scatterer position regaring the beam-localization.
 
     Methods
     -------
@@ -71,6 +73,7 @@ class NoiseSetting(metaclass=RestrictiveMeta):
     include_dark_current_noise = True
     include_source_noise = True
     include_amplifier_noise = True
+    assume_perfect_hydrodynamic_focusing = False
 
     @property
     def include_noises(self):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import numpy as np
-from typing import List, Callable, Optional
+from typing import List, Optional
 import pandas as pd
 import pint_pandas
 
