@@ -167,7 +167,7 @@ and complexity and can be further analyzed for feature extraction, such as peak 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.850 seconds)
+   **Total running time of the script:** (0 minutes 0.863 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_flow_cytometer_signal.py:
