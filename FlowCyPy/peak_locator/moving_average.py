@@ -76,7 +76,7 @@ class SlidingWindowPeakLocator:
 
         self.max_number_of_peaks = max_number_of_peaks
 
-        self.instance = interface_peak_locator.SlidingWindowPeakLocator(
+        self.binding = interface_peak_locator.SlidingWindowPeakLocator(
             window_size=window_size,
             window_step=window_step,
             max_number_of_peaks=max_number_of_peaks,
@@ -85,6 +85,17 @@ class SlidingWindowPeakLocator:
             compute_area=compute_area,
             threshold=threshold
         )
+
+        self.output = dict(
+            Index=None,
+            Height=None,
+        )
+
+        if compute_area:
+            self.output['Area'] = None
+
+        if compute_width:
+            self.output['Width'] = None
 
     def __call__(self, array: np.ndarray) -> dict:
         """
@@ -108,4 +119,9 @@ class SlidingWindowPeakLocator:
               - "Width": (Optional) A 1D array with computed widths, if compute_width is True.
               - "Area": (Optional) A 1D array with computed areas, if compute_area is True.
         """
-        return self.instance(array)
+        self.binding.compute(array)
+
+        for key in self.output.keys():
+            self.output[key] = self.binding.get_metric(key)
+
+        return self.output

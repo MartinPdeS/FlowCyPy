@@ -116,6 +116,13 @@ class SignalDigitizer:
             raise ValueError(f"sampling_rate must be in hertz, but got {value.units}")
         return value
 
+    def get_time_series(self, run_time: Quantity) -> Quantity:
+        time_points = int(self.sampling_rate * run_time)
+
+        time_series = np.linspace(0, run_time.magnitude, time_points) * run_time.units
+
+        return time_series
+
     def get_saturation_values(self, signal: pd.Series) -> Tuple[Quantity, Quantity]:
         if self.saturation_levels == 'auto':
             return signal.pint.quantity.min(), signal.pint.quantity.max()

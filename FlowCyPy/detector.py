@@ -3,7 +3,6 @@ import pandas as pd
 from typing import Optional
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-import pint_pandas
 
 from PyMieSim.units import Quantity
 from FlowCyPy import units
@@ -186,35 +185,6 @@ class Detector():
             A dataframe corresponding to the detector's recorded data.
         """
         return self.cytometer.dataframe.xs(self.name)
-
-    @validate_units(run_time=units.second)
-    def get_initialized_signal(self, run_time: Quantity, sampling_rate: Quantity) -> pd.DataFrame:
-        """
-        Initializes a placeholder for the detector's raw signal over a specified runtime.
-
-        This method creates a time-dependent DataFrame with columns for time and the
-        corresponding signal (initialized to zero volts).
-
-        Parameters
-        ----------
-        run_time : Quantity
-            The total acquisition time for the signal (in seconds).
-
-        Returns
-        -------
-        pd.DataFrame
-            A DataFrame with a time column (in seconds) and a signal column (in volts),
-            initialized to zero.
-        """
-        time_points = int(sampling_rate * run_time)
-        time = np.linspace(0, run_time, time_points)
-
-        return pd.DataFrame(
-            data=dict(
-                Time=pint_pandas.PintArray(time, dtype=units.second),
-                Signal=pint_pandas.PintArray(np.zeros_like(time), dtype=units.volt),
-            )
-        )
 
     def get_noise_signal(self, sequence_length: int):
         """

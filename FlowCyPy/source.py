@@ -171,7 +171,10 @@ class BaseBeam():
         - The bandwidth parameter (\(B\)) must be in Hz and reflects the frequency range of the detection system.
         - The function assumes that RIN is specified in dB/Hz. If RIN is already in linear scale, the conversion step can be skipped.
         """
-        amplitudes = self.amplitude_at(x=x, y=y, z=z).values.quantity
+        if NoiseSetting.assume_perfect_hydrodynamic_focusing:
+            amplitudes = self.amplitude_at(x=0 * x, y=0 * y, z=0 * z).values.quantity
+        else:
+            amplitudes = self.amplitude_at(x=x, y=y, z=z).values.quantity
 
         if NoiseSetting.include_source_noise and NoiseSetting.include_noises:
             amplitudes = self.add_rin_to_amplitude(amplitudes, bandwidth=bandwidth)
@@ -265,7 +268,7 @@ class GaussianBeam(BaseBeam):
             warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
         E0 = self.calculate_field_amplitude_at_focus()
-        return E0 * np.exp(-y ** 2 / self.waist ** 2 - z ** 2 / self.waist ** 2)
+        return E0 * np.exp(-(y ** 2) / (self.waist ** 2) - (z ** 2) / (self.waist ** 2))
 
     def get_particle_width(self, velocity: Quantity) -> Quantity:
         return self.waist / (2 * velocity)

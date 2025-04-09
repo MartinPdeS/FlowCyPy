@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-from FlowCyPy.binary.interface_core import FlowCyPySim
-
-import logging
 import numpy as np
-from typing import List, Callable, Optional
+from typing import List, Optional
 import pandas as pd
+import pint_pandas
 
 from FlowCyPy import units
 from FlowCyPy.flow_cell import FlowCell
@@ -17,16 +14,10 @@ from FlowCyPy.helper import validate_units
 from FlowCyPy import dataframe_subclass
 from FlowCyPy.circuits import SignalProcessor
 from FlowCyPy.source import BaseBeam
-from FlowCyPy.binary import interface_core
+from FlowCyPy.binary import interface_signal_generator
 from FlowCyPy.noises import NoiseSetting
 from FlowCyPy.amplifier import TransimpedanceAmplifier
-
-# Set up logging configuration
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(levelname)s - %(message)s'
-)
-
+from FlowCyPy.coupling import compute_detected_signal
 
 class FlowCytometer:
     """
@@ -43,9 +34,6 @@ class FlowCytometer:
         The flow cell object representing the fluidic and optical environment through which particles travel.
     detectors : List[Detector]
         A list of `Detector` objects representing the detectors used to measure optical signals (e.g., FSC and SSC). Exactly two detectors must be provided.
-    coupling_mechanism : str, optional
-        The scattering mechanism used to couple the signal from the particles to the detectors.
-        Supported mechanisms include: 'mie' (default): Mie scattering, 'rayleigh': Rayleigh scattering, 'uniform': Uniform signal coupling, 'empirical': Empirical data-driven coupling
     background_power : units.watt, optional
         The background optical power added to the detector signal. Defaults to 0 milliwatts.
 
@@ -59,8 +47,6 @@ class FlowCytometer:
         The laser beam source providing illumination to the flow cytometer.
     detectors : List[Detector]
         The detectors used to collect and process signals from the scatterers.
-    coupling_mechanism : str
-        The selected mechanism for signal coupling.
     background_power : units.watt
         The optical background power added to the detector signals.
 
@@ -78,7 +64,6 @@ class FlowCytometer:
             signal_digitizer: SignalDigitizer,
             detectors: List[Detector],
             transimpedance_amplifier: TransimpedanceAmplifier,
-            coupling_mechanism: Optional[str] = 'mie',
             background_power: Optional[units.Quantity] = 0 * units.milliwatt):
 
         self.scatterer_collection = scatterer_collection
@@ -87,7 +72,6 @@ class FlowCytometer:
         self.source = source
         self.detectors = detectors
         self.signal_digitizer = signal_digitizer
-        self.coupling_mechanism = coupling_mechanism
         self.background_power = background_power
 
         # assert len(self.detectors) == 2, 'For now, FlowCytometer can only take two detectors for the analysis.'
@@ -118,13 +102,11 @@ class FlowCytometer:
         ValueError
             If an invalid coupling mechanism is specified during initialization.
         """
-        detection_mechanism = self._get_detection_mechanism()
-
         if scatterer_dataframe.empty:
             return
 
         for detector in self.detectors:
-            detection_mechanism(
+            compute_detected_signal(
                 source=self.source,
                 detector=detector,
                 scatterer_dataframe=scatterer_dataframe,
@@ -207,19 +189,27 @@ class FlowCytometer:
         based on the flow cell's runtime.
 
         """
-        dataframes = []
+        detector_names = [d.name for d in self.detectors]
 
-        # Initialize the detectors
-        for detector in self.detectors:
-            dataframe = detector.get_initialized_signal(run_time=run_time, sampling_rate=self.signal_digitizer.sampling_rate)
+        time_series = self.signal_digitizer.get_time_series(
+            run_time=run_time
+        )
 
-            dataframes.append(dataframe)
+        self.sequence_length = len(time_series)
 
-        dataframe = pd.concat(dataframes, keys=[d.name for d in self.detectors])
+        signal = np.zeros(self.sequence_length)
 
-        dataframe.index.names = ["Detector", "Index"]
+        time_series = pint_pandas.PintArray(time_series.magnitude, time_series.units)
 
-        return dataframe.sort_index()
+        df = pd.DataFrame(index=range(self.sequence_length), columns=[*detector_names, 'Time'])
+
+        df['Time'] = time_series
+
+        for detector in detector_names:
+            df[detector] = pint_pandas.PintArray(signal, dtype='volt')
+
+        return df
+
 
     @validate_units(run_time=units.second)
     def prepare_acquisition(self, run_time: units.second) -> pd.DataFrame:
@@ -244,8 +234,9 @@ class FlowCytometer:
 
         return self.scatterer_dataframe
 
+
     @validate_units(run_time=units.second)
-    def get_acquisition(self, processing_steps: list[SignalProcessor] = None) -> Acquisition:
+    def get_acquisition(self, processing_steps: list[SignalProcessor] = []) -> Acquisition:
         """
         Simulates the generation of optical signal pulses for each particle event.
 
@@ -276,118 +267,68 @@ class FlowCytometer:
         """
         signal_dataframe = self._initialize_signal(run_time=self.run_time)
 
-        for detector_name, group in signal_dataframe.groupby('Detector'):
-            sequence_length = len(signal_dataframe.loc[detector_name, 'Signal'])
-            detector = self.get_detector_by_name(detector_name)
-            total_power = self.background_power
+        # signal_dict = dict()
 
-            # Broadcast the time array to the shape of (number of signals, len(detector.time))
+        for column in signal_dataframe:
+            if column == 'Time':
+                continue
+
+            detector = self.get_detector_by_name(column)
+
             if not self.scatterer_dataframe.empty:
-                core = FlowCyPySim(np.linspace(0, 1))
-                # core = interface_core.FlowCyPySim(
-                #     time_array=signal_dataframe.loc[detector_name, 'Time'].pint.magnitude.values,
-                #     widths=self.scatterer_dataframe['Widths'].pint.to('second').pint.quantity.magnitude,
-                #     centers=self.scatterer_dataframe['Time'].pint.to('second').pint.quantity.magnitude,
-                #     coupling_power=self.scatterer_dataframe[detector_name].pint.to('watt').pint.quantity.magnitude,
-                #     background_power=self.background_power.to('watt').magnitude
-                # )
+                coupling_power = np.zeros(self.sequence_length, dtype='float64')
 
-                # total_power = core.getAcquisition() * units.watt
+                interface_signal_generator.generate_pulses(
+                    signal=coupling_power,
+                    widths=self.scatterer_dataframe['Widths'].pint.to('second').values.quantity.magnitude,
+                    centers=self.scatterer_dataframe['Time'].pint.to('second').values.quantity.magnitude,
+                    coupling_power=self.scatterer_dataframe[column].pint.to('watt').values.quantity.magnitude,
+                    time=signal_dataframe['Time'].pint.to('second').values.quantity.magnitude,
+                    background_power=self.background_power.to('watt').magnitude
+                )
 
-        #     if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
-        #         photocurrent = (total_power * detector.responsivity)
-        #     else:
-        #         photocurrent = detector.get_shot_noise(optical_power=total_power, wavelength=self.source.wavelength, bandwidth=self.signal_digitizer.bandwidth)
+                coupling_power = coupling_power * units.watt
 
-        #     if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
-        #         photocurrent += detector.get_dark_current_noise(sequence_length=sequence_length, bandwidth=self.signal_digitizer.bandwidth)
+            if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
+                photocurrent = (coupling_power * detector.responsivity)
+            else:
+                photocurrent = detector.get_shot_noise(optical_power=coupling_power, wavelength=self.source.wavelength, bandwidth=self.signal_digitizer.bandwidth)
 
-        #     signal_dataframe.loc[detector_name, 'Signal'] = self.transimpedance_amplifier.amplify(signal=photocurrent, dt=1 / self.signal_digitizer.sampling_rate)
+            if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
+                photocurrent += detector.get_dark_current_noise(sequence_length=self.sequence_length, bandwidth=self.signal_digitizer.bandwidth)
 
-        # # Apply user-defined processing steps
-        # self.circuit_process_data(signal_dataframe, processing_steps)
+            signal = self.transimpedance_amplifier.amplify(signal=photocurrent, dt=1 / self.signal_digitizer.sampling_rate).to('volt')
 
-        # signal_dataframe = dataframe_subclass.AnalogAcquisitionDataFrame(
-        #     signal_dataframe,
-        #     scatterer_dataframe=self.scatterer_dataframe
-        # )
+            for step in processing_steps:
+                step.apply(signal, sampling_rate=self.signal_digitizer.sampling_rate)  # Apply processing in-place
 
-        # experiment = Acquisition(
-        #     cytometer=self,
-        #     run_time=self.run_time,
-        #     scatterer_dataframe=self.scatterer_dataframe,
-        #     detector_dataframe=signal_dataframe
-        # )
-
-        # experiment.sample_volume = (self.flow_cell.sample.volume_flow * self.run_time).to_compact()
-
-        # return experiment
-
-    def circuit_process_data(self, signal_dataframe: pd.DataFrame, processing_steps: list) -> None:
-        """
-        Apply a sequence of user-defined processing steps to the signal data in place.
-
-        This method iterates through the signal dataframe grouped by detector, retrieves the
-        raw signal data as a writable NumPy array, and applies each processing step sequentially.
-        After processing, it reintroduces the original units and updates the dataframe.
-
-        Parameters
-        ----------
-        signal_dataframe : pd.DataFrame
-            DataFrame containing the signal data to be processed.
-        processing_steps : list
-            A list of signal processing steps (SignalProcessor instances) that modify the signal data in place.
-        """
-        for detector_name, group in signal_dataframe.groupby('Detector'):
-            detector = self.get_detector_by_name(detector_name)
-
-            if processing_steps:
-                temporary = group['Signal'].values.numpy_data  # Get writable NumPy array
-
-                for step in processing_steps:
-                    step.apply(temporary, sampling_rate=detector.signal_digitizer.sampling_rate)  # Apply processing in-place
-
-                # Reintroduce units after processing
-                signal_dataframe.loc[group.index, 'Signal'] = temporary * group['Signal'].pint.units
-
-    def add_noises_to_signal(self, signal_dataframe: pd.DataFrame) -> None:
-        """
-        Add noise components to the signal data in the given dataframe.
-
-        For each detector, this method retrieves noise parameters (e.g., thermal and dark current noise),
-        generates corresponding noise values using a normal distribution, and adds the noise to the existing
-        signal data in place.
-
-        Parameters
-        ----------
-        signal_dataframe : pd.DataFrame
-            DataFrame containing the signal data where noise will be added.
-        """
-        # Generate noise components
-        for detector_name, group in signal_dataframe.groupby('Detector'):
-            mean = 0 * units.volt
-            std_2 = 0 * units.volt ** 2
-            signal_units = group['Signal'].pint.units
-            detector = self.get_detector_by_name(detector_name)
-            noises = detector.get_noise_parameters()
-
-            for noise_name, parameters in noises.items():
-                if parameters is None:
-                    continue
-
-                mean += parameters['mean']
-                std_2 += parameters['std'] ** 2
+            signal_dataframe[column] = pd.Series(signal, dtype="pint[volt]")
 
 
-            # Generate noise values for this group
-            noise = np.random.normal(
-                mean.to(signal_units).magnitude,
-                np.sqrt(std_2).to(signal_units).magnitude,
-                size=len(group)
-            ) * signal_units
+        signal_dataframe = dataframe_subclass.AnalogAcquisitionDataFrame(
+            signal_dataframe,
+            scatterer_dataframe=self.scatterer_dataframe
+        )
 
-            # Update the 'Signal' column in the original DataFrame using .loc
-            signal_dataframe.loc[group.index, 'Signal'] = group['Signal'] + noise
+        experiment = Acquisition(
+            cytometer=self,
+            run_time=self.run_time,
+            scatterer_dataframe=self.scatterer_dataframe,
+            detector_dataframe=signal_dataframe
+        )
+
+        experiment.sample_volume = (self.flow_cell.sample.volume_flow * self.run_time).to_compact()
+
+        return experiment
+
+    def run_processing(self, *processing_steps) -> None:
+        signal = self.signal.copy()
+        for step in processing_steps:
+            step.apply(signal, sampling_rate=self.signal_digitizer.sampling_rate)  # Apply processing in-place
+
+        return signal
+        signal_dataframe[column] = pd.Series(signal, dtype="pint[volt]")
+
 
     def get_detector_by_name(self, name: str) -> Detector:
         """
@@ -406,40 +347,4 @@ class FlowCytometer:
         for detector in self.detectors:
             if detector.name == name:
                 return detector
-
-    def _get_detection_mechanism(self) -> Callable:
-        """
-        Retrieves the detection mechanism function for signal coupling based on the selected method.
-
-        Supported Coupling Mechanisms
-        -----------------------------
-        - 'mie': Mie scattering.
-        - 'rayleigh': Rayleigh scattering.
-        - 'uniform': Uniform scattering.
-        - 'empirical': Empirical (data-driven) scattering.
-
-        Returns
-        -------
-        Callable
-            A function that computes the detected signal for scatterer diameters and particle distributions.
-
-        Raises
-        ------
-        ValueError
-            If an unsupported coupling mechanism is specified.
-        """
-        from FlowCyPy import coupling_mechanism
-
-        # Determine which coupling mechanism to use and compute the corresponding factors
-        match self.coupling_mechanism.lower():
-            case 'rayleigh':
-                return coupling_mechanism.rayleigh.compute_detected_signal
-            case 'uniform':
-                return coupling_mechanism.uniform.compute_detected_signal
-            case 'mie':
-                return coupling_mechanism.mie.compute_detected_signal
-            case 'empirical':
-                return coupling_mechanism.empirical.compute_detected_signal
-            case _:
-                raise ValueError("Invalid coupling mechanism. Choose 'rayleigh' or 'uniform'.")
 

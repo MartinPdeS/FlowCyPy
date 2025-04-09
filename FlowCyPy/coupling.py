@@ -1,6 +1,5 @@
-from PyMieSim import experiment as _PyMieSim
+import PyMieSim.experiment as _PyMieSim
 import numpy as np
-from FlowCyPy import Detector
 from FlowCyPy.source import BaseBeam
 from PyMieSim.units import Quantity, degree, watt
 from FlowCyPy import units
@@ -8,7 +7,7 @@ import pandas as pd
 import pint_pandas
 
 
-def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
+def compute_detected_signal(source: BaseBeam, detector: object, scatterer_dataframe: pd.DataFrame, medium_refractive_index: Quantity) -> np.ndarray:
     """
     Computes the detected signal by analyzing the scattering properties of particles.
 
@@ -38,7 +37,7 @@ def compute_detected_signal(source: BaseBeam, detector: Detector, scatterer_data
 
     process_coreshell(source, detector, scatterer_dataframe, coreshell_mask, medium_refractive_index)
 
-def process_sphere(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, sphere_mask: pd.Series, medium_refractive_index: Quantity) -> None:
+def process_sphere(source: BaseBeam, detector: object, scatterer_dataframe: pd.DataFrame, sphere_mask: pd.Series, medium_refractive_index: Quantity) -> None:
     """
     Processes the 'Sphere' type particles and updates the original DataFrame in-place.
 
@@ -85,8 +84,8 @@ def process_sphere(source: BaseBeam, detector: Detector, scatterer_dataframe: pd
     )
 
     pms_detector = _PyMieSim.detector.Photodiode.build_sequential(
-        mode_number='NC00',
         total_size=total_size,
+        mode_number='NC00',
         NA=detector.numerical_aperture,
         cache_NA=detector.cache_numerical_aperture,
         gamma_offset=detector.gamma_angle,
@@ -103,11 +102,10 @@ def process_sphere(source: BaseBeam, detector: Detector, scatterer_dataframe: pd
     coupling_value = experiment.get_sequential('coupling')
 
     # Here we update the original DataFrame in-place using the mask.
-
     scatterer_dataframe.loc[sphere_mask, detector.name] = pint_pandas.PintArray(coupling_value, dtype=units.watt)
 
 
-def process_coreshell(source: BaseBeam, detector: Detector, scatterer_dataframe: pd.DataFrame, coreshell_mask: pd.Series, medium_refractive_index: Quantity) -> None:
+def process_coreshell(source: BaseBeam, detector: object, scatterer_dataframe: pd.DataFrame, coreshell_mask: pd.Series, medium_refractive_index: Quantity) -> None:
     df = scatterer_dataframe[coreshell_mask]
     total_size = len(df)
 
@@ -140,8 +138,8 @@ def process_coreshell(source: BaseBeam, detector: Detector, scatterer_dataframe:
     )
 
     pms_detector = _PyMieSim.detector.Photodiode.build_sequential(
-        mode_number='NC00',
         total_size=total_size,
+        mode_number='NC00',
         NA=detector.numerical_aperture,
         cache_NA=detector.cache_numerical_aperture,
         gamma_offset=detector.gamma_angle,

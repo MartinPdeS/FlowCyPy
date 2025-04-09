@@ -42,7 +42,6 @@ def test_add_signal_and_time(simple_signal):
     """
     t, signal = simple_signal
     ts = TriggeringSystem(
-        scheme="fixed-window",
         trigger_detector_name="detector1",
         threshold=0.6,
         lower_threshold=0.6
@@ -59,14 +58,13 @@ def test_no_time_error(simple_signal):
     """
     t, signal = simple_signal
     ts = TriggeringSystem(
-        scheme="fixed-window",
         trigger_detector_name="detector1",
         threshold=0.6,
         lower_threshold=0.6
     )
     ts.add_signal("detector1", signal)
-    with pytest.raises(RuntimeError):
-        ts.run()
+    with pytest.raises(ValueError):
+        ts.run(algorithm="fixed-window",)
 
 def test_no_trigger(no_trigger_signal):
     """
@@ -75,19 +73,19 @@ def test_no_trigger(no_trigger_signal):
     """
     t, signal = no_trigger_signal
     ts = TriggeringSystem(
-        scheme="fixed-window",
         trigger_detector_name="detector1",
         threshold=0.8,
         lower_threshold=0.8
     )
     ts.add_time(t)
-    ts.add_signal("detector1", signal)
+    ts.add_signal("detector2", signal)
 
-    with pytest.warns(UserWarning):
-        ts.run()
+    with pytest.raises(RuntimeError):
+        ts.run(algorithm="fixed-window")
+
     # Expect that no triggers are found (empty arrays returned)
-    assert ts.get_time_out("detector1").size == 0
-    assert ts.get_signal_out("detector1").size == 0
+    assert len(ts.get_times("detector2")) == 0
+    assert len(ts.get_signals("detector2")) == 0
 
 def test_trigger_fixed_window(simple_signal):
     """
@@ -102,7 +100,6 @@ def test_trigger_fixed_window(simple_signal):
     signal = np.zeros_like(t)
     signal[410:415] = 1.0  # spike well above a threshold of 0.6
     ts = TriggeringSystem(
-        scheme="fixed-window",
         trigger_detector_name="detector1",
         threshold=0.6,
         lower_threshold=0.6,
@@ -111,10 +108,10 @@ def test_trigger_fixed_window(simple_signal):
     )
     ts.add_time(t)
     ts.add_signal("detector1", signal)
-    ts.run()
+    ts.run(algorithm="fixed-window",)
     # Expect non-empty output arrays (i.e. at least one trigger is detected).
-    assert ts.get_time_out("detector1").size > 0
-    assert ts.get_signal_out("detector1").size > 0
+    assert len(ts.get_times("detector1")) > 0
+    assert len(ts.get_signals("detector1")) > 0
 
 def test_trigger_dynamic_single_threshold(simple_signal):
     """
@@ -129,7 +126,6 @@ def test_trigger_dynamic_single_threshold(simple_signal):
     signal = np.zeros_like(t)
     signal[300:350] = 1.0  # continuous high region
     ts = TriggeringSystem(
-        scheme="dynamic",
         trigger_detector_name="detector1",
         threshold=0.6,
         lower_threshold=0.6,
@@ -140,12 +136,12 @@ def test_trigger_dynamic_single_threshold(simple_signal):
     )
     ts.add_time(t)
     ts.add_signal("detector1", signal)
-    ts.run()
+    ts.run(algorithm="dynamic")
     # Ensure that triggers are detected.
-    assert ts.get_time_out("detector1").size > 0
-    assert ts.get_signal_out("detector1").size > 0
+    assert len(ts.get_times("detector1")) > 0
+    assert len(ts.get_signals("detector1")) > 0
     # Check that at least one segment is present by examining segment IDs.
-    unique_ids = np.unique(ts.get_segment_ID("detector1"))
+    unique_ids = np.unique(ts.get_segments_ID("detector1"))
     assert len(unique_ids) >= 1
 
 if __name__ == "__main__":
