@@ -38,7 +38,7 @@ Key Features
 - **Fluorescence Modeling**: Simulate fluorescence signals for labeled particles (e.g., EV surface markers).
 - **Visualization Tools**: Generate advanced plots, including density maps and signal traces.
 
-For full documentation and examples, visit the `FlowCyPy Documentation <https://martinpdes.github.io/FlowCyPy/>`_.
+For full documentation and examples, visit the `FlowCyPy Documentation <https://martinpdes.github.io/FlowCyPy/docs/latest/index.html>`_.
 
 Installation
 ------------
