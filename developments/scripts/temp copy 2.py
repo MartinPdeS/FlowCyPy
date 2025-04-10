@@ -23,35 +23,15 @@ Overview:
 
 import numpy as np
 from FlowCyPy import units
-
-
-# %%
-# Step 1: Configure Noise Settings
-# ---------------------------------
-# Noise settings are configured to simulate real-world imperfections. In this example, we include noise
-# globally but exclude specific types, such as shot noise and thermal noise.
-
-from FlowCyPy import NoiseSetting
-
-NoiseSetting.include_noises = True
-NoiseSetting.include_shot_noise = True
-NoiseSetting.include_dark_current_noise = True
-NoiseSetting.include_source_noise = True
-NoiseSetting.include_amplifier_noise = True
-
-NoiseSetting.assume_perfect_hydrodynamic_focusing = True
-
-
-# np.random.seed(3)  # Ensure reproducibility
-
-
-# %%
-# Step 2: Configure the Laser Source
-# ----------------------------------
-# The laser source generates light that interacts with the particles. Its parameters, like numerical
-# aperture and wavelength, affect how light scatters, governed by Mie theory.
-
+from FlowCyPy.detector import Detector
+from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy.amplifier import TransimpedanceAmplifier
 from FlowCyPy import GaussianBeam
+from FlowCyPy.flow_cell import FlowCell
+from FlowCyPy import ScattererCollection
+from FlowCyPy.population import Exosome, Sphere, distribution
+from FlowCyPy import FlowCytometer, circuits
+
 
 source = GaussianBeam(
     numerical_aperture=0.1 * units.AU,           # Numerical aperture
@@ -60,18 +40,6 @@ source = GaussianBeam(
     RIN=-140
 )
 
-
-# %%
-# Step 3: Set Up the Flow Cell
-# ----------------------------
-# The flow cell models the movement of particles in the cytometer. For example, the volume of fluid
-# passing through the cross-sectional area is calculated as:
-#
-# .. math::
-#     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
-
-from FlowCyPy.flow_cell import FlowCell
-
 flow_cell = FlowCell(
     sample_volume_flow=80 * units.microliter / units.minute,
     sheath_volume_flow=1 * units.milliliter / units.minute,
@@ -79,67 +47,20 @@ flow_cell = FlowCell(
     height=100 * units.micrometer,
 )
 
-# flow_cell.plot(n_samples=300)
-
-
-# %%
-# Step 4: Define ScattererCollection and Population
-# -------------------------------------------------
-# The scatterer represents particles in the flow. The concentration of particles in the flow cell is
-# given by:
-#
-# .. math::
-#     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
-
-from FlowCyPy import ScattererCollection
-from FlowCyPy.population import Exosome, Sphere, distribution
-
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
 exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
 
-spread_factor = 10
-f = 1
-
 population_0 = Sphere(
-    name='Pop: 150nm',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=10 * spread_factor),
-    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.005 * f * units.RIU)
-)
-population_1 = Sphere(
-    name='Pop: 100nm',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=100 * units.nanometer, spread=10 * spread_factor),
-    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.005 * f * units.RIU)
-)
-population_2 = Sphere(
-    name='Pop: 200nm',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=200 * units.nanometer, spread=10 * spread_factor),
-    refractive_index=distribution.Normal(mean=1.41 * units.RIU, std_dev=0.005 * f * units.RIU)
+    name='Population 0',
+    particle_count=100 * units.particle,
+    diameter=150 * units.nanometer,
+    refractive_index=1.44 * units.RIU
 )
 
-
-# Add an Exosome population
-scatterer_collection.add_population(population_0, population_1, population_2)
+scatterer_collection.add_population(population_0)
 
 scatterer_collection.dilute(factor=60)
-
-# Initialize the scatterer with the flow cell
-df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
-
-# df.plot(x='Diameter', y='RefractiveIndex')
-
-# %%
-# Step 5: Define Detectors
-# ------------------------
-# Detectors measure light intensity. Parameters like responsivity define the conversion of optical
-# power to electronic signals, and saturation level represents the maximum signal they can handle.
-
-from FlowCyPy.detector import Detector
-from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy.amplifier import TransimpedanceAmplifier
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
@@ -161,12 +82,6 @@ detector_1 = Detector(
     responsivity=1 * units.ampere / units.watt,
 )
 
-# detector_2 = Detector(
-#     name='det_2',
-#     phi_angle=30 * units.degree,                 # Side scatter angle
-#     numerical_aperture=0.7 * units.AU,
-#     responsivity=1 * units.ampere / units.watt,
-# )
 
 amplifier = TransimpedanceAmplifier(
     gain=10 * units.volt / units.ampere,
@@ -175,16 +90,6 @@ amplifier = TransimpedanceAmplifier(
     current_noise_density=.2 * units.femtoampere / units.sqrt_hertz
 )
 
-
-# %%
-# Step 6: Simulate Flow Cytometry Experiment
-# ------------------------------------------
-# The FlowCytometer combines all components to simulate scattering. The interaction between light
-# and particles follows Mie theory:
-#
-# .. math::
-#     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
-from FlowCyPy import FlowCytometer, circuits
 
 cytometer = FlowCytometer(
     source=source,
@@ -201,28 +106,12 @@ processing_steps = [
     circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
 ]
 
-# Run the flow cytometry simulation
-df = cytometer.prepare_acquisition(run_time=2 / 5 * units.millisecond)
+cytometer.prepare_acquisition(run_time=2 * units.millisecond)
 
 acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
-
-# _ = acquisition.scatterer.plot(
-#     # figsize=(10, 7),
-#     x='RefractiveIndex',
-#     y='Diameter',
-#     # log_scale=True,
-# )
-
-# _ = acquisition.scatterer.hist(
-#     # figsize=(10, 7),
-#     x='side',
-#     bins=100
-#     # y='forward',
-#     # z='RefractiveIndex',
-#     # log_scale=True,
-# )
-
+# forward_signal = acquisition.analog['foward']
+# side_signal = acquisition.analog['foward']
 
 # %%
 # Visualize the scatter signals from both detectors

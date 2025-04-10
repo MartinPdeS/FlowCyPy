@@ -57,9 +57,9 @@ def compute_detected_signal(
     )
 
     # Process sphere and core-shell scatterers.
-    if len(sphere_mask) != 0:
+    if len(scatterer_dataframe[sphere_mask]) != 0:
         process_sphere(mask=sphere_mask, **kwargs)
-    if len(coreshell_mask) != 0:
+    if len(scatterer_dataframe[coreshell_mask]) != 0:
         process_coreshell(mask=coreshell_mask, **kwargs)
 
 
