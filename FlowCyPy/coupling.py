@@ -4,14 +4,14 @@ import pandas as pd
 import pint_pandas
 
 from FlowCyPy.source import BaseBeam
-from PyMieSim.units import Quantity, degree, watt
+from PyMieSim.units import Quantity
 from FlowCyPy import units
 
 
 def compute_detected_signal(
     source: BaseBeam,
     detector: object,
-    scatterer_df: pd.DataFrame,
+    scatterer_dataframe: pd.DataFrame,
     medium_refractive_index: Quantity,
     compute_cross_section: bool = True
 ) -> None:
@@ -29,7 +29,7 @@ def compute_detected_signal(
     detector : object
         Detector object that includes attributes such as numerical aperture, angles, and sampling
         configuration.
-    scatterer_df : pd.DataFrame
+    scatterer_dataframe : pd.DataFrame
         DataFrame containing scatterer properties. It must include a column named 'type' with values
         'Sphere' or 'CoreShell', and additional columns required for each scatterer type.
     medium_refractive_index : Quantity
@@ -45,19 +45,29 @@ def compute_detected_signal(
         optionally, the scattering cross section.
     """
     # Create boolean masks for each scatterer type.
-    sphere_mask = scatterer_df["type"] == "Sphere"
-    coreshell_mask = scatterer_df["type"] == "CoreShell"
+    sphere_mask = scatterer_dataframe["type"] == "Sphere"
+    coreshell_mask = scatterer_dataframe["type"] == "CoreShell"
+
+    kwargs = dict(
+        source=source,
+        detector=detector,
+        medium_refractive_index=medium_refractive_index,
+        compute_cross_section=compute_cross_section,
+        scatterer_dataframe=scatterer_dataframe
+    )
 
     # Process sphere and core-shell scatterers.
-    process_sphere(source, detector, scatterer_df, sphere_mask, medium_refractive_index, compute_cross_section)
-    process_coreshell(source, detector, scatterer_df, coreshell_mask, medium_refractive_index, compute_cross_section)
+    if len(sphere_mask) != 0:
+        process_sphere(mask=sphere_mask, **kwargs)
+    if len(coreshell_mask) != 0:
+        process_coreshell(mask=coreshell_mask, **kwargs)
 
 
 def process_sphere(
     source: BaseBeam,
     detector: object,
-    scatterer_df: pd.DataFrame,
-    sphere_mask: pd.Series,
+    scatterer_dataframe: pd.DataFrame,
+    mask: pd.Series,
     medium_refractive_index: Quantity,
     compute_cross_section: bool = False
 ) -> None:
@@ -77,7 +87,7 @@ def process_sphere(
         Light source object.
     detector : object
         Detector object containing measurement settings.
-    scatterer_df : pd.DataFrame
+    scatterer_dataframe : pd.DataFrame
         DataFrame with scatterer data to be updated.
     sphere_mask : pd.Series
         Boolean mask that selects rows corresponding to 'Sphere' scatterers.
@@ -91,24 +101,22 @@ def process_sphere(
     None
     """
     # Extract rows for sphere scatterers.
-    df_sphere = scatterer_df[sphere_mask]
+    df_sphere = scatterer_dataframe[mask]
     num_particles = len(df_sphere)
-    if num_particles == 0:
-        return
 
     # Compute amplitude signal using spatial positions.
     amplitude = source.get_amplitude_signal(
         size=num_particles,
         bandwidth=detector.signal_digitizer.bandwidth,
-        x=scatterer_df["x"],
-        y=scatterer_df["y"]
+        x=scatterer_dataframe["x"],
+        y=scatterer_dataframe["y"]
     )
 
     # Build the plane wave source for simulation.
     pms_source = _PyMieSim.source.PlaneWave.build_sequential(
         total_size=num_particles,
         wavelength=source.wavelength,
-        polarization=0 * degree,
+        polarization=0 * units.degree,
         amplitude=amplitude
     )
 
@@ -129,9 +137,9 @@ def process_sphere(
         cache_NA=detector.cache_numerical_aperture,
         gamma_offset=detector.gamma_angle,
         phi_offset=detector.phi_angle,
-        polarization_filter=np.nan * degree,
+        polarization_filter=np.nan * units.degree,
         sampling=detector.sampling,
-        rotation=0 * degree
+        rotation=0 * units.degree
     )
 
     # Set up the experiment combining source, scatterer, and detector.
@@ -139,19 +147,19 @@ def process_sphere(
 
     # Compute the coupling signal.
     coupling_values = experiment.get_sequential("coupling")
-    scatterer_df.loc[sphere_mask, detector.name] = pint_pandas.PintArray(coupling_values, dtype=units.watt)
+    scatterer_dataframe.loc[mask, detector.name] = pint_pandas.PintArray(coupling_values, dtype=units.watt)
 
     # Optionally compute the scattering cross section and update the DataFrame.
     if compute_cross_section:
         cross_section = experiment.get_sequential("Csca")
-        scatterer_df.loc[sphere_mask, "Csca"] = pint_pandas.PintArray(cross_section, dtype=units.meter * units.meter)
+        scatterer_dataframe.loc[mask, "Csca"] = pint_pandas.PintArray(cross_section, dtype=units.meter * units.meter)
 
 
 def process_coreshell(
     source: BaseBeam,
     detector: object,
-    scatterer_df: pd.DataFrame,
-    coreshell_mask: pd.Series,
+    scatterer_dataframe: pd.DataFrame,
+    mask: pd.Series,
     medium_refractive_index: Quantity,
     compute_cross_section: bool = False
 ) -> None:
@@ -171,7 +179,7 @@ def process_coreshell(
         Light source object.
     detector : object
         Detector object containing measurement settings.
-    scatterer_df : pd.DataFrame
+    scatterer_dataframe : pd.DataFrame
         DataFrame with scatterer data to be updated.
     coreshell_mask : pd.Series
         Boolean mask that selects rows corresponding to 'CoreShell' scatterers.
@@ -185,24 +193,22 @@ def process_coreshell(
     None
     """
     # Extract rows for core-shell scatterers.
-    df_coreshell = scatterer_df[coreshell_mask]
+    df_coreshell = scatterer_dataframe[mask]
     num_particles = len(df_coreshell)
-    if num_particles == 0:
-        return
 
     # Compute amplitude signal using spatial positions.
     amplitude = source.get_amplitude_signal(
         size=num_particles,
         bandwidth=detector.signal_digitizer.bandwidth,
-        x=scatterer_df["x"],
-        y=scatterer_df["y"]
+        x=scatterer_dataframe["x"],
+        y=scatterer_dataframe["y"]
     )
 
     # Build the plane wave source for simulation.
     pms_source = _PyMieSim.source.PlaneWave.build_sequential(
         total_size=num_particles,
         wavelength=source.wavelength,
-        polarization=0 * degree,
+        polarization=0 * units.degree,
         amplitude=amplitude
     )
 
@@ -225,9 +231,9 @@ def process_coreshell(
         cache_NA=detector.cache_numerical_aperture,
         gamma_offset=detector.gamma_angle,
         phi_offset=detector.phi_angle,
-        polarization_filter=np.nan * degree,
+        polarization_filter=np.nan * units.degree,
         sampling=detector.sampling,
-        rotation=0 * degree
+        rotation=0 * units.degree
     )
 
     # Set up the experiment combining source, scatterer, and detector.
@@ -235,9 +241,9 @@ def process_coreshell(
 
     # Compute the coupling signal.
     coupling_values = experiment.get_sequential("coupling")
-    scatterer_df.loc[coreshell_mask, detector.name] = pint_pandas.PintArray(coupling_values, dtype=units.watt)
+    scatterer_dataframe.loc[mask, detector.name] = pint_pandas.PintArray(coupling_values, dtype=units.watt)
 
     # Optionally compute the scattering cross section and update the DataFrame.
     if compute_cross_section:
         cross_section = experiment.get_sequential("Csca")
-        scatterer_df.loc[coreshell_mask, "Csca"] = pint_pandas.PintArray(cross_section, dtype=units.meter * units.meter)
+        scatterer_dataframe.loc[mask, "Csca"] = pint_pandas.PintArray(cross_section, dtype=units.meter * units.meter)
