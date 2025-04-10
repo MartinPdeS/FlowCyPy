@@ -90,7 +90,6 @@ amplifier = TransimpedanceAmplifier(
     current_noise_density=.2 * units.femtoampere / units.sqrt_hertz
 )
 
-
 cytometer = FlowCytometer(
     source=source,
     transimpedance_amplifier=amplifier,

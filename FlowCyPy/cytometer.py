@@ -277,16 +277,19 @@ class FlowCytometer:
 
             coupling_power = np.zeros(self.sequence_length, dtype='float64')
 
-            interface_signal_generator.generate_pulses(
-                signal=coupling_power,
-                widths=self.scatterer_dataframe['Widths'].pint.to('second').values.quantity.magnitude,
-                centers=self.scatterer_dataframe['Time'].pint.to('second').values.quantity.magnitude,
-                coupling_power=self.scatterer_dataframe[column].pint.to('watt').values.quantity.magnitude,
-                time=signal_dataframe['Time'].pint.to('second').values.quantity.magnitude,
-                background_power=self.background_power.to('watt').magnitude
-            )
+            if self.scatterer_dataframe.empty:
+                coupling_power += self.background_power.to('watt')
+            else:
+                interface_signal_generator.generate_pulses(
+                    signal=coupling_power,
+                    widths=self.scatterer_dataframe['Widths'].pint.to('second').values.quantity.magnitude,
+                    centers=self.scatterer_dataframe['Time'].pint.to('second').values.quantity.magnitude,
+                    coupling_power=self.scatterer_dataframe[column].pint.to('watt').values.quantity.magnitude,
+                    time=signal_dataframe['Time'].pint.to('second').values.quantity.magnitude,
+                    background_power=self.background_power.to('watt').magnitude
+                )
 
-            coupling_power = coupling_power * units.watt
+                coupling_power = coupling_power * units.watt
 
             if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
                 photocurrent = (coupling_power * detector.responsivity)
