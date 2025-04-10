@@ -267,8 +267,6 @@ class FlowCytometer:
         """
         signal_dataframe = self._initialize_signal(run_time=self.run_time)
 
-        # signal_dict = dict()
-
         for column in signal_dataframe:
             if column == 'Time':
                 continue
