@@ -129,7 +129,7 @@ scatterer_collection.dilute(factor=60)
 # Initialize the scatterer with the flow cell
 df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
 
-# df.plot(x='Diameter', bins='auto')
+# df.plot(x='Diameter', y='RefractiveIndex')
 
 # %%
 # Step 5: Define Detectors
