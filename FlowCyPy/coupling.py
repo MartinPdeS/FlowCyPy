@@ -42,7 +42,7 @@ def compute_detected_signal(
     -------
     None
         The input DataFrame is updated in place with new columns for the detected coupling signal and,
-        optionally, the scattering cross section.
+        optionally, the scattering cross section .
     """
     # Create boolean masks for each scatterer type.
     sphere_mask = scatterer_dataframe["type"] == "Sphere"
