@@ -53,7 +53,7 @@ exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
 
 population_0 = Sphere(
     name='Population 0',
-    particle_count=100 * units.particle,
+    particle_count=1 * units.particle,
     diameter=150 * units.nanometer,
     refractive_index=1.44 * units.RIU
 )
