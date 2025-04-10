@@ -25,7 +25,7 @@ class BasePopulation:
 
         This validator ensures that the refractive index is provided either as a Quantity with the correct
         refractive index units (RIU) or as an instance of distribution.Base. If a Quantity is provided,
-        it is converted to a Delta distribution.
+        it is converted to a Delta distribution .
 
         Parameters
         ----------
