@@ -583,15 +583,6 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">signal_digitizer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">background_power</span> <span class="o">=</span> <span class="n">background_power</span>
 
-        <span class="c1"># assert len(self.detectors) == 2, &#39;For now, FlowCytometer can only take two detectors for the analysis.&#39;</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Both detectors cannot have the same name&#39;</span>
-
-        <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="n">detectors</span><span class="p">:</span>
-            <span class="n">detector</span><span class="o">.</span><span class="n">cytometer</span> <span class="o">=</span> <span class="bp">self</span>
-
-        <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
-            <span class="n">detector</span><span class="o">.</span><span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">signal_digitizer</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_run_coupling_analysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scatterer_dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes and assigns the optical coupling power for each particle-detection event.</span>
@@ -618,6 +609,7 @@ document.write(`
             <span class="n">compute_detected_signal</span><span class="p">(</span>
                 <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
                 <span class="n">detector</span><span class="o">=</span><span class="n">detector</span><span class="p">,</span>
+                <span class="n">signal_digitizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_digitizer</span><span class="p">,</span>
                 <span class="n">scatterer_dataframe</span><span class="o">=</span><span class="n">scatterer_dataframe</span><span class="p">,</span>
                 <span class="n">medium_refractive_index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">medium_refractive_index</span>
             <span class="p">)</span>
