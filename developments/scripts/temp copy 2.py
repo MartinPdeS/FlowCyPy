@@ -28,10 +28,14 @@ from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 from FlowCyPy import GaussianBeam
 from FlowCyPy.flow_cell import FlowCell
+from FlowCyPy.noises import NoiseSetting
 from FlowCyPy import ScattererCollection
 from FlowCyPy.population import Exosome, Sphere, distribution
 from FlowCyPy import FlowCytometer, circuits
 
+
+NoiseSetting.include_noises = True
+NoiseSetting.assume_perfect_hydrodynamic_focusing = True
 
 source = GaussianBeam(
     numerical_aperture=0.1 * units.AU,           # Numerical aperture
@@ -51,16 +55,35 @@ scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.
 
 exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
 
+spread_factor = 1
+
 population_0 = Sphere(
-    name='Population 0',
-    particle_count=1 * units.particle,
-    diameter=150 * units.nanometer,
-    refractive_index=1.44 * units.RIU
+    name='Population: 100nm',
+    particle_count=100 * units.particle,
+    # diameter=150 * units.nanometer,
+    diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30 * spread_factor),
+    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.02 * units.RIU)
 )
 
-scatterer_collection.add_population(population_0)
+population_1 = Sphere(
+    name='Population: 50nm',
+    particle_count=100 * units.particle,
+    # diameter=50 * units.nanometer,
+    diameter=distribution.RosinRammler(characteristic_property=50 * units.nanometer, spread=30 * spread_factor),
+    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.02 * units.RIU)
+)
 
-scatterer_collection.dilute(factor=60)
+population_2 = Sphere(
+    name='Population: 150nm',
+    particle_count=100 * units.particle,
+    # diameter=100 * units.nanometer,
+    diameter=distribution.RosinRammler(characteristic_property=100 * units.nanometer, spread=30 * spread_factor),
+    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.02 * units.RIU)
+)
+
+scatterer_collection.add_population(population_0, population_1, population_2)
+
+scatterer_collection.dilute(factor=2)
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
@@ -86,8 +109,8 @@ detector_1 = Detector(
 amplifier = TransimpedanceAmplifier(
     gain=10 * units.volt / units.ampere,
     bandwidth=10 * units.megahertz,
-    voltage_noise_density=.1 * units.nanovolt / units.sqrt_hertz,
-    current_noise_density=.2 * units.femtoampere / units.sqrt_hertz
+    voltage_noise_density=.01 * units.nanovolt / units.sqrt_hertz,
+    current_noise_density=.02 * units.femtoampere / units.sqrt_hertz
 )
 
 cytometer = FlowCytometer(
@@ -109,20 +132,14 @@ cytometer.prepare_acquisition(run_time=2 * units.millisecond)
 
 acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
-# forward_signal = acquisition.analog['foward']
-# side_signal = acquisition.analog['foward']
+acquisition.scatterer.plot(x='Diameter', y='RefractiveIndex')
+acquisition.scatterer.plot(x='forward', y='side')
 
-# %%
-# Visualize the scatter signals from both detectors
 acquisition.analog.plot()
 
-# %%
-# Step 7: Analyze Detected Signals
-# --------------------------------
-# The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 # window size and threshold.
 triggered_acquisition = acquisition.run_triggering(
-    threshold=2 * units.microvolt,
+    threshold=0.1 * units.microvolt,
     trigger_detector_name='forward',
     max_triggers=-1,
     pre_buffer=20,

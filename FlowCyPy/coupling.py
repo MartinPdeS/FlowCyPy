@@ -11,6 +11,7 @@ from FlowCyPy import units
 def compute_detected_signal(
     source: BaseBeam,
     detector: object,
+    signal_digitizer: object,
     scatterer_dataframe: pd.DataFrame,
     medium_refractive_index: Quantity,
     compute_cross_section: bool = True
@@ -53,7 +54,8 @@ def compute_detected_signal(
         detector=detector,
         medium_refractive_index=medium_refractive_index,
         compute_cross_section=compute_cross_section,
-        scatterer_dataframe=scatterer_dataframe
+        scatterer_dataframe=scatterer_dataframe,
+        signal_digitizer=signal_digitizer
     )
 
     # Process sphere and core-shell scatterers.
@@ -66,6 +68,7 @@ def compute_detected_signal(
 def process_sphere(
     source: BaseBeam,
     detector: object,
+    signal_digitizer: object,
     scatterer_dataframe: pd.DataFrame,
     mask: pd.Series,
     medium_refractive_index: Quantity,
@@ -107,7 +110,7 @@ def process_sphere(
     # Compute amplitude signal using spatial positions.
     amplitude = source.get_amplitude_signal(
         size=num_particles,
-        bandwidth=detector.signal_digitizer.bandwidth,
+        bandwidth=signal_digitizer.bandwidth,
         x=scatterer_dataframe["x"],
         y=scatterer_dataframe["y"]
     )
@@ -158,6 +161,7 @@ def process_sphere(
 def process_coreshell(
     source: BaseBeam,
     detector: object,
+    signal_digitizer: object,
     scatterer_dataframe: pd.DataFrame,
     mask: pd.Series,
     medium_refractive_index: Quantity,
@@ -199,7 +203,7 @@ def process_coreshell(
     # Compute amplitude signal using spatial positions.
     amplitude = source.get_amplitude_signal(
         size=num_particles,
-        bandwidth=detector.signal_digitizer.bandwidth,
+        bandwidth=signal_digitizer.bandwidth,
         x=scatterer_dataframe["x"],
         y=scatterer_dataframe["y"]
     )

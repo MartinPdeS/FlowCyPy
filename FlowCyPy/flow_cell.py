@@ -347,6 +347,9 @@ class FlowCell:
         """
         Generates a DataFrame of event times and sampled velocities for each population based on the specified scheme.
         """
+        if len(populations) == 0:
+            return pd.DataFrame(columns=['Time', 'Velocity', 'x', 'y'])
+
         population_event_frames = [
             self._generate_poisson_events(run_time=run_time, population=population)
             for population in populations

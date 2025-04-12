@@ -90,7 +90,7 @@ class ScattererDataFrame(pd.DataFrame):
         if len(self) == 1:
             return
 
-        df, (x_unit, y_unit) = self.get_sub_dataframe(y, x)
+        df, (y_unit, x_unit) = self.get_sub_dataframe(y, x)
 
         with plt.style.context(mps):
             grid = sns.jointplot(
@@ -104,10 +104,10 @@ class ScattererDataFrame(pd.DataFrame):
                 marginal_kws={'bw_adjust': bandwidth_adjust}
             )
 
-        grid.figure.suptitle("Scatterer Sampling Distribution")
-        grid.ax_joint.set_xlabel(f"{x} [{x_unit}]")
-        grid.ax_joint.set_ylabel(f"{y} [{y_unit}]")
-        return grid
+            grid.figure.suptitle("Scatterer Sampling Distribution")
+            grid.ax_joint.set_xlabel(f"{x} [{x_unit}]")
+            grid.ax_joint.set_ylabel(f"{y} [{y_unit}]")
+            return grid
 
     @helper.plot_3d
     def plot_3d(

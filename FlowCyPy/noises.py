@@ -26,11 +26,11 @@ class NoiseSetting(metaclass=RestrictiveMeta):
         Whether to include shot noise in simulations. Default is True.
     include_dark_current_noise : bool
         Whether to include dark current noise in simulations. Default is True.
-    include_thermal_noise : bool
-        Whether to include thermal noise in simulations. Default is True.
+    include_amplifier_noise : bool
+        Whether to include amplifier noise in simulations. Default is True.
     include_source_noise : bool
         Whether to include Relative Intensity Noise (RIN) in simulations. Default is True.
-    include_flowcell_noise: bool
+    assume_perfect_hydrodynamic_focusing: bool
         Whether to include the noise coming for the transversal sampling of the scatterer position regaring the beam-localization.
 
     Methods
@@ -57,8 +57,8 @@ class NoiseSetting(metaclass=RestrictiveMeta):
     >>> noise_setting.include_noises = False
     >>> noise_setting.include_shot_noise
     False
-    >>> noise_setting.include_noises = True
-    >>> noise_setting.include_thermal_noise
+    >>> noise_setting.assume_perfect_hydrodynamic_focusing = True
+    >>> noise_setting.assume_perfect_hydrodynamic_focusing
     True
     """
     _instance = None

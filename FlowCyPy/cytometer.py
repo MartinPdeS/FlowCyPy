@@ -74,15 +74,6 @@ class FlowCytometer:
         self.signal_digitizer = signal_digitizer
         self.background_power = background_power
 
-        # assert len(self.detectors) == 2, 'For now, FlowCytometer can only take two detectors for the analysis.'
-        assert self.detectors[0].name != self.detectors[1].name, 'Both detectors cannot have the same name'
-
-        for detector in detectors:
-            detector.cytometer = self
-
-        for detector in self.detectors:
-            detector.signal_digitizer = signal_digitizer
-
     def _run_coupling_analysis(self, scatterer_dataframe: pd.DataFrame) -> None:
         """
         Computes and assigns the optical coupling power for each particle-detection event.
@@ -109,6 +100,7 @@ class FlowCytometer:
             compute_detected_signal(
                 source=self.source,
                 detector=detector,
+                signal_digitizer=self.signal_digitizer,
                 scatterer_dataframe=scatterer_dataframe,
                 medium_refractive_index=self.scatterer_collection.medium_refractive_index
             )
