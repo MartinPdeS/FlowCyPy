@@ -213,7 +213,7 @@ class ScattererCollection():
             sampling = len(sub_dataframe)
 
             # Generate sampling data for this population
-            sampling_data = population.generate_sampling(sampling)
+            sampling_data = population.generate_property_sampling(sampling)
 
             for key, value in sampling_data.items():
                 scatterer_dataframe.loc[mask, key] = PintArray(value, dtype=value.units)

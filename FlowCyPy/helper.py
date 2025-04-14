@@ -6,7 +6,31 @@ from functools import wraps
 import inspect
 from FlowCyPy.units import Quantity
 from FlowCyPy import units
-from MPSPlots.styles import mps
+import pint_pandas
+import numpy as np
+
+def get_dataframe_from_dict(dictionnary: dict, level_names: list = None) -> pd.DataFrame:
+    dfs = []
+    for pop_name, inner_dict in dictionnary.items():
+
+        df_pop = pd.DataFrame(
+            index=range(inner_dict.pop('n_elements'))
+        )
+
+        df_pop.index = pd.MultiIndex.from_product(
+            [[pop_name], df_pop.index],
+            names=level_names
+        )
+
+        for k, v in inner_dict.items():
+            df_pop[k] = pint_pandas.PintArray(v.magnitude, v.units)
+
+        dfs.append(df_pop)
+
+    if len(dfs) == 0:
+        return pd.DataFrame(columns=level_names).set_index(level_names)
+
+    return pd.concat(dfs)
 
 def validate_units(**expected_units):
     """
@@ -212,7 +236,7 @@ def add_event_to_ax(
     ax: plt.Axes,
     time_units: units.Quantity,
     palette: str = 'tab10',
-    show_populations: str | List[str] = None
+    filter_population: str | List[str] = None
 ) -> None:
     """
     Adds vertical markers for event occurrences in the scatterer data.
@@ -225,7 +249,7 @@ def add_event_to_ax(
         Time units to use for plotting.
     palette : str, optional
         Color palette for different populations (default: 'tab10').
-    show_populations : str or list of str, optional
+    filter_population : str or list of str, optional
         Populations to display. If None, all populations are shown.
     """
     # Get unique population names
@@ -233,7 +257,7 @@ def add_event_to_ax(
     color_mapping = dict(zip(unique_populations, sns.color_palette(palette, len(unique_populations))))
 
     for population_name, group in scatterer_dataframe.groupby('Population'):
-        if show_populations is not None and population_name not in show_populations:
+        if filter_population is not None and population_name not in filter_population:
             continue
         x = group.Time.pint.to(time_units)
         color = color_mapping[population_name]

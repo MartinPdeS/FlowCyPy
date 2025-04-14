@@ -89,6 +89,22 @@ def regression_for_K(dataframe: pd.DataFrame, power: float) -> tuple:
 
     return K_fit, median_signals, sigma_values
 
+class NameSpace():
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+
+    def __repr__(self):
+        output = ""
+        for k, v in self.kwargs.items():
+            output += f"{k} \t\t {v}\n"
+
+        return output
+
+    def __str__(self):
+        return self.__repr__()
 
 def compute_robust_stats(data):
     """
@@ -106,9 +122,14 @@ def compute_robust_stats(data):
     median = np.median(data)
     perc84 = np.percentile(data, 84.13)
     perc15 = np.percentile(data, 15.87)
-    rSD = (perc84 - perc15) / 2.0
-    rCV = rSD / median if median != 0 else np.nan
-    return median, rSD, rCV
+    standard_deviation = (perc84 - perc15) / 2.0
+    coefficient_of_variation = standard_deviation / median if median != 0 else np.nan
+
+    return NameSpace(
+        median=median,
+        coefficient_of_variation=coefficient_of_variation,
+        standard_deviation=standard_deviation
+    )
 
 def add_background_to_dataframe(dataframe, gain, detection_efficiency, background_level, powers, N_events):
     """
@@ -251,11 +272,11 @@ def add_signal_to_dataframe(
             corrected_events = total_events - dataframe.loc[index, 'BackGroundMedian']
 
             # Compute robust statistics: median signal and robust coefficient of variation.
-            median_signal, _, robust_coefficient_variation = compute_robust_stats(corrected_events)
+            data = compute_robust_stats(corrected_events)
 
             # Update the DataFrame with the computed values.
-            dataframe.loc[index, 'SignalMedian'] = median_signal
-            dataframe.loc[index, 'rCV'] = robust_coefficient_variation
+            dataframe.loc[index, 'SignalMedian'] = data.median
+            dataframe.loc[index, 'rCV'] = data.coefficient_of_variation
 
     return dataframe
 

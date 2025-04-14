@@ -1,6 +1,5 @@
 from typing import List
 import numpy as np
-import warnings
 import pandas as pd
 from pydantic.dataclasses import dataclass
 from pint_pandas import PintArray
@@ -8,11 +7,10 @@ import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 from pydantic import field_validator
 from FlowCyPy.population import BasePopulation
-from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy.units import Quantity
 from FlowCyPy import units
-from FlowCyPy.helper import validate_units
 from FlowCyPy.dataframe_subclass import ScattererDataFrame
+from FlowCyPy import helper
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -106,7 +104,6 @@ class FlowCell:
     mu: Quantity = 1e-3 * units.pascal * units.second
     N_terms: int = 25
     n_int: int = 200
-
     event_scheme: str = 'poisson'
 
     @field_validator('width', 'height', mode='plain')
@@ -129,7 +126,7 @@ class FlowCell:
 
         return value
 
-    @validate_units(run_time=units.second)
+    @helper.validate_units(run_time=units.second)
     def get_sample_volume(self, run_time: Quantity) -> Quantity:
         """
         Computes the volume passing through the flow cell over the given run time.
@@ -245,7 +242,7 @@ class FlowCell:
             self.dpdx = dpdx_saved
         return Q
 
-    def sample_particles(self, n_samples: int) -> tuple:
+    def sample_transverse_profile(self, n_samples: int) -> tuple:
         r"""
         Sample particles from the focused sample stream.
 
@@ -281,33 +278,65 @@ class FlowCell:
         velocities : ndarray
             A NumPy array of shape (n_samples,) containing the local x-direction velocities (in m/s).
         """
-        # Here we assume that the "Quantity" type has attributes 'magnitude' and 'units'.
-        # Adjust this section for your specific unit system.
-        y_samples = np.random.uniform(-self.sample.width.magnitude / 2, self.sample.width.magnitude / 2, n_samples) * self.sample.width.units
-        z_samples = np.random.uniform(-self.sample.height.magnitude / 2, self.sample.height.magnitude / 2, n_samples) * self.sample.height.units
+        x_samples = np.random.uniform(-self.sample.width.magnitude / 2, self.sample.width.magnitude / 2, n_samples) * self.sample.width.units
+        y_samples = np.random.uniform(-self.sample.height.magnitude / 2, self.sample.height.magnitude / 2, n_samples) * self.sample.height.units
 
-        velocities = self.velocity(y_samples, z_samples).to('meter / second')
+        velocities = self.velocity(x_samples, y_samples).to('meter / second')
         if len(velocities) !=0:
             velocities = velocities.to(velocities.max().to_compact().units)
 
-        return y_samples, z_samples, velocities
+        return dict(
+            x=x_samples, y=y_samples, Velocity=velocities
+        )
 
-    @validate_units(run_time=units.second)
-    def get_population_sampling(self, run_time: Quantity, scatterer_collection: ScattererCollection) -> List[Quantity]:
+    @helper.validate_units(run_time=units.second)
+    def _generate_event_dataframe(self, populations: List[BasePopulation], run_time: Quantity) -> pd.DataFrame:
         """
-        Calculates the number of events (particle counts) for each population based on run time.
+        Generates a DataFrame of event times and sampled velocities for each population based on the specified scheme.
         """
-        return [
-            p.particle_count.calculate_number_of_events(
-                flow_area=self.sample.area,
-                flow_speed=self.sample.average_flow_speed,
-                run_time=run_time
+        sampling_dict = {
+            p.name: {} for p in populations
+        }
+
+        for population in populations:
+            sub_dict = sampling_dict[population.name]
+            arrival_time = self._get_population_arrival_time(run_time=run_time, population=population)
+
+            n_events = len(arrival_time)
+
+            sub_dict['n_elements'] = len(arrival_time)
+
+            sub_dict['Time'] = arrival_time
+
+            sub_dict.update(
+                population.generate_property_sampling(n_events)
             )
-            for p in scatterer_collection.populations
-        ]
 
-    @validate_units(run_time=units.second)
-    def _generate_poisson_events(self, run_time: Quantity, population: BasePopulation) -> pd.DataFrame:
+            sub_dict.update(
+                self.sample_transverse_profile(n_events)
+            )
+
+        df = helper.get_dataframe_from_dict(
+            dictionnary=sampling_dict,
+            level_names=['Population', 'ScattererID']
+        )
+
+        df = ScattererDataFrame(df)
+
+        if not df.empty and self.event_scheme.lower() in ['uniform-random', 'uniform-sequential']:
+            total_events = len(df)
+            start_time = 0 * run_time.units
+            end_time = run_time
+            time_interval = (end_time - start_time) / total_events
+            evenly_spaced_times = np.arange(0, total_events) * time_interval
+
+            if self.event_scheme.lower() == 'uniform-random':
+                np.random.shuffle(evenly_spaced_times.magnitude)
+            df['Time'] = PintArray(evenly_spaced_times.to(units.second).magnitude, units.second)
+
+        return df
+
+    def _get_population_arrival_time(self, run_time: Quantity, population: BasePopulation) -> pd.DataFrame:
         """
         Generates particle arrival times using a Poisson process and samples a velocity for each event.
         """
@@ -324,63 +353,12 @@ class FlowCell:
         ) / (particle_flux.units) * units.particle
 
         arrival_times = np.cumsum(inter_arrival_times)
+
         arrival_times = arrival_times[arrival_times <= run_time]
 
-        dataframe = pd.DataFrame()
-        dataframe['Time'] = PintArray(arrival_times, dtype=arrival_times.units)
+        return arrival_times
 
-        # Sample velocity for each event using the geometry-specific velocity profile.
-        x, y, velocities = self.sample_particles(len(arrival_times))
-
-        dataframe['Velocity'] = PintArray(velocities, dtype=velocities.units)
-
-        dataframe['x'] = PintArray(x, dtype=x.units)
-        dataframe['y'] = PintArray(y, dtype=y.units)
-
-        if len(dataframe) == 0:
-            warnings.warn("Population has been initialized with 0 events.")
-
-        return dataframe
-
-    @validate_units(run_time=units.second)
-    def _generate_event_dataframe(self, populations: List[BasePopulation], run_time: Quantity) -> pd.DataFrame:
-        """
-        Generates a DataFrame of event times and sampled velocities for each population based on the specified scheme.
-        """
-        if len(populations) == 0:
-            return pd.DataFrame(columns=['Time', 'Velocity', 'x', 'y'])
-
-        population_event_frames = [
-            self._generate_poisson_events(run_time=run_time, population=population)
-            for population in populations
-        ]
-
-        # Loop over each dataframe to make sure they share the same units
-        ref_dataframe = population_event_frames[0]
-        for df in population_event_frames:
-            for col in df.columns:
-                df[col] = df[col].pint.to(ref_dataframe[col].pint.units)
-
-        event_dataframe = pd.concat(population_event_frames, keys=[pop.name for pop in populations])
-
-        event_dataframe.index.names = ["Population", "Index"]
-
-        if self.event_scheme.lower() in ['uniform-random', 'uniform-sequential']:
-            total_events = len(event_dataframe)
-            start_time = 0 * run_time.units
-            end_time = run_time
-            time_interval = (end_time - start_time) / total_events
-            evenly_spaced_times = np.arange(0, total_events) * time_interval
-
-            if self.event_scheme.lower() == 'uniform-random':
-                np.random.shuffle(evenly_spaced_times.magnitude)
-            event_dataframe['Time'] = PintArray(evenly_spaced_times.to(units.second).magnitude, units.second)
-
-        scatterer_dataframe = ScattererDataFrame(event_dataframe)
-        scatterer_dataframe.attrs['run_time'] = run_time
-        return scatterer_dataframe
-
-    def plot(self, n_samples: int, figsize: tuple = (7, 4), ax: plt.Axes = None, show: bool = True) -> None:
+    def plot(self, n_samples: int = 100, figsize: tuple = (7, 4), ax: plt.Axes = None, show: bool = True) -> None:
         r"""
         Plot the spatial distribution of sampled particles with velocity color-coding.
 
@@ -423,7 +401,7 @@ class FlowCell:
         >>> ax = my_object.plot(n_samples=500)
         >>> # The plot is displayed if show=True, and ax can be used for further customization.
         """
-        y_vals, z_vals, velocities = self.sample_particles(n_samples)
+        sampling = self.sample_transverse_profile(n_samples)
 
         length_units = self.width.units
 
@@ -433,9 +411,9 @@ class FlowCell:
                 _, ax = plt.subplots(1, 1, figsize=figsize)
 
         sc = ax.scatter(
-            y_vals.to(length_units).magnitude,
-            z_vals.to(length_units).magnitude,
-            c=velocities.magnitude,
+            sampling['x'].to(length_units).magnitude,
+            sampling['y'].to(length_units).magnitude,
+            c=sampling['Velocity'].magnitude,
             cmap="viridis",
             edgecolor="black",
             label='Particle sampling'
@@ -445,7 +423,7 @@ class FlowCell:
         from mpl_toolkits.axes_grid1 import make_axes_locatable
         divider = make_axes_locatable(ax)
         cax = divider.append_axes("right", size="5%", pad=0.05)
-        plt.colorbar(sc, cax=cax, label=f"Velocity [{velocities.units}]")
+        plt.colorbar(sc, cax=cax, label=f"Velocity [{sampling['Velocity'].units}]")
 
         ax.set(
             xlabel=f"X [{length_units}]",

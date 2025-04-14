@@ -599,14 +599,11 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
         axes = {name: ax for name, ax in zip(self.detector_names + ['scatterer'], axes_array)}
         self._plot_detector_data(axes=axes, time_units=time_units, signal_units=signal_units)
 
-        if filter_population is None:
-            filter_population = self.attrs['scatterer_dataframe'].index.get_level_values('Population').unique()
-
         helper.add_event_to_ax(
             self.attrs['scatterer_dataframe'],
             ax=axes['scatterer'],
             time_units=time_units,
-            show_populations=filter_population
+            filter_population=filter_population
         )
         axes['scatterer'].set_xlabel(f"Time [{time_units}]")
 

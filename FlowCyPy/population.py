@@ -144,7 +144,7 @@ class Sphere(BasePopulation):
             if isinstance(attr_value, Quantity):
                 setattr(self, attr_name, attr_value.to_base_units())
 
-    def generate_sampling(self, sampling: int) -> tuple:
+    def generate_property_sampling(self, sampling: int) -> tuple:
         """
         Generate a sampling of particle properties.
 
@@ -254,7 +254,7 @@ class CoreShell(BasePopulation):
         shell = self.shell_thickness.generate(sampling)
         return core + 2 * shell
 
-    def generate_sampling(self, sampling: Quantity) -> tuple:
+    def generate_property_sampling(self, sampling: Quantity) -> tuple:
         r"""
         Generate a sampling of core-shell particle properties.
 

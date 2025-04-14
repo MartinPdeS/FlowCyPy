@@ -49,7 +49,10 @@ flow_cell = FlowCell(
     sheath_volume_flow=1 * units.milliliter / units.minute,
     width=100 * units.micrometer,
     height=100 * units.micrometer,
+    event_scheme='uniform-sequential'
 )
+
+# flow_cell.plot(100)
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
@@ -81,7 +84,7 @@ population_2 = Sphere(
     refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.02 * units.RIU)
 )
 
-scatterer_collection.add_population(population_0, population_1, population_2)
+# scatterer_collection.add_population(population_0, population_1, population_2)
 
 scatterer_collection.dilute(factor=2)
 
@@ -128,12 +131,12 @@ processing_steps = [
     circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
 ]
 
-cytometer.prepare_acquisition(run_time=2 * units.millisecond)
+cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
 
 acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
-acquisition.scatterer.plot(x='Diameter', y='RefractiveIndex')
-acquisition.scatterer.plot(x='forward', y='side')
+# acquisition.scatterer.plot(x='Diameter', y='RefractiveIndex')
+# acquisition.scatterer.plot(x='forward', y='side')
 
 acquisition.analog.plot()
 

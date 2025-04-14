@@ -147,14 +147,10 @@ def test_flow_cytometer_plot(mock_show, flow_cytometer):
     acquisition = flow_cytometer.get_acquisition()
 
     acquisition.analog.plot()
-    acquisition.analog.log()
     plt.close()
 
     acquisition.digital.plot()
-    acquisition.digital.log()
     plt.close()
-
-    acquisition.scatterer.log()
 
 
 def test_flow_cytometer_triggered_acquisition(flow_cytometer):

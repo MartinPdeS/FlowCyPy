@@ -107,13 +107,13 @@ def test_compute_channel_flow(valid_flowcell):
 def test_sample_particles(valid_flowcell):
     fc = valid_flowcell
     n_samples = 1000
-    y_samples, z_samples, velocities = fc.sample_particles(n_samples)
-    assert len(y_samples) == n_samples
-    assert len(z_samples) == n_samples
-    assert len(velocities) == n_samples
+    sampling_dict = fc.sample_transverse_profile(n_samples)
+    assert len(sampling_dict['y']) == n_samples
+    assert len(sampling_dict['x']) == n_samples
+    assert len(sampling_dict['Velocity']) == n_samples
     # Check that velocities are finite.
-    v_arr = velocities.magnitude if hasattr(velocities, "magnitude") else velocities
-    assert np.all(np.isfinite(v_arr))
+
+    assert np.all(np.isfinite(sampling_dict['Velocity'].magnitude))
 
 def test_plot_method(valid_flowcell, monkeypatch):
     fc = valid_flowcell
@@ -134,7 +134,7 @@ def test_get_sample_volume(valid_flowcell):
 
 def test_generate_poisson_events(valid_flowcell, real_population):
     run_time = 10 * units.second
-    df = valid_flowcell._generate_poisson_events(run_time, real_population)
+    df = valid_flowcell._generate_event_dataframe(run_time=run_time, populations=[real_population])
     expected_columns = {"Time", "Velocity", "x", "y"}
     assert expected_columns.issubset(set(df.columns))
     if not df.empty:
@@ -142,15 +142,15 @@ def test_generate_poisson_events(valid_flowcell, real_population):
 
 def test_generate_event_dataframe(valid_flowcell, real_population):
     run_time = 10 * units.second
-    df_event = valid_flowcell._generate_event_dataframe([real_population], run_time)
+    df_event = valid_flowcell._generate_event_dataframe(populations=[real_population], run_time=run_time)
     # Check that the DataFrame has a MultiIndex with "Population" and "Index"
     assert "Population" in df_event.index.names
-    assert "Index" in df_event.index.names
+    assert "ScattererID" in df_event.index.names
     assert len(df_event) > 0
 
 def test_event_dataframe_units(valid_flowcell, real_scatterer_collection):
     run_time = 10 * units.second
-    df_event = valid_flowcell._generate_event_dataframe(real_scatterer_collection.populations, run_time)
+    df_event = valid_flowcell._generate_event_dataframe(populations=real_scatterer_collection.populations, run_time=run_time)
     # Check that each column has pint arrays with units (assume the column has .pint attribute)
     for col in df_event.columns:
         assert hasattr(df_event[col], "pint")

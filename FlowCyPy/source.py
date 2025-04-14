@@ -8,6 +8,7 @@ from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy import units
 from FlowCyPy.units import Quantity, meter, joule, particle, degree, volt, AU
 from FlowCyPy.noises import NoiseSetting
+import pint_pandas
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -271,6 +272,8 @@ class GaussianBeam(BaseBeam):
         return E0 * np.exp(-(y ** 2) / (self.waist ** 2) - (z ** 2) / (self.waist ** 2))
 
     def get_particle_width(self, velocity: Quantity) -> Quantity:
+        if len(velocity) == 0:
+            return pint_pandas.PintArray([], units.meter)
         return self.waist / (2 * velocity)
 
 
