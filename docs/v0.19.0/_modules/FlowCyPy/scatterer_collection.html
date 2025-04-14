@@ -739,7 +739,7 @@ document.write(`
             <span class="n">sampling</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_dataframe</span><span class="p">)</span>
 
             <span class="c1"># Generate sampling data for this population</span>
-            <span class="n">sampling_data</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">generate_sampling</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+            <span class="n">sampling_data</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">generate_property_sampling</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">sampling_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>

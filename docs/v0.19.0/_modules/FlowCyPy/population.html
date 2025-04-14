@@ -653,9 +653,9 @@ document.write(`
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">())</span>
 
-<div class="viewcode-block" id="Sphere.generate_sampling">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.Sphere.generate_sampling">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">generate_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<div class="viewcode-block" id="Sphere.generate_property_sampling">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.Sphere.generate_property_sampling">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_property_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a sampling of particle properties.</span>
 
@@ -772,9 +772,9 @@ document.write(`
         <span class="k">return</span> <span class="n">core</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">shell</span></div>
 
 
-<div class="viewcode-block" id="CoreShell.generate_sampling">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.CoreShell.generate_sampling">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">generate_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<div class="viewcode-block" id="CoreShell.generate_property_sampling">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.CoreShell.generate_property_sampling">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_property_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a sampling of core-shell particle properties.</span>
 
