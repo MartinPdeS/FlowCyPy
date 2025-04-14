@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_2404691b0fd86af0_scatterer_collection_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-04-12 12:43 +0000
+            created at 2025-04-14 13:21 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -228,7 +228,7 @@
     <p class="par run show_par"><span class="n"><a id="t144" href="#t144">144</a></span><span class="t">            <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">attr_value</span><span class="op">,</span> <span class="nam">Quantity</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">144&#x202F;&#x219B;&#x202F;145</span><span class="annotate long">line 144 didn't jump to line 145 because the condition on line 144 was never true</span></span></p>
     <p class="mis show_mis"><span class="n"><a id="t145" href="#t145">145</a></span><span class="t">                <span class="nam">setattr</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">attr_name</span><span class="op">,</span> <span class="nam">attr_value</span><span class="op">.</span><span class="nam">to_base_units</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t146" href="#t146">146</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t147" href="#t147">147</a></span><span class="t">    <span class="key">def</span> <span class="nam">generate_sampling</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">sampling</span><span class="op">:</span> <span class="nam">int</span><span class="op">)</span> <span class="op">-></span> <span class="nam">tuple</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t147" href="#t147">147</a></span><span class="t">    <span class="key">def</span> <span class="nam">generate_property_sampling</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">sampling</span><span class="op">:</span> <span class="nam">int</span><span class="op">)</span> <span class="op">-></span> <span class="nam">tuple</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t148" href="#t148">148</a></span><span class="t">        <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t149" href="#t149">149</a></span><span class="t"><span class="str">        Generate a sampling of particle properties.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t150" href="#t150">150</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -338,7 +338,7 @@
     <p class="mis show_mis"><span class="n"><a id="t254" href="#t254">254</a></span><span class="t">        <span class="nam">shell</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">shell_thickness</span><span class="op">.</span><span class="nam">generate</span><span class="op">(</span><span class="nam">sampling</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t255" href="#t255">255</a></span><span class="t">        <span class="key">return</span> <span class="nam">core</span> <span class="op">+</span> <span class="num">2</span> <span class="op">*</span> <span class="nam">shell</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t256" href="#t256">256</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t257" href="#t257">257</a></span><span class="t">    <span class="key">def</span> <span class="nam">generate_sampling</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">sampling</span><span class="op">:</span> <span class="nam">Quantity</span><span class="op">)</span> <span class="op">-></span> <span class="nam">tuple</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t257" href="#t257">257</a></span><span class="t">    <span class="key">def</span> <span class="nam">generate_property_sampling</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">sampling</span><span class="op">:</span> <span class="nam">Quantity</span><span class="op">)</span> <span class="op">-></span> <span class="nam">tuple</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t258" href="#t258">258</a></span><span class="t">        <span class="str">r"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t259" href="#t259">259</a></span><span class="t"><span class="str">        Generate a sampling of core-shell particle properties.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t260" href="#t260">260</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -440,7 +440,7 @@
             <a class="nav" href="z_2404691b0fd86af0_scatterer_collection_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.4">coverage.py v7.6.4</a>,
-            created at 2025-04-12 12:43 +0000
+            created at 2025-04-14 13:21 +0000
         </p>
     </div>
 </footer>
