@@ -1,7 +1,8 @@
 import numpy as np
 from FlowCyPy.binary import interface_peak_locator
+from FlowCyPy.peak_locator.base_class import BasePeakLocator
 
-class GlobalPeakLocator:
+class GlobalPeakLocator(BasePeakLocator):
     r"""
     A peak detection utility that identifies the maximum value in each row of a 2D array.
 

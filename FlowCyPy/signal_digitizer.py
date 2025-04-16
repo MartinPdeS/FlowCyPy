@@ -145,7 +145,7 @@ class SignalDigitizer:
             self._bit_depth
         )
 
-        digitized_signal = np.digitize(signal.pint.magnitude, bins, right=True)
+        digitized_signal = np.digitize(signal.pint.magnitude, bins, right=True).astype(float)
 
         # Throw a warning if saturated
         if np.any((signal < min_level) | (signal > max_level)):

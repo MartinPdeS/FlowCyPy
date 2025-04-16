@@ -30,7 +30,7 @@ minute = ureg.minute
 
 
 # Define a custom unit 'bit_bins'
-ureg.define("bit_bins = ![detector_resolution]")
+ureg.define("bit_bins = ![Int64]")
 bit_bins = ureg.bit_bins
 
 ureg.define("sqrt_hertz = Hz**0.5")

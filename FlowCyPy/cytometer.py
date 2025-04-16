@@ -11,7 +11,7 @@ from FlowCyPy.detector import Detector
 from FlowCyPy.acquisition import Acquisition
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.helper import validate_units
-from FlowCyPy import dataframe_subclass
+from FlowCyPy.dataframe_subclass import AcquisitionDataFrame
 from FlowCyPy.circuits import SignalProcessor
 from FlowCyPy.source import BaseBeam
 from FlowCyPy.binary import interface_signal_generator
@@ -74,7 +74,7 @@ class FlowCytometer:
         self.signal_digitizer = signal_digitizer
         self.background_power = background_power
 
-    def _run_coupling_analysis(self, scatterer_dataframe: pd.DataFrame) -> None:
+    def _run_coupling_analysis(self, scatterer_dataframe: pd.DataFrame, compute_cross_section: bool = False) -> None:
         """
         Computes and assigns the optical coupling power for each particle-detection event.
 
@@ -102,7 +102,8 @@ class FlowCytometer:
                 detector=detector,
                 signal_digitizer=self.signal_digitizer,
                 scatterer_dataframe=scatterer_dataframe,
-                medium_refractive_index=self.scatterer_collection.medium_refractive_index
+                medium_refractive_index=self.scatterer_collection.medium_refractive_index,
+                compute_cross_section=compute_cross_section
             )
 
     def _generate_pulse_parameters(self, scatterer_dataframe: pd.DataFrame) -> None:
@@ -211,7 +212,7 @@ class FlowCytometer:
 
 
     @validate_units(run_time=units.second)
-    def prepare_acquisition(self, run_time: units.second) -> pd.DataFrame:
+    def prepare_acquisition(self, run_time: units.second, compute_cross_section: bool = False) -> pd.DataFrame:
         """
         Set the internal properties for run_time.
 
@@ -227,7 +228,7 @@ class FlowCytometer:
 
         self.scatterer_collection.fill_dataframe_with_sampling(self.scatterer_dataframe)
 
-        self._run_coupling_analysis(self.scatterer_dataframe)
+        self._run_coupling_analysis(self.scatterer_dataframe, compute_cross_section=compute_cross_section)
 
         self._generate_pulse_parameters(self.scatterer_dataframe)
 
@@ -304,9 +305,10 @@ class FlowCytometer:
             signal_dataframe[column] = pd.Series(signal, dtype="pint[volt]")
 
 
-        signal_dataframe = dataframe_subclass.AnalogAcquisitionDataFrame(
+        signal_dataframe = AcquisitionDataFrame(
             signal_dataframe,
-            scatterer_dataframe=self.scatterer_dataframe
+            scatterer_dataframe=self.scatterer_dataframe,
+            plot_type='analog'
         )
 
         experiment = Acquisition(

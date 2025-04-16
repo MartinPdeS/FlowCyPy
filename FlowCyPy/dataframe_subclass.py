@@ -557,6 +557,10 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
     """
     Base class for acquisition data frames with common plotting and logging functionalities.
     """
+    def __init__(self, dataframe: pd.DataFrame = None, **attributes: dict):
+        super().__init__(dataframe)
+
+        self.attrs.update(attributes)
 
     @property
     def _constructor(self) -> type:
@@ -582,7 +586,7 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
         figure_size = kwargs.get("figure_size", (10, 6))
         time_units = self["Time"].max().to_compact().units
 
-        signal_units = self[self.detector_names].max(axis=None).to_compact().units
+        signal_units = self.loc[:, self.detector_names].to_numpy().max().to_compact().units
 
         with plt.style.context(mps):
             fig, axes_array = plt.subplots(
@@ -592,25 +596,24 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
                 gridspec_kw={'height_ratios': [1] * (n_plots - 1) + [0.5]}
             )
 
-        for ax in axes_array:
-            ax.yaxis.tick_right()
-            # ax.yaxis.set_label_position("right", rotation=180)
+            for ax in axes_array:
+                ax.yaxis.tick_right()
 
-        axes = {name: ax for name, ax in zip(self.detector_names + ['scatterer'], axes_array)}
-        self._plot_detector_data(axes=axes, time_units=time_units, signal_units=signal_units)
+            axes = {name: ax for name, ax in zip(self.detector_names + ['scatterer'], axes_array)}
+            self._add_to_axes(axes=axes, time_units=time_units, signal_units=signal_units)
 
-        helper.add_event_to_ax(
-            self.attrs['scatterer_dataframe'],
-            ax=axes['scatterer'],
-            time_units=time_units,
-            filter_population=filter_population
-        )
-        axes['scatterer'].set_xlabel(f"Time [{time_units}]")
+            helper.add_event_to_ax(
+                self.attrs['scatterer_dataframe'],
+                ax=axes['scatterer'],
+                time_units=time_units,
+                filter_population=filter_population
+            )
+            axes['scatterer'].set_xlabel(f"Time [{time_units}]")
 
-        if kwargs.get("save_filename"):
-            fig.savefig(fname=kwargs["save_filename"])
-        if show:
-            plt.show()
+            if kwargs.get("save_filename"):
+                fig.savefig(fname=kwargs["save_filename"])
+            if show:
+                plt.show()
 
     def hist(
         self,
@@ -724,8 +727,8 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
         axes_twin = {name: ax.twinx() for name, ax in zip(self.detector_names + ['scatterer'], axes_array)}
         time_units = dataframes[0]["Time"].max().to_compact().units  # Assumes same time unit across frames
 
-        dataframes[0]._plot_detector_data(axes=axes, time_units=time_units)
-        dataframes[1]._plot_detector_data(axes=axes_twin, time_units=time_units)
+        dataframes[0]._add_to_axes(axes=axes, time_units=time_units)
+        dataframes[1]._add_to_axes(axes=axes_twin, time_units=time_units)
 
         scatterer_df = dataframes[0].attrs['scatterer_dataframe']
         helper.add_event_to_ax(scatterer_df, ax=axes['scatterer'], time_units=time_units, show_populations=None)
@@ -736,144 +739,34 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
         if show:
             plt.show()
 
-    def _plot_detector_data(
-        self,
-        axes: dict,
-        detector_name: Optional[str] = None,
-        group: Optional[pd.DataFrame] = None,
-        time_units: units.Quantity = None,
-        signal_units: Optional[units.Quantity] = None
-    ) -> None:
-        """
-        Plot logic for individual detectors; to be implemented in subclasses.
-        """
-        raise NotImplementedError("Subclasses must implement _plot_detector_data method.")
 
-    def log(self, table_format: str = "grid", include_totals: bool = True) -> None:
-        """
-        Log statistics for analog acquisition.
-        """
-        logging.info(f"\n=== {self.__class__.__name__} Statistics ===")
-        if self.empty:
-            logging.warning("No data available for detectors.")
-            return
-
-        table_data = [
-            self._get_detector_stats(detector_name, self[detector_name])
-            for detector_name in self.detector_names
-        ]
-        headers = self._get_log_headers()
-        formatted_table = tabulate(table_data, headers=headers, tablefmt=table_format, floatfmt=".3f")
-        logging.info("\n" + formatted_table)
-    def _get_log_headers(self) -> List[str]:
-        """Return headers for the log table; can be overridden in subclasses."""
-        return [
-            "Detector",
-            "Num Points",
-            "First Time",
-            "Last Time",
-            "Mean Δ Time",
-            "Max Signal",
-            "Min Signal",
-            "Mean Signal",
-            "STD Signal",
-        ]
-
-    def _get_detector_stats(self, detector_name: str, group: pd.DataFrame) -> List[Any]:
-        """
-        Compute statistics for a detector.
-
-        Parameters
-        ----------
-        detector_name : str
-            The detector name.
-        group : pd.DataFrame
-            The group of data for the detector.
-
-        Returns
-        -------
-        list
-            List of statistics for the detector.
-        """
-        if group.empty:
-            return [detector_name, 0, None, None, None, None, None, None, None]
-
-        num_points = len(self["Time"])
-        first_time = self["Time"].min()
-        last_time = self["Time"].max()
-        time_diffs = self["Time"].diff().dropna()
-        mean_delta = time_diffs.mean() if not time_diffs.empty else None
-        max_signal = self[detector_name].max()
-        min_signal = self[detector_name].min()
-        mean_signal = self[detector_name].mean()
-        std_signal = self[detector_name].std()
-
-        return [
-            detector_name,
-            num_points,
-            first_time,
-            last_time,
-            mean_delta,
-            max_signal,
-            min_signal,
-            mean_signal,
-            std_signal,
-        ]
-
-
-class AnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
+class AcquisitionDataFrame(BaseAcquisitionDataFrame):
     """
     DataFrame subclass for continuous (analog) acquisition data.
     """
 
-    def __init__(self, dataframe: pd.DataFrame, **attributes: dict):
-        super().__init__(dataframe)
 
-        self.attrs.update(attributes)
-
-
-    def _plot_detector_data(self, axes: dict, time_units: units.Quantity, signal_units: Optional[units.Quantity] = None) -> None:
+    def _add_to_axes(self, axes: dict, time_units: Optional[units.Quantity] = None, signal_units: Optional[units.Quantity] = None) -> None:
         """
         Plot analog signal data for each detector.
         """
-        # for detector_name, group in self.groupby('Detector'):
+        signal_units = signal_units or self[self.detector_names].max().to_compact().units
+        time_units = time_units or self['Time'].max().to_compact().units
 
         for detector_name in self.detector_names:
             ax = axes[detector_name]
-            ax.set_ylabel(detector_name)
-            time_data = self["Time"].pint.to(time_units)
-            _signal_units = signal_units or self[detector_name].max().to_compact().units
-            signal = self[detector_name].pint.to(_signal_units)
-            ax.plot(time_data, signal, label='Analog Signal', linestyle='-', color='black')
+            ax.set_ylabel(f'{detector_name} [{signal_units}]', labelpad=20)
 
-            ax.set_ylabel(f'{detector_name} [{_signal_units}]', labelpad=20)
+            time = self["Time"].pint.to(time_units)
+            signal = self[detector_name].pint.to(signal_units)
 
-
-class DigitizedAcquisitionDataFrame(BaseAcquisitionDataFrame):
-    """
-    DataFrame subclass for digitized acquisition data.
-    """
-    def _plot_detector_data(
-        self,
-        axes: dict,
-        time_units: units.Quantity,
-        signal_units: Optional[units.Quantity] = None
-    ) -> None:
-        """
-        Plot digitized signal data for each detector.
-        """
-        for detector_name in self.detector_names:
-            ax = axes[detector_name]
-            time_data = self["Time"].pint.to(time_units)
-            _signal_units = signal_units or self[detector_name].max().to_compact().units
-
-            ax.step(time_data, self[detector_name], where='mid', color='black', label='Digitized Signal')
-
-            ax.set_ylabel(f'{detector_name} [{_signal_units}]', labelpad=20)
+            if self.attrs['plot_type'] == 'analog':
+                ax.plot(time, signal, label='Analog Signal', linestyle='-', color='black')
+            else:
+                ax.step(time, signal, where='mid', color='black', label='Digitized Signal')
 
 
-
-class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
+class TriggerDataFrame(BaseAcquisitionDataFrame):
     """
     DataFrame subclass for triggered analog acquisition data.
     """
@@ -887,132 +780,39 @@ class TriggeredAnalogAcquisitionDataFrame(BaseAcquisitionDataFrame):
     def n_segment(self) -> int:
         return len(self.index.get_level_values('SegmentID').unique())
 
-    def _plot_detector_data(
-        self,
-        axes: dict,
-        time_units: units.Quantity,
-        signal_units: Optional[units.Quantity] = None
-    ) -> None:
+    def _add_to_axes(self, axes: dict, time_units: Optional[units.Quantity] = None, signal_units: Optional[units.Quantity] = None) -> None:
         """
         Plot triggered analog signal data for each detector and highlight each SegmentID region
         with a distinct color.
         """
+        time_units = time_units or self['Time'].max().to_compact().units
         signal_units = signal_units or self[self.detector_names].max().to_compact().units
 
         for detector_name in self.detector_names:
             ax = axes[detector_name]
-            ax.set_ylabel(f"{detector_name} [{signal_units}]")
+            ax.set_ylabel(f'{detector_name} [{signal_units}]', labelpad=20)
 
             for segment_id, group in self.groupby('SegmentID'):
-                time_series = group["Time"].pint.to(time_units)
+                time = group["Time"].pint.to(time_units)
                 signal = group[detector_name].pint.to(signal_units)
-                start_time = time_series.min()
-                end_time = time_series.max()
+                start_time = time.min()
+                end_time = time.max()
 
                 color = plt.cm.tab10(int(segment_id) % 10)
 
                 ax.axvspan(start_time, end_time, facecolor=color, alpha=0.3)
 
-                ax.plot(time_series, signal, color='black', linestyle='-')
+                if self.attrs['plot_type'] == 'analog':
+                    ax.plot(time, signal, color='black', linestyle='-')
+                else:
+                    ax.step(time, signal, where='mid', color='black', linestyle='-')
 
                 # Add threshold line and legend for the detector, if applicable.
-                if detector_name == self.attrs['threshold']['detector']:
+                threshold = self.attrs.get('threshold', None)
+                if threshold is not None and detector_name == threshold['detector']:
                     _, labels = ax.get_legend_handles_labels()
                     if 'Threshold' not in labels:
-                        ax.axhline(
-                            y=self.attrs['threshold']['value'].to(signal_units),
-                            label='Threshold',
-                            linestyle='--',
-                            color='black',
-                            linewidth=1
-                        )
+                        threshold = threshold['value'].to(signal_units)
+                        ax.axhline(y=threshold, label='Threshold', linestyle='--', color='black', linewidth=1)
+
                     ax.legend(loc='upper right')
-
-    def _get_log_headers(self) -> List[str]:
-        """Return headers for triggered analog acquisition logs."""
-        return [
-            "Detector",
-            "Number of Acquisition",
-            "First Event Time",
-            "Last Event Time",
-            "Time Between Events",
-        ]
-
-    def _get_detector_stats(self, detector_name: str, group: pd.DataFrame) -> List[Any]:
-        """
-        Compute statistics for triggered analog acquisition.
-        """
-        if group.empty:
-            return [detector_name, 0, None, None, None]
-
-        num_acquisition = len(self["Time"])
-        first_event_time = self["Time"].min()
-        last_event_time = self["Time"].max()
-        time_diffs = self["Time"].diff().dropna()
-        time_between_events = time_diffs.mean() if not time_diffs.empty else None
-
-        return [
-            detector_name,
-            num_acquisition,
-            first_event_time,
-            last_event_time,
-            time_between_events,
-        ]
-
-
-class TriggeredDigitalAcquisitionDataFrame(BaseAcquisitionDataFrame):
-    """
-    DataFrame subclass for triggered digital acquisition data.
-    """
-
-    @property
-    def n_segment(self) -> int:
-        return len(self.index.get_level_values('SegmentID').unique())
-
-    def _plot_detector_data(
-        self,
-        axes: dict,
-        time_units: units.Quantity,
-        signal_units: Optional[units.Quantity] = None
-    ) -> None:
-        """
-        Plot triggered digital signal data for each detector.
-        """
-        for (detector_name, _), group in self.groupby(['Detector', 'SegmentID']):
-            ax = axes[detector_name]
-            ax.set_ylabel(detector_name)
-            time_data = group["Time"].pint.to(time_units)
-            ax.step(time_data, group["Signal"], where='mid')
-            ax.set_ylim(self.attrs['saturation_levels'][detector_name])
-            ax.set_ylabel(f'{detector_name} [{group["Signal"].pint.units}]', labelpad=20)
-
-    def _get_log_headers(self) -> List[str]:
-        """Return headers for triggered digital acquisition logs."""
-        return [
-            "Detector",
-            "Number of Acquisition",
-            "First Event Time",
-            "Last Event Time",
-            "Time Between Events",
-        ]
-
-    def _get_detector_stats(self, detector_name: str, group: pd.DataFrame) -> List[Any]:
-        """
-        Compute statistics for triggered digital acquisition.
-        """
-        if group.empty:
-            return [detector_name, 0, None, None, None]
-
-        num_acquisition = len(group["Time"])
-        first_event_time = group["Time"].min()
-        last_event_time = group["Time"].max()
-        time_diffs = group["Time"].diff().dropna()
-        time_between_events = time_diffs.mean() if not time_diffs.empty else None
-
-        return [
-            detector_name,
-            num_acquisition,
-            first_event_time,
-            last_event_time,
-            time_between_events,
-        ]

@@ -218,9 +218,9 @@ triggered_acquisition.analog.plot()
 from FlowCyPy import peak_locator
 peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
 
+digital_signal = triggered_acquisition.get_digital_signal()
 
-peaks = triggered_acquisition.detect_peaks(peak_algorithm)
-
+peaks = peak_algorithm.run(digital_signal)
 
 peaks.plot(feature='Height', x='side', y='forward')
 

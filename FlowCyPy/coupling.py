@@ -14,7 +14,7 @@ def compute_detected_signal(
     signal_digitizer: object,
     scatterer_dataframe: pd.DataFrame,
     medium_refractive_index: Quantity,
-    compute_cross_section: bool = True
+    compute_cross_section: bool = False
 ) -> None:
     """
     Computes the detected coupling signal for scatterers by analyzing their scattering properties and

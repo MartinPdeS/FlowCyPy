@@ -1,6 +1,7 @@
 import numpy as np
+from FlowCyPy.peak_locator.base_class import BasePeakLocator
 
-class DeepPeakLocator:
+class DeepPeakLocator(BasePeakLocator):
     """
     A peak detection utility leveraging deep learning models for robust peak identification.
 

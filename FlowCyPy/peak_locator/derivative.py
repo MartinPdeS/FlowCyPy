@@ -1,6 +1,7 @@
 import numpy as np
+from FlowCyPy.peak_locator.base_class import BasePeakLocator
 
-class DerivativePeakLocator:
+class DerivativePeakLocator(BasePeakLocator):
     r"""
     A peak detection utility based on the zero-crossing of the first derivative.
 

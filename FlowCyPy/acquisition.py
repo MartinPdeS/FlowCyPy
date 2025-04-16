@@ -2,7 +2,7 @@ from typing import List
 import warnings
 import pandas as pd
 from FlowCyPy import units
-from FlowCyPy import dataframe_subclass
+from FlowCyPy.dataframe_subclass import AcquisitionDataFrame, TriggerDataFrame
 from FlowCyPy.triggered_acquisition import TriggeredAcquisitions
 from FlowCyPy.binary.interface_triggering_system import TriggeringSystem # type: ignore
 import pint_pandas
@@ -60,7 +60,7 @@ class Acquisition:
             min_window_duration: units.Quantity = None,
             lower_threshold: units.Quantity = None,
             debounce_enabled: bool = True,
-            scheme: str = 'dynamic') -> TriggeredAcquisitions:
+            scheme: str = 'dynamic') -> TriggerDataFrame:
         """
         Execute triggered acquisition analysis on signal data.
 
@@ -197,7 +197,7 @@ class Acquisition:
         df = df.set_index('SegmentID')
 
         # Create a specialized DataFrame class
-        df = dataframe_subclass.TriggeredAnalogAcquisitionDataFrame(df)
+        df = TriggerDataFrame(df, plot_type='analog')
 
         # Copy metadata attributes
         df.attrs['bit_depth'] = self.analog.attrs.get('bit_depth', None)
@@ -212,19 +212,17 @@ class Acquisition:
         return triggered_acquisition
 
 
-    @property
-    def digital(self) -> pd.DataFrame:
-        dataframe = dataframe_subclass.DigitizedAcquisitionDataFrame(
+    def get_digital_signal(self) -> AcquisitionDataFrame:
+        digital_df = pd.DataFrame(
             index=self.analog.index,
-            data=dict(Time=self.analog.Time)
+            columns=self.analog.columns,
+            data=dict(Time=self.analog.Time),
         )
 
-        dataframe.attrs['saturation_levels'] = dict()
-        dataframe.attrs['scatterer_dataframe'] = self.analog.attrs.get('scatterer_dataframe', None)
-
         for detector_name in self.analog.detector_names:
-            digitized_signal, _ = self.signal_digitizer.capture_signal(signal=self.analog[detector_name])
+            analog_signal = self.analog[detector_name]
+            digitized_signal, _ = self.signal_digitizer.capture_signal(signal=analog_signal)
 
-            dataframe[detector_name] = pint_pandas.PintArray(digitized_signal, units.bit_bins)
+            digital_df[detector_name] = pint_pandas.PintArray(digitized_signal, units.bit_bins)
 
-        return dataframe
+        return AcquisitionDataFrame(digital_df, plot_type='digital', scatterer_dataframe=self.scatterer)

@@ -102,6 +102,8 @@ trigger_acquisition.analog.plot()
 
 peak_algorithm = peak_locator.GlobalPeakLocator()
 
-peaks = trigger_acquisition.detect_peaks(peak_algorithm)
+digital_signal = trigger_acquisition.get_digital_signal()
+
+peaks = peak_algorithm.run(digital_signal)
 
 peaks.plot(x='side', y='forward')

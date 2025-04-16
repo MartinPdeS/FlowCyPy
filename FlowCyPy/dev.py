@@ -122,13 +122,19 @@ def compute_robust_stats(data):
     median = np.median(data)
     perc84 = np.percentile(data, 84.13)
     perc15 = np.percentile(data, 15.87)
-    standard_deviation = (perc84 - perc15) / 2.0
+    robust_standard_deviation = (perc84 - perc15) / 2.0
+    robust_coefficient_of_variation = robust_standard_deviation / median if median != 0 else np.nan
+
+    standard_deviation = np.std(data)
     coefficient_of_variation = standard_deviation / median if median != 0 else np.nan
 
     return NameSpace(
         median=median,
+        robust_coefficient_of_variation=robust_coefficient_of_variation,
+        robust_standard_deviation=robust_standard_deviation,
+        standard_deviation=standard_deviation,
         coefficient_of_variation=coefficient_of_variation,
-        standard_deviation=standard_deviation
+        mean=np.mean(data)
     )
 
 def add_background_to_dataframe(dataframe, gain, detection_efficiency, background_level, powers, N_events):
@@ -379,6 +385,75 @@ def plot_K(dataframe: pd.DataFrame, illumination_powers: list):
         plt.show()
 
 
+
+
+
+
+
+
+
+
+
+def get_acquisition(scatterer_collection, background_power, run_time, processing_steps, plot_analog = False):
+    # Set up the flow cell.
+    flow_cell = FlowCell(
+        sample_volume_flow=80 * units.microliter / units.minute,
+        sheath_volume_flow=1 * units.milliliter / units.minute,
+        width=100 * units.micrometer,
+        height=100 * units.micrometer,
+    )
+
+    source = GaussianBeam(
+        numerical_aperture=0.1 * units.AU,
+        wavelength=450 * units.nanometer,
+        optical_power=200 * units.milliwatt,
+        RIN=-140
+    )
+
+    # Configure the signal digitizer.
+    signal_digitizer = SignalDigitizer(
+        bit_depth='20bit',
+        saturation_levels='auto',
+        sampling_rate=60 * units.megahertz,
+    )
+
+    # Configure the detector.
+    detector_ = Detector(
+        name='forward',
+        phi_angle=0 * units.degree,
+        numerical_aperture=0.3 * units.AU,
+        responsivity=1 * units.ampere / units.watt,
+    )
+
+    # Set up the transimpedance amplifier.
+    amplifier = TransimpedanceAmplifier(
+        gain=10 * units.volt / units.ampere,
+        bandwidth=10 * units.megahertz,
+        voltage_noise_density=1 * units.nanovolt / units.sqrt_hertz,
+        current_noise_density=2 * units.femtoampere / units.sqrt_hertz
+    )
+
+    # Create the flow cytometer.
+    cytometer = FlowCytometer(
+        source=source,
+        transimpedance_amplifier=amplifier,
+        scatterer_collection=scatterer_collection,
+        signal_digitizer=signal_digitizer,
+        detectors=[detector_],
+        flow_cell=flow_cell,
+        background_power=background_power
+    )
+
+    # Prepare the acquisition for the specified run time.
+    cytometer.prepare_acquisition(run_time=run_time, compute_cross_section=True)
+    acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
+
+    if plot_analog:
+        acquisition.analog.plot()
+
+    return acquisition
+
+
 def get_beads_dataframe(
     diameter_list: list,
     indices_list: list,
@@ -386,9 +461,9 @@ def get_beads_dataframe(
     run_time: units.Quantity,
     medium_refractive_index: units.Quantity,
     background_power: units.Quantity,
-    cutoff: units.Quantity = None,
     plot_analog: bool = False,
     particle_count: int = 50,
+    processing_steps: list = [],
     plot_trigger: bool = False,
 ) -> any:
     """
@@ -435,22 +510,6 @@ def get_beads_dataframe(
     if len(diameter_list) != len(indices_list):
         raise ValueError("The number of diameters must match the number of refractive indices.")
 
-    # Set up the optical source.
-    source = GaussianBeam(
-        numerical_aperture=0.1 * units.AU,
-        wavelength=450 * units.nanometer,
-        optical_power=200 * units.milliwatt,
-        RIN=-140
-    )
-
-    # Set up the flow cell.
-    flow_cell = FlowCell(
-        sample_volume_flow=80 * units.microliter / units.minute,
-        sheath_volume_flow=1 * units.milliliter / units.minute,
-        width=100 * units.micrometer,
-        height=100 * units.micrometer,
-    )
-
     # Create the scatterer collection with the specified medium refractive index.
     scatterer_collection = ScattererCollection(medium_refractive_index=medium_refractive_index)
 
@@ -465,57 +524,13 @@ def get_beads_dataframe(
         )
         scatterer_collection.add_population(population)
 
-    # Configure the signal digitizer.
-    signal_digitizer = SignalDigitizer(
-        bit_depth='14bit',
-        saturation_levels='auto',
-        sampling_rate=60 * units.megahertz,
-    )
-
-    # Configure the detector.
-    detector_ = Detector(
-        name='forward',
-        phi_angle=0 * units.degree,
-        numerical_aperture=0.3 * units.AU,
-        responsivity=1 * units.ampere / units.watt,
-    )
-
-    # Set up the transimpedance amplifier.
-    amplifier = TransimpedanceAmplifier(
-        gain=10 * units.volt / units.ampere,
-        bandwidth=10 * units.megahertz,
-        voltage_noise_density=1 * units.nanovolt / units.sqrt_hertz,
-        current_noise_density=2 * units.femtoampere / units.sqrt_hertz
-    )
-
-    # Create the flow cytometer.
-    cytometer = FlowCytometer(
-        source=source,
-        transimpedance_amplifier=amplifier,
+    acquisition = get_acquisition(
         scatterer_collection=scatterer_collection,
-        signal_digitizer=signal_digitizer,
-        detectors=[detector_],
-        flow_cell=flow_cell,
-        background_power=background_power
+        background_power=background_power,
+        run_time=run_time,
+        processing_steps=processing_steps,
+        plot_analog=plot_analog
     )
-
-    # Define the signal processing steps.
-    processing_steps = [
-        circuits.BaselineRestorator(window_size=100 * units.microsecond),
-        # circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
-    ]
-    if cutoff is not None:
-        processing_steps.append(
-            circuits.BesselLowPass(cutoff=cutoff, order=4, gain=2)
-        )
-
-    # Prepare the acquisition for the specified run time.
-    cytometer.prepare_acquisition(run_time=run_time)
-    acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
-
-    # Optionally plot the raw analog acquisition signal.
-    if plot_analog:
-        acquisition.analog.plot()
 
     # Run the triggering algorithm.
     triggered_acquisition = acquisition.run_triggering(
@@ -533,17 +548,20 @@ def get_beads_dataframe(
     # Create a global peak locator algorithm (without computing width).
     peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
 
-    # Detect peaks in the triggered acquisition.
-    detected_peaks = triggered_acquisition.detect_peaks(peak_algorithm)
+    digital_signal = triggered_acquisition.get_digital_signal()
 
-    return detected_peaks
+    peak_dataframe = peak_algorithm.run(
+        signal_dataframe=digital_signal
+    )
+
+    return acquisition.scatterer, peak_dataframe
 
 
 def get_background_dataframe(
     run_time: units.Quantity,
     background_power: units.Quantity,
-    cutoff: units.Quantity = None,
     plot_analog: bool = False,
+    processing_steps: list = [],
 ) -> any:
     """
     Simulate a flow cytometry acquisition, perform triggering, and detect peaks
@@ -585,73 +603,15 @@ def get_background_dataframe(
     Raises:
         ValueError: If the lengths of 'diameter_list' and 'indices_list' do not match.
     """
-    # Set up the optical source.
-    source = GaussianBeam(
-        numerical_aperture=0.1 * units.AU,
-        wavelength=450 * units.nanometer,
-        optical_power=200 * units.milliwatt,
-        RIN=-140
-    )
-
-    # Set up the flow cell.
-    flow_cell = FlowCell(
-        sample_volume_flow=80 * units.microliter / units.minute,
-        sheath_volume_flow=1 * units.milliliter / units.minute,
-        width=100 * units.micrometer,
-        height=100 * units.micrometer,
-    )
-
     # Create the scatterer collection with the specified medium refractive index.
-    scatterer_collection = ScattererCollection(medium_refractive_index=1.0 * units.RIU)
+    scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
-    # Configure the signal digitizer.
-    signal_digitizer = SignalDigitizer(
-        bit_depth='14bit',
-        saturation_levels='auto',
-        sampling_rate=60 * units.megahertz,
-    )
-
-    # Configure the detector.
-    detector_ = Detector(
-        name='forward',
-        phi_angle=0 * units.degree,
-        numerical_aperture=0.3 * units.AU,
-        responsivity=1 * units.ampere / units.watt,
-    )
-
-    # Set up the transimpedance amplifier.
-    amplifier = TransimpedanceAmplifier(
-        gain=10 * units.volt / units.ampere,
-        bandwidth=10 * units.megahertz,
-        voltage_noise_density=1 * units.nanovolt / units.sqrt_hertz,
-        current_noise_density=2 * units.femtoampere / units.sqrt_hertz
-    )
-
-    # Create the flow cytometer.
-    cytometer = FlowCytometer(
-        source=source,
-        transimpedance_amplifier=amplifier,
+    acquisition = get_acquisition(
         scatterer_collection=scatterer_collection,
-        signal_digitizer=signal_digitizer,
-        detectors=[detector_],
-        flow_cell=flow_cell,
-        background_power=background_power
+        background_power=background_power,
+        run_time=run_time,
+        processing_steps=processing_steps,
+        plot_analog=plot_analog
     )
 
-    # Define the signal processing steps.
-    processing_steps = [
-        circuits.BaselineRestorator(window_size=100 * units.microsecond),
-    ]
-    if cutoff is not None:
-        processing_steps.append(
-            circuits.BesselLowPass(cutoff=cutoff, order=4, gain=2)
-        )
-
-    # Prepare the acquisition for the specified run time.
-    cytometer.prepare_acquisition(run_time=run_time)
-    acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
-
-    if plot_analog:
-        acquisition.analog.plot()
-
-    return acquisition.analog
+    return acquisition#.get_digital_signal()

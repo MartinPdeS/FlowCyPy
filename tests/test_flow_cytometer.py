@@ -149,7 +149,7 @@ def test_flow_cytometer_plot(mock_show, flow_cytometer):
     acquisition.analog.plot()
     plt.close()
 
-    acquisition.digital.plot()
+    acquisition.get_digital_signal().plot()
     plt.close()
 
 
@@ -207,7 +207,9 @@ def test_peak_detection(flow_cytometer):
 
     algorithm = peak_locator.GlobalPeakLocator()
 
-    peaks = triggered_acquisition.detect_peaks(algorithm)
+    digital_signal = triggered_acquisition.get_digital_signal()
+
+    peaks = algorithm.run(digital_signal)
 
     assert len(peaks) > 0, "No peaks detected when they were expected."
 
@@ -229,7 +231,9 @@ def test_peak_plot(mock_show, flow_cytometer):
 
     algorithm = peak_locator.GlobalPeakLocator()
 
-    peaks = triggered_acquisition.detect_peaks(algorithm)
+    digital_signal = triggered_acquisition.get_digital_signal()
+
+    peaks = algorithm.run(digital_signal)
 
     peaks.plot(x='default', y='default_bis')
     plt.close()

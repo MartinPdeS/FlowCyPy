@@ -138,7 +138,9 @@ acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 # acquisition.scatterer.plot(x='Diameter', y='RefractiveIndex')
 # acquisition.scatterer.plot(x='forward', y='side')
 
-acquisition.analog.plot()
+# acquisition.analog.plot()
+
+# acquisition.get_digital_signal().plot()
 
 # window size and threshold.
 triggered_acquisition = acquisition.run_triggering(
@@ -149,30 +151,30 @@ triggered_acquisition = acquisition.run_triggering(
     post_buffer=20
 )
 
-triggered_acquisition.analog.plot()
+# triggered_acquisition.analog.plot()
+triggered_acquisition.get_digital_signal().plot()
+
+# # %%
+# # Getting and plotting the extracted peaks.
+# from FlowCyPy import peak_locator
+# peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
 
 
-# %%
-# Getting and plotting the extracted peaks.
-from FlowCyPy import peak_locator
-peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
+# peaks = triggered_acquisition.detect_peaks(peak_algorithm)
 
 
-peaks = triggered_acquisition.detect_peaks(peak_algorithm)
+# peaks.plot(feature='Height', x='side', y='forward')
 
+# # %%
+# # Step 8: Classifying the collected dataset
+# from FlowCyPy.classifier import KmeansClassifier
 
-peaks.plot(feature='Height', x='side', y='forward')
+# classifier = KmeansClassifier(number_of_cluster=2)
 
-# %%
-# Step 8: Classifying the collected dataset
-from FlowCyPy.classifier import KmeansClassifier
+# data = classifier.run(
+#     dataframe=peaks.unstack('Detector'),
+#     features=['Height'],
+#     detectors=['side', 'forward']
+# )
 
-classifier = KmeansClassifier(number_of_cluster=2)
-
-data = classifier.run(
-    dataframe=peaks.unstack('Detector'),
-    features=['Height'],
-    detectors=['side', 'forward']
-)
-
-_ = data.plot(feature='Height', x='side', y='forward')
+# _ = data.plot(feature='Height', x='side', y='forward')
