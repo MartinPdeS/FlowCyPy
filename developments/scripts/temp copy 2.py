@@ -32,6 +32,7 @@ from FlowCyPy.noises import NoiseSetting
 from FlowCyPy import ScattererCollection
 from FlowCyPy.population import Exosome, Sphere, distribution
 from FlowCyPy import FlowCytometer, circuits
+from FlowCyPy.triggering_system import TriggeringSystem
 
 
 NoiseSetting.include_noises = True
@@ -135,6 +136,32 @@ cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
 
 acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
+
+
+
+
+
+
+
+trigger = TriggeringSystem(
+    threshold=0.1 * units.microvolt,
+    trigger_detector_name='forward',
+    max_triggers=-1,
+    pre_buffer=20,
+    post_buffer=20,
+
+)
+
+
+df = trigger.run(
+    signal_dataframe=acquisition.analog,
+    sampling_rate=signal_digitizer.sampling_rate
+)
+
+
+print(df.analog)
+
+
 # acquisition.scatterer.plot(x='Diameter', y='RefractiveIndex')
 # acquisition.scatterer.plot(x='forward', y='side')
 
@@ -143,16 +170,16 @@ acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 # acquisition.get_digital_signal().plot()
 
 # window size and threshold.
-triggered_acquisition = acquisition.run_triggering(
-    threshold=0.1 * units.microvolt,
-    trigger_detector_name='forward',
-    max_triggers=-1,
-    pre_buffer=20,
-    post_buffer=20
-)
+# triggered_acquisition = acquisition.run_triggering(
+#     threshold=0.1 * units.microvolt,
+#     trigger_detector_name='forward',
+#     max_triggers=-1,
+#     pre_buffer=20,
+#     post_buffer=20
+# )
 
 # triggered_acquisition.analog.plot()
-triggered_acquisition.get_digital_signal().plot()
+# triggered_acquisition.get_digital_signal().plot()
 
 # # %%
 # # Getting and plotting the extracted peaks.

@@ -694,12 +694,12 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
                 # Plot the histogram using a bar chart.
                 ax.bar(bin_centers, counts, width=bin_edges[1] - bin_edges[0], edgecolor='black')
 
-        axes[detector_name].set_xlabel(f'Signal [{_signal_units}]')
-        if save_filename:
-            fig.savefig(fname=save_filename)
+            axes[detector_name].set_xlabel(f'Signal [{_signal_units}]')
+            if save_filename:
+                fig.savefig(fname=save_filename)
 
-        if show:
-            plt.show()
+            if show:
+                plt.show()
 
     def plot_combined(self, dataframes: List["BaseAcquisitionDataFrame"], show: bool = True, **kwargs) -> None:
         """
@@ -755,6 +755,7 @@ class AcquisitionDataFrame(BaseAcquisitionDataFrame):
 
         for detector_name in self.detector_names:
             ax = axes[detector_name]
+
             ax.set_ylabel(f'{detector_name} [{signal_units}]', labelpad=20)
 
             time = self["Time"].pint.to(time_units)

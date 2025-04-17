@@ -4,6 +4,9 @@ from FlowCyPy import units
 from PyMieSim import experiment
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
+from typing import Union, Sequence, Optional
+import pandas as pd
+import itertools
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Sphere
 from FlowCyPy import (
@@ -394,26 +397,29 @@ def plot_K(dataframe: pd.DataFrame, illumination_powers: list):
 
 
 
-def get_acquisition(scatterer_collection, background_power, run_time, processing_steps, plot_analog = False):
+def get_acquisition(background_fraction, optical_power, run_time, processing_steps, plot_analog = False, plot_digital = False, bit_depth = '14bit', saturation_levels = 'auto', populations=[]):
+    background_power = background_fraction * optical_power
+
     # Set up the flow cell.
     flow_cell = FlowCell(
         sample_volume_flow=80 * units.microliter / units.minute,
         sheath_volume_flow=1 * units.milliliter / units.minute,
         width=100 * units.micrometer,
         height=100 * units.micrometer,
+        event_scheme='uniform-random'
     )
 
     source = GaussianBeam(
         numerical_aperture=0.1 * units.AU,
         wavelength=450 * units.nanometer,
-        optical_power=200 * units.milliwatt,
+        optical_power=optical_power,
         RIN=-140
     )
 
     # Configure the signal digitizer.
     signal_digitizer = SignalDigitizer(
-        bit_depth='20bit',
-        saturation_levels='auto',
+        bit_depth=bit_depth,
+        saturation_levels=saturation_levels,
         sampling_rate=60 * units.megahertz,
     )
 
@@ -421,7 +427,7 @@ def get_acquisition(scatterer_collection, background_power, run_time, processing
     detector_ = Detector(
         name='forward',
         phi_angle=0 * units.degree,
-        numerical_aperture=0.3 * units.AU,
+        numerical_aperture=0.8 * units.AU,
         responsivity=1 * units.ampere / units.watt,
     )
 
@@ -433,6 +439,17 @@ def get_acquisition(scatterer_collection, background_power, run_time, processing
         current_noise_density=2 * units.femtoampere / units.sqrt_hertz
     )
 
+    scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
+
+
+    for population in populations:
+        scatterer_collection.add_population(population)
+
+
+    if len(populations) != 0:
+        print('Simulating configuration', f"{populations[0].diameter}, {background_power = :~P}, {optical_power = :~P}, {run_time = :~P}, {bit_depth = }, {saturation_levels = }")
+    else:
+        print('Simulating configuration', f"{background_power = :~P}, {optical_power = :~P}, {run_time = :~P}, {bit_depth = }, {saturation_levels = }")
     # Create the flow cytometer.
     cytometer = FlowCytometer(
         source=source,
@@ -451,167 +468,411 @@ def get_acquisition(scatterer_collection, background_power, run_time, processing
     if plot_analog:
         acquisition.analog.plot()
 
+    if plot_digital:
+        acquisition.get_digital_signal().plot()
+
     return acquisition
 
 
-def get_beads_dataframe(
-    diameter_list: list,
-    indices_list: list,
-    threshold: units.Quantity,
-    run_time: units.Quantity,
-    medium_refractive_index: units.Quantity,
-    background_power: units.Quantity,
+def get_acquisition_analog_metrics(
+    diameter_list: Sequence[float],
+    index_list: Sequence[float],
+    optical_power: Union[float, Sequence[float]],
+    background_fraction=0,
+    run_time = 5 * units.millisecond,
+    particle_count: int = 100,
     plot_analog: bool = False,
-    particle_count: int = 50,
-    processing_steps: list = [],
+    processing_steps: Optional[list] = []
+) -> pd.DataFrame:
+    """
+    Compute bead metrics for each combination of diameter, optical_power, and background_power.
+
+    Parameters
+    ----------
+    diameter_list : sequence of float
+        List of bead diameters to process.
+    optical_power : float or sequence of float
+        Illumination power(s). If a single value is provided, it will be wrapped in a list.
+    background_power : float or sequence of float
+        Background illumination power(s). If a single value is provided, it will be wrapped in a list.
+    threshold : float
+        Peak detection threshold.
+    bit_depth : str
+        Detector bit depth.
+    saturation_levels : str
+        Levels for digital saturation.
+    plot_analog : bool, optional
+        Whether to plot analog traces.
+    plot_digital : bool, optional
+        Whether to plot digital traces.
+    processing_steps : list, optional
+        Additional processing steps for data.
+
+    Returns
+    -------
+    pd.DataFrame
+        A concatenated DataFrame indexed by (diameter, optical_power, background_power)
+        containing computed metrics (including Csca).
+    """
+    optical_powers = np.atleast_1d(optical_power)
+    background_fractions = np.atleast_1d(background_fraction)
+
+    length = len(diameter_list) * len(optical_powers) * len(background_fraction)
+    df = pd.DataFrame(index=range(length), columns=['Mean', 'Median', 'STD', 'CV', 'InvSqrtMedian', 'Run'])
+
+    for run_id, ((diameter, refractive_index), op, bf) in enumerate(itertools.product(zip(diameter_list, index_list), optical_powers, background_fractions)):
+
+        if diameter is not None and refractive_index is not None:
+            populations = [
+                Sphere(
+                    name=f'Population: [{diameter}nm, {refractive_index}]',
+                    particle_count=particle_count * units.particle,
+                    diameter=diameter,
+                    refractive_index=refractive_index
+                )
+            ]
+        else:
+            populations = []
+
+        acquisition = get_acquisition(
+            populations=populations,
+            optical_power=op,
+            background_fraction=bf,
+            run_time=run_time,
+            processing_steps=processing_steps,
+            bit_depth='15bit',
+            saturation_levels='auto',
+            plot_analog=plot_analog,
+            plot_digital=False
+        )
+
+        signal = acquisition.analog['forward'].pint.to('V').pint.quantity.magnitude
+
+        df.loc[run_id, 'Run'] = run_id
+        df.loc[run_id, 'Mean'] = np.mean(signal)
+        df.loc[run_id, 'OpticalPower'] = op.to('mW').magnitude
+        df.loc[run_id, 'BackgroundPower'] = (bf * op).to('mW').magnitude
+        df.loc[run_id, 'BackgroundFraction'] = bf
+        df.loc[run_id, 'Median'] = np.median(signal)
+        df.loc[run_id, 'STD'] = np.std(signal)
+        df.loc[run_id, 'CV'] = df.loc[run_id, 'STD'] / df.loc[run_id, 'Median']
+        df.loc[run_id, 'InvSqrtMedian'] = 1 / (np.sqrt(df.loc[run_id, 'Median']))
+
+
+    return df.set_index('Run')
+
+def get_acquisition_digital_metrics(
+    diameter_list: Sequence[float],
+    index_list: Sequence[float],
+    optical_power: Union[float, Sequence[float]],
+    background_fraction=0,
+    bit_depth: str = '15bit',
+    saturation_levels: str = 'auto',
+    run_time = 5 * units.millisecond,
+    particle_count: int = 100,
+    plot_analog: bool = False,
+    plot_digital: bool = False,
+    processing_steps: Optional[list] = []
+) -> pd.DataFrame:
+    """
+    Compute bead metrics for each combination of diameter, optical_power, and background_power.
+
+    Parameters
+    ----------
+    diameter_list : sequence of float
+        List of bead diameters to process.
+    optical_power : float or sequence of float
+        Illumination power(s). If a single value is provided, it will be wrapped in a list.
+    background_power : float or sequence of float
+        Background illumination power(s). If a single value is provided, it will be wrapped in a list.
+    threshold : float
+        Peak detection threshold.
+    bit_depth : str
+        Detector bit depth.
+    saturation_levels : str
+        Levels for digital saturation.
+    plot_analog : bool, optional
+        Whether to plot analog traces.
+    plot_digital : bool, optional
+        Whether to plot digital traces.
+    processing_steps : list, optional
+        Additional processing steps for data.
+
+    Returns
+    -------
+    pd.DataFrame
+        A concatenated DataFrame indexed by (diameter, optical_power, background_power)
+        containing computed metrics (including Csca).
+    """
+    optical_powers = np.atleast_1d(optical_power)
+    background_fractions = np.atleast_1d(background_fraction)
+
+    length = len(diameter_list) * len(optical_powers) * len(background_fractions)
+    df = pd.DataFrame(index=range(length), columns=['Mean', 'Median', 'STD', 'CV', 'InvSqrtMedian', 'Run'])
+
+    for run_id, ((diameter, refractive_index), op, bf) in enumerate(itertools.product(zip(diameter_list, index_list), optical_powers, background_fractions)):
+
+        if diameter is not None and refractive_index is not None:
+            populations = [
+                Sphere(
+                    name=f'Population: [{diameter}nm, {refractive_index}]',
+                    particle_count=particle_count * units.particle,
+                    diameter=diameter,
+                    refractive_index=refractive_index
+                )
+            ]
+        else:
+            populations = []
+
+        acquisition = get_acquisition(
+            populations=populations,
+            optical_power=op,
+            background_fraction=bf,
+            run_time=run_time,
+            processing_steps=processing_steps,
+            bit_depth=bit_depth,
+            saturation_levels=saturation_levels,
+            plot_analog=plot_analog,
+            plot_digital=plot_digital
+        )
+
+        signal = acquisition.get_digital_signal()['forward'].pint.to('bit_bins').pint.quantity.magnitude
+
+        df.loc[run_id, 'Run'] = run_id
+        df.loc[run_id, 'Mean'] = np.mean(signal)
+        df.loc[run_id, 'OpticalPower'] = op.to('mW').magnitude
+        df.loc[run_id, 'BackgroundPower'] = (bf * op).to('mW').magnitude
+        df.loc[run_id, 'BackgroundFraction'] = bf
+        df.loc[run_id, 'Median'] = np.median(signal)
+        df.loc[run_id, 'STD'] = np.std(signal)
+        df.loc[run_id, 'CV'] = df.loc[run_id, 'STD'] / df.loc[run_id, 'Median']
+        df.loc[run_id, 'InvSqrtMedian'] = 1 / (np.sqrt(df.loc[run_id, 'Median']))
+
+
+    return df.set_index('Run')
+
+
+
+def get_trigger_metrics(
+    diameter_list: Sequence[float],
+    index_list: Sequence[float],
+    optical_power: Union[float, Sequence[float]],
+    threshold: float,
+    bit_depth: str,
+    saturation_levels: str,
+    background_fraction=0,
+    run_time = 5 * units.millisecond,
+    particle_count: int = 100,
+    plot_analog: bool = False,
+    plot_digital: bool = False,
     plot_trigger: bool = False,
-) -> any:
+    processing_steps: Optional[list] = []
+) -> pd.DataFrame:
     """
-    Simulate a flow cytometry acquisition, perform triggering, and detect peaks
-    (e.g., peak heights) from the triggered signal using the FlowCyPy library.
+    Compute bead metrics for each combination of diameter, optical_power, and background_power.
 
-    This function sets up a simulated flow cytometer with a Gaussian beam source,
-    flow cell, and scatterer collection configured with the specified medium refractive
-    index. For each bead population defined by a diameter in 'diameter_list' and
-    its corresponding refractive index in 'indices_list', a sphere population is added
-    to the scatterer collection.
+    Parameters
+    ----------
+    diameter_list : sequence of float
+        List of bead diameters to process.
+    optical_power : float or sequence of float
+        Illumination power(s). If a single value is provided, it will be wrapped in a list.
+    background_power : float or sequence of float
+        Background illumination power(s). If a single value is provided, it will be wrapped in a list.
+    threshold : float
+        Peak detection threshold.
+    bit_depth : str
+        Detector bit depth.
+    saturation_levels : str
+        Levels for digital saturation.
+    plot_analog : bool, optional
+        Whether to plot analog traces.
+    plot_digital : bool, optional
+        Whether to plot digital traces.
+    processing_steps : list, optional
+        Additional processing steps for data.
 
-    The simulation then configures a signal digitizer, detector, and transimpedance
-    amplifier before creating a FlowCytometer instance. After preparing an acquisition
-    with the specified run time and applying processing steps (baseline restoration
-    and low-pass filtering), the function retrieves the analog signal. If requested,
-    it plots this raw analog signal.
-
-    Next, the function applies a triggering algorithm on the 'forward' detector using
-    the provided threshold (with pre-buffer and post-buffer sizes of 20 samples). If requested,
-    the triggered signal is also plotted.
-
-    Finally, a global peak locator algorithm is applied to the triggered acquisition
-    to detect and return peak information.
-
-    Parameters:
-        diameter_list (list): List of bead diameters (e.g., in nanometers) for the simulated populations.
-        indices_list (list): List of refractive indices for each bead population. Must have the same length as diameter_list.
-        plot_analog (bool, optional): If True, plot the raw analog acquisition signal. Defaults to False.
-        plot_trigger (bool, optional): If True, plot the triggered acquisition signal. Defaults to False.
-        threshold (units.Quantity): The threshold value (with appropriate units) for triggering.
-        run_time (units.Quantity): The duration of the acquisition (with appropriate units).
-        medium_refractive_index (units.Quantity): The refractive index of the medium used in the flow cell.
-
-    Returns:
-        any: The detected peaks from the triggered acquisition as returned by the peak locator.
-             (The exact type/structure depends on the implementation of peak_locator.GlobalPeakLocator
-              and the triggered acquisition's detect_peaks method.)
-
-    Raises:
-        ValueError: If the lengths of 'diameter_list' and 'indices_list' do not match.
+    Returns
+    -------
+    pd.DataFrame
+        A concatenated DataFrame indexed by (diameter, optical_power, background_power)
+        containing computed metrics (including Csca).
     """
-    # Validate that the bead populations are defined correctly.
-    if len(diameter_list) != len(indices_list):
-        raise ValueError("The number of diameters must match the number of refractive indices.")
+    optical_powers = np.atleast_1d(optical_power)
+    background_fraction = np.atleast_1d(background_fraction)
 
-    # Create the scatterer collection with the specified medium refractive index.
-    scatterer_collection = ScattererCollection(medium_refractive_index=medium_refractive_index)
+    results = []
 
-    # Add each bead population (represented as a sphere) to the scatterer collection.
+    for run_id, ((diameter, refractive_index), op, bf) in enumerate(itertools.product(zip(diameter_list, index_list), optical_powers, background_fraction)):
 
-    for diameter, refractive_index in zip(diameter_list, indices_list):
         population = Sphere(
             name=f'Population: [{diameter}nm, {refractive_index}]',
             particle_count=particle_count * units.particle,
-            diameter=diameter * units.nanometer,
-            refractive_index=refractive_index * units.RIU
+            diameter=diameter,
+            refractive_index=refractive_index
         )
-        scatterer_collection.add_population(population)
 
-    acquisition = get_acquisition(
-        scatterer_collection=scatterer_collection,
-        background_power=background_power,
-        run_time=run_time,
-        processing_steps=processing_steps,
-        plot_analog=plot_analog
+        acquisition = get_acquisition(
+            populations=[population],
+            optical_power=op,
+            background_fraction=bf,
+            run_time=run_time,
+            processing_steps=processing_steps,
+            bit_depth=bit_depth,
+            saturation_levels=saturation_levels,
+            plot_analog=plot_analog,
+            plot_digital=plot_digital
+        )
+
+
+        triggered_acquisition = acquisition.run_triggering(
+            threshold=threshold,
+            trigger_detector_name='forward',
+            max_triggers=-1,
+            pre_buffer=20,
+            post_buffer=20
+        )
+
+        if plot_trigger:
+            triggered_acquisition.analog.plot()
+
+        peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
+
+        digital_signal = triggered_acquisition.get_digital_signal()
+
+        peak_dataframe = peak_algorithm.run(signal_dataframe=digital_signal)
+
+        csca_val = acquisition.scatterer['Csca'].mean().to('nm**2').magnitude
+
+        df = peak_dataframe.copy()
+        df['Run'] = run_id
+        df['Diameter'] = diameter.to('nm').magnitude
+        df['OpticalPower'] = op.to('mW').magnitude
+        df['BackgroundPower'] = (bf * op).to('mW').magnitude
+        df['BackgroundFraction'] = bf
+        df['Csca'] = csca_val
+        df['DetectorPower'] = acquisition.scatterer['forward'].mean().to('mW').magnitude
+
+        results.append(df)
+
+    # Concatenate all results
+    combined = pd.concat(results, ignore_index=True)
+
+    # Set up multi-index
+    combined.set_index(
+        ['Diameter', 'OpticalPower', 'BackgroundPower', 'Run'],
+        inplace=True
     )
 
-    # Run the triggering algorithm.
-    triggered_acquisition = acquisition.run_triggering(
-        threshold=threshold,
-        trigger_detector_name='forward',
-        max_triggers=-1,
-        pre_buffer=20,
-        post_buffer=20
+    # Drop unwanted raw columns and ensure numeric types
+    cleaned = (
+        combined
+        .drop(columns=['Detector', 'SegmentID', 'PeakID', 'Area', 'Width', 'Index'], errors='ignore')
+        .astype(float)
     )
 
-    # Optionally plot the triggered acquisition signal.
-    if plot_trigger:
-        triggered_acquisition.analog.plot()
 
-    # Create a global peak locator algorithm (without computing width).
-    peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
+    df = pd.DataFrame()
+    df['Mean'] = cleaned['Height'].groupby(['Diameter', 'OpticalPower', 'BackgroundPower']).apply('mean')
+    df['Median'] = cleaned['Height'].groupby(['Diameter', 'OpticalPower', 'BackgroundPower']).apply('median')
+    df['STD'] = cleaned['Height'].groupby(['Diameter', 'OpticalPower', 'BackgroundPower']).apply('std')
+    df['CV'] = df['STD'] / df['Median']
+    df['Csca'] = cleaned['Csca'].groupby(['Diameter', 'OpticalPower', 'BackgroundPower']).apply('mean')
 
-    digital_signal = triggered_acquisition.get_digital_signal()
+    df['DetectorPower'] = cleaned['DetectorPower'].groupby(['Diameter', 'OpticalPower', 'BackgroundPower']).apply('mean')
+    df.acquisition = acquisition
+    return df
 
-    peak_dataframe = peak_algorithm.run(
-        signal_dataframe=digital_signal
-    )
-
-    return acquisition.scatterer, peak_dataframe
-
-
-def get_background_dataframe(
-    run_time: units.Quantity,
-    background_power: units.Quantity,
+def get_scatterer_metrics(
+    diameter_list: Sequence[float],
+    index_list: Sequence[float],
+    optical_power: Union[float, Sequence[float]],
+    bit_depth: str,
+    saturation_levels: str,
+    background_fraction: 0,
+    run_time = 5 * units.millisecond,
+    particle_count: int = 100,
     plot_analog: bool = False,
-    processing_steps: list = [],
-) -> any:
+    plot_digital: bool = False,
+    processing_steps: Optional[list] = []
+) -> pd.DataFrame:
     """
-    Simulate a flow cytometry acquisition, perform triggering, and detect peaks
-    (e.g., peak heights) from the triggered signal using the FlowCyPy library.
+    Compute bead metrics for each combination of diameter, optical_power, and background_power.
 
-    This function sets up a simulated flow cytometer with a Gaussian beam source,
-    flow cell, and scatterer collection configured with the specified medium refractive
-    index. For each bead population defined by a diameter in 'diameter_list' and
-    its corresponding refractive index in 'indices_list', a sphere population is added
-    to the scatterer collection.
+    Parameters
+    ----------
+    diameter_list : sequence of float
+        List of bead diameters to process.
+    optical_power : float or sequence of float
+        Illumination power(s). If a single value is provided, it will be wrapped in a list.
+    background_power : float or sequence of float
+        Background illumination power(s). If a single value is provided, it will be wrapped in a list.
+    threshold : float
+        Peak detection threshold.
+    bit_depth : str
+        Detector bit depth.
+    saturation_levels : str
+        Levels for digital saturation.
+    plot_analog : bool, optional
+        Whether to plot analog traces.
+    plot_digital : bool, optional
+        Whether to plot digital traces.
+    processing_steps : list, optional
+        Additional processing steps for data.
 
-    The simulation then configures a signal digitizer, detector, and transimpedance
-    amplifier before creating a FlowCytometer instance. After preparing an acquisition
-    with the specified run time and applying processing steps (baseline restoration
-    and low-pass filtering), the function retrieves the analog signal. If requested,
-    it plots this raw analog signal.
-
-    Next, the function applies a triggering algorithm on the 'forward' detector using
-    the provided threshold (with pre-buffer and post-buffer sizes of 20 samples). If requested,
-    the triggered signal is also plotted.
-
-    Finally, a global peak locator algorithm is applied to the triggered acquisition
-    to detect and return peak information.
-
-    Parameters:
-        diameter_list (list): List of bead diameters (e.g., in nanometers) for the simulated populations.
-        indices_list (list): List of refractive indices for each bead population. Must have the same length as diameter_list.
-        plot_analog (bool, optional): If True, plot the raw analog acquisition signal. Defaults to False.
-        plot_trigger (bool, optional): If True, plot the triggered acquisition signal. Defaults to False.
-        threshold (units.Quantity): The threshold value (with appropriate units) for triggering.
-        run_time (units.Quantity): The duration of the acquisition (with appropriate units).
-        medium_refractive_index (units.Quantity): The refractive index of the medium used in the flow cell.
-
-    Returns:
-        any: The detected peaks from the triggered acquisition as returned by the peak locator.
-             (The exact type/structure depends on the implementation of peak_locator.GlobalPeakLocator
-              and the triggered acquisition's detect_peaks method.)
-
-    Raises:
-        ValueError: If the lengths of 'diameter_list' and 'indices_list' do not match.
+    Returns
+    -------
+    pd.DataFrame
+        A concatenated DataFrame indexed by (diameter, optical_power, background_power)
+        containing computed metrics (including Csca).
     """
-    # Create the scatterer collection with the specified medium refractive index.
-    scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
+    optical_powers = np.atleast_1d(optical_power)
+    background_fractions = np.atleast_1d(background_fraction)
 
-    acquisition = get_acquisition(
-        scatterer_collection=scatterer_collection,
-        background_power=background_power,
-        run_time=run_time,
-        processing_steps=processing_steps,
-        plot_analog=plot_analog
+    results = []
+
+    for run_id, ((diameter, refractive_index), op, bf) in enumerate(itertools.product(zip(diameter_list, index_list), optical_powers, background_fractions)):
+
+        population = Sphere(
+            name=f'Population: [{diameter}nm, {refractive_index}]',
+            particle_count=particle_count * units.particle,
+            diameter=diameter,
+            refractive_index=refractive_index
+        )
+
+        acquisition = get_acquisition(
+            populations=[population],
+            optical_power=op,
+            background_fraction=bf,
+            run_time=run_time,
+            processing_steps=processing_steps,
+            bit_depth=bit_depth,
+            saturation_levels=saturation_levels,
+            plot_analog=plot_analog,
+            plot_digital=plot_digital
+        )
+
+        csca_val = acquisition.scatterer['Csca'].mean().to('nm**2').magnitude
+
+        df = acquisition.scatterer.copy()
+        df['Run'] = run_id
+        df['Diameter'] = diameter.to('nm').magnitude
+        df['OpticalPower'] = op.to('mW').magnitude
+        df['BackgroundPower'] = (bf * op).to('mW').magnitude
+        df['BackgroundFraction'] = bf
+        df['Csca'] = csca_val
+
+        results.append(df)
+
+    # Concatenate all results
+    combined = pd.concat(results, ignore_index=True)
+
+    # Set up multi-index
+    combined.set_index(
+        ['Diameter', 'OpticalPower', 'BackgroundPower', 'Run'],
+        inplace=True
     )
 
-    return acquisition#.get_digital_signal()
+    cleaned_df = combined.drop(columns=['x', 'y', 'Velocity', 'Widths', 'type', 'RefractiveIndex', 'Time'], errors='ignore')
+
+    return cleaned_df
