@@ -1,181 +1,201 @@
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Optional, Sequence, Union
 import warnings
-import pandas as pd
-from pydantic.dataclasses import dataclass
 
+import numpy as np
+import pandas as pd
+import pint
+import pint_pandas
 
 from FlowCyPy import units
 from FlowCyPy.dataframe_subclass import TriggerDataFrame
 from FlowCyPy.triggered_acquisition import TriggeredAcquisitions
-from FlowCyPy.binary import interface_triggering_system # type: ignore
-import pint_pandas
+from FlowCyPy.binary.interface_triggering_system import TriggeringSystem as cpp_binding  # type: ignore
 
-config_dict = dict(
-    arbitrary_types_allowed=True,
-    kw_only=True,
-    slots=True,
-    extra='forbid'
-)
+# ---------------------------------------------------------------------------
+# Helpers / types
+# ---------------------------------------------------------------------------
 
-@dataclass(config=config_dict)
-class TriggeringSystem():
-    """
-    Execute triggered acquisition analysis on signal data.
+class Scheme(str, Enum):
+    """Triggering windows available in the C++ backend."""
 
-    This method processes the analog signal data by identifying segments where the
-    signal exceeds a given threshold using a designated detector. It then extracts
-    these segments with additional pre- and post-trigger buffers. The analysis can
-    operate in either a "fixed-window" or "dynamic" mode depending on the `scheme`
-    parameter, providing flexibility for different signal characteristics.
+    FIXED = "fixed-window"
+    DYNAMIC = "dynamic"
+
+    def __str__(self) -> str:  # nicer repr in help()
+        return self.value
+
+@dataclass(slots=True, kw_only=True)
+class TriggeringSystem:
+    """Detect threshold-crossing windows and structure them into a DataFrame.
 
     Parameters
     ----------
-    threshold : units.Quantity
-        The signal threshold value. Only signal values exceeding this threshold are
-        considered as trigger events.
-    trigger_detector_name : str
-        The name of the detector whose signal is used to detect trigger events.
-    pre_buffer : int, optional
-        The number of data points to include before the trigger event in each
-        extracted segment. Default is 64.
-    post_buffer : int, optional
-        The number of data points to include after the trigger event in each
-        extracted segment. Default is 64.
-    max_triggers : int, optional
-        The maximum number of trigger events to process. If set to -1, all detected
-        trigger events are processed. Default is -1.
-    min_window_duration : units.Quantity, optional
-        The minimum duration for which the signal must remain above the threshold
-        to be considered a valid trigger. This duration is converted into a number of
-        samples based on the sampling rate. If set to None, no minimum duration check is applied.
-    lower_threshold : units.Quantity, optional
-        An optional lower threshold for ending a trigger event. If not provided, the
-        same value as `threshold` is used.
-    debounce_enabled : bool, optional
-        If True, the algorithm requires that the signal remains above the threshold
-        for at least `min_window_duration` samples (if specified) to validate a trigger.
-        If False, this debounce check is skipped. Default is True.
-    scheme : str, optional
-        The triggering scheme to use. Options include:
-        - 'fixed-window': Uses fixed pre_buffer and post_buffer lengths.
-        - 'dynamic': Uses a dynamic window that extends until the signal falls
-            below the threshold (or lower_threshold if specified).
-        Default is 'dynamic'.
-
-    Returns
-    -------
-    TriggeredAcquisitions
-        An object that contains the extracted signal segments, their corresponding
-        time values, detector names, and segment IDs packaged in a specialized
-        DataFrame.
-
-    Raises
-    ------
-    ValueError
-        If the specified `trigger_detector_name` is not found in the dataset.
-    RuntimeError
-        If no time array is provided (via add_time) and none is available for the
-        trigger detector.
-
-    Warns
-    -----
-    UserWarning
-        If no trigger events are detected (i.e., no signal segments meet the threshold
-        criteria), a warning is issued and None is returned.
-
-    Notes
-    -----
-    - In dynamic mode, each extracted segment includes:
-        pre_buffer points before the trigger event,
-        all points where the signal is above the threshold (or remains above lower_threshold),
-        and post_buffer points after the signal falls below the threshold.
-    This results in a segment length of pre_buffer + width + post_buffer - 1.
-    - The method converts input signal and time values from physical units to raw
-    numerical values based on their respective units before passing them to the C++
-    triggering algorithm for fast processing. After processing, the numerical arrays
-    are converted back into PintArray objects with the original units restored.
-    - This method automatically invokes additional processing (e.g., peak detection)
-    on the triggered segments via `self.detect_peaks` (if applicable) after the
-    acquisition analysis.
+    threshold
+        Threshold on the *trigger* detector signal.  Must carry units.
+    pre_buffer, post_buffer
+        Extra samples to copy before / after the detected window.
+    max_triggers
+        -1 → unlimited.  Any positive value caps the number of extracted windows.
+    min_window_duration
+        If given, debouncing requires *continuous* above-threshold time ≥ this.
+    lower_threshold
+        Dynamic scheme only.  Finishes a window once the signal dips below this
+        value (defaults to *threshold*).
+    debounce_enabled
+        Skip / apply the min-duration rule.
+    scheme
+        "fixed-window" or "dynamic".  Use the :class:`Scheme` enum for type
+        safety, but raw strings work too.
     """
+
     threshold: units.Quantity
-    trigger_detector_name: str
     pre_buffer: int = 64
     post_buffer: int = 64
     max_triggers: int = -1
-    min_window_duration: units.Quantity = None
-    lower_threshold: units.Quantity = None
+    min_window_duration: Optional[units.Quantity] = None
+    lower_threshold: Optional[units.Quantity] = None
     debounce_enabled: bool = True
-    scheme: str = 'dynamic'
+    scheme: Union[Scheme, str] = Scheme.DYNAMIC
 
-    def run(self, signal_dataframe: pd.DataFrame, sampling_rate: units.Quantity) -> TriggerDataFrame:
-        detector_names = signal_dataframe.detector_names
+    # internal, filled in __post_init__
+    _signal_units: pint.Unit = field(init=False, repr=False)
 
-        # Ensure the trigger detector exists
-        if self.trigger_detector_name not in detector_names:
-            raise ValueError(f"Detector '{self.trigger_detector_name}' not found in dataset.")
+    # ---------------------------------------------------------------------
+    # Validation helpers
+    # ---------------------------------------------------------------------
 
-        # Prepare detector-specific signal & time mappings for C++ function
-        signal_dataframe['Time'] = signal_dataframe['Time'].pint.to('second')
-        for detector_name in detector_names:
-            signal_dataframe[detector_name] = signal_dataframe[detector_name].pint.to('volt')
+    def __post_init__(self) -> None:
+        if self.threshold.magnitude <= 0:
+            raise ValueError("threshold must be > 0")
+        if self.pre_buffer < 0 or self.post_buffer < 0:
+            raise ValueError("buffers must be >= 0")
+        if isinstance(self.scheme, str):
+            try:
+                self.scheme = Scheme(self.scheme)
+            except ValueError as exc:
+                raise ValueError(f"Unknown scheme {self.scheme!r}") from exc
 
-        lower_threshold = (self.lower_threshold or self.threshold).to('volt').magnitude
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
 
-        min_window_duration = int(
-            (self.min_window_duration * sampling_rate).to('dimensionless').magnitude if self.min_window_duration is not None else -1
+    def run(
+        self,
+        signal_dataframe: pd.DataFrame,
+        sampling_rate: units.Quantity,
+        trigger_detector_name: str,
+    ) -> Optional[TriggeredAcquisitions]:
+        """
+        Extract windows where *trigger_detector_name* crosses *threshold*.
+
+        Returns
+        -------
+        TriggeredAcquisitions | None
+            None when no window matches the criteria (a warning is emitted).
+        """
+
+        detectors: Sequence[str] = list(signal_dataframe.detector_names)
+        if trigger_detector_name not in detectors:
+            raise ValueError(f"Detector {trigger_detector_name!r} not found in frame")
+
+        self._signal_units = signal_dataframe[trigger_detector_name].pint.units
+
+        df_norm = self._normalize_units(signal_dataframe, detectors)
+        cpp_sys = self._build_cpp_trigger(
+            sampling_rate=sampling_rate,
+            lower_thr_default=self.threshold,
+            trigger_detector_name=trigger_detector_name,
         )
 
-        # Call the C++ function for fast triggering detection
-        triggering_system = interface_triggering_system.TriggeringSystem(
-            trigger_detector_name=self.trigger_detector_name,
-            threshold=self.threshold.to('volt').magnitude,
+        # feed time + all detector signals
+        cpp_sys.add_time(df_norm["Time"].values)
+        for det in detectors:
+            cpp_sys.add_signal(det, df_norm[det].values)
+
+        cpp_sys.run(algorithm=str(self.scheme))
+
+        if len(cpp_sys.get_signals(trigger_detector_name)) == 0:
+            self._warn_no_hits(signal_dataframe, trigger_detector_name)
+            return None
+
+        out_df = self._assemble_dataframe(cpp_sys, detectors)
+        out_df.attrs['scatterer_dataframe'] = signal_dataframe.attrs['scatterer_dataframe']
+        return TriggeredAcquisitions(parent=self, dataframe=out_df)
+
+    # ------------------------------------------------------------------
+    # Private helpers
+    # ------------------------------------------------------------------
+
+    def _normalize_units(self, df: pd.DataFrame, detectors: Sequence[str]) -> pd.DataFrame:
+        """Return a *copy* of *df* whose Time + each detector share one unit set."""
+
+        dfc = df.copy()
+        dfc["Time"] = df["Time"].pint.to("second").pint.magnitude
+        for det in detectors:
+            dfc[det] = df[det].pint.to(self._signal_units).pint.magnitude
+        return dfc
+
+    def _build_cpp_trigger(
+        self,
+        sampling_rate: units.Quantity,
+        lower_thr_default: units.Quantity,
+        trigger_detector_name: str) -> cpp_binding:
+        """
+        Instantiate and configure the fast C++ backend.
+        """
+
+        lower_thr = (self.lower_threshold or lower_thr_default).to(self._signal_units).magnitude
+
+        min_win_samples = (
+            int((self.min_window_duration * sampling_rate).to("dimensionless").m)
+            if self.min_window_duration is not None
+            else -1
+        )
+
+        return cpp_binding(
+            trigger_detector_name=trigger_detector_name,
+            threshold=self.threshold.to(self._signal_units).magnitude,
             pre_buffer=self.pre_buffer,
             post_buffer=self.post_buffer,
             max_triggers=self.max_triggers,
-            lower_threshold=lower_threshold,
-            min_window_duration=min_window_duration,
-            debounce_enabled=self.debounce_enabled
+            lower_threshold=lower_thr,
+            min_window_duration=min_win_samples,
+            debounce_enabled=self.debounce_enabled,
         )
 
-        triggering_system.add_time(signal_dataframe['Time'].pint.quantity.magnitude)
-
-        for detector_name in detector_names:
-            signal = signal_dataframe[detector_name].pint.to('volt').values.quantity.magnitude
-            triggering_system.add_signal(detector_name, signal)
-
-        triggering_system.run(algorithm=self.scheme)
-
-        if len(triggering_system.get_signals(self.trigger_detector_name)) == 0:
-            warnings.warn(
-                f"No signal met the trigger criteria. Try adjusting the threshold. "
-                f"Signal min-max: {signal_dataframe[self.trigger_detector_name].min().to_compact()}, {signal_dataframe[self.trigger_detector_name].max().to_compact()}",
-                UserWarning
-            )
-
-            return None
-
-        df = pd.DataFrame(
-            columns=['Time', 'SegmentID', *detector_names]
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _warn_no_hits(df: pd.DataFrame, det: str) -> None:  # pragma: no cover
+        warnings.warn(
+            "No signal met the trigger criteria. Try adjusting the threshold. "
+            f"Signal min/max: {df[det].min().to_compact()}, {df[det].max().to_compact()}",
+            UserWarning,
+            stacklevel=2,
         )
 
-        for detector_name in detector_names:
-            df[detector_name] = pint_pandas.PintArray(triggering_system.get_signals(detector_name), 'volt')
+    def _assemble_dataframe(self, cpp_sys: cpp_binding, detectors: Sequence[str]) -> TriggerDataFrame:
+        """Transform raw numpy outputs from C++ into a typed TriggerDataFrame."""
 
-        ref_detector_name = detector_names[0]
-        df['Time'] = pint_pandas.PintArray(triggering_system.get_times(ref_detector_name), 'second')
-        df['SegmentID'] = triggering_system.get_segments_ID(ref_detector_name)
+        data = {
+            "SegmentID": cpp_sys.get_segments_ID(detectors[0]),
+            "Time": pint_pandas.PintArray(cpp_sys.get_times(detectors[0]), "second"),
+        }
+        for det in detectors:
+            sig_np = cpp_sys.get_signals(det)
+            data[det] = pint_pandas.PintArray(sig_np, self._signal_units)
 
-        df = df.set_index('SegmentID')
+        tidy = (
+            pd.DataFrame(data)
+            .set_index("SegmentID")
+            .pipe(TriggerDataFrame, plot_type="analog")
+        )
 
-        # Create a specialized DataFrame class
-        df = TriggerDataFrame(df, plot_type='analog')
-
-        # Copy metadata attributes
-        df.attrs['scatterer_dataframe'] = signal_dataframe.attrs.get('scatterer_dataframe', None)
-        df.attrs['threshold'] = {'detector': self.trigger_detector_name, 'value': self.threshold}
-
-        # Wrap inside a TriggeredAcquisitions object
-        triggered_acquisition = TriggeredAcquisitions(parent=self, dataframe=df)
-        # triggered_acquisition.scatterer = self.scatterer
-
-        return triggered_acquisition
+        # metadata passthrough
+        tidy.attrs.update(
+            {
+                "threshold": {"detector": detectors[0], "value": self.threshold},
+            }
+        )
+        return tidy

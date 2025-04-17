@@ -85,7 +85,7 @@ population_2 = Sphere(
     refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.02 * units.RIU)
 )
 
-# scatterer_collection.add_population(population_0, population_1, population_2)
+scatterer_collection.add_population(population_0, population_1, population_2)
 
 scatterer_collection.dilute(factor=2)
 
@@ -144,8 +144,7 @@ acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
 
 trigger = TriggeringSystem(
-    threshold=0.1 * units.microvolt,
-    trigger_detector_name='forward',
+    threshold=10 * units.bit_bins,
     max_triggers=-1,
     pre_buffer=20,
     post_buffer=20,
@@ -154,10 +153,11 @@ trigger = TriggeringSystem(
 
 
 df = trigger.run(
-    signal_dataframe=acquisition.analog,
+    signal_dataframe=acquisition.get_digital_signal(),
+    trigger_detector_name='forward',
     sampling_rate=signal_digitizer.sampling_rate
 )
-
+df.analog.plot()
 
 print(df.analog)
 
