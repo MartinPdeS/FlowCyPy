@@ -21,7 +21,7 @@
 Limit of detection
 ==================
 
-.. GENERATED FROM PYTHON SOURCE LINES 5-108
+.. GENERATED FROM PYTHON SOURCE LINES 5-124
 
 
 
@@ -45,8 +45,15 @@ Limit of detection
     *
 
       .. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
-         :alt: Peaks properties
+         :alt: limit of detection
          :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_004.png
+         :alt: Peaks properties
+         :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_004.png
          :class: sphx-glr-multi-img
 
 
@@ -54,12 +61,12 @@ Limit of detection
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+    /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+    /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
-    <seaborn.axisgrid.JointGrid object at 0x7efe20bcb490>
+    <seaborn.axisgrid.JointGrid object at 0x7fa28ddae890>
 
 
 
@@ -79,6 +86,8 @@ Limit of detection
     from FlowCyPy import distribution
     from FlowCyPy.signal_digitizer import SignalDigitizer
     from FlowCyPy import peak_locator
+    from FlowCyPy.triggering_system import TriggeringSystem
+    from FlowCyPy import circuits
 
     NoiseSetting.include_noises = True
     NoiseSetting.include_shot_noise = True
@@ -113,7 +122,7 @@ Limit of detection
 
         scatterer_collection.add_population(population)
 
-    signal_digitizer = SignalDigitizer(
+    digitizer = SignalDigitizer(
         bit_depth='14bit',
         saturation_levels='auto',
         sampling_rate=60 * units.megahertz,            # Sampling frequency: 60 MHz
@@ -143,40 +152,54 @@ Limit of detection
     cytometer = FlowCytometer(
         source=source,
         transimpedance_amplifier=transimpedance_amplifier,
-        signal_digitizer=signal_digitizer,
+        digitizer=digitizer,
         scatterer_collection=scatterer_collection,
         flow_cell=flow_cell,                     # Populations used in the experiment
-        background_power=0.0 * units.milliwatt,
+        background_power=0.01 * units.milliwatt,
         detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
     )
 
     # Run the flow cytometry simulation
+    processing_steps = [
+        circuits.BaselineRestorator(window_size=1000 * units.microsecond),
+        circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)
+    ]
+
     cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
-    acquisition = cytometer.get_acquisition()
+    analog_acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
     # Visualize the scatter signals from both detectors
-    acquisition.analog.plot()
+    analog_acquisition.plot()
 
-    trigger_acquisition = acquisition.run_triggering(
+    trigger = TriggeringSystem(
         threshold=3 * units.millivolt,
-        trigger_detector_name='forward',
         max_triggers=15,
         pre_buffer=64,
-        post_buffer=64
+        post_buffer=64,
+        digitizer=digitizer
     )
 
-    trigger_acquisition.analog.plot()
+    analog_trigger = trigger.run(
+        signal_dataframe=analog_acquisition,
+        trigger_detector_name='forward',
+    )
+
+    analog_trigger.plot()
+
+    digital_trigger = analog_trigger.digitalize(digitizer=digitizer)
+
+    digital_trigger.plot()
 
     peak_algorithm = peak_locator.GlobalPeakLocator()
 
-    peaks = trigger_acquisition.detect_peaks(peak_algorithm)
+    peaks = peak_algorithm.run(digital_trigger)
 
     peaks.plot(x='side', y='forward')
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.112 seconds)
+   **Total running time of the script:** (0 minutes 4.337 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:

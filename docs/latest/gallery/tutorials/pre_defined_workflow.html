@@ -29,7 +29,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -604,7 +604,7 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 
 <span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;Diameter&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
 
-<span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
+<span class="n">digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>
     <span class="n">saturation_levels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
     <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
@@ -624,7 +624,7 @@ define physical quantities like meters, seconds, and watts in a concise and cons
     <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
     <span class="n">transimpedance_amplifier</span><span class="o">=</span><span class="n">transimpedance_amplifier</span><span class="p">,</span>
     <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
-    <span class="n">signal_digitizer</span><span class="o">=</span><span class="n">signal_digitizer</span><span class="p">,</span>
+    <span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">,</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">],</span>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>
     <span class="n">background_power</span><span class="o">=</span><span class="mf">0.001</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span>
@@ -644,15 +644,15 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 <li><img src="../../_images/sphx_glr_pre_defined_workflow_001.png" srcset="../../_images/sphx_glr_pre_defined_workflow_001.png" alt="Distribution of Diameter" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_pre_defined_workflow_002.png" srcset="../../_images/sphx_glr_pre_defined_workflow_002.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-multi-img"/></li>
 </ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
-/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
 
 &lt;Figure size 800x800 with 1 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.014 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.546 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-pre-defined-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/2048f4e8a3fcccab34320d69681f3e9a/pre_defined_workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">pre_defined_workflow.ipynb</span></code></a></p>

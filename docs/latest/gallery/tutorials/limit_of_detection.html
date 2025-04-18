@@ -29,7 +29,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -554,14 +554,15 @@ to download the full example code.</p>
 <ul class="sphx-glr-horizontal">
 <li><img src="../../_images/sphx_glr_limit_of_detection_001.png" srcset="../../_images/sphx_glr_limit_of_detection_001.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_limit_of_detection_002.png" srcset="../../_images/sphx_glr_limit_of_detection_002.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_limit_of_detection_003.png" srcset="../../_images/sphx_glr_limit_of_detection_003.png" alt="Peaks properties" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_limit_of_detection_003.png" srcset="../../_images/sphx_glr_limit_of_detection_003.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_limit_of_detection_004.png" srcset="../../_images/sphx_glr_limit_of_detection_004.png" alt="Peaks properties" class = "sphx-glr-multi-img"/></li>
 </ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
-/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
 
-&lt;seaborn.axisgrid.JointGrid object at 0x7efe20bcb490&gt;
+&lt;seaborn.axisgrid.JointGrid object at 0x7fa28ddae890&gt;
 </pre></div>
 </div>
 <div class="line-block">
@@ -576,6 +577,8 @@ to download the full example code.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">peak_locator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.triggering_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriggeringSystem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">circuits</span>
 
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="o">=</span> <span class="kc">True</span>
@@ -610,7 +613,7 @@ to download the full example code.</p>
 
     <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
 
-<span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
+<span class="n">digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>
     <span class="n">saturation_levels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
     <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>            <span class="c1"># Sampling frequency: 60 MHz</span>
@@ -640,38 +643,52 @@ to download the full example code.</p>
 <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
     <span class="n">transimpedance_amplifier</span><span class="o">=</span><span class="n">transimpedance_amplifier</span><span class="p">,</span>
-    <span class="n">signal_digitizer</span><span class="o">=</span><span class="n">signal_digitizer</span><span class="p">,</span>
+    <span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">,</span>
     <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>                     <span class="c1"># Populations used in the experiment</span>
-    <span class="n">background_power</span><span class="o">=</span><span class="mf">0.0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>
+    <span class="n">background_power</span><span class="o">=</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">]</span>       <span class="c1"># List of detectors: Side scatter and Forward scatter</span>
 <span class="p">)</span>
 
 <span class="c1"># Run the flow cytometry simulation</span>
+<span class="n">processing_steps</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">1000</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microsecond</span><span class="p">),</span>
+    <span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="p">]</span>
+
 <span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
-<span class="n">acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">()</span>
+<span class="n">analog_acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span><span class="n">processing_steps</span><span class="o">=</span><span class="n">processing_steps</span><span class="p">)</span>
 
 <span class="c1"># Visualize the scatter signals from both detectors</span>
-<span class="n">acquisition</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">analog_acquisition</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
-<span class="n">trigger_acquisition</span> <span class="o">=</span> <span class="n">acquisition</span><span class="o">.</span><span class="n">run_triggering</span><span class="p">(</span>
+<span class="n">trigger</span> <span class="o">=</span> <span class="n">TriggeringSystem</span><span class="p">(</span>
     <span class="n">threshold</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millivolt</span><span class="p">,</span>
-    <span class="n">trigger_detector_name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
     <span class="n">max_triggers</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
     <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
-    <span class="n">post_buffer</span><span class="o">=</span><span class="mi">64</span>
+    <span class="n">post_buffer</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span>
 <span class="p">)</span>
 
-<span class="n">trigger_acquisition</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">analog_trigger</span> <span class="o">=</span> <span class="n">trigger</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+    <span class="n">signal_dataframe</span><span class="o">=</span><span class="n">analog_acquisition</span><span class="p">,</span>
+    <span class="n">trigger_detector_name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">analog_trigger</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+<span class="n">digital_trigger</span> <span class="o">=</span> <span class="n">analog_trigger</span><span class="o">.</span><span class="n">digitalize</span><span class="p">(</span><span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">)</span>
+
+<span class="n">digital_trigger</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
 <span class="n">peak_algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span><span class="p">()</span>
 
-<span class="n">peaks</span> <span class="o">=</span> <span class="n">trigger_acquisition</span><span class="o">.</span><span class="n">detect_peaks</span><span class="p">(</span><span class="n">peak_algorithm</span><span class="p">)</span>
+<span class="n">peaks</span> <span class="o">=</span> <span class="n">peak_algorithm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">digital_trigger</span><span class="p">)</span>
 
 <span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.112 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.337 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-limit-of-detection-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc141053ca87c293e1689882fb19bce1/limit_of_detection.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">limit_of_detection.ipynb</span></code></a></p>

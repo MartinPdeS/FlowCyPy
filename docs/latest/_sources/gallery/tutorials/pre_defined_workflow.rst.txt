@@ -81,7 +81,7 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 
     df.plot(x='Diameter', bins='auto')
 
-    signal_digitizer = SignalDigitizer(
+    digitizer = SignalDigitizer(
         bit_depth='14bit',
         saturation_levels='auto',
         sampling_rate=60 * units.megahertz,
@@ -101,7 +101,7 @@ define physical quantities like meters, seconds, and watts in a concise and cons
         source=source,
         transimpedance_amplifier=transimpedance_amplifier,
         scatterer_collection=scatterer_collection,
-        signal_digitizer=signal_digitizer,
+        digitizer=digitizer,
         detectors=[detector_0, detector_1],
         flow_cell=flow_cell,
         background_power=0.001 * units.milliwatt
@@ -140,9 +140,9 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+    /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+    /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
     <Figure size 800x800 with 1 Axes>
@@ -152,7 +152,7 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.014 seconds)
+   **Total running time of the script:** (0 minutes 1.546 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_pre_defined_workflow.py:

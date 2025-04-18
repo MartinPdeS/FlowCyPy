@@ -101,7 +101,7 @@ Define and plot the flow cell.
     )
 
     # Define the signal digitizer.
-    signal_digitizer = SignalDigitizer(
+    digitizer = SignalDigitizer(
         bit_depth='14bit',
         saturation_levels='auto',
         sampling_rate=60 * units.megahertz  # Sampling rate: 60 MHz
@@ -133,7 +133,7 @@ Define and plot the flow cell.
     cytometer = FlowCytometer(
         source=source,
         transimpedance_amplifier=transimpedance_amplifier,
-        signal_digitizer=signal_digitizer,
+        digitizer=digitizer,
         scatterer_collection=scatterer_collection,
         flow_cell=flow_cell,
         background_power=2 * units.microwatt,
@@ -151,8 +151,8 @@ Define and plot the flow cell.
     cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
     acquisition_none = cytometer.get_acquisition(processing_steps=processing_steps_none)
     ax.plot(
-        acquisition_none.analog['Time'].pint.to('microsecond'),
-        acquisition_none.analog['forward'].pint.to('millivolt'),
+        acquisition_none['Time'].pint.to('microsecond'),
+        acquisition_none['forward'].pint.to('millivolt'),
         linestyle='-',
         label='Raw Signal'
     )
@@ -161,8 +161,8 @@ Define and plot the flow cell.
     processing_steps_baseline = [circuits.BaselineRestorator(window_size=1000 * units.microsecond)]
     acquisition_baseline = cytometer.get_acquisition(processing_steps=processing_steps_baseline)
     ax.plot(
-        acquisition_baseline.analog['Time'].pint.to('microsecond'),
-        acquisition_baseline.analog['forward'].pint.to('millivolt'),
+        acquisition_baseline['Time'].pint.to('microsecond'),
+        acquisition_baseline['forward'].pint.to('millivolt'),
         linestyle='--',
         label='Baseline Restored'
     )
@@ -171,8 +171,8 @@ Define and plot the flow cell.
     processing_steps_bessel = [circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)]
     acquisition_bessel = cytometer.get_acquisition(processing_steps=processing_steps_bessel)
     ax.plot(
-        acquisition_bessel.analog['Time'].pint.to('microsecond'),
-        acquisition_bessel.analog['forward'].pint.to('millivolt'),
+        acquisition_bessel['Time'].pint.to('microsecond'),
+        acquisition_bessel['forward'].pint.to('millivolt'),
         linestyle='-.',
         label='Bessel LowPass'
     )
@@ -209,9 +209,9 @@ Define and plot the flow cell.
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+    /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+    /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
 
@@ -220,7 +220,7 @@ Define and plot the flow cell.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.950 seconds)
+   **Total running time of the script:** (0 minutes 1.652 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_signal_processing.py:

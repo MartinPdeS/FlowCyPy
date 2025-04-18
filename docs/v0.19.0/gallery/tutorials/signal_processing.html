@@ -29,7 +29,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -612,7 +612,7 @@ forward scatter detector signals. Three acquisitions are performed:</p>
 <span class="p">)</span>
 
 <span class="c1"># Define the signal digitizer.</span>
-<span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
+<span class="n">digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>
     <span class="n">saturation_levels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
     <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span>  <span class="c1"># Sampling rate: 60 MHz</span>
@@ -644,7 +644,7 @@ forward scatter detector signals. Three acquisitions are performed:</p>
 <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
     <span class="n">transimpedance_amplifier</span><span class="o">=</span><span class="n">transimpedance_amplifier</span><span class="p">,</span>
-    <span class="n">signal_digitizer</span><span class="o">=</span><span class="n">signal_digitizer</span><span class="p">,</span>
+    <span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">,</span>
     <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>
     <span class="n">background_power</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microwatt</span><span class="p">,</span>
@@ -662,8 +662,8 @@ forward scatter detector signals. Three acquisitions are performed:</p>
 <span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 <span class="n">acquisition_none</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span><span class="n">processing_steps</span><span class="o">=</span><span class="n">processing_steps_none</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">acquisition_none</span><span class="o">.</span><span class="n">analog</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;microsecond&#39;</span><span class="p">),</span>
-    <span class="n">acquisition_none</span><span class="o">.</span><span class="n">analog</span><span class="p">[</span><span class="s1">&#39;forward&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;millivolt&#39;</span><span class="p">),</span>
+    <span class="n">acquisition_none</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;microsecond&#39;</span><span class="p">),</span>
+    <span class="n">acquisition_none</span><span class="p">[</span><span class="s1">&#39;forward&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;millivolt&#39;</span><span class="p">),</span>
     <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span>
     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Raw Signal&#39;</span>
 <span class="p">)</span>
@@ -672,8 +672,8 @@ forward scatter detector signals. Three acquisitions are performed:</p>
 <span class="n">processing_steps_baseline</span> <span class="o">=</span> <span class="p">[</span><span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">1000</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)]</span>
 <span class="n">acquisition_baseline</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span><span class="n">processing_steps</span><span class="o">=</span><span class="n">processing_steps_baseline</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">acquisition_baseline</span><span class="o">.</span><span class="n">analog</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;microsecond&#39;</span><span class="p">),</span>
-    <span class="n">acquisition_baseline</span><span class="o">.</span><span class="n">analog</span><span class="p">[</span><span class="s1">&#39;forward&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;millivolt&#39;</span><span class="p">),</span>
+    <span class="n">acquisition_baseline</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;microsecond&#39;</span><span class="p">),</span>
+    <span class="n">acquisition_baseline</span><span class="p">[</span><span class="s1">&#39;forward&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;millivolt&#39;</span><span class="p">),</span>
     <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span>
     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Baseline Restored&#39;</span>
 <span class="p">)</span>
@@ -682,8 +682,8 @@ forward scatter detector signals. Three acquisitions are performed:</p>
 <span class="n">processing_steps_bessel</span> <span class="o">=</span> <span class="p">[</span><span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)]</span>
 <span class="n">acquisition_bessel</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span><span class="n">processing_steps</span><span class="o">=</span><span class="n">processing_steps_bessel</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">acquisition_bessel</span><span class="o">.</span><span class="n">analog</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;microsecond&#39;</span><span class="p">),</span>
-    <span class="n">acquisition_bessel</span><span class="o">.</span><span class="n">analog</span><span class="p">[</span><span class="s1">&#39;forward&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;millivolt&#39;</span><span class="p">),</span>
+    <span class="n">acquisition_bessel</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;microsecond&#39;</span><span class="p">),</span>
+    <span class="n">acquisition_bessel</span><span class="p">[</span><span class="s1">&#39;forward&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;millivolt&#39;</span><span class="p">),</span>
     <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-.&#39;</span><span class="p">,</span>
     <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Bessel LowPass&#39;</span>
 <span class="p">)</span>
@@ -701,13 +701,13 @@ forward scatter detector signals. Three acquisitions are performed:</p>
 <li><img src="../../_images/sphx_glr_signal_processing_001.png" srcset="../../_images/sphx_glr_signal_processing_001.png" alt="Particle Spatial Distribution and Speed" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_signal_processing_002.png" srcset="../../_images/sphx_glr_signal_processing_002.png" alt="Flow Cytometry Signal Processing" class = "sphx-glr-multi-img"/></li>
 </ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
-/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.950 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.652 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-signal-processing-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/50779067d973746deae688bfb4c9a778/signal_processing.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">signal_processing.ipynb</span></code></a></p>

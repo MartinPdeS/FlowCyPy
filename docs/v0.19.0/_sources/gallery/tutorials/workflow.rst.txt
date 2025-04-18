@@ -211,7 +211,7 @@ power to electronic signals, and saturation level represents the maximum signal 
     from FlowCyPy.signal_digitizer import SignalDigitizer
     from FlowCyPy.amplifier import TransimpedanceAmplifier
 
-    signal_digitizer = SignalDigitizer(
+    digitizer = SignalDigitizer(
         bit_depth='14bit',
         saturation_levels='auto',
         sampling_rate=60 * units.megahertz,
@@ -273,7 +273,7 @@ and particles follows Mie theory:
         source=source,
         transimpedance_amplifier=amplifier,
         scatterer_collection=scatterer_collection,
-        signal_digitizer=signal_digitizer,
+        digitizer=digitizer,
         detectors=[detector_0, detector_1, detector_2],
         flow_cell=flow_cell,
         background_power=0.000 * units.milliwatt
@@ -307,11 +307,11 @@ and particles follows Mie theory:
 
  .. code-block:: none
 
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+    /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+    /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
-    /opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+    /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
 
@@ -325,7 +325,7 @@ Visualize the scatter signals from both detectors
 
 .. code-block:: Python
 
-    acquisition.analog.plot()
+    acquisition.plot()
 
 
 
@@ -346,19 +346,26 @@ Step 7: Analyze Detected Signals
 The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 205-216
+.. GENERATED FROM PYTHON SOURCE LINES 205-223
 
 .. code-block:: Python
 
-    triggered_acquisition = acquisition.run_triggering(
+    from FlowCyPy.triggering_system import TriggeringSystem
+
+    trigger = TriggeringSystem(
         threshold=2 * units.microvolt,
-        trigger_detector_name='forward',
         max_triggers=-1,
         pre_buffer=20,
-        post_buffer=20
+        post_buffer=20,
+        digitizer=digitizer
     )
 
-    triggered_acquisition.analog.plot()
+    analog_triggered = trigger.run(
+        signal_dataframe=acquisition,
+        trigger_detector_name='forward',
+    )
+
+    analog_triggered.plot()
 
 
 
@@ -373,20 +380,20 @@ window size and threshold.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 217-218
+.. GENERATED FROM PYTHON SOURCE LINES 224-225
 
 Getting and plotting the extracted peaks.
 
-.. GENERATED FROM PYTHON SOURCE LINES 218-227
+.. GENERATED FROM PYTHON SOURCE LINES 225-234
 
 .. code-block:: Python
 
     from FlowCyPy import peak_locator
     peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
 
+    digital_signal = analog_triggered.digitalize(digitizer=digitizer)
 
-    peaks = triggered_acquisition.detect_peaks(peak_algorithm)
-
+    peaks = peak_algorithm.run(digital_signal)
 
     peaks.plot(feature='Height', x='side', y='forward')
 
@@ -404,15 +411,15 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7efe23132e50>
+    <seaborn.axisgrid.JointGrid object at 0x7fa28dcd1e10>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 228-229
+.. GENERATED FROM PYTHON SOURCE LINES 235-236
 
 Step 8: Classifying the collected dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 229-239
+.. GENERATED FROM PYTHON SOURCE LINES 236-246
 
 .. code-block:: Python
 
@@ -441,7 +448,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 11.039 seconds)
+   **Total running time of the script:** (0 minutes 12.026 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

@@ -75,7 +75,7 @@ scatterer_collection.add_population(ev)
 # ---------------------------
 # The detector captures the scattered light. It is positioned at 90 degrees relative to the incident light beam
 # and configured with a numerical aperture of 0.4 and responsivity of 1.
-signal_digitizer = SignalDigitizer(
+digitizer = SignalDigitizer(
     bit_depth=1024,
     saturation_levels='auto',
     sampling_rate=1 * units.megahertz,        # Sampling frequency: 1 MHz
@@ -106,7 +106,7 @@ transimpedance_amplifier = TransimpedanceAmplifier(
 cytometer = FlowCytometer(
     source=source,
     transimpedance_amplifier=transimpedance_amplifier,
-    signal_digitizer=signal_digitizer,
+    digitizer=digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,                # Particle diameter distribution
     detectors=[detector_0, detector_1]  # List of detectors used in the simulation
@@ -118,9 +118,11 @@ cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
 acquisition = cytometer.get_acquisition()
 
 # Visualize the scatter signals from both detectors
-acquisition.analog.plot()
+acquisition.plot()
 
-acquisition.analog.log()
+digital_signals = acquisition.digitalize(digitizer=digitizer)
+
+digital_signals.plot()
 
 """
 Summary:

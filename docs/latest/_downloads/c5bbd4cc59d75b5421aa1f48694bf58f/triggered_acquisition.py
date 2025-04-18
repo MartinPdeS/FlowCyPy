@@ -22,6 +22,7 @@ from FlowCyPy.population import Sphere
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import units
+from FlowCyPy.triggering_system import TriggeringSystem
 
 import numpy
 numpy.random.seed(3)
@@ -79,7 +80,7 @@ scatterer_collection.dilute(2)
 # ---------------------------
 # The detector captures the scattered light. It is positioned at 90 degrees relative to the incident light beam
 # and configured with a numerical aperture of 0.4 and responsivity of 1.
-signal_digitizer = SignalDigitizer(
+digitizer = SignalDigitizer(
     bit_depth=1024,
     saturation_levels='auto',
     sampling_rate=10 * units.megahertz,        # Sampling frequency: 1 MHz
@@ -110,7 +111,8 @@ transimpedance_amplifier = TransimpedanceAmplifier(
 cytometer = FlowCytometer(
     source=source,
     transimpedance_amplifier=transimpedance_amplifier,
-    signal_digitizer=signal_digitizer,
+    digitizer=digitizer,
+    background_power=0.01 * units.milliwatt,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,                # Particle size distribution
     detectors=[detector_0, detector_1]  # List of detectors used in the simulation
@@ -122,27 +124,31 @@ acquisition = cytometer.get_acquisition()
 
 # %%
 # Visualize the scatter analog signals from both detectors
-# acquisition.analog.log()
-# acquisition.analog.plot()
+acquisition.plot()
 
 # %%
 # Visualize the scatter digital signals from both detectors
-# acquisition.digital.log()
-# acquisition.digital.plot()
+digital_signal = acquisition.digitalize(digitizer=digitizer)
+digital_signal.plot()
 
+trigger = TriggeringSystem(
+    threshold='3 sigma',
+    max_triggers=-1,
+    pre_buffer=20,
+    post_buffer=20,
+    digitizer=digitizer
+)
 
-triggered_acquisition = acquisition.run_triggering(
-    threshold = 20 * units.microvolt,
+analog_triggered = trigger.run(
+    signal_dataframe=acquisition,
     trigger_detector_name='forward',
-    max_triggers=8,
-    pre_buffer=10,
-    post_buffer=10
 )
 
 # # %%
 # # Visualize the scatter triggered analog signals from both detectors
-triggered_acquisition.analog.plot()
+analog_triggered.plot()
 
 # # %%
 # # Visualize the scatter triggered digital signals from both detectors
-# triggered_acquisition.digital.plot()
+digital_triggered = analog_triggered.digitalize(digitizer=digitizer)
+digital_triggered.plot()
