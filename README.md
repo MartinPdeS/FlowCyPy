@@ -11,7 +11,7 @@
 | FlowCyPy/cytometer.py                                 |       86 |        8 |       26 |        6 |     86% |96, 169, 278, 294, 296->299, 316-320, 338->exit |
 | FlowCyPy/dataframe\_subclass.py                       |      311 |      193 |       84 |        3 |     33% |28-34, 50-59, 91-111, 146-161, 172-189, 205-217, 260-289, 326-339, 357, 376-391, 430-466, 534-554, 628, 629->exit, 668-716, 729-754, 813, 841-871 |
 | FlowCyPy/detector.py                                  |       83 |       18 |       16 |        5 |     73% |103, 125, 147, 167, 187, 207-225, 317, 335, 353, 372 |
-| FlowCyPy/dev.py                                       |      235 |      235 |       38 |        0 |      0% |     1-882 |
+| FlowCyPy/dev.py                                       |      235 |      235 |       38 |        0 |      0% |     1-883 |
 | FlowCyPy/distribution/base\_class.py                  |       25 |        3 |        0 |        0 |     88% |32, 36, 65 |
 | FlowCyPy/distribution/delta.py                        |       31 |        2 |        2 |        1 |     91% |   74, 104 |
 | FlowCyPy/distribution/lognormal.py                    |       37 |        3 |        4 |        2 |     88% |90, 92, 124 |
