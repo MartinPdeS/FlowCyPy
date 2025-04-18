@@ -87,7 +87,7 @@ population_2 = Sphere(
 
 scatterer_collection.add_population(population_0, population_1, population_2)
 
-scatterer_collection.dilute(factor=2)
+scatterer_collection.dilute(factor=10)
 
 signal_digitizer = SignalDigitizer(
     bit_depth='14bit',
@@ -128,13 +128,25 @@ cytometer = FlowCytometer(
 )
 
 processing_steps = [
-    circuits.BaselineRestorator(window_size=100 * units.microsecond),
-    circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
+    # circuits.BaselineRestorator(window_size=100 * units.microsecond),
+    # circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
 ]
 
 cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
 
-acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
+analog_acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
+
+
+digital_acquisition = analog_acquisition.digitalize(digitizer=signal_digitizer)
+
+
+
+# digital_acquisition.plot()
+
+
+digital_acquisition = digital_acquisition.digitalize(digitizer=signal_digitizer)
+
+digital_acquisition.plot()
 
 
 
@@ -142,66 +154,23 @@ acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
 
 
-
-trigger = TriggeringSystem(
-    threshold=10 * units.bit_bins,
-    max_triggers=-1,
-    pre_buffer=20,
-    post_buffer=20,
-
-)
-
-
-df = trigger.run(
-    signal_dataframe=acquisition.get_digital_signal(),
-    trigger_detector_name='forward',
-    sampling_rate=signal_digitizer.sampling_rate
-)
-df.analog.plot()
-
-print(df.analog)
-
-
-# acquisition.scatterer.plot(x='Diameter', y='RefractiveIndex')
-# acquisition.scatterer.plot(x='forward', y='side')
-
-# acquisition.analog.plot()
-
-# acquisition.get_digital_signal().plot()
-
-# window size and threshold.
-# triggered_acquisition = acquisition.run_triggering(
-#     threshold=0.1 * units.microvolt,
-#     trigger_detector_name='forward',
+# trigger = TriggeringSystem(
+#     threshold='3 sigma',
 #     max_triggers=-1,
 #     pre_buffer=20,
-#     post_buffer=20
+#     post_buffer=20,
+#     digitizer=signal_digitizer
 # )
 
-# triggered_acquisition.analog.plot()
-# triggered_acquisition.get_digital_signal().plot()
-
-# # %%
-# # Getting and plotting the extracted peaks.
-# from FlowCyPy import peak_locator
-# peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
-
-
-# peaks = triggered_acquisition.detect_peaks(peak_algorithm)
-
-
-# peaks.plot(feature='Height', x='side', y='forward')
-
-# # %%
-# # Step 8: Classifying the collected dataset
-# from FlowCyPy.classifier import KmeansClassifier
-
-# classifier = KmeansClassifier(number_of_cluster=2)
-
-# data = classifier.run(
-#     dataframe=peaks.unstack('Detector'),
-#     features=['Height'],
-#     detectors=['side', 'forward']
+# triggered_signal = trigger.run(
+#     signal_dataframe=analog_acquisition,
+#     trigger_detector_name='forward',
 # )
 
-# _ = data.plot(feature='Height', x='side', y='forward')
+
+
+# df = triggered_signal.digitalize(digitizer=signal_digitizer)
+
+# df.plot()
+
+

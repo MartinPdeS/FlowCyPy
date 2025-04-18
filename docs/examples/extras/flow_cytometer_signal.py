@@ -67,7 +67,7 @@ scatterer_collection.add_population(population_1, population_0)
 # ----------------------------
 # Two detectors are used: Forward Scatter (FSC) and Side Scatter (SSC). Each detector is configured
 # with its own numerical aperture, responsivity, noise level, and acquisition frequency.
-signal_digitizer = SignalDigitizer(
+digitizer = SignalDigitizer(
     bit_depth=1024,
     saturation_levels='auto',
     sampling_rate=10 * units.megahertz,           # Sampling frequency: 10 MHz
@@ -98,7 +98,7 @@ transimpedance_amplifier = TransimpedanceAmplifier(
 cytometer = FlowCytometer(
     source=source,
     transimpedance_amplifier=transimpedance_amplifier,
-    signal_digitizer=signal_digitizer,
+    digitizer=digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,  # Particle size distribution
     detectors=[detector_fsc, detector_ssc],  # Detectors: FSC and SSC
@@ -111,9 +111,15 @@ cytometer = FlowCytometer(
 acquisition = cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
 acquisition = cytometer.get_acquisition()
 
-# Visualize the scatter signals from both detectors
-acquisition.digital.plot(filter_population=['EV'])
 
+
+# Visualize the scatter signals from both detectors
+acquisition.plot(filter_population=['EV'])
+
+
+
+digital_signal = acquisition.digitalize(digitizer=digitizer)
+digital_signal.plot(filter_population=['EV'])
 # %%
 #
 # The above plot shows the raw simulated signals for Forward Scatter (FSC) and

@@ -58,7 +58,7 @@ df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio
 
 df.plot(x='Diameter', bins='auto')
 
-signal_digitizer = SignalDigitizer(
+digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
     sampling_rate=60 * units.megahertz,
@@ -78,7 +78,7 @@ cytometer = FlowCytometer(
     source=source,
     transimpedance_amplifier=transimpedance_amplifier,
     scatterer_collection=scatterer_collection,
-    signal_digitizer=signal_digitizer,
+    digitizer=digitizer,
     detectors=[detector_0, detector_1],
     flow_cell=flow_cell,
     background_power=0.001 * units.milliwatt

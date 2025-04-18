@@ -137,6 +137,8 @@ class SignalDigitizer:
         """
         min_level, max_level = self.get_saturation_values(signal)
 
+        assert signal.pint.check(min_level.units), f"Signal units: {signal.pint.units} do not match the saturation level units: {min_level.units}"
+
         self._saturation_levels = min_level, max_level
         # Generate bins for discretization
         bins = np.linspace(

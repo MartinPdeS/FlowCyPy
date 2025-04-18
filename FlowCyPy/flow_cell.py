@@ -325,10 +325,6 @@ class FlowCell:
 
         if not df.empty and self.event_scheme.lower() in ['uniform-random', 'uniform-sequential']:
             total_events = len(df)
-            # start_time = 0.1 * run_time
-            # end_time = 0.9 * run_time
-            # time_interval = (end_time - start_time) / total_events
-            # evenly_spaced_times = np.arange(0, total_events) * time_interval
             evenly_spaced_times = np.linspace(
                 0.1 * run_time,
                 0.9 * run_time,

@@ -65,7 +65,7 @@ scatterer_collection = ScattererCollection(
 )
 
 # Define the signal digitizer.
-signal_digitizer = SignalDigitizer(
+digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
     sampling_rate=60 * units.megahertz  # Sampling rate: 60 MHz
@@ -97,7 +97,7 @@ transimpedance_amplifier = TransimpedanceAmplifier(
 cytometer = FlowCytometer(
     source=source,
     transimpedance_amplifier=transimpedance_amplifier,
-    signal_digitizer=signal_digitizer,
+    digitizer=digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,
     background_power=2 * units.microwatt,
@@ -115,8 +115,8 @@ processing_steps_none = []
 cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
 acquisition_none = cytometer.get_acquisition(processing_steps=processing_steps_none)
 ax.plot(
-    acquisition_none.analog['Time'].pint.to('microsecond'),
-    acquisition_none.analog['forward'].pint.to('millivolt'),
+    acquisition_none['Time'].pint.to('microsecond'),
+    acquisition_none['forward'].pint.to('millivolt'),
     linestyle='-',
     label='Raw Signal'
 )
@@ -125,8 +125,8 @@ ax.plot(
 processing_steps_baseline = [circuits.BaselineRestorator(window_size=1000 * units.microsecond)]
 acquisition_baseline = cytometer.get_acquisition(processing_steps=processing_steps_baseline)
 ax.plot(
-    acquisition_baseline.analog['Time'].pint.to('microsecond'),
-    acquisition_baseline.analog['forward'].pint.to('millivolt'),
+    acquisition_baseline['Time'].pint.to('microsecond'),
+    acquisition_baseline['forward'].pint.to('millivolt'),
     linestyle='--',
     label='Baseline Restored'
 )
@@ -135,8 +135,8 @@ ax.plot(
 processing_steps_bessel = [circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)]
 acquisition_bessel = cytometer.get_acquisition(processing_steps=processing_steps_bessel)
 ax.plot(
-    acquisition_bessel.analog['Time'].pint.to('microsecond'),
-    acquisition_bessel.analog['forward'].pint.to('millivolt'),
+    acquisition_bessel['Time'].pint.to('microsecond'),
+    acquisition_bessel['forward'].pint.to('millivolt'),
     linestyle='-.',
     label='Bessel LowPass'
 )

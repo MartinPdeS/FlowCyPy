@@ -8,7 +8,6 @@ import pint_pandas
 from FlowCyPy import units
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.detector import Detector
-from FlowCyPy.acquisition import Acquisition
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.helper import validate_units
 from FlowCyPy.dataframe_subclass import AcquisitionDataFrame
@@ -61,7 +60,7 @@ class FlowCytometer:
             source: BaseBeam,
             scatterer_collection: object,
             flow_cell: FlowCell,
-            signal_digitizer: SignalDigitizer,
+            digitizer: SignalDigitizer,
             detectors: List[Detector],
             transimpedance_amplifier: TransimpedanceAmplifier,
             background_power: Optional[units.Quantity] = 0 * units.milliwatt):
@@ -71,7 +70,7 @@ class FlowCytometer:
         self.flow_cell = flow_cell
         self.source = source
         self.detectors = detectors
-        self.signal_digitizer = signal_digitizer
+        self.digitizer = digitizer
         self.background_power = background_power
 
     def _run_coupling_analysis(self, scatterer_dataframe: pd.DataFrame, compute_cross_section: bool = False) -> None:
@@ -100,7 +99,7 @@ class FlowCytometer:
             compute_detected_signal(
                 source=self.source,
                 detector=detector,
-                signal_digitizer=self.signal_digitizer,
+                signal_digitizer=self.digitizer,
                 scatterer_dataframe=scatterer_dataframe,
                 medium_refractive_index=self.scatterer_collection.medium_refractive_index,
                 compute_cross_section=compute_cross_section
@@ -191,7 +190,7 @@ class FlowCytometer:
         """
         detector_names = [d.name for d in self.detectors]
 
-        time_series = self.signal_digitizer.get_time_series(
+        time_series = self.digitizer.get_time_series(
             run_time=run_time
         )
 
@@ -236,7 +235,7 @@ class FlowCytometer:
 
 
     @validate_units(run_time=units.second)
-    def get_acquisition(self, processing_steps: list[SignalProcessor] = []) -> Acquisition:
+    def get_acquisition(self, processing_steps: list[SignalProcessor] = []) -> AcquisitionDataFrame:
         """
         Simulates the generation of optical signal pulses for each particle event.
 
@@ -292,40 +291,31 @@ class FlowCytometer:
             if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
                 photocurrent = (coupling_power * detector.responsivity)
             else:
-                photocurrent = detector.get_shot_noise(optical_power=coupling_power, wavelength=self.source.wavelength, bandwidth=self.signal_digitizer.bandwidth)
+                photocurrent = detector.get_shot_noise(optical_power=coupling_power, wavelength=self.source.wavelength, bandwidth=self.digitizer.bandwidth)
 
             if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
-                photocurrent += detector.get_dark_current_noise(sequence_length=self.sequence_length, bandwidth=self.signal_digitizer.bandwidth)
+                photocurrent += detector.get_dark_current_noise(sequence_length=self.sequence_length, bandwidth=self.digitizer.bandwidth)
 
-            signal = self.transimpedance_amplifier.amplify(signal=photocurrent, dt=1 / self.signal_digitizer.sampling_rate).to('volt')
+            signal = self.transimpedance_amplifier.amplify(signal=photocurrent, dt=1 / self.digitizer.sampling_rate).to('volt')
 
             for step in processing_steps:
-                step.apply(signal, sampling_rate=self.signal_digitizer.sampling_rate)  # Apply processing in-place
+                step.apply(signal, sampling_rate=self.digitizer.sampling_rate)  # Apply processing in-place
 
             signal_dataframe[column] = pd.Series(signal, dtype="pint[volt]")
 
 
         signal_dataframe = AcquisitionDataFrame(
             signal_dataframe,
-            scatterer_dataframe=self.scatterer_dataframe,
+            scatterer=self.scatterer_dataframe,
             plot_type='analog'
         )
 
-        experiment = Acquisition(
-            cytometer=self,
-            run_time=self.run_time,
-            scatterer_dataframe=self.scatterer_dataframe,
-            detector_dataframe=signal_dataframe
-        )
-
-        experiment.sample_volume = (self.flow_cell.sample.volume_flow * self.run_time).to_compact()
-
-        return experiment
+        return signal_dataframe
 
     def run_processing(self, *processing_steps) -> None:
         signal = self.signal.copy()
         for step in processing_steps:
-            step.apply(signal, sampling_rate=self.signal_digitizer.sampling_rate)  # Apply processing in-place
+            step.apply(signal, sampling_rate=self.digitizer.sampling_rate)  # Apply processing in-place
 
         return signal
         signal_dataframe[column] = pd.Series(signal, dtype="pint[volt]")

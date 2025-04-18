@@ -10,7 +10,6 @@ import pint_pandas
 
 from FlowCyPy import units
 from FlowCyPy.dataframe_subclass import TriggerDataFrame
-from FlowCyPy.triggered_acquisition import TriggeredAcquisitions
 from FlowCyPy.binary.interface_triggering_system import TriggeringSystem as cpp_binding  # type: ignore
 
 # ---------------------------------------------------------------------------
@@ -18,7 +17,9 @@ from FlowCyPy.binary.interface_triggering_system import TriggeringSystem as cpp_
 # ---------------------------------------------------------------------------
 
 class Scheme(str, Enum):
-    """Triggering windows available in the C++ backend."""
+    """
+    Triggering windows available in the C++ backend.
+    """
 
     FIXED = "fixed-window"
     DYNAMIC = "dynamic"
@@ -50,7 +51,8 @@ class TriggeringSystem:
         safety, but raw strings work too.
     """
 
-    threshold: units.Quantity
+    threshold: units.Quantity | str
+    digitizer: object
     pre_buffer: int = 64
     post_buffer: int = 64
     max_triggers: int = -1
@@ -67,26 +69,20 @@ class TriggeringSystem:
     # ---------------------------------------------------------------------
 
     def __post_init__(self) -> None:
-        if self.threshold.magnitude <= 0:
-            raise ValueError("threshold must be > 0")
+
         if self.pre_buffer < 0 or self.post_buffer < 0:
             raise ValueError("buffers must be >= 0")
-        if isinstance(self.scheme, str):
-            try:
-                self.scheme = Scheme(self.scheme)
-            except ValueError as exc:
-                raise ValueError(f"Unknown scheme {self.scheme!r}") from exc
+
+        try:
+            self.scheme = Scheme(self.scheme)
+        except ValueError as exc:
+            raise ValueError(f"Unknown scheme {self.scheme!r}") from exc
 
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
 
-    def run(
-        self,
-        signal_dataframe: pd.DataFrame,
-        sampling_rate: units.Quantity,
-        trigger_detector_name: str,
-    ) -> Optional[TriggeredAcquisitions]:
+    def run(self, signal_dataframe: pd.DataFrame, trigger_detector_name: str) -> TriggerDataFrame:
         """
         Extract windows where *trigger_detector_name* crosses *threshold*.
 
@@ -95,16 +91,23 @@ class TriggeringSystem:
         TriggeredAcquisitions | None
             None when no window matches the criteria (a warning is emitted).
         """
-
         detectors: Sequence[str] = list(signal_dataframe.detector_names)
         if trigger_detector_name not in detectors:
             raise ValueError(f"Detector {trigger_detector_name!r} not found in frame")
 
         self._signal_units = signal_dataframe[trigger_detector_name].pint.units
 
+        if isinstance(self.threshold, str):  # MAD-based method
+            number_of_sigma = float(self.threshold.strip('sigma'))
+            signal = signal_dataframe[trigger_detector_name].pint.quantity.magnitude
+            median_val = np.median(signal)
+            mad = np.median(np.abs(signal - median_val))
+            sigma_mad = mad / 0.6745
+
+            self.threshold = (median_val + number_of_sigma * sigma_mad) * self._signal_units
+
         df_norm = self._normalize_units(signal_dataframe, detectors)
         cpp_sys = self._build_cpp_trigger(
-            sampling_rate=sampling_rate,
             lower_thr_default=self.threshold,
             trigger_detector_name=trigger_detector_name,
         )
@@ -121,8 +124,10 @@ class TriggeringSystem:
             return None
 
         out_df = self._assemble_dataframe(cpp_sys, detectors)
-        out_df.attrs['scatterer_dataframe'] = signal_dataframe.attrs['scatterer_dataframe']
-        return TriggeredAcquisitions(parent=self, dataframe=out_df)
+
+        out_df.attrs['scatterer'] = signal_dataframe.scatterer
+
+        return out_df
 
     # ------------------------------------------------------------------
     # Private helpers
@@ -137,19 +142,14 @@ class TriggeringSystem:
             dfc[det] = df[det].pint.to(self._signal_units).pint.magnitude
         return dfc
 
-    def _build_cpp_trigger(
-        self,
-        sampling_rate: units.Quantity,
-        lower_thr_default: units.Quantity,
-        trigger_detector_name: str) -> cpp_binding:
+    def _build_cpp_trigger(self, lower_thr_default: units.Quantity, trigger_detector_name: str) -> cpp_binding:
         """
         Instantiate and configure the fast C++ backend.
         """
-
         lower_thr = (self.lower_threshold or lower_thr_default).to(self._signal_units).magnitude
 
         min_win_samples = (
-            int((self.min_window_duration * sampling_rate).to("dimensionless").m)
+            int((self.min_window_duration * self.digitizer.sampling_rate).to("dimensionless").m)
             if self.min_window_duration is not None
             else -1
         )
@@ -176,7 +176,9 @@ class TriggeringSystem:
         )
 
     def _assemble_dataframe(self, cpp_sys: cpp_binding, detectors: Sequence[str]) -> TriggerDataFrame:
-        """Transform raw numpy outputs from C++ into a typed TriggerDataFrame."""
+        """
+        Transform raw numpy outputs from C++ into a typed TriggerDataFrame.
+        """
 
         data = {
             "SegmentID": cpp_sys.get_segments_ID(detectors[0]),
@@ -198,4 +200,5 @@ class TriggeringSystem:
                 "threshold": {"detector": detectors[0], "value": self.threshold},
             }
         )
+
         return tidy

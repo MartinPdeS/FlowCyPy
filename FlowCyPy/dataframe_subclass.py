@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import logging
 from tabulate import tabulate
+import pint_pandas
 
 from FlowCyPy import helper, units
-from MPSPlots.styles import mps
+from MPSPlots.styles import mps as plot_style
 
 
 class ScattererDataFrame(pd.DataFrame):
@@ -92,7 +93,7 @@ class ScattererDataFrame(pd.DataFrame):
 
         df, (y_unit, x_unit) = self.get_sub_dataframe(y, x)
 
-        with plt.style.context(mps):
+        with plt.style.context(plot_style):
             grid = sns.jointplot(
                 data=df,
                 x=x,
@@ -261,7 +262,7 @@ class ScattererDataFrame(pd.DataFrame):
 
         df, [unit] = self.get_sub_dataframe(x)
 
-        with plt.style.context(mps):
+        with plt.style.context(plot_style):
             figure, ax = plt.subplots(figsize=(7, 5))
 
         df = df.reset_index('Population').pint.dequantify().droplevel('unit', axis=1)
@@ -327,7 +328,7 @@ class ClassifierDataFrame(pd.DataFrame):
                 "Missing 'Label' column. Run `classify_dataset` before plotting."
             )
 
-        with plt.style.context(mps):
+        with plt.style.context(plot_style):
             temp = self.pint.dequantify().sort_index(axis=1)
             grid = sns.jointplot(
                 x=temp[(feature, x)].values.squeeze(),
@@ -431,7 +432,7 @@ class PeakDataFrame(pd.DataFrame):
 
         detector_names = self.index.get_level_values('Detector').unique()
 
-        with plt.style.context(mps):
+        with plt.style.context(plot_style):
             figure, axes = plt.subplots(
                 ncols=1, nrows=len(detector_names), figsize=figure_size, sharex=True
             )
@@ -487,7 +488,7 @@ class PeakDataFrame(pd.DataFrame):
         """
         df = self.loc[[x, y], [feature]].sort_index()
 
-        with plt.style.context(mps):
+        with plt.style.context(plot_style):
             grid = sns.jointplot(
                 x=df.loc[x, feature],
                 y=df.loc[y, feature],
@@ -557,14 +558,27 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
     """
     Base class for acquisition data frames with common plotting and logging functionalities.
     """
-    def __init__(self, dataframe: pd.DataFrame = None, **attributes: dict):
+    def __init__(self, dataframe: pd.DataFrame, scatterer = None, **attributes: dict):
         super().__init__(dataframe)
 
+        self.attrs['scatterer'] = scatterer
         self.attrs.update(attributes)
+
+    def __finalize__(self, other, method=..., **kwargs):
+
+        output = super().__finalize__(other, method, **kwargs)
+
+        output.attrs['scatterer'] = self.attrs['scatterer']
+
+        return output
 
     @property
     def _constructor(self) -> type:
         return self.__class__
+
+    @property
+    def scatterer(self) -> object:
+        return self.attrs['scatterer']
 
     @property
     def detector_names(self) -> List[str]:
@@ -588,7 +602,7 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
 
         signal_units = self.loc[:, self.detector_names].to_numpy().max().to_compact().units
 
-        with plt.style.context(mps):
+        with plt.style.context(plot_style):
             fig, axes_array = plt.subplots(
                 nrows=n_plots,
                 figsize=figure_size,
@@ -603,7 +617,7 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
             self._add_to_axes(axes=axes, time_units=time_units, signal_units=signal_units)
 
             helper.add_event_to_ax(
-                self.attrs['scatterer_dataframe'],
+                self.scatterer,
                 ax=axes['scatterer'],
                 time_units=time_units,
                 filter_population=filter_population
@@ -654,7 +668,7 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
         n_plots = len(self.detector_names)
         signal_units = self["Signal"].max().to_compact().units
 
-        with plt.style.context(mps):
+        with plt.style.context(plot_style):
             fig, axes_array = plt.subplots(
                 nrows=n_plots,
                 figsize=figure_size,
@@ -715,7 +729,7 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
         n_plots = len(self.detector_names) + 1  # One extra plot for events
         figure_size = kwargs.get("figure_size", (10, 6))
 
-        with plt.style.context(mps):
+        with plt.style.context(plot_style):
             fig, axes_array = plt.subplots(
                 nrows=n_plots,
                 figsize=figure_size,
@@ -744,7 +758,24 @@ class AcquisitionDataFrame(BaseAcquisitionDataFrame):
     """
     DataFrame subclass for continuous (analog) acquisition data.
     """
+    def digitalize(self, digitizer: object) -> "AcquisitionDataFrame":
+        digital_df = pd.DataFrame(
+            index=self.index,
+            columns=self.columns,
+            data=dict(Time=self.Time)
+        )
 
+        for detector_name in self.detector_names:
+            analog_signal = self[detector_name]
+            digitized_signal, _ = digitizer.capture_signal(signal=analog_signal)
+
+            digital_df[detector_name] = pint_pandas.PintArray(digitized_signal, units.bit_bins)
+
+        return AcquisitionDataFrame(
+            dataframe=digital_df,
+            plot_type='digital',
+            scatterer=self.attrs['scatterer']
+        )
 
     def _add_to_axes(self, axes: dict, time_units: Optional[units.Quantity] = None, signal_units: Optional[units.Quantity] = None) -> None:
         """
@@ -781,6 +812,27 @@ class TriggerDataFrame(BaseAcquisitionDataFrame):
     def n_segment(self) -> int:
         return len(self.index.get_level_values('SegmentID').unique())
 
+
+    def digitalize(self, digitizer: object) -> "TriggerDataFrame":
+        digital_df = pd.DataFrame(
+            index=self.index,
+            columns=self.columns,
+            data=dict(Time=self.Time)
+        )
+
+        for detector_name in self.detector_names:
+            analog_signal = self[detector_name]
+            digitized_signal, _ = digitizer.capture_signal(signal=analog_signal)
+
+            digital_df[detector_name] = pint_pandas.PintArray(digitized_signal, units.bit_bins)
+
+        return TriggerDataFrame(
+            dataframe=digital_df,
+            plot_type='digital',
+            scatterer_dataframe=self.scatterer
+        )
+
+
     def _add_to_axes(self, axes: dict, time_units: Optional[units.Quantity] = None, signal_units: Optional[units.Quantity] = None) -> None:
         """
         Plot triggered analog signal data for each detector and highlight each SegmentID region
@@ -791,7 +843,7 @@ class TriggerDataFrame(BaseAcquisitionDataFrame):
 
         for detector_name in self.detector_names:
             ax = axes[detector_name]
-            ax.set_ylabel(f'{detector_name} [{signal_units}]', labelpad=20)
+            ax.set_ylabel(rf'{detector_name} [{signal_units}]', labelpad=20)
 
             for segment_id, group in self.groupby('SegmentID'):
                 time = group["Time"].pint.to(time_units)

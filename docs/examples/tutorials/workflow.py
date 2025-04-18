@@ -123,7 +123,7 @@ from FlowCyPy.detector import Detector
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 
-signal_digitizer = SignalDigitizer(
+digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
     sampling_rate=60 * units.megahertz,
@@ -172,7 +172,7 @@ cytometer = FlowCytometer(
     source=source,
     transimpedance_amplifier=amplifier,
     scatterer_collection=scatterer_collection,
-    signal_digitizer=signal_digitizer,
+    digitizer=digitizer,
     detectors=[detector_0, detector_1, detector_2],
     flow_cell=flow_cell,
     background_power=0.000 * units.milliwatt
@@ -195,22 +195,29 @@ _ = acquisition.scatterer.plot(
 
 # %%
 # Visualize the scatter signals from both detectors
-acquisition.analog.plot()
+acquisition.plot()
 
 # %%
 # Step 7: Analyze Detected Signals
 # --------------------------------
 # The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 # window size and threshold.
-triggered_acquisition = acquisition.run_triggering(
+from FlowCyPy.triggering_system import TriggeringSystem
+
+trigger = TriggeringSystem(
     threshold=2 * units.microvolt,
-    trigger_detector_name='forward',
     max_triggers=-1,
     pre_buffer=20,
-    post_buffer=20
+    post_buffer=20,
+    digitizer=digitizer
 )
 
-triggered_acquisition.analog.plot()
+analog_triggered = trigger.run(
+    signal_dataframe=acquisition,
+    trigger_detector_name='forward',
+)
+
+analog_triggered.plot()
 
 
 # %%
@@ -218,7 +225,7 @@ triggered_acquisition.analog.plot()
 from FlowCyPy import peak_locator
 peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
 
-digital_signal = triggered_acquisition.get_digital_signal()
+digital_signal = analog_triggered.digitalize(digitizer=digitizer)
 
 peaks = peak_algorithm.run(digital_signal)
 

@@ -12,6 +12,8 @@ from FlowCyPy.population import Sphere
 from FlowCyPy import distribution
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import peak_locator
+from FlowCyPy.triggering_system import TriggeringSystem
+from FlowCyPy import circuits
 
 NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
@@ -46,7 +48,7 @@ for size in [150, 100, 50, 30]:
 
     scatterer_collection.add_population(population)
 
-signal_digitizer = SignalDigitizer(
+digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
     sampling_rate=60 * units.megahertz,            # Sampling frequency: 60 MHz
@@ -76,34 +78,46 @@ transimpedance_amplifier = TransimpedanceAmplifier(
 cytometer = FlowCytometer(
     source=source,
     transimpedance_amplifier=transimpedance_amplifier,
-    signal_digitizer=signal_digitizer,
+    digitizer=digitizer,
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell,                     # Populations used in the experiment
-    background_power=0.0 * units.milliwatt,
+    background_power=0.01 * units.milliwatt,
     detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
 )
 
 # Run the flow cytometry simulation
+processing_steps = [
+    circuits.BaselineRestorator(window_size=1000 * units.microsecond),
+    circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)
+]
+
 cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
-acquisition = cytometer.get_acquisition()
+analog_acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
 # Visualize the scatter signals from both detectors
-acquisition.analog.plot()
+analog_acquisition.plot()
 
-trigger_acquisition = acquisition.run_triggering(
+trigger = TriggeringSystem(
     threshold=3 * units.millivolt,
-    trigger_detector_name='forward',
     max_triggers=15,
     pre_buffer=64,
-    post_buffer=64
+    post_buffer=64,
+    digitizer=digitizer
 )
 
-trigger_acquisition.analog.plot()
+analog_trigger = trigger.run(
+    signal_dataframe=analog_acquisition,
+    trigger_detector_name='forward',
+)
+
+analog_trigger.plot()
+
+digital_trigger = analog_trigger.digitalize(digitizer=digitizer)
+
+digital_trigger.plot()
 
 peak_algorithm = peak_locator.GlobalPeakLocator()
 
-digital_signal = trigger_acquisition.get_digital_signal()
-
-peaks = peak_algorithm.run(digital_signal)
+peaks = peak_algorithm.run(digital_trigger)
 
 peaks.plot(x='side', y='forward')
