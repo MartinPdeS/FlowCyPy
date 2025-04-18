@@ -725,6 +725,7 @@ def get_trigger_metrics(
         )
 
         trigger = TriggeringSystem(
+            digitizer=cytometer.digitizer,
             threshold=threshold,
             max_triggers=-1,
             pre_buffer=20,

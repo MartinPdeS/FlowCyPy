@@ -829,7 +829,7 @@ class TriggerDataFrame(BaseAcquisitionDataFrame):
         return TriggerDataFrame(
             dataframe=digital_df,
             plot_type='digital',
-            scatterer_dataframe=self.scatterer
+            scatterer=self.attrs['scatterer']
         )
 
 
