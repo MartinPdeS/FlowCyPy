@@ -4,6 +4,7 @@ from FlowCyPy import units
 from PyMieSim import experiment
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
+from FlowCyPy.triggering_system import TriggeringSystem
 from typing import Union, Sequence, Optional
 import pandas as pd
 import itertools
@@ -11,7 +12,6 @@ from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Sphere
 from FlowCyPy import (
     peak_locator,
-    circuits,
     GaussianBeam,
     ScattererCollection,
     SignalDigitizer,
@@ -417,7 +417,7 @@ def get_acquisition(background_fraction, optical_power, run_time, processing_ste
     )
 
     # Configure the signal digitizer.
-    signal_digitizer = SignalDigitizer(
+    digitizer = SignalDigitizer(
         bit_depth=bit_depth,
         saturation_levels=saturation_levels,
         sampling_rate=60 * units.megahertz,
@@ -455,7 +455,7 @@ def get_acquisition(background_fraction, optical_power, run_time, processing_ste
         source=source,
         transimpedance_amplifier=amplifier,
         scatterer_collection=scatterer_collection,
-        signal_digitizer=signal_digitizer,
+        digitizer=digitizer,
         detectors=[detector_],
         flow_cell=flow_cell,
         background_power=background_power
@@ -466,12 +466,12 @@ def get_acquisition(background_fraction, optical_power, run_time, processing_ste
     acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 
     if plot_analog:
-        acquisition.analog.plot()
+        acquisition.plot()
 
     if plot_digital:
-        acquisition.get_digital_signal().plot()
+        acquisition.digitalize(digitizer=digitizer).plot()
 
-    return acquisition
+    return acquisition, cytometer
 
 
 def get_acquisition_analog_metrics(
@@ -534,7 +534,7 @@ def get_acquisition_analog_metrics(
         else:
             populations = []
 
-        acquisition = get_acquisition(
+        acquisition, _ = get_acquisition(
             populations=populations,
             optical_power=op,
             background_fraction=bf,
@@ -546,7 +546,7 @@ def get_acquisition_analog_metrics(
             plot_digital=False
         )
 
-        signal = acquisition.analog['forward'].pint.to('V').pint.quantity.magnitude
+        signal = acquisition['forward'].pint.to('V').pint.quantity.magnitude
 
         df.loc[run_id, 'Run'] = run_id
         df.loc[run_id, 'Mean'] = np.mean(signal)
@@ -624,7 +624,7 @@ def get_acquisition_digital_metrics(
         else:
             populations = []
 
-        acquisition = get_acquisition(
+        acquisition, cytometer = get_acquisition(
             populations=populations,
             optical_power=op,
             background_fraction=bf,
@@ -636,7 +636,7 @@ def get_acquisition_digital_metrics(
             plot_digital=plot_digital
         )
 
-        signal = acquisition.get_digital_signal()['forward'].pint.to('bit_bins').pint.quantity.magnitude
+        signal = acquisition.digitalize(digitizer=cytometer.digitizer)['forward'].pint.to('bit_bins').pint.quantity.magnitude
 
         df.loc[run_id, 'Run'] = run_id
         df.loc[run_id, 'Mean'] = np.mean(signal)
@@ -712,7 +712,7 @@ def get_trigger_metrics(
             refractive_index=refractive_index
         )
 
-        acquisition = get_acquisition(
+        acquisition, cytometer = get_acquisition(
             populations=[population],
             optical_power=op,
             background_fraction=bf,
@@ -724,23 +724,27 @@ def get_trigger_metrics(
             plot_digital=plot_digital
         )
 
-
-        triggered_acquisition = acquisition.run_triggering(
+        trigger = TriggeringSystem(
             threshold=threshold,
-            trigger_detector_name='forward',
             max_triggers=-1,
             pre_buffer=20,
             post_buffer=20
         )
 
+        triggered_analog = trigger.run(
+            trigger_detector_name='forward',
+            signal_dataframe=acquisition
+
+        )
+
         if plot_trigger:
-            triggered_acquisition.analog.plot()
+            triggered_analog.plot()
 
         peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
 
-        digital_signal = triggered_acquisition.get_digital_signal()
+        digital_trigger = triggered_analog.digitalize(digitizer=cytometer.digitizer)
 
-        peak_dataframe = peak_algorithm.run(signal_dataframe=digital_signal)
+        peak_dataframe = peak_algorithm.run(signal_dataframe=digital_trigger)
 
         csca_val = acquisition.scatterer['Csca'].mean().to('nm**2').magnitude
 
@@ -840,7 +844,7 @@ def get_scatterer_metrics(
             refractive_index=refractive_index
         )
 
-        acquisition = get_acquisition(
+        acquisition, cytometer = get_acquisition(
             populations=[population],
             optical_power=op,
             background_fraction=bf,
