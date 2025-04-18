@@ -548,14 +548,18 @@ def get_acquisition_analog_metrics(
 
         signal = acquisition['forward'].pint.to('V').pint.quantity.magnitude
 
+        data = compute_robust_stats(signal)
+
         df.loc[run_id, 'Run'] = run_id
-        df.loc[run_id, 'Mean'] = np.mean(signal)
+        df.loc[run_id, 'Mean'] = data.mean
+        df.loc[run_id, 'Median'] = data.median
+        df.loc[run_id, 'STD'] = data.standard_deviation
+        df.loc[run_id, 'CV'] = data.coefficient_of_variation
+        df.loc[run_id, 'rSTD'] = data.robust_standard_deviation
+        df.loc[run_id, 'rCV'] = data.robust_coefficient_of_variation
         df.loc[run_id, 'OpticalPower'] = op.to('mW').magnitude
         df.loc[run_id, 'BackgroundPower'] = (bf * op).to('mW').magnitude
         df.loc[run_id, 'BackgroundFraction'] = bf
-        df.loc[run_id, 'Median'] = np.median(signal)
-        df.loc[run_id, 'STD'] = np.std(signal)
-        df.loc[run_id, 'CV'] = df.loc[run_id, 'STD'] / df.loc[run_id, 'Median']
         df.loc[run_id, 'InvSqrtMedian'] = 1 / (np.sqrt(df.loc[run_id, 'Median']))
 
 
@@ -638,16 +642,19 @@ def get_acquisition_digital_metrics(
 
         signal = acquisition.digitalize(digitizer=cytometer.digitizer)['forward'].pint.to('bit_bins').pint.quantity.magnitude
 
+        data = compute_robust_stats(signal)
+
         df.loc[run_id, 'Run'] = run_id
-        df.loc[run_id, 'Mean'] = np.mean(signal)
+        df.loc[run_id, 'Mean'] = data.mean
+        df.loc[run_id, 'Median'] = data.median
+        df.loc[run_id, 'STD'] = data.standard_deviation
+        df.loc[run_id, 'CV'] = data.coefficient_of_variation
+        df.loc[run_id, 'rSTD'] = data.robust_standard_deviation
+        df.loc[run_id, 'rCV'] = data.robust_coefficient_of_variation
         df.loc[run_id, 'OpticalPower'] = op.to('mW').magnitude
         df.loc[run_id, 'BackgroundPower'] = (bf * op).to('mW').magnitude
         df.loc[run_id, 'BackgroundFraction'] = bf
-        df.loc[run_id, 'Median'] = np.median(signal)
-        df.loc[run_id, 'STD'] = np.std(signal)
-        df.loc[run_id, 'CV'] = df.loc[run_id, 'STD'] / df.loc[run_id, 'Median']
         df.loc[run_id, 'InvSqrtMedian'] = 1 / (np.sqrt(df.loc[run_id, 'Median']))
-
 
     return df.set_index('Run')
 
@@ -785,7 +792,7 @@ def get_trigger_metrics(
     df['Csca'] = cleaned['Csca'].groupby(['Diameter', 'OpticalPower', 'BackgroundPower']).apply('mean')
 
     df['DetectorPower'] = cleaned['DetectorPower'].groupby(['Diameter', 'OpticalPower', 'BackgroundPower']).apply('mean')
-    df.acquisition = acquisition
+    df.attrs['cytometer'] = cytometer
     return df
 
 def get_scatterer_metrics(
