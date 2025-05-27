@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 # Import the C++ module exposed via pybind11.
-from FlowCyPy.binary.interface_triggering_system import TriggeringSystem # type: ignore
+from FlowCyPy.binary.interface_triggering_system import TRIGERRINGSYSTEM # type: ignore
 
 # ---------------------------------------------------------------------------
 # Fixtures for synthetic signals and time arrays
@@ -33,15 +33,15 @@ def no_trigger_signal():
     return t, signal
 
 # ---------------------------------------------------------------------------
-# Tests for TriggeringSystem functionality
+# Tests for TRIGERRINGSYSTEM functionality
 # ---------------------------------------------------------------------------
 def test_add_signal_and_time(simple_signal):
     """
     Test that add_time() and add_signal() correctly add the time and signal data
-    to the TriggeringSystem instance.
+    to the TRIGERRINGSYSTEM instance.
     """
     t, signal = simple_signal
-    ts = TriggeringSystem(
+    ts = TRIGERRINGSYSTEM(
         trigger_detector_name="detector1",
         threshold=0.6,
         lower_threshold=0.6
@@ -57,7 +57,7 @@ def test_no_time_error(simple_signal):
     Test that if no time array is provided, the run() method raises a RuntimeError.
     """
     t, signal = simple_signal
-    ts = TriggeringSystem(
+    ts = TRIGERRINGSYSTEM(
         trigger_detector_name="detector1",
         threshold=0.6,
         lower_threshold=0.6
@@ -72,7 +72,7 @@ def test_no_trigger(no_trigger_signal):
     empty arrays and issues a warning.
     """
     t, signal = no_trigger_signal
-    ts = TriggeringSystem(
+    ts = TRIGERRINGSYSTEM(
         trigger_detector_name="detector1",
         threshold=0.8,
         lower_threshold=0.8
@@ -99,7 +99,7 @@ def test_trigger_fixed_window(simple_signal):
     # Create a signal that is zero except for a spike between indices 410 and 415.
     signal = np.zeros_like(t)
     signal[410:415] = 1.0  # spike well above a threshold of 0.6
-    ts = TriggeringSystem(
+    ts = TRIGERRINGSYSTEM(
         trigger_detector_name="detector1",
         threshold=0.6,
         lower_threshold=0.6,
@@ -125,7 +125,7 @@ def test_trigger_dynamic_single_threshold(simple_signal):
     # Create a signal that is zero except for a continuous high region between indices 300 and 350.
     signal = np.zeros_like(t)
     signal[300:350] = 1.0  # continuous high region
-    ts = TriggeringSystem(
+    ts = TRIGERRINGSYSTEM(
         trigger_detector_name="detector1",
         threshold=0.6,
         lower_threshold=0.6,

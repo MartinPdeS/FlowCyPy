@@ -6,6 +6,11 @@ import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 from FlowCyPy.triggering_system import TriggeringSystem
 from typing import Union, Sequence, Optional
+
+import numpy as np
+import matplotlib.pyplot as plt
+from MPSPlots.styles import mps
+from typing import Optional, Sequence, Union
 import pandas as pd
 import itertools
 from FlowCyPy.flow_cell import FlowCell
@@ -402,8 +407,8 @@ def get_acquisition(background_fraction, optical_power, run_time, processing_ste
 
     # Set up the flow cell.
     flow_cell = FlowCell(
-        sample_volume_flow=80 * units.microliter / units.minute,
-        sheath_volume_flow=1 * units.milliliter / units.minute,
+        sample_volume_flow=80 * units.microliter / units.minute / 10,
+        sheath_volume_flow=1 * units.milliliter / units.minute / 10,
         width=100 * units.micrometer,
         height=100 * units.micrometer,
         event_scheme='uniform-random'
@@ -888,3 +893,222 @@ def get_scatterer_metrics(
     cleaned_df = combined.drop(columns=['x', 'y', 'Velocity', 'Widths', 'type', 'RefractiveIndex', 'Time'], errors='ignore')
 
     return cleaned_df
+
+
+def get_trigger_signals(
+    diameter_list: Sequence[float],
+    index_list: Sequence[float],
+    optical_power: Union[float, Sequence[float]],
+    threshold: float,
+    bit_depth: str,
+    saturation_levels: str,
+    background_fraction=0,
+    run_time = 5 * units.millisecond,
+    particle_count: int = 100,
+    plot_analog: bool = False,
+    plot_digital: bool = False,
+    plot_trigger: bool = False,
+    processing_steps: Optional[list] = []
+) -> pd.DataFrame:
+    """
+    Compute bead metrics for each combination of diameter, optical_power, and background_power.
+
+    Parameters
+    ----------
+    diameter_list : sequence of float
+        List of bead diameters to process.
+    optical_power : float or sequence of float
+        Illumination power(s). If a single value is provided, it will be wrapped in a list.
+    background_power : float or sequence of float
+        Background illumination power(s). If a single value is provided, it will be wrapped in a list.
+    threshold : float
+        Peak detection threshold.
+    bit_depth : str
+        Detector bit depth.
+    saturation_levels : str
+        Levels for digital saturation.
+    plot_analog : bool, optional
+        Whether to plot analog traces.
+    plot_digital : bool, optional
+        Whether to plot digital traces.
+    processing_steps : list, optional
+        Additional processing steps for data.
+
+    Returns
+    -------
+    pd.DataFrame
+        A concatenated DataFrame indexed by (diameter, optical_power, background_power)
+        containing computed metrics (including Csca).
+    """
+    optical_powers = np.atleast_1d(optical_power)
+    background_fraction = np.atleast_1d(background_fraction)
+
+    results = []
+
+    for run_id, ((diameter, refractive_index), op, bf) in enumerate(itertools.product(zip(diameter_list, index_list), optical_powers, background_fraction)):
+
+        population = Sphere(
+            name=f'Population: [{diameter}nm, {refractive_index}]',
+            particle_count=particle_count * units.particle,
+            diameter=diameter,
+            refractive_index=refractive_index
+        )
+
+        acquisition, cytometer = get_acquisition(
+            populations=[population],
+            optical_power=op,
+            background_fraction=bf,
+            run_time=run_time,
+            processing_steps=processing_steps,
+            bit_depth=bit_depth,
+            saturation_levels=saturation_levels,
+            plot_analog=plot_analog,
+            plot_digital=plot_digital
+        )
+
+        trigger = TriggeringSystem(
+            digitizer=cytometer.digitizer,
+            threshold=threshold,
+            max_triggers=-1,
+            min_window_duration=1 * units.microsecond,
+            pre_buffer=20,
+            post_buffer=20
+        )
+
+        triggered_analog = trigger.run(
+            trigger_detector_name='forward',
+            signal_dataframe=acquisition
+
+        )
+
+        if plot_trigger:
+            triggered_analog.plot()
+
+        peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
+
+        digital_trigger = triggered_analog.digitalize(digitizer=cytometer.digitizer)
+
+        peak_dataframe = peak_algorithm.run(signal_dataframe=digital_trigger)
+
+        csca_val = acquisition.scatterer['Csca'].mean().to('nm**2').magnitude
+        peak_dataframe['Csca'] = csca_val
+
+        detector_power = acquisition.scatterer['forward'].mean().to('mW').magnitude
+        peak_dataframe['DetectorPower'] = detector_power
+
+
+
+        results.append(peak_dataframe)
+
+    output = pd.concat(results, keys=[d.to('nm').magnitude for d in diameter_list]).droplevel(['Detector', 'PeakID'], axis=0).drop(['Index', 'Area', 'Width'], axis=1)
+
+    output.index.names = ['Diameter', 'SegmentID']
+
+    return output
+
+
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+from typing import Optional, Union, Sequence
+
+def fit_polynomial(x: np.ndarray, y: np.ndarray, degrees: Optional[Union[int, Sequence[int]]], strict_degree: bool, string_repr: str) -> tuple:
+    """Fit a polynomial to the data and return the coefficients, the fitted values, and the R² value."""
+    if isinstance(degrees, int):
+        degrees_list = [degrees]
+    else:
+        degrees_list = list(degrees)
+
+    if not strict_degree:
+        max_deg = max(degrees_list)
+        degrees_list = list(range(0, max_deg + 1))
+    else:
+        degrees_list = sorted(set(degrees_list))
+
+    # Build design matrix
+    X = np.vstack([x**deg for deg in degrees_list]).T
+    coeffs = np.linalg.lstsq(X, y, rcond=None)[0]
+
+    # Calculate fitted values
+    X_sorted = np.vstack([np.sort(x)**deg for deg in degrees_list]).T
+    y_fit = X_sorted @ coeffs
+
+    # Calculate R² (Coefficient of Determination)
+    ss_total = np.sum((y - np.mean(y)) ** 2)
+    ss_residual = np.sum((y - y_fit) ** 2)
+
+    r2 = 1 - (ss_residual / ss_total)
+
+    # Prepare the label for the equation
+    terms = [
+        f"{coeffs[i]:{string_repr}} x$^{deg}$" for i, deg in enumerate(degrees_list)
+    ]
+    label = ' + '.join(terms).replace('$^1$', '')
+
+    return coeffs, y_fit, r2, label
+
+def plot_with_fit(
+    x: np.ndarray,
+    y: np.ndarray,
+    degrees: Optional[Union[int, Sequence[int]]] = None,
+    strict_degree: bool = True,
+    xlabel: str = 'x',
+    ylabel: str = 'y',
+    title: Optional[str] = None,
+    show_equation: bool = True,
+    figsize: tuple = (10, 6),
+    fit_colors: Optional[Sequence[str]] = None,
+    scatter_kwargs: Optional[dict] = None,
+    line_kwargs: Optional[dict] = None,
+    ax: plt.Axes = None,
+    string_repr: str = '.3f'
+) -> plt.Axes:
+    """
+    Plot data points and polynomial fits of specified degrees or specified monomials.
+    """
+    # Convert input to numpy arrays
+    x, y = np.asarray(x), np.asarray(y)
+
+    indices = np.argsort(y)
+
+    y = y[indices]
+    x = x[indices]
+
+    # Default arguments if not provided
+    scatter_kwargs = scatter_kwargs or {'s': 50, 'alpha': 0.7, 'label': 'Data'}
+    line_kwargs = line_kwargs or {'linestyle': '--', 'linewidth': 2}
+
+    # Create figure and axis
+    if ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+
+    # Step 1: Plot scatter data
+    ax.scatter(x, y, **scatter_kwargs)
+
+    # Step 2: Fit the polynomial and compute necessary information
+    if degrees is not None:
+        coeffs, y_fit, r2, label = fit_polynomial(x, y, degrees, strict_degree, string_repr)
+
+        # Step 3: Plot the fitted line
+        prop_cycle = plt.rcParams['axes.prop_cycle'].by_key().get('color', None)
+        colors = fit_colors or prop_cycle
+        ax.plot(np.sort(x), y_fit, label=f"R$^2$: {r2:.4f}", color=colors[0] if colors else None, **line_kwargs)
+
+        # Step 4: Display the equation in a white box
+        if show_equation:
+            ax.text(0.05, 0.95, f"y = {label}", transform=ax.transAxes, fontsize=12, verticalalignment='top', horizontalalignment='left', bbox=dict(facecolor='white', edgecolor='none', boxstyle='round,pad=0.5'))
+
+        # Step 5: Add R² to the legend
+        ax.legend(loc='upper left')
+
+    # Final formatting
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    if title:
+        ax.set_title(title)
+    ax.grid(True, linestyle=':', alpha=0.6)
+    ax.legend(loc='lower right')
+    plt.tight_layout()
+
+    return ax, coeffs

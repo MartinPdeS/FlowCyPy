@@ -39,18 +39,23 @@ class FlowCell:
     .. math::
 
        u(y,z) = \frac{16b^2}{\pi^3 \mu}\left(-\frac{dp}{dx}\right)
-       \sum_{\substack{n=1,3,5,\ldots}}^{\infty} \frac{1}{n^3}
-       \left[ 1 - \frac{\cosh\left(\frac{n\pi y}{2b}\right)}
-       {\cosh\left(\frac{n\pi a}{2b}\right)} \right]
+            \sum_{\substack{n=1,3,5,\ldots}}^{\infty} \frac{1}{n^3}
+            \left[
+                1 - \frac{
+                        \cosh\left(\frac{n\pi y}{2b}\right)
+                    }{
+                        \cosh\left(\frac{n\pi a}{2b}\right)
+                    }
+            \right]
        \sin\left(\frac{n\pi (z+b)}{2b}\right)
 
     where:
 
-       - ``a`` is the half-width of the channel (in the y-direction),
-       - ``b`` is the half-height of the channel (in the z-direction),
-       - ``mu`` is the dynamic viscosity,
-       - ``dp/dx`` is the pressure gradient driving the flow,
-       - the summation is over odd integers (i.e. ``n = 1, 3, 5, ...``).
+       - :math:`a` is the half-width of the channel (in the y-direction),
+       - :math:`b` is the half-height of the channel (in the z-direction),
+       - :math:`mu` is the dynamic viscosity,
+       - :math:`dp/dx` is the pressure gradient driving the flow,
+       - the summation is over odd integers (i.e. :math:`n = 1, 3, 5, ...`).
 
     The derivation of this solution is based on the method of separation of variables and
     eigenfunction expansion applied to the Poisson equation for fully developed laminar flow.

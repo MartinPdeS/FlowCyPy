@@ -10,6 +10,10 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Type of build" FORCE)
 
 
+# Set the output directory for libraries
+set(FLOWCYPY_CXX_DIR "${CMAKE_SOURCE_DIR}/FlowCyPy/cpp")
+set(FLOWCYPY_BIN_DIR "${CMAKE_SOURCE_DIR}/FlowCyPy/binary")
+
 # Directories
 set(LOCAL_CXX_DIR "${PROJECT_NAME}/cpp")
 set(LOCAL_BIN_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/binary")
@@ -31,10 +35,7 @@ endif()
 
 add_compile_options(-Wall -Wextra -pedantic-errors)
 
-add_subdirectory(FlowCyPy/cpp/dummy)
-
-add_subdirectory(FlowCyPy/cpp/triggering_system)
-
-add_subdirectory(FlowCyPy/cpp/signal_generator)
-
-add_subdirectory(FlowCyPy/cpp/peak_locator)
+add_subdirectory(FlowCyPy/cpp/dummy)               # dummy
+add_subdirectory(FlowCyPy/cpp/triggering_system)   # triggering_system
+add_subdirectory(FlowCyPy/cpp/signal_generator)    # signal_generator
+add_subdirectory(FlowCyPy/cpp/peak_locator)        # peak_locator

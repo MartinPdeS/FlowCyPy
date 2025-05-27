@@ -565,12 +565,42 @@ class BaseAcquisitionDataFrame(pd.DataFrame):
         self.attrs.update(attributes)
 
     def __finalize__(self, other, method=..., **kwargs):
-
+        """
+        Finalize the DataFrame after operations, preserving scatterer attributes.
+        This method ensures that the scatterer attribute is retained in the output DataFrame.
+        """
         output = super().__finalize__(other, method, **kwargs)
 
         output.attrs['scatterer'] = self.attrs['scatterer']
 
         return output
+
+
+    def normalize(self, signal_units: units.Quantity = None, time_units: units.Quantity = None, inplace: bool = False) -> None:
+        """
+        Normalize the DataFrame's signal and time columns to specified units.
+
+        Parameters
+        ----------
+        signal_units : units.Quantity, optional
+            The units to which the signal columns should be normalized (default: None).
+        time_units : units.Quantity, optional
+            The units to which the time column should be normalized (default: None).
+        """
+        if not inplace:
+            output = self.copy()
+        else:
+            output = self
+
+        for col in output.columns:
+            if col == 'Time' and time_units is not None:
+                output[col] = output[col].pint.to(time_units)
+
+            elif col != 'Time' and signal_units is not None:
+                output[col] = output[col].pint.to(signal_units)
+
+        return output
+
 
     @property
     def _constructor(self) -> type:

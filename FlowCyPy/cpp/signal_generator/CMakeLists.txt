@@ -1,3 +1,5 @@
+set(NAME "signal_generator")
+
 # Find FFTW library
 find_package(OpenMP REQUIRED)
 find_package(PkgConfig REQUIRED)
@@ -10,10 +12,16 @@ target_include_directories("cpp_signal_generator" PUBLIC ${FFTW_INCLUDE_DIRS})
 target_link_libraries("cpp_signal_generator" PRIVATE pybind11::module PkgConfig::FFTW OpenMP::OpenMP_CXX)
 
 
-
-
 # Create your Python module
-pybind11_add_module("interface_signal_generator" MODULE interface.cpp)
-target_link_libraries("interface_signal_generator" PRIVATE pybind11::module PkgConfig::FFTW "cpp_signal_generator")
-target_include_directories("interface_signal_generator" PRIVATE pybind11::module ${FFTW_INCLUDE_DIRS})
-set_target_properties("interface_signal_generator" PROPERTIES OUTPUT_NAME "interface_signal_generator")
+pybind11_add_module("interface_${NAME}" MODULE interface.cpp)
+set_target_properties("interface_${NAME}" PROPERTIES OUTPUT_NAME "interface_${NAME}")
+target_link_libraries("interface_${NAME}" PRIVATE pybind11::module PkgConfig::FFTW "cpp_signal_generator")
+target_include_directories("interface_${NAME}" PRIVATE pybind11::module ${FFTW_INCLUDE_DIRS})
+
+
+install(
+    TARGETS cpp_${NAME} interface_${NAME}
+    LIBRARY DESTINATION ${FLOWCYPY_BIN_DIR}
+    ARCHIVE DESTINATION ${FLOWCYPY_BIN_DIR}
+    RUNTIME DESTINATION ${FLOWCYPY_BIN_DIR}
+)

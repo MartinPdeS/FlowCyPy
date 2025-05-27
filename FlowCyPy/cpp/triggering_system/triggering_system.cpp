@@ -1,7 +1,4 @@
 #include "triggering_system.h"
-#include <string>
-#include <cmath>      // for std::isnan
-#include "../utils.h"
 
 namespace py = pybind11;
 
@@ -12,7 +9,7 @@ void TriggeringSystem::add_time(const py::buffer &time) {
     global_time = time;
 }
 
-void TriggeringSystem::add_signal(const std::string &detector_name, const py::buffer signal) {
+void TriggeringSystem::add_signal(const std::string &detector_name, const py::buffer &signal) {
     if (signal.request().ndim != 1)
         throw std::runtime_error("Signal arrays must be 1D");
 
@@ -20,7 +17,7 @@ void TriggeringSystem::add_signal(const std::string &detector_name, const py::bu
 }
 
 
-void TriggeringSystem::run(const std::string &algorithm) {
+void TriggeringSystem::run(const std::string& algorithm, const double threshold, const double lower_threshold, const bool debounce_enabled, const int min_window_duration) {
     // Validate that the trigger detector exists.
     this->validate_detector_existence(trigger_detector_name);
 
@@ -31,11 +28,11 @@ void TriggeringSystem::run(const std::string &algorithm) {
     std::vector<std::pair<int, int>> trigger_indices;
 
     if (algorithm == "fixed-window")
-        trigger_indices = this->run_fixed_window();
+        trigger_indices = this->run_fixed_window(threshold);
     else if (algorithm == "dynamic")
-        trigger_indices = this->run_dynamic_single_threshold();
+        trigger_indices = this->run_dynamic_double_threshold(threshold, lower_threshold, debounce_enabled, min_window_duration);
     else if (algorithm == "dynamic-simple")
-        trigger_indices = this->run_dynamic();
+        trigger_indices = this->run_dynamic(threshold);
     else
         throw py::value_error("Invalid triggering algorithm, options are: 'fixed-window', 'dynamic', or 'dynamic-simple'.");
 
@@ -46,8 +43,8 @@ void TriggeringSystem::run(const std::string &algorithm) {
 }
 
 // Fixed-window triggered acquisition.
-std::vector<std::pair<int, int>> TriggeringSystem::run_fixed_window() {
-    struct Trigger trigger_channel = this->get_trigger(trigger_detector_name);
+std::vector<std::pair<int, int>> TriggeringSystem::run_fixed_window(const double threshold) {
+    struct Trigger trigger_channel = this->get_trigger(this->trigger_detector_name);
 
     std::vector<std::pair<int, int>> valid_triggers;
 
@@ -58,15 +55,15 @@ std::vector<std::pair<int, int>> TriggeringSystem::run_fixed_window() {
 
     int last_end = -1;
     for (int idx : trigger_indices) {
-        int start = idx - pre_buffer - 1;
-        int end = idx + post_buffer;
+        int start = idx - this->pre_buffer - 1;
+        int end = idx + this->post_buffer;
         if (start < 0 || end >= static_cast<int>(trigger_channel.buffer_size))
             continue;
         if (start > last_end) {
             valid_triggers.emplace_back(start, end);
             last_end = end;
         }
-        if (max_triggers > 0 && valid_triggers.size() >= static_cast<size_t>(max_triggers))
+        if (this->max_triggers > 0 && valid_triggers.size() >= static_cast<size_t>(this->max_triggers))
             break;
     }
 
@@ -74,7 +71,7 @@ std::vector<std::pair<int, int>> TriggeringSystem::run_fixed_window() {
 }
 
 // Simple dynamic triggered acquisition.
-std::vector<std::pair<int, int>> TriggeringSystem::run_dynamic() {
+std::vector<std::pair<int, int>> TriggeringSystem::run_dynamic(const double threshold) {
     struct Trigger trigger_channel = this->get_trigger(trigger_detector_name);
 
     std::vector<std::pair<int, int>> valid_triggers;
@@ -82,20 +79,20 @@ std::vector<std::pair<int, int>> TriggeringSystem::run_dynamic() {
     int last_end = -1;
     for (size_t i = 1; i < trigger_channel.buffer_size; ++i) {
         if (trigger_channel.buffer_ptr[i - 1] <= threshold && trigger_channel.buffer_ptr[i] > threshold) {
-            int start = static_cast<int>(i) - pre_buffer;
+            int start = static_cast<int>(i) - this->pre_buffer;
             if (start < 0)
                 start = 0;
             size_t j = i;
             while (j < trigger_channel.buffer_size && trigger_channel.buffer_ptr[j] > threshold)
                 j++;
-            int end = static_cast<int>(j) - 1 + post_buffer;
+            int end = static_cast<int>(j) - 1 + this->post_buffer;
             if (end >= static_cast<int>(trigger_channel.buffer_size))
                 end = static_cast<int>(trigger_channel.buffer_size) - 1;
             if (start > last_end) {
                 valid_triggers.emplace_back(start, end);
                 last_end = end;
             }
-            if (max_triggers > 0 && valid_triggers.size() >= static_cast<size_t>(max_triggers))
+            if (this->max_triggers > 0 && valid_triggers.size() >= static_cast<size_t>(this->max_triggers))
                 break;
             i = j;
         }
@@ -105,21 +102,24 @@ std::vector<std::pair<int, int>> TriggeringSystem::run_dynamic() {
 }
 
 // Dynamic triggered acquisition with single threshold (with optional lower_threshold and debounce).
-std::vector<std::pair<int, int>> TriggeringSystem::run_dynamic_single_threshold() {
+std::vector<std::pair<int, int>> TriggeringSystem::run_dynamic_double_threshold(const double threshold, const double lower_threshold, const bool debounce_enabled, const int min_window_duration) {
     struct Trigger trigger_channel = this->get_trigger(trigger_detector_name);
 
     std::vector<std::pair<int, int>> valid_triggers;
 
+    double _lower_threshold;
     if (std::isnan(lower_threshold))
-        this->lower_threshold = this->threshold;
+        _lower_threshold = threshold;
+    else
+        _lower_threshold = lower_threshold;
 
     int last_end = -1;
     for (size_t i = 1; i < trigger_channel.buffer_size; ++i) {
-        if (trigger_channel.buffer_ptr[i - 1] <= this->threshold && trigger_channel.buffer_ptr[i] > this->threshold) {
+        if (trigger_channel.buffer_ptr[i - 1] <= threshold && trigger_channel.buffer_ptr[i] > threshold) {
             size_t j = i;
             if (debounce_enabled && min_window_duration != -1) {
                 size_t count = 0;
-                while (j < trigger_channel.buffer_size && trigger_channel.buffer_ptr[j] > this->threshold) {
+                while (j < trigger_channel.buffer_size && trigger_channel.buffer_ptr[j] > threshold) {
                     ++count;
                     ++j;
                     if (count >= static_cast<size_t>(min_window_duration))
@@ -130,23 +130,23 @@ std::vector<std::pair<int, int>> TriggeringSystem::run_dynamic_single_threshold(
                     continue;
                 }
             } else {
-                while (j < trigger_channel.buffer_size && trigger_channel.buffer_ptr[j] > this->threshold)
+                while (j < trigger_channel.buffer_size && trigger_channel.buffer_ptr[j] > threshold)
                     ++j;
             }
-            int start = static_cast<int>(i) - pre_buffer;
+            int start = static_cast<int>(i) - this->pre_buffer;
             if (start < 0)
                 start = 0;
             size_t k = j;
-            while (k < trigger_channel.buffer_size && trigger_channel.buffer_ptr[k] > this->lower_threshold)
+            while (k < trigger_channel.buffer_size && trigger_channel.buffer_ptr[k] > _lower_threshold)
                 ++k;
-            int end = static_cast<int>(k) - 1 + post_buffer;
+            int end = static_cast<int>(k) - 1 + this->post_buffer;
             if (end >= static_cast<int>(trigger_channel.buffer_size))
                 end = static_cast<int>(trigger_channel.buffer_size) - 1;
             if (start > last_end) {
                 valid_triggers.emplace_back(start, end);
                 last_end = end;
             }
-            if (max_triggers > 0 && valid_triggers.size() >= static_cast<size_t>(max_triggers))
+            if (this->max_triggers > 0 && valid_triggers.size() >= static_cast<size_t>(this->max_triggers))
                 break;
             i = k;
         }
@@ -155,39 +155,33 @@ std::vector<std::pair<int, int>> TriggeringSystem::run_dynamic_single_threshold(
     return valid_triggers;
 }
 
-struct Trigger TriggeringSystem::get_trigger(const std::string &detector_name) {
-    for (struct Trigger &trigger : this->triggers)
+struct Trigger TriggeringSystem::get_trigger(const std::string &detector_name) const {
+    for (const struct Trigger &trigger : this->triggers)
         if (trigger.detector_name == detector_name)
             return trigger;
 
     throw std::runtime_error("Detector not found");
 }
 
-std::vector<double> TriggeringSystem::get_signals_py(const std::string &detector_name) {
+std::vector<double> TriggeringSystem::get_signals_py(const std::string &detector_name) const {
     struct Trigger trigger = this->get_trigger(detector_name);
 
     return trigger.signal_out;
-
-    // return to_array_double(trigger.signal_out);
 }
 
-std::vector<double> TriggeringSystem::get_times_py(const std::string &detector_name) {
+std::vector<double> TriggeringSystem::get_times_py(const std::string &detector_name) const {
     struct Trigger trigger = this->get_trigger(detector_name);
 
     return trigger.time_out;
-
-    // return to_array_double(trigger.time_out);
 }
 
-std::vector<int> TriggeringSystem::get_segments_ID_py(const std::string &detector_name) {
+std::vector<int> TriggeringSystem::get_segments_ID_py(const std::string &detector_name) const {
     struct Trigger trigger = this->get_trigger(detector_name);
 
     return trigger.segment_ids_out;
-
-    // return to_array_int(trigger.segment_ids_out);
 }
 
-void TriggeringSystem::validate_detector_existence(const std::string &detector_name)
+void TriggeringSystem::validate_detector_existence(const std::string &detector_name) const
 {
     for (struct Trigger trigger: this->triggers)
         if (detector_name == trigger.detector_name)
