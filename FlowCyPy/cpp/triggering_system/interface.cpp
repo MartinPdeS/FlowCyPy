@@ -25,8 +25,6 @@ PYBIND11_MODULE(interface_triggering_system, module) {
 
         Parameters
         ----------
-        trigger_detector_name : str
-            Identifier for the detection algorithm (e.g. 'fixed', 'sliding', 'global').
         threshold : float
             Primary threshold above which a trigger is fired.
         lower_threshold : float
@@ -57,6 +55,8 @@ PYBIND11_MODULE(interface_triggering_system, module) {
 
                 Parameters
                 ----------
+                trigger_detector_name : str
+                    Identifier for the detection algorithm (e.g. 'fixed', 'sliding', 'global').
                 pre_buffer : int, optional
                     Number of samples to include before each trigger. Default = 64.
                 post_buffer : int, optional
@@ -128,8 +128,8 @@ PYBIND11_MODULE(interface_triggering_system, module) {
 
                 Parameters
                 ----------
-                trigger_detector_name : str
-                    Identifier for the detection algorithm (e.g. 'fixed', 'sliding', 'global').
+                algorithm : str
+                    Which algorithm to use (must match `trigger_detector_name`).
                 threshold : float
                     Primary threshold above which a trigger is fired.
                 lower_threshold : float
@@ -138,8 +138,6 @@ PYBIND11_MODULE(interface_triggering_system, module) {
                     If true, applies debouncing to avoid rapid successive triggers. Default = true.
                 min_window_duration : int, optional
                     Minimum samples between triggers in dynamic mode; -1 to disable. Default = -1.
-                algorithm : str
-                    Which algorithm to use (must match `trigger_detector_name`).
 
              )pbdoc")
 
