@@ -66,8 +66,6 @@ source = GaussianBeam(
 # passing through the cross-sectional area is calculated as:
 #
 # .. math::
-
-
 #     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
 
 from FlowCyPy.flow_cell import FlowCell
@@ -113,16 +111,7 @@ scatterer_collection.dilute(factor=8)
 # Initialize the scatterer with the flow cell
 df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
 
-
-
-df.plot(x='Diameter', clip_data='1%')
-df.plot(x='Diameter', y='RefractiveIndex')
-df.plot(x='Diameter', y='RefractiveIndex', z='Velocity')
-
-
-dsa
-
-# df.plot(x='Diameter', bins='auto')
+df.plot(x='Diameter', bins='auto')
 
 # %%
 # Step 5: Define Detectors
@@ -184,7 +173,7 @@ cytometer = FlowCytometer(
     transimpedance_amplifier=amplifier,
     scatterer_collection=scatterer_collection,
     digitizer=digitizer,
-    detectors=[detector_0, detector_1],
+    detectors=[detector_0, detector_1, detector_2],
     flow_cell=flow_cell,
     background_power=0.000 * units.milliwatt
 )
@@ -194,29 +183,20 @@ processing_steps = [
     circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
 ]
 
-
 # Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=2.5 * units.millisecond)
+cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
 acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 acquisition.normalize()
-# acquisition.scatterer.plot(x='Diameter', clip_data='1%')
-# acquisition.scatterer.plot(x='Diameter', y='RefractiveIndex')
-# acquisition.scatterer.plot(x='Diameter', y='RefractiveIndex', z='forward')
-# acquisition.hist(clip_data="10%", kde=True)
 
-# dsa
-
-# acquisition.plot()
-
-# _ = acquisition.scatterer.plot(
-#     x='side',
-#     y='forward',
-#     z='RefractiveIndex'
-# )
+_ = acquisition.scatterer.plot(
+    x='side',
+    y='forward',
+    z='RefractiveIndex'
+)
 
 # %%
 # Visualize the scatter signals from both detectors
-# acquisition.plot()
+acquisition.plot()
 
 # %%
 # Step 7: Analyze Detected Signals
@@ -240,9 +220,6 @@ analog_triggered = trigger.run(
 )
 
 
-# analog_triggered.plot()
-
-
 # %%
 # Getting and plotting the extracted peaks.
 from FlowCyPy import peak_locator
@@ -255,25 +232,8 @@ peaks = peak_algorithm.run(digital_signal)
 
 peaks.plot(
     x=('side', 'Height'),
-    y=('forward', 'Height'),
-    z=('forward', 'Height')
+    y=('forward', 'Height')
 )
-
-# print(peaks)
-
-# print(peaks['forward'])
-
-
-# res = peaks.mean_('forward')
-
-
-# print(res)
-
-dsa
-
-
-
-# peaks.plot(feature='Height', x='side', y='forward')
 
 # %%
 # Step 8: Classifying the collected dataset
@@ -287,40 +247,7 @@ data = classifier.run(
     detectors=['side', 'forward']
 )
 
-# _ = data.plot(feature='Height', x='side', y='forward')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# trigger = TriggeringSystem(
-#     dataframe=acquisition,
-#     trigger_detector_name='forward',
-#     max_triggers=-1,
-#     pre_buffer=20,
-#     post_buffer=20,
-#     digitizer=digitizer
-# )
-
-# analog_triggered = trigger.run(
-#     scheme=Scheme.FIXED,
-#     threshold=2 * units.microvolt
-# )
+_ = data.plot(
+    x=('side', 'Height'),
+    y=('forward', 'Height')
+)
