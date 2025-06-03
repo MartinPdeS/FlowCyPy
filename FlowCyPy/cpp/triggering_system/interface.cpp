@@ -141,7 +141,8 @@ PYBIND11_MODULE(interface_triggering_system, module) {
 
              )pbdoc")
 
-        .def("_cpp_run_dynamic", &TriggeringSystem::run_dynamic,
+        .def("_cpp_run_dynamic",
+            &TriggeringSystem::run_dynamic,
              R"pbdoc(
                  Execute a dynamic-window trigger analysis.
 
@@ -149,7 +150,8 @@ PYBIND11_MODULE(interface_triggering_system, module) {
                  and `min_window_duration`.
              )pbdoc")
 
-        .def("_cpp_get_times", &TriggeringSystem::get_times_py,
+        .def("_cpp_get_times",
+            &TriggeringSystem::get_times_py,
              R"pbdoc(
                  Retrieve time segments for each detected trigger.
 
@@ -159,7 +161,8 @@ PYBIND11_MODULE(interface_triggering_system, module) {
                      One array of time stamps per trigger segment.
              )pbdoc")
 
-        .def("_cpp_get_signals", &TriggeringSystem::get_signals_py,
+        .def("_cpp_get_signals",
+            &TriggeringSystem::get_signals_py,
              R"pbdoc(
                  Retrieve signal segments corresponding to each trigger.
 
@@ -169,7 +172,8 @@ PYBIND11_MODULE(interface_triggering_system, module) {
                      One array of signal values per trigger segment.
              )pbdoc")
 
-        .def("_cpp_get_segments_ID", &TriggeringSystem::get_segments_ID_py,
+        .def("_cpp_get_segments_ID",
+            &TriggeringSystem::get_segments_ID_py,
              R"pbdoc(
                  Retrieve a mapping from sample index to segment ID.
 
@@ -180,11 +184,13 @@ PYBIND11_MODULE(interface_triggering_system, module) {
                      (or -1 for no segment).
              )pbdoc")
 
-        .def_readonly("_cpp_global_time", &TriggeringSystem::global_time,
-             R"pbdoc(
-                 Global time vector used for all signal operations.
+        .def_readonly("_cpp_global_time",
+            &TriggeringSystem::global_time,
+            py::return_value_policy::reference_internal,
+            R"pbdoc(
+                Global time vector used for all signal operations.
 
-                 Aligns one-to-one with samples in added signals.
-             )pbdoc")
+                Aligns one-to-one with samples in added signals.
+            )pbdoc")
     ;
 }

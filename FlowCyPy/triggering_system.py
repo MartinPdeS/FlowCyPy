@@ -175,7 +175,7 @@ class TriggeringSystem(TRIGERRINGSYSTEM):
                 median_val = np.median(signal)
                 mad = np.median(np.abs(signal - median_val))
                 sigma_mad = mad / 0.6745
-                return (median_val + number_of_sigma * sigma_mad) * self._signal_units
+                return (median_val + number_of_sigma * sigma_mad) * self.dataframe.signal_units
             else:
                 raise ValueError(f"Unknown threshold format: {threshold!r}")
 

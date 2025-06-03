@@ -66,6 +66,8 @@ source = GaussianBeam(
 # passing through the cross-sectional area is calculated as:
 #
 # .. math::
+
+
 #     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
 
 from FlowCyPy.flow_cell import FlowCell
@@ -110,6 +112,15 @@ scatterer_collection.dilute(factor=8)
 
 # Initialize the scatterer with the flow cell
 df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
+
+
+
+df.plot(x='Diameter', clip_data='1%')
+df.plot(x='Diameter', y='RefractiveIndex')
+df.plot(x='Diameter', y='RefractiveIndex', z='Velocity')
+
+
+dsa
 
 # df.plot(x='Diameter', bins='auto')
 
@@ -173,7 +184,7 @@ cytometer = FlowCytometer(
     transimpedance_amplifier=amplifier,
     scatterer_collection=scatterer_collection,
     digitizer=digitizer,
-    detectors=[detector_0, detector_1, detector_2],
+    detectors=[detector_0, detector_1],
     flow_cell=flow_cell,
     background_power=0.000 * units.milliwatt
 )
@@ -183,10 +194,20 @@ processing_steps = [
     circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
 ]
 
+
 # Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=0.5 * units.millisecond)
+cytometer.prepare_acquisition(run_time=2.5 * units.millisecond)
 acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
-print(acquisition)
+acquisition.normalize()
+# acquisition.scatterer.plot(x='Diameter', clip_data='1%')
+# acquisition.scatterer.plot(x='Diameter', y='RefractiveIndex')
+# acquisition.scatterer.plot(x='Diameter', y='RefractiveIndex', z='forward')
+# acquisition.hist(clip_data="10%", kde=True)
+
+# dsa
+
+# acquisition.plot()
+
 # _ = acquisition.scatterer.plot(
 #     x='side',
 #     y='forward',
@@ -218,7 +239,8 @@ analog_triggered = trigger.run(
     threshold=2 * units.microvolt
 )
 
-analog_triggered.plot()
+
+# analog_triggered.plot()
 
 
 # %%
@@ -229,6 +251,27 @@ peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
 digital_signal = analog_triggered.digitalize(digitizer=digitizer)
 
 peaks = peak_algorithm.run(digital_signal)
+
+
+peaks.plot(
+    x=('side', 'Height'),
+    y=('forward', 'Height'),
+    z=('forward', 'Height')
+)
+
+# print(peaks)
+
+# print(peaks['forward'])
+
+
+# res = peaks.mean_('forward')
+
+
+# print(res)
+
+dsa
+
+
 
 # peaks.plot(feature='Height', x='side', y='forward')
 
@@ -245,3 +288,39 @@ data = classifier.run(
 )
 
 # _ = data.plot(feature='Height', x='side', y='forward')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# trigger = TriggeringSystem(
+#     dataframe=acquisition,
+#     trigger_detector_name='forward',
+#     max_triggers=-1,
+#     pre_buffer=20,
+#     post_buffer=20,
+#     digitizer=digitizer
+# )
+
+# analog_triggered = trigger.run(
+#     scheme=Scheme.FIXED,
+#     threshold=2 * units.microvolt
+# )

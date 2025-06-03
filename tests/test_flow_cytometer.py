@@ -10,7 +10,7 @@ from FlowCyPy.population import Sphere
 from FlowCyPy import units
 from FlowCyPy import peak_locator
 from FlowCyPy import circuits
-from FlowCyPy.triggering_system import TriggeringSystem
+from FlowCyPy.triggering_system import TriggeringSystem, Scheme
 # ----------------- FIXTURES -----------------
 
 
@@ -28,16 +28,6 @@ def digitizer():
         bit_depth=1024,
         saturation_levels='auto',
         sampling_rate=5e6 * units.hertz,
-    )
-
-@pytest.fixture
-def trigger(digitizer):
-    return TriggeringSystem(
-        threshold='3 sigma',
-        max_triggers=-1,
-        pre_buffer=20,
-        post_buffer=20,
-        digitizer=digitizer
     )
 
 @pytest.fixture
@@ -163,34 +153,52 @@ def test_flow_cytometer_plot(mock_show, flow_cytometer, digitizer):
     plt.close()
 
 
-def test_flow_cytometer_triggered_acquisition(flow_cytometer, trigger):
+def test_flow_cytometer_triggered_acquisition(flow_cytometer):
     """Test triggered acquisition with a defined threshold."""
     flow_cytometer.prepare_acquisition(run_time=2 * units.millisecond)
     acquisition = flow_cytometer.get_acquisition()
 
-    triggered_acquisition = trigger.run(
-        signal_dataframe=acquisition,
+    trigger = TriggeringSystem(
+        dataframe=acquisition,
         trigger_detector_name='default',
+        max_triggers=-1,
+        pre_buffer=20,
+        post_buffer=20,
+        digitizer=digitizer
+    )
+
+    triggered_acquisition = trigger.run(
+        scheme=Scheme.FIXED,
+        threshold='3 sigma',
     )
 
     assert triggered_acquisition is not None, "Triggered acquisition failed to return results."
     assert len(triggered_acquisition) > 0, "Triggered acquisition has no signal data."
 
 
-def test_flow_cytometer_signal_processing(flow_cytometer, trigger):
+def test_flow_cytometer_signal_processing(flow_cytometer):
     """Test filtering and baseline restoration on the acquired signal."""
     flow_cytometer.prepare_acquisition(run_time=2.0 * units.millisecond)
     acquisition = flow_cytometer.get_acquisition()
 
-    triggered_acquisition = trigger.run(
-        signal_dataframe=acquisition,
+    trigger = TriggeringSystem(
+        dataframe=acquisition,
         trigger_detector_name='default',
+        max_triggers=-1,
+        pre_buffer=20,
+        post_buffer=20,
+        digitizer=digitizer
+    )
+
+    triggered_acquisition = trigger.run(
+        scheme=Scheme.FIXED,
+        threshold='3 sigma',
     )
 
     assert np.std(triggered_acquisition['default']) > 0, "Filtered signal has zero variance."
 
 
-def test_peak_detection(flow_cytometer, digitizer, trigger):
+def test_peak_detection(flow_cytometer, digitizer):
     """Ensure peak detection works correctly on the triggered acquisition."""
     flow_cytometer.prepare_acquisition(run_time=2.0 * units.millisecond)
 
@@ -201,9 +209,18 @@ def test_peak_detection(flow_cytometer, digitizer, trigger):
 
     acquisition = flow_cytometer.get_acquisition(processing_steps=processing_steps)
 
-    triggered_acquisition = trigger.run(
-        signal_dataframe=acquisition,
+    trigger = TriggeringSystem(
+        dataframe=acquisition,
         trigger_detector_name='default',
+        max_triggers=-1,
+        pre_buffer=20,
+        post_buffer=20,
+        digitizer=digitizer
+    )
+
+    triggered_acquisition = trigger.run(
+        scheme=Scheme.FIXED,
+        threshold='3 sigma',
     )
 
     algorithm = peak_locator.GlobalPeakLocator()
@@ -216,24 +233,35 @@ def test_peak_detection(flow_cytometer, digitizer, trigger):
 
 
 @patch('matplotlib.pyplot.show')
-def test_peak_plot(mock_show, flow_cytometer, digitizer, trigger):
+def test_peak_plot(mock_show, flow_cytometer, digitizer):
     """Ensure peak plots render correctly."""
     flow_cytometer.prepare_acquisition(run_time=2.0 * units.millisecond)
     acquisition = flow_cytometer.get_acquisition()
     acquisition.plot()
 
-    triggered_acquisition = trigger.run(
-        signal_dataframe=acquisition,
+    trigger = TriggeringSystem(
+        dataframe=acquisition,
         trigger_detector_name='default',
+        max_triggers=-1,
+        pre_buffer=20,
+        post_buffer=20,
+        digitizer=digitizer
     )
 
+    triggered_acquisition = trigger.run(
+        scheme=Scheme.FIXED,
+        threshold='3 sigma',
+    )
     algorithm = peak_locator.GlobalPeakLocator()
 
     digital_signal = triggered_acquisition.digitalize(digitizer=digitizer)
 
     peaks = algorithm.run(digital_signal)
 
-    peaks.plot(x='default', y='default_bis')
+    peaks.plot(
+        x=('default', 'Height'),
+        y=('default_bis', 'Height')
+    )
     plt.close()
 
 
