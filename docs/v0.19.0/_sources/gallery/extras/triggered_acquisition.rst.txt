@@ -46,7 +46,7 @@ Step 1: Import necessary modules from FlowCyPy
     from FlowCyPy.signal_digitizer import SignalDigitizer
     from FlowCyPy.flow_cell import FlowCell
     from FlowCyPy import units
-    from FlowCyPy.triggering_system import TriggeringSystem
+    from FlowCyPy.triggering_system import TriggeringSystem, Scheme
 
     import numpy
     numpy.random.seed(3)
@@ -220,6 +220,12 @@ Visualize the scatter analog signals from both detectors
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <Figure size 1200x500 with 3 Axes>
 
 
 
@@ -227,7 +233,7 @@ Visualize the scatter analog signals from both detectors
 
 Visualize the scatter digital signals from both detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 131-155
+.. GENERATED FROM PYTHON SOURCE LINES 131-157
 
 .. code-block:: Python
 
@@ -235,7 +241,8 @@ Visualize the scatter digital signals from both detectors
     digital_signal.plot()
 
     trigger = TriggeringSystem(
-        threshold='3 sigma',
+        trigger_detector_name='forward',
+        dataframe=acquisition,
         max_triggers=-1,
         pre_buffer=20,
         post_buffer=20,
@@ -243,8 +250,9 @@ Visualize the scatter digital signals from both detectors
     )
 
     analog_triggered = trigger.run(
-        signal_dataframe=acquisition,
-        trigger_detector_name='forward',
+        threshold='3 sigma',
+        scheme=Scheme.FIXED
+
     )
 
     # # %%
@@ -283,13 +291,19 @@ Visualize the scatter digital signals from both detectors
          :class: sphx-glr-multi-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <Figure size 1200x500 with 3 Axes>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.629 seconds)
+   **Total running time of the script:** (0 minutes 2.514 seconds)
 
 
 .. _sphx_glr_download_gallery_extras_triggered_acquisition.py:

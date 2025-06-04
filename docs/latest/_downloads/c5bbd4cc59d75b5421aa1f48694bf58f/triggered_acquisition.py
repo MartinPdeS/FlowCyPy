@@ -22,7 +22,7 @@ from FlowCyPy.population import Sphere
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import units
-from FlowCyPy.triggering_system import TriggeringSystem
+from FlowCyPy.triggering_system import TriggeringSystem, Scheme
 
 import numpy
 numpy.random.seed(3)
@@ -132,7 +132,8 @@ digital_signal = acquisition.digitalize(digitizer=digitizer)
 digital_signal.plot()
 
 trigger = TriggeringSystem(
-    threshold='3 sigma',
+    trigger_detector_name='forward',
+    dataframe=acquisition,
     max_triggers=-1,
     pre_buffer=20,
     post_buffer=20,
@@ -140,8 +141,9 @@ trigger = TriggeringSystem(
 )
 
 analog_triggered = trigger.run(
-    signal_dataframe=acquisition,
-    trigger_detector_name='forward',
+    threshold='3 sigma',
+    scheme=Scheme.FIXED
+
 )
 
 # # %%

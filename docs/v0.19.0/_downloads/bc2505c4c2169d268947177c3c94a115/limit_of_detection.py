@@ -12,7 +12,7 @@ from FlowCyPy.population import Sphere
 from FlowCyPy import distribution
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import peak_locator
-from FlowCyPy.triggering_system import TriggeringSystem
+from FlowCyPy.triggering_system import TriggeringSystem, Scheme
 from FlowCyPy import circuits
 
 NoiseSetting.include_noises = True
@@ -98,7 +98,8 @@ analog_acquisition = cytometer.get_acquisition(processing_steps=processing_steps
 analog_acquisition.plot()
 
 trigger = TriggeringSystem(
-    threshold=3 * units.millivolt,
+    dataframe=analog_acquisition,
+    trigger_detector_name='forward',
     max_triggers=15,
     pre_buffer=64,
     post_buffer=64,
@@ -106,8 +107,8 @@ trigger = TriggeringSystem(
 )
 
 analog_trigger = trigger.run(
-    signal_dataframe=analog_acquisition,
-    trigger_detector_name='forward',
+    threshold=3 * units.millivolt,
+    scheme=Scheme.FIXED,
 )
 
 analog_trigger.plot()
@@ -120,4 +121,7 @@ peak_algorithm = peak_locator.GlobalPeakLocator()
 
 peaks = peak_algorithm.run(digital_trigger)
 
-peaks.plot(x='side', y='forward')
+peaks.plot(
+    x=('side', 'Height'),
+    y=('forward', 'Height')
+)

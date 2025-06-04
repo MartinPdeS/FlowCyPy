@@ -186,12 +186,23 @@ given by:
     # Initialize the scatterer with the flow cell
     df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
 
-    # df.plot(x='Diameter', bins='auto')
+    df.plot(x='Diameter', bins='auto')
 
 
 
 
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :alt: Distribution of Diameter
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :class: sphx-glr-single-img
 
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <Figure size 1000x600 with 1 Axes>
 
 
 
@@ -263,7 +274,7 @@ and particles follows Mie theory:
 .. math::
     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
 
-.. GENERATED FROM PYTHON SOURCE LINES 169-196
+.. GENERATED FROM PYTHON SOURCE LINES 169-197
 
 .. code-block:: Python
 
@@ -285,8 +296,9 @@ and particles follows Mie theory:
     ]
 
     # Run the flow cytometry simulation
-    cytometer.prepare_acquisition(run_time=0.5 * units.millisecond)
+    cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
     acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
+    acquisition.normalize_units(time_units='max', signal_units='max')
 
     _ = acquisition.scatterer.plot(
         x='side',
@@ -297,9 +309,9 @@ and particles follows Mie theory:
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
    :alt: Scatterer Sampling Distribution
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
    :class: sphx-glr-single-img
 
 
@@ -317,56 +329,15 @@ and particles follows Mie theory:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 197-198
+.. GENERATED FROM PYTHON SOURCE LINES 198-199
 
 Visualize the scatter signals from both detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 198-200
+.. GENERATED FROM PYTHON SOURCE LINES 199-201
 
 .. code-block:: Python
 
     acquisition.plot()
-
-
-
-
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
-   :alt: workflow
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
-   :class: sphx-glr-single-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 201-205
-
-Step 7: Analyze Detected Signals
---------------------------------
-The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
-window size and threshold.
-
-.. GENERATED FROM PYTHON SOURCE LINES 205-223
-
-.. code-block:: Python
-
-    from FlowCyPy.triggering_system import TriggeringSystem
-
-    trigger = TriggeringSystem(
-        threshold=2 * units.microvolt,
-        max_triggers=-1,
-        pre_buffer=20,
-        post_buffer=20,
-        digitizer=digitizer
-    )
-
-    analog_triggered = trigger.run(
-        signal_dataframe=acquisition,
-        trigger_detector_name='forward',
-    )
-
-    analog_triggered.plot()
-
 
 
 
@@ -377,6 +348,47 @@ window size and threshold.
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <Figure size 1200x500 with 4 Axes>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 202-206
+
+Step 7: Analyze Detected Signals
+--------------------------------
+The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
+window size and threshold.
+
+.. GENERATED FROM PYTHON SOURCE LINES 206-223
+
+.. code-block:: Python
+
+    from FlowCyPy.triggering_system import TriggeringSystem, Scheme
+
+    trigger = TriggeringSystem(
+        dataframe=acquisition,
+        trigger_detector_name='forward',
+        max_triggers=-1,
+        pre_buffer=20,
+        post_buffer=20,
+        digitizer=digitizer
+    )
+
+    analog_triggered = trigger.run(
+        scheme=Scheme.FIXED,
+        threshold=2 * units.microvolt
+    )
+
+
+
+
+
+
 
 
 
@@ -384,7 +396,7 @@ window size and threshold.
 
 Getting and plotting the extracted peaks.
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-234
+.. GENERATED FROM PYTHON SOURCE LINES 225-237
 
 .. code-block:: Python
 
@@ -395,7 +407,10 @@ Getting and plotting the extracted peaks.
 
     peaks = peak_algorithm.run(digital_signal)
 
-    peaks.plot(feature='Height', x='side', y='forward')
+    peaks.plot(
+        x=('side', 'Height'),
+        y=('forward', 'Height')
+    )
 
 
 
@@ -411,15 +426,15 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f63cd1d11d0>
+    <seaborn.axisgrid.JointGrid object at 0x7efcd0924ad0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 235-236
+.. GENERATED FROM PYTHON SOURCE LINES 238-239
 
 Step 8: Classifying the collected dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 236-246
+.. GENERATED FROM PYTHON SOURCE LINES 239-252
 
 .. code-block:: Python
 
@@ -433,7 +448,10 @@ Step 8: Classifying the collected dataset
         detectors=['side', 'forward']
     )
 
-    _ = data.plot(feature='Height', x='side', y='forward')
+    _ = data.plot(
+        x=('side', 'Height'),
+        y=('forward', 'Height')
+    )
 
 
 .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
@@ -448,7 +466,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 12.390 seconds)
+   **Total running time of the script:** (0 minutes 3.715 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

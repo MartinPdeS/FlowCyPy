@@ -562,7 +562,7 @@ to download the full example code.</p>
 /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
 
-&lt;seaborn.axisgrid.JointGrid object at 0x7f63d4b28c10&gt;
+&lt;seaborn.axisgrid.JointGrid object at 0x7efcdb45ce10&gt;
 </pre></div>
 </div>
 <div class="line-block">
@@ -577,7 +577,7 @@ to download the full example code.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">peak_locator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.triggering_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriggeringSystem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.triggering_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriggeringSystem</span><span class="p">,</span> <span class="n">Scheme</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">circuits</span>
 
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
@@ -663,7 +663,8 @@ to download the full example code.</p>
 <span class="n">analog_acquisition</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
 <span class="n">trigger</span> <span class="o">=</span> <span class="n">TriggeringSystem</span><span class="p">(</span>
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millivolt</span><span class="p">,</span>
+    <span class="n">dataframe</span><span class="o">=</span><span class="n">analog_acquisition</span><span class="p">,</span>
+    <span class="n">trigger_detector_name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
     <span class="n">max_triggers</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
     <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
     <span class="n">post_buffer</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
@@ -671,8 +672,8 @@ to download the full example code.</p>
 <span class="p">)</span>
 
 <span class="n">analog_trigger</span> <span class="o">=</span> <span class="n">trigger</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-    <span class="n">signal_dataframe</span><span class="o">=</span><span class="n">analog_acquisition</span><span class="p">,</span>
-    <span class="n">trigger_detector_name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millivolt</span><span class="p">,</span>
+    <span class="n">scheme</span><span class="o">=</span><span class="n">Scheme</span><span class="o">.</span><span class="n">FIXED</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">analog_trigger</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -685,10 +686,13 @@ to download the full example code.</p>
 
 <span class="n">peaks</span> <span class="o">=</span> <span class="n">peak_algorithm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">digital_trigger</span><span class="p">)</span>
 
-<span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">)</span>
+<span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="s1">&#39;Height&#39;</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="s1">&#39;Height&#39;</span><span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.359 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.497 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-limit-of-detection-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc141053ca87c293e1689882fb19bce1/limit_of_detection.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">limit_of_detection.ipynb</span></code></a></p>

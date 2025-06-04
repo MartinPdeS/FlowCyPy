@@ -111,7 +111,7 @@ scatterer_collection.dilute(factor=8)
 # Initialize the scatterer with the flow cell
 df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
 
-# df.plot(x='Diameter', bins='auto')
+df.plot(x='Diameter', bins='auto')
 
 # %%
 # Step 5: Define Detectors
@@ -184,8 +184,9 @@ processing_steps = [
 ]
 
 # Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=0.5 * units.millisecond)
+cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
 acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
+acquisition.normalize_units(time_units='max', signal_units='max')
 
 _ = acquisition.scatterer.plot(
     x='side',
@@ -202,10 +203,11 @@ acquisition.plot()
 # --------------------------------
 # The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 # window size and threshold.
-from FlowCyPy.triggering_system import TriggeringSystem
+from FlowCyPy.triggering_system import TriggeringSystem, Scheme
 
 trigger = TriggeringSystem(
-    threshold=2 * units.microvolt,
+    dataframe=acquisition,
+    trigger_detector_name='forward',
     max_triggers=-1,
     pre_buffer=20,
     post_buffer=20,
@@ -213,11 +215,9 @@ trigger = TriggeringSystem(
 )
 
 analog_triggered = trigger.run(
-    signal_dataframe=acquisition,
-    trigger_detector_name='forward',
+    scheme=Scheme.FIXED,
+    threshold=2 * units.microvolt
 )
-
-analog_triggered.plot()
 
 
 # %%
@@ -229,7 +229,10 @@ digital_signal = analog_triggered.digitalize(digitizer=digitizer)
 
 peaks = peak_algorithm.run(digital_signal)
 
-peaks.plot(feature='Height', x='side', y='forward')
+peaks.plot(
+    x=('side', 'Height'),
+    y=('forward', 'Height')
+)
 
 # %%
 # Step 8: Classifying the collected dataset
@@ -243,4 +246,7 @@ data = classifier.run(
     detectors=['side', 'forward']
 )
 
-_ = data.plot(feature='Height', x='side', y='forward')
+_ = data.plot(
+    x=('side', 'Height'),
+    y=('forward', 'Height')
+)

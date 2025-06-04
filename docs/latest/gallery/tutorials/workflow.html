@@ -652,7 +652,10 @@ given by:</p>
 <span class="c1"># Initialize the scatterer with the flow cell</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">get_population_dataframe</span><span class="p">(</span><span class="n">total_sampling</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">use_ratio</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Visualize the particle population</span>
 
-<span class="c1"># df.plot(x=&#39;Diameter&#39;, bins=&#39;auto&#39;)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;Diameter&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="Distribution of Diameter" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 1000x600 with 1 Axes&gt;
 </pre></div>
 </div>
 </section>
@@ -724,8 +727,9 @@ and particles follows Mie theory:</p>
 <span class="p">]</span>
 
 <span class="c1"># Run the flow cytometry simulation</span>
-<span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
+<span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 <span class="n">acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span><span class="n">processing_steps</span><span class="o">=</span><span class="n">processing_steps</span><span class="p">)</span>
+<span class="n">acquisition</span><span class="o">.</span><span class="n">normalize_units</span><span class="p">(</span><span class="n">time_units</span><span class="o">=</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="n">signal_units</span><span class="o">=</span><span class="s1">&#39;max&#39;</span><span class="p">)</span>
 
 <span class="n">_</span> <span class="o">=</span> <span class="n">acquisition</span><span class="o">.</span><span class="n">scatterer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
     <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>
@@ -734,7 +738,7 @@ and particles follows Mie theory:</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+<img src="../../_images/sphx_glr_workflow_002.png" srcset="../../_images/sphx_glr_workflow_002.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
 /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
@@ -746,15 +750,19 @@ and particles follows Mie theory:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">acquisition</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_002.png" srcset="../../_images/sphx_glr_workflow_002.png" alt="workflow" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_workflow_003.png" srcset="../../_images/sphx_glr_workflow_003.png" alt="workflow" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 1200x500 with 4 Axes&gt;
+</pre></div>
+</div>
+</section>
 <section id="step-7-analyze-detected-signals">
 <h2>Step 7: Analyze Detected Signals<a class="headerlink" href="#step-7-analyze-detected-signals" title="Link to this heading">#</a></h2>
 <p>The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.triggering_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriggeringSystem</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.triggering_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriggeringSystem</span><span class="p">,</span> <span class="n">Scheme</span>
 
 <span class="n">trigger</span> <span class="o">=</span> <span class="n">TriggeringSystem</span><span class="p">(</span>
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microvolt</span><span class="p">,</span>
+    <span class="n">dataframe</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span>
+    <span class="n">trigger_detector_name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
     <span class="n">max_triggers</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
     <span class="n">post_buffer</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
@@ -762,14 +770,12 @@ window size and threshold.</p>
 <span class="p">)</span>
 
 <span class="n">analog_triggered</span> <span class="o">=</span> <span class="n">trigger</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-    <span class="n">signal_dataframe</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span>
-    <span class="n">trigger_detector_name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
+    <span class="n">scheme</span><span class="o">=</span><span class="n">Scheme</span><span class="o">.</span><span class="n">FIXED</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microvolt</span>
 <span class="p">)</span>
-
-<span class="n">analog_triggered</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_003.png" srcset="../../_images/sphx_glr_workflow_003.png" alt="workflow" class = "sphx-glr-single-img"/><p>Getting and plotting the extracted peaks.</p>
+<p>Getting and plotting the extracted peaks.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">peak_locator</span>
 <span class="n">peak_algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span><span class="p">(</span><span class="n">compute_width</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -777,10 +783,13 @@ window size and threshold.</p>
 
 <span class="n">peaks</span> <span class="o">=</span> <span class="n">peak_algorithm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">digital_signal</span><span class="p">)</span>
 
-<span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;Height&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">)</span>
+<span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="s1">&#39;Height&#39;</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="s1">&#39;Height&#39;</span><span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_004.png" srcset="../../_images/sphx_glr_workflow_004.png" alt="Peaks properties" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7f63cd1d11d0&gt;
+<img src="../../_images/sphx_glr_workflow_004.png" srcset="../../_images/sphx_glr_workflow_004.png" alt="Peaks properties" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7efcd0924ad0&gt;
 </pre></div>
 </div>
 <p>Step 8: Classifying the collected dataset</p>
@@ -794,10 +803,13 @@ window size and threshold.</p>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="s1">&#39;forward&#39;</span><span class="p">]</span>
 <span class="p">)</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;Height&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="s1">&#39;Height&#39;</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="s1">&#39;Height&#39;</span><span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.390 seconds)</p>
+<img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.715 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/67e0cd555ca79f8bdb69184b227f40a4/workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow.ipynb</span></code></a></p>
