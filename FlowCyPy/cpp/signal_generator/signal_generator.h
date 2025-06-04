@@ -2,6 +2,11 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <stdexcept>
+#include <random>
+#include <fftw3.h>
+#include <cmath>
+#include <complex>
 
 namespace py = pybind11;
 
@@ -81,7 +86,7 @@ void butterworth_lowpass_filter(const py::buffer signal, const double sampling_r
  * @throws std::runtime_error If the input is not a 1D float64 array, or if the specified
  *         filter order is not implemented.
  */
-void bessel_lowpass_filter(const py::buffer signal, const double sampling_rate, const double cutoff_frequency, const int order, const double gain);
+void apply_bessel_lowpass_filter_to_signal(const py::buffer signal, const double sampling_rate, const double cutoff_frequency, const int order, const double gain);
 
 
 /**
@@ -126,7 +131,7 @@ void generate_pulses(py::buffer signal, const py::buffer &widths, const py::buff
  *
  * @throws std::runtime_error If the input array is not a 1D float64 NumPy array.
  */
-void add_gaussian_noise(py::buffer signal, const double mean, const double standard_deviation);
+void add_gaussian_noise_to_signal(std::vector<double> signal, const double mean, const double standard_deviation);
 
 
 /**
@@ -144,5 +149,5 @@ void add_gaussian_noise(py::buffer signal, const double mean, const double stand
  *
  * @throws std::runtime_error If the input array is not a 1D float64 NumPy array or if any element is negative.
  */
-void add_poisson_noise(py::buffer signal);
+void add_poisson_noise_to_signal(std::vector<double> &signal);
 

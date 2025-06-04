@@ -17,8 +17,8 @@ PYBIND11_MODULE(interface_signal_generator, module) {
     );
 
     module.def(
-        "bessel_lowpass_filter",
-        &bessel_lowpass_filter,
+        "apply_bessel_lowpass_filter",
+        &apply_bessel_lowpass_filter_to_signal,
         py::arg("signal"),
         py::arg("sampling_rate"),
         py::arg("cutoff_frequency"),
@@ -27,7 +27,7 @@ PYBIND11_MODULE(interface_signal_generator, module) {
     );
 
     module.def("baseline_restoration",
-        &baseline_restoration,
+        &apply_baseline_restoration_to_signal,
         py::arg("signal"),
         py::arg("window_size"),
         "In-place baseline restoration"
@@ -48,7 +48,7 @@ PYBIND11_MODULE(interface_signal_generator, module) {
 
     module.def(
         "add_gaussian_noise",
-        &add_gaussian_noise,
+        &add_gaussian_noise_to_signal,
         py::arg("signal"),
         py::arg("mean"),
         py::arg("standard_deviation"),
@@ -56,7 +56,7 @@ PYBIND11_MODULE(interface_signal_generator, module) {
     );
 
     module.def("add_poisson_noise",
-        &add_poisson_noise,
+        &add_poisson_noise_to_signal,
         py::arg("signal"),
         "Applies Poisson-distributed noise in-place to a non-negative signal buffer."
     );

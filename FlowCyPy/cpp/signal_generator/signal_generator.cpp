@@ -1,15 +1,11 @@
 #include "signal_generator.h"
 
-#include <stdexcept>
-#include <random>
-#include <fftw3.h>
-#include <cmath>
-#include <complex>
+
 
 namespace py = pybind11;
 
 
-void baseline_restoration(py::buffer signal, const int window_size)
+void apply_baseline_restoration_to_signal(py::buffer signal, const int window_size)
 {
     size_t n = signal.request().size;
     double* signal_ptr = static_cast<double*>(signal.request().ptr);
@@ -141,26 +137,20 @@ void generate_pulses(
 
 
 
-void add_gaussian_noise(py::buffer signal, const double mean, const double standard_deviation) {
-    py::buffer_info info = signal.request();
-
-    if (info.ndim != 1 || info.format != py::format_descriptor<double>::format()) {
-        throw std::runtime_error("Output must be a 1D float64 NumPy array");
+void add_gaussian_noise_to_signal(std::vector<double> &signal, const double mean, const double standard_deviation) {
+    if (signal.empty()) {
+        throw std::runtime_error("Signal vector is empty.");
     }
-
-    double* data = static_cast<double*>(info.ptr);
-    const size_t size = info.shape[0];
-
     std::default_random_engine rng(std::random_device{}());
     std::normal_distribution<double> dist(mean, standard_deviation);
 
-    for (size_t i = 0; i < size; ++i)
-        data[i] += dist(rng);
+    for (size_t i = 0; i < signal.size(); ++i)
+        signal[i] += dist(rng);
 }
 
 
 
-void bessel_lowpass_filter(const py::buffer signal, const double sampling_rate, const double cutoff_frequency, const int order, const double gain) {
+void apply_bessel_lowpass_filter_to_signal(const py::buffer signal, const double sampling_rate, const double cutoff_frequency, const int order, const double gain) {
     double dt = 1. / sampling_rate;
 
     py::buffer_info buf = signal.request();
@@ -240,25 +230,20 @@ void bessel_lowpass_filter(const py::buffer signal, const double sampling_rate, 
 
 
 
-void add_poisson_noise(py::buffer signal) {
-    auto info = signal.request();
-
-    if (info.ndim != 1 || info.format != py::format_descriptor<double>::format()) {
-        throw std::runtime_error("Expected a 1D float64 output array");
+void add_poisson_noise_to_signal(std::vector<double> &signal) {
+    if (signal.empty()) {
+        throw std::runtime_error("Signal vector is empty.");
     }
-
-    double* data = static_cast<double*>(info.ptr);
-    const size_t size = info.shape[0];
 
     std::default_random_engine rng(std::random_device{}());
 
-    for (size_t i = 0; i < size; ++i) {
-        if (data[i] < 0.0) {
+    for (size_t i = 0; i < signal.size(); ++i) {
+        if (signal[i] < 0.0) {
             throw std::runtime_error("Poisson noise requires non-negative values");
         }
 
-        std::poisson_distribution<int> dist(data[i]);
-        data[i] = static_cast<double>(dist(rng));
+        std::poisson_distribution<int> dist(signal[i]);
+        signal[i] = static_cast<double>(dist(rng));
     }
 }
 
