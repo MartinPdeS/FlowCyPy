@@ -278,13 +278,14 @@ class FlowCytometer:
                 coupling_power += self.background_power.to('watt')
             else:
                 interface_signal_generator.generate_pulses(
-                    signal=coupling_power,
+                    signal=coupling_power.view(),
                     widths=self.scatterer_dataframe['Widths'].pint.to('second').values.quantity.magnitude,
                     centers=self.scatterer_dataframe['Time'].pint.to('second').values.quantity.magnitude,
                     coupling_power=self.scatterer_dataframe[column].pint.to('watt').values.quantity.magnitude,
                     time=signal_dataframe['Time'].pint.to('second').values.quantity.magnitude,
                     background_power=self.background_power.to('watt').magnitude
                 )
+
 
                 coupling_power = coupling_power * units.watt
 

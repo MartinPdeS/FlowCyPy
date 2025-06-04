@@ -1,14 +1,12 @@
 #pragma once
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 #include <stdexcept>
+#include <vector>
 #include <random>
 #include <fftw3.h>
 #include <cmath>
 #include <complex>
 
-namespace py = pybind11;
 
 
 /**
@@ -28,7 +26,7 @@ namespace py = pybind11;
  * @param window_size The number of previous samples to consider for the minimum. If set to -1,
  *                    the window is treated as infinite (using all samples from index 0 to \(i-1\)).
  */
-void baseline_restoration(py::buffer signal, const int window_size);
+void apply_baseline_restoration_to_signal(std::vector<double> &signal, const int window_size);
 
 
 /**
@@ -52,7 +50,7 @@ void baseline_restoration(py::buffer signal, const int window_size);
  *
  * @throws std::runtime_error If the input array is not a 1D float64 NumPy array.
  */
-void butterworth_lowpass_filter(const py::buffer signal, const double sampling_rate, const double cutoff_freq, const int order = 1, const double gain = 1);
+void apply_butterworth_lowpass_filter_to_signal(std::vector<double> &signal, const double sampling_rate, const double cutoff_freq, const int order = 1, const double gain = 1);
 
 
 /**
@@ -86,7 +84,7 @@ void butterworth_lowpass_filter(const py::buffer signal, const double sampling_r
  * @throws std::runtime_error If the input is not a 1D float64 array, or if the specified
  *         filter order is not implemented.
  */
-void apply_bessel_lowpass_filter_to_signal(const py::buffer signal, const double sampling_rate, const double cutoff_frequency, const int order, const double gain);
+void apply_bessel_lowpass_filter_to_signal(std::vector<double> &signal, const double sampling_rate, const double cutoff_frequency, const int order, const double gain);
 
 
 /**
@@ -113,7 +111,7 @@ void apply_bessel_lowpass_filter_to_signal(const py::buffer signal, const double
  *
  * @throws std::runtime_error If the sizes of the widths, centers, and coupling_power buffers are not equal.
  */
-void generate_pulses(py::buffer signal, const py::buffer &widths, const py::buffer &centers, const py::buffer &coupling_power, const py::buffer &time, const double background_power);
+std::vector<double> generate_pulses(std::vector<double> &signal, const std::vector<double> &widths, const std::vector<double> &centers, const std::vector<double> &coupling_power, const std::vector<double> &time, const double background_power);
 
 
 /**
@@ -131,7 +129,7 @@ void generate_pulses(py::buffer signal, const py::buffer &widths, const py::buff
  *
  * @throws std::runtime_error If the input array is not a 1D float64 NumPy array.
  */
-void add_gaussian_noise_to_signal(std::vector<double> signal, const double mean, const double standard_deviation);
+void add_gaussian_noise_to_signal(std::vector<double> &signal, const double mean, const double standard_deviation);
 
 
 /**

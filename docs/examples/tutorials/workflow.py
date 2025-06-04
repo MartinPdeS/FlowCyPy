@@ -33,7 +33,7 @@ from FlowCyPy import units
 
 from FlowCyPy import NoiseSetting
 
-NoiseSetting.include_noises = True
+NoiseSetting.include_noises = False
 NoiseSetting.include_shot_noise = True
 NoiseSetting.include_dark_current_noise = True
 NoiseSetting.include_source_noise = True

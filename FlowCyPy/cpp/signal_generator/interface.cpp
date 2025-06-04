@@ -1,5 +1,7 @@
-#include "signal_generator.h"
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
+#include "signal_generator.h"
 
 namespace py = pybind11;
 
@@ -8,7 +10,7 @@ PYBIND11_MODULE(interface_signal_generator, module) {
 
     module.def(
         "butterworth_lowpass_filter",
-        &butterworth_lowpass_filter,
+        &apply_butterworth_lowpass_filter_to_signal,
         py::arg("signal"),
         py::arg("sampling_rate"),
         py::arg("cutoff_frequency"),
@@ -17,7 +19,7 @@ PYBIND11_MODULE(interface_signal_generator, module) {
     );
 
     module.def(
-        "apply_bessel_lowpass_filter",
+        "bessel_lowpass_filter",
         &apply_bessel_lowpass_filter_to_signal,
         py::arg("signal"),
         py::arg("sampling_rate"),
