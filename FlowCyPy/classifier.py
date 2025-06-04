@@ -2,7 +2,7 @@ from sklearn.cluster import KMeans
 from sklearn.cluster import DBSCAN
 from sklearn.mixture import GaussianMixture
 import pandas as pd
-from FlowCyPy.dataframe_subclass import ClassifierDataFrame
+from FlowCyPy.sub_frames.classifier import ClassifierDataFrame
 
 
 class BaseClassifier:

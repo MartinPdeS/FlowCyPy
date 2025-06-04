@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from FlowCyPy.units import Quantity, particle, liter, second
 
 class ParticleCount:

@@ -1,6 +1,6 @@
 import pandas as pd
 from abc import ABC
-from FlowCyPy.dataframe_subclass import PeakDataFrame
+from FlowCyPy.sub_frames.peaks import PeakDataFrame
 
 
 class BasePeakLocator(ABC):

@@ -4,11 +4,10 @@ import warnings
 
 import numpy as np
 import pandas as pd
-import pint
 import pint_pandas
 
 from FlowCyPy import units
-from FlowCyPy.dataframe_subclass import TriggerDataFrame
+from FlowCyPy.sub_frames.acquisition import TriggerDataFrame
 from FlowCyPy.binary.interface_triggering_system import TRIGERRINGSYSTEM
 
 class Scheme(str, Enum):
@@ -25,8 +24,6 @@ class Scheme(str, Enum):
 
 
 class TriggeringSystem(TRIGERRINGSYSTEM):
-    _signal_units: pint.Unit
-
     def __init__(self,
         digitizer: object,
         dataframe: pd.DataFrame,
@@ -63,6 +60,7 @@ class TriggeringSystem(TRIGERRINGSYSTEM):
         """
         self.digitizer = digitizer
         self.dataframe = dataframe
+        self.dataframe.normalize_units(time_units=units.second, signal_units=units.volt)
 
         super().__init__(
             trigger_detector_name=trigger_detector_name,
@@ -70,6 +68,12 @@ class TriggeringSystem(TRIGERRINGSYSTEM):
             post_buffer=post_buffer,
             max_triggers=max_triggers,
         )
+
+        # feed time + all detector signals
+        self._cpp_add_time(self.dataframe["Time"].pint.quantity.magnitude)
+
+        for detector_name in self.dataframe.detector_names:
+            self._cpp_add_signal(detector_name, self.dataframe[detector_name].pint.quantity.magnitude)
 
 
     # ------------------------------------------------------------------
@@ -123,19 +127,10 @@ class TriggeringSystem(TRIGERRINGSYSTEM):
 
         self.threshold = self._parse_threshold(threshold, self.dataframe)
 
-        df_norm = self.dataframe.normalize(signal_units="volt", time_units="second", inplace=False)
-        self._signal_units = units.volt
-
-        # feed time + all detector signals
-        self._cpp_add_time(df_norm["Time"].pint.quantity.magnitude)
-
-        for detector_name in self.dataframe.detector_names:
-            self._cpp_add_signal(detector_name, df_norm[detector_name].pint.quantity.magnitude)
-
         self._cpp_run(
             algorithm=str(self.scheme),
-            threshold=self.threshold.to("volt").magnitude,
-            lower_threshold=lower_threshold.to("volt").magnitude,
+            threshold=self.threshold.to(self.dataframe.signal_units).magnitude,
+            lower_threshold=lower_threshold.to(self.dataframe.signal_units).magnitude,
             min_window_duration=min_win_samples,
             debounce_enabled=debounce_enabled,
         )
@@ -191,25 +186,26 @@ class TriggeringSystem(TRIGERRINGSYSTEM):
 
         detectors = self.dataframe.detector_names
 
-        data = {
-            "SegmentID": self._cpp_get_segments_ID(detectors[0]),
-            "Time": pint_pandas.PintArray(self._cpp_get_times(detectors[0]), "second"),
-        }
+        data = dict(
+            SegmentID=self._cpp_get_segments_ID(detectors[0]),
+            Time=pint_pandas.PintArray(self._cpp_get_times(detectors[0]), "second"),
+        )
+
+        meta_data = dict(
+            threshold={"detector": detectors[0], "value": self.threshold},
+        )
+
         for det in detectors:
             sig_np = self._cpp_get_signals(det)
-            data[det] = pint_pandas.PintArray(sig_np, self._signal_units)
+            data[det] = pint_pandas.PintArray(sig_np, self.dataframe.signal_units)
 
-        tidy = (
-            pd.DataFrame(data)
-            .set_index("SegmentID")
-            .pipe(TriggerDataFrame, plot_type="analog")
-        )
+        tidy = pd.DataFrame(data).set_index("SegmentID")
+
+        tidy = TriggerDataFrame(tidy, plot_type="analog")
+
+        tidy.normalize_units(signal_units='max', time_units='max')
 
         # metadata passthrough
-        tidy.attrs.update(
-            {
-                "threshold": {"detector": detectors[0], "value": self.threshold},
-            }
-        )
+        tidy.attrs.update(meta_data)
 
         return tidy

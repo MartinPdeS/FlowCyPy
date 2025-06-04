@@ -10,7 +10,7 @@ from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.detector import Detector
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.helper import validate_units
-from FlowCyPy.dataframe_subclass import AcquisitionDataFrame
+from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.circuits import SignalProcessor
 from FlowCyPy.source import BaseBeam
 from FlowCyPy.binary import interface_signal_generator
@@ -310,6 +310,8 @@ class FlowCytometer:
             plot_type='analog'
         )
 
+        signal_dataframe.normalize_units(signal_units='SI', time_units='SI')
+
         return signal_dataframe
 
     def run_processing(self, *processing_steps) -> None:
@@ -318,7 +320,6 @@ class FlowCytometer:
             step.apply(signal, sampling_rate=self.digitizer.sampling_rate)  # Apply processing in-place
 
         return signal
-        signal_dataframe[column] = pd.Series(signal, dtype="pint[volt]")
 
 
     def get_detector_by_name(self, name: str) -> Detector:

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from typing import List, Optional, Union
 import pandas as pd
 from typing import Optional, List
@@ -6,7 +7,7 @@ from enum import Enum
 
 from FlowCyPy.units import Quantity, RIU, particle, liter
 from FlowCyPy.population import BasePopulation
-from FlowCyPy.dataframe_subclass import ScattererDataFrame
+from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
 
 
 class CouplingModel(Enum):

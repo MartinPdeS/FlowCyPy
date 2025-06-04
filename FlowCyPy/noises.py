@@ -1,7 +1,17 @@
+import warnings
+
+
 class RestrictiveMeta(type):
     def __setattr__(cls, name, value):
         if not hasattr(cls, name):
-            raise AttributeError(f"Cannot set unknown class-level attribute '{name}' in {cls.__name__}.")
+            # Collect valid attribute names (excluding private and dunder)
+            valid_attrs = [attr for attr in dir(cls) if not attr.startswith("_")]
+            warnings.warn(
+                f"Attribute '{name}' not recognized in {cls.__name__}. "
+                f"Valid attributes are: {valid_attrs}",
+                UserWarning
+            )
+            return
         super().__setattr__(name, value)
 
 
@@ -31,7 +41,8 @@ class NoiseSetting(metaclass=RestrictiveMeta):
     include_source_noise : bool
         Whether to include Relative Intensity Noise (RIN) in simulations. Default is True.
     assume_perfect_hydrodynamic_focusing: bool
-        Whether to include the noise coming for the transversal sampling of the scatterer position regaring the beam-localization.
+        Whether to include the noise coming from the transversal sampling of
+        the scatterer position regarding beam localization. Default is False.
 
     Methods
     -------
@@ -48,18 +59,6 @@ class NoiseSetting(metaclass=RestrictiveMeta):
       new class-level attributes after the class definition.
     - The singleton pattern is enforced by overriding the `__new__` method, ensuring
       a single shared instance.
-
-    Examples
-    --------
-    >>> noise_setting = NoiseSetting()
-    >>> noise_setting.include_noises
-    True
-    >>> noise_setting.include_noises = False
-    >>> noise_setting.include_shot_noise
-    False
-    >>> noise_setting.assume_perfect_hydrodynamic_focusing = True
-    >>> noise_setting.assume_perfect_hydrodynamic_focusing
-    True
     """
     _instance = None
 
@@ -81,9 +80,9 @@ class NoiseSetting(metaclass=RestrictiveMeta):
 
     @include_noises.setter
     def include_noises(self, value):
-        self._include_noises = value
+        self._include_noises = bool(value)
         # Dynamically update other noise components
-        if not value:
+        if not self._include_noises:
             self.include_shot_noise = False
             self.include_dark_current_noise = False
             self.include_source_noise = False

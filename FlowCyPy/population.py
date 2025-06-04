@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 from typing import Union
 from FlowCyPy import distribution
 from pydantic.dataclasses import dataclass

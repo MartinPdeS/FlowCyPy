@@ -9,7 +9,7 @@ from pydantic import field_validator
 from FlowCyPy.population import BasePopulation
 from FlowCyPy.units import Quantity
 from FlowCyPy import units
-from FlowCyPy.dataframe_subclass import ScattererDataFrame
+from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
 from FlowCyPy import helper
 
 config_dict = dict(

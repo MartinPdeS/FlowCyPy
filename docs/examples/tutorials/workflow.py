@@ -229,7 +229,6 @@ digital_signal = analog_triggered.digitalize(digitizer=digitizer)
 
 peaks = peak_algorithm.run(digital_signal)
 
-
 peaks.plot(
     x=('side', 'Height'),
     y=('forward', 'Height')

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from FlowCyPy.units import meter, joule, second, farad, kelvin, coulomb
 import numpy as np
 
