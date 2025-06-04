@@ -186,7 +186,7 @@ processing_steps = [
 # Run the flow cytometry simulation
 cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
 acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
-acquisition.normalize()
+acquisition.normalize_units(time_units='max', signal_units='max')
 
 _ = acquisition.scatterer.plot(
     x='side',
