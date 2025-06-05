@@ -3,122 +3,177 @@ import pytest
 
 from FlowCyPy.binary import interface_signal_generator
 
+
 # === Shared signal model setup (used by most tests) ===
 
 WIDTHS = np.full(5, 0.1)
 CENTERS = np.linspace(0.2, 0.8, 5)
 COUPLING_POWER = np.linspace(1.0, 2.0, 5)
-TIME_ARRAY = np.linspace(0.0, 1.0, 100)
+
+N_ELEMENTS = 5000
+TIME_ARRAY = np.linspace(0.0, 1.0, N_ELEMENTS)
 BACKGROUND_POWER = 1.0
+
+
+@pytest.fixture
+def signal_generator():
+    """
+    Returns a SignalGenerator instance with a predefined time array.
+    This is used to avoid code duplication in tests.
+    """
+    signal_generator = interface_signal_generator.SignalGenerator(N_ELEMENTS)
+    signal_generator.add_signal("Time", TIME_ARRAY)
+    signal_generator.create_zero_signal(signal_name="Signal")
+    return signal_generator
 
 # === Signal tests ===
 
-def test_signal_after_pulse_generation():
-    signal = np.zeros_like(TIME_ARRAY)
-    interface_signal_generator.generate_pulses(
-        signal=signal,
+def test_signal_after_pulse_generation(signal_generator):
+    """
+    Test that the signal is generated correctly after pulse generation.
+    """
+    signal_generator.generate_pulses(
         widths=WIDTHS,
         centers=CENTERS,
         coupling_power=COUPLING_POWER,
-        time=TIME_ARRAY,
         background_power=BACKGROUND_POWER
     )
 
-    assert signal.shape == TIME_ARRAY.shape
-    assert signal.dtype == np.float64
-    assert np.all(signal >= 0.0)
+    array = signal_generator.get_signal("Signal")
+
+    array = np.asarray(array)
+
+    assert array.shape == TIME_ARRAY.shape
+    assert array.dtype == np.float64
+    assert np.all(array >= 0.0)
+
+
+def test_signal_constant_addition(signal_generator):
+    """
+    Test that adding a constant modifies the signal correctly.
+    """
+    constant = 10.0
+    signal_generator.add_constant(constant)
+
+    array = signal_generator.get_signal("Signal")
+
+    array = np.asarray(array)
+
+    assert array.shape == TIME_ARRAY.shape
+    assert array.dtype == np.float64
+    assert np.all(array >= 0.0)
+    assert np.isclose(np.mean(array), constant, atol=0.1)
+
 
 # === Gaussian noise tests ===
 
-def test_add_gaussian_noise_changes_signal():
-    signal = np.zeros_like(TIME_ARRAY)
+def test_add_gaussian_noise_changes_signal(signal_generator):
+    """
+    Test that adding Gaussian noise modifies the signal.
+    """
 
-    interface_signal_generator.add_gaussian_noise(
-        signal=signal,
+    signal_generator.add_gaussian_noise(
         mean=0.0,
         standard_deviation=1.0
     )
 
-    assert not np.allclose(signal, 0.0)
+    array = signal_generator.get_signal("Signal")
 
-def test_add_gaussian_noise_statistics():
-    signal = np.full(10000, 5.0)
+    array = np.asarray(array)
 
-    interface_signal_generator.add_gaussian_noise(
-        signal=signal,
-        mean=0.0,
-        standard_deviation=1.0
-    )
+    assert array.shape == TIME_ARRAY.shape
 
-    assert np.abs(np.mean(signal) - 5.0) < 0.1
-    assert 0.9 < np.std(signal) < 1.1
+    assert np.isclose(np.mean(array), 0.0, atol=0.1)
+
+    assert np.isclose(np.std(array), 1.0, atol=0.1)
+
 
 # === Poisson noise ===
 
-def test_add_poisson_noise():
-    signal = np.full_like(TIME_ARRAY, 5.0)
-    before = signal.copy()
-    interface_signal_generator.add_poisson_noise(signal=signal)
-    assert not np.array_equal(signal, before)
-    assert np.all(signal >= 0)
+def test_add_poisson_noise(signal_generator):
+    """
+    Test that adding Poisson noise modifies the signal.
+    """
+    signal_generator.add_poisson_noise()
 
-# === FFT filtering ===
+    array = signal_generator.get_signal("Signal")
 
-def test_fft_filtering_runs_and_modifies_signal():
-    time = np.linspace(0.0, 1.0, 1024)
-    signal = np.sin(2 * np.pi * 50 * time).astype(np.float64)
+    array = np.asarray(array)
 
-    processed_signal = signal.copy()
-    unprocessed_signal = signal.copy()
+    assert np.all(np.isclose(array, 0.0))
 
-    dt = time[1] - time[0]
-    interface_signal_generator.bessel_lowpass_filter(
-        signal=processed_signal,
-        sampling_rate=1 / dt,
-        cutoff_frequency=10.0,
-        order=2,
-        gain=1
-    )
 
-    assert processed_signal.shape == unprocessed_signal.shape
-    assert processed_signal.dtype == np.float64
-    assert not np.allclose(processed_signal, unprocessed_signal)
-    assert np.max(np.abs(processed_signal)) < np.max(np.abs(unprocessed_signal))
+def test_poisson_noise_statistics(signal_generator):
+    """
+    Test that Poisson noise has the expected statistical properties.
+    """
 
-# === Noise in-place check ===
+    constant = 10.0
+    signal_generator.add_constant(10.0)
 
-def test_noise_modifies_signal_inplace():
-    signal = np.ones(100, dtype=np.float64) * 3.0
+    signal_generator.add_poisson_noise()
+    array = signal_generator.get_signal("Signal")
 
-    interface_signal_generator.add_gaussian_noise(
-        signal=signal,
-        mean=0.0,
-        standard_deviation=0.1
-    )
-    assert not np.allclose(signal, 3.0)
+    array = np.asarray(array)
 
-# === Baseline restoration tests ===
+    assert np.isclose(np.mean(array), constant, atol=0.1)
 
-def test_baseline_restoration_global():
-    signal = np.array([1, 2, 3, 4, 5, 6], dtype=np.float64)
-    expected = signal.copy()
-    expected[1:] = expected[1:] - 1
+    assert np.isclose(np.std(array), np.sqrt(constant), atol=0.1)
 
-    interface_signal_generator.baseline_restoration(signal=signal, window_size=-1)
 
-    np.testing.assert_allclose(signal[1:], expected[1:])
+# === API call tests ===
 
-def test_baseline_restoration_sliding_window():
-    original = np.array([5, 2, 3, 4, 6, 7, 2, 3, 1], dtype=np.float64)
-    signal = original.copy()
-    interface_signal_generator.baseline_restoration(signal=signal, window_size=3)
+def test_butterworth_low_pass_filter(signal_generator):
+    """
+    Test that the low-pass filter modifies the signal correctly.
+    """
+    signal_generator.add_gaussian_noise(mean=0.0, standard_deviation=1.0)
 
-    assert signal[0] == 0
-    assert signal[1] >= 0
-    assert signal[2] >= 0
-    assert signal.shape == original.shape
-    assert signal.dtype == np.float64
-    assert not np.allclose(signal, original)
+    signal_generator.apply_butterworth_lowpass_filter(sampling_rate=1, cutoff_frequency=10.0, order=2, gain=1.0)
+
+    array = signal_generator.get_signal("Signal")
+
+    array = np.asarray(array)
+
+    assert array.shape == TIME_ARRAY.shape
+    assert array.dtype == np.float64
+    assert not np.allclose(array, 0.0)
+    assert np.max(np.abs(array)) < 10.0
+
+def test_bessel_low_pass_filter(signal_generator):
+    """
+    Test that the Bessel low-pass filter modifies the signal correctly.
+    """
+    signal_generator.add_gaussian_noise(mean=0.0, standard_deviation=1.0)
+
+    signal_generator.apply_bessel_lowpass_filter(sampling_rate=1, cutoff_frequency=10.0, order=2, gain=1.0)
+
+    array = signal_generator.get_signal("Signal")
+
+    array = np.asarray(array)
+
+    assert array.shape == TIME_ARRAY.shape
+    assert array.dtype == np.float64
+    assert not np.allclose(array, 0.0)
+    assert np.max(np.abs(array)) < 10.0
+
+
+def test_baseline_restoration(signal_generator):
+    """
+    Test that baseline restoration modifies the signal correctly.
+    """
+    signal_generator.add_gaussian_noise(mean=0.0, standard_deviation=1.0)
+
+    signal_generator.apply_baseline_restoration(window_size=10)
+
+    array = signal_generator.get_signal("Signal")
+
+    array = np.asarray(array)
+
+    assert array.shape == TIME_ARRAY.shape
+    assert array.dtype == np.float64
+    assert not np.allclose(array, 0.0)
+    assert np.max(np.abs(array)) < 10.0
 
 if __name__ == "__main__":
     pytest.main(["-W", "error", "-s", __file__])

@@ -33,7 +33,7 @@ from FlowCyPy import units
 
 from FlowCyPy import NoiseSetting
 
-NoiseSetting.include_noises = False
+NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
 NoiseSetting.include_dark_current_noise = True
 NoiseSetting.include_source_noise = True
@@ -111,7 +111,7 @@ scatterer_collection.dilute(factor=8)
 # Initialize the scatterer with the flow cell
 df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
 
-df.plot(x='Diameter', bins='auto')
+# df.plot(x='Diameter', bins='auto')
 
 # %%
 # Step 5: Define Detectors

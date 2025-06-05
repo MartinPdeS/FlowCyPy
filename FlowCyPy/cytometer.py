@@ -266,28 +266,25 @@ class FlowCytometer:
         """
         signal_dataframe = self._initialize_signal(run_time=self.run_time)
 
-        for column in signal_dataframe:
-            if column == 'Time':
-                continue
+        self.signal_generator = interface_signal_generator.SignalGenerator(n_elements=self.sequence_length)
 
-            detector = self.get_detector_by_name(column)
+        self.signal_generator.add_signal("Time", signal_dataframe['Time'].pint.to('second').values.quantity.magnitude)
 
-            coupling_power = np.zeros(self.sequence_length, dtype='float64')
+        for detector in self.detectors:
+            self.signal_generator.create_zero_signal(signal_name=detector.name)
 
             if self.scatterer_dataframe.empty:
-                coupling_power += self.background_power.to('watt')
+                self.signal_generator.add_constant(constant=self.background_power.to('watt').magnitude)
+
             else:
-                interface_signal_generator.generate_pulses(
-                    signal=coupling_power.view(),
+                self.signal_generator.generate_pulses(
                     widths=self.scatterer_dataframe['Widths'].pint.to('second').values.quantity.magnitude,
                     centers=self.scatterer_dataframe['Time'].pint.to('second').values.quantity.magnitude,
-                    coupling_power=self.scatterer_dataframe[column].pint.to('watt').values.quantity.magnitude,
-                    time=signal_dataframe['Time'].pint.to('second').values.quantity.magnitude,
+                    coupling_power=self.scatterer_dataframe[detector.name].pint.to('watt').values.quantity.magnitude,
                     background_power=self.background_power.to('watt').magnitude
                 )
 
-
-                coupling_power = coupling_power * units.watt
+            coupling_power = self.signal_generator.get_signal(detector.name) * units.watt
 
             if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
                 photocurrent = (coupling_power * detector.responsivity)
@@ -302,8 +299,7 @@ class FlowCytometer:
             for step in processing_steps:
                 step.apply(signal, sampling_rate=self.digitizer.sampling_rate)  # Apply processing in-place
 
-            signal_dataframe[column] = pd.Series(signal, dtype="pint[volt]")
-
+            signal_dataframe[detector.name] = pd.Series(signal, dtype="pint[volt]")
 
         signal_dataframe = AcquisitionDataFrame(
             signal_dataframe,
