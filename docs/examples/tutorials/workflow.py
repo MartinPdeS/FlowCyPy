@@ -216,7 +216,7 @@ trigger = TriggeringSystem(
 
 analog_triggered = trigger.run(
     scheme=Scheme.FIXED,
-    threshold=2 * units.microvolt
+    threshold=0.2 * units.microvolt
 )
 
 

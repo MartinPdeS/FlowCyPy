@@ -113,7 +113,7 @@ void SignalGenerator::generate_pulses_signal(const std::string &signal_name, con
     for (size_t i = 0; i < time_size; ++i)
         signal[i] = background_power;
 
-    // #pragma omp parallel for  // Parallelize the outer loop over particles.
+    #pragma omp parallel for  // Parallelize the outer loop over particles.
     for (size_t i = 0; i < n_pulses; ++i) {
         double inv_denom = 1.0 / (2.0 * widths[i] * widths[i]);
 

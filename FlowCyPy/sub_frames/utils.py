@@ -4,10 +4,7 @@ import matplotlib.pyplot as plt
 from MPSPlots.styles import mps as plot_style
 import pint_pandas
 from pint import Quantity
-import seaborn as sns
 import numpy as np
-from typing import List
-import pandas as pd
 
 
 def _pre_plot(function):
@@ -38,7 +35,7 @@ def _pre_plot(function):
         with plt.style.context(plot_style):
             figure = function(self, **kwargs)
 
-            plt.tight_layout()
+            figure.tight_layout()
 
             if save_as is not None:
                 plt.savefig(save_as)
