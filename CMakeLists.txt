@@ -36,6 +36,7 @@ endif()
 add_compile_options(-Wall -Wextra -pedantic-errors)
 
 add_subdirectory(FlowCyPy/cpp/utils)               # utils
+add_subdirectory(FlowCyPy/cpp/circuits)            # circuits
 add_subdirectory(FlowCyPy/cpp/triggering_system)   # triggering_system
 add_subdirectory(FlowCyPy/cpp/signal_generator)    # signal_generator
 add_subdirectory(FlowCyPy/cpp/peak_locator)        # peak_locator

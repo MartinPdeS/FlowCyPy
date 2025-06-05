@@ -3,6 +3,7 @@ import numpy as np
 from FlowCyPy.binary import interface_utils
 from FlowCyPy.helper import validate_units
 from FlowCyPy import units
+from FlowCyPy.binary import interface_circuits
 
 
 class SignalProcessor(ABC):
@@ -21,7 +22,7 @@ class SignalProcessor(ABC):
         """
         pass
 
-class BaselineRestorator(SignalProcessor):
+class BaselineRestorator(interface_circuits.BaseLineRestoration):
     """
     Applies a baseline restoration filter by subtracting the minimum value over a given window size.
 
@@ -33,22 +34,27 @@ class BaselineRestorator(SignalProcessor):
     """
     def __init__(self, window_size: int):
         self.window_size = window_size
+        super().__init__()
 
-    def apply(self, signal: units.Quantity, sampling_rate: units.Quantity, **kwargs) -> units.Quantity:
+    def process(self, signal_generator: object, sampling_rate: units.Quantity, **kwargs) -> None:
         """
-        Applies baseline restoration in-place.
+        Processes the signal generator to apply baseline restoration.
 
         Parameters
         ----------
-        signal : np.ndarray
-            The signal to be modified in-place.
+        signal_generator : object
+            An object that generates the signal to be processed.
+        sampling_rate : units.Quantity
+            The sampling rate of the signal.
+
+        Returns
+        -------
+        units.Quantity
+            The processed signal with baseline restoration applied.
         """
-        window_size_bin = int((self.window_size * sampling_rate).to('').magnitude)
-        signal_units = signal.units
+        self._cpp_window_size = int((self.window_size * sampling_rate).to('').magnitude)
 
-        interface_utils.baseline_restoration(signal=signal.magnitude, window_size=window_size_bin)
-
-        return signal * signal_units
+        self._cpp_process(signal_generator)
 
 
 class BesselLowPass(SignalProcessor):

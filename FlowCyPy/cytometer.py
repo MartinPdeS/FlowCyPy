@@ -296,8 +296,8 @@ class FlowCytometer:
 
             signal = self.transimpedance_amplifier.amplify(signal=photocurrent, dt=1 / self.digitizer.sampling_rate).to('volt')
 
-            for step in processing_steps:
-                step.apply(signal, sampling_rate=self.digitizer.sampling_rate)  # Apply processing in-place
+            for circuit in processing_steps:
+                circuit.process(signal_generator=self.signal_generator, sampling_rate=self.digitizer.sampling_rate)
 
             signal_dataframe[detector.name] = pd.Series(signal, dtype="pint[volt]")
 
