@@ -1,6 +1,6 @@
 #include "utils.h"
 
-void apply_baseline_restoration_to_signal(std::vector<double> &signal, const int window_size)
+void utils::apply_baseline_restoration_to_signal(std::vector<double> &signal, const int window_size)
 {
     if (signal.empty()) {
         throw std::runtime_error("Signal vector is empty.");
@@ -32,7 +32,7 @@ void apply_baseline_restoration_to_signal(std::vector<double> &signal, const int
 }
 
 
-void apply_butterworth_lowpass_filter_to_signal(std::vector<double> &signal, const double sampling_rate, const double cutoff_frequency, const int order, const double gain) {
+void utils::apply_butterworth_lowpass_filter_to_signal(std::vector<double> &signal, const double sampling_rate, const double cutoff_frequency, const int order, const double gain) {
     if (signal.empty()) {
         throw std::runtime_error("Signal vector is empty.");
     }
@@ -82,7 +82,7 @@ void apply_butterworth_lowpass_filter_to_signal(std::vector<double> &signal, con
 
 
 
-std::vector<double> generate_pulses(
+std::vector<double> utils::generate_pulses_signal(
     std::vector<double> &signal,
     const std::vector<double> &widths,
     const std::vector<double> &centers,
@@ -122,7 +122,7 @@ std::vector<double> generate_pulses(
 
 
 
-void add_gaussian_noise_to_signal(std::vector<double> &signal, const double mean, const double standard_deviation) {
+void utils::add_gaussian_noise_to_signal(std::vector<double> &signal, const double mean, const double standard_deviation) {
     if (signal.empty()) {
         throw std::runtime_error("Signal vector is empty.");
     }
@@ -135,7 +135,7 @@ void add_gaussian_noise_to_signal(std::vector<double> &signal, const double mean
 
 
 
-void apply_bessel_lowpass_filter_to_signal(std::vector<double> &signal, const double sampling_rate, const double cutoff_frequency, const int order, const double gain) {
+void utils::apply_bessel_lowpass_filter_to_signal(std::vector<double> &signal, const double sampling_rate, const double cutoff_frequency, const int order, const double gain) {
     if (signal.empty()) {
         throw std::runtime_error("Signal vector is empty.");
     }
@@ -212,7 +212,7 @@ void apply_bessel_lowpass_filter_to_signal(std::vector<double> &signal, const do
 
 
 
-void add_poisson_noise_to_signal(std::vector<double> &signal) {
+void utils::add_poisson_noise_to_signal(std::vector<double> &signal) {
     if (signal.empty()) {
         throw std::runtime_error("Signal vector is empty.");
     }

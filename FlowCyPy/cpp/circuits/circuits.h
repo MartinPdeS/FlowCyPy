@@ -30,11 +30,14 @@ public:
     int order;
     double gain;
 
-    ButterworthLowPassFilter(double sampling_rate, double cutoff_frequency, int order = 1, double gain = 1.0)
+    ButterworthLowPassFilter() = default;
+
+    ButterworthLowPassFilter(double sampling_rate, double cutoff_frequency, int order, double gain)
         : sampling_rate(sampling_rate), cutoff_frequency(cutoff_frequency), order(order), gain(gain) {}
 
     void process(SignalGenerator &signal_generator) override;
 };
+
 class BesselLowPassFilter: public BaseCircuit {
 public:
     double sampling_rate;
@@ -42,7 +45,9 @@ public:
     int order;
     double gain;
 
-    BesselLowPassFilter(double sampling_rate, double cutoff_frequency, int order, double gain = 1.0)
+    BesselLowPassFilter() = default;
+
+    BesselLowPassFilter(double sampling_rate, double cutoff_frequency, int order, double gain)
         : sampling_rate(sampling_rate), cutoff_frequency(cutoff_frequency), order(order), gain(gain) {}
 
     void process(SignalGenerator &signal_generator) override;

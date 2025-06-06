@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include <cmath>      // for std::isnan
-#include "../utils.h"
 
 namespace py = pybind11;
 

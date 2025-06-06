@@ -10,7 +10,7 @@
 #include <map>
 
 
-
+namespace utils {
 
 /**
  * @brief Performs baseline restoration on a signal using a rolling window minimum.
@@ -114,8 +114,14 @@ void apply_bessel_lowpass_filter_to_signal(std::vector<double> &signal, const do
  *
  * @throws std::runtime_error If the sizes of the widths, centers, and coupling_power buffers are not equal.
  */
-std::vector<double> generate_pulses(std::vector<double> &signal, const std::vector<double> &widths, const std::vector<double> &centers, const std::vector<double> &coupling_power, const std::vector<double> &time, const double background_power);
-
+std::vector<double> generate_pulses_signal(
+    std::vector<double> &signal,
+    const std::vector<double> &widths,
+    const std::vector<double> &centers,
+    const std::vector<double> &coupling_power,
+    const std::vector<double> &time,
+    const double background_power
+);
 
 /**
  * @brief Adds Gaussian noise to a 1D signal.
@@ -152,3 +158,4 @@ void add_gaussian_noise_to_signal(std::vector<double> &signal, const double mean
  */
 void add_poisson_noise_to_signal(std::vector<double> &signal);
 
+}

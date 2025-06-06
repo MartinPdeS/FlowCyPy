@@ -8,6 +8,7 @@ from PyMieSim.units import Quantity
 from FlowCyPy import units
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy.helper import validate_units
+from FlowCyPy.noises import NoiseSetting
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -40,16 +41,16 @@ class Detector():
         (dimensionless). Default is 0 AU.
     responsivity : Quantity, optional
         The responsivity of the detector (in amperes per watt). Default is 1 A/W. Typical
-        ranges include 0.4–0.7 A/W for silicon-based detectors and 0.8–0.9 A/W for InGaAs-based
+        ranges include 0.4-0.7 A/W for silicon-based detectors and 0.8-0.9 A/W for InGaAs-based
         detectors.
     dark_current : Quantity, optional
         The dark current of the detector (in amperes). Default is 0 A. Typical values are in the
-        range of 1–100 nA.
+        range of 1-100 nA.
     gamma_angle : Quantity, optional
         The complementary (longitudinal) angle of incidence, if applicable (in degrees).
         Default is 0°.
     sampling : Quantity, optional
-        The number of spatial sampling points defining the detector’s resolution. Default is 100 AU.
+        The number of spatial sampling points defining the detector's resolution. Default is 100 AU.
 
     Attributes
     ----------
@@ -186,45 +187,35 @@ class Detector():
         """
         return self.cytometer.dataframe.xs(self.name)
 
-    def get_noise_signal(self, sequence_length: int):
+    def _transform_coupling_power_to_current(self, signal_generator: object, bandwidth: Quantity, wavelength: Quantity) -> Quantity:
         """
-        Generates the composite noise signal over a specified sequence length.
-
-        This method computes and aggregates different noise components
-        (e.g., thermal and dark current noise) based on their parameters.
+        Converts the coupling power (in watts) to voltage using the detector's responsivity.
 
         Parameters
         ----------
-        sequence_length : int
-            The number of data points for which to generate the noise signal.
+        coupling_power : Quantity
+            The optical power coupled to the detector (in watts).
 
         Returns
         -------
         Quantity
-            The aggregated noise signal (in volts) as a Quantity array.
+            The resulting voltage signal (in volts).
         """
-        # Generate noise components
-        signal = np.zeros(sequence_length) * units.volt
-        noise_dictionnary = self.get_noise_parameters()
+        # Step 1: Add shot noise to optical power if enabled
+        if NoiseSetting.include_shot_noise or NoiseSetting.include_noises:
+            self.add_shot_noise(signal_generator=signal_generator, wavelength=wavelength, bandwidth=bandwidth)
 
-        for _, parameters in noise_dictionnary.items():
-            if parameters is None:
-                continue
+        # Step 2: Convert optical power to current using the responsivity
+        signal_generator.multiply_signal(
+            signal_name=self.name,
+            factor=self.responsivity.to('ampere/watt').magnitude
+        )
 
-            signal_units = signal.units
-            # Generate noise values for this group
-            noise = np.random.normal(
-                parameters['mean'].to(signal_units).magnitude,
-                parameters['std'].to(signal_units).magnitude,
-                size=len(signal)
-            ) * signal_units
+        # Step 3: Add dark current noise to photo-current if enabled
+        if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
+            self.add_dark_current_noise(signal_generator=signal_generator, bandwidth=bandwidth)
 
-            # Update the 'Signal' column in the original DataFrame using .loc
-            signal += noise
-
-        return signal
-
-    def get_dark_current_noise(self, sequence_length: int, bandwidth: Quantity) -> Quantity:
+    def add_dark_current_noise(self, signal_generator: object, bandwidth: Quantity) -> Quantity:
         r"""
         Compute and return the dark current noise.
 
@@ -243,18 +234,74 @@ class Detector():
         dict
             Dictionary containing noise parameters for 'thermal' and 'dark_current'.
         """
-        mean = self.dark_current
+        mean_noise = self.dark_current
 
-        std = np.sqrt(2 * 1.602176634e-19 * units.coulomb * self.dark_current * bandwidth)
+        std_noise = np.sqrt(2 * 1.602176634e-19 * units.coulomb * self.dark_current * bandwidth)
 
-        return np.random.normal(
-            mean.to('ampere').magnitude,
-            std.to('ampere').magnitude,
-            size=sequence_length
-        ) * units.ampere
+        signal_generator.add_gaussian_noise_to_signal(
+            signal_name=self.name,
+            mean=mean_noise.to('ampere').magnitude,
+            standard_deviation=std_noise.to('ampere').magnitude
+        )
+
+    def _get_optical_power_to_photon_factor(self, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
+        """
+        Computes the conversion factor from optical power to photon count.
+
+        This factor is derived from the energy of a single photon and the optical power.
+
+        Parameters
+        ----------
+        optical_power : Quantity
+            The incident optical power on the detector (in watts).
+        wavelength : Quantity
+            The wavelength of the incident light (in meters).
+
+        Returns
+        -------
+        Quantity
+            The conversion factor from optical power to photon count (in 1/watt).
+        """
+        # Step 1: Compute photon energy
+        energy_photon = PhysicalConstant.h * PhysicalConstant.c / wavelength
+
+        # Step 2: Compute mean photon count per sampling interval
+        sampling_interval = 1 / (bandwidth * 2)  # Sampling interval (s)
+
+        optical_power_to_photo_count_conversion_factor = (sampling_interval / energy_photon).to('1 / watt')  # Conversion factor (1/W)
+        return optical_power_to_photo_count_conversion_factor
+
+    def _get_photon_count_to_current_factor(self, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
+        """
+        Computes the conversion factor from photon count to current.
+
+        This factor is derived from the energy of a single photon and the detector's responsivity.
+
+        Parameters
+        ----------
+        wavelength : Quantity
+            The wavelength of the incident light (in meters).
+        bandwidth : Quantity
+            The bandwidth of the signal (in Hz).
+
+        Returns
+        -------
+        Quantity
+            The conversion factor from photon count to current (in amperes).
+        """
+        # Step 1: Compute photon energy
+        energy_photon = PhysicalConstant.h * PhysicalConstant.c / wavelength
+
+        # Step 2: Convert photon counts to photocurrent
+        photon_to_power_factor =  energy_photon * (bandwidth * 2)
+
+        # Step 3: Convert power to current using the detector's responsivity
+        power_to_current_factor = self.responsivity
+
+        return photon_to_power_factor * power_to_current_factor  # Current (A)
 
     @validate_units(optical_power=units.watt, wavelength=units.meter)
-    def get_shot_noise(self, optical_power: Quantity, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
+    def add_shot_noise(self, signal_generator: object, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
         r"""
         Computes the shot noise photocurrent arising from photon statistics.
 
@@ -299,30 +346,27 @@ class Detector():
         Quantity
             The shot noise voltage distribution (in volts).
         """
-        size = len(optical_power)
-        # Step 1: Compute photon energy
-        energy_photon = PhysicalConstant.h * PhysicalConstant.c / wavelength  # Photon energy (J)
+        optical_power_to_photo_count_conversion_factor = self._get_optical_power_to_photon_factor(
+            wavelength=wavelength,
+            bandwidth=bandwidth
+        )
 
-        # Step 2: Compute mean photon count per sampling interval
-        photon_rate = optical_power / energy_photon  # Photon rate (photons/s)
+        photon_to_current_factor = self._get_photon_count_to_current_factor(
+            wavelength=wavelength,
+            bandwidth=bandwidth
+        )
 
-        sampling_interval = 1 / (bandwidth * 2)  # Sampling interval (s)
-        mean_photon_count = photon_rate * sampling_interval  # Mean photons per sample
+        signal_generator.multiply_signal(
+            signal_name=self.name,
+            factor=optical_power_to_photo_count_conversion_factor.to("1 / watt").magnitude
+        )
 
-        # Step 3: Simulate photon arrivals using Poisson statistics
-        mean = mean_photon_count.to('').magnitude
-        if np.max(mean) > 1e6:  # Threshold where Poisson becomes unstable
-            photon_counts_distribution = np.random.normal(mean, np.sqrt(mean), size=size).astype(int)
-        else:
-            photon_counts_distribution = np.random.poisson(mean, size=size)
+        signal_generator.apply_poisson_noise_to_signal(signal_name=self.name)
 
-
-        # Step 4: Convert photon counts to photocurrent
-        photon_power_distribution = photon_counts_distribution * energy_photon * (bandwidth * 2)
-
-        photocurrent_distribution = self.responsivity * photon_power_distribution  # Current (A)
-
-        return photocurrent_distribution
+        signal_generator.multiply_signal(
+            signal_name=self.name,
+            factor=photon_to_current_factor.to("ampere").magnitude
+        )
 
 class PMT():
     def __new__(cls,

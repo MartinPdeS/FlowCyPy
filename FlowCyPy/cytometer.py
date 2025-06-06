@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import numpy as np
 from typing import List, Optional
 import pandas as pd
-import pint_pandas
 
 from FlowCyPy import units
 from FlowCyPy.flow_cell import FlowCell
@@ -14,7 +12,6 @@ from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.circuits import SignalProcessor
 from FlowCyPy.source import BaseBeam
 from FlowCyPy.binary import interface_signal_generator
-from FlowCyPy.noises import NoiseSetting
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 from FlowCyPy.coupling import compute_detected_signal
 
@@ -174,42 +171,6 @@ class FlowCytometer:
 
         scatterer_dataframe['Widths'] = widths
 
-
-    def _initialize_signal(self, run_time: units.second) -> None:
-        """
-        Initializes the raw signal for each detector based on the source and flow cell configuration.
-
-        This method prepares the detectors for signal capture by associating each detector with the
-        light source and generating a time-dependent raw signal placeholder.
-
-        Effects
-        -------
-        Each detector's `raw_signal` attribute is initialized with time-dependent values
-        based on the flow cell's runtime.
-
-        """
-        detector_names = [d.name for d in self.detectors]
-
-        time_series = self.digitizer.get_time_series(
-            run_time=run_time
-        )
-
-        self.sequence_length = len(time_series)
-
-        signal = np.zeros(self.sequence_length)
-
-        time_series = pint_pandas.PintArray(time_series.magnitude, time_series.units)
-
-        df = pd.DataFrame(index=range(self.sequence_length), columns=[*detector_names, 'Time'])
-
-        df['Time'] = time_series
-
-        for detector in detector_names:
-            df[detector] = pint_pandas.PintArray(signal, dtype='volt')
-
-        return df
-
-
     @validate_units(run_time=units.second)
     def prepare_acquisition(self, run_time: units.second, compute_cross_section: bool = False) -> pd.DataFrame:
         """
@@ -232,6 +193,37 @@ class FlowCytometer:
         self._generate_pulse_parameters(self.scatterer_dataframe)
 
         return self.scatterer_dataframe
+
+
+    def _create_signal_generator(self, run_time: units.second) -> interface_signal_generator.SignalGenerator:
+        """
+        Creates a signal generator for the flow cytometer.
+
+        This method initializes a signal generator with the specified run time and prepares it
+        to generate signals based on the flow cytometer's configuration.
+
+        Parameters
+        ----------
+        run_time : pint.Quantity
+            The duration of the acquisition in seconds.
+
+        Returns
+        -------
+        SignalGenerator
+            An instance of `SignalGenerator` configured for the flow cytometer.
+        """
+        time_series = self.digitizer.get_time_series(
+            run_time=run_time
+        )
+
+        signal_generator = interface_signal_generator.SignalGenerator(n_elements=len(time_series))
+
+        signal_generator.add_signal("Time", time_series.to('second').magnitude)
+
+        for detector in self.detectors:
+            signal_generator.create_zero_signal(signal_name=detector.name)
+
+        return signal_generator
 
 
     @validate_units(run_time=units.second)
@@ -264,42 +256,66 @@ class FlowCytometer:
         ValueError
             If the scatterer collection lacks required data columns ('Widths', 'Time').
         """
-        signal_dataframe = self._initialize_signal(run_time=self.run_time)
-
-        self.signal_generator = interface_signal_generator.SignalGenerator(n_elements=self.sequence_length)
-
-        self.signal_generator.add_signal("Time", signal_dataframe['Time'].pint.to('second').values.quantity.magnitude)
+        signal_generator = self._create_signal_generator(run_time=self.run_time)
 
         for detector in self.detectors:
-            self.signal_generator.create_zero_signal(signal_name=detector.name)
-
             if self.scatterer_dataframe.empty:
-                self.signal_generator.add_constant(constant=self.background_power.to('watt').magnitude)
+                signal_generator.add_constant(constant=self.background_power.to('watt').magnitude)
 
             else:
-                self.signal_generator.generate_pulses(
+                signal_generator.generate_pulses_signal(
+                    signal_name=detector.name,
                     widths=self.scatterer_dataframe['Widths'].pint.to('second').values.quantity.magnitude,
                     centers=self.scatterer_dataframe['Time'].pint.to('second').values.quantity.magnitude,
                     coupling_power=self.scatterer_dataframe[detector.name].pint.to('watt').values.quantity.magnitude,
                     background_power=self.background_power.to('watt').magnitude
                 )
 
-            coupling_power = self.signal_generator.get_signal(detector.name) * units.watt
+            # Till here the pulses are in optical power units (watt)
+            detector._transform_coupling_power_to_current(
+                signal_generator=signal_generator,
+                wavelength=self.source.wavelength,
+                bandwidth=self.digitizer.bandwidth
+            )
 
-            if not NoiseSetting.include_shot_noise or not NoiseSetting.include_noises:
-                photocurrent = (coupling_power * detector.responsivity)
-            else:
-                photocurrent = detector.get_shot_noise(optical_power=coupling_power, wavelength=self.source.wavelength, bandwidth=self.digitizer.bandwidth)
+            # Now the pulses are in current units (ampere)
+            self.transimpedance_amplifier.amplify(
+                detector_name=detector.name,
+                signal_generator=signal_generator,
+                sampling_rate=self.digitizer.sampling_rate
+            )
 
-            if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
-                photocurrent += detector.get_dark_current_noise(sequence_length=self.sequence_length, bandwidth=self.digitizer.bandwidth)
+        # Now the pulses are in voltage units (volt)
+        for circuit in processing_steps:
+            circuit.process(
+                signal_generator=signal_generator,
+                sampling_rate=self.digitizer.sampling_rate
+            )
 
-            signal = self.transimpedance_amplifier.amplify(signal=photocurrent, dt=1 / self.digitizer.sampling_rate).to('volt')
+        return self._make_dataframe_out_of_signal_generator(signal_generator=signal_generator)
 
-            for circuit in processing_steps:
-                circuit.process(signal_generator=self.signal_generator, sampling_rate=self.digitizer.sampling_rate)
+    def _make_dataframe_out_of_signal_generator(self, signal_generator: interface_signal_generator.SignalGenerator) -> AcquisitionDataFrame:
+        """
+        Converts a signal generator's output into a pandas DataFrame.
 
-            signal_dataframe[detector.name] = pd.Series(signal, dtype="pint[volt]")
+        Parameters
+        ----------
+        signal_generator : interface_signal_generator.SignalGenerator
+            The signal generator instance containing the generated signals.
+
+        Returns
+        -------
+        AcquisitionDataFrame
+            A DataFrame containing the signals from the signal generator.
+        """
+        df = pd.DataFrame()
+
+        signal_dataframe = df
+
+        signal_dataframe["Time"] = pd.Series(signal_generator.get_signal("Time"), dtype="pint[second]")
+
+        for detector in self.detectors:
+            signal_dataframe[detector.name] = pd.Series(signal_generator.get_signal(detector.name), dtype="pint[volt]")
 
         signal_dataframe = AcquisitionDataFrame(
             signal_dataframe,
@@ -310,14 +326,6 @@ class FlowCytometer:
         signal_dataframe.normalize_units(signal_units='SI', time_units='SI')
 
         return signal_dataframe
-
-    def run_processing(self, *processing_steps) -> None:
-        signal = self.signal.copy()
-        for step in processing_steps:
-            step.apply(signal, sampling_rate=self.digitizer.sampling_rate)  # Apply processing in-place
-
-        return signal
-
 
     def get_detector_by_name(self, name: str) -> Detector:
         """

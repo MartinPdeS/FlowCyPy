@@ -8,31 +8,33 @@
 #include <complex>
 #include <algorithm>
 #include <map>
+#include "../utils/utils.h"
 
 class SignalGenerator {
 public:
     std::map<std::string, std::vector<double>> data_dict;
-    SignalGenerator(const size_t n_elements) : n_elements(n_elements) {}
-
     size_t n_elements;
 
-    void create_zero_signal(const std::string &signal_name) {
+    SignalGenerator(const size_t n_elements) : n_elements(n_elements) {}
 
-        if (data_dict.find(signal_name) != data_dict.end())
-            throw std::runtime_error("Signal with this name already exists.");
+    /**
+     * @brief Creates a zero signal with the specified name.
+     * This function initializes a signal with the given name and fills it with zeros.
+     * If a signal with the same name already exists, it throws an error.
+     * @param signal_name The name of the signal to create.
+     * @throws std::runtime_error If a signal with the specified name already exists.
+     */
+    void create_zero_signal(const std::string &signal_name);
 
-        this->data_dict[signal_name] = std::vector<double>(this->n_elements, 0.0);
-    }
-
-    void add_signal(const std::string &signal_name, const std::vector<double> &signal_data) {
-        if (data_dict.find(signal_name) != data_dict.end())
-            throw std::runtime_error("Signal with this name already exists.");
-
-        if (signal_data.size() != this->n_elements)
-            throw std::runtime_error("Signal data size does not match the number of elements.");
-
-        this->data_dict[signal_name] = signal_data;
-    }
+    /**
+     * @brief Adds a signal with the specified name and data to the data dictionary.
+     * This function checks if a signal with the same name already exists and throws an error if it does.
+     * It also checks if the size of the provided signal data matches the number of elements.
+     * @param signal_name The name of the signal to add.
+     * @param signal_data The data for the signal to be added.
+     * @throws std::runtime_error If a signal with the specified name already exists or if the size of the signal data does not match the number of elements.
+     */
+    void add_signal(const std::string &signal_name, const std::vector<double> &signal_data);
 
     /**
      * @brief Applies baseline restoration to a signal using a rolling window minimum.
@@ -49,7 +51,6 @@ public:
      * @throws std::runtime_error If the signal with the specified name does not exist.
      * @param window_size The number of previous samples to consider for the minimum. If set to -1, the window is treated as infinite (using all samples from index 0 to \(i-1\)).
      */
-    void apply_baseline_restoration_to_signal(const std::string &signal_name, const int window_size);
     void apply_baseline_restoration(const int window_size);
 
     /**
@@ -66,8 +67,8 @@ public:
      * @throws std::runtime_error If the signal with the specified name does not exist.
      * @throws std::runtime_error If the signal vector is empty.
      */
-    void apply_butterworth_lowpass_filter_to_signal(const std::string &signal_name, const double sampling_rate, const double cutoff_frequency, const int order, const double gain);
     void apply_butterworth_lowpass_filter(const double sampling_rate, const double cutoff_frequency, const int order, const double gain);
+    void apply_butterworth_lowpass_filter_to_signal(const std::string &signal_name, const double sampling_rate, const double cutoff_frequency, const int order, const double gain);
 
     /**
      * @brief Generates a composite signal with Gaussian pulses on a constant background.
@@ -89,8 +90,8 @@ public:
      * @throws std::runtime_error If the signal with the specified name does not exist.
      * @throws std::runtime_error If the sizes of widths, centers, and coupling_power vectors do not match.
      */
-    void generate_pulses_signal(const std::string &signal_name, const std::vector<double> &widths, const std::vector<double> &centers, const std::vector<double> &coupling_power, const double background_power);
     void generate_pulses(const std::vector<double> &widths, const std::vector<double> &centers, const std::vector<double> &coupling_power, const double background_power);
+    void generate_pulses_signal(const std::string &signal_name, const std::vector<double> &widths, const std::vector<double> &centers, const std::vector<double> &coupling_power, const double background_power);
 
     /**
      *  @brief Adds Gaussian noise to a signal.
@@ -105,8 +106,8 @@ public:
      *  @note If the signal vector is empty, it will throw an error.
      *  @note This function modifies the signal in place.
     */
-    void add_gaussian_noise_to_signal(const std::string &signal_name, const double mean, const double standard_deviation);
     void add_gaussian_noise(const double mean, const double standard_deviation);
+    void add_gaussian_noise_to_signal(std::string &signal_name, const double mean, const double standard_deviation);
 
     /**
      * @brief Applies a Bessel low-pass filter to a signal.
@@ -129,7 +130,6 @@ public:
      * @throws std::runtime_error If the signal with the specified name does not exist.
      * @throws std::runtime_error If the signal vector is empty.
      */
-    void apply_bessel_lowpass_filter_to_signal(const std::string &signal_name, const double sampling_rate, const double cutoff_frequency, const int order, const double gain);
     void apply_bessel_lowpass_filter(const double sampling_rate, const double cutoff_frequency, const int order, const double gain);
 
 
@@ -145,30 +145,69 @@ public:
      * @note This function modifies the signal in place.
      * @note The signal must contain non-negative values, as Poisson noise is defined for non-negative integers.
      */
-    void add_poisson_noise_to_signal(const std::string &signal_name);
-    void add_poisson_noise();
+    void apply_poisson_noise_to_signal(const std::string &signal_name);
+    void apply_poisson_noise();
+private:
+    void _apply_poisson_noise_to_signal(const std::string &signal_name);
+    void _apply_poisson_noise_as_gaussian_to_signal(const std::string &signal_name);
 
-    std::vector<double> &get_signal(const std::string &signal_name) {
-        if (data_dict.find(signal_name) == data_dict.end())
-            throw std::runtime_error("Signal with this name does not exist.");
+public:
+    /**
+     * @brief Retrieves a signal by its name.
+     * This function returns a reference to the signal vector associated with the given signal name.
+     * If the signal does not exist, it throws an error.
+     * @param signal_name The name of the signal to retrieve.
+     * @return A reference to the signal vector.
+     * @throws std::runtime_error If the signal with the specified name does not exist.
+     */
+    std::vector<double> &get_signal(const std::string &signal_name);
 
-        return data_dict[signal_name];
-    }
+    /**
+     * @brief Retrieves a signal by its name.
+     * This function returns a constant reference to the signal vector associated with the given signal name.
+     * If the signal does not exist, it throws an error.
+     * @param signal_name The name of the signal to retrieve.
+     * @return A constant reference to the signal vector.
+     * @throws std::runtime_error If the signal with the specified name does not exist.
+     */
+    void add_constant_to_signal(const std::string &signal_name, const double constant);
 
-    void add_constant_to_signal(const std::string &signal_name, const double constant) {
-        if (data_dict.find(signal_name) == data_dict.end())
-            throw std::runtime_error("Signal with this name does not exist.");
+    /**
+     * @brief Adds a constant value to all elements of a specified signal.
+     * This function adds a constant value to each element of the specified signal in the data dictionary.
+     * @param signal_name The name of the signal to which the constant will be added.
+     * @param constant The constant value to add to the signal.
+     * @throws std::runtime_error If the signal with the specified name does not exist.
+     */
+    void add_constant(const double constant);
 
-        for (auto &value : data_dict[signal_name])
-            value += constant;
+    /**
+     * @brief Multiplies a specified signal by a constant factor.
+     * This function multiplies each element of the specified signal by the given factor.
+     * @param signal_name The name of the signal to multiply.
+     * @param factor The constant factor to multiply the signal by.
+     * @throws std::runtime_error If the signal with the specified name does not exist.
+     */
+    void multiply_signal(const std::string &signal_name, const double factor);
 
-    }
+    /**
+     * @brief Multiplies all signals by a constant factor.
+     * This function multiplies each signal in the data dictionary (except the "Time" signal) by the given factor.
+     * @param factor The constant factor to multiply all signals by.
+     */
+    void multiply(const double factor);
 
-    void add_constant(const double constant) {
-        for (auto &entry : data_dict) {
-            if (entry.first == "Time")  // Skip the time signal
-                continue;
-            this->add_constant_to_signal(entry.first, constant);
-        }
-    }
+    /**
+     * @brief Rounds the values of a specified signal to the nearest integer.
+     * This function rounds each value in the specified signal to the nearest integer.
+     * @param signal_name The name of the signal to round.
+     * @throws std::runtime_error If the signal with the specified name does not exist.
+     */
+    void round_signal(const std::string &signal_name);
+
+    /**
+     * @brief Rounds the values of all signals to the nearest integer.
+     * This function rounds each signal in the data dictionary (except the "Time" signal) to the nearest integer.
+     */
+    void round();
 };

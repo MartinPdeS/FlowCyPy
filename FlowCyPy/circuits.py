@@ -1,28 +1,16 @@
-from abc import ABC, abstractmethod
-import numpy as np
-from FlowCyPy.binary import interface_utils
 from FlowCyPy.helper import validate_units
 from FlowCyPy import units
 from FlowCyPy.binary import interface_circuits
 
 
-class SignalProcessor(ABC):
+
+class SignalProcessor():
     """
     Abstract base class for signal processing operations.
     """
-    @abstractmethod
-    def apply(self, signal: np.ndarray) -> None:
-        """
-        Applies a signal processing transformation **in-place**.
 
-        Parameters
-        ----------
-        signal : np.ndarray
-            The signal to be modified in-place.
-        """
-        pass
 
-class BaselineRestorator(interface_circuits.BaseLineRestoration):
+class BaselineRestorator(interface_circuits.BaseLineRestoration, SignalProcessor):
     """
     Applies a baseline restoration filter by subtracting the minimum value over a given window size.
 
@@ -57,7 +45,7 @@ class BaselineRestorator(interface_circuits.BaseLineRestoration):
         self._cpp_process(signal_generator)
 
 
-class BesselLowPass(SignalProcessor):
+class BesselLowPass(interface_circuits.BesselLowPassFilter, SignalProcessor):
     """
     Applies a Bessel low-pass filter to smooth the signal.
 
@@ -76,7 +64,9 @@ class BesselLowPass(SignalProcessor):
         self.order = order
         self.gain = gain
 
-    def apply(self, signal: units.Quantity, sampling_rate: units.Quantity, **kwargs) -> units.Quantity:
+        super().__init__()
+
+    def process(self, signal_generator: object, sampling_rate: units.Quantity, **kwargs) -> units.Quantity:
         """
         Applies Bessel low-pass filtering in-place.
 
@@ -85,21 +75,17 @@ class BesselLowPass(SignalProcessor):
         signal : np.ndarray
             The signal to be modified in-place.
         """
-        signal_units = signal.units
-        interface_utils.bessel_lowpass_filter(
-            signal=signal.magnitude,
-            sampling_rate=sampling_rate.to('hertz').magnitude,
-            cutoff_frequency=self.cutoff.to('hertz').magnitude,
-            order=self.order,
-            gain=self.gain
-        )
+        self._cpp_sampling_rate = sampling_rate.to('hertz').magnitude
+        self._cpp_cutoff_frequency = self.cutoff.to('hertz').magnitude
+        self._cpp_order = self.order
+        self._cpp_gain = self.gain
 
-        return signal * signal_units
+        self._cpp_process(signal_generator)
 
-class ButterworthlLowPass(SignalProcessor):
+
+class ButterworthlLowPass(interface_circuits.ButterworthLowPassFilter, SignalProcessor):
     """
-    Applies a Bessel low-pass filter to smooth the signal.
-
+    Applies a Butterworth low-pass filter to smooth the signal.
     Parameters
     ----------
     cutoff : float
@@ -115,7 +101,9 @@ class ButterworthlLowPass(SignalProcessor):
         self.order = order
         self.gain = gain
 
-    def apply(self, signal: np.ndarray, sampling_rate: units.Quantity, **kwargs) -> None:
+        super().__init__()
+
+    def process(self, signal_generator: object, sampling_rate: units.Quantity, **kwargs) -> None:
         """
         Applies Bessel low-pass filtering in-place.
 
@@ -124,12 +112,9 @@ class ButterworthlLowPass(SignalProcessor):
         signal : np.ndarray
             The signal to be modified in-place.
         """
-        interface_utils.butterworth_lowpass_filter(
-            signal=signal,
-            sampling_rate=sampling_rate.to('hertz').magnitude,
-            cutoff=self.cutoff.to('hertz').magnitude,
-            order=self.order,
-            gain=self.gain
-        )
+        self._cpp_sampling_rate = sampling_rate.to('hertz').magnitude
+        self._cpp_cutoff_frequency = self.cutoff.to('hertz').magnitude
+        self._cpp_order = self.order
+        self._cpp_gain = self.gain
 
-        return signal
+        self._cpp_process(signal_generator)

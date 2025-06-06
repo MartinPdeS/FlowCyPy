@@ -9,7 +9,7 @@ pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
 
 add_library("cpp_${NAME}" STATIC "signal_generator.cpp")
 target_include_directories("cpp_${NAME}" PUBLIC ${FFTW_INCLUDE_DIRS})
-target_link_libraries("cpp_${NAME}" PRIVATE pybind11::module PkgConfig::FFTW OpenMP::OpenMP_CXX)
+target_link_libraries("cpp_${NAME}" PRIVATE pybind11::module PkgConfig::FFTW OpenMP::OpenMP_CXX cpp_utils)
 
 
 # Create your Python module

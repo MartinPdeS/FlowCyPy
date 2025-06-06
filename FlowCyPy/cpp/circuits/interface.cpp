@@ -27,24 +27,36 @@ PYBIND11_MODULE(interface_circuits, module) {
         })
     ;
 
+
     py::class_<ButterworthLowPassFilter, BaseCircuit>(module, "ButterworthLowPassFilter")
-        .def(py::init<double, double, int, double>(), "Initialize with sampling rate, cutoff frequency, order, and gain")
-        .def_readonly(
+        .def(
+            py::init<>(),
+            "Default constructor for ButterworthLowPassFilter"
+        )
+        .def(
+            py::init<double, double, int, double>(),
+            py::arg("sampling_rate"),
+            py::arg("cutoff_frequency"),
+            py::arg("order"),
+            py::arg("gain"),
+            "Initialize with sampling rate, cutoff frequency, order, and gain"
+        )
+        .def_readwrite(
             "_cpp_sampling_rate",
             &ButterworthLowPassFilter::sampling_rate,
             "Sampling rate for the Butterworth filter"
         )
-        .def_readonly(
+        .def_readwrite(
             "_cpp_cutoff_frequency",
             &ButterworthLowPassFilter::cutoff_frequency,
             "Cutoff frequency for the Butterworth filter"
         )
-        .def_readonly(
+        .def_readwrite(
             "_cpp_order",
             &ButterworthLowPassFilter::order,
             "Order of the Butterworth filter"
         )
-        .def_readonly(
+        .def_readwrite(
             "_cpp_gain",
             &ButterworthLowPassFilter::gain,
             "Gain factor for the Butterworth filter"
@@ -63,23 +75,34 @@ PYBIND11_MODULE(interface_circuits, module) {
     ;
 
     py::class_<BesselLowPassFilter, BaseCircuit>(module, "BesselLowPassFilter")
-        .def(py::init<double, double, int, double>(), "Initialize with sampling rate, cutoff frequency, order, and gain")
-        .def_readonly(
+        .def(
+            py::init<>(),
+            "Default constructor for BesselLowPassFilter"
+        )
+        .def(
+            py::init<double, double, int, double>(),
+            py::arg("sampling_rate"),
+            py::arg("cutoff_frequency"),
+            py::arg("order"),
+            py::arg("gain"),
+            "Initialize with sampling rate, cutoff frequency, order, and gain"
+        )
+        .def_readwrite(
             "_cpp_sampling_rate",
             &BesselLowPassFilter::sampling_rate,
             "Sampling rate for the Bessel filter"
         )
-        .def_readonly(
+        .def_readwrite(
             "_cpp_cutoff_frequency",
             &BesselLowPassFilter::cutoff_frequency,
             "Cutoff frequency for the Bessel filter"
         )
-        .def_readonly(
+        .def_readwrite(
             "_cpp_order",
             &BesselLowPassFilter::order,
             "Order of the Bessel filter"
         )
-        .def_readonly(
+        .def_readwrite(
             "_cpp_gain",
             &BesselLowPassFilter::gain,
             "Gain factor for the Bessel filter"
