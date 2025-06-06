@@ -77,7 +77,7 @@ flow_cell = FlowCell(
     height=100 * units.micrometer,
 )
 
-# flow_cell.plot(n_samples=300)
+flow_cell.plot(n_samples=300)
 
 
 # %%

@@ -32,8 +32,7 @@ public:
 
     ButterworthLowPassFilter() = default;
 
-    ButterworthLowPassFilter(double sampling_rate, double cutoff_frequency, int order, double gain)
-        : sampling_rate(sampling_rate), cutoff_frequency(cutoff_frequency), order(order), gain(gain) {}
+    ButterworthLowPassFilter(double sampling_rate, double cutoff_frequency, int order, double gain);
 
     void process(SignalGenerator &signal_generator) override;
 };
@@ -47,8 +46,7 @@ public:
 
     BesselLowPassFilter() = default;
 
-    BesselLowPassFilter(double sampling_rate, double cutoff_frequency, int order, double gain)
-        : sampling_rate(sampling_rate), cutoff_frequency(cutoff_frequency), order(order), gain(gain) {}
+    BesselLowPassFilter(double sampling_rate, double cutoff_frequency, int order, double gain);
 
     void process(SignalGenerator &signal_generator) override;
 };
