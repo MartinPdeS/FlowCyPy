@@ -38,7 +38,7 @@ NoiseSetting.include_shot_noise = True
 NoiseSetting.include_dark_current_noise = True
 NoiseSetting.include_source_noise = True
 NoiseSetting.include_amplifier_noise = True
-
+NoiseSetting.assume_perfect_hydrodynamic_focusing = True
 
 np.random.seed(3)  # Ensure reproducibility
 
@@ -77,7 +77,7 @@ flow_cell = FlowCell(
     height=100 * units.micrometer,
 )
 
-# flow_cell.plot(n_samples=300)
+flow_cell.plot(n_samples=300)
 
 
 # %%
@@ -175,16 +175,16 @@ cytometer = FlowCytometer(
     digitizer=digitizer,
     detectors=[detector_0, detector_1, detector_2],
     flow_cell=flow_cell,
-    background_power=0.000 * units.milliwatt
+    background_power=0.001 * units.milliwatt
 )
 
 processing_steps = [
-    circuits.BaselineRestorator(window_size=100 * units.microsecond),
-    circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
+    circuits.BaselineRestorator(window_size=10 * units.microsecond),
+    circuits.BesselLowPass(cutoff=2 * units.megahertz, order=4, gain=2)
 ]
 
 # Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
+cytometer.prepare_acquisition(run_time=0.5 * units.millisecond)
 acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 acquisition.normalize_units(time_units='max', signal_units='max')
 
@@ -215,10 +215,11 @@ trigger = TriggeringSystem(
 )
 
 analog_triggered = trigger.run(
-    scheme=Scheme.FIXED,
-    threshold=2 * units.microvolt
+    scheme=Scheme.DYNAMIC,
+    threshold=10 * units.microvolt
 )
 
+analog_triggered.plot()
 
 # %%
 # Getting and plotting the extracted peaks.

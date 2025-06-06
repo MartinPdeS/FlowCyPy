@@ -88,7 +88,7 @@ cytometer = FlowCytometer(
 # Run the flow cytometry simulation
 processing_steps = [
     circuits.BaselineRestorator(window_size=1000 * units.microsecond),
-    circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)
+    # circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)
 ]
 
 cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)

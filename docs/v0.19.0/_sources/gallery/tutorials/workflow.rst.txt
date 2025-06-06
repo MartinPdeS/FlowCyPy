@@ -74,7 +74,7 @@ globally but exclude specific types, such as shot noise and thermal noise.
     NoiseSetting.include_dark_current_noise = True
     NoiseSetting.include_source_noise = True
     NoiseSetting.include_amplifier_noise = True
-
+    NoiseSetting.assume_perfect_hydrodynamic_focusing = True
 
     np.random.seed(3)  # Ensure reproducibility
 
@@ -139,13 +139,24 @@ passing through the cross-sectional area is calculated as:
         height=100 * units.micrometer,
     )
 
-    # flow_cell.plot(n_samples=300)
+    flow_cell.plot(n_samples=300)
 
 
 
 
 
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :alt: Particle Spatial Distribution and Speed
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :class: sphx-glr-single-img
 
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <Axes: title={'center': 'Particle Spatial Distribution and Speed'}, xlabel='X [µm]', ylabel='Y [µm]'>
 
 
 
@@ -191,9 +202,9 @@ given by:
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
    :alt: Distribution of Diameter
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
    :class: sphx-glr-single-img
 
 
@@ -287,16 +298,16 @@ and particles follows Mie theory:
         digitizer=digitizer,
         detectors=[detector_0, detector_1, detector_2],
         flow_cell=flow_cell,
-        background_power=0.000 * units.milliwatt
+        background_power=0.001 * units.milliwatt
     )
 
     processing_steps = [
-        circuits.BaselineRestorator(window_size=100 * units.microsecond),
-        circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
+        circuits.BaselineRestorator(window_size=10 * units.microsecond),
+        circuits.BesselLowPass(cutoff=2 * units.megahertz, order=4, gain=2)
     ]
 
     # Run the flow cytometry simulation
-    cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
+    cytometer.prepare_acquisition(run_time=0.5 * units.millisecond)
     acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
     acquisition.normalize_units(time_units='max', signal_units='max')
 
@@ -309,22 +320,11 @@ and particles follows Mie theory:
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_003.png
    :alt: Scatterer Sampling Distribution
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_003.png
    :class: sphx-glr-single-img
 
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
-      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
-    /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
-      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
-    /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
-      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
 
 
@@ -342,9 +342,9 @@ Visualize the scatter signals from both detectors
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_003.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_004.png
    :alt: workflow
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_003.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_004.png
    :class: sphx-glr-single-img
 
 
@@ -364,7 +364,7 @@ Step 7: Analyze Detected Signals
 The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 206-223
+.. GENERATED FROM PYTHON SOURCE LINES 206-224
 
 .. code-block:: Python
 
@@ -380,23 +380,35 @@ window size and threshold.
     )
 
     analog_triggered = trigger.run(
-        scheme=Scheme.FIXED,
-        threshold=2 * units.microvolt
+        scheme=Scheme.DYNAMIC,
+        threshold=10 * units.microvolt
     )
 
+    analog_triggered.plot()
 
 
 
 
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
+   :alt: workflow
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_005.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <Figure size 1200x500 with 4 Axes>
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 224-225
+.. GENERATED FROM PYTHON SOURCE LINES 225-226
 
 Getting and plotting the extracted peaks.
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-237
+.. GENERATED FROM PYTHON SOURCE LINES 226-238
 
 .. code-block:: Python
 
@@ -415,9 +427,9 @@ Getting and plotting the extracted peaks.
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_004.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_006.png
    :alt: Peaks properties
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_004.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_006.png
    :class: sphx-glr-single-img
 
 
@@ -426,15 +438,15 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7ff620a97450>
+    <seaborn.axisgrid.JointGrid object at 0x7fcd48814f50>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 238-239
+.. GENERATED FROM PYTHON SOURCE LINES 239-240
 
 Step 8: Classifying the collected dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 239-252
+.. GENERATED FROM PYTHON SOURCE LINES 240-253
 
 .. code-block:: Python
 
@@ -454,9 +466,9 @@ Step 8: Classifying the collected dataset
     )
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_007.png
    :alt: Event classification
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_005.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_007.png
    :class: sphx-glr-single-img
 
 
@@ -466,7 +478,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.339 seconds)
+   **Total running time of the script:** (0 minutes 10.963 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

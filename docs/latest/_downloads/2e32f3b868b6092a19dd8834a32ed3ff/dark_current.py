@@ -11,7 +11,7 @@ along with their distributions.
 import matplotlib.pyplot as plt
 from FlowCyPy.detector import Detector
 from FlowCyPy import units
-from FlowCyPy import TransimpedanceAmplifier
+from FlowCyPy.binary.interface_signal_generator import SignalGenerator
 import numpy
 from FlowCyPy import NoiseSetting
 
@@ -28,17 +28,28 @@ fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
 
 # Loop over the dark current levels
 for dark_current in dark_currents:
+    detector_name = f"{dark_current.magnitude:.1e} A"
+
+    signal_generator = SignalGenerator(n_elements=200)
+
+    signal_generator.create_zero_signal(detector_name)
+
     # Initialize the detector
     detector = Detector(
-        name=f"{dark_current.magnitude:.1e} A",
+        name=detector_name,
         responsivity=1 * units.ampere / units.watt,  # Responsitivity (current per power)
-        numerical_aperture=0.2 * units.AU,      # Numerical aperture
-        phi_angle=0 * units.degree,             # Detector orientation angle
-        dark_current=dark_current         # Dark current level
+        numerical_aperture=0.2 * units.AU,           # Numerical aperture
+        phi_angle=0 * units.degree,                  # Detector orientation angle
+        dark_current=dark_current                    # Dark current level
     )
 
     # Add dark current noise to the raw signal
-    noise_current = detector.get_dark_current_noise(sequence_length=200, bandwidth=10 * units.megahertz).to(units.ampere)
+    detector.add_dark_current_noise(
+        signal_generator=signal_generator,
+        bandwidth=10 * units.megahertz
+    )
+
+    noise_current = signal_generator.get_signal(detector_name)
 
     # Plot the raw signal on the first axis
     ax_signal.step(x=numpy.arange(200), y=noise_current)

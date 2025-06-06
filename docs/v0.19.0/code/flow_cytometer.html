@@ -549,7 +549,7 @@ particle event and noise modeling for accurate signal representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>flow_cell</strong> (<em>FlowCell</em>) – The flow cell object representing the fluidic and optical environment through which particles travel.</p></li>
+<li><p><strong>flow_cell</strong> (<a class="reference internal" href="flow_cell.html#FlowCyPy.flow_cell.FlowCell" title="FlowCyPy.flow_cell.FlowCell"><em>FlowCell</em></a>) – The flow cell object representing the fluidic and optical environment through which particles travel.</p></li>
 <li><p><strong>detectors</strong> (<em>List</em><em>[</em><a class="reference internal" href="detector.html#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><em>Detector</em></a><em>]</em>) – A list of <cite>Detector</cite> objects representing the detectors used to measure optical signals (e.g., FSC and SSC). Exactly two detectors must be provided.</p></li>
 <li><p><strong>background_power</strong> (<em>units.watt</em><em>, </em><em>optional</em>) – The background optical power added to the detector signal. Defaults to 0 milliwatts.</p></li>
 <li><p><strong>source</strong> (<em>BaseBeam</em>)</p></li>
@@ -565,7 +565,7 @@ particle event and noise modeling for accurate signal representation.</p>
 <dd><p>The flow cell instance representing the system environment.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>FlowCell</p>
+<dd class="field-odd"><p><a class="reference internal" href="flow_cell.html#FlowCyPy.flow_cell.FlowCell" title="FlowCyPy.flow_cell.FlowCell">FlowCell</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -622,7 +622,7 @@ particle event and noise modeling for accurate signal representation.</p>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>source</strong> (<em>BaseBeam</em>)</p></li>
 <li><p><strong>scatterer_collection</strong> (<em>object</em>)</p></li>
-<li><p><strong>flow_cell</strong> (<em>FlowCell</em>)</p></li>
+<li><p><strong>flow_cell</strong> (<a class="reference internal" href="flow_cell.html#FlowCyPy.flow_cell.FlowCell" title="FlowCyPy.flow_cell.FlowCell"><em>FlowCell</em></a>)</p></li>
 <li><p><strong>digitizer</strong> (<em>SignalDigitizer</em>)</p></li>
 <li><p><strong>detectors</strong> (<em>List</em><em>[</em><a class="reference internal" href="detector.html#FlowCyPy.detector.Detector" title="FlowCyPy.detector.Detector"><em>Detector</em></a><em>]</em>)</p></li>
 <li><p><strong>transimpedance_amplifier</strong> (<em>TransimpedanceAmplifier</em>)</p></li>
@@ -693,16 +693,6 @@ to each detector’s raw signal.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.run_processing">
-<span class="sig-name descname"><span class="pre">run_processing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">processing_steps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.run_processing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.run_processing" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -738,7 +728,6 @@ to each detector’s raw signal.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.get_acquisition"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.get_acquisition()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.get_detector_by_name"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.get_detector_by_name()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.prepare_acquisition"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.prepare_acquisition()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.run_processing"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.run_processing()</span></code></a></li>
 </ul>
 </li>
 </ul>

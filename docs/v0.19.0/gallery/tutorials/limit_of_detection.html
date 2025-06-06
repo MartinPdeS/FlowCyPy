@@ -562,7 +562,7 @@ to download the full example code.</p>
 /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
 
-&lt;seaborn.axisgrid.JointGrid object at 0x7ff620afe9d0&gt;
+&lt;seaborn.axisgrid.JointGrid object at 0x7fcd48177210&gt;
 </pre></div>
 </div>
 <div class="line-block">
@@ -653,7 +653,7 @@ to download the full example code.</p>
 <span class="c1"># Run the flow cytometry simulation</span>
 <span class="n">processing_steps</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">1000</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microsecond</span><span class="p">),</span>
-    <span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="c1"># circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)</span>
 <span class="p">]</span>
 
 <span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
@@ -692,7 +692,7 @@ to download the full example code.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.626 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.429 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-limit-of-detection-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc141053ca87c293e1689882fb19bce1/limit_of_detection.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">limit_of_detection.ipynb</span></code></a></p>

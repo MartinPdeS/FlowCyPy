@@ -2,7 +2,7 @@
 FlowCell Class
 --------------
 
-.. autoclass:: FlowCyPy.FlowCell
+.. autoclass:: FlowCyPy.flow_cell.FlowCell
    :members:
    :show-inheritance:
    :exclude-members: flow_speed, flow_area, run_time

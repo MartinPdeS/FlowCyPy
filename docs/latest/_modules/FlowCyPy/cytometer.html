@@ -507,10 +507,8 @@ document.write(`
   <h1>Source code for FlowCyPy.cytometer</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pint_pandas</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.flow_cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCell</span>
@@ -520,8 +518,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.acquisition</span><span class="w"> </span><span class="kn">import</span> <span class="n">AcquisitionDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.circuits</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalProcessor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseBeam</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary</span><span class="w"> </span><span class="kn">import</span> <span class="n">interface_signal_generator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.noises</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoiseSetting</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary.interface_signal_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.amplifier</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransimpedanceAmplifier</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.coupling</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_detected_signal</span>
 
@@ -683,42 +680,6 @@ document.write(`
 
         <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s1">&#39;Widths&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">widths</span>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes the raw signal for each detector based on the source and flow cell configuration.</span>
-
-<span class="sd">        This method prepares the detectors for signal capture by associating each detector with the</span>
-<span class="sd">        light source and generating a time-dependent raw signal placeholder.</span>
-
-<span class="sd">        Effects</span>
-<span class="sd">        -------</span>
-<span class="sd">        Each detector&#39;s `raw_signal` attribute is initialized with time-dependent values</span>
-<span class="sd">        based on the flow cell&#39;s runtime.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">detector_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">]</span>
-
-        <span class="n">time_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">get_time_series</span><span class="p">(</span>
-            <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span>
-        <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">sequence_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_series</span><span class="p">)</span>
-
-        <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_length</span><span class="p">)</span>
-
-        <span class="n">time_series</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">time_series</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">time_series</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
-
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_length</span><span class="p">),</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="n">detector_names</span><span class="p">,</span> <span class="s1">&#39;Time&#39;</span><span class="p">])</span>
-
-        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_series</span>
-
-        <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="n">detector_names</span><span class="p">:</span>
-            <span class="n">df</span><span class="p">[</span><span class="n">detector</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;volt&#39;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">df</span>
-
-
 <div class="viewcode-block" id="FlowCytometer.prepare_acquisition">
 <a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.prepare_acquisition">[docs]</a>
     <span class="nd">@validate_units</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
@@ -744,6 +705,37 @@ document.write(`
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span></div>
 
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_signal_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SignalGenerator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a signal generator for the flow cytometer.</span>
+
+<span class="sd">        This method initializes a signal generator with the specified run time and prepares it</span>
+<span class="sd">        to generate signals based on the flow cytometer&#39;s configuration.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        run_time : pint.Quantity</span>
+<span class="sd">            The duration of the acquisition in seconds.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SignalGenerator</span>
+<span class="sd">            An instance of `SignalGenerator` configured for the flow cytometer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">get_time_series</span><span class="p">(</span>
+            <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span>
+        <span class="p">)</span>
+
+        <span class="n">signal_generator</span> <span class="o">=</span> <span class="n">SignalGenerator</span><span class="p">(</span><span class="n">n_elements</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">time_series</span><span class="p">))</span>
+
+        <span class="n">signal_generator</span><span class="o">.</span><span class="n">add_signal</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="n">time_series</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
+            <span class="n">signal_generator</span><span class="o">.</span><span class="n">create_zero_signal</span><span class="p">(</span><span class="n">signal_name</span><span class="o">=</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">signal_generator</span>
 
 
 <div class="viewcode-block" id="FlowCytometer.get_acquisition">
@@ -778,45 +770,67 @@ document.write(`
 <span class="sd">        ValueError</span>
 <span class="sd">            If the scatterer collection lacks required data columns (&#39;Widths&#39;, &#39;Time&#39;).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">signal_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_signal</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_time</span><span class="p">)</span>
+        <span class="n">signal_generator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_signal_generator</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_time</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">signal_dataframe</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">column</span> <span class="o">==</span> <span class="s1">&#39;Time&#39;</span><span class="p">:</span>
-                <span class="k">continue</span>
-
-            <span class="n">detector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_detector_by_name</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
-
-            <span class="n">coupling_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
-
+        <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-                <span class="n">coupling_power</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">background_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;watt&#39;</span><span class="p">)</span>
+                <span class="n">signal_generator</span><span class="o">.</span><span class="n">add_constant</span><span class="p">(</span><span class="n">constant</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">background_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;watt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
+
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">interface_signal_generator</span><span class="o">.</span><span class="n">generate_pulses</span><span class="p">(</span>
-                    <span class="n">signal</span><span class="o">=</span><span class="n">coupling_power</span><span class="p">,</span>
+                <span class="n">signal_generator</span><span class="o">.</span><span class="n">generate_pulses_signal</span><span class="p">(</span>
+                    <span class="n">signal_name</span><span class="o">=</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                     <span class="n">widths</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s1">&#39;Widths&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
                     <span class="n">centers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-                    <span class="n">coupling_power</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;watt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-                    <span class="n">time</span><span class="o">=</span><span class="n">signal_dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+                    <span class="n">coupling_power</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scatterer_dataframe</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;watt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
                     <span class="n">background_power</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">background_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;watt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
                 <span class="p">)</span>
 
-                <span class="n">coupling_power</span> <span class="o">=</span> <span class="n">coupling_power</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span>
+            <span class="c1"># Till here the pulses are in optical power units (watt)</span>
+            <span class="n">detector</span><span class="o">.</span><span class="n">_transform_coupling_power_to_current</span><span class="p">(</span>
+                <span class="n">signal_generator</span><span class="o">=</span><span class="n">signal_generator</span><span class="p">,</span>
+                <span class="n">wavelength</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">wavelength</span><span class="p">,</span>
+                <span class="n">bandwidth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">bandwidth</span>
+            <span class="p">)</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
-                <span class="n">photocurrent</span> <span class="o">=</span> <span class="p">(</span><span class="n">coupling_power</span> <span class="o">*</span> <span class="n">detector</span><span class="o">.</span><span class="n">responsivity</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">photocurrent</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">get_shot_noise</span><span class="p">(</span><span class="n">optical_power</span><span class="o">=</span><span class="n">coupling_power</span><span class="p">,</span> <span class="n">wavelength</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">wavelength</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">)</span>
+            <span class="c1"># Now the pulses are in current units (ampere)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transimpedance_amplifier</span><span class="o">.</span><span class="n">amplify</span><span class="p">(</span>
+                <span class="n">detector_name</span><span class="o">=</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">signal_generator</span><span class="o">=</span><span class="n">signal_generator</span><span class="p">,</span>
+                <span class="n">sampling_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">sampling_rate</span>
+            <span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_dark_current_noise</span> <span class="ow">and</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
-                <span class="n">photocurrent</span> <span class="o">+=</span> <span class="n">detector</span><span class="o">.</span><span class="n">get_dark_current_noise</span><span class="p">(</span><span class="n">sequence_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sequence_length</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">)</span>
+        <span class="c1"># Now the pulses are in voltage units (volt)</span>
+        <span class="k">for</span> <span class="n">circuit</span> <span class="ow">in</span> <span class="n">processing_steps</span><span class="p">:</span>
+            <span class="n">circuit</span><span class="o">.</span><span class="n">process</span><span class="p">(</span>
+                <span class="n">signal_generator</span><span class="o">=</span><span class="n">signal_generator</span><span class="p">,</span>
+                <span class="n">sampling_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">sampling_rate</span>
+            <span class="p">)</span>
 
-            <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transimpedance_amplifier</span><span class="o">.</span><span class="n">amplify</span><span class="p">(</span><span class="n">signal</span><span class="o">=</span><span class="n">photocurrent</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;volt&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataframe_out_of_signal_generator</span><span class="p">(</span><span class="n">signal_generator</span><span class="o">=</span><span class="n">signal_generator</span><span class="p">)</span></div>
 
-            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">processing_steps</span><span class="p">:</span>
-                <span class="n">step</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">)</span>  <span class="c1"># Apply processing in-place</span>
 
-            <span class="n">signal_dataframe</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;pint[volt]&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_dataframe_out_of_signal_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_generator</span><span class="p">:</span> <span class="n">SignalGenerator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AcquisitionDataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts a signal generator&#39;s output into a pandas DataFrame.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        signal_generator : SignalGenerator</span>
+<span class="sd">            The signal generator instance containing the generated signals.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        AcquisitionDataFrame</span>
+<span class="sd">            A DataFrame containing the signals from the signal generator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+        <span class="n">signal_dataframe</span> <span class="o">=</span> <span class="n">df</span>
+
+        <span class="n">signal_dataframe</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">signal_generator</span><span class="o">.</span><span class="n">get_signal</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;pint[second]&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
+            <span class="n">signal_dataframe</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">signal_generator</span><span class="o">.</span><span class="n">get_signal</span><span class="p">(</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;pint[volt]&quot;</span><span class="p">)</span>
 
         <span class="n">signal_dataframe</span> <span class="o">=</span> <span class="n">AcquisitionDataFrame</span><span class="p">(</span>
             <span class="n">signal_dataframe</span><span class="p">,</span>
@@ -826,19 +840,7 @@ document.write(`
 
         <span class="n">signal_dataframe</span><span class="o">.</span><span class="n">normalize_units</span><span class="p">(</span><span class="n">signal_units</span><span class="o">=</span><span class="s1">&#39;SI&#39;</span><span class="p">,</span> <span class="n">time_units</span><span class="o">=</span><span class="s1">&#39;SI&#39;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">signal_dataframe</span></div>
-
-
-<div class="viewcode-block" id="FlowCytometer.run_processing">
-<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.run_processing">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">run_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">processing_steps</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">processing_steps</span><span class="p">:</span>
-            <span class="n">step</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">)</span>  <span class="c1"># Apply processing in-place</span>
-
-        <span class="k">return</span> <span class="n">signal</span></div>
-
-
+        <span class="k">return</span> <span class="n">signal_dataframe</span>
 
 <div class="viewcode-block" id="FlowCytometer.get_detector_by_name">
 <a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.get_detector_by_name">[docs]</a>

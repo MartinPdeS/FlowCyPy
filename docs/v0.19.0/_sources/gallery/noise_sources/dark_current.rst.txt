@@ -25,7 +25,7 @@ This example illustrates the impact of varying dark current levels on a flow cyt
 The detector is initialized, dark current noise is applied, and the resulting signals are visualized
 along with their distributions.
 
-.. GENERATED FROM PYTHON SOURCE LINES 10-62
+.. GENERATED FROM PYTHON SOURCE LINES 10-73
 
 
 
@@ -39,7 +39,7 @@ along with their distributions.
 
  .. code-block:: none
 
-    /home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/dark_current.py:52: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+    /home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/dark_current.py:63: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
       ax_signal.legend()
 
 
@@ -55,7 +55,7 @@ along with their distributions.
     import matplotlib.pyplot as plt
     from FlowCyPy.detector import Detector
     from FlowCyPy import units
-    from FlowCyPy import TransimpedanceAmplifier
+    from FlowCyPy.binary.interface_signal_generator import SignalGenerator
     import numpy
     from FlowCyPy import NoiseSetting
 
@@ -72,17 +72,28 @@ along with their distributions.
 
     # Loop over the dark current levels
     for dark_current in dark_currents:
+        detector_name = f"{dark_current.magnitude:.1e} A"
+
+        signal_generator = SignalGenerator(n_elements=200)
+
+        signal_generator.create_zero_signal(detector_name)
+
         # Initialize the detector
         detector = Detector(
-            name=f"{dark_current.magnitude:.1e} A",
+            name=detector_name,
             responsivity=1 * units.ampere / units.watt,  # Responsitivity (current per power)
-            numerical_aperture=0.2 * units.AU,      # Numerical aperture
-            phi_angle=0 * units.degree,             # Detector orientation angle
-            dark_current=dark_current         # Dark current level
+            numerical_aperture=0.2 * units.AU,           # Numerical aperture
+            phi_angle=0 * units.degree,                  # Detector orientation angle
+            dark_current=dark_current                    # Dark current level
         )
 
         # Add dark current noise to the raw signal
-        noise_current = detector.get_dark_current_noise(sequence_length=200, bandwidth=10 * units.megahertz).to(units.ampere)
+        detector.add_dark_current_noise(
+            signal_generator=signal_generator,
+            bandwidth=10 * units.megahertz
+        )
+
+        noise_current = signal_generator.get_signal(detector_name)
 
         # Plot the raw signal on the first axis
         ax_signal.step(x=numpy.arange(200), y=noise_current)
@@ -107,7 +118,7 @@ along with their distributions.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.563 seconds)
+   **Total running time of the script:** (0 minutes 0.552 seconds)
 
 
 .. _sphx_glr_download_gallery_noise_sources_dark_current.py:
