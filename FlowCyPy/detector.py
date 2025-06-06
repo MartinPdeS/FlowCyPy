@@ -3,7 +3,7 @@ import pandas as pd
 from typing import Optional
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-
+from FlowCyPy.binary.interface_signal_generator import SignalGenerator
 from PyMieSim.units import Quantity
 from FlowCyPy import units
 from FlowCyPy.physical_constant import PhysicalConstant
@@ -187,14 +187,18 @@ class Detector():
         """
         return self.cytometer.dataframe.xs(self.name)
 
-    def _transform_coupling_power_to_current(self, signal_generator: object, bandwidth: Quantity, wavelength: Quantity) -> Quantity:
+    def _transform_coupling_power_to_current(self, signal_generator: SignalGenerator, bandwidth: Quantity, wavelength: Quantity) -> Quantity:
         """
         Converts the coupling power (in watts) to voltage using the detector's responsivity.
 
         Parameters
         ----------
-        coupling_power : Quantity
-            The optical power coupled to the detector (in watts).
+        signal_generator : SignalGenerator
+            The signal generator instance used to apply the conversion.
+        wavelength : Quantity
+            The wavelength of the incident light (in meters).
+        bandwidth : Quantity
+            The bandwidth of the signal (in Hz).
 
         Returns
         -------
@@ -215,9 +219,16 @@ class Detector():
         if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
             self.add_dark_current_noise(signal_generator=signal_generator, bandwidth=bandwidth)
 
-    def add_dark_current_noise(self, signal_generator: object, bandwidth: Quantity) -> Quantity:
+    def add_dark_current_noise(self, signal_generator: SignalGenerator, bandwidth: Quantity) -> Quantity:
         r"""
         Compute and return the dark current noise.
+
+        Parameters
+        ----------
+        signal_generator : SignalGenerator
+            The signal generator instance used to apply noise to the signal.
+        bandwidth : Quantity
+            The bandwidth of the signal (in Hz).
 
         Dark current noise is computed as:
 
@@ -225,9 +236,9 @@ class Detector():
             \sigma_{\text{dark}} = \sqrt{2 q I_d B}
 
         where:
-        - :math:`q` is the elementary charge (1.602176634 x 10⁻¹⁹ C),
-        - :math:`I_d` is the dark current,
-        - :math:`B` is the bandwidth.
+            - :math:`q` is the elementary charge (1.602176634 x 10⁻¹⁹ C),
+            - :math:`I_d` is the dark current,
+            - :math:`B` is the bandwidth.
 
         Returns
         -------
@@ -252,8 +263,8 @@ class Detector():
 
         Parameters
         ----------
-        optical_power : Quantity
-            The incident optical power on the detector (in watts).
+        bandwidth : Quantity
+            The bandwidth of the signal (in Hz).
         wavelength : Quantity
             The wavelength of the incident light (in meters).
 
@@ -301,7 +312,7 @@ class Detector():
         return photon_to_power_factor * power_to_current_factor  # Current (A)
 
     @validate_units(optical_power=units.watt, wavelength=units.meter)
-    def add_shot_noise(self, signal_generator: object, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
+    def add_shot_noise(self, signal_generator: SignalGenerator, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
         r"""
         Computes the shot noise photocurrent arising from photon statistics.
 
@@ -334,6 +345,8 @@ class Detector():
 
         Parameters
         ----------
+        signal_generator : SignalGenerator
+            The signal generator instance used to apply noise to the signal.
         signal : pd.Series
             The raw signal data series (used to infer the number of samples).
         optical_power : Quantity
@@ -376,6 +389,7 @@ class PMT():
         responsivity: Quantity = Quantity(0.2, units.ampere / units.watt),
         dark_current: Quantity = Quantity(1e-9, units.ampere),
         **kwargs):
+
         return Detector(
             name=name,
             phi_angle=phi_angle,
@@ -394,6 +408,7 @@ class PIN():
         responsivity=Quantity(0.5, units.ampere / units.watt),  # Higher responsivity for PIN
         dark_current=Quantity(1e-8, units.ampere),               # Slightly higher dark current
         **kwargs):
+
         return Detector(
             name=name,
             phi_angle=phi_angle,
@@ -413,6 +428,7 @@ class APD():
         responsivity=Quantity(0.7, units.ampere / units.watt),  # APDs often have high responsivity
         dark_current=Quantity(5e-9, units.ampere),
         **kwargs):
+
         return Detector(
             name=name,
             phi_angle=phi_angle,

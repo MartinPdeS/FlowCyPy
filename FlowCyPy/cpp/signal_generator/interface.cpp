@@ -8,7 +8,6 @@ namespace py = pybind11;
 PYBIND11_MODULE(interface_signal_generator, module) {
     module.doc() = "SignalGenerator bindings";
 
-
     py::class_<SignalGenerator>(module, "SignalGenerator")
         .def(
             py::init<const size_t>(),
@@ -33,6 +32,13 @@ PYBIND11_MODULE(interface_signal_generator, module) {
             &SignalGenerator::add_constant,
             py::arg("constant"),
             "Adds a constant value to all the signal."
+        )
+        .def(
+            "add_constant_to_signal",
+            &SignalGenerator::add_constant_to_signal,
+            py::arg("signal_name"),
+            py::arg("constant"),
+            "Adds a constant value to the specified signal."
         )
         .def("multiply",
             &SignalGenerator::multiply,

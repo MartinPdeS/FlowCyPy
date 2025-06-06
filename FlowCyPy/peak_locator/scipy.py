@@ -29,24 +29,6 @@ class ScipyPeakLocator:
         If True, computes the width (in number of samples) of each detected peak. Default is False.
     compute_area : bool, optional
         If True, computes the area (sum over the peak region) for each detected peak. Default is False.
-
-    Examples
-    --------
-    >>> import numpy as np
-    >>> # Create an instance that only detects peak indices:
-    >>> peak_locator = ScipyPeakLocator(height=500, distance=2, max_number_of_peaks=3)
-    >>> data = np.array([[0, 800, 100, 2000, 150, 9000],
-    ...                  [50, 1000, 200, 3000, 4000, 100]])
-    >>> result = peak_locator(data)
-    >>> print(result["peak_index"])
-    [[ 1.  3.  5.]
-     [ 2.  3.  4.]]
-    >>> # Create an instance that also computes peak width and area:
-    >>> peak_locator_metrics = ScipyPeakLocator(height=500, distance=2, max_number_of_peaks=3, compute_width=True, compute_area=True)
-    >>> result = peak_locator_metrics(data)
-    >>> print("Peak Indices:\n", result["peak_index"])
-    >>> print("Widths:\n", result["width"])
-    >>> print("Areas:\n", result["area"])
     """
 
     def __init__(self, height: float = 2000, distance: int = 1, width: float = None, prominence: float = None,

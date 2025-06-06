@@ -13,11 +13,6 @@ class BasePeakLocator {
         std::vector<double> peak_widths;
         std::vector<double> peak_areas;
 
-        // py::array get_indices_py() const {return to_array_int(this->peak_indices);}
-        // py::array get_height_py() const {return to_array_double(this->peak_heights);}
-        // py::array get_areas_py() const {return to_array_double(this->peak_areas);}
-        // py::array get_widths_py() const {return to_array_double(this->peak_widths);}
-
         BasePeakLocator(bool compute_width, bool compute_area) : compute_width(compute_width), compute_area(compute_area) {}
 
         std::vector<double> get_metric_py(const std::string &metric_name){

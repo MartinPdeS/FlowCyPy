@@ -11,7 +11,7 @@ from FlowCyPy.helper import validate_units
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.circuits import SignalProcessor
 from FlowCyPy.source import BaseBeam
-from FlowCyPy.binary import interface_signal_generator
+from FlowCyPy.binary.interface_signal_generator import SignalGenerator
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 from FlowCyPy.coupling import compute_detected_signal
 
@@ -195,7 +195,7 @@ class FlowCytometer:
         return self.scatterer_dataframe
 
 
-    def _create_signal_generator(self, run_time: units.second) -> interface_signal_generator.SignalGenerator:
+    def _create_signal_generator(self, run_time: units.second) -> SignalGenerator:
         """
         Creates a signal generator for the flow cytometer.
 
@@ -216,7 +216,7 @@ class FlowCytometer:
             run_time=run_time
         )
 
-        signal_generator = interface_signal_generator.SignalGenerator(n_elements=len(time_series))
+        signal_generator = SignalGenerator(n_elements=len(time_series))
 
         signal_generator.add_signal("Time", time_series.to('second').magnitude)
 
@@ -294,13 +294,13 @@ class FlowCytometer:
 
         return self._make_dataframe_out_of_signal_generator(signal_generator=signal_generator)
 
-    def _make_dataframe_out_of_signal_generator(self, signal_generator: interface_signal_generator.SignalGenerator) -> AcquisitionDataFrame:
+    def _make_dataframe_out_of_signal_generator(self, signal_generator: SignalGenerator) -> AcquisitionDataFrame:
         """
         Converts a signal generator's output into a pandas DataFrame.
 
         Parameters
         ----------
-        signal_generator : interface_signal_generator.SignalGenerator
+        signal_generator : SignalGenerator
             The signal generator instance containing the generated signals.
 
         Returns
