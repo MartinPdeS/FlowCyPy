@@ -28,6 +28,8 @@ dB = ureg.dB
 pascal = ureg.pascal
 minute = ureg.minute
 
+dimensionless = ureg.dimensionless
+
 
 # Define a custom unit 'bit_bins'
 ureg.define("bit_bins = ![Int64]")

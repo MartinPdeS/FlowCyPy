@@ -11,9 +11,10 @@ from FlowCyPy.helper import validate_units
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.circuits import SignalProcessor
 from FlowCyPy.source import BaseBeam
-from FlowCyPy.binary.interface_signal_generator import SignalGenerator
+from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 from FlowCyPy.coupling import compute_detected_signal
+from FlowCyPy.noises import NoiseSetting
 
 class FlowCytometer:
     """
@@ -222,9 +223,9 @@ class FlowCytometer:
             run_time=run_time
         )
 
-        signal_generator = SignalGenerator(n_elements=len(time_series))
+        signal_generator = SignalGenerator(n_elements=len(time_series), time_units=units.second, signal_units=units.watt)
 
-        signal_generator.add_signal("Time", time_series.to('second').magnitude)
+        signal_generator.add_time(time_series)
 
         for detector in self.detectors:
             signal_generator.create_zero_signal(signal_name=detector.name)
@@ -264,32 +265,41 @@ class FlowCytometer:
         """
         signal_generator = self._create_signal_generator(run_time=self.run_time)
 
+        signal_generator.signal_units = units.watt  # Till here the pulses are in optical power units (watt)
         for detector in self.detectors:
             if self.scatterer_dataframe.empty:
-                signal_generator.add_constant(constant=self.background_power.to('watt').magnitude)
+                signal_generator.add_constant(constant=self.background_power)
 
             else:
-                signal_generator.generate_pulses_signal(
+                signal_generator.generate_pulses(
                     signal_name=detector.name,
-                    widths=self.scatterer_dataframe['Widths'].pint.to('second').values.quantity.magnitude,
-                    centers=self.scatterer_dataframe['Time'].pint.to('second').values.quantity.magnitude,
-                    coupling_power=self.scatterer_dataframe[detector.name].pint.to('watt').values.quantity.magnitude,
-                    background_power=self.background_power.to('watt').magnitude
+                    widths=self.scatterer_dataframe['Widths'].values.quantity,
+                    centers=self.scatterer_dataframe['Time'].values.quantity,
+                    amplitudes=self.scatterer_dataframe[detector.name].values.quantity,
+                    base_level=self.background_power
                 )
 
-            # Till here the pulses are in optical power units (watt)
+
+        for detector in self.detectors:
             detector._transform_coupling_power_to_current(
                 signal_generator=signal_generator,
                 wavelength=self.source.wavelength,
                 bandwidth=self.digitizer.bandwidth
             )
 
-            # Now the pulses are in current units (ampere)
-            self.transimpedance_amplifier.amplify(
-                detector_name=detector.name,
-                signal_generator=signal_generator,
-                sampling_rate=self.digitizer.sampling_rate
-            )
+        signal_generator.signal_units = units.ampere  # Now the pulses are in current units (ampere)
+        if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
+            for detector in self.detectors:  # Step 3: Add dark current noise to photo-current if enabled
+                detector.apply_dark_current_noise(
+                    signal_generator=signal_generator,
+                    bandwidth=self.digitizer.bandwidth
+                )
+
+        signal_generator.signal_units = units.volt  # Step 4: Convert current to voltage using the transimpedance amplifier
+        self.transimpedance_amplifier.amplify(
+            signal_generator=signal_generator,
+            sampling_rate=self.digitizer.sampling_rate
+        )
 
         # Now the pulses are in voltage units (volt)
         for circuit in processing_steps:
@@ -314,11 +324,11 @@ class FlowCytometer:
         AcquisitionDataFrame
             A DataFrame containing the signals from the signal generator.
         """
-        df = pd.DataFrame()
+        signal_dataframe = pd.DataFrame()
 
-        signal_dataframe = df
+        time = signal_generator.get_time()
 
-        signal_dataframe["Time"] = pd.Series(signal_generator.get_signal("Time"), dtype="pint[second]")
+        signal_dataframe["Time"] = pd.Series(time, dtype="pint[second]")
 
         for detector in self.detectors:
             signal_dataframe[detector.name] = pd.Series(signal_generator.get_signal(detector.name), dtype="pint[volt]")

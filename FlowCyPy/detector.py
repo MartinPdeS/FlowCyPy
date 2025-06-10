@@ -212,12 +212,12 @@ class Detector():
         # Step 2: Convert optical power to current using the responsivity
         signal_generator.multiply_signal(
             signal_name=self.name,
-            factor=self.responsivity.to('ampere/watt').magnitude
+            factor=self.responsivity
         )
 
-        # Step 3: Add dark current noise to photo-current if enabled
-        if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
-            self.apply_dark_current_noise(signal_generator=signal_generator, bandwidth=bandwidth)
+        # # Step 3: Add dark current noise to photo-current if enabled
+        # if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
+        #     self.apply_dark_current_noise(signal_generator=signal_generator, bandwidth=bandwidth)
 
     def apply_dark_current_noise(self, signal_generator: SignalGenerator, bandwidth: Quantity) -> Quantity:
         r"""
@@ -245,14 +245,12 @@ class Detector():
         dict
             Dictionary containing noise parameters for 'thermal' and 'dark_current'.
         """
-        mean_noise = self.dark_current
-
         std_noise = np.sqrt(2 * 1.602176634e-19 * units.coulomb * self.dark_current * bandwidth)
 
-        signal_generator.add_gaussian_noise_to_signal(
+        signal_generator.apply_gaussian_noise(
             signal_name=self.name,
-            mean=mean_noise.to('ampere').magnitude,
-            standard_deviation=std_noise.to('ampere').magnitude
+            mean=self.dark_current,
+            standard_deviation=std_noise
         )
 
     def _get_optical_power_to_photon_factor(self, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
@@ -362,14 +360,14 @@ class Detector():
         optical_power_to_photo_count_conversion = self._get_optical_power_to_photon_factor(
             wavelength=wavelength,
             bandwidth=bandwidth
-        ).to("1 / watt").magnitude
+        )
 
         signal_generator.multiply_signal(
             signal_name=self.name,
             factor=optical_power_to_photo_count_conversion
         )
 
-        signal_generator.apply_poisson_noise_to_signal(signal_name=self.name)
+        signal_generator.apply_poisson_noise(signal_name=self.name)
 
         signal_generator.multiply_signal(
             signal_name=self.name,

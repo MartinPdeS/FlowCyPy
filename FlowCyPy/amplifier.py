@@ -98,15 +98,13 @@ class TransimpedanceAmplifier:
         return np.sqrt(v_rms**2 + i_rms**2)
 
     @validate_units(signal=units.ampere, dt=units.second)
-    def amplify(self, detector_name: str, signal_generator: object, sampling_rate: units.Quantity):
+    def amplify(self, signal_generator: object, sampling_rate: units.Quantity):
         """
         Amplifies the input signal from a detector using the transimpedance amplifier's gain.
         The noise is added after the amplification.
 
         Parameters
         ----------
-        detector_name : str
-            The name of the detector whose signal is being amplified.
         signal_generator : object
             An instance of a signal generator that provides the input signal to be amplified.
         sampling_rate : units.Quantity
@@ -124,23 +122,20 @@ class TransimpedanceAmplifier:
         `apply_butterworth_lowpass_filter_to_signal` method of the signal generator.
         """
         if self.bandwidth is not None:
-            signal_generator.apply_butterworth_lowpass_filter_to_signal(
-                signal_name=detector_name,
-                gain=self.gain.to("volts/ampere").magnitude,
-                sampling_rate=sampling_rate.to('Hz').magnitude,
-                cutoff_frequency=self.bandwidth.to("Hz").magnitude,
+            signal_generator.apply_butterworth_lowpass_filter(
+                gain=self.gain,
+                sampling_rate=sampling_rate,
+                cutoff_frequency=self.bandwidth,
                 order=1
             )
         else:
-            signal_generator.multiply_signal(
-                signal_name=detector_name,
-                factor=self.gain.to("volt/ampere").magnitude
+            signal_generator.multiply(
+                factor=self.gain
             )
 
         # Add voltage related noise if enabled
         if NoiseSetting.include_amplifier_noise and NoiseSetting.include_noises:
-            signal_generator.add_gaussian_noise_to_signal(
-                signal_name=detector_name,
-                mean=0.0,
-                standard_deviation=self.total_output_noise.to('volt').magnitude
+            signal_generator.apply_gaussian_noise(
+                mean=0.0 * self.total_output_noise.units,
+                standard_deviation=self.total_output_noise
             )

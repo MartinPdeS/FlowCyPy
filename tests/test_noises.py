@@ -4,11 +4,11 @@ from FlowCyPy.detector import Detector
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import units
-from FlowCyPy.binary import interface_signal_generator
+from FlowCyPy.signal_generator import SignalGenerator
 
 TOLERANCE = 0.05  # Allowable error margin (5%)
 N_ELEMENTS = 5000  # Number of elements in the signal
-TIME_ARRAY = np.linspace(0.0, 1.0, N_ELEMENTS)  # Time array for the signal generator
+TIME_ARRAY = np.linspace(0.0, 1.0, N_ELEMENTS) * units.microsecond  # Time array for the signal generator
 
 @pytest.fixture
 def signal_generator():
@@ -16,8 +16,8 @@ def signal_generator():
     Returns a SignalGenerator instance with a predefined time array.
     This is used to avoid code duplication in tests.
     """
-    signal_generator = interface_signal_generator.SignalGenerator(N_ELEMENTS)
-    signal_generator.add_signal("Time", TIME_ARRAY)
+    signal_generator = SignalGenerator(N_ELEMENTS, time_units=units.second, signal_units=units.volt)
+    signal_generator.add_time(TIME_ARRAY)
     signal_generator.create_zero_signal(signal_name="TestDetector")
     return signal_generator
 
@@ -51,7 +51,9 @@ def test_shot_noise(signal_generator, signal_digitizer):
     # Signal and Detector Properties
     optical_power = 0.001 * units.milliwatt  # Power in watts
 
-    signal_generator.add_constant(optical_power.to(units.watt).magnitude)  # Add constant optical power to the signal
+    signal_generator.signal_units = units.watt  # Set signal units to watts for shot noise calculation
+
+    signal_generator.add_constant(optical_power)  # Add constant optical power to the signal
 
     # Initialize Detector
     detector = Detector(
@@ -68,7 +70,7 @@ def test_shot_noise(signal_generator, signal_digitizer):
         bandwidth=signal_digitizer.bandwidth
     )
 
-    shot_noised_optical_power = signal_generator.get_signal("TestDetector") * units.watt
+    shot_noised_optical_power = signal_generator.get_signal("TestDetector")
 
     # # Step 1: Compute Equivalent Shot Noise in Voltage
     shot_noised_current = (shot_noised_optical_power  * detector.responsivity)
@@ -94,7 +96,9 @@ def test_dark_current_noise(signal_generator, signal_digitizer):
     # Detector Properties
     dark_current = 1e-12 * units.ampere  # Dark current in amps
 
-    signal_generator.add_constant(dark_current.to(units.ampere).magnitude)  # Add constant optical power to the signal
+    signal_generator.signal_units = units.ampere  # Set signal units to amperes for dark current noise calculation
+
+    signal_generator.add_constant(dark_current)  # Add constant optical power to the signal
 
     # Initialize Detector
     detector = Detector(
@@ -112,7 +116,7 @@ def test_dark_current_noise(signal_generator, signal_digitizer):
     )  # Capture returned noise
 
 
-    dark_current_noise = signal_generator.get_signal("TestDetector") * units.ampere
+    dark_current_noise = signal_generator.get_signal("TestDetector")
 
     # Step 1: Compute Theoretical Dark Current Noise in Voltage
     expected_current_std = np.sqrt(2 * PhysicalConstant.e * dark_current * signal_digitizer.bandwidth)

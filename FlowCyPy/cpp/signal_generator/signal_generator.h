@@ -131,6 +131,7 @@ public:
      * @throws std::runtime_error If the signal vector is empty.
      */
     void apply_bessel_lowpass_filter(const double sampling_rate, const double cutoff_frequency, const int order, const double gain);
+    void apply_bessel_lowpass_filter_to_signal(const std::string &signal_name, const double sampling_rate, const double cutoff_frequency, const int order, const double gain);
 
 
     /**

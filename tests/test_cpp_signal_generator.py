@@ -22,7 +22,7 @@ def signal_generator():
     This is used to avoid code duplication in tests.
     """
     signal_generator = interface_signal_generator.SignalGenerator(N_ELEMENTS)
-    signal_generator.add_signal("Time", TIME_ARRAY)
+    signal_generator._cpp_add_signal("Time", TIME_ARRAY)
     signal_generator.create_zero_signal(signal_name="Signal")
     return signal_generator
 
@@ -39,7 +39,7 @@ def test_signal_after_pulse_generation(signal_generator):
         background_power=BACKGROUND_POWER
     )
 
-    array = signal_generator.get_signal("Signal")
+    array = signal_generator._cpp_get_signal("Signal")
 
     array = np.asarray(array)
 
@@ -53,9 +53,9 @@ def test_signal_constant_addition(signal_generator):
     Test that adding a constant modifies the signal correctly.
     """
     constant = 10.0
-    signal_generator.add_constant(constant)
+    signal_generator._cpp_add_constant(constant)
 
-    array = signal_generator.get_signal("Signal")
+    array = signal_generator._cpp_get_signal("Signal")
 
     array = np.asarray(array)
 
@@ -72,12 +72,12 @@ def test_add_gaussian_noise_changes_signal(signal_generator):
     Test that adding Gaussian noise modifies the signal.
     """
 
-    signal_generator.add_gaussian_noise(
+    signal_generator._cpp_apply_gaussian_noise(
         mean=0.0,
         standard_deviation=1.0
     )
 
-    array = signal_generator.get_signal("Signal")
+    array = signal_generator._cpp_get_signal("Signal")
 
     array = np.asarray(array)
 
@@ -94,9 +94,9 @@ def test_add_poisson_noise(signal_generator):
     """
     Test that adding Poisson noise modifies the signal.
     """
-    signal_generator.apply_poisson_noise()
+    signal_generator._cpp_apply_poisson_noise()
 
-    array = signal_generator.get_signal("Signal")
+    array = signal_generator._cpp_get_signal("Signal")
 
     array = np.asarray(array)
 
@@ -109,10 +109,10 @@ def test_poisson_noise_statistics(signal_generator):
     """
 
     constant = 10.0
-    signal_generator.add_constant(10.0)
+    signal_generator._cpp_add_constant(10.0)
 
-    signal_generator.apply_poisson_noise()
-    array = signal_generator.get_signal("Signal")
+    signal_generator._cpp_apply_poisson_noise()
+    array = signal_generator._cpp_get_signal("Signal")
 
     array = np.asarray(array)
 
@@ -127,11 +127,11 @@ def test_butterworth_low_pass_filter(signal_generator):
     """
     Test that the low-pass filter modifies the signal correctly.
     """
-    signal_generator.add_gaussian_noise(mean=0.0, standard_deviation=1.0)
+    signal_generator._cpp_apply_gaussian_noise(mean=0.0, standard_deviation=1.0)
 
-    signal_generator.apply_butterworth_lowpass_filter(sampling_rate=1, cutoff_frequency=10.0, order=2, gain=1.0)
+    signal_generator._cpp_apply_butterworth_lowpass_filter(sampling_rate=1, cutoff_frequency=10.0, order=2, gain=1.0)
 
-    array = signal_generator.get_signal("Signal")
+    array = signal_generator._cpp_get_signal("Signal")
 
     array = np.asarray(array)
 
@@ -144,11 +144,11 @@ def test_bessel_low_pass_filter(signal_generator):
     """
     Test that the Bessel low-pass filter modifies the signal correctly.
     """
-    signal_generator.add_gaussian_noise(mean=0.0, standard_deviation=1.0)
+    signal_generator._cpp_apply_gaussian_noise(mean=0.0, standard_deviation=1.0)
 
-    signal_generator.apply_bessel_lowpass_filter(sampling_rate=1, cutoff_frequency=10.0, order=2, gain=1.0)
+    signal_generator._cpp_apply_bessel_lowpass_filter(sampling_rate=1, cutoff_frequency=10.0, order=2, gain=1.0)
 
-    array = signal_generator.get_signal("Signal")
+    array = signal_generator._cpp_get_signal("Signal")
 
     array = np.asarray(array)
 
@@ -162,11 +162,11 @@ def test_baseline_restoration(signal_generator):
     """
     Test that baseline restoration modifies the signal correctly.
     """
-    signal_generator.add_gaussian_noise(mean=0.0, standard_deviation=1.0)
+    signal_generator._cpp_apply_gaussian_noise(mean=0.0, standard_deviation=1.0)
 
-    signal_generator.apply_baseline_restoration(window_size=10)
+    signal_generator._cpp_apply_baseline_restoration(window_size=10)
 
-    array = signal_generator.get_signal("Signal")
+    array = signal_generator._cpp_get_signal("Signal")
 
     array = np.asarray(array)
 
