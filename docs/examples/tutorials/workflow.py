@@ -202,7 +202,7 @@ acquisition.normalize_units(time_units='max', signal_units='max')
 _ = acquisition.scatterer.plot(
     x='side',
     y='forward',
-    z='RefractiveIndex'
+    # z='RefractiveIndex'
 )
 
 # %%

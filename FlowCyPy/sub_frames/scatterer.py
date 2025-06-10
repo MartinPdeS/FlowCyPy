@@ -1,6 +1,5 @@
 from typing import Optional, Union, List, Tuple, Any
 import pandas as pd
-import numpy
 import matplotlib.pyplot as plt
 import seaborn as sns
 from FlowCyPy import units
@@ -95,8 +94,8 @@ class ScattererDataFrame(BaseSubFrame):
         )
 
         grid.figure.suptitle("Scatterer Sampling Distribution")
-        grid.ax_joint.set_xlabel(f"{x} [{x_unit}]")
-        grid.ax_joint.set_ylabel(f"{y} [{y_unit}]")
+        grid.ax_joint.set_xlabel(f"{x} [{x_unit._repr_latex_()}]")
+        grid.ax_joint.set_ylabel(f"{y} [{y_unit._repr_latex_()}]")
         return grid
 
     @utils.plot_3d
@@ -132,9 +131,9 @@ class ScattererDataFrame(BaseSubFrame):
         for population, group in df.pint.dequantify().astype(float).groupby(hue):
             ax.scatter(group[x], group[y], group[z], label=population, alpha=alpha)
 
-        ax.set_xlabel(f"{x} [{x_unit}]", labelpad=20)
-        ax.set_ylabel(f"{y} [{y_unit}]", labelpad=20)
-        ax.set_zlabel(f"{z} [{z_unit}]", labelpad=20)
+        ax.set_xlabel(f"{x} [{x_unit._repr_latex_()}]", labelpad=20)
+        ax.set_ylabel(f"{y} [{y_unit._repr_latex_()}]", labelpad=20)
+        ax.set_zlabel(f"{z} [{z_unit._repr_latex_()}]", labelpad=20)
         ax.set_title("Scatterer Sampling Distribution")
         return ax.figure
 
@@ -184,7 +183,7 @@ class ScattererDataFrame(BaseSubFrame):
         df[x] = utils.clip_data(signal=df[[x]], clip_value=clip_data)
 
         sns.histplot(data=df, x=df[x], ax=ax, kde=kde, bins=bins, color=color, hue=df['Population'])
-        ax.set_xlabel(f"{x} [{unit}]")
+        ax.set_xlabel(f"{x} [{unit._repr_latex_()}]")
         ax.set_title(f"Distribution of {x}")
 
         return figure
@@ -219,5 +218,5 @@ class ScattererDataFrame(BaseSubFrame):
 
         ax.tick_params(axis='y', left=False, labelleft=False)
         ax.get_yaxis().set_visible(False)
-        ax.set_xlabel(f"Time [{time_units}]")
+        ax.set_xlabel(f"Time [{time_units._repr_latex_()}]")
         ax.legend()
