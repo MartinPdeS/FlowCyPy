@@ -48,7 +48,7 @@ for optical_power in optical_powers:
         phi_angle=0 * units.degree
     )
 
-    detector.add_shot_noise(
+    detector.apply_shot_noise(
         signal_generator=signal_generator,
         wavelength=1550 * units.nanometer,
         bandwidth=10 * units.megahertz

@@ -180,6 +180,13 @@ class FlowCytometer:
         ----------
         run_time : pint.Quantity
             The duration of the acquisition in seconds.
+        compute_cross_section : bool, optional
+            If True, computes the cross-section for each scatterer. Defaults to False.
+
+        Returns
+        -------
+        pd.DataFrame
+            A DataFrame containing the scatterer data with computed coupling powers and pulse parameters.
 
         """
         self.run_time = run_time
@@ -193,7 +200,6 @@ class FlowCytometer:
         self._generate_pulse_parameters(self.scatterer_dataframe)
 
         return self.scatterer_dataframe
-
 
     def _create_signal_generator(self, run_time: units.second) -> SignalGenerator:
         """

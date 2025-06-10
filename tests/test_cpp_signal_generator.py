@@ -94,7 +94,7 @@ def test_add_poisson_noise(signal_generator):
     """
     Test that adding Poisson noise modifies the signal.
     """
-    signal_generator.add_poisson_noise()
+    signal_generator.apply_poisson_noise()
 
     array = signal_generator.get_signal("Signal")
 
@@ -111,7 +111,7 @@ def test_poisson_noise_statistics(signal_generator):
     constant = 10.0
     signal_generator.add_constant(10.0)
 
-    signal_generator.add_poisson_noise()
+    signal_generator.apply_poisson_noise()
     array = signal_generator.get_signal("Signal")
 
     array = np.asarray(array)

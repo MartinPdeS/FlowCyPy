@@ -100,6 +100,7 @@ void SignalGenerator::apply_baseline_restoration(const int window_size) {
 }
 
 void SignalGenerator::apply_butterworth_lowpass_filter(const double sampling_rate, const double cutoff_frequency, const int order, const double gain) {
+    #pragma omp parallel for
     for (auto &entry : this->data_dict)
         if (entry.first != "Time")
             utils::apply_butterworth_lowpass_filter_to_signal(entry.second, sampling_rate, cutoff_frequency, order, gain);
@@ -114,6 +115,7 @@ void SignalGenerator::apply_butterworth_lowpass_filter_to_signal(const std::stri
 }
 
 void SignalGenerator::generate_pulses(const std::vector<double> &widths, const std::vector<double> &centers, const std::vector<double> &coupling_power, const double background_power) {
+    #pragma omp parallel for
     for (auto &entry : this->data_dict)
         if (entry.first != "Time")
             utils::generate_pulses_signal(entry.second, widths, centers, coupling_power, this->data_dict["Time"], background_power);
@@ -127,6 +129,7 @@ void SignalGenerator::generate_pulses_signal(const std::string& signal_name, con
 }
 
 void SignalGenerator::apply_bessel_lowpass_filter(const double sampling_rate, const double cutoff_frequency, const int order, const double gain) {
+    #pragma omp parallel for
     for (auto &entry : this->data_dict)
         if (entry.first != "Time")
             utils::apply_bessel_lowpass_filter_to_signal(entry.second, sampling_rate, cutoff_frequency, order, gain);
@@ -138,6 +141,7 @@ void SignalGenerator::apply_bessel_lowpass_filter(const double sampling_rate, co
 // -----------------------------------------------------------------------------
 
 void SignalGenerator::add_gaussian_noise(const double mean, const double standard_deviation) {
+    #pragma omp parallel for
     for (auto &entry : this->data_dict)
         if (entry.first != "Time")
             utils::add_gaussian_noise_to_signal(entry.second, mean, standard_deviation);
@@ -207,6 +211,7 @@ void SignalGenerator::_apply_poisson_noise_as_gaussian_to_signal(const std::stri
 }
 
 void SignalGenerator::apply_poisson_noise() {
+    #pragma omp parallel for
     for (const auto &entry : this->data_dict)
         if (entry.first != "Time")
             this->apply_poisson_noise_to_signal(entry.first);

@@ -106,7 +106,18 @@ custom_population = Sphere(
 # Add an Exosome population
 scatterer_collection.add_population(custom_population)
 
-scatterer_collection.dilute(factor=8)
+
+custom_population = Sphere(
+    name='Pop 1',
+    particle_count=5e9 * units.particle / units.milliliter,
+    diameter=distribution.RosinRammler(characteristic_property=200 * units.nanometer, spread=30),
+    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
+)
+
+# Add an Exosome population
+scatterer_collection.add_population(custom_population)
+
+scatterer_collection.dilute(factor=80)
 
 # Initialize the scatterer with the flow cell
 df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
@@ -184,7 +195,7 @@ processing_steps = [
 ]
 
 # Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=0.5 * units.millisecond)
+cytometer.prepare_acquisition(run_time=2.5 * units.millisecond)
 acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
 acquisition.normalize_units(time_units='max', signal_units='max')
 

@@ -207,7 +207,7 @@ class Detector():
         """
         # Step 1: Add shot noise to optical power if enabled
         if NoiseSetting.include_shot_noise or NoiseSetting.include_noises:
-            self.add_shot_noise(signal_generator=signal_generator, wavelength=wavelength, bandwidth=bandwidth)
+            self.apply_shot_noise(signal_generator=signal_generator, wavelength=wavelength, bandwidth=bandwidth)
 
         # Step 2: Convert optical power to current using the responsivity
         signal_generator.multiply_signal(
@@ -217,9 +217,9 @@ class Detector():
 
         # Step 3: Add dark current noise to photo-current if enabled
         if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
-            self.add_dark_current_noise(signal_generator=signal_generator, bandwidth=bandwidth)
+            self.apply_dark_current_noise(signal_generator=signal_generator, bandwidth=bandwidth)
 
-    def add_dark_current_noise(self, signal_generator: SignalGenerator, bandwidth: Quantity) -> Quantity:
+    def apply_dark_current_noise(self, signal_generator: SignalGenerator, bandwidth: Quantity) -> Quantity:
         r"""
         Compute and return the dark current noise.
 
@@ -312,7 +312,7 @@ class Detector():
         return photon_to_power_factor * power_to_current_factor  # Current (A)
 
     @validate_units(optical_power=units.watt, wavelength=units.meter)
-    def add_shot_noise(self, signal_generator: SignalGenerator, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
+    def apply_shot_noise(self, signal_generator: SignalGenerator, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
         r"""
         Computes the shot noise photocurrent arising from photon statistics.
 
@@ -357,28 +357,23 @@ class Detector():
         Returns
         -------
         Quantity
-            The shot noise voltage distribution (in volts).
+            The shot noise-added current distribution (in current).
         """
-        optical_power_to_photo_count_conversion_factor = self._get_optical_power_to_photon_factor(
+        optical_power_to_photo_count_conversion = self._get_optical_power_to_photon_factor(
             wavelength=wavelength,
             bandwidth=bandwidth
-        )
-
-        photon_to_current_factor = self._get_photon_count_to_current_factor(
-            wavelength=wavelength,
-            bandwidth=bandwidth
-        )
+        ).to("1 / watt").magnitude
 
         signal_generator.multiply_signal(
             signal_name=self.name,
-            factor=optical_power_to_photo_count_conversion_factor.to("1 / watt").magnitude
+            factor=optical_power_to_photo_count_conversion
         )
 
         signal_generator.apply_poisson_noise_to_signal(signal_name=self.name)
 
         signal_generator.multiply_signal(
             signal_name=self.name,
-            factor=photon_to_current_factor.to("ampere").magnitude
+            factor=1 / optical_power_to_photo_count_conversion
         )
 
 class PMT():
