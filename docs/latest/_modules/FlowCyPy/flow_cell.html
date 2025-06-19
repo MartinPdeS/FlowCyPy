@@ -758,7 +758,7 @@ document.write(`
         <span class="n">U</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
 
         <span class="c1"># Compute the 2D integral over the channel cross-section using the composite trapezoidal rule.</span>
-        <span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">y_vals</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">z_vals</span><span class="p">)</span>
+        <span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trapezoid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">trapezoid</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">y_vals</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">z_vals</span><span class="p">)</span>
 
         <span class="c1"># Restore the original dpdx if it was set.</span>
         <span class="k">if</span> <span class="n">dpdx_saved</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -842,26 +842,53 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">sample_transverse_profile</span><span class="p">(</span><span class="n">n_events</span><span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="n">df</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">get_dataframe_from_dict</span><span class="p">(</span>
+        <span class="n">scatterer_dataframe</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">get_dataframe_from_dict</span><span class="p">(</span>
             <span class="n">dictionnary</span><span class="o">=</span><span class="n">sampling_dict</span><span class="p">,</span>
             <span class="n">level_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Population&#39;</span><span class="p">,</span> <span class="s1">&#39;ScattererID&#39;</span><span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="n">df</span> <span class="o">=</span> <span class="n">ScattererDataFrame</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">scatterer_dataframe</span> <span class="o">=</span> <span class="n">ScattererDataFrame</span><span class="p">(</span><span class="n">scatterer_dataframe</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">df</span><span class="o">.</span><span class="n">empty</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_scheme</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;uniform-random&#39;</span><span class="p">,</span> <span class="s1">&#39;uniform-sequential&#39;</span><span class="p">]:</span>
-            <span class="n">total_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-            <span class="n">evenly_spaced_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
-                <span class="mf">0.1</span> <span class="o">*</span> <span class="n">run_time</span><span class="p">,</span>
-                <span class="mf">0.9</span> <span class="o">*</span> <span class="n">run_time</span><span class="p">,</span>
-                <span class="n">total_events</span>
-            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order_events</span><span class="p">(</span>
+            <span class="n">scatterer_dataframe</span><span class="o">=</span><span class="n">scatterer_dataframe</span><span class="p">,</span>
+            <span class="n">event_scheme</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">event_scheme</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">scatterer_dataframe</span>
+
+<div class="viewcode-block" id="FlowCell.order_events">
+<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.flow_cell.FlowCell.order_events">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">order_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scatterer_dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">event_scheme</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Orders the events in the DataFrame by their arrival time.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        scatterer_dataframe : pd.DataFrame</span>
+<span class="sd">            DataFrame containing the events with a &#39;Time&#39; column.</span>
+<span class="sd">        event_scheme : str</span>
+<span class="sd">            The scheme used to generate the events, e.g., &#39;uniform-random&#39; or &#39;uniform-sequential&#39;.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            Ordered DataFrame with events sorted by &#39;Time&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.1</span>
+        <span class="n">stop_time</span> <span class="o">=</span> <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.9</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">empty</span> <span class="ow">and</span> <span class="n">event_scheme</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;uniform-random&#39;</span><span class="p">,</span> <span class="s1">&#39;uniform-sequential&#39;</span><span class="p">]:</span>
+            <span class="n">total_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scatterer_dataframe</span><span class="p">)</span>
+
+            <span class="n">evenly_spaced_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">stop_time</span><span class="p">,</span> <span class="n">total_events</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_scheme</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;uniform-random&#39;</span><span class="p">:</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">evenly_spaced_times</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
-            <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">evenly_spaced_times</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
+            <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">evenly_spaced_times</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span></div>
 
-        <span class="k">return</span> <span class="n">df</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_population_arrival_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="n">BasePopulation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

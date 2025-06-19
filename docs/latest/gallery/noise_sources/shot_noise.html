@@ -54,7 +54,7 @@
     <link rel="icon" href="../../_static/thumbnail.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Examples: extras" href="../extras/index.html" />
+    <link rel="next" title="Theory" href="../../theory.html" />
     <link rel="prev" title="Dark Current" href="dark_current.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -464,8 +464,8 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/coupling_model.html">Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/limit_of_detection.html">Limit of detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/pre_defined_workflow.html">Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/signal_processing.html">Signal Processing in Flow Cytometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Workflow</a></li>
 </ul>
@@ -473,15 +473,6 @@ document.write(`
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Noises</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="dark_current.html">Dark Current</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Shot noise</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../extras/index.html">Examples: extras</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../extras/continuous_acquisition.html">WorkFlow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/distributions.html">Particle Distribution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/flow_cell_profiles.html">Flow Cell geometries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/flow_cytometer_signal.html">Generating Signal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/scatterer_distribution.html">Scatterer Collection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/triggered_acquisition.html">WorkFlow</a></li>
 </ul>
 </details></li>
 </ul>
@@ -559,7 +550,7 @@ and their distributions.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoiseSetting</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary.interface_signal_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalGenerator</span>
 
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="o">=</span> <span class="kc">True</span>
@@ -577,13 +568,13 @@ and their distributions.</p>
 <span class="k">for</span> <span class="n">optical_power</span> <span class="ow">in</span> <span class="n">optical_powers</span><span class="p">:</span>
     <span class="n">detector_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">optical_power</span><span class="o">.</span><span class="n">magnitude</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2"> W&quot;</span>
 
-    <span class="n">signal_generator</span> <span class="o">=</span> <span class="n">SignalGenerator</span><span class="p">(</span><span class="n">n_elements</span><span class="o">=</span><span class="n">sequence_length</span><span class="p">)</span>
+    <span class="n">signal_generator</span> <span class="o">=</span> <span class="n">SignalGenerator</span><span class="p">(</span><span class="n">n_elements</span><span class="o">=</span><span class="n">sequence_length</span><span class="p">,</span> <span class="n">time_units</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">signal_units</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">)</span>
 
     <span class="n">signal_generator</span><span class="o">.</span><span class="n">create_zero_signal</span><span class="p">(</span><span class="n">detector_name</span><span class="p">)</span>
 
-    <span class="n">signal_generator</span><span class="o">.</span><span class="n">add_constant_to_signal</span><span class="p">(</span>
+    <span class="n">signal_generator</span><span class="o">.</span><span class="n">add_constant</span><span class="p">(</span>
         <span class="n">signal_name</span><span class="o">=</span><span class="n">detector_name</span><span class="p">,</span>
-        <span class="n">constant</span><span class="o">=</span><span class="n">optical_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;watt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+        <span class="n">constant</span><span class="o">=</span><span class="n">optical_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;watt&#39;</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="c1"># Initialize the detector</span>
@@ -594,7 +585,7 @@ and their distributions.</p>
         <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span>
     <span class="p">)</span>
 
-    <span class="n">detector</span><span class="o">.</span><span class="n">add_shot_noise</span><span class="p">(</span>
+    <span class="n">detector</span><span class="o">.</span><span class="n">apply_shot_noise</span><span class="p">(</span>
         <span class="n">signal_generator</span><span class="o">=</span><span class="n">signal_generator</span><span class="p">,</span>
         <span class="n">wavelength</span><span class="o">=</span><span class="mi">1550</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
         <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span>
@@ -623,7 +614,7 @@ and their distributions.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.624 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.556 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-noise-sources-shot-noise-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/0ed030493f46cf072d14cf8d5b0bb706/shot_noise.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">shot_noise.ipynb</span></code></a></p>

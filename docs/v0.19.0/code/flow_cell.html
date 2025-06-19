@@ -688,6 +688,26 @@ The same theoretical framework for rectangular duct flow is applied to these mic
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.flow_cell.FlowCell.order_events">
+<span class="sig-name descname"><span class="pre">order_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scatterer_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_scheme</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell.order_events"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell.order_events" title="Link to this definition">#</a></dt>
+<dd><p>Orders the events in the DataFrame by their arrival time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scatterer_dataframe</strong> (<em>pd.DataFrame</em>) – DataFrame containing the events with a ‘Time’ column.</p></li>
+<li><p><strong>event_scheme</strong> (<em>str</em>) – The scheme used to generate the events, e.g., ‘uniform-random’ or ‘uniform-sequential’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Ordered DataFrame with events sorted by ‘Time’.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.flow_cell.FlowCell.plot">
 <span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(7,</span> <span class="pre">4)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell.plot" title="Link to this definition">#</a></dt>
 <dd><p>Plot the spatial distribution of sampled particles with velocity color-coding.</p>
@@ -847,6 +867,7 @@ z \in [-b_{\text{sample}}, b_{\text{sample}}]\]</div>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.height"><code class="docutils literal notranslate"><span class="pre">FlowCell.height</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.mu"><code class="docutils literal notranslate"><span class="pre">FlowCell.mu</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.n_int"><code class="docutils literal notranslate"><span class="pre">FlowCell.n_int</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.order_events"><code class="docutils literal notranslate"><span class="pre">FlowCell.order_events()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.plot"><code class="docutils literal notranslate"><span class="pre">FlowCell.plot()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.sample_transverse_profile"><code class="docutils literal notranslate"><span class="pre">FlowCell.sample_transverse_profile()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.sample_volume_flow"><code class="docutils literal notranslate"><span class="pre">FlowCell.sample_volume_flow</span></code></a></li>

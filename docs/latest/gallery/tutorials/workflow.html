@@ -465,8 +465,8 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="coupling_model.html">Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pre_defined_workflow.html">Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Workflow</a></li>
 </ul>
@@ -474,15 +474,6 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../noise_sources/index.html">Examples: Noises</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/dark_current.html">Dark Current</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/shot_noise.html">Shot noise</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../extras/index.html">Examples: extras</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../extras/continuous_acquisition.html">WorkFlow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/distributions.html">Particle Distribution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/flow_cell_profiles.html">Flow Cell geometries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/flow_cytometer_signal.html">Generating Signal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/scatterer_distribution.html">Scatterer Collection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/triggered_acquisition.html">WorkFlow</a></li>
 </ul>
 </details></li>
 </ul>
@@ -633,7 +624,7 @@ passing through the cross-sectional area is calculated as:</p>
 given by:</p>
 <div class="math notranslate nohighlight">
 \[\text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}\]</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererCollection</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluidics</span><span class="p">,</span> <span class="n">ScattererCollection</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Exosome</span><span class="p">,</span> <span class="n">Sphere</span><span class="p">,</span> <span class="n">distribution</span>
 
 <span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
@@ -650,10 +641,26 @@ given by:</p>
 <span class="c1"># Add an Exosome population</span>
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">custom_population</span><span class="p">)</span>
 
-<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 
-<span class="c1"># Initialize the scatterer with the flow cell</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">get_population_dataframe</span><span class="p">(</span><span class="n">total_sampling</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">use_ratio</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Visualize the particle population</span>
+<span class="n">custom_population</span> <span class="o">=</span> <span class="n">Sphere</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Pop 1&#39;</span><span class="p">,</span>
+    <span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
+    <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="n">characteristic_property</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
+    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">1.44</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.002</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Add an Exosome population</span>
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">custom_population</span><span class="p">)</span>
+
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+
+<span class="n">fluidics</span> <span class="o">=</span> <span class="n">Fluidics</span><span class="p">(</span>
+    <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
+    <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span>
+<span class="p">)</span>
+
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">fluidics</span><span class="o">.</span><span class="n">generate_event_dataframe</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">3.5</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 
 <span class="n">df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;Diameter&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
 </pre></div>
@@ -703,6 +710,15 @@ power to electronic signals, and saturation level represents the maximum signal 
     <span class="n">voltage_noise_density</span><span class="o">=</span><span class="mf">.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanovolt</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">sqrt_hertz</span><span class="p">,</span>
     <span class="n">current_noise_density</span><span class="o">=</span><span class="mf">.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">femtoampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">sqrt_hertz</span>
 <span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptoElectronics</span>
+
+<span class="n">opto_electronics</span> <span class="o">=</span> <span class="n">OptoElectronics</span><span class="p">(</span>
+    <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">,</span> <span class="n">detector_2</span><span class="p">],</span>
+    <span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+    <span class="n">amplifier</span><span class="o">=</span><span class="n">amplifier</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -715,14 +731,12 @@ and particles follows Mie theory:</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">circuits</span>
 
 <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
-    <span class="n">transimpedance_amplifier</span><span class="o">=</span><span class="n">amplifier</span><span class="p">,</span>
-    <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
-    <span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">,</span>
-    <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">,</span> <span class="n">detector_2</span><span class="p">],</span>
-    <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>
+    <span class="n">opto_electronics</span><span class="o">=</span><span class="n">opto_electronics</span><span class="p">,</span>
+    <span class="n">fluidics</span><span class="o">=</span><span class="n">fluidics</span><span class="p">,</span>
     <span class="n">background_power</span><span class="o">=</span><span class="mf">0.001</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span>
 <span class="p">)</span>
+
+<span class="n">cytometer</span><span class="o">.</span><span class="n">opto_electronics</span> <span class="o">=</span> <span class="n">opto_electronics</span>
 
 <span class="n">processing_steps</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microsecond</span><span class="p">),</span>
@@ -730,14 +744,17 @@ and particles follows Mie theory:</p>
 <span class="p">]</span>
 
 <span class="c1"># Run the flow cytometry simulation</span>
-<span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
-<span class="n">acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span><span class="n">processing_steps</span><span class="o">=</span><span class="n">processing_steps</span><span class="p">)</span>
+<span class="n">acquisition</span><span class="p">,</span> <span class="n">event_dataframe</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span>
+    <span class="n">run_time</span><span class="o">=</span><span class="mf">.5</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">,</span>
+    <span class="n">processing_steps</span><span class="o">=</span><span class="n">processing_steps</span>
+<span class="p">)</span>
+
 <span class="n">acquisition</span><span class="o">.</span><span class="n">normalize_units</span><span class="p">(</span><span class="n">time_units</span><span class="o">=</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="n">signal_units</span><span class="o">=</span><span class="s1">&#39;max&#39;</span><span class="p">)</span>
 
 <span class="n">_</span> <span class="o">=</span> <span class="n">acquisition</span><span class="o">.</span><span class="n">scatterer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
     <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>
     <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
-    <span class="n">z</span><span class="o">=</span><span class="s1">&#39;RefractiveIndex&#39;</span>
+    <span class="c1"># z=&#39;RefractiveIndex&#39;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -789,7 +806,7 @@ window size and threshold.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_006.png" srcset="../../_images/sphx_glr_workflow_006.png" alt="Peaks properties" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7fcd48814f50&gt;
+<img src="../../_images/sphx_glr_workflow_006.png" srcset="../../_images/sphx_glr_workflow_006.png" alt="Peaks properties" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7f1154923510&gt;
 </pre></div>
 </div>
 <p>Step 8: Classifying the collected dataset</p>
@@ -809,7 +826,7 @@ window size and threshold.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_007.png" srcset="../../_images/sphx_glr_workflow_007.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 10.963 seconds)</p>
+<img src="../../_images/sphx_glr_workflow_007.png" srcset="../../_images/sphx_glr_workflow_007.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 9.004 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/67e0cd555ca79f8bdb69184b227f40a4/workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow.ipynb</span></code></a></p>

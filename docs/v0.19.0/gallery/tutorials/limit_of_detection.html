@@ -54,8 +54,8 @@
     <link rel="icon" href="../../_static/thumbnail.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Workflow" href="pre_defined_workflow.html" />
-    <link rel="prev" title="Examples: Tutorials" href="index.html" />
+    <link rel="next" title="Signal Processing in Flow Cytometry" href="signal_processing.html" />
+    <link rel="prev" title="Workflow" href="coupling_model.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -464,8 +464,8 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="coupling_model.html">Workflow</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Limit of detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pre_defined_workflow.html">Workflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="workflow.html">Workflow</a></li>
 </ul>
@@ -473,15 +473,6 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../noise_sources/index.html">Examples: Noises</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/dark_current.html">Dark Current</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/shot_noise.html">Shot noise</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../extras/index.html">Examples: extras</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../extras/continuous_acquisition.html">WorkFlow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/distributions.html">Particle Distribution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/flow_cell_profiles.html">Flow Cell geometries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/flow_cytometer_signal.html">Generating Signal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/scatterer_distribution.html">Scatterer Collection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/triggered_acquisition.html">WorkFlow</a></li>
 </ul>
 </details></li>
 </ul>
@@ -562,7 +553,7 @@ to download the full example code.</p>
 /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
 
-&lt;seaborn.axisgrid.JointGrid object at 0x7fcd48177210&gt;
+&lt;seaborn.axisgrid.JointGrid object at 0x7f115c39cd50&gt;
 </pre></div>
 </div>
 <div class="line-block">
@@ -579,6 +570,7 @@ to download the full example code.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">peak_locator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.triggering_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriggeringSystem</span><span class="p">,</span> <span class="n">Scheme</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">circuits</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptoElectronics</span><span class="p">,</span> <span class="n">Fluidics</span>
 
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="o">=</span> <span class="kc">True</span>
@@ -613,6 +605,12 @@ to download the full example code.</p>
 
     <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
 
+
+<span class="n">fluidics</span> <span class="o">=</span> <span class="n">Fluidics</span><span class="p">(</span>
+    <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
+    <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span>
+<span class="p">)</span>
+
 <span class="n">digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>
     <span class="n">saturation_levels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
@@ -635,29 +633,35 @@ to download the full example code.</p>
     <span class="n">dark_current</span><span class="o">=</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliampere</span><span class="p">,</span>          <span class="c1"># Dark current: 0.1 milliamps</span>
 <span class="p">)</span>
 
-<span class="n">transimpedance_amplifier</span> <span class="o">=</span> <span class="n">TransimpedanceAmplifier</span><span class="p">(</span>
+<span class="n">amplifier</span> <span class="o">=</span> <span class="n">TransimpedanceAmplifier</span><span class="p">(</span>
     <span class="n">gain</span><span class="o">=</span><span class="mi">10000</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span>
     <span class="n">bandwidth</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span>
 <span class="p">)</span>
 
-<span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
-    <span class="n">transimpedance_amplifier</span><span class="o">=</span><span class="n">transimpedance_amplifier</span><span class="p">,</span>
+<span class="n">opto_electronics</span> <span class="o">=</span> <span class="n">OptoElectronics</span><span class="p">(</span>
+    <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">],</span>
     <span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">,</span>
-    <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
-    <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>                     <span class="c1"># Populations used in the experiment</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+    <span class="n">amplifier</span><span class="o">=</span><span class="n">amplifier</span>
+<span class="p">)</span>
+
+
+<span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
+    <span class="n">opto_electronics</span><span class="o">=</span><span class="n">opto_electronics</span><span class="p">,</span>
+    <span class="n">fluidics</span><span class="o">=</span><span class="n">fluidics</span><span class="p">,</span>
     <span class="n">background_power</span><span class="o">=</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>
-    <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">]</span>       <span class="c1"># List of detectors: Side scatter and Forward scatter</span>
 <span class="p">)</span>
 
 <span class="c1"># Run the flow cytometry simulation</span>
 <span class="n">processing_steps</span> <span class="o">=</span> <span class="p">[</span>
     <span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">1000</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microsecond</span><span class="p">),</span>
-    <span class="c1"># circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)</span>
+    <span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="p">]</span>
 
-<span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
-<span class="n">analog_acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span><span class="n">processing_steps</span><span class="o">=</span><span class="n">processing_steps</span><span class="p">)</span>
+<span class="n">analog_acquisition</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span>
+    <span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">,</span>
+    <span class="n">processing_steps</span><span class="o">=</span><span class="n">processing_steps</span>
+<span class="p">)</span>
 
 <span class="c1"># Visualize the scatter signals from both detectors</span>
 <span class="n">analog_acquisition</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -692,7 +696,7 @@ to download the full example code.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.429 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.383 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-limit-of-detection-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc141053ca87c293e1689882fb19bce1/limit_of_detection.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">limit_of_detection.ipynb</span></code></a></p>

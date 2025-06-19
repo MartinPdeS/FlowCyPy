@@ -170,12 +170,12 @@ given by:
 .. math::
     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-116
+.. GENERATED FROM PYTHON SOURCE LINES 91-133
 
 .. code-block:: Python
 
 
-    from FlowCyPy import ScattererCollection
+    from FlowCyPy import Fluidics, ScattererCollection
     from FlowCyPy.population import Exosome, Sphere, distribution
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
@@ -192,12 +192,29 @@ given by:
     # Add an Exosome population
     scatterer_collection.add_population(custom_population)
 
-    scatterer_collection.dilute(factor=8)
 
-    # Initialize the scatterer with the flow cell
-    df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
+    custom_population = Sphere(
+        name='Pop 1',
+        particle_count=5e9 * units.particle / units.milliliter,
+        diameter=distribution.RosinRammler(characteristic_property=200 * units.nanometer, spread=30),
+        refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
+    )
+
+    # Add an Exosome population
+    scatterer_collection.add_population(custom_population)
+
+    scatterer_collection.dilute(factor=80)
+
+    fluidics = Fluidics(
+        scatterer_collection=scatterer_collection,
+        flow_cell=flow_cell
+    )
+
+
+    df = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)
 
     df.plot(x='Diameter', bins='auto')
+
 
 
 
@@ -217,14 +234,14 @@ given by:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 117-121
+.. GENERATED FROM PYTHON SOURCE LINES 134-138
 
 Step 5: Define Detectors
 ------------------------
 Detectors measure light intensity. Parameters like responsivity define the conversion of optical
 power to electronic signals, and saturation level represents the maximum signal they can handle.
 
-.. GENERATED FROM PYTHON SOURCE LINES 121-161
+.. GENERATED FROM PYTHON SOURCE LINES 138-187
 
 .. code-block:: Python
 
@@ -267,6 +284,14 @@ power to electronic signals, and saturation level represents the maximum signal 
         current_noise_density=.2 * units.femtoampere / units.sqrt_hertz
     )
 
+    from FlowCyPy import OptoElectronics
+
+    opto_electronics = OptoElectronics(
+        detectors=[detector_0, detector_1, detector_2],
+        digitizer=digitizer,
+        source=source,
+        amplifier=amplifier
+    )
 
 
 
@@ -275,7 +300,8 @@ power to electronic signals, and saturation level represents the maximum signal 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 162-169
+
+.. GENERATED FROM PYTHON SOURCE LINES 188-195
 
 Step 6: Simulate Flow Cytometry Experiment
 ------------------------------------------
@@ -285,21 +311,19 @@ and particles follows Mie theory:
 .. math::
     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
 
-.. GENERATED FROM PYTHON SOURCE LINES 169-197
+.. GENERATED FROM PYTHON SOURCE LINES 195-224
 
 .. code-block:: Python
 
     from FlowCyPy import FlowCytometer, circuits
 
     cytometer = FlowCytometer(
-        source=source,
-        transimpedance_amplifier=amplifier,
-        scatterer_collection=scatterer_collection,
-        digitizer=digitizer,
-        detectors=[detector_0, detector_1, detector_2],
-        flow_cell=flow_cell,
+        opto_electronics=opto_electronics,
+        fluidics=fluidics,
         background_power=0.001 * units.milliwatt
     )
+
+    cytometer.opto_electronics = opto_electronics
 
     processing_steps = [
         circuits.BaselineRestorator(window_size=10 * units.microsecond),
@@ -307,14 +331,17 @@ and particles follows Mie theory:
     ]
 
     # Run the flow cytometry simulation
-    cytometer.prepare_acquisition(run_time=0.5 * units.millisecond)
-    acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
+    acquisition, event_dataframe = cytometer.get_acquisition(
+        run_time=.5 * units.millisecond,
+        processing_steps=processing_steps
+    )
+
     acquisition.normalize_units(time_units='max', signal_units='max')
 
     _ = acquisition.scatterer.plot(
         x='side',
         y='forward',
-        z='RefractiveIndex'
+        # z='RefractiveIndex'
     )
 
 
@@ -329,11 +356,11 @@ and particles follows Mie theory:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 198-199
+.. GENERATED FROM PYTHON SOURCE LINES 225-226
 
 Visualize the scatter signals from both detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 199-201
+.. GENERATED FROM PYTHON SOURCE LINES 226-228
 
 .. code-block:: Python
 
@@ -357,14 +384,14 @@ Visualize the scatter signals from both detectors
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 202-206
+.. GENERATED FROM PYTHON SOURCE LINES 229-233
 
 Step 7: Analyze Detected Signals
 --------------------------------
 The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 206-224
+.. GENERATED FROM PYTHON SOURCE LINES 233-251
 
 .. code-block:: Python
 
@@ -404,11 +431,11 @@ window size and threshold.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-226
+.. GENERATED FROM PYTHON SOURCE LINES 252-253
 
 Getting and plotting the extracted peaks.
 
-.. GENERATED FROM PYTHON SOURCE LINES 226-238
+.. GENERATED FROM PYTHON SOURCE LINES 253-265
 
 .. code-block:: Python
 
@@ -438,15 +465,15 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7fcd48814f50>
+    <seaborn.axisgrid.JointGrid object at 0x7f1154923510>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 239-240
+.. GENERATED FROM PYTHON SOURCE LINES 266-267
 
 Step 8: Classifying the collected dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 240-253
+.. GENERATED FROM PYTHON SOURCE LINES 267-280
 
 .. code-block:: Python
 
@@ -478,7 +505,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 10.963 seconds)
+   **Total running time of the script:** (0 minutes 9.004 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

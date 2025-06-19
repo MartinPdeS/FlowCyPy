@@ -55,7 +55,7 @@ along with their distributions.
     import matplotlib.pyplot as plt
     from FlowCyPy.detector import Detector
     from FlowCyPy import units
-    from FlowCyPy.binary.interface_signal_generator import SignalGenerator
+    from FlowCyPy.signal_generator import SignalGenerator
     import numpy
     from FlowCyPy import NoiseSetting
 
@@ -74,7 +74,7 @@ along with their distributions.
     for dark_current in dark_currents:
         detector_name = f"{dark_current.magnitude:.1e} A"
 
-        signal_generator = SignalGenerator(n_elements=200)
+        signal_generator = SignalGenerator(n_elements=200, time_units=units.second, signal_units=units.ampere)
 
         signal_generator.create_zero_signal(detector_name)
 
@@ -88,7 +88,7 @@ along with their distributions.
         )
 
         # Add dark current noise to the raw signal
-        detector.add_dark_current_noise(
+        detector.apply_dark_current_noise(
             signal_generator=signal_generator,
             bandwidth=10 * units.megahertz
         )
@@ -118,7 +118,7 @@ along with their distributions.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.552 seconds)
+   **Total running time of the script:** (0 minutes 0.494 seconds)
 
 
 .. _sphx_glr_download_gallery_noise_sources_dark_current.py:

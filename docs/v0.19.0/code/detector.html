@@ -655,8 +655,8 @@ Default is 0°.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.add_dark_current_noise">
-<span class="sig-name descname"><span class="pre">add_dark_current_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.add_dark_current_noise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.add_dark_current_noise" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.apply_dark_current_noise">
+<span class="sig-name descname"><span class="pre">apply_dark_current_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.apply_dark_current_noise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.apply_dark_current_noise" title="Link to this definition">#</a></dt>
 <dd><p>Compute and return the dark current noise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -683,8 +683,8 @@ Default is 0°.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.add_shot_noise">
-<span class="sig-name descname"><span class="pre">add_shot_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.add_shot_noise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.add_shot_noise" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="FlowCyPy.detector.Detector.apply_shot_noise">
+<span class="sig-name descname"><span class="pre">apply_shot_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal_generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelength</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/detector.html#Detector.apply_shot_noise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.detector.Detector.apply_shot_noise" title="Link to this definition">#</a></dt>
 <dd><p>Computes the shot noise photocurrent arising from photon statistics.</p>
 <dl>
 <dt>Shot noise is due to the discrete nature of photon arrivals. The process includes:</dt><dd><ol class="arabic simple">
@@ -738,7 +738,7 @@ Default is 0°.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The shot noise voltage distribution (in volts).</p>
+<dd class="field-even"><p>The shot noise-added current distribution (in current).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Quantity</p>
@@ -805,8 +805,8 @@ Default is 0°.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.gamma_angle"><code class="docutils literal notranslate"><span class="pre">Detector.gamma_angle</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.sampling"><code class="docutils literal notranslate"><span class="pre">Detector.sampling</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.name"><code class="docutils literal notranslate"><span class="pre">Detector.name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.add_dark_current_noise"><code class="docutils literal notranslate"><span class="pre">Detector.add_dark_current_noise()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.add_shot_noise"><code class="docutils literal notranslate"><span class="pre">Detector.add_shot_noise()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.apply_dark_current_noise"><code class="docutils literal notranslate"><span class="pre">Detector.apply_dark_current_noise()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.apply_shot_noise"><code class="docutils literal notranslate"><span class="pre">Detector.apply_shot_noise()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id0"><code class="docutils literal notranslate"><span class="pre">Detector.cache_numerical_aperture</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.detector.Detector.dataframe"><code class="docutils literal notranslate"><span class="pre">Detector.dataframe</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><code class="docutils literal notranslate"><span class="pre">Detector.responsivity</span></code></a></li>
