@@ -57,15 +57,12 @@ napoleon_numpy_docstring = True
 html_logo = "_static/thumbnail.png"
 html_favicon = "_static/thumbnail.png"
 
-
 def reset_mpl(gallery_conf, fname):
     use_mpsplots_style()
 
-
 examples_files = [
     'tutorials',
-    'noise_sources',
-    'extras'
+    'noise_sources'
 ]
 
 sphinx_gallery_conf = {
