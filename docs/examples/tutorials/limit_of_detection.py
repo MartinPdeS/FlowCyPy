@@ -14,6 +14,7 @@ from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import peak_locator
 from FlowCyPy.triggering_system import TriggeringSystem, Scheme
 from FlowCyPy import circuits
+from FlowCyPy import OptoElectronics, Fluidics
 
 NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
@@ -48,6 +49,12 @@ for size in [150, 100, 50, 30]:
 
     scatterer_collection.add_population(population)
 
+
+fluidics = Fluidics(
+    scatterer_collection=scatterer_collection,
+    flow_cell=flow_cell
+)
+
 digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
@@ -70,29 +77,35 @@ detector_1 = Detector(
     dark_current=0.01 * units.milliampere,          # Dark current: 0.1 milliamps
 )
 
-transimpedance_amplifier = TransimpedanceAmplifier(
+amplifier = TransimpedanceAmplifier(
     gain=10000 * units.volt / units.ampere,
     bandwidth = 10 * units.megahertz
 )
 
-cytometer = FlowCytometer(
-    source=source,
-    transimpedance_amplifier=transimpedance_amplifier,
+opto_electronics = OptoElectronics(
+    detectors=[detector_0, detector_1],
     digitizer=digitizer,
-    scatterer_collection=scatterer_collection,
-    flow_cell=flow_cell,                     # Populations used in the experiment
+    source=source,
+    amplifier=amplifier
+)
+
+
+cytometer = FlowCytometer(
+    opto_electronics=opto_electronics,
+    fluidics=fluidics,
     background_power=0.01 * units.milliwatt,
-    detectors=[detector_0, detector_1]       # List of detectors: Side scatter and Forward scatter
 )
 
 # Run the flow cytometry simulation
 processing_steps = [
     circuits.BaselineRestorator(window_size=1000 * units.microsecond),
-    # circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)
+    circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)
 ]
 
-cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
-analog_acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
+analog_acquisition, _ = cytometer.get_acquisition(
+    run_time=0.2 * units.millisecond,
+    processing_steps=processing_steps
+)
 
 # Visualize the scatter signals from both detectors
 analog_acquisition.plot()

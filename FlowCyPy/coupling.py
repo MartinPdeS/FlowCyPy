@@ -12,7 +12,7 @@ def compute_detected_signal(
     source: BaseBeam,
     detector: object,
     signal_digitizer: object,
-    scatterer_dataframe: pd.DataFrame,
+    event_dataframe: pd.DataFrame,
     medium_refractive_index: Quantity,
     compute_cross_section: bool = False
 ) -> None:
@@ -30,7 +30,7 @@ def compute_detected_signal(
     detector : object
         Detector object that includes attributes such as numerical aperture, angles, and sampling
         configuration.
-    scatterer_dataframe : pd.DataFrame
+    event_dataframe : pd.DataFrame
         DataFrame containing scatterer properties. It must include a column named 'type' with values
         'Sphere' or 'CoreShell', and additional columns required for each scatterer type.
     medium_refractive_index : Quantity
@@ -46,22 +46,22 @@ def compute_detected_signal(
         optionally, the scattering cross section .
     """
     # Create boolean masks for each scatterer type.
-    sphere_mask = scatterer_dataframe["type"] == "Sphere"
-    coreshell_mask = scatterer_dataframe["type"] == "CoreShell"
+    sphere_mask = event_dataframe["type"] == "Sphere"
+    coreshell_mask = event_dataframe["type"] == "CoreShell"
 
     kwargs = dict(
         source=source,
         detector=detector,
         medium_refractive_index=medium_refractive_index,
         compute_cross_section=compute_cross_section,
-        scatterer_dataframe=scatterer_dataframe,
+        event_dataframe=event_dataframe,
         signal_digitizer=signal_digitizer
     )
 
     # Process sphere and core-shell scatterers.
-    if len(scatterer_dataframe[sphere_mask]) != 0:
+    if len(event_dataframe[sphere_mask]) != 0:
         process_sphere(mask=sphere_mask, **kwargs)
-    if len(scatterer_dataframe[coreshell_mask]) != 0:
+    if len(event_dataframe[coreshell_mask]) != 0:
         process_coreshell(mask=coreshell_mask, **kwargs)
 
 
@@ -69,7 +69,7 @@ def process_sphere(
     source: BaseBeam,
     detector: object,
     signal_digitizer: object,
-    scatterer_dataframe: pd.DataFrame,
+    event_dataframe: pd.DataFrame,
     mask: pd.Series,
     medium_refractive_index: Quantity,
     compute_cross_section: bool = False
@@ -90,7 +90,7 @@ def process_sphere(
         Light source object.
     detector : object
         Detector object containing measurement settings.
-    scatterer_dataframe : pd.DataFrame
+    event_dataframe : pd.DataFrame
         DataFrame with scatterer data to be updated.
     sphere_mask : pd.Series
         Boolean mask that selects rows corresponding to 'Sphere' scatterers.
@@ -104,15 +104,15 @@ def process_sphere(
     None
     """
     # Extract rows for sphere scatterers.
-    df_sphere = scatterer_dataframe[mask]
+    df_sphere = event_dataframe[mask]
     num_particles = len(df_sphere)
 
     # Compute amplitude signal using spatial positions.
     amplitude = source.get_amplitude_signal(
         size=num_particles,
         bandwidth=signal_digitizer.bandwidth,
-        x=scatterer_dataframe["x"],
-        y=scatterer_dataframe["y"]
+        x=event_dataframe["x"],
+        y=event_dataframe["y"]
     )
 
     # Build the plane wave source for simulation.
@@ -150,19 +150,19 @@ def process_sphere(
 
     # Compute the coupling signal.
     coupling_values = experiment.get_sequential("coupling")
-    scatterer_dataframe.loc[mask, detector.name] = pint_pandas.PintArray(coupling_values, dtype=units.watt)
+    event_dataframe.loc[mask, detector.name] = pint_pandas.PintArray(coupling_values, dtype=units.watt)
 
     # Optionally compute the scattering cross section and update the DataFrame.
     if compute_cross_section:
         cross_section = experiment.get_sequential("Csca")
-        scatterer_dataframe.loc[mask, "Csca"] = pint_pandas.PintArray(cross_section, dtype=units.meter * units.meter)
+        event_dataframe.loc[mask, "Csca"] = pint_pandas.PintArray(cross_section, dtype=units.meter * units.meter)
 
 
 def process_coreshell(
     source: BaseBeam,
     detector: object,
     signal_digitizer: object,
-    scatterer_dataframe: pd.DataFrame,
+    event_dataframe: pd.DataFrame,
     mask: pd.Series,
     medium_refractive_index: Quantity,
     compute_cross_section: bool = False
@@ -183,7 +183,7 @@ def process_coreshell(
         Light source object.
     detector : object
         Detector object containing measurement settings.
-    scatterer_dataframe : pd.DataFrame
+    event_dataframe : pd.DataFrame
         DataFrame with scatterer data to be updated.
     coreshell_mask : pd.Series
         Boolean mask that selects rows corresponding to 'CoreShell' scatterers.
@@ -197,15 +197,15 @@ def process_coreshell(
     None
     """
     # Extract rows for core-shell scatterers.
-    df_coreshell = scatterer_dataframe[mask]
+    df_coreshell = event_dataframe[mask]
     num_particles = len(df_coreshell)
 
     # Compute amplitude signal using spatial positions.
     amplitude = source.get_amplitude_signal(
         size=num_particles,
         bandwidth=signal_digitizer.bandwidth,
-        x=scatterer_dataframe["x"],
-        y=scatterer_dataframe["y"]
+        x=event_dataframe["x"],
+        y=event_dataframe["y"]
     )
 
     # Build the plane wave source for simulation.
@@ -245,9 +245,9 @@ def process_coreshell(
 
     # Compute the coupling signal.
     coupling_values = experiment.get_sequential("coupling")
-    scatterer_dataframe.loc[mask, detector.name] = pint_pandas.PintArray(coupling_values, dtype=units.watt)
+    event_dataframe.loc[mask, detector.name] = pint_pandas.PintArray(coupling_values, dtype=units.watt)
 
     # Optionally compute the scattering cross section and update the DataFrame.
     if compute_cross_section:
         cross_section = experiment.get_sequential("Csca")
-        scatterer_dataframe.loc[mask, "Csca"] = pint_pandas.PintArray(cross_section, dtype=units.meter * units.meter)
+        event_dataframe.loc[mask, "Csca"] = pint_pandas.PintArray(cross_section, dtype=units.meter * units.meter)

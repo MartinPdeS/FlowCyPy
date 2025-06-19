@@ -240,7 +240,7 @@ class FlowCell:
         U = self.velocity(Y, Z)
 
         # Compute the 2D integral over the channel cross-section using the composite trapezoidal rule.
-        Q = np.trapz(np.trapz(U, y_vals, axis=1), z_vals)
+        Q = np.trapezoid(np.trapezoid(U, y_vals, axis=1), z_vals)
 
         # Restore the original dpdx if it was set.
         if dpdx_saved is not None:
@@ -321,26 +321,50 @@ class FlowCell:
                 self.sample_transverse_profile(n_events)
             )
 
-        df = helper.get_dataframe_from_dict(
+        scatterer_dataframe = helper.get_dataframe_from_dict(
             dictionnary=sampling_dict,
             level_names=['Population', 'ScattererID']
         )
 
-        df = ScattererDataFrame(df)
+        scatterer_dataframe = ScattererDataFrame(scatterer_dataframe)
 
-        if not df.empty and self.event_scheme.lower() in ['uniform-random', 'uniform-sequential']:
-            total_events = len(df)
-            evenly_spaced_times = np.linspace(
-                0.1 * run_time,
-                0.9 * run_time,
-                total_events
-            )
+        self.order_events(
+            scatterer_dataframe=scatterer_dataframe,
+            event_scheme=self.event_scheme
+        )
+
+        return scatterer_dataframe
+
+    def order_events(self, scatterer_dataframe: pd.DataFrame, event_scheme: str) -> pd.DataFrame:
+        """
+        Orders the events in the DataFrame by their arrival time.
+
+        Parameters
+        ----------
+        scatterer_dataframe : pd.DataFrame
+            DataFrame containing the events with a 'Time' column.
+        event_scheme : str
+            The scheme used to generate the events, e.g., 'uniform-random' or 'uniform-sequential'.
+
+        Returns
+        -------
+        pd.DataFrame
+            Ordered DataFrame with events sorted by 'Time'.
+        """
+        if scatterer_dataframe.empty:
+            return
+
+        start_time = scatterer_dataframe['Time'].min() * 1.1
+        stop_time = scatterer_dataframe['Time'].max() * 0.9
+
+        if not scatterer_dataframe.empty and event_scheme.lower() in ['uniform-random', 'uniform-sequential']:
+            total_events = len(scatterer_dataframe)
+
+            evenly_spaced_times = np.linspace(start_time, stop_time, total_events)
 
             if self.event_scheme.lower() == 'uniform-random':
                 np.random.shuffle(evenly_spaced_times.magnitude)
-            df['Time'] = PintArray(evenly_spaced_times.to(units.second).magnitude, units.second)
-
-        return df
+            scatterer_dataframe['Time'] = PintArray(evenly_spaced_times.to(units.second).magnitude, units.second)
 
     def _get_population_arrival_time(self, run_time: Quantity, population: BasePopulation) -> pd.DataFrame:
         """

@@ -22,18 +22,16 @@ Overview:
 # define physical quantities like meters, seconds, and watts in a concise and consistent manner.
 
 from FlowCyPy import units
-from FlowCyPy import GaussianBeam
-from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy import ScattererCollection
+from FlowCyPy import ScattererCollection, FlowCell
 from FlowCyPy.population import Exosome, HDL
-from FlowCyPy.detector import PMT
-from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy import FlowCytometer, TransimpedanceAmplifier
+from FlowCyPy import GaussianBeam, OptoElectronics, SignalDigitizer, PMT, TransimpedanceAmplifier
+from FlowCyPy import Fluidics
+
 
 source = GaussianBeam(
-    numerical_aperture=0.3 * units.AU,           # Numerical aperture
-    wavelength=200 * units.nanometer,           # Wavelength
-    optical_power=20 * units.milliwatt          # Optical power
+    numerical_aperture=0.3 * units.AU,
+    wavelength=200 * units.nanometer,
+    optical_power=20 * units.milliwatt
 )
 
 flow_cell = FlowCell(
@@ -51,12 +49,17 @@ scatterer_collection.add_population(
     HDL(particle_count=5e9 * units.particle / units.milliliter)
 )
 
-scatterer_collection.dilute(factor=1)
+scatterer_collection.dilute(factor=0.1)
 
-# Initialize the scatterer with the flow cell
-df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
+fluidics = Fluidics(
+    scatterer_collection=scatterer_collection,
+    flow_cell=flow_cell
+)
 
-df.plot(x='Diameter', bins='auto')
+
+event_dataframe = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)  # Visualize the particle population
+
+event_dataframe.plot(x='Diameter', bins='auto')
 
 digitizer = SignalDigitizer(
     bit_depth='14bit',
@@ -68,27 +71,25 @@ detector_0 = PMT(name='forward', phi_angle=0 * units.degree, numerical_aperture=
 
 detector_1 = PMT(name='side', phi_angle=90 * units.degree, numerical_aperture=0.3 * units.AU)
 
-transimpedance_amplifier = TransimpedanceAmplifier(
+amplifier = TransimpedanceAmplifier(
     gain=100 * units.volt / units.ampere,
     bandwidth = 10 * units.megahertz
 )
 
-
-cytometer = FlowCytometer(
-    source=source,
-    transimpedance_amplifier=transimpedance_amplifier,
-    scatterer_collection=scatterer_collection,
-    digitizer=digitizer,
+opto_electronics = OptoElectronics(
     detectors=[detector_0, detector_1],
-    flow_cell=flow_cell,
-    background_power=0.001 * units.milliwatt
+    digitizer=digitizer,
+    source=source,
+    amplifier=amplifier
 )
 
-# Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
+event_dataframe = opto_electronics.model_event(
+    event_dataframe=event_dataframe,
+    compute_cross_section=True
+)
 
-cytometer.scatterer_dataframe.plot(
+event_dataframe.plot(
     x='side',
     y='forward',
-    z='RefractiveIndex'
+    z='Csca'
 )

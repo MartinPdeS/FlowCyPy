@@ -11,6 +11,7 @@ from FlowCyPy import units
 from FlowCyPy import peak_locator
 from FlowCyPy import circuits
 from FlowCyPy.triggering_system import TriggeringSystem, Scheme
+from FlowCyPy import OptoElectronics, Fluidics
 # ----------------- FIXTURES -----------------
 
 
@@ -105,22 +106,31 @@ def scatterer_collection(population):
 @pytest.fixture
 def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, source, amplifier, digitizer):
     """Fixture for creating a default Flow Cytometer."""
-    return FlowCytometer(
-        source=source,
-        transimpedance_amplifier=amplifier,
-        digitizer=digitizer,
-        scatterer_collection=scatterer_collection,
+
+    opto_electronics = OptoElectronics(
         detectors=[detector_0, detector_1],
-        flow_cell=flow_cell,
+        digitizer=digitizer,
+        source=source,
+        amplifier=amplifier
     )
+
+    fluidics = Fluidics(
+        scatterer_collection=scatterer_collection,
+        flow_cell=flow_cell
+    )
+
+    return FlowCytometer(
+        opto_electronics=opto_electronics,
+        fluidics=fluidics
+    )
+
 
 # ----------------- UNIT TESTS -----------------
 
 
 def test_flow_cytometer_acquisition(flow_cytometer):
     """Test if the Flow Cytometer generates a non-zero acquisition signal."""
-    flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
-    acquisition = flow_cytometer.get_acquisition()
+    acquisition, _ = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
     signal = acquisition['default']
 
@@ -130,8 +140,7 @@ def test_flow_cytometer_acquisition(flow_cytometer):
 
 def test_flow_cytometer_multiple_detectors(flow_cytometer):
     """Ensure that both detectors generate non-zero signals."""
-    flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
-    acquisition = flow_cytometer.get_acquisition()
+    acquisition, _ = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
     signal_0 = acquisition['default']
     signal_1 = acquisition['default']
@@ -143,8 +152,7 @@ def test_flow_cytometer_multiple_detectors(flow_cytometer):
 @patch('matplotlib.pyplot.show')
 def test_flow_cytometer_plot(mock_show, flow_cytometer, digitizer):
     """Test if the flow cytometer plots without error."""
-    flow_cytometer.prepare_acquisition(run_time=0.2 * units.millisecond)
-    acquisition = flow_cytometer.get_acquisition()
+    acquisition, _ = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
     acquisition.plot()
     plt.close()
@@ -155,8 +163,7 @@ def test_flow_cytometer_plot(mock_show, flow_cytometer, digitizer):
 
 def test_flow_cytometer_triggered_acquisition(flow_cytometer):
     """Test triggered acquisition with a defined threshold."""
-    flow_cytometer.prepare_acquisition(run_time=2 * units.millisecond)
-    acquisition = flow_cytometer.get_acquisition()
+    acquisition, _ = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
     trigger = TriggeringSystem(
         dataframe=acquisition,
@@ -178,8 +185,7 @@ def test_flow_cytometer_triggered_acquisition(flow_cytometer):
 
 def test_flow_cytometer_signal_processing(flow_cytometer):
     """Test filtering and baseline restoration on the acquired signal."""
-    flow_cytometer.prepare_acquisition(run_time=2.0 * units.millisecond)
-    acquisition = flow_cytometer.get_acquisition()
+    acquisition, _ = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
 
     trigger = TriggeringSystem(
         dataframe=acquisition,
@@ -200,14 +206,12 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
 
 def test_peak_detection(flow_cytometer, digitizer):
     """Ensure peak detection works correctly on the triggered acquisition."""
-    flow_cytometer.prepare_acquisition(run_time=2.0 * units.millisecond)
-
     processing_steps = [
         circuits.BaselineRestorator(window_size=1000 * units.microsecond),
         circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
     ]
 
-    acquisition = flow_cytometer.get_acquisition(processing_steps=processing_steps)
+    acquisition, _ = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond, processing_steps=processing_steps)
 
     trigger = TriggeringSystem(
         dataframe=acquisition,
@@ -235,8 +239,7 @@ def test_peak_detection(flow_cytometer, digitizer):
 @patch('matplotlib.pyplot.show')
 def test_peak_plot(mock_show, flow_cytometer, digitizer):
     """Ensure peak plots render correctly."""
-    flow_cytometer.prepare_acquisition(run_time=2.0 * units.millisecond)
-    acquisition = flow_cytometer.get_acquisition()
+    acquisition, _ = flow_cytometer.get_acquisition(run_time=0.2 * units.millisecond)
     acquisition.plot()
 
     trigger = TriggeringSystem(

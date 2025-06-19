@@ -11,7 +11,7 @@ along with their distributions.
 import matplotlib.pyplot as plt
 from FlowCyPy.detector import Detector
 from FlowCyPy import units
-from FlowCyPy.binary.interface_signal_generator import SignalGenerator
+from FlowCyPy.signal_generator import SignalGenerator
 import numpy
 from FlowCyPy import NoiseSetting
 
@@ -30,7 +30,7 @@ fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
 for dark_current in dark_currents:
     detector_name = f"{dark_current.magnitude:.1e} A"
 
-    signal_generator = SignalGenerator(n_elements=200)
+    signal_generator = SignalGenerator(n_elements=200, time_units=units.second, signal_units=units.ampere)
 
     signal_generator.create_zero_signal(detector_name)
 
@@ -44,7 +44,7 @@ for dark_current in dark_currents:
     )
 
     # Add dark current noise to the raw signal
-    detector.add_dark_current_noise(
+    detector.apply_dark_current_noise(
         signal_generator=signal_generator,
         bandwidth=10 * units.megahertz
     )

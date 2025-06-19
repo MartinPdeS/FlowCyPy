@@ -7,9 +7,11 @@ except ImportError:
 from .binary import *
 from .cytometer import FlowCytometer
 from .scatterer_collection import ScattererCollection, CouplingModel
-# from .population import Population
-from .detector import Detector
+from .detector import Detector, PIN, PMT, APD
 from .source import GaussianBeam, AstigmaticGaussianBeam
 from .noises import NoiseSetting
 from .signal_digitizer import SignalDigitizer
 from .amplifier import TransimpedanceAmplifier
+from .opto_electronics import OptoElectronics
+from .flow_cell import FlowCell
+from .fluidics import Fluidics

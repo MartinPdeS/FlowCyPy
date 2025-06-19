@@ -1,6 +1,6 @@
+from typing import Optional
 import numpy as np
 import pandas as pd
-from typing import Optional
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 from FlowCyPy.binary.interface_signal_generator import SignalGenerator
@@ -9,6 +9,7 @@ from FlowCyPy import units
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy.helper import validate_units
 from FlowCyPy.noises import NoiseSetting
+
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -215,10 +216,6 @@ class Detector():
             factor=self.responsivity
         )
 
-        # # Step 3: Add dark current noise to photo-current if enabled
-        # if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
-        #     self.apply_dark_current_noise(signal_generator=signal_generator, bandwidth=bandwidth)
-
     def apply_dark_current_noise(self, signal_generator: SignalGenerator, bandwidth: Quantity) -> Quantity:
         r"""
         Compute and return the dark current noise.
@@ -374,6 +371,7 @@ class Detector():
             factor=1 / optical_power_to_photo_count_conversion
         )
 
+
 class PMT():
     def __new__(cls,
         name: str,
@@ -430,3 +428,4 @@ class APD():
             dark_current=dark_current,
             **kwargs
         )
+

@@ -20,11 +20,9 @@ import matplotlib.pyplot as plt
 
 # Import necessary components from FlowCyPy
 from FlowCyPy import (
-    FlowCytometer, ScattererCollection, Detector, GaussianBeam,
-    population, distribution, circuits, units, NoiseSetting, TransimpedanceAmplifier
+    FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell, SignalDigitizer, OptoElectronics,
+    population, distribution, circuits, units, NoiseSetting, TransimpedanceAmplifier, Fluidics
 )
-from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy.signal_digitizer import SignalDigitizer
 
 # Enable noise settings if desired
 NoiseSetting.include_noises = True
@@ -64,6 +62,11 @@ scatterer_collection = ScattererCollection(
     populations=[population]
 )
 
+fluidics = Fluidics(
+    scatterer_collection=scatterer_collection,
+    flow_cell=flow_cell
+)
+
 # Define the signal digitizer.
 digitizer = SignalDigitizer(
     bit_depth='14bit',
@@ -88,20 +91,24 @@ detector_1 = Detector(
     dark_current=1 * units.microampere,
 )
 
-transimpedance_amplifier = TransimpedanceAmplifier(
+amplifier = TransimpedanceAmplifier(
     gain=100 * units.volt / units.ampere,
     bandwidth = 10 * units.megahertz
 )
 
+
+opto_electronics = OptoElectronics(
+    detectors=[detector_0, detector_1],
+    digitizer=digitizer,
+    source=source,
+    amplifier=amplifier
+)
+
 # Setup the flow cytometer.
 cytometer = FlowCytometer(
-    source=source,
-    transimpedance_amplifier=transimpedance_amplifier,
-    digitizer=digitizer,
-    scatterer_collection=scatterer_collection,
-    flow_cell=flow_cell,
+    opto_electronics=opto_electronics,
+    fluidics=fluidics,
     background_power=2 * units.microwatt,
-    detectors=[detector_0, detector_1]
 )
 
 # ---------------------------------------------------------------------------
@@ -109,11 +116,11 @@ cytometer = FlowCytometer(
 # ---------------------------------------------------------------------------
 
 fig, ax = plt.subplots(1, 1, figsize=(12, 6))
+run_time = 0.1 * units.millisecond
 
 # Acquisition 1: Raw Signal (no processing)
 processing_steps_none = []
-cytometer.prepare_acquisition(run_time=0.1 * units.millisecond)
-acquisition_none = cytometer.get_acquisition(processing_steps=processing_steps_none)
+acquisition_none, _ = cytometer.get_acquisition(run_time=run_time, processing_steps=processing_steps_none)
 ax.plot(
     acquisition_none['Time'].pint.to('microsecond'),
     acquisition_none['forward'].pint.to('millivolt'),
@@ -123,7 +130,7 @@ ax.plot(
 
 # Acquisition 2: Baseline Restoration
 processing_steps_baseline = [circuits.BaselineRestorator(window_size=1000 * units.microsecond)]
-acquisition_baseline = cytometer.get_acquisition(processing_steps=processing_steps_baseline)
+acquisition_baseline, _ = cytometer.get_acquisition(run_time=run_time, processing_steps=processing_steps_baseline)
 ax.plot(
     acquisition_baseline['Time'].pint.to('microsecond'),
     acquisition_baseline['forward'].pint.to('millivolt'),
@@ -133,7 +140,7 @@ ax.plot(
 
 # Acquisition 3: Bessel LowPass Filter
 processing_steps_bessel = [circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)]
-acquisition_bessel = cytometer.get_acquisition(processing_steps=processing_steps_bessel)
+acquisition_bessel, _ = cytometer.get_acquisition(run_time=run_time, processing_steps=processing_steps_bessel)
 ax.plot(
     acquisition_bessel['Time'].pint.to('microsecond'),
     acquisition_bessel['forward'].pint.to('millivolt'),

@@ -203,6 +203,7 @@ class ScattererCollection():
 
         After filling, the DataFrame will be populated with diameter and refractive index data.
         """
+        scatterer_dataframe.medium_refractive_index = self.medium_refractive_index
         for population in self.populations:
             # Create a boolean mask for rows where the first index level equals population.name
             mask = scatterer_dataframe.index.get_level_values(0) == population.name

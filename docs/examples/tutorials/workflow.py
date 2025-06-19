@@ -89,7 +89,7 @@ flow_cell.plot(n_samples=300)
 # .. math::
 #     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
 
-from FlowCyPy import ScattererCollection
+from FlowCyPy import Fluidics, ScattererCollection
 from FlowCyPy.population import Exosome, Sphere, distribution
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
@@ -119,10 +119,16 @@ scatterer_collection.add_population(custom_population)
 
 scatterer_collection.dilute(factor=80)
 
-# Initialize the scatterer with the flow cell
-df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
+fluidics = Fluidics(
+    scatterer_collection=scatterer_collection,
+    flow_cell=flow_cell
+)
+
+
+df = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)
 
 df.plot(x='Diameter', bins='auto')
+
 
 # %%
 # Step 5: Define Detectors
@@ -168,6 +174,15 @@ amplifier = TransimpedanceAmplifier(
     current_noise_density=.2 * units.femtoampere / units.sqrt_hertz
 )
 
+from FlowCyPy import OptoElectronics
+
+opto_electronics = OptoElectronics(
+    detectors=[detector_0, detector_1, detector_2],
+    digitizer=digitizer,
+    source=source,
+    amplifier=amplifier
+)
+
 
 # %%
 # Step 6: Simulate Flow Cytometry Experiment
@@ -180,14 +195,12 @@ amplifier = TransimpedanceAmplifier(
 from FlowCyPy import FlowCytometer, circuits
 
 cytometer = FlowCytometer(
-    source=source,
-    transimpedance_amplifier=amplifier,
-    scatterer_collection=scatterer_collection,
-    digitizer=digitizer,
-    detectors=[detector_0, detector_1, detector_2],
-    flow_cell=flow_cell,
+    opto_electronics=opto_electronics,
+    fluidics=fluidics,
     background_power=0.001 * units.milliwatt
 )
+
+cytometer.opto_electronics = opto_electronics
 
 processing_steps = [
     circuits.BaselineRestorator(window_size=10 * units.microsecond),
@@ -195,8 +208,11 @@ processing_steps = [
 ]
 
 # Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=2.5 * units.millisecond)
-acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
+acquisition, event_dataframe = cytometer.get_acquisition(
+    run_time=.5 * units.millisecond,
+    processing_steps=processing_steps
+)
+
 acquisition.normalize_units(time_units='max', signal_units='max')
 
 _ = acquisition.scatterer.plot(
