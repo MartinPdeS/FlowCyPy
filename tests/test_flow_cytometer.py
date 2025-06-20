@@ -10,7 +10,7 @@ from FlowCyPy.population import Sphere
 from FlowCyPy import units
 from FlowCyPy import peak_locator
 from FlowCyPy import circuits
-from FlowCyPy.triggering_system import TriggeringSystem, Scheme
+from FlowCyPy.triggering_system import DynamicWindow
 from FlowCyPy import OptoElectronics, Fluidics
 # ----------------- FIXTURES -----------------
 

@@ -1,49 +1,92 @@
 #include "triggering_system.h"
 
-namespace py = pybind11;
 
-void TriggeringSystem::add_time(const py::buffer &time) {
-    if (time.request().ndim != 1)
+
+
+
+// ------------- BaseTrigger class implementation-------------//
+void BaseTrigger::add_time(const std::vector<double> &time) {
+    if (time.empty())
         throw std::runtime_error("Time arrays must be 1D");
 
-    global_time = time;
+    this->global_time = time;
 }
 
-void TriggeringSystem::add_signal(const std::string &detector_name, const py::buffer &signal) {
-    if (signal.request().ndim != 1)
+void BaseTrigger::add_signal(const std::string &detector_name, const std::vector<double> &signal) {
+     if (signal.empty())
         throw std::runtime_error("Signal arrays must be 1D");
 
     this->triggers.emplace_back(detector_name, signal);
 }
 
+struct Trigger BaseTrigger::get_trigger(const std::string &detector_name) const {
+    for (const struct Trigger &trigger : this->triggers)
+        if (trigger.detector_name == detector_name)
+            return trigger;
 
-void TriggeringSystem::run(const std::string& algorithm, const double threshold, const double lower_threshold, const bool debounce_enabled, const int min_window_duration) {
-    // Validate that the trigger detector exists.
-    this->validate_detector_existence(trigger_detector_name);
-
-    // For time, try the per-detector map; if not found, check global_time.
-    if (!global_time)
-        throw py::value_error("No time array found. Please add a time array using add_time().");
-
-    std::vector<std::pair<int, int>> trigger_indices;
-
-    if (algorithm == "fixed-window")
-        trigger_indices = this->run_fixed_window(threshold);
-    else if (algorithm == "dynamic")
-        trigger_indices = this->run_dynamic_double_threshold(threshold, lower_threshold, debounce_enabled, min_window_duration);
-    else if (algorithm == "dynamic-simple")
-        trigger_indices = this->run_dynamic(threshold);
-    else
-        throw py::value_error("Invalid triggering algorithm, options are: 'fixed-window', 'dynamic', or 'dynamic-simple'.");
-
-    if (trigger_indices.empty())
-        return ;
-
-    extract_signal_segments(trigger_indices);
+    throw std::runtime_error("Detector not found");
 }
 
-// Fixed-window triggered acquisition.
-std::vector<std::pair<int, int>> TriggeringSystem::run_fixed_window(const double threshold) {
+
+
+void BaseTrigger::validate_detector_existence(const std::string &detector_name) const
+{
+    for (struct Trigger trigger: this->triggers)
+        if (detector_name == trigger.detector_name)
+            return;
+
+    std::runtime_error("Trigger detector not found in signal map.");
+}
+
+// Helper function: Extract signal segments given valid trigger indices.
+void BaseTrigger::extract_signal_segments(const std::vector<std::pair<int, int>> &valid_triggers)
+{
+    for (struct Trigger &trigger : this->triggers) {
+        size_t segment_id = 0;
+        for (const auto &[start, end] : valid_triggers) {
+            for (int i = start; i <= end; ++i) {
+                if (i >= static_cast<int>(trigger.buffer_size))
+                    break;
+
+                trigger.signal_out.push_back(trigger.buffer_ptr[i]);
+                trigger.time_out.push_back(this->global_time[i]);
+                trigger.segment_ids_out.push_back(segment_id);
+            }
+            segment_id++;
+        }
+    }
+}
+
+std::vector<double> BaseTrigger::get_signals_py(const std::string &detector_name) const {
+    struct Trigger trigger = this->get_trigger(detector_name);
+
+    return trigger.signal_out;
+}
+
+std::vector<double> BaseTrigger::get_times_py(const std::string &detector_name) const {
+    struct Trigger trigger = this->get_trigger(detector_name);
+
+    return trigger.time_out;
+}
+
+std::vector<int> BaseTrigger::get_segments_ID_py(const std::string &detector_name) const {
+    struct Trigger trigger = this->get_trigger(detector_name);
+
+    return trigger.segment_ids_out;
+}
+
+
+
+
+// ------------- FixedWindow class implementation-------------//
+void FixedWindow::run(const double threshold) {
+    if (global_time.empty())
+        throw pybind11::value_error("Global time axis must be set before running triggers");
+
+    if (trigger_detector_name.empty())
+        throw pybind11::value_error("Trigger detector name must be set before running triggers");
+
+
     struct Trigger trigger_channel = this->get_trigger(this->trigger_detector_name);
 
     std::vector<std::pair<int, int>> valid_triggers;
@@ -67,11 +110,22 @@ std::vector<std::pair<int, int>> TriggeringSystem::run_fixed_window(const double
             break;
     }
 
-    return valid_triggers;
+    if (valid_triggers.empty())
+        return ;
+
+    this->extract_signal_segments(valid_triggers);
 }
 
-// Simple dynamic triggered acquisition.
-std::vector<std::pair<int, int>> TriggeringSystem::run_dynamic(const double threshold) {
+
+// ------------- DynamicWindow class implementation-------------//
+void DynamicWindow::run(const double threshold) {
+    if (global_time.empty())
+        throw pybind11::value_error("Global time axis must be set before running triggers");
+
+    if (trigger_detector_name.empty())
+        throw pybind11::value_error("Trigger detector name must be set before running triggers");
+
+
     struct Trigger trigger_channel = this->get_trigger(trigger_detector_name);
 
     std::vector<std::pair<int, int>> valid_triggers;
@@ -80,29 +134,48 @@ std::vector<std::pair<int, int>> TriggeringSystem::run_dynamic(const double thre
     for (size_t i = 1; i < trigger_channel.buffer_size; ++i) {
         if (trigger_channel.buffer_ptr[i - 1] <= threshold && trigger_channel.buffer_ptr[i] > threshold) {
             int start = static_cast<int>(i) - this->pre_buffer;
+
             if (start < 0)
                 start = 0;
+
             size_t j = i;
+
             while (j < trigger_channel.buffer_size && trigger_channel.buffer_ptr[j] > threshold)
                 j++;
             int end = static_cast<int>(j) - 1 + this->post_buffer;
+
+
             if (end >= static_cast<int>(trigger_channel.buffer_size))
                 end = static_cast<int>(trigger_channel.buffer_size) - 1;
+
             if (start > last_end) {
                 valid_triggers.emplace_back(start, end);
                 last_end = end;
             }
+
             if (this->max_triggers > 0 && valid_triggers.size() >= static_cast<size_t>(this->max_triggers))
                 break;
+
             i = j;
         }
     }
 
-    return valid_triggers;
+    if (valid_triggers.empty())
+        return ;
+
+    this->extract_signal_segments(valid_triggers);
 }
 
-// Dynamic triggered acquisition with single threshold (with optional lower_threshold and debounce).
-std::vector<std::pair<int, int>> TriggeringSystem::run_dynamic_double_threshold(const double threshold, const double lower_threshold, const bool debounce_enabled, const int min_window_duration) {
+
+// ------------- DoubleThreshold class implementation-------------//
+void DoubleThreshold::run(const double threshold, const double lower_threshold, const bool debounce_enabled, const int min_window_duration) {
+    if (global_time.empty())
+        throw pybind11::value_error("Global time axis must be set before running triggers");
+
+    if (trigger_detector_name.empty())
+        throw pybind11::value_error("Trigger detector name must be set before running triggers");
+
+
     struct Trigger trigger_channel = this->get_trigger(trigger_detector_name);
 
     std::vector<std::pair<int, int>> valid_triggers;
@@ -152,62 +225,10 @@ std::vector<std::pair<int, int>> TriggeringSystem::run_dynamic_double_threshold(
         }
     }
 
-    return valid_triggers;
-}
 
-struct Trigger TriggeringSystem::get_trigger(const std::string &detector_name) const {
-    for (const struct Trigger &trigger : this->triggers)
-        if (trigger.detector_name == detector_name)
-            return trigger;
+    if (valid_triggers.empty())
+        return ;
 
-    throw std::runtime_error("Detector not found");
-}
-
-std::vector<double> TriggeringSystem::get_signals_py(const std::string &detector_name) const {
-    struct Trigger trigger = this->get_trigger(detector_name);
-
-    return trigger.signal_out;
-}
-
-std::vector<double> TriggeringSystem::get_times_py(const std::string &detector_name) const {
-    struct Trigger trigger = this->get_trigger(detector_name);
-
-    return trigger.time_out;
-}
-
-std::vector<int> TriggeringSystem::get_segments_ID_py(const std::string &detector_name) const {
-    struct Trigger trigger = this->get_trigger(detector_name);
-
-    return trigger.segment_ids_out;
-}
-
-void TriggeringSystem::validate_detector_existence(const std::string &detector_name) const
-{
-    for (struct Trigger trigger: this->triggers)
-        if (detector_name == trigger.detector_name)
-            return;
-
-    std::runtime_error("Trigger detector not found in signal map.");
-}
-
-// Helper function: Extract signal segments given valid trigger indices.
-void TriggeringSystem::extract_signal_segments(const std::vector<std::pair<int, int>> &valid_triggers)
-{
-    double* time_ptr = static_cast<double *>(global_time.request().ptr);
-
-    for (struct Trigger &trigger : this->triggers) {
-        size_t segment_id = 0;
-        for (const auto &[start, end] : valid_triggers) {
-            for (int i = start; i <= end; ++i) {
-                if (i >= static_cast<int>(trigger.buffer_size))
-                    break;
-
-                trigger.signal_out.push_back(trigger.buffer_ptr[i]);
-                trigger.time_out.push_back(time_ptr[i]);
-                trigger.segment_ids_out.push_back(segment_id);
-            }
-            segment_id++;
-        }
-    }
+    this->extract_signal_segments(valid_triggers);
 }
 

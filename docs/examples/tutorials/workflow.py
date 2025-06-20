@@ -230,9 +230,9 @@ acquisition.plot()
 # --------------------------------
 # The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 # window size and threshold.
-from FlowCyPy.triggering_system import TriggeringSystem, Scheme
+from FlowCyPy.triggering_system import DynamicWindow
 
-trigger = TriggeringSystem(
+trigger = DynamicWindow(
     dataframe=acquisition,
     trigger_detector_name='forward',
     max_triggers=-1,
@@ -242,7 +242,6 @@ trigger = TriggeringSystem(
 )
 
 analog_triggered = trigger.run(
-    scheme=Scheme.DYNAMIC,
     threshold=10 * units.microvolt
 )
 

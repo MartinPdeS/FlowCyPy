@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 # Import the C++ module exposed via pybind11.
-from FlowCyPy.binary.interface_triggering_system import TRIGERRINGSYSTEM # type: ignore
+from FlowCyPy.binary.interface_triggering_system import DOUBLETHRESHOLD # type: ignore
 
 # ---------------------------------------------------------------------------
 # Fixtures for synthetic signals and time arrays
@@ -33,15 +33,15 @@ def no_trigger_signal():
     return t, signal
 
 # ---------------------------------------------------------------------------
-# Tests for TRIGERRINGSYSTEM functionality
+# Tests for DOUBLETHRESHOLD functionality
 # ---------------------------------------------------------------------------
 def test_add_signal_and_time(simple_signal):
     """
     Test that add_time() and add_signal() correctly add the time and signal data
-    to the TRIGERRINGSYSTEM instance.
+    to the DOUBLETHRESHOLD instance.
     """
     t, signal = simple_signal
-    ts = TRIGERRINGSYSTEM(
+    ts = DOUBLETHRESHOLD(
         trigger_detector_name="detector1",
         pre_buffer=5,
         post_buffer=5,
@@ -58,14 +58,14 @@ def test_no_time_error(simple_signal):
     Test that if no time array is provided, the run() method raises a RuntimeError.
     """
     t, signal = simple_signal
-    ts = TRIGERRINGSYSTEM(
+    ts = DOUBLETHRESHOLD(
         trigger_detector_name="detector1",
         pre_buffer=5,
         post_buffer=5,
     )
     ts._cpp_add_signal("detector1", signal)
     with pytest.raises(ValueError):
-        ts._cpp_run(algorithm="fixed-window", threshold=0.6, lower_threshold=0.6, min_window_duration=-1, debounce_enabled=False)
+        ts._cpp_run(threshold=0.6, lower_threshold=0.6, min_window_duration=-1, debounce_enabled=False)
 
 def test_no_trigger(no_trigger_signal):
     """
@@ -73,7 +73,7 @@ def test_no_trigger(no_trigger_signal):
     empty arrays and issues a warning.
     """
     t, signal = no_trigger_signal
-    ts = TRIGERRINGSYSTEM(
+    ts = DOUBLETHRESHOLD(
         trigger_detector_name="detector1",
         pre_buffer=5,
         post_buffer=5,
@@ -82,7 +82,7 @@ def test_no_trigger(no_trigger_signal):
     ts._cpp_add_signal("detector2", signal)
 
     with pytest.raises(RuntimeError):
-        ts._cpp_run(algorithm="fixed-window", threshold=0.6, lower_threshold=0.6, min_window_duration=-1, debounce_enabled=False)
+        ts._cpp_run(threshold=0.6, lower_threshold=0.6, min_window_duration=-1, debounce_enabled=False)
 
     # Expect that no triggers are found (empty arrays returned)
     assert len(ts._cpp_get_times("detector2")) == 0
@@ -100,14 +100,14 @@ def test_trigger_fixed_window(simple_signal):
     # Create a signal that is zero except for a spike between indices 410 and 415.
     signal = np.zeros_like(t)
     signal[410:415] = 1.0  # spike well above a threshold of 0.6
-    ts = TRIGERRINGSYSTEM(
+    ts = DOUBLETHRESHOLD(
         trigger_detector_name="detector1",
         pre_buffer=5,
         post_buffer=5
     )
     ts._cpp_add_time(t)
     ts._cpp_add_signal("detector1", signal)
-    ts._cpp_run(algorithm="fixed-window", threshold=0.6, lower_threshold=0.6, min_window_duration=-1, debounce_enabled=False)
+    ts._cpp_run(threshold=0.6, lower_threshold=0.6, min_window_duration=-1, debounce_enabled=False)
     # Expect non-empty output arrays (i.e. at least one trigger is detected).
     assert len(ts._cpp_get_times("detector1")) > 0
     assert len(ts._cpp_get_signals("detector1")) > 0
@@ -124,14 +124,14 @@ def test_trigger_dynamic_single_threshold(simple_signal):
     # Create a signal that is zero except for a continuous high region between indices 300 and 350.
     signal = np.zeros_like(t)
     signal[300:350] = 1.0  # continuous high region
-    ts = TRIGERRINGSYSTEM(
+    ts = DOUBLETHRESHOLD(
         trigger_detector_name="detector1",
         pre_buffer=10,
         post_buffer=10,
     )
     ts._cpp_add_time(t)
     ts._cpp_add_signal("detector1", signal)
-    ts._cpp_run(algorithm="dynamic", threshold=0.6, lower_threshold=0.6, debounce_enabled=True, min_window_duration=3)
+    ts._cpp_run(threshold=0.6, lower_threshold=0.6, debounce_enabled=True, min_window_duration=3)
     # Ensure that triggers are detected.
     assert len(ts._cpp_get_times("detector1")) > 0
     assert len(ts._cpp_get_signals("detector1")) > 0

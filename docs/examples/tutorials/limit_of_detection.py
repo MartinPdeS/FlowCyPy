@@ -12,7 +12,7 @@ from FlowCyPy.population import Sphere
 from FlowCyPy import distribution
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import peak_locator
-from FlowCyPy.triggering_system import TriggeringSystem, Scheme
+from FlowCyPy.triggering_system import DynamicWindow
 from FlowCyPy import circuits
 from FlowCyPy import OptoElectronics, Fluidics
 
@@ -110,7 +110,7 @@ analog_acquisition, _ = cytometer.get_acquisition(
 # Visualize the scatter signals from both detectors
 analog_acquisition.plot()
 
-trigger = TriggeringSystem(
+trigger = DynamicWindow(
     dataframe=analog_acquisition,
     trigger_detector_name='forward',
     max_triggers=15,
@@ -121,7 +121,6 @@ trigger = TriggeringSystem(
 
 analog_trigger = trigger.run(
     threshold=3 * units.millivolt,
-    scheme=Scheme.FIXED,
 )
 
 analog_trigger.plot()
