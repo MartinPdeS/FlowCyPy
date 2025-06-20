@@ -6,7 +6,7 @@ set(NAME "circuits")
 add_library("cpp_${NAME}" STATIC "${NAME}.cpp")
 
 # Link with pybind11 module target
-target_link_libraries("cpp_${NAME}" PUBLIC pybind11::module "cpp_signal_generator")
+target_link_libraries("cpp_${NAME}" PUBLIC pybind11::module OpenMP::OpenMP_CXX "cpp_signal_generator")
 
 # Create your Python module
 pybind11_add_module("interface_${NAME}" MODULE interface.cpp)
