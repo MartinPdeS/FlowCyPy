@@ -258,21 +258,21 @@ power to electronic signals, and saturation level represents the maximum signal 
 
     detector_0 = Detector(
         name='forward',
-        phi_angle=0 * units.degree,                  # Forward scatter angle
+        phi_angle=0 * units.degree,
         numerical_aperture=0.3 * units.AU,
         responsivity=1 * units.ampere / units.watt,
     )
 
     detector_1 = Detector(
         name='side',
-        phi_angle=90 * units.degree,                 # Side scatter angle
+        phi_angle=90 * units.degree,
         numerical_aperture=0.3 * units.AU,
         responsivity=1 * units.ampere / units.watt,
     )
 
     detector_2 = Detector(
-        name='det_2',
-        phi_angle=30 * units.degree,                 # Side scatter angle
+        name='det 2',
+        phi_angle=30 * units.degree,
         numerical_aperture=0.3 * units.AU,
         responsivity=1 * units.ampere / units.watt,
     )
@@ -341,7 +341,7 @@ and particles follows Mie theory:
     _ = acquisition.scatterer.plot(
         x='side',
         y='forward',
-        # z='RefractiveIndex'
+        z='RefractiveIndex'
     )
 
 
@@ -464,7 +464,7 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7ff1416416d0>
+    <seaborn.axisgrid.JointGrid object at 0x7f62125adc90>
 
 
 
@@ -504,7 +504,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.962 seconds)
+   **Total running time of the script:** (0 minutes 8.657 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:
