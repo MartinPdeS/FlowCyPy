@@ -13,6 +13,12 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Type of build" FORCE)
 set(LOCAL_CXX_DIR "${PROJECT_NAME}/cpp")
 set(LOCAL_BIN_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/binary")
 
+# Find dependencies
+if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    include_directories("/opt/homebrew/opt/libomp/include")   # for if compiler was installed through brew
+endif()
+
+
 # Include directories
 include_directories("${LOCAL_CXX_DIR}")
 find_package(OpenMP REQUIRED)
