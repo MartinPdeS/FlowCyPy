@@ -128,9 +128,7 @@ class TransimpedanceAmplifier():
                 order=1
             )
         else:
-            signal_generator.multiply(
-                factor=self.gain
-            )
+            signal_generator.multiply(factor=self.gain)
 
         # Add voltage related noise if enabled
         if NoiseSetting.include_amplifier_noise and NoiseSetting.include_noises:
