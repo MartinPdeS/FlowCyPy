@@ -9,22 +9,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Type of build" FORCE)
 
-
 # Set the output directory for libraries
-set(FLOWCYPY_CXX_DIR "${CMAKE_SOURCE_DIR}/FlowCyPy/cpp")
-set(FLOWCYPY_BIN_DIR "${CMAKE_SOURCE_DIR}/FlowCyPy/binary")
-
-# Directories
 set(LOCAL_CXX_DIR "${PROJECT_NAME}/cpp")
 set(LOCAL_BIN_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/binary")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${LOCAL_BIN_DIR}")
 
 # Include directories
 include_directories("${LOCAL_CXX_DIR}")
-
+find_package(OpenMP REQUIRED)
 find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
 find_package(pybind11 CONFIG REQUIRED)
-message(STATUS "Found pybind11 version: ${pybind11_VERSION}")
 
 # Platform-specific settings for static linking
 if (WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -33,7 +26,15 @@ if (WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     add_link_options(-static)
 endif()
 
+# Compiler and linker options
 add_compile_options(-Wall -Wextra -pedantic-errors)
+
+# Print some messages
+message(STATUS "OPENMP flags: ${OpenMP_CXX_FLAGS}")
+message(STATUS "FlowCyPy version is: ${FLOWCYPY_VERSION}")
+message(STATUS "FlowCyPy includes directory is: ${FLOWCYPY_CXX_DIR}")
+message(STATUS "Python version to be compiled against: ${PYBIND11_PYTHON_VERSION}")
+message(STATUS "Binary will be installed in location: ${LOCAL_BIN_DIR}")
 
 add_subdirectory(FlowCyPy/cpp/utils)               # utils
 add_subdirectory(FlowCyPy/cpp/circuits)            # circuits
