@@ -176,9 +176,9 @@ class DynamicWindow(DYNAMICWINDOW, BaseTrigger):
         max_triggers: int = -1,
         pre_buffer: int = 64,
         post_buffer: int = 64) -> None:
-
         """
         Initialize the DynamicWindow triggering scheme with the specified parameters.
+
         Parameters
         ----------
         digitizer : object
@@ -222,8 +222,6 @@ class DynamicWindow(DYNAMICWINDOW, BaseTrigger):
         TriggerDataFrame
             A DataFrame containing the detected trigger windows.
         """
-
-
         self.threshold = self._parse_threshold(threshold, self.dataframe)
 
         self._cpp_run(
