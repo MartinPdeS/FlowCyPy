@@ -11,21 +11,17 @@ build:
 
 requirements:
   host:
-    - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - {{ compiler('fortran') }}
     - python {{ PY_VER }}*
     - scikit-build-core ~=0.3
     - pybind11 ~=2.13
     - python-build ~=1.2
     - setuptools_scm[toml] ~=8.0
     - fftw
-    - pybind11
   build:
     - fftw
   run:
     - fftw
-    - pybind11
     - python {{PY_VER}}*
     - pandas ~=2.2
     - pint-pandas ~=0.6
