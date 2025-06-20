@@ -148,21 +148,21 @@ digitizer = SignalDigitizer(
 
 detector_0 = Detector(
     name='forward',
-    phi_angle=0 * units.degree,                  # Forward scatter angle
+    phi_angle=0 * units.degree,
     numerical_aperture=0.3 * units.AU,
     responsivity=1 * units.ampere / units.watt,
 )
 
 detector_1 = Detector(
     name='side',
-    phi_angle=90 * units.degree,                 # Side scatter angle
+    phi_angle=90 * units.degree,
     numerical_aperture=0.3 * units.AU,
     responsivity=1 * units.ampere / units.watt,
 )
 
 detector_2 = Detector(
-    name='det_2',
-    phi_angle=30 * units.degree,                 # Side scatter angle
+    name='det 2',
+    phi_angle=30 * units.degree,
     numerical_aperture=0.3 * units.AU,
     responsivity=1 * units.ampere / units.watt,
 )
@@ -218,7 +218,7 @@ acquisition.normalize_units(time_units='max', signal_units='max')
 _ = acquisition.scatterer.plot(
     x='side',
     y='forward',
-    # z='RefractiveIndex'
+    z='RefractiveIndex'
 )
 
 # %%
