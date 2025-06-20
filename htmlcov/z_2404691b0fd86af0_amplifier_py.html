@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_2404691b0fd86af0_circuits_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.9.1">coverage.py v7.9.1</a>,
-            created at 2025-06-20 15:19 +0000
+            created at 2025-06-20 15:23 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -212,16 +212,14 @@
     <p class="pln"><span class="n"><a id="t128" href="#t128">128</a></span><span class="t">                <span class="nam">order</span><span class="op">=</span><span class="num">1</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t129" href="#t129">129</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t130" href="#t130">130</a></span><span class="t">        <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t131" href="#t131">131</a></span><span class="t">            <span class="nam">signal_generator</span><span class="op">.</span><span class="nam">multiply</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t132" href="#t132">132</a></span><span class="t">                <span class="nam">factor</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">gain</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t133" href="#t133">133</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t134" href="#t134">134</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t135" href="#t135">135</a></span><span class="t">        <span class="com"># Add voltage related noise if enabled</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t136" href="#t136">136</a></span><span class="t">        <span class="key">if</span> <span class="nam">NoiseSetting</span><span class="op">.</span><span class="nam">include_amplifier_noise</span> <span class="key">and</span> <span class="nam">NoiseSetting</span><span class="op">.</span><span class="nam">include_noises</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t137" href="#t137">137</a></span><span class="t">            <span class="nam">signal_generator</span><span class="op">.</span><span class="nam">apply_gaussian_noise</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t">                <span class="nam">mean</span><span class="op">=</span><span class="num">0.0</span> <span class="op">*</span> <span class="nam">self</span><span class="op">.</span><span class="nam">total_output_noise</span><span class="op">.</span><span class="nam">units</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t">                <span class="nam">standard_deviation</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">total_output_noise</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t140" href="#t140">140</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t131" href="#t131">131</a></span><span class="t">            <span class="nam">signal_generator</span><span class="op">.</span><span class="nam">multiply</span><span class="op">(</span><span class="nam">factor</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">gain</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t132" href="#t132">132</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t133" href="#t133">133</a></span><span class="t">        <span class="com"># Add voltage related noise if enabled</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t134" href="#t134">134</a></span><span class="t">        <span class="key">if</span> <span class="nam">NoiseSetting</span><span class="op">.</span><span class="nam">include_amplifier_noise</span> <span class="key">and</span> <span class="nam">NoiseSetting</span><span class="op">.</span><span class="nam">include_noises</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t135" href="#t135">135</a></span><span class="t">            <span class="nam">signal_generator</span><span class="op">.</span><span class="nam">apply_gaussian_noise</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t136" href="#t136">136</a></span><span class="t">                <span class="nam">mean</span><span class="op">=</span><span class="num">0.0</span> <span class="op">*</span> <span class="nam">self</span><span class="op">.</span><span class="nam">total_output_noise</span><span class="op">.</span><span class="nam">units</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t137" href="#t137">137</a></span><span class="t">                <span class="nam">standard_deviation</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">total_output_noise</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -231,7 +229,7 @@
             <a class="nav" href="z_2404691b0fd86af0_circuits_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.9.1">coverage.py v7.9.1</a>,
-            created at 2025-06-20 15:19 +0000
+            created at 2025-06-20 15:23 +0000
         </p>
     </div>
 </footer>
