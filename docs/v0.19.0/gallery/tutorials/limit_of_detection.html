@@ -553,7 +553,7 @@ to download the full example code.</p>
 /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:269: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
 
-&lt;seaborn.axisgrid.JointGrid object at 0x7f9bbfcd1250&gt;
+&lt;seaborn.axisgrid.JointGrid object at 0x7ff1538bfbd0&gt;
 </pre></div>
 </div>
 <div class="line-block">
@@ -568,7 +568,7 @@ to download the full example code.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">peak_locator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.triggering_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriggeringSystem</span><span class="p">,</span> <span class="n">Scheme</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.triggering_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">DynamicWindow</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">circuits</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptoElectronics</span><span class="p">,</span> <span class="n">Fluidics</span>
 
@@ -666,7 +666,7 @@ to download the full example code.</p>
 <span class="c1"># Visualize the scatter signals from both detectors</span>
 <span class="n">analog_acquisition</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
-<span class="n">trigger</span> <span class="o">=</span> <span class="n">TriggeringSystem</span><span class="p">(</span>
+<span class="n">trigger</span> <span class="o">=</span> <span class="n">DynamicWindow</span><span class="p">(</span>
     <span class="n">dataframe</span><span class="o">=</span><span class="n">analog_acquisition</span><span class="p">,</span>
     <span class="n">trigger_detector_name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
     <span class="n">max_triggers</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
@@ -677,7 +677,6 @@ to download the full example code.</p>
 
 <span class="n">analog_trigger</span> <span class="o">=</span> <span class="n">trigger</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
     <span class="n">threshold</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millivolt</span><span class="p">,</span>
-    <span class="n">scheme</span><span class="o">=</span><span class="n">Scheme</span><span class="o">.</span><span class="n">FIXED</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">analog_trigger</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -696,7 +695,7 @@ to download the full example code.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.302 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.486 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-limit-of-detection-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc141053ca87c293e1689882fb19bce1/limit_of_detection.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">limit_of_detection.ipynb</span></code></a></p>

@@ -391,13 +391,13 @@ Step 7: Analyze Detected Signals
 The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 233-251
+.. GENERATED FROM PYTHON SOURCE LINES 233-250
 
 .. code-block:: Python
 
-    from FlowCyPy.triggering_system import TriggeringSystem, Scheme
+    from FlowCyPy.triggering_system import DynamicWindow
 
-    trigger = TriggeringSystem(
+    trigger = DynamicWindow(
         dataframe=acquisition,
         trigger_detector_name='forward',
         max_triggers=-1,
@@ -407,7 +407,6 @@ window size and threshold.
     )
 
     analog_triggered = trigger.run(
-        scheme=Scheme.DYNAMIC,
         threshold=10 * units.microvolt
     )
 
@@ -431,11 +430,11 @@ window size and threshold.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 252-253
+.. GENERATED FROM PYTHON SOURCE LINES 251-252
 
 Getting and plotting the extracted peaks.
 
-.. GENERATED FROM PYTHON SOURCE LINES 253-265
+.. GENERATED FROM PYTHON SOURCE LINES 252-264
 
 .. code-block:: Python
 
@@ -465,15 +464,15 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f9bbc4e3ad0>
+    <seaborn.axisgrid.JointGrid object at 0x7ff1416416d0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 266-267
+.. GENERATED FROM PYTHON SOURCE LINES 265-266
 
 Step 8: Classifying the collected dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 267-280
+.. GENERATED FROM PYTHON SOURCE LINES 266-279
 
 .. code-block:: Python
 
@@ -505,7 +504,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.720 seconds)
+   **Total running time of the script:** (0 minutes 8.962 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:
