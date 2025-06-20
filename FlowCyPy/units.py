@@ -1,7 +1,6 @@
 # Initialize a unit registry
 from PyMieSim.units import ureg, Quantity # noqa F401
 from PyMieSim.units import *  # noqa F401
-from numpy import sqrt
 
 _scaled_units_str_list = [
     'watt', 'volt', 'meter', 'second', 'liter', 'hertz', 'ohm', 'ampere'

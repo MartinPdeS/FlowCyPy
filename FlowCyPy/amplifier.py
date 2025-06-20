@@ -4,7 +4,6 @@ from FlowCyPy import units
 import numpy as np
 from FlowCyPy.noises import NoiseSetting
 from FlowCyPy.helper import validate_units
-import numpy.fft as fft  # Using numpy's FFT routines
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -14,7 +13,7 @@ config_dict = dict(
 )
 
 @dataclass(config=config_dict)
-class TransimpedanceAmplifier:
+class TransimpedanceAmplifier():
     """
     Represents a transimpedance amplifier (TIA) used to convert photocurrent signals into voltage.
 

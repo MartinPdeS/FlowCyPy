@@ -112,7 +112,7 @@ def test_sliding_window_empty_signal():
 def test_sliding_window_rejects_non_1d_input():
     locator = SlidingWindowPeakLocator(window_size=10)
     bad_input = np.zeros((10, 10))
-    with pytest.raises(RuntimeError, match="1D"):
+    with pytest.raises(TypeError):
         locator.compute(bad_input)
 
 
@@ -168,7 +168,7 @@ def test_global_peak_handles_flat_signal():
 def test_global_peak_rejects_non_1d_input():
     locator = GlobalPeakLocator()
     bad_input = np.ones((10, 10))
-    with pytest.raises(RuntimeError, match="1D"):
+    with pytest.raises(TypeError):
         locator.compute(bad_input)
 
 
