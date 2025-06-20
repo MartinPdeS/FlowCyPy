@@ -168,7 +168,6 @@ class DynamicWindow(DYNAMICWINDOW, BaseTrigger):
     """
     Dynamic window triggering scheme.
     """
-
     def __init__(self,
         digitizer: object,
         dataframe: pd.DataFrame,
@@ -304,10 +303,7 @@ class DoubleThreshold(DOUBLETHRESHOLD, BaseTrigger):
         TriggerDataFrame
             A DataFrame containing the detected trigger windows.
         """
-
-
         self.threshold = self._parse_threshold(threshold, self.dataframe)
-
 
         min_win_samples = (
             int((min_window_duration * self.digitizer.sampling_rate).to("dimensionless").m) if min_window_duration is not None else -1

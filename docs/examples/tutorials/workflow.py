@@ -77,9 +77,6 @@ flow_cell = FlowCell(
     height=100 * units.micrometer,
 )
 
-flow_cell.plot(n_samples=300)
-
-
 # %%
 # Step 4: Define ScattererCollection and Population
 # -------------------------------------------------
@@ -124,6 +121,9 @@ fluidics = Fluidics(
     flow_cell=flow_cell
 )
 
+fluidics.plot(run_time=3.5 * units.millisecond)
+
+dsa
 
 df = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)
 

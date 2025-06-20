@@ -3,14 +3,13 @@ import numpy as np
 import pandas as pd
 from pydantic.dataclasses import dataclass
 from pint_pandas import PintArray
-import matplotlib.pyplot as plt
-from MPSPlots.styles import mps
 from pydantic import field_validator
 from FlowCyPy.population import BasePopulation
 from FlowCyPy.units import Quantity
 from FlowCyPy import units
 from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
 from FlowCyPy import helper
+from matplotlib.patches import Rectangle
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -20,10 +19,26 @@ config_dict = dict(
 )
 
 
-class NameSpace():
+class Flow():
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
+
+    def _add_to_plot(self, ax, length_units, color):
+        channel_rect = Rectangle(
+            (-self.width.to(length_units).magnitude / 2, -self.height.to(length_units).magnitude / 2),
+            self.width.to(length_units).magnitude,
+            self.height.to(length_units).magnitude,
+            fill=True,
+            edgecolor='black',
+            alpha=0.8,
+            facecolor=color,
+            linewidth=1,
+            zorder=-1,
+            label="Sample Region"
+        )
+
+        ax.add_patch(channel_rect)
 
 
 
@@ -162,13 +177,19 @@ class FlowCell:
         width_sample = (self.width / self.height) * height_sample
         average_flow_speed_sample = self.sample_volume_flow / area_sample
 
-        self.sample = NameSpace(
+        self.sample = Flow(
             height=height_sample,
             width=width_sample,
             area=area_sample,
             volume_flow=self.sample_volume_flow,
             max_flow_speed=self.u_center,
             average_flow_speed=average_flow_speed_sample
+        )
+
+        self.sheath = Flow(
+            height=self.height,
+            width=self.width,
+            volume_flow=self.sheath_volume_flow,
         )
 
     def velocity(self, y: float, z: float) -> float:
@@ -388,116 +409,4 @@ class FlowCell:
 
         return arrival_times
 
-    def plot(self, n_samples: int = 100, figsize: tuple = (7, 4), ax: plt.Axes = None, show: bool = True) -> None:
-        r"""
-        Plot the spatial distribution of sampled particles with velocity color-coding.
 
-        This method samples a specified number of particles from the focused sample stream
-        and generates a scatter plot of their positions in the y-z plane. The particles are
-        color-coded by their local x-direction velocity using a continuous colormap. In addition,
-        the plot includes overlays that represent the channel boundaries (sheath + sample regions)
-        and the sample region boundaries.
-
-        A dedicated colorbar is added to the right of the main axes and its height is adjusted
-        to match the plot, using a separate axes created with ``mpl_toolkits.axes_grid1.make_axes_locatable``.
-
-        Parameters
-        ----------
-        n_samples : int
-            Number of particles to sample and plot.
-        figsize : tuple, optional
-            Figure size (width, height) in inches. Default is (7, 4).
-        ax : matplotlib.axes.Axes, optional
-            A matplotlib Axes instance to draw the plot on. If not provided, a new figure and axes
-            are created.
-        show : bool, optional
-            Whether to display the plot immediately. Default is True.
-
-        Returns
-        -------
-        matplotlib.axes.Axes
-            The Axes instance with the plot.
-
-        Notes
-        -----
-        - The plot uses orthogonal splines and a horizontal layout (left-to-right).
-        - Global styling parameters such as node style and edge styling are applied.
-        - The method requires that the object defines ``self.width``, ``self.height``,
-        ``self.sample.width``, ``self.sample.height``, and a method ``self.sample_particles(n_samples)``.
-        - The colorbar is created with a dedicated axes to ensure it spans the full height of the plot.
-
-        Examples
-        --------
-        >>> ax = my_object.plot(n_samples=500)
-        >>> # The plot is displayed if show=True, and ax can be used for further customization.
-        """
-        sampling = self.sample_transverse_profile(n_samples)
-
-        length_units = self.width.units
-
-        # Create plot
-        if ax is None:
-            with plt.style.context(mps):
-                _, ax = plt.subplots(1, 1, figsize=figsize)
-
-        sc = ax.scatter(
-            sampling['x'].to(length_units).magnitude,
-            sampling['y'].to(length_units).magnitude,
-            c=sampling['Velocity'].magnitude,
-            cmap="viridis",
-            edgecolor="black",
-            label='Particle sampling'
-        )
-
-        # Create a dedicated colorbar axes next to the main axes:
-        from mpl_toolkits.axes_grid1 import make_axes_locatable
-        divider = make_axes_locatable(ax)
-        cax = divider.append_axes("right", size="5%", pad=0.05)
-        plt.colorbar(sc, cax=cax, label=f"Velocity [{sampling['Velocity'].units}]")
-
-        ax.set(
-            xlabel=f"X [{length_units}]",
-            ylabel=f"Y [{length_units}]",
-            title="Particle Spatial Distribution and Speed"
-        )
-
-        from matplotlib.patches import Rectangle
-
-        # Plot channel boundary.
-        channel_rect = Rectangle(
-            (-self.width.to(length_units).magnitude / 2, -self.height.to(length_units).magnitude / 2),
-            self.width.to(length_units).magnitude,
-            self.height.to(length_units).magnitude,
-            fill=True,
-            edgecolor='black',
-            facecolor='lightblue',
-            alpha=0.8,
-            zorder=-1,
-            linewidth=1,
-            label="Sheath fluid"
-        )
-        ax.add_patch(channel_rect)
-
-        # Plot sample region boundary.
-        sample_rect = Rectangle(
-            (-self.sample.width.to(length_units).magnitude / 2, -self.sample.height.to(length_units).magnitude / 2),
-            self.sample.width.to(length_units).magnitude,
-            self.sample.height.to(length_units).magnitude,
-            fill=True,
-            edgecolor='black',
-            alpha=0.8,
-            facecolor='green',
-            linewidth=1,
-            zorder=-1,
-            label="Sample Region"
-        )
-        ax.add_patch(sample_rect)
-
-        ax.set_aspect('equal')
-        plt.tight_layout()
-        ax.legend(loc='upper right')
-
-        if show:
-            plt.show()
-
-        return ax
