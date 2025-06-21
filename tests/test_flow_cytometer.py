@@ -127,14 +127,14 @@ def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, sour
 
 # ----------------- UNIT TESTS -----------------
 
-# def test_flow_cytometer_acquisition(flow_cytometer):
-#     """Test if the Flow Cytometer generates a non-zero acquisition signal."""
-#     acquisition, _ = flow_cytometer.get_acquisition(run_time=0.05 * units.millisecond)
+def test_flow_cytometer_acquisition(flow_cytometer):
+    """Test if the Flow Cytometer generates a non-zero acquisition signal."""
+    acquisition, _ = flow_cytometer.get_acquisition(run_time=0.05 * units.millisecond)
 
-#     signal = acquisition['default']
+    signal = acquisition['default']
 
-#     assert not np.all(signal == 0 * units.volt), "Acquisition signal is all zeros."
-#     assert np.std(signal) > 0 * units.volt, "Acquisition signal variance is zero, indicating no noise added."
+    assert not np.all(signal == 0 * units.volt), "Acquisition signal is all zeros."
+    assert np.std(signal) > 0 * units.volt, "Acquisition signal variance is zero, indicating no noise added."
 
 
 # def test_flow_cytometer_multiple_detectors(flow_cytometer):
