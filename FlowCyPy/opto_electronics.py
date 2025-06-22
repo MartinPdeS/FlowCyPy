@@ -143,6 +143,9 @@ class OptoElectronics():
         - A `'Centers'` column with the pulse center times.
         - A `'Widths'` column with the computed pulse widths.
         """
+        if event_dataframe.empty:
+            return
+
         assert "Velocity" in event_dataframe.columns, "Event DataFrame must contain 'Velocity' column to compute the pulses width."
         # Calculate the pulse width (standard deviation in time, σₜ) based on the beam waist and flow speed.
         if event_dataframe.empty:

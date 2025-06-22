@@ -1,6 +1,5 @@
 from typing import Optional
 import numpy as np
-import pandas as pd
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 from FlowCyPy.binary.interface_signal_generator import SignalGenerator
@@ -175,18 +174,6 @@ class Detector():
         """
         if self.name is None:
             self.name = str(id(self))
-
-    @property
-    def dataframe(self) -> pd.DataFrame:
-        """
-        Retrieves the detector-specific slice of the cytometer's dataframe.
-
-        Returns
-        -------
-        pd.DataFrame
-            A dataframe corresponding to the detector's recorded data.
-        """
-        return self.cytometer.dataframe.xs(self.name)
 
     def _transform_coupling_power_to_current(self, signal_generator: SignalGenerator, bandwidth: Quantity, wavelength: Quantity) -> Quantity:
         """

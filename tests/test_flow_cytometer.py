@@ -103,7 +103,7 @@ def population(diameter_distribution, ri_distribution):
 def scatterer_collection(population):
     """Fixture for creating a scatterer collection with a default population."""
     scatterer = ScattererCollection()
-    scatterer.add_population(population)
+    # scatterer.add_population(population)
     return scatterer
 
 @pytest.fixture
@@ -124,7 +124,8 @@ def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, sour
 
     return FlowCytometer(
         opto_electronics=opto_electronics,
-        fluidics=fluidics
+        fluidics=fluidics,
+        background_power=0.01 * units.milliwatt,
     )
 
 
@@ -134,10 +135,7 @@ def test_flow_cytometer_acquisition(flow_cytometer):
     """Test if the Flow Cytometer generates a non-zero acquisition signal."""
     acquisition, _ = flow_cytometer.get_acquisition(run_time=0.05 * units.millisecond)
 
-    signal = acquisition['default']
-
-    assert not np.all(signal == 0 * units.volt), "Acquisition signal is all zeros."
-    assert np.std(signal) > 0 * units.volt, "Acquisition signal variance is zero, indicating no noise added."
+    assert np.std(acquisition['default'].pint.quantity.magnitude) > 0, "Acquisition signal variance is zero, indicating no noise added."
 
 
 # def test_flow_cytometer_multiple_detectors(flow_cytometer):

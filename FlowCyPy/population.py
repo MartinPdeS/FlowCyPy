@@ -230,30 +230,6 @@ class CoreShell(BasePopulation):
             if isinstance(attr_value, Quantity):
                 setattr(self, attr_name, attr_value.to_base_units())
 
-    def overall_diameter(self, sampling: Quantity) -> Quantity:
-        """
-        Generate the overall particle diameter.
-
-        This method calculates the overall particle diameter for a given sampling by generating
-        the core diameter and shell thickness samples from their respective distributions. The overall
-        diameter is computed as:
-
-            overall_diameter = core_diameter + 2 * shell_thickness
-
-        Parameters
-        ----------
-        sampling : Quantity
-            The sampling parameter used by the distributions to generate values.
-
-        Returns
-        -------
-        Quantity
-            The overall diameter of the particles.
-        """
-        core = self.core_diameter.generate(sampling)
-        shell = self.shell_thickness.generate(sampling)
-        return core + 2 * shell
-
     def generate_property_sampling(self, sampling: Quantity) -> tuple:
         r"""
         Generate a sampling of core-shell particle properties.

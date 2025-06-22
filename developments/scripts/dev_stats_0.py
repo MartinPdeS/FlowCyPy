@@ -19,8 +19,8 @@ from FlowCyPy import PMT
 
 NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
-NoiseSetting.include_source_noise = True
-NoiseSetting.include_dark_current_noise = True
+NoiseSetting.include_source_noise = False
+NoiseSetting.include_dark_current_noise = False
 NoiseSetting.assume_perfect_hydrodynamic_focusing = True
 
 np.random.seed(3)
@@ -45,7 +45,7 @@ for size in np.linspace(110, 30, 5):
     size = int(size)
     population = Sphere(
         name=f'{size} nanometer',
-        particle_count=5 * units.particle,
+        particle_count=10 * units.particle,
         diameter=distribution.Delta(position=size * units.nanometer),
         refractive_index=distribution.Delta(position=1.39 * units.RIU)
     )
@@ -101,7 +101,7 @@ processing_steps = [
 ]
 
 analog_acquisition, _ = cytometer.get_acquisition(
-    run_time=0.1 * units.millisecond,
+    run_time=0.3 * units.millisecond,
     processing_steps=processing_steps
 )
 
@@ -110,19 +110,19 @@ analog_acquisition, _ = cytometer.get_acquisition(
 analog_acquisition.normalize_units(signal_units='max')
 analog_acquisition.plot()
 
-trigger = FixedWindow(
+trigger = DynamicWindow(
     dataframe=analog_acquisition,
     trigger_detector_name='side',
     max_triggers=15,
-    pre_buffer=64,
-    post_buffer=64,
+    pre_buffer=10,
+    post_buffer=10,
     digitizer=digitizer
 )
 
 
 
 analog_trigger = trigger.run(
-    threshold="3sigma",
+    threshold="1sigma",
 )
 
 analog_trigger.plot()
