@@ -745,33 +745,6 @@ document.write(`
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">())</span>
 
-<div class="viewcode-block" id="CoreShell.overall_diameter">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.CoreShell.overall_diameter">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">overall_diameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate the overall particle diameter.</span>
-
-<span class="sd">        This method calculates the overall particle diameter for a given sampling by generating</span>
-<span class="sd">        the core diameter and shell thickness samples from their respective distributions. The overall</span>
-<span class="sd">        diameter is computed as:</span>
-
-<span class="sd">            overall_diameter = core_diameter + 2 * shell_thickness</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        sampling : Quantity</span>
-<span class="sd">            The sampling parameter used by the distributions to generate values.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
-<span class="sd">            The overall diameter of the particles.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">core</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
-        <span class="n">shell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_thickness</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">core</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">shell</span></div>
-
-
 <div class="viewcode-block" id="CoreShell.generate_property_sampling">
 <a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.CoreShell.generate_property_sampling">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_property_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
