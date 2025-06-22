@@ -58,7 +58,7 @@ dependencies = [
     "numpy >=2.0.0,<3.0.0",
     'pint ~=0.24',
     "scipy ~=1.14",
-    'PyMieSim ==3.5.4.2',
+    'PyMieSim ==3.5.4.3',
     'MPSPlots',
     'scikit-learn'
 ]
