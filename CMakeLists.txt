@@ -44,6 +44,7 @@ message(STATUS "Binary will be installed in location: ${LOCAL_BIN_DIR}")
 
 add_subdirectory(FlowCyPy/cpp/utils)               # utils
 add_subdirectory(FlowCyPy/cpp/circuits)            # circuits
+add_subdirectory(FlowCyPy/cpp/trigger)             # trigger
 add_subdirectory(FlowCyPy/cpp/triggering_system)   # triggering_system
 add_subdirectory(FlowCyPy/cpp/signal_generator)    # signal_generator
 add_subdirectory(FlowCyPy/cpp/peak_locator)        # peak_locator

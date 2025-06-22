@@ -15,3 +15,6 @@ from .amplifier import TransimpedanceAmplifier
 from .opto_electronics import OptoElectronics
 from .flow_cell import FlowCell
 from .fluidics import Fluidics
+
+
+debug_mode = False

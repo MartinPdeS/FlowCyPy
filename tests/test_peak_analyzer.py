@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 import math
-from numpy.testing import assert_allclose
 
 # Replace 'your_module' with the actual module name where the classes are defined.
 from FlowCyPy import peak_locator

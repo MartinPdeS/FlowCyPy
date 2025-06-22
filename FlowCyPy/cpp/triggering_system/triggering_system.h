@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 #include <cmath>      // for std::isnan
-#include "trigger.cpp"
+#include "../trigger/trigger.h"
 
 
 class BaseTrigger {
@@ -11,13 +11,19 @@ public:
     size_t pre_buffer;                        // Samples to include before each trigger
     size_t post_buffer;                       // Samples to include after each trigger
     int max_triggers;                         // Cap on number of triggers (-1 = unlimited)
-    std::vector<double> global_time;          // Global time axis for all signals
-    std::vector<Trigger> triggers;            // Collection of all signals to process
+    Trigger trigger;
 
 public:
     BaseTrigger() = default;
 
-
+    /**
+     * @brief Construct a new BaseTrigger with specified parameters.
+     *
+     * @param trigger_detector_name Name of the detection algorithm to apply.
+     * @param pre_buffer           Samples to buffer before each detected event.
+     * @param post_buffer          Samples to buffer after each detected event.
+     * @param max_triggers         Maximum number of triggers to record (-1 = no limit).
+     */
     BaseTrigger(const std::string& trigger_detector_name, size_t pre_buffer, size_t post_buffer, int max_triggers = -1)
         : trigger_detector_name(trigger_detector_name), pre_buffer(pre_buffer), post_buffer(post_buffer), max_triggers(max_triggers) {}
 
@@ -43,15 +49,6 @@ public:
     void add_signal(const std::string &detector_name, const std::vector<double> &signal);
 
 
-    /**
-     * @brief Retrieve the Trigger struct for a named detector.
-     *
-     * @param detector_name Name of the previously added signal.
-     * @return Trigger&     Reference to the corresponding Trigger object.
-     */
-    Trigger get_trigger(const std::string &detector_name) const;
-
-
 protected:
     /**
      * @brief Ensure a signal with the given name has been added.
@@ -66,32 +63,6 @@ protected:
      * @param valid_triggers Vector of (start, end) indices for each trigger.
      */
     void extract_signal_segments(const std::vector<std::pair<int, int>> &valid_triggers);
-
-
-public:
-    /**
-     * @brief Get the extracted signal segments for a detector.
-     *
-     * @param detector_name Name of the detector.
-     * @return vector<double> Concatenated signal segments.
-     */
-    std::vector<double> get_signals_py(const std::string &detector_name) const;
-
-    /**
-     * @brief Get the time stamps for each extracted segment.
-     *
-     * @param detector_name Name of the detector.
-     * @return vector<double> Concatenated time arrays for segments.
-     */
-    std::vector<double> get_times_py(const std::string &detector_name) const;
-
-    /**
-     * @brief Get segment ID mapping for each sample index.
-     *
-     * @param detector_name Name of the detector.
-     * @return vector<int>   Segment ID per sample (-1 if none).
-     */
-    std::vector<int> get_segments_ID_py(const std::string &detector_name) const;
 
 };
 

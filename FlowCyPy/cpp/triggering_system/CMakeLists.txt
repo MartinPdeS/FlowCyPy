@@ -3,7 +3,7 @@ set(NAME "triggering_system")
 
 # Create your library target
 add_library("cpp_${NAME}" STATIC "${NAME}.cpp")
-target_link_libraries("cpp_${NAME}" PRIVATE pybind11::module)
+target_link_libraries("cpp_${NAME}" PRIVATE pybind11::module cpp_trigger)
 
 # Create your Python module
 pybind11_add_module("interface_${NAME}" MODULE interface.cpp)

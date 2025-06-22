@@ -24,7 +24,6 @@ Overview:
 import numpy as np
 from FlowCyPy import units
 
-
 # %%
 # Step 1: Configure Noise Settings
 # ---------------------------------
@@ -123,7 +122,6 @@ fluidics = Fluidics(
 
 fluidics.plot(run_time=3.5 * units.millisecond)
 
-dsa
 
 df = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)
 

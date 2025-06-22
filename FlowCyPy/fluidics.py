@@ -93,10 +93,14 @@ class Fluidics:
             with plt.style.context(mps):
                 _, ax = plt.subplots(1, 1, figsize=figsize)
 
+        x = sampling['x'].pint.to(length_units).pint.quantity.magnitude
+        y = sampling['y'].pint.to(length_units).pint.quantity.magnitude
+        velocity = sampling['y'].pint.to(length_units).pint.quantity
+
         sc = ax.scatter(
-            sampling['x'].pint.to(length_units),
-            sampling['y'].pint.to(length_units),
-            c=sampling['Velocity'],
+            x,
+            y,
+            c=velocity.magnitude,
             cmap="viridis",
             edgecolor="black",
             label='Particle sampling'

@@ -12,6 +12,8 @@ from FlowCyPy import peak_locator
 from FlowCyPy import circuits
 from FlowCyPy.triggering_system import DynamicWindow
 from FlowCyPy import OptoElectronics, Fluidics
+import FlowCyPy
+FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 # ----------------- FIXTURES -----------------
 
 

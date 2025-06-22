@@ -62,7 +62,7 @@ class BaseTrigger:
             A DataFrame containing the trigger windows with segment IDs, times, and signals.
         """
 
-        if len(self._cpp_get_signals(self.trigger_detector_name)) == 0:
+        if len(self.trigger.get_segmented_signal(self.trigger_detector_name)) == 0:
             warnings.warn(f"No signal met the trigger criteria. Try adjusting the threshold. Signal min/max: {self.dataframe[self.trigger_detector_name].min().to_compact()}, {self.dataframe[self.trigger_detector_name].max().to_compact()}", UserWarning)
             self._warn_no_hits(self.dataframe, self.trigger_detector_name)
             return None
@@ -70,23 +70,25 @@ class BaseTrigger:
         detectors = self.dataframe.detector_names
 
         data = dict(
-            SegmentID=self._cpp_get_segments_ID(detectors[0]),
-            Time=pint_pandas.PintArray(self._cpp_get_times(detectors[0]), "second"),
+            SegmentID=self.trigger.segment_ids,
+            Time=pint_pandas.PintArray(self.trigger.segmented_time, "second"),
         )
 
-        meta_data = dict(
-            threshold={"detector": detectors[0], "value": self.threshold},
-        )
-
-        for det in detectors:
-            sig_np = self._cpp_get_signals(det)
-            data[det] = pint_pandas.PintArray(sig_np, self.dataframe.signal_units)
+        for detetector_name in detectors:
+            data[detetector_name] = pint_pandas.PintArray(
+                self.trigger.get_segmented_signal(detetector_name),
+                self.dataframe.signal_units
+            )
 
         tidy = pd.DataFrame(data).set_index("SegmentID")
 
         tidy = TriggerDataFrame(tidy, plot_type="analog")
 
         tidy.normalize_units(signal_units='max', time_units='max')
+
+        meta_data = dict(
+            threshold={"detector": self.trigger_detector_name, "value": self.threshold},
+        )
 
         # metadata passthrough
         tidy.attrs.update(meta_data)
@@ -227,11 +229,11 @@ class DynamicWindow(DYNAMICWINDOW, BaseTrigger):
             threshold=self.threshold.to(self.dataframe.signal_units).magnitude,
         )
 
-        out_df = self._assemble_dataframe()
+        output = self._assemble_dataframe()
 
-        out_df.attrs['scatterer'] = self.dataframe.scatterer
+        output.attrs['scatterer'] = self.dataframe.scatterer
 
-        return out_df
+        return output
 
 
 class DoubleThreshold(DOUBLETHRESHOLD, BaseTrigger):
@@ -310,7 +312,6 @@ class DoubleThreshold(DOUBLETHRESHOLD, BaseTrigger):
         )
 
         self._cpp_run(
-            algorithm=str(self.scheme),
             threshold=self.threshold.to(self.dataframe.signal_units).magnitude,
             lower_threshold=lower_threshold.to(self.dataframe.signal_units).magnitude,
             min_window_duration=min_win_samples,

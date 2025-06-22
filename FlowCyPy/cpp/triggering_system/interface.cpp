@@ -1,6 +1,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include "triggering_system.h"
+#include "../trigger/interface.cpp"
+
 
 namespace py = pybind11;
 
@@ -13,9 +15,21 @@ PYBIND11_MODULE(interface_triggering_system, module) {
         pre/post buffering, and segment extraction.
     )pbdoc";
 
+
+    register_trigger(module);
+
     // BaseTrigger class
     py::class_<BaseTrigger>(module, "BASETRIGGER")
         .def(py::init<>())
+        .def_readonly("trigger",
+            &BaseTrigger::trigger,
+            py::return_value_policy::reference_internal,
+            R"pbdoc(
+                The underlying trigger system used for detection and segmentation.
+
+                This object manages the signal data, time stamps, and segment extraction.
+            )pbdoc"
+        )
         .def_readwrite("trigger_detector_name", &BaseTrigger::trigger_detector_name,
              R"pbdoc(
                  Name of the trigger detection algorithm used.
@@ -66,49 +80,6 @@ PYBIND11_MODULE(interface_triggering_system, module) {
                 ----------
                 signal_array : numpy.ndarray
                     1D array of signal values aligned to `global_time`.
-            )pbdoc"
-        )
-        .def("_cpp_get_times",
-            &BaseTrigger::get_times_py,
-             R"pbdoc(
-                 Retrieve time segments for each detected trigger.
-
-                 Returns
-                 -------
-                 List[numpy.ndarray]
-                     One array of time stamps per trigger segment.
-             )pbdoc"
-        )
-        .def("_cpp_get_signals",
-            &BaseTrigger::get_signals_py,
-             R"pbdoc(
-                 Retrieve signal segments corresponding to each trigger.
-
-                 Returns
-                 -------
-                 List[numpy.ndarray]
-                     One array of signal values per trigger segment.
-             )pbdoc"
-        )
-        .def("_cpp_get_segments_ID",
-            &BaseTrigger::get_segments_ID_py,
-             R"pbdoc(
-                 Retrieve a mapping from sample index to segment ID.
-
-                 Returns
-                 -------
-                 numpy.ndarray
-                     1D array of ints where each entry is the segment index
-                     (or -1 for no segment).
-             )pbdoc"
-        )
-        .def_readonly("_cpp_global_time",
-            &BaseTrigger::global_time,
-            py::return_value_policy::reference_internal,
-            R"pbdoc(
-                Global time vector used for all signal operations.
-
-                Aligns one-to-one with samples in added signals.
             )pbdoc"
         )
     ;

@@ -51,7 +51,7 @@ def test_add_signal_and_time(simple_signal):
     ts._cpp_add_signal("detector1", signal)
 
     # Check that the global time array is set.
-    np.testing.assert_array_equal(ts._cpp_global_time, t)
+    np.testing.assert_array_equal(ts.trigger.global_time, t)
 
 def test_no_time_error(simple_signal):
     """
@@ -81,12 +81,12 @@ def test_no_trigger(no_trigger_signal):
     ts._cpp_add_time(t)
     ts._cpp_add_signal("detector2", signal)
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(IndexError):
         ts._cpp_run(threshold=0.6, lower_threshold=0.6, min_window_duration=-1, debounce_enabled=False)
 
     # Expect that no triggers are found (empty arrays returned)
-    assert len(ts._cpp_get_times("detector2")) == 0
-    assert len(ts._cpp_get_signals("detector2")) == 0
+    assert len(ts.trigger.segmented_time) == 0
+    assert len(ts.trigger.get_segmented_signal("detector2")) == 0
 
 def test_trigger_fixed_window(simple_signal):
     """
@@ -109,8 +109,8 @@ def test_trigger_fixed_window(simple_signal):
     ts._cpp_add_signal("detector1", signal)
     ts._cpp_run(threshold=0.6, lower_threshold=0.6, min_window_duration=-1, debounce_enabled=False)
     # Expect non-empty output arrays (i.e. at least one trigger is detected).
-    assert len(ts._cpp_get_times("detector1")) > 0
-    assert len(ts._cpp_get_signals("detector1")) > 0
+    assert len(ts.trigger.segmented_time) > 0
+    assert len(ts.trigger.get_segmented_signal("detector1")) > 0
 
 def test_trigger_dynamic_single_threshold(simple_signal):
     """
@@ -133,10 +133,10 @@ def test_trigger_dynamic_single_threshold(simple_signal):
     ts._cpp_add_signal("detector1", signal)
     ts._cpp_run(threshold=0.6, lower_threshold=0.6, debounce_enabled=True, min_window_duration=3)
     # Ensure that triggers are detected.
-    assert len(ts._cpp_get_times("detector1")) > 0
-    assert len(ts._cpp_get_signals("detector1")) > 0
+    assert len(ts.trigger.segmented_time) > 0
+    assert len(ts.trigger.get_segmented_signal("detector1")) > 0
     # Check that at least one segment is present by examining segment IDs.
-    unique_ids = np.unique(ts._cpp_get_segments_ID("detector1"))
+    unique_ids = np.unique(ts.trigger.segment_ids)
     assert len(unique_ids) >= 1
 
 if __name__ == "__main__":

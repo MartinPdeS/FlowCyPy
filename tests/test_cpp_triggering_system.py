@@ -67,9 +67,9 @@ def test_fixed_window_triggering_extracts_expected_segments():
         min_window_duration=-1
     )
 
-    signals = ts._cpp_get_signals("det1")
+    signals = ts.trigger.get_segmented_signal("det1")
 
-    ids = ts._cpp_get_segments_ID("det1")
+    ids = ts.trigger.segment_ids
     assert len(np.unique(ids)) == 3
     assert len(signals) > 0
 
@@ -97,7 +97,7 @@ def test_dynamic_triggering_detects_rising_and_falling_edges():
         min_window_duration=-1
     )
 
-    seg_ids = ts._cpp_get_segments_ID("det1")
+    seg_ids = ts.trigger.segment_ids
     assert len(np.unique(seg_ids)) == 2
 
 
@@ -123,7 +123,7 @@ def test_dynamic_simple_triggering_segments_plateaus():
         min_window_duration=-1
     )
 
-    seg_ids = ts._cpp_get_segments_ID("det1")
+    seg_ids = ts.trigger.segment_ids
     assert len(np.unique(seg_ids)) == 2
 
 
@@ -161,7 +161,7 @@ def test_run_warns_if_no_triggers_found():
     ts._cpp_add_signal("det1", signal)
     ts._cpp_run(threshold=5.0, lower_threshold=np.nan, debounce_enabled=False,  min_window_duration=-1)
 
-    output = ts._cpp_get_signals("det1")
+    output = ts.trigger.get_segmented_signal("det1")
     assert len(output) == 0
 
 

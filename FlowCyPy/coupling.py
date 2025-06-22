@@ -6,7 +6,7 @@ import pint_pandas
 from FlowCyPy.source import BaseBeam
 from PyMieSim.units import Quantity
 from FlowCyPy import units
-
+import FlowCyPy
 
 def compute_detected_signal(
     source: BaseBeam,
@@ -103,6 +103,24 @@ def process_sphere(
     -------
     None
     """
+    if FlowCyPy.debug_mode:
+        print("\n[DEBUG] Starting sphere processing")
+        print("-" * 50)
+        print(f"→ Total particles in event dataframe: {len(event_dataframe)}")
+        print(f"→ Sphere particles selected by mask: {mask.sum()}")
+        print(f"Sphere properties:")
+        print(f"→ Diameter: {event_dataframe['Diameter'].values.quantity}")
+        print(f"→ Refractive index: {event_dataframe['RefractiveIndex'].values.quantity}")
+        print(f"→ Medium refractive index: {medium_refractive_index}")
+        print(f"→ Signal digitizer bandwidth: {signal_digitizer.bandwidth}")
+        print(f"→ Source wavelength: {source.wavelength}")
+        print(f"→ Detector name: {detector.name}")
+        print(f"→ Detector NA: {detector.numerical_aperture}")
+        print(f"→ Detector angles: gamma={detector.gamma_angle}, phi={detector.phi_angle}")
+        print(f"→ Compute cross section: {compute_cross_section}")
+        print("-" * 50)
+
+
     # Extract rows for sphere scatterers.
     df_sphere = event_dataframe[mask]
     num_particles = len(df_sphere)
@@ -196,6 +214,26 @@ def process_coreshell(
     -------
     None
     """
+    if FlowCyPy.debug_mode:
+        print("\n[DEBUG] Starting core-shell processing")
+        print("-" * 50)
+        print(f"→ Total particles in event dataframe: {len(event_dataframe)}")
+        print(f"→ Core-shell particles selected by mask: {mask.sum()}")
+        print(f"Core Shell properties:")
+        print(f"→ Core diameter: {event_dataframe['CoreDiameter'].values.quantity}")
+        print(f"→ Core refractive index: {event_dataframe['CoreRefractiveIndex'].values.quantity}")
+        print(f"→ Shell thickness: {event_dataframe['ShellThickness'].values.quantity}")
+        print(f"→ Shell refractive index: {event_dataframe['ShellRefractiveIndex'].values.quantity}")
+        print(f"→ Medium refractive index: {medium_refractive_index}")
+        print(f"→ Signal digitizer bandwidth: {signal_digitizer.bandwidth}")
+        print(f"→ Source wavelength: {source.wavelength}")
+        print(f"→ Detector name: {detector.name}")
+        print(f"→ Detector NA: {detector.numerical_aperture}")
+        print(f"→ Detector angles: gamma={detector.gamma_angle}, phi={detector.phi_angle}")
+        print(f"→ Compute cross section: {compute_cross_section}")
+        print("-" * 50)
+
+
     # Extract rows for core-shell scatterers.
     df_coreshell = event_dataframe[mask]
     num_particles = len(df_coreshell)

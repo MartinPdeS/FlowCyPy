@@ -1,11 +1,12 @@
 import pytest
 import numpy as np
-import matplotlib.pyplot as plt
+from unittest.mock import patch
 
 # Import necessary components from FlowCyPy.
 from FlowCyPy import units, population, distribution
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import ScattererCollection  # Assuming this is the correct import for scatterer collection
+from FlowCyPy.fluidics import Fluidics
 
 # --- Fixtures ---
 
@@ -14,18 +15,12 @@ def valid_flowcell():
     """
     Create a valid FlowCell instance using typical microfluidic and flow cytometry parameters.
     """
-    width = 10 * units.micrometer
-    height = 10 * units.micrometer
-    sample_flow = 0.3 * units.microliter / units.second
-    sheath_flow = 3 * units.microliter / units.second
-    mu = 1e-3 * units.pascal * units.second
-
-    fc = FlowCell(
-        width=width,
-        height=height,
-        sample_volume_flow=sample_flow,
-        sheath_volume_flow=sheath_flow,
-        mu=mu,
+    return FlowCell(
+        width=10 * units.micrometer,
+        height=10 * units.micrometer,
+        sample_volume_flow=0.3 * units.microliter / units.second,
+        sheath_volume_flow=3 * units.microliter / units.second,
+        mu=1e-3 * units.pascal * units.second,
         N_terms=25,
         n_int=200,
     )
@@ -36,13 +31,12 @@ def real_population():
     """
     Create a real Population instance using FlowCyPy's Sphere population with delta distributions.
     """
-    pop = population.Sphere(
+    return population.Sphere(
         name='Population',
         particle_count=10 * units.particle,
         diameter=distribution.Delta(position=150 * units.nanometer),
         refractive_index=distribution.Delta(position=1.39 * units.RIU)
     )
-    return pop
 
 @pytest.fixture
 def real_scatterer_collection(real_population):
@@ -57,14 +51,13 @@ def real_scatterer_collection(real_population):
 # --- Test Cases ---
 
 def test_flowcell_creation(valid_flowcell):
-    fc = valid_flowcell
-    expected_Q_total = fc.sample_volume_flow + fc.sheath_volume_flow
-    assert fc.Q_total.to("microliter/second").magnitude == pytest.approx(
+    expected_Q_total = valid_flowcell.sample_volume_flow + valid_flowcell.sheath_volume_flow
+    assert valid_flowcell.Q_total.to("microliter/second").magnitude == pytest.approx(
         expected_Q_total.to("microliter/second").magnitude
     )
-    assert fc.dpdx != 0
-    assert fc.u_center > 0
-    ns = fc.sample
+    assert valid_flowcell.dpdx != 0
+    assert valid_flowcell.u_center > 0
+    ns = valid_flowcell.sample
     assert ns.width > 0
     assert ns.height > 0
     assert ns.area > 0
@@ -91,23 +84,20 @@ def test_invalid_flow_units():
         )
 
 def test_velocity_output(valid_flowcell):
-    fc = valid_flowcell
-    y_vals = np.linspace(-fc.width.magnitude/2, fc.width.magnitude/2, 10)
-    z_vals = np.linspace(-fc.height.magnitude/2, fc.height.magnitude/2, 10)
+    y_vals = np.linspace(-valid_flowcell.width.magnitude/2, valid_flowcell.width.magnitude/2, 10)
+    z_vals = np.linspace(-valid_flowcell.height.magnitude/2, valid_flowcell.height.magnitude/2, 10)
     Y, Z = np.meshgrid(y_vals, z_vals)
-    U = fc.velocity(Y * units.micrometer, Z * units.micrometer)
+    U = valid_flowcell.velocity(Y * units.micrometer, Z * units.micrometer)
     assert U.shape == Y.shape
     assert np.all(np.isfinite(U))
 
 def test_compute_channel_flow(valid_flowcell):
-    fc = valid_flowcell
-    Q = fc._compute_channel_flow(fc.dpdx_ref, fc.n_int)
+    Q = valid_flowcell._compute_channel_flow(valid_flowcell.dpdx_ref, valid_flowcell.n_int)
     assert Q > 0
 
 def test_sample_particles(valid_flowcell):
-    fc = valid_flowcell
     n_samples = 1000
-    sampling_dict = fc.sample_transverse_profile(n_samples)
+    sampling_dict = valid_flowcell.sample_transverse_profile(n_samples)
     assert len(sampling_dict['y']) == n_samples
     assert len(sampling_dict['x']) == n_samples
     assert len(sampling_dict['Velocity']) == n_samples
@@ -115,20 +105,19 @@ def test_sample_particles(valid_flowcell):
 
     assert np.all(np.isfinite(sampling_dict['Velocity'].magnitude))
 
-def test_plot_method(valid_flowcell, monkeypatch):
-    fc = valid_flowcell
-    called = False
-    def fake_show():
-        nonlocal called
-        called = True
-    monkeypatch.setattr(plt, "show", fake_show)
-    fc.plot(n_samples=100)
-    assert called
+@patch('matplotlib.pyplot.show')
+def test_plot_method(mock_show, valid_flowcell, real_scatterer_collection):
+    fluidics = Fluidics(
+        scatterer_collection=real_scatterer_collection,
+        flow_cell=valid_flowcell
+    )
+
+    fluidics.plot(run_time=1 * units.millisecond)
+
 
 def test_get_sample_volume(valid_flowcell):
-    fc = valid_flowcell
     run_time = 10 * units.second
-    volume = fc.get_sample_volume(run_time)
+    volume = valid_flowcell.get_sample_volume(run_time)
     volume_microliters = volume.to("microliter")
     assert volume_microliters.magnitude > 0
 
@@ -159,4 +148,4 @@ def test_event_dataframe_units(valid_flowcell, real_scatterer_collection):
 # ------------------ RUN TESTS ------------------
 
 if __name__ == "__main__":
-    pytest.main(["-W", "error", __file__])
+    pytest.main(["-W", "error", "-s", __file__])
