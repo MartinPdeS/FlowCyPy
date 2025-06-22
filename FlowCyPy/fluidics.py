@@ -121,13 +121,16 @@ class Fluidics:
         self.flow_cell.sheath._add_to_plot(
             ax=ax,
             length_units=length_units,
-            color='lightblue'
+            color='lightblue',
+            label='Sheath Region'
         )
 
         self.flow_cell.sample._add_to_plot(
             ax=ax,
             length_units=length_units,
-            color='green'
+            color='green',
+            label='Sample Region'
+
         )
 
         ax.set_aspect('equal')

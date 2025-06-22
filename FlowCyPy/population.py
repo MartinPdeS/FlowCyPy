@@ -3,7 +3,7 @@ from typing import Union
 from FlowCyPy import distribution
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-from FlowCyPy.units import Quantity, nanometer, RIU, micrometer, particle
+from FlowCyPy.units import Quantity, RIU
 from FlowCyPy.particle_count import ParticleCount
 
 from PyMieSim.units import Quantity, RIU, meter
@@ -97,6 +97,18 @@ class BasePopulation:
         """
         self.particle_count /= factor
 
+    def __post_init__(self):
+        """
+        This method converts any Quantity attributes to their base SI units (i.e., removes any prefixes)
+        and ensures that the particle_count is stored as a ParticleCount instance.
+        """
+        self.particle_count = ParticleCount(self.particle_count)
+        # Convert all attributes that are Quantity instances to their base SI units.
+        for attr_name, attr_value in vars(self).items():
+            if isinstance(attr_value, Quantity):
+                setattr(self, attr_name, attr_value.to_base_units())
+
+
 @dataclass(config=config_dict)
 class Sphere(BasePopulation):
     """
@@ -125,24 +137,10 @@ class Sphere(BasePopulation):
         it should be convertible to a ParticleCount.
 
     """
-
     name: str
     refractive_index: Union[distribution.Base, Quantity]
     diameter: Union[distribution.Base, Quantity]
     particle_count: ParticleCount | Quantity
-
-    def __post_init__(self):
-        """
-        Post-initialization processing.
-
-        This method converts any Quantity attributes to their base SI units (i.e., removes any prefixes)
-        and ensures that the particle_count is stored as a ParticleCount instance.
-        """
-        self.particle_count = ParticleCount(self.particle_count)
-        # Convert all attributes that are Quantity instances to their base SI units.
-        for attr_name, attr_value in vars(self).items():
-            if isinstance(attr_value, Quantity):
-                setattr(self, attr_name, attr_value.to_base_units())
 
     def generate_property_sampling(self, sampling: int) -> tuple:
         """
@@ -214,22 +212,6 @@ class CoreShell(BasePopulation):
     shell_refractive_index: Union[distribution.Base, Quantity]
     particle_count: ParticleCount | Quantity
 
-    def __post_init__(self):
-        """
-        Post-initialization processing.
-
-        This method ensures that:
-            - All Quantity attributes are converted to their base SI units.
-            - The particle_count is stored as a ParticleCount instance.
-            - The core_diameter, shell_thickness, and refractive indices are validated via their respective field validators.
-
-        """
-        self.particle_count = ParticleCount(self.particle_count)
-        # Convert any Quantity attribute to its base SI units.
-        for attr_name, attr_value in vars(self).items():
-            if isinstance(attr_value, Quantity):
-                setattr(self, attr_name, attr_value.to_base_units())
-
     def generate_property_sampling(self, sampling: Quantity) -> tuple:
         r"""
         Generate a sampling of core-shell particle properties.
@@ -261,65 +243,3 @@ class CoreShell(BasePopulation):
             'ShellRefractiveIndex': self.shell_refractive_index.generate(sampling)
         }
 
-
-class CallablePopulationMeta(type):
-    def __getattr__(cls, attr):
-        raise AttributeError(f"{cls.__name__} must be called as {cls.__name__}() to access its population instance.")
-
-
-class CallablePopulation(metaclass=CallablePopulationMeta):
-    def __init__(self, name, diameter_dist, ri_dist):
-        self._name = name
-        self._diameter_distribution = diameter_dist
-        self._ri_distribution = ri_dist
-
-    def __call__(self, particle_count: Quantity = 1 * particle):
-        return Sphere(
-            particle_count=particle_count,
-            name=self._name,
-            diameter=self._diameter_distribution,
-            refractive_index=self._ri_distribution,
-        )
-
-
-# Define populations
-_populations = (
-    ('Exosome',          70 * nanometer, 2.0, 1.39 * RIU, 0.02 * RIU),
-    ('MicroVesicle',    400 * nanometer, 1.5, 1.39 * RIU, 0.02 * RIU),
-    ('ApoptoticBodies',  2 * micrometer, 1.2, 1.40 * RIU, 0.03 * RIU),
-    ('HDL',              10 * nanometer, 3.5, 1.33 * RIU, 0.01 * RIU),
-    ('LDL',              20 * nanometer, 3.0, 1.35 * RIU, 0.02 * RIU),
-    ('VLDL',             50 * nanometer, 2.0, 1.445 * RIU, 0.0005 * RIU),
-    ('Platelet',       2000 * nanometer, 2.5, 1.38 * RIU, 0.01 * RIU),
-    ('CellularDebris',   3 * micrometer, 1.0, 1.40 * RIU, 0.03 * RIU),
-)
-
-# Dynamically create population classes
-for (name, diameter, diameter_spread, ri, ri_spread) in _populations:
-    diameter_distribution = distribution.RosinRammler(
-        characteristic_property=diameter,
-        spread=diameter_spread
-    )
-
-    ri_distribution = distribution.Normal(
-        mean=ri,
-        std_dev=ri_spread
-    )
-
-    # Create a class dynamically for each population
-    cls = type(name, (CallablePopulation,), {})
-    globals()[name] = cls(name, diameter_distribution, ri_distribution)
-
-
-# Helper function for microbeads
-def get_microbeads(diameter: Quantity, refractive_index: Quantity, name: str) -> Sphere:
-    diameter_distribution = distribution.Delta(position=diameter)
-    ri_distribution = distribution.Delta(position=refractive_index)
-
-    microbeads = Sphere(
-        name=name,
-        diameter=diameter_distribution,
-        refractive_index=ri_distribution
-    )
-
-    return microbeads

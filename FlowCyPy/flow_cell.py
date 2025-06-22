@@ -1,6 +1,7 @@
 from typing import List
 import numpy as np
 import pandas as pd
+import pint_pandas
 from pydantic.dataclasses import dataclass
 from pint_pandas import PintArray
 from pydantic import field_validator
@@ -19,26 +20,32 @@ config_dict = dict(
 )
 
 
-class Flow():
-    def __init__(self, **kwargs):
-        for k, v in kwargs.items():
-            setattr(self, k, v)
+@dataclass(config=config_dict, kw_only=True)
+class FluidRegion:
+    height: Quantity
+    width: Quantity
+    volume_flow: Quantity
+    max_flow_speed: Quantity = None
+    average_flow_speed: Quantity = None
 
-    def _add_to_plot(self, ax, length_units, color):
-        channel_rect = Rectangle(
+    @property
+    def area(self) -> Quantity:
+        return self.height * self.width
+
+    def _add_to_plot(self, ax, length_units, color, label=None):
+        rect = Rectangle(
             (-self.width.to(length_units).magnitude / 2, -self.height.to(length_units).magnitude / 2),
             self.width.to(length_units).magnitude,
             self.height.to(length_units).magnitude,
             fill=True,
             edgecolor='black',
-            alpha=0.8,
             facecolor=color,
+            alpha=0.8,
             linewidth=1,
             zorder=-1,
-            label="Sample Region"
+            label=label
         )
-
-        ax.add_patch(channel_rect)
+        ax.add_patch(rect)
 
 
 
@@ -177,16 +184,15 @@ class FlowCell:
         width_sample = (self.width / self.height) * height_sample
         average_flow_speed_sample = self.sample_volume_flow / area_sample
 
-        self.sample = Flow(
+        self.sample = FluidRegion(
             height=height_sample,
             width=width_sample,
-            area=area_sample,
             volume_flow=self.sample_volume_flow,
             max_flow_speed=self.u_center,
-            average_flow_speed=average_flow_speed_sample
+            average_flow_speed=average_flow_speed_sample,
         )
 
-        self.sheath = Flow(
+        self.sheath = FluidRegion(
             height=self.height,
             width=self.width,
             volume_flow=self.sheath_volume_flow,
@@ -221,10 +227,12 @@ class FlowCell:
         u = np.zeros_like(y, dtype=np.float64)
         prefactor = (4 * self.height**2 / (np.pi**3 * self.mu)) * (-self.dpdx)
         n_values = np.arange(1, 2 * self.N_terms, 2)  # n = 1, 3, 5, ...
+
         for n in n_values:
             term_y = 1 - np.cosh((n * np.pi * y) / self.height) / np.cosh((n * np.pi * self.width / 2) / self.height)
             term_z = np.sin((n * np.pi * (z + (self.height / 2))) / self.height)
-            u += term_y * term_z / n**3
+            u += term_y * term_z / n ** 3
+
         return prefactor * u
 
     def _compute_channel_flow(self, dpdx: float, n_int: int) -> float:
@@ -311,9 +319,7 @@ class FlowCell:
         if len(velocities) !=0:
             velocities = velocities.to(velocities.max().to_compact().units)
 
-        return dict(
-            x=x_samples, y=y_samples, Velocity=velocities
-        )
+        return x_samples, y_samples, velocities
 
     @helper.validate_units(run_time=units.second)
     def _generate_event_dataframe(self, populations: List[BasePopulation], run_time: Quantity) -> pd.DataFrame:
@@ -326,6 +332,7 @@ class FlowCell:
 
         for population in populations:
             sub_dict = sampling_dict[population.name]
+
             arrival_time = self._get_population_arrival_time(run_time=run_time, population=population)
 
             n_events = len(arrival_time)
@@ -338,11 +345,10 @@ class FlowCell:
                 population.generate_property_sampling(n_events)
             )
 
-            sub_dict.update(
-                self.sample_transverse_profile(n_events)
-            )
+            sub_dict["x"], sub_dict["y"], sub_dict["Velocity"] = self.sample_transverse_profile(n_events)
 
-        scatterer_dataframe = helper.get_dataframe_from_dict(
+
+        scatterer_dataframe = self.get_dataframe_from_dict(
             dictionnary=sampling_dict,
             level_names=['Population', 'ScattererID']
         )
@@ -385,6 +391,7 @@ class FlowCell:
 
             if self.event_scheme.lower() == 'uniform-random':
                 np.random.shuffle(evenly_spaced_times.magnitude)
+
             scatterer_dataframe['Time'] = PintArray(evenly_spaced_times.to(units.second).magnitude, units.second)
 
     def _get_population_arrival_time(self, run_time: Quantity, population: BasePopulation) -> pd.DataFrame:
@@ -410,3 +417,25 @@ class FlowCell:
         return arrival_times
 
 
+    def get_dataframe_from_dict(self, dictionnary: dict, level_names: list = None) -> pd.DataFrame:
+        dfs = []
+        for pop_name, inner_dict in dictionnary.items():
+
+            df_pop = pd.DataFrame(
+                index=range(inner_dict.pop('n_elements'))
+            )
+
+            df_pop.index = pd.MultiIndex.from_product(
+                [[pop_name], df_pop.index],
+                names=level_names
+            )
+
+            for k, v in inner_dict.items():
+                df_pop[k] = pint_pandas.PintArray(v.magnitude, v.units)
+
+            dfs.append(df_pop)
+
+        if len(dfs) == 0:
+            return pd.DataFrame(columns=level_names).set_index(level_names)
+
+        return pd.concat(dfs)

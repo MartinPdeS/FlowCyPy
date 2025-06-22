@@ -1,19 +1,11 @@
 # -*- coding: utf-8 -*-
-from typing import List, Optional, Union
+from typing import List, Union
 import pandas as pd
-from typing import Optional, List
 from pint_pandas import PintArray
-from enum import Enum
 
 from FlowCyPy.units import Quantity, RIU, particle, liter
 from FlowCyPy.population import BasePopulation
 from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
-
-
-class CouplingModel(Enum):
-    MIE = 'mie'
-    RAYLEIGH = 'rayleigh'
-    UNIFORM = 'uniform'
 
 
 class ScattererCollection():
@@ -23,20 +15,17 @@ class ScattererCollection():
     indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).
 
     """
-    def __init__(self, medium_refractive_index: Quantity = 1.0 * RIU, populations: List[BasePopulation] = None, coupling_model: Optional[CouplingModel] = CouplingModel.MIE):
+    def __init__(self, medium_refractive_index: Quantity = 1.0 * RIU, populations: List[BasePopulation] = None):
         """
         Parameters
         ----------
         populations : List[BasePopulation]
             A list of Population instances that define different scatterer populations.
-        coupling_model : Optional[CouplingModel], optional
-            The type of coupling factor to use (CouplingModel.MIE, CouplingModel.RAYLEIGH, CouplingModel.UNIFORM). Default is CouplingModel.MIE.
         medium_refractive_index : float
             The refractive index of the medium. Default is 1.0.
         """
         self.populations = populations or []
         self.medium_refractive_index = medium_refractive_index
-        self.coupling_model = coupling_model
         self.dataframe: pd.DataFrame = None
 
     def get_population_ratios(self) -> list[float]:

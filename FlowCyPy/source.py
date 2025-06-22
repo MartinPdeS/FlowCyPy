@@ -36,18 +36,15 @@ class BaseBeam():
     def calculate_field_amplitude_at_focus(self) -> Quantity:
         return NotImplementedError('This method should be implemneted by the derived class!')
 
-    @field_validator('wavelength', mode='plain')
+    def _validation(*args, **kwargs):
+        def wrapper(function):
+            return function(*args, **kwargs)
+
+        return wrapper
+
+    @_validation
+    @field_validator('wavelength', 'waist', 'waist_y', 'waist_z', mode='plain')
     def validate_length(cls, value, field):
-        if not isinstance(value, Quantity):
-            raise ValueError(f"{value} must be a Quantity with distance units [<prefix>meter].")
-
-        if not value.check('meter'):
-            raise ValueError(f"{field} must be a Quantity with distance units [<prefix>meter], but got {value.units}.")
-
-        return value
-
-    @field_validator('waist', 'waist_y', 'waist_z', mode='plain')
-    def validate_waist(cls, value, field):
         if value is None:
             return value
         if not isinstance(value, Quantity):
@@ -59,7 +56,7 @@ class BaseBeam():
         return value
 
     @field_validator('polarization', mode='plain')
-    def validate_polarization(cls, value, field):
+    def validate_angle(cls, value, field):
         if not isinstance(value, Quantity):
             raise ValueError(f"{value} must be a Quantity with angle units [<prefix>degree or <prefix>radian].")
 
@@ -69,7 +66,7 @@ class BaseBeam():
         return value
 
     @field_validator('optical_power', mode='plain')
-    def validate_optical_power(cls, value, field):
+    def validate_power(cls, value, field):
         if not isinstance(value, Quantity):
             raise ValueError(f"{value} must be a Quantity with power units [<prefix>watt].")
 
@@ -79,7 +76,7 @@ class BaseBeam():
         return value
 
     @field_validator('numerical_aperture', 'numerical_aperture_y', 'numerical_aperture_z', mode='plain')
-    def validate_numerical_apertures(cls, value, field):
+    def validate_AU(cls, value, field):
         if value is None:
             return value
         if not isinstance(value, Quantity):
