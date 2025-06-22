@@ -58,7 +58,7 @@ def detector_1():
 def source():
     return GaussianBeam(
         numerical_aperture=0.1 * units.AU,
-        wavelength=1550 * units.nanometer,
+        wavelength=1.550 * units.micrometer,
         optical_power=100e-3 * units.watt,
     )
 
@@ -103,7 +103,7 @@ def population(diameter_distribution, ri_distribution):
 def scatterer_collection(population):
     """Fixture for creating a scatterer collection with a default population."""
     scatterer = ScattererCollection()
-    # scatterer.add_population(population)
+    scatterer.add_population(population)
     return scatterer
 
 @pytest.fixture
