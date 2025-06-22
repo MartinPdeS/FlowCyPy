@@ -1,8 +1,8 @@
 from FlowCyPy import units, NoiseSetting
 from FlowCyPy import GaussianBeam, ScattererCollection, Detector, SignalDigitizer, TransimpedanceAmplifier, FlowCell
-from FlowCyPy.triggering_system import TriggeringSystem, Scheme
-from FlowCyPy.population import Exosome, Sphere, distribution
+from FlowCyPy.population import Sphere, distribution
 from FlowCyPy import FlowCytometer, circuits
+from FlowCyPy import OptoElectronics, Fluidics
 
 NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
@@ -38,6 +38,11 @@ scatterer_collection.add_population(custom_population)
 
 scatterer_collection.dilute(factor=80)
 
+fluidics = Fluidics(
+    scatterer_collection=scatterer_collection,
+    flow_cell=flow_cell
+)
+
 digitizer = SignalDigitizer(
     bit_depth='14bit',
     saturation_levels='auto',
@@ -66,13 +71,16 @@ amplifier = TransimpedanceAmplifier(
     current_noise_density=.2 * units.femtoampere / units.sqrt_hertz
 )
 
-cytometer = FlowCytometer(
-    source=source,
-    transimpedance_amplifier=amplifier,
-    scatterer_collection=scatterer_collection,
-    digitizer=digitizer,
+opto_electronics = OptoElectronics(
     detectors=[detector_0, detector_1],
-    flow_cell=flow_cell,
+    digitizer=digitizer,
+    source=source,
+    amplifier=amplifier
+)
+
+cytometer = FlowCytometer(
+    fluidics=fluidics,
+    opto_electronics=opto_electronics,
     background_power=0.001 * units.milliwatt
 )
 
@@ -81,21 +89,27 @@ processing_steps = [
     circuits.BesselLowPass(cutoff=2 * units.megahertz, order=4, gain=2)
 ]
 
-cytometer.prepare_acquisition(run_time=2.5 * units.millisecond)
-acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
-
-trigger = TriggeringSystem(
-    dataframe=acquisition,
-    trigger_detector_name='forward',
-    max_triggers=-1,
-    pre_buffer=20,
-    post_buffer=20,
-    digitizer=digitizer
+analog, event_df = cytometer.get_acquisition(
+    run_time=2.5 * units.millisecond,
+    processing_steps=processing_steps
 )
 
-analog_triggered = trigger.run(
-    scheme=Scheme.DYNAMIC,
-    threshold=10 * units.microvolt
-)
+analog.normalize_units(signal_units='max', time_units='max')
 
-analog_triggered.plot()
+analog.plot()
+
+# trigger = TriggeringSystem(
+#     dataframe=acquisition,
+#     trigger_detector_name='forward',
+#     max_triggers=-1,
+#     pre_buffer=20,
+#     post_buffer=20,
+#     digitizer=digitizer
+# )
+
+# analog_triggered = trigger.run(
+#     scheme=Scheme.DYNAMIC,
+#     threshold=10 * units.microvolt
+# )
+
+# analog_triggered.plot()

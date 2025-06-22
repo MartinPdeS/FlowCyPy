@@ -60,95 +60,91 @@ Simulate a simple flow cytometer experiment:
 
 ..  code-block:: python
 
-    import numpy as np
-    from FlowCyPy import Detector, FlowCytometer, ScattererCollection, FlowCell, units, NoiseSetting, GaussianBeam, SignalDigitizer
-    from FlowCyPy.population import Exosome, Population, distribution
-
-    NoiseSetting.include_noises = True
+    from FlowCyPy import units, NoiseSetting
+    from FlowCyPy import GaussianBeam, ScattererCollection, Detector, SignalDigitizer, TransimpedanceAmplifier, FlowCell
+    from FlowCyPy.triggering_system import TriggeringSystem, Scheme
+    from FlowCyPy.population import Sphere, distribution
+    from FlowCyPy import FlowCytometer, circuits
 
     source = GaussianBeam(
-        numerical_aperture=0.3 * units.AU,
-        wavelength=200 * units.nanometer,
-        optical_power=20 * units.milliwatt
+        numerical_aperture=0.1 * units.AU,
+        wavelength=450 * units.nanometer,
+        optical_power=200 * units.milliwatt,
+        RIN=-140
     )
 
     flow_cell = FlowCell(
-        source=source,
-        volume_flow=0.3 * units.microliter / units.second,
-        flow_area=(10 * units.micrometer) ** 2,
+        sample_volume_flow=80 * units.microliter / units.minute,
+        sheath_volume_flow=1 * units.milliliter / units.minute,
+        width=100 * units.micrometer,
+        height=100 * units.micrometer,
     )
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
-    exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
-
-    custom_population = Population(
-        name='Pop 0',
+    custom_population = Sphere(
+        name='Population 1',
         particle_count=5e9 * units.particle / units.milliliter,
-        size=distribution.RosinRammler(characteristic_size=150 * units.nanometer, spread=30),
+        diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
         refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
     )
 
-    scatterer_collection.add_population(exosome, custom_population)
+    scatterer_collection.add_population(custom_population)
 
-    scatterer_collection.dilute(factor=4)
+    scatterer_collection.dilute(factor=80)
 
-    scatterer_collection.plot()
-
-    signal_digitizer = SignalDigitizer(
+    digitizer = SignalDigitizer(
         bit_depth='14bit',
         saturation_levels='auto',
-        sampling_freq=60 * units.megahertz,
+        sampling_rate=60 * units.megahertz,
     )
 
     detector_0 = Detector(
         name='forward',
         phi_angle=0 * units.degree,
-        numerical_aperture=1.2 * units.AU,
-        responsitivity=1 * units.ampere / units.watt,
-        resistance=50 * units.ohm,
-        temperature=300 * units.kelvin
+        numerical_aperture=0.3 * units.AU,
+        responsivity=1 * units.ampere / units.watt,
     )
 
     detector_1 = Detector(
         name='side',
         phi_angle=90 * units.degree,
-        numerical_aperture=1.2 * units.AU,
-        responsitivity=1 * units.ampere / units.watt,
-        resistance=50 * units.ohm,
-        temperature=300 * units.kelvin,
+        numerical_aperture=0.3 * units.AU,
+        responsivity=1 * units.ampere / units.watt,
+    )
+
+
+    amplifier = TransimpedanceAmplifier(
+        gain=10 * units.volt / units.ampere,
+        bandwidth=10 * units.megahertz,
+        voltage_noise_density=.1 * units.nanovolt / units.sqrt_hertz,
+        current_noise_density=.2 * units.femtoampere / units.sqrt_hertz
     )
 
     cytometer = FlowCytometer(
+        source=source,
+        transimpedance_amplifier=amplifier,
         scatterer_collection=scatterer_collection,
-        signal_digitizer=signal_digitizer,
+        digitizer=digitizer,
         detectors=[detector_0, detector_1],
         flow_cell=flow_cell,
         background_power=0.001 * units.milliwatt
     )
 
-    acquisition = cytometer.get_acquisition(run_time=0.2 * units.millisecond)
+    processing_steps = [
+        circuits.BaselineRestorator(window_size=10 * units.microsecond),
+        circuits.BesselLowPass(cutoff=2 * units.megahertz, order=4, gain=2)
+    ]
 
-    acquisition.scatterer.plot(
-        x='side',
-        y='forward'
-    )
+    cytometer.prepare_acquisition(run_time=2.5 * units.millisecond)
 
-    acquisition.analog.plot()
+    analog = cytometer.get_acquisition(processing_steps=processing_steps)
 
-    triggered_acquisition = acquisition.run_triggering(
-        threshold=0.2 * units.millivolt,
-        trigger_detector_name='forward',
-        max_triggers=35,
-        pre_buffer=64,
-        post_buffer=64
-    )
+    analog.plot()
 
-    triggered_acquisition.analog.plot()
+|example_signal|
 
 Explore more examples in the `FlowCyPy Examples <https://martinpdes.github.io/FlowCyPy/gallery/index.html>`_.
-
-
 
 Code structure
 --------------
@@ -219,6 +215,10 @@ Contact
 For inquiries or collaboration, contact `Martin Poinsinet de Sivry-Houle <mailto:martin.poinsinet.de.sivry@gmail.com>`_.
 
 .. |logo| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/logo.png
+    :align: middle
+    :alt: FlowCyPy Logo
+
+.. |example_signal| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/example_signal.png
     :align: middle
     :alt: FlowCyPy Logo
 

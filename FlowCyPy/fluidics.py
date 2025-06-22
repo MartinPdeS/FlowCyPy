@@ -45,7 +45,7 @@ class Fluidics:
 
         return event_dataframe
 
-    def plot(self, run_time, n_samples: int = 100, figsize: tuple = (7, 4), ax: plt.Axes = None, show: bool = True) -> None:
+    def plot(self, run_time: units.Quantity, figsize: tuple = (7, 4), ax: plt.Axes = None, show: bool = True) -> None:
         r"""
         Plot the spatial distribution of sampled particles with velocity color-coding.
 
@@ -95,7 +95,7 @@ class Fluidics:
 
         x = sampling['x'].pint.to(length_units).pint.quantity.magnitude
         y = sampling['y'].pint.to(length_units).pint.quantity.magnitude
-        velocity = sampling['y'].pint.to(length_units).pint.quantity
+        velocity = sampling['Velocity'].pint.to("meter/second").pint.quantity
 
         sc = ax.scatter(
             x,
