@@ -46,14 +46,11 @@ flow_cell = FlowCell(
     height=10 * units.micrometer,
 )
 
-flow_cell.plot(n_samples=100)
-
-
 # Create a scatterer collection with a single population.
 # For signal processing, we use delta distributions (i.e., no variability).
 population = population.Sphere(
     name='Population',
-    particle_count=10 * units.particle,
+    particle_count=100 * units.particle,
     diameter=distribution.Delta(position=150 * units.nanometer),
     refractive_index=distribution.Delta(position=1.39 * units.RIU)
 )
@@ -66,6 +63,8 @@ fluidics = Fluidics(
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell
 )
+
+fluidics.plot(run_time=1.5 * units.millisecond)
 
 # Define the signal digitizer.
 digitizer = SignalDigitizer(

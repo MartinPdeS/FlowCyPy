@@ -24,7 +24,6 @@ Overview:
 import numpy as np
 from FlowCyPy import units
 
-
 # %%
 # Step 1: Configure Noise Settings
 # ---------------------------------
@@ -77,9 +76,6 @@ flow_cell = FlowCell(
     height=100 * units.micrometer,
 )
 
-flow_cell.plot(n_samples=300)
-
-
 # %%
 # Step 4: Define ScattererCollection and Population
 # -------------------------------------------------
@@ -123,6 +119,8 @@ fluidics = Fluidics(
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell
 )
+
+fluidics.plot(run_time=3.5 * units.millisecond)
 
 
 df = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)

@@ -39,7 +39,7 @@ Step 0: Import Necessary Libraries
 Here, we import the necessary libraries and units for the simulation. The units module helps us
 define physical quantities like meters, seconds, and watts in a concise and consistent manner.
 
-.. GENERATED FROM PYTHON SOURCE LINES 23-28
+.. GENERATED FROM PYTHON SOURCE LINES 23-27
 
 .. code-block:: Python
 
@@ -54,15 +54,14 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 29-33
+.. GENERATED FROM PYTHON SOURCE LINES 28-32
 
 Step 1: Configure Noise Settings
 ---------------------------------
 Noise settings are configured to simulate real-world imperfections. In this example, we include noise
 globally but exclude specific types, such as shot noise and thermal noise.
 
-.. GENERATED FROM PYTHON SOURCE LINES 33-46
+.. GENERATED FROM PYTHON SOURCE LINES 32-45
 
 .. code-block:: Python
 
@@ -86,14 +85,14 @@ globally but exclude specific types, such as shot noise and thermal noise.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 47-51
+.. GENERATED FROM PYTHON SOURCE LINES 46-50
 
 Step 2: Configure the Laser Source
 ----------------------------------
 The laser source generates light that interacts with the particles. Its parameters, like numerical
 aperture and wavelength, affect how light scatters, governed by Mie theory.
 
-.. GENERATED FROM PYTHON SOURCE LINES 51-62
+.. GENERATED FROM PYTHON SOURCE LINES 50-61
 
 .. code-block:: Python
 
@@ -115,7 +114,7 @@ aperture and wavelength, affect how light scatters, governed by Mie theory.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 63-70
+.. GENERATED FROM PYTHON SOURCE LINES 62-69
 
 Step 3: Set Up the Flow Cell
 ----------------------------
@@ -125,7 +124,7 @@ passing through the cross-sectional area is calculated as:
 .. math::
     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
 
-.. GENERATED FROM PYTHON SOURCE LINES 70-83
+.. GENERATED FROM PYTHON SOURCE LINES 69-79
 
 .. code-block:: Python
 
@@ -139,28 +138,14 @@ passing through the cross-sectional area is calculated as:
         height=100 * units.micrometer,
     )
 
-    flow_cell.plot(n_samples=300)
 
 
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
-   :alt: Particle Spatial Distribution and Speed
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
-   :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <Axes: title={'center': 'Particle Spatial Distribution and Speed'}, xlabel='X [µm]', ylabel='Y [µm]'>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 84-91
+.. GENERATED FROM PYTHON SOURCE LINES 80-87
 
 Step 4: Define ScattererCollection and Population
 -------------------------------------------------
@@ -170,7 +155,7 @@ given by:
 .. math::
     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-133
+.. GENERATED FROM PYTHON SOURCE LINES 87-131
 
 .. code-block:: Python
 
@@ -210,6 +195,8 @@ given by:
         flow_cell=flow_cell
     )
 
+    fluidics.plot(run_time=3.5 * units.millisecond)
+
 
     df = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)
 
@@ -219,10 +206,22 @@ given by:
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
-   :alt: Distribution of Diameter
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
-   :class: sphx-glr-single-img
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
+         :alt: Particle Spatial Distribution and Speed
+         :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
+         :alt: Distribution of Diameter
+         :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
+         :class: sphx-glr-multi-img
 
 
 .. rst-class:: sphx-glr-script-out
@@ -234,14 +233,14 @@ given by:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 134-138
+.. GENERATED FROM PYTHON SOURCE LINES 132-136
 
 Step 5: Define Detectors
 ------------------------
 Detectors measure light intensity. Parameters like responsivity define the conversion of optical
 power to electronic signals, and saturation level represents the maximum signal they can handle.
 
-.. GENERATED FROM PYTHON SOURCE LINES 138-187
+.. GENERATED FROM PYTHON SOURCE LINES 136-185
 
 .. code-block:: Python
 
@@ -301,7 +300,7 @@ power to electronic signals, and saturation level represents the maximum signal 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 188-195
+.. GENERATED FROM PYTHON SOURCE LINES 186-193
 
 Step 6: Simulate Flow Cytometry Experiment
 ------------------------------------------
@@ -311,7 +310,7 @@ and particles follows Mie theory:
 .. math::
     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
 
-.. GENERATED FROM PYTHON SOURCE LINES 195-224
+.. GENERATED FROM PYTHON SOURCE LINES 193-222
 
 .. code-block:: Python
 
@@ -356,11 +355,11 @@ and particles follows Mie theory:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-226
+.. GENERATED FROM PYTHON SOURCE LINES 223-224
 
 Visualize the scatter signals from both detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 226-228
+.. GENERATED FROM PYTHON SOURCE LINES 224-226
 
 .. code-block:: Python
 
@@ -384,14 +383,14 @@ Visualize the scatter signals from both detectors
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 229-233
+.. GENERATED FROM PYTHON SOURCE LINES 227-231
 
 Step 7: Analyze Detected Signals
 --------------------------------
 The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 233-250
+.. GENERATED FROM PYTHON SOURCE LINES 231-248
 
 .. code-block:: Python
 
@@ -430,11 +429,11 @@ window size and threshold.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 251-252
+.. GENERATED FROM PYTHON SOURCE LINES 249-250
 
 Getting and plotting the extracted peaks.
 
-.. GENERATED FROM PYTHON SOURCE LINES 252-264
+.. GENERATED FROM PYTHON SOURCE LINES 250-262
 
 .. code-block:: Python
 
@@ -464,15 +463,15 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7fa763d395d0>
+    <seaborn.axisgrid.JointGrid object at 0x7f49b72b2bd0>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 265-266
+.. GENERATED FROM PYTHON SOURCE LINES 263-264
 
 Step 8: Classifying the collected dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 266-279
+.. GENERATED FROM PYTHON SOURCE LINES 264-277
 
 .. code-block:: Python
 
@@ -504,7 +503,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.667 seconds)
+   **Total running time of the script:** (0 minutes 8.457 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

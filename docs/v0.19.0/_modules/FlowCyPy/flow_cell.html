@@ -510,14 +510,13 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pint_pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">PintArray</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">MPSPlots.styles</span><span class="w"> </span><span class="kn">import</span> <span class="n">mps</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePopulation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.scatterer</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">helper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rectangle</span>
 
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -527,10 +526,26 @@ document.write(`
 <span class="p">)</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">NameSpace</span><span class="p">():</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Flow</span><span class="p">():</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_to_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">length_units</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="n">channel_rect</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">(</span>
+            <span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+            <span class="n">facecolor</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Sample Region&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">channel_rect</span><span class="p">)</span>
 
 
 
@@ -677,13 +692,19 @@ document.write(`
         <span class="n">width_sample</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span> <span class="o">*</span> <span class="n">height_sample</span>
         <span class="n">average_flow_speed_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_volume_flow</span> <span class="o">/</span> <span class="n">area_sample</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">sample</span> <span class="o">=</span> <span class="n">NameSpace</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
             <span class="n">height</span><span class="o">=</span><span class="n">height_sample</span><span class="p">,</span>
             <span class="n">width</span><span class="o">=</span><span class="n">width_sample</span><span class="p">,</span>
             <span class="n">area</span><span class="o">=</span><span class="n">area_sample</span><span class="p">,</span>
             <span class="n">volume_flow</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_volume_flow</span><span class="p">,</span>
             <span class="n">max_flow_speed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">u_center</span><span class="p">,</span>
             <span class="n">average_flow_speed</span><span class="o">=</span><span class="n">average_flow_speed_sample</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sheath</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
+            <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
+            <span class="n">volume_flow</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sheath_volume_flow</span><span class="p">,</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="FlowCell.velocity">
@@ -910,124 +931,9 @@ document.write(`
 
         <span class="n">arrival_times</span> <span class="o">=</span> <span class="n">arrival_times</span><span class="p">[</span><span class="n">arrival_times</span> <span class="o">&lt;=</span> <span class="n">run_time</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">arrival_times</span>
+        <span class="k">return</span> <span class="n">arrival_times</span></div>
 
-<div class="viewcode-block" id="FlowCell.plot">
-<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.flow_cell.FlowCell.plot">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">figsize</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Plot the spatial distribution of sampled particles with velocity color-coding.</span>
 
-<span class="sd">        This method samples a specified number of particles from the focused sample stream</span>
-<span class="sd">        and generates a scatter plot of their positions in the y-z plane. The particles are</span>
-<span class="sd">        color-coded by their local x-direction velocity using a continuous colormap. In addition,</span>
-<span class="sd">        the plot includes overlays that represent the channel boundaries (sheath + sample regions)</span>
-<span class="sd">        and the sample region boundaries.</span>
-
-<span class="sd">        A dedicated colorbar is added to the right of the main axes and its height is adjusted</span>
-<span class="sd">        to match the plot, using a separate axes created with ``mpl_toolkits.axes_grid1.make_axes_locatable``.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        n_samples : int</span>
-<span class="sd">            Number of particles to sample and plot.</span>
-<span class="sd">        figsize : tuple, optional</span>
-<span class="sd">            Figure size (width, height) in inches. Default is (7, 4).</span>
-<span class="sd">        ax : matplotlib.axes.Axes, optional</span>
-<span class="sd">            A matplotlib Axes instance to draw the plot on. If not provided, a new figure and axes</span>
-<span class="sd">            are created.</span>
-<span class="sd">        show : bool, optional</span>
-<span class="sd">            Whether to display the plot immediately. Default is True.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        matplotlib.axes.Axes</span>
-<span class="sd">            The Axes instance with the plot.</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        - The plot uses orthogonal splines and a horizontal layout (left-to-right).</span>
-<span class="sd">        - Global styling parameters such as node style and edge styling are applied.</span>
-<span class="sd">        - The method requires that the object defines ``self.width``, ``self.height``,</span>
-<span class="sd">        ``self.sample.width``, ``self.sample.height``, and a method ``self.sample_particles(n_samples)``.</span>
-<span class="sd">        - The colorbar is created with a dedicated axes to ensure it spans the full height of the plot.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; ax = my_object.plot(n_samples=500)</span>
-<span class="sd">        &gt;&gt;&gt; # The plot is displayed if show=True, and ax can be used for further customization.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sampling</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_transverse_profile</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
-
-        <span class="n">length_units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">units</span>
-
-        <span class="c1"># Create plot</span>
-        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">mps</span><span class="p">):</span>
-                <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
-
-        <span class="n">sc</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
-            <span class="n">sampling</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">sampling</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">c</span><span class="o">=</span><span class="n">sampling</span><span class="p">[</span><span class="s1">&#39;Velocity&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">,</span>
-            <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Particle sampling&#39;</span>
-        <span class="p">)</span>
-
-        <span class="c1"># Create a dedicated colorbar axes next to the main axes:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">mpl_toolkits.axes_grid1</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_axes_locatable</span>
-        <span class="n">divider</span> <span class="o">=</span> <span class="n">make_axes_locatable</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
-        <span class="n">cax</span> <span class="o">=</span> <span class="n">divider</span><span class="o">.</span><span class="n">append_axes</span><span class="p">(</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s2">&quot;5%&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">sc</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Velocity [</span><span class="si">{</span><span class="n">sampling</span><span class="p">[</span><span class="s1">&#39;Velocity&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
-
-        <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
-            <span class="n">xlabel</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;X [</span><span class="si">{</span><span class="n">length_units</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">,</span>
-            <span class="n">ylabel</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Y [</span><span class="si">{</span><span class="n">length_units</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">,</span>
-            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Particle Spatial Distribution and Speed&quot;</span>
-        <span class="p">)</span>
-
-        <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rectangle</span>
-
-        <span class="c1"># Plot channel boundary.</span>
-        <span class="n">channel_rect</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">(</span>
-            <span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
-            <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;lightblue&#39;</span><span class="p">,</span>
-            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
-            <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Sheath fluid&quot;</span>
-        <span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">channel_rect</span><span class="p">)</span>
-
-        <span class="c1"># Plot sample region boundary.</span>
-        <span class="n">sample_rect</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">(</span>
-            <span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
-            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
-            <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span>
-            <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Sample Region&quot;</span>
-        <span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">sample_rect</span><span class="p">)</span>
-
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-
-        <span class="k">return</span> <span class="n">ax</span></div>
-</div>
 
 </pre></div>
 

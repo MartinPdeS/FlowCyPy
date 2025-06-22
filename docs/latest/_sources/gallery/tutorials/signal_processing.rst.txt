@@ -71,7 +71,7 @@ The resulting signals are plotted for comparison.
 
 Define and plot the flow cell.
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-158
+.. GENERATED FROM PYTHON SOURCE LINES 42-157
 
 .. code-block:: Python
 
@@ -82,14 +82,11 @@ Define and plot the flow cell.
         height=10 * units.micrometer,
     )
 
-    flow_cell.plot(n_samples=100)
-
-
     # Create a scatterer collection with a single population.
     # For signal processing, we use delta distributions (i.e., no variability).
     population = population.Sphere(
         name='Population',
-        particle_count=10 * units.particle,
+        particle_count=100 * units.particle,
         diameter=distribution.Delta(position=150 * units.nanometer),
         refractive_index=distribution.Delta(position=1.39 * units.RIU)
     )
@@ -102,6 +99,8 @@ Define and plot the flow cell.
         scatterer_collection=scatterer_collection,
         flow_cell=flow_cell
     )
+
+    fluidics.plot(run_time=1.5 * units.millisecond)
 
     # Define the signal digitizer.
     digitizer = SignalDigitizer(
@@ -235,7 +234,7 @@ Define and plot the flow cell.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.782 seconds)
+   **Total running time of the script:** (0 minutes 1.873 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_signal_processing.py:

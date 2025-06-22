@@ -584,14 +584,11 @@ forward scatter detector signals. Three acquisitions are performed:</p>
     <span class="n">height</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">flow_cell</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-
-
 <span class="c1"># Create a scatterer collection with a single population.</span>
 <span class="c1"># For signal processing, we use delta distributions (i.e., no variability).</span>
 <span class="n">population</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Population&#39;</span><span class="p">,</span>
-    <span class="n">particle_count</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span><span class="p">,</span>
+    <span class="n">particle_count</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span><span class="p">,</span>
     <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="mi">150</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">),</span>
     <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="mf">1.39</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
 <span class="p">)</span>
@@ -604,6 +601,8 @@ forward scatter detector signals. Three acquisitions are performed:</p>
     <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span>
 <span class="p">)</span>
+
+<span class="n">fluidics</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">1.5</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 
 <span class="c1"># Define the signal digitizer.</span>
 <span class="n">digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
@@ -713,7 +712,7 @@ forward scatter detector signals. Three acquisitions are performed:</p>
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.782 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 1.873 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-signal-processing-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/50779067d973746deae688bfb4c9a778/signal_processing.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">signal_processing.ipynb</span></code></a></p>
