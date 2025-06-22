@@ -98,18 +98,19 @@ analog.normalize_units(signal_units='max', time_units='max')
 
 analog.plot()
 
-# trigger = TriggeringSystem(
-#     dataframe=acquisition,
-#     trigger_detector_name='forward',
-#     max_triggers=-1,
-#     pre_buffer=20,
-#     post_buffer=20,
-#     digitizer=digitizer
-# )
+from FlowCyPy.triggering_system import DynamicWindow
 
-# analog_triggered = trigger.run(
-#     scheme=Scheme.DYNAMIC,
-#     threshold=10 * units.microvolt
-# )
+trigger = DynamicWindow(
+    dataframe=analog,
+    trigger_detector_name='forward',
+    max_triggers=-1,
+    pre_buffer=20,
+    post_buffer=20,
+    digitizer=digitizer
+)
 
-# analog_triggered.plot()
+analog_triggered = trigger.run(
+    threshold=10 * units.microvolt
+)
+
+analog_triggered.plot()

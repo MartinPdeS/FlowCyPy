@@ -32,7 +32,7 @@ requirements:
     - pint ~=0.24
     - scipy ~=1.14
     - scikit-learn
-    - martinpdes::pymiesim =v3.5.4.1
+    - martinpdes::pymiesim =v3.5.4.2
     - martinpdes::mpsplots
 
 about:

@@ -58,14 +58,13 @@ def detector_1():
 def source():
     return GaussianBeam(
         numerical_aperture=0.1 * units.AU,
-        wavelength=1.550 * units.micrometer,
+        wavelength=1550 * units.nanometer,
         optical_power=100e-3 * units.watt,
     )
 
 @pytest.fixture
 def flow_cell():
     """Fixture for creating a default flow cell."""
-
     return FlowCell(
         sample_volume_flow=1 * units.microliter / units.second,
         sheath_volume_flow=6 * units.microliter / units.second,
