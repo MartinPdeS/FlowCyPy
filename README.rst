@@ -142,7 +142,7 @@ Simulate a simple flow cytometer experiment:
 
     analog.plot()
 
-|example_signal|
+|signal_example|
 
 Explore more examples in the `FlowCyPy Examples <https://martinpdes.github.io/FlowCyPy/gallery/index.html>`_.
 
@@ -218,7 +218,7 @@ For inquiries or collaboration, contact `Martin Poinsinet de Sivry-Houle <mailto
     :align: middle
     :alt: FlowCyPy Logo
 
-.. |example_signal| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/example_signal.png
+.. |signal_example| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/signal_example.png
     :align: middle
     :alt: FlowCyPy Logo
 
