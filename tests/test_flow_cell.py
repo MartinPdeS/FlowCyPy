@@ -7,8 +7,11 @@ from FlowCyPy import units, population, distribution
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import ScattererCollection  # Assuming this is the correct import for scatterer collection
 from FlowCyPy.fluidics import Fluidics
+import FlowCyPy
+FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
-# --- Fixtures ---
+
+# ----------------- FIXTURES -----------------
 
 @pytest.fixture
 def valid_flowcell():

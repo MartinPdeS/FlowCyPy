@@ -7,7 +7,8 @@ from FlowCyPy import distribution as dist
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.population import Sphere
 from FlowCyPy import units
-
+import FlowCyPy
+FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
 CONCENTRATION = 3e+5 * units.particle / units.milliliter
 

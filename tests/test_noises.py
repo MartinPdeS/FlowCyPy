@@ -5,10 +5,16 @@ from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import units
 from FlowCyPy.signal_generator import SignalGenerator
+import FlowCyPy
+FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
+
+# ----------------- CONSTANTS -----------------
 
 TOLERANCE = 0.05  # Allowable error margin (5%)
 N_ELEMENTS = 5000  # Number of elements in the signal
 TIME_ARRAY = np.linspace(0.0, 1.0, N_ELEMENTS) * units.microsecond  # Time array for the signal generator
+
+# ----------------- FIXTURES -----------------
 
 @pytest.fixture
 def signal_generator():

@@ -4,20 +4,18 @@ from FlowCyPy import distribution as dist
 from unittest.mock import patch
 from FlowCyPy import units
 import matplotlib.pyplot as plt
+import FlowCyPy
+FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
 
-# Common test parameters
-@pytest.fixture
-def n_samples():
-    return 10000
+# ----------------- CONSTANTS -----------------
+
+N_SAMPLES = 1000
+X_VALUES = np.linspace(0.01, 1, N_SAMPLES) * units.micrometer
 
 
-@pytest.fixture
-def x_values(n_samples):
-    return np.linspace(0.01, 1, n_samples) * units.micrometer
+# ----------------- DISTRIBUTIONS -----------------
 
-
-# Parametrize different distributions
 distributions = [
     dist.Normal(mean=1.0 * units.micrometer, std_dev=1.0 * units.nanometer),
     dist.LogNormal(mean=1.0 * units.micrometer, std_dev=0.01 * units.micrometer),
@@ -26,16 +24,18 @@ distributions = [
 ]
 
 
+# ----------------- TESTS -----------------
+
 @patch('matplotlib.pyplot.show')
 @pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__.__name__)
-def test_number_of_samples(mock_show, distribution, n_samples):
+def test_number_of_samples(mock_show, distribution):
     """Test the generate method of the Distribution class."""
 
     # Generate particle sizes
-    sizes = distribution.generate(n_samples)
+    sizes = distribution.generate(N_SAMPLES)
 
     # Assert the shape is correct
-    assert sizes.shape == (n_samples,), f"{distribution.__class__.__name__}: Generated size array has incorrect shape."
+    assert sizes.shape == (N_SAMPLES,), f"{distribution.__class__.__name__}: Generated size array has incorrect shape."
 
     # Assert all sizes are positive
     assert np.all(sizes > 0), f"{distribution.__class__.__name__}: Generated sizes should all be positive."

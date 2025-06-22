@@ -2,6 +2,14 @@ import pytest
 import numpy as np
 from FlowCyPy import units
 from FlowCyPy.physical_constant import PhysicalConstant
+import FlowCyPy
+FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
+
+
+
+
+
+
 pi = PhysicalConstant.pi
 epsilon_0 = PhysicalConstant.epsilon_0
 c = PhysicalConstant.c

@@ -2,9 +2,10 @@ import numpy as np
 import pytest
 
 from FlowCyPy.binary import interface_signal_generator
+import FlowCyPy
+FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
-
-# === Shared signal model setup (used by most tests) ===
+# ----------------- CONSTANTS -----------------
 
 WIDTHS = np.full(5, 0.1)
 CENTERS = np.linspace(0.2, 0.8, 5)
@@ -14,6 +15,7 @@ N_ELEMENTS = 5000
 TIME_ARRAY = np.linspace(0.0, 1.0, N_ELEMENTS)
 BACKGROUND_POWER = 1.0
 
+# ----------------- FIXTURES -----------------
 
 @pytest.fixture
 def signal_generator():
@@ -26,7 +28,7 @@ def signal_generator():
     signal_generator.create_zero_signal(signal_name="Signal")
     return signal_generator
 
-# === Signal tests ===
+# ----------------- TESTS -----------------
 
 def test_signal_after_pulse_generation(signal_generator):
     """

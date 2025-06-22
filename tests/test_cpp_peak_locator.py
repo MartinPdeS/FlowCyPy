@@ -3,7 +3,7 @@ import pytest
 
 from FlowCyPy.binary.interface_peak_locator import SlidingWindowPeakLocator, GlobalPeakLocator
 
-# === Peak signal generation ===
+# ----------------- HELPER FUNCTIONS -----------------
 
 def generate_peak_signal(length=100, peaks=None, mode="square"):
     """
@@ -53,7 +53,7 @@ def generate_peak_signal(length=100, peaks=None, mode="square"):
     return signal
 
 
-# === SlidingWindowPeakLocator tests ===
+# ----------------- TESTS -----------------
 
 def test_sliding_window_basic_peak_detection():
     signal = generate_peak_signal(

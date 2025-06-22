@@ -14,8 +14,9 @@ from FlowCyPy.triggering_system import DynamicWindow
 from FlowCyPy import OptoElectronics, Fluidics
 import FlowCyPy
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
-# ----------------- FIXTURES -----------------
 
+
+# ----------------- FIXTURES -----------------
 
 @pytest.fixture
 def amplifier():

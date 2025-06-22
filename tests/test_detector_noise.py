@@ -5,12 +5,17 @@ from FlowCyPy import units
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy import NoiseSetting
 from FlowCyPy.signal_generator import SignalGenerator
+import FlowCyPy
 
+FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 NoiseSetting.include_noises = True
+
+# ----------------- CONSTANTS -----------------
 
 N_ELEMENTS = 5000  # Number of elements in the signal
 TIME_ARRAY = np.linspace(0.0, 1.0, N_ELEMENTS) * units.microsecond  # Time array for the signal generator
 
+# ----------------- FIXTURES -----------------
 
 @pytest.fixture
 def signal_generator():
@@ -52,6 +57,8 @@ def detector_dark_current():
 
     return detector
 
+
+# ----------------- TESTS -----------------
 
 def test_shot_noise_generation(detector_shot_noise, signal_generator):
     """Test that shot noise is generated and not zero for a detector."""

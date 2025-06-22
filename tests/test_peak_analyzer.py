@@ -4,6 +4,8 @@ import math
 
 # Replace 'your_module' with the actual module name where the classes are defined.
 from FlowCyPy import peak_locator
+import FlowCyPy
+FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
 PEAK_CENTERS = [30, 70]
 

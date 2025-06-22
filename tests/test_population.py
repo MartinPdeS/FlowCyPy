@@ -7,6 +7,8 @@ from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import units
 
 from pint import UnitRegistry
+import FlowCyPy
+FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
 # Initialize a UnitRegistry
 ureg = UnitRegistry()
