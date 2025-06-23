@@ -527,37 +527,8 @@ document.write(`
     <span class="n">extra</span><span class="o">=</span><span class="s1">&#39;forbid&#39;</span>
 <span class="p">)</span>
 
-
-<span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">FluidRegion</span><span class="p">:</span>
-    <span class="n">height</span><span class="p">:</span> <span class="n">Quantity</span>
-    <span class="n">width</span><span class="p">:</span> <span class="n">Quantity</span>
-    <span class="n">volume_flow</span><span class="p">:</span> <span class="n">Quantity</span>
-    <span class="n">max_flow_speed</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">average_flow_speed</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_to_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">length_units</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">rect</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">(</span>
-            <span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
-            <span class="n">facecolor</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
-            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
-            <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="n">label</span>
-        <span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
-
-
-<span class="k">class</span><span class="w"> </span><span class="nc">_FluidRegion</span><span class="p">():</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FluidRegion</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">FLUIDREGION</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span>
 
     <span class="nd">@property</span>
@@ -732,8 +703,8 @@ document.write(`
             <span class="n">n_int</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_int</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">sample</span> <span class="o">=</span> <span class="n">_FluidRegion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cpp_sample</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sheath</span> <span class="o">=</span> <span class="n">_FluidRegion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cpp_sheath</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample</span> <span class="o">=</span> <span class="n">FluidRegion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cpp_sample</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sheath</span> <span class="o">=</span> <span class="n">FluidRegion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cpp_sheath</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FlowCell.sample_transverse_profile">
 <a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.flow_cell.FlowCell.sample_transverse_profile">[docs]</a>
@@ -790,7 +761,17 @@ document.write(`
         <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
             <span class="n">sub_dict</span> <span class="o">=</span> <span class="n">sampling_dict</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
 
-            <span class="n">arrival_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_population_arrival_time</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">)</span>
+
+            <span class="n">particle_flux</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">particle_count</span><span class="o">.</span><span class="n">compute_particle_flux</span><span class="p">(</span>
+                <span class="n">flow_speed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">average_flow_speed</span><span class="p">,</span>
+                <span class="n">flow_area</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">area</span><span class="p">,</span>
+                <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span>
+            <span class="p">)</span>
+
+            <span class="n">arrival_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_sample_arrival_times</span><span class="p">(</span>
+                <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+                <span class="n">particle_flux</span><span class="o">=</span><span class="n">particle_flux</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;particle / second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span>
 
             <span class="n">n_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrival_time</span><span class="p">)</span>
 
@@ -852,29 +833,6 @@ document.write(`
                 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">evenly_spaced_times</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
 
             <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">evenly_spaced_times</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span></div>
-
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_population_arrival_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="n">BasePopulation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generates particle arrival times using a Poisson process and samples a velocity for each event.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">particle_flux</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">particle_count</span><span class="o">.</span><span class="n">compute_particle_flux</span><span class="p">(</span>
-            <span class="n">flow_speed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">average_flow_speed</span><span class="p">,</span>
-            <span class="n">flow_area</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">area</span><span class="p">,</span>
-            <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span>
-        <span class="p">)</span>
-        <span class="n">expected_particles</span> <span class="o">=</span> <span class="n">particle_flux</span> <span class="o">*</span> <span class="n">run_time</span>
-
-        <span class="n">inter_arrival_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span>
-            <span class="n">scale</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">particle_flux</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">expected_particles</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
-        <span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">particle_flux</span><span class="o">.</span><span class="n">units</span><span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span>
-
-        <span class="n">arrival_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">inter_arrival_times</span><span class="p">)</span>
-
-        <span class="n">arrival_times</span> <span class="o">=</span> <span class="n">arrival_times</span><span class="p">[</span><span class="n">arrival_times</span> <span class="o">&lt;=</span> <span class="n">run_time</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="n">arrival_times</span>
 
 
 <div class="viewcode-block" id="FlowCell.get_dataframe_from_dict">
