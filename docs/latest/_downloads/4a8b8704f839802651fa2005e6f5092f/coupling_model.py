@@ -23,7 +23,7 @@ Overview:
 
 from FlowCyPy import units
 from FlowCyPy import ScattererCollection, FlowCell
-from FlowCyPy.population import Exosome, HDL
+from FlowCyPy.instances import Exosome, HDL
 from FlowCyPy import GaussianBeam, OptoElectronics, SignalDigitizer, PMT, TransimpedanceAmplifier
 from FlowCyPy import Fluidics
 

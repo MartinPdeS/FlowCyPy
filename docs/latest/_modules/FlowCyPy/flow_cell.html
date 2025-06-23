@@ -508,6 +508,7 @@ document.write(`
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pint_pandas</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pint_pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">PintArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
@@ -526,26 +527,32 @@ document.write(`
 <span class="p">)</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">Flow</span><span class="p">():</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FluidRegion</span><span class="p">:</span>
+    <span class="n">height</span><span class="p">:</span> <span class="n">Quantity</span>
+    <span class="n">width</span><span class="p">:</span> <span class="n">Quantity</span>
+    <span class="n">volume_flow</span><span class="p">:</span> <span class="n">Quantity</span>
+    <span class="n">max_flow_speed</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">average_flow_speed</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_to_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">length_units</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
-        <span class="n">channel_rect</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">(</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_to_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">length_units</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">rect</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">(</span>
             <span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
             <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
-            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
             <span class="n">facecolor</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
             <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Sample Region&quot;</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">label</span>
         <span class="p">)</span>
-
-        <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">channel_rect</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
 
 
 
@@ -692,16 +699,15 @@ document.write(`
         <span class="n">width_sample</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span> <span class="o">*</span> <span class="n">height_sample</span>
         <span class="n">average_flow_speed_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_volume_flow</span> <span class="o">/</span> <span class="n">area_sample</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">sample</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample</span> <span class="o">=</span> <span class="n">FluidRegion</span><span class="p">(</span>
             <span class="n">height</span><span class="o">=</span><span class="n">height_sample</span><span class="p">,</span>
             <span class="n">width</span><span class="o">=</span><span class="n">width_sample</span><span class="p">,</span>
-            <span class="n">area</span><span class="o">=</span><span class="n">area_sample</span><span class="p">,</span>
             <span class="n">volume_flow</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_volume_flow</span><span class="p">,</span>
             <span class="n">max_flow_speed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">u_center</span><span class="p">,</span>
-            <span class="n">average_flow_speed</span><span class="o">=</span><span class="n">average_flow_speed_sample</span>
+            <span class="n">average_flow_speed</span><span class="o">=</span><span class="n">average_flow_speed_sample</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">sheath</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sheath</span> <span class="o">=</span> <span class="n">FluidRegion</span><span class="p">(</span>
             <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
             <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
             <span class="n">volume_flow</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sheath_volume_flow</span><span class="p">,</span>
@@ -738,10 +744,12 @@ document.write(`
         <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
         <span class="n">prefactor</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dpdx</span><span class="p">)</span>
         <span class="n">n_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">N_terms</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># n = 1, 3, 5, ...</span>
+
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">n_values</span><span class="p">:</span>
             <span class="n">term_y</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">((</span><span class="n">n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">((</span><span class="n">n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
             <span class="n">term_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">z</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)))</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">)</span>
-            <span class="n">u</span> <span class="o">+=</span> <span class="n">term_y</span> <span class="o">*</span> <span class="n">term_z</span> <span class="o">/</span> <span class="n">n</span><span class="o">**</span><span class="mi">3</span>
+            <span class="n">u</span> <span class="o">+=</span> <span class="n">term_y</span> <span class="o">*</span> <span class="n">term_z</span> <span class="o">/</span> <span class="n">n</span> <span class="o">**</span> <span class="mi">3</span>
+
         <span class="k">return</span> <span class="n">prefactor</span> <span class="o">*</span> <span class="n">u</span></div>
 
 
@@ -831,9 +839,7 @@ document.write(`
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">velocities</span><span class="p">)</span> <span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
             <span class="n">velocities</span> <span class="o">=</span> <span class="n">velocities</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">velocities</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">x</span><span class="o">=</span><span class="n">x_samples</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_samples</span><span class="p">,</span> <span class="n">Velocity</span><span class="o">=</span><span class="n">velocities</span>
-        <span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">x_samples</span><span class="p">,</span> <span class="n">y_samples</span><span class="p">,</span> <span class="n">velocities</span></div>
 
 
     <span class="nd">@helper</span><span class="o">.</span><span class="n">validate_units</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
@@ -847,6 +853,7 @@ document.write(`
 
         <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
             <span class="n">sub_dict</span> <span class="o">=</span> <span class="n">sampling_dict</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
             <span class="n">arrival_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_population_arrival_time</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">)</span>
 
             <span class="n">n_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrival_time</span><span class="p">)</span>
@@ -859,11 +866,10 @@ document.write(`
                 <span class="n">population</span><span class="o">.</span><span class="n">generate_property_sampling</span><span class="p">(</span><span class="n">n_events</span><span class="p">)</span>
             <span class="p">)</span>
 
-            <span class="n">sub_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sample_transverse_profile</span><span class="p">(</span><span class="n">n_events</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;Velocity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_transverse_profile</span><span class="p">(</span><span class="n">n_events</span><span class="p">)</span>
 
-        <span class="n">scatterer_dataframe</span> <span class="o">=</span> <span class="n">helper</span><span class="o">.</span><span class="n">get_dataframe_from_dict</span><span class="p">(</span>
+
+        <span class="n">scatterer_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dataframe_from_dict</span><span class="p">(</span>
             <span class="n">dictionnary</span><span class="o">=</span><span class="n">sampling_dict</span><span class="p">,</span>
             <span class="n">level_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Population&#39;</span><span class="p">,</span> <span class="s1">&#39;ScattererID&#39;</span><span class="p">]</span>
         <span class="p">)</span>
@@ -908,6 +914,7 @@ document.write(`
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_scheme</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;uniform-random&#39;</span><span class="p">:</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">evenly_spaced_times</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
+
             <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">evenly_spaced_times</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span></div>
 
 
@@ -931,9 +938,34 @@ document.write(`
 
         <span class="n">arrival_times</span> <span class="o">=</span> <span class="n">arrival_times</span><span class="p">[</span><span class="n">arrival_times</span> <span class="o">&lt;=</span> <span class="n">run_time</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">arrival_times</span></div>
+        <span class="k">return</span> <span class="n">arrival_times</span>
 
 
+<div class="viewcode-block" id="FlowCell.get_dataframe_from_dict">
+<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.flow_cell.FlowCell.get_dataframe_from_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_dataframe_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionnary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">level_names</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pop_name</span><span class="p">,</span> <span class="n">inner_dict</span> <span class="ow">in</span> <span class="n">dictionnary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="n">df_pop</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">inner_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;n_elements&#39;</span><span class="p">))</span>
+            <span class="p">)</span>
+
+            <span class="n">df_pop</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span>
+                <span class="p">[[</span><span class="n">pop_name</span><span class="p">],</span> <span class="n">df_pop</span><span class="o">.</span><span class="n">index</span><span class="p">],</span>
+                <span class="n">names</span><span class="o">=</span><span class="n">level_names</span>
+            <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">inner_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">df_pop</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+
+            <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_pop</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">level_names</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">level_names</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span></div>
+</div>
 
 </pre></div>
 

@@ -87,7 +87,7 @@ flow_cell = FlowCell(
 #     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
 
 from FlowCyPy import Fluidics, ScattererCollection
-from FlowCyPy.population import Exosome, Sphere, distribution
+from FlowCyPy.instances import Exosome, Sphere, distribution
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 

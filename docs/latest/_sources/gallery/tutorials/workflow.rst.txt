@@ -162,7 +162,7 @@ given by:
 
 
     from FlowCyPy import Fluidics, ScattererCollection
-    from FlowCyPy.population import Exosome, Sphere, distribution
+    from FlowCyPy.instances import Exosome, Sphere, distribution
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
@@ -464,7 +464,7 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f40bb6e1650>
+    <seaborn.axisgrid.JointGrid object at 0x7f6f1c604950>
 
 
 
@@ -504,7 +504,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.624 seconds)
+   **Total running time of the script:** (0 minutes 8.497 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:
