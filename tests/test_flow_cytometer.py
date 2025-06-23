@@ -164,7 +164,7 @@ def test_flow_cytometer_triggered_acquisition(flow_cytometer):
     """Test triggered acquisition with a defined threshold."""
     acquisition, _ = flow_cytometer.get_acquisition(run_time=0.05 * units.millisecond)
 
-    trigger = TriggeringSystem(
+    trigger = DynamicWindow(
         dataframe=acquisition,
         trigger_detector_name='default',
         max_triggers=-1,
@@ -174,7 +174,6 @@ def test_flow_cytometer_triggered_acquisition(flow_cytometer):
     )
 
     triggered_acquisition = trigger.run(
-        scheme=Scheme.FIXED,
         threshold='3 sigma',
     )
 
@@ -186,7 +185,7 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
     """Test filtering and baseline restoration on the acquired signal."""
     acquisition, _ = flow_cytometer.get_acquisition(run_time=0.05 * units.millisecond)
 
-    trigger = TriggeringSystem(
+    trigger = DynamicWindow(
         dataframe=acquisition,
         trigger_detector_name='default',
         max_triggers=-1,
@@ -196,7 +195,6 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
     )
 
     triggered_acquisition = trigger.run(
-        scheme=Scheme.FIXED,
         threshold='3 sigma',
     )
 
@@ -212,7 +210,7 @@ def test_peak_detection(flow_cytometer, digitizer):
 
     acquisition, _ = flow_cytometer.get_acquisition(run_time=0.05 * units.millisecond, processing_steps=processing_steps)
 
-    trigger = TriggeringSystem(
+    trigger = DynamicWindow(
         dataframe=acquisition,
         trigger_detector_name='default',
         max_triggers=-1,
@@ -222,7 +220,6 @@ def test_peak_detection(flow_cytometer, digitizer):
     )
 
     triggered_acquisition = trigger.run(
-        scheme=Scheme.FIXED,
         threshold='3 sigma',
     )
 
@@ -241,7 +238,7 @@ def test_peak_plot(mock_show, flow_cytometer, digitizer):
     acquisition, _ = flow_cytometer.get_acquisition(run_time=0.05 * units.millisecond)
     acquisition.plot()
 
-    trigger = TriggeringSystem(
+    trigger = DynamicWindow(
         dataframe=acquisition,
         trigger_detector_name='default',
         max_triggers=-1,
@@ -251,7 +248,6 @@ def test_peak_plot(mock_show, flow_cytometer, digitizer):
     )
 
     triggered_acquisition = trigger.run(
-        scheme=Scheme.FIXED,
         threshold='3 sigma',
     )
     algorithm = peak_locator.GlobalPeakLocator()
