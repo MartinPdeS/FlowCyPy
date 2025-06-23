@@ -27,7 +27,6 @@ def valid_flowcell():
         N_terms=25,
         n_int=200,
     )
-    return fc
 
 @pytest.fixture
 def real_population():
@@ -100,13 +99,14 @@ def test_compute_channel_flow(valid_flowcell):
 
 def test_sample_particles(valid_flowcell):
     n_samples = 1000
-    sampling_dict = valid_flowcell.sample_transverse_profile(n_samples)
-    assert len(sampling_dict['y']) == n_samples
-    assert len(sampling_dict['x']) == n_samples
-    assert len(sampling_dict['Velocity']) == n_samples
+    x, y, velocity = valid_flowcell.sample_transverse_profile(n_samples)
+
+    assert len(y) == n_samples
+    assert len(x) == n_samples
+    assert len(velocity) == n_samples
     # Check that velocities are finite.
 
-    assert np.all(np.isfinite(sampling_dict['Velocity'].magnitude))
+    assert np.all(np.isfinite(velocity.magnitude))
 
 @patch('matplotlib.pyplot.show')
 def test_plot_method(mock_show, valid_flowcell, real_scatterer_collection):
