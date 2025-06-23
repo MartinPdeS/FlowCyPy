@@ -186,5 +186,29 @@ PYBIND11_MODULE(interface_flow_cell, module) {
                 Total volumetric flow rate (m³/s).
         )pbdoc"
     )
+    .def("_cpp_sample_arrival_times",
+        &FlowCell::sample_arrival_times,
+        pybind11::arg("run_time"),
+        pybind11::arg("particle_flux"),
+        R"pbdoc(
+            Sample the arrival times of particles in the flow cell based on the specified run time and particle flux.
+
+            This method computes the expected arrival times of particles in the flow cell based on the
+            total flow rate, dimensions, and specified particle flux. It returns a vector of arrival times
+            for particles that would be present in the flow cell during the specified run time.
+
+            Parameters
+            ----------
+            run_time : float
+                Total run time for which to sample arrival times (in seconds).
+            particle_flux : float
+                Particle flux (particles per second) used to compute expected arrival times.
+
+            Returns
+            -------
+            List[float]
+                A list of arrival times for particles in seconds.
+        )pbdoc"
+    )
     ;
 }

@@ -4,6 +4,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <random>
+#include <tuple>
 
 class FluidRegion {
 public:
@@ -110,4 +111,16 @@ public:
      * @return The computed channel flow in m^3/s.
      */
     double compute_channel_flow(double dpdx_input);
+
+    /**
+     * @brief Get the local axial velocity at a point in the flow cell.
+     * This method computes the local axial velocity \( u(y, z) \) at the point (y, z) in a rectangular microchannel
+     * using the analytical Fourier series solution for pressure-driven flow.
+     *
+     * @param y Lateral (width-wise) position in meters.
+     * @param z Vertical (height-wise) position in meters.
+     * @param dpdx_local Pressure gradient (Pa/m) used for the computation.
+     * @return The local axial velocity at the specified point in m/s.
+     */
+    std::vector<double> sample_arrival_times(double run_time, double particle_flux) const;
 };

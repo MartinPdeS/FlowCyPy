@@ -79,3 +79,28 @@ double FlowCell::compute_channel_flow(double dpdx_input) {
 
     return sum * dy * dz;
 }
+
+std::vector<double> FlowCell::sample_arrival_times(double run_time, double particle_flux) const {
+    int expected_particles = static_cast<int>(run_time * particle_flux);
+    std::vector<double> inter_arrivals(expected_particles);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::exponential_distribution<> exp_dist(particle_flux);
+
+    for (auto& dt : inter_arrivals)
+        dt = exp_dist(gen);
+
+    std::vector<double> arrival_times(expected_particles);
+    std::partial_sum(inter_arrivals.begin(), inter_arrivals.end(), arrival_times.begin());
+
+    arrival_times.erase(
+        std::remove_if(
+            arrival_times.begin(), arrival_times.end(),
+            [run_time](double t) { return t > run_time; }
+        ),
+        arrival_times.end()
+    );
+
+    return arrival_times;
+}

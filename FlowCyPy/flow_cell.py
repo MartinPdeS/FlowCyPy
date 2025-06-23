@@ -20,37 +20,8 @@ config_dict = dict(
     extra='forbid'
 )
 
-
-@dataclass(config=config_dict, kw_only=True)
-class FluidRegion:
-    height: Quantity
-    width: Quantity
-    volume_flow: Quantity
-    max_flow_speed: Quantity = None
-    average_flow_speed: Quantity = None
-
-    @property
-    def area(self) -> Quantity:
-        return self.height * self.width
-
-    def _add_to_plot(self, ax, length_units, color, label=None):
-        rect = Rectangle(
-            (-self.width.to(length_units).magnitude / 2, -self.height.to(length_units).magnitude / 2),
-            self.width.to(length_units).magnitude,
-            self.height.to(length_units).magnitude,
-            fill=True,
-            edgecolor='black',
-            facecolor=color,
-            alpha=0.8,
-            linewidth=1,
-            zorder=-1,
-            label=label
-        )
-        ax.add_patch(rect)
-
-
-class _FluidRegion():
-    def __init__(self, instance):
+class FluidRegion():
+    def __init__(self, instance: FLUIDREGION):
         self.instance = instance
 
     @property
@@ -214,8 +185,8 @@ class FlowCell(FLOWCELL):
             n_int=self.n_int,
         )
 
-        self.sample = _FluidRegion(self._cpp_sample)
-        self.sheath = _FluidRegion(self._cpp_sheath)
+        self.sample = FluidRegion(self._cpp_sample)
+        self.sheath = FluidRegion(self._cpp_sheath)
 
     def sample_transverse_profile(self, n_samples: int) -> tuple:
         r"""
@@ -269,7 +240,17 @@ class FlowCell(FLOWCELL):
         for population in populations:
             sub_dict = sampling_dict[population.name]
 
-            arrival_time = self._get_population_arrival_time(run_time=run_time, population=population)
+
+            particle_flux = population.particle_count.compute_particle_flux(
+                flow_speed=self.sample.average_flow_speed,
+                flow_area=self.sample.area,
+                run_time=run_time
+            )
+
+            arrival_time = self._cpp_sample_arrival_times(
+                run_time=run_time.to('second').magnitude,
+                particle_flux=particle_flux.to('particle / second').magnitude,
+            ) * units.second
 
             n_events = len(arrival_time)
 
@@ -329,29 +310,6 @@ class FlowCell(FLOWCELL):
                 np.random.shuffle(evenly_spaced_times.magnitude)
 
             scatterer_dataframe['Time'] = PintArray(evenly_spaced_times.to(units.second).magnitude, units.second)
-
-    def _get_population_arrival_time(self, run_time: Quantity, population: BasePopulation) -> pd.DataFrame:
-        """
-        Generates particle arrival times using a Poisson process and samples a velocity for each event.
-        """
-        particle_flux = population.particle_count.compute_particle_flux(
-            flow_speed=self.sample.average_flow_speed,
-            flow_area=self.sample.area,
-            run_time=run_time
-        )
-        expected_particles = particle_flux * run_time
-
-        inter_arrival_times = np.random.exponential(
-            scale=1 / particle_flux.magnitude,
-            size=int(expected_particles.magnitude)
-        ) / (particle_flux.units) * units.particle
-
-        arrival_times = np.cumsum(inter_arrival_times)
-
-        arrival_times = arrival_times[arrival_times <= run_time]
-
-        return arrival_times
-
 
     def get_dataframe_from_dict(self, dictionnary: dict, level_names: list = None) -> pd.DataFrame:
         dfs = []
