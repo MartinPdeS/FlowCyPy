@@ -43,6 +43,7 @@ message(STATUS "Python version to be compiled against: ${PYBIND11_PYTHON_VERSION
 message(STATUS "Binary will be installed in location: ${LOCAL_BIN_DIR}")
 
 add_subdirectory(FlowCyPy/cpp/utils)               # utils
+add_subdirectory(FlowCyPy/cpp/flow_cell)           # flow_cell
 add_subdirectory(FlowCyPy/cpp/circuits)            # circuits
 add_subdirectory(FlowCyPy/cpp/trigger)             # trigger
 add_subdirectory(FlowCyPy/cpp/triggering_system)   # triggering_system

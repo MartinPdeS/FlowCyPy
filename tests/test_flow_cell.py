@@ -53,17 +53,12 @@ def real_scatterer_collection(real_population):
 # --- Test Cases ---
 
 def test_flowcell_creation(valid_flowcell):
-    expected_Q_total = valid_flowcell.sample_volume_flow + valid_flowcell.sheath_volume_flow
-    assert valid_flowcell.Q_total.to("microliter/second").magnitude == pytest.approx(
-        expected_Q_total.to("microliter/second").magnitude
-    )
-    assert valid_flowcell.dpdx != 0
-    assert valid_flowcell.u_center > 0
-    ns = valid_flowcell.sample
-    assert ns.width > 0
-    assert ns.height > 0
-    assert ns.area > 0
-    assert ns.average_flow_speed > 0
+    assert valid_flowcell._cpp_dpdx_ref != 0
+    assert valid_flowcell._cpp_u_center > 0
+    assert valid_flowcell.sample.width > 0
+    assert valid_flowcell.sample.height > 0
+    assert valid_flowcell.sample.area > 0
+    assert valid_flowcell.sample.average_flow_speed > 0
 
 def test_invalid_width_type():
     with pytest.raises(ValueError):
@@ -86,15 +81,14 @@ def test_invalid_flow_units():
         )
 
 def test_velocity_output(valid_flowcell):
-    y_vals = np.linspace(-valid_flowcell.width.magnitude/2, valid_flowcell.width.magnitude/2, 10)
-    z_vals = np.linspace(-valid_flowcell.height.magnitude/2, valid_flowcell.height.magnitude/2, 10)
-    Y, Z = np.meshgrid(y_vals, z_vals)
-    U = valid_flowcell.velocity(Y * units.micrometer, Z * units.micrometer)
-    assert U.shape == Y.shape
-    assert np.all(np.isfinite(U))
+    velocity = valid_flowcell._cpp_get_velocity(y=0.0, z=0.0, dpdx_local=1e-3)
+
+    assert velocity != 0
+
+    assert np.all(np.isfinite(velocity))
 
 def test_compute_channel_flow(valid_flowcell):
-    Q = valid_flowcell._compute_channel_flow(valid_flowcell.dpdx_ref, valid_flowcell.n_int)
+    Q = valid_flowcell._cpp_compute_channel_flow(valid_flowcell._cpp_dpdx_ref)
     assert Q > 0
 
 def test_sample_particles(valid_flowcell):

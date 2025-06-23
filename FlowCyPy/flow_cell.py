@@ -11,6 +11,7 @@ from FlowCyPy import units
 from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
 from FlowCyPy import helper
 from matplotlib.patches import Rectangle
+from FlowCyPy.binary.interface_flow_cell import FLOWCELL, FLUIDREGION
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -48,9 +49,51 @@ class FluidRegion:
         ax.add_patch(rect)
 
 
+class _FluidRegion():
+    def __init__(self, instance):
+        self.instance = instance
+
+    @property
+    def width(self) -> Quantity:
+        return self.instance._cpp_width * units.meter
+
+    @property
+    def height(self) -> Quantity:
+        return self.instance._cpp_height * units.meter
+
+    @property
+    def area(self) -> Quantity:
+        return self.width * self.height
+
+    @property
+    def volume_flow(self) -> Quantity:
+        return self.instance._cpp_volume_flow * (units.meter**3 / units.second)
+
+    @property
+    def average_flow_speed(self) -> Quantity:
+        return self.instance._cpp_average_flow_speed * (units.meter / units.second)
+
+    @property
+    def max_flow_speed(self) -> Quantity:
+        return self.instance._cpp_max_flow_speed * (units.meter / units.second)
+
+    def _add_to_plot(self, ax, length_units, color, label=None):
+        rect = Rectangle(
+            (-self.width.to(length_units).magnitude / 2, -self.height.to(length_units).magnitude / 2),
+            self.width.to(length_units).magnitude,
+            self.height.to(length_units).magnitude,
+            fill=True,
+            edgecolor='black',
+            facecolor=color,
+            alpha=0.8,
+            linewidth=1,
+            zorder=-1,
+            label=label
+        )
+        ax.add_patch(rect)
 
 @dataclass(config=config_dict, kw_only=True)
-class FlowCell:
+class FlowCell(FLOWCELL):
     r"""
     Represents a rectangular flow cell in which the velocity field is computed from an
     analytical Fourier series solution for pressure-driven flow. The focused sample region
@@ -134,7 +177,7 @@ class FlowCell:
     event_scheme: str = 'poisson'
 
     @field_validator('width', 'height', mode='plain')
-    def validate_polarization(cls, value, field):
+    def validate_length(cls, value, field):
         if not isinstance(value, Quantity):
             raise ValueError(f"{value} must be a Quantity with length units [<prefix>meter].")
 
@@ -144,7 +187,7 @@ class FlowCell:
         return value
 
     @field_validator('sample_volume_flow', 'sheath_volume_flow', mode='plain')
-    def validate_polarization(cls, value, field):
+    def validate_volumn_flow(cls, value, field):
         if not isinstance(value, Quantity):
             raise ValueError(f"{value} must be a Quantity with volume flow [<prefix>liter / second].")
 
@@ -161,120 +204,18 @@ class FlowCell:
         return (self.sample.area * self.sample.average_flow_speed * run_time).to_compact()
 
     def __post_init__(self):
-        # Total volumetric flow rate: Q_total = Q_sample + Q_sheath.
-        self.Q_total = self.sample_volume_flow + self.sheath_volume_flow
-
-        # Compute dp/dx using the linearity of the solution (u ∝ -dp/dx)
-        # with a reference pressure gradient of -1 Pa/m.
-        self.dpdx_ref = -1.0  # Reference pressure gradient in Pa/m.
-        Q_ref = self._compute_channel_flow(self.dpdx_ref, self.n_int)
-        # The actual pressure gradient is given by:
-        self.dpdx = self.dpdx_ref * (self.Q_total / Q_ref)
-
-        # Compute the center velocity u(0,0)
-        self.u_center = self.velocity(0.0 * units.meter, 0.0 * units.meter)
-
-        # Estimate the sample region area: A_sample = Q_sample / u(0,0)
-        area_sample = self.sample_volume_flow / self.u_center
-        # Assuming the sample region is a centered rectangle with:
-        #   A_sample = (2 * a_sample) * (2 * b_sample) = 4 * a_sample * b_sample,
-        # and preserving the aspect ratio: a_sample / b_sample = a / b,
-        # compute:
-        height_sample = np.sqrt((area_sample * self.height) / (4 * self.width)) * 2
-        width_sample = (self.width / self.height) * height_sample
-        average_flow_speed_sample = self.sample_volume_flow / area_sample
-
-        self.sample = FluidRegion(
-            height=height_sample,
-            width=width_sample,
-            volume_flow=self.sample_volume_flow,
-            max_flow_speed=self.u_center,
-            average_flow_speed=average_flow_speed_sample,
+        super().__init__(
+            width=self.width.to('meter').magnitude,
+            height=self.height.to('meter').magnitude,
+            sample_volume_flow=self.sample_volume_flow.to('meter**3 / second').magnitude,
+            sheath_volume_flow=self.sheath_volume_flow.to('meter**3 / second').magnitude,
+            viscosity=self.mu.to('pascal * second').magnitude,
+            N_terms=self.N_terms,
+            n_int=self.n_int,
         )
 
-        self.sheath = FluidRegion(
-            height=self.height,
-            width=self.width,
-            volume_flow=self.sheath_volume_flow,
-        )
-
-    def velocity(self, y: float, z: float) -> float:
-        r"""
-        Compute the local x-direction velocity at the point (y, z) using the Fourier series solution.
-
-        The velocity is computed as:
-
-        .. math::
-
-           u(y,z) = \frac{16b^2}{\pi^3 \mu}\left(-\frac{dp}{dx}\right)
-           \sum_{\substack{n=1,3,5,\ldots}}^{\infty} \frac{1}{n^3}
-           \left[ 1 - \frac{\cosh\left(\frac{n\pi y}{2b}\right)}
-           {\cosh\left(\frac{n\pi a}{2b}\right)} \right]
-           \sin\left(\frac{n\pi (z+b)}{2b}\right)
-
-        Parameters
-        ----------
-        y : float or array_like
-            y-coordinate (m). Can be a scalar or a NumPy array.
-        z : float or array_like
-            z-coordinate (m). Can be a scalar or a NumPy array.
-
-        Returns
-        -------
-        u : float or ndarray
-            Local velocity (m/s) at (y, z).
-        """
-        u = np.zeros_like(y, dtype=np.float64)
-        prefactor = (4 * self.height**2 / (np.pi**3 * self.mu)) * (-self.dpdx)
-        n_values = np.arange(1, 2 * self.N_terms, 2)  # n = 1, 3, 5, ...
-
-        for n in n_values:
-            term_y = 1 - np.cosh((n * np.pi * y) / self.height) / np.cosh((n * np.pi * self.width / 2) / self.height)
-            term_z = np.sin((n * np.pi * (z + (self.height / 2))) / self.height)
-            u += term_y * term_z / n ** 3
-
-        return prefactor * u
-
-    def _compute_channel_flow(self, dpdx: float, n_int: int) -> float:
-        r"""
-        Numerically compute the total volumetric flow rate in the channel for a given pressure gradient.
-
-        The volumetric flow rate is defined as:
-
-        .. math::
-
-           Q = \int_{-b}^{b}\int_{-a}^{a} u(y,z) \, dy \, dz
-
-        where :math:`u(y,z)` is the local velocity computed from the Fourier series solution.
-
-        Parameters
-        ----------
-        dpdx : float
-            Pressure gradient (Pa/m).
-        n_int : int
-            Number of grid points per dimension for integration.
-
-        Returns
-        -------
-        Q : float
-            Total volumetric flow rate (m³/s).
-        """
-        # Temporarily set dpdx to the provided value.
-        dpdx_saved = self.dpdx if hasattr(self, 'dpdx') else None
-        self.dpdx = dpdx
-
-        y_vals = np.linspace(-self.width / 2, self.width / 2, n_int)
-        z_vals = np.linspace(-self.height / 2, self.height / 2, n_int)
-        Y, Z = np.meshgrid(y_vals, z_vals)
-        U = self.velocity(Y, Z)
-
-        # Compute the 2D integral over the channel cross-section using the composite trapezoidal rule.
-        Q = np.trapezoid(np.trapezoid(U, y_vals, axis=1), z_vals)
-
-        # Restore the original dpdx if it was set.
-        if dpdx_saved is not None:
-            self.dpdx = dpdx_saved
-        return Q
+        self.sample = _FluidRegion(self._cpp_sample)
+        self.sheath = _FluidRegion(self._cpp_sheath)
 
     def sample_transverse_profile(self, n_samples: int) -> tuple:
         r"""
@@ -312,14 +253,9 @@ class FlowCell:
         velocities : ndarray
             A NumPy array of shape (n_samples,) containing the local x-direction velocities (in m/s).
         """
-        x_samples = np.random.uniform(-self.sample.width.magnitude / 2, self.sample.width.magnitude / 2, n_samples) * self.sample.width.units
-        y_samples = np.random.uniform(-self.sample.height.magnitude / 2, self.sample.height.magnitude / 2, n_samples) * self.sample.height.units
+        x, y, velocities = self._cpp_sample_transverse_profile(n_samples)
 
-        velocities = self.velocity(x_samples, y_samples).to('meter / second')
-        if len(velocities) !=0:
-            velocities = velocities.to(velocities.max().to_compact().units)
-
-        return x_samples, y_samples, velocities
+        return x * units.meter, y * units.meter, velocities * units.meter / units.second
 
     @helper.validate_units(run_time=units.second)
     def _generate_event_dataframe(self, populations: List[BasePopulation], run_time: Quantity) -> pd.DataFrame:
