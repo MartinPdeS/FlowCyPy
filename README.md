@@ -18,7 +18,7 @@
 | FlowCyPy/distribution/particle\_size\_distribution.py |       37 |       16 |        4 |        0 |     51% |86-94, 120-130, 133 |
 | FlowCyPy/distribution/uniform.py                      |       34 |        1 |        0 |        0 |     97% |       117 |
 | FlowCyPy/distribution/weibull.py                      |       36 |       16 |        2 |        0 |     53% |28, 32, 36, 57-62, 79, 102-112, 115 |
-| FlowCyPy/flow\_cell.py                                |      137 |       13 |       28 |        5 |     85% |138-144, 149, 319->322, 382, 388-395, 439 |
+| FlowCyPy/flow\_cell.py                                |      130 |       14 |       22 |        5 |     86% |34, 37-49, 70, 78, 185, 192, 318, 324-331, 375 |
 | FlowCyPy/fluidics.py                                  |       37 |        0 |        4 |        2 |     95% |92->96, 140->143 |
 | FlowCyPy/helper.py                                    |       23 |        3 |       10 |        3 |     82% |36, 40, 44 |
 | FlowCyPy/instances.py                                 |       34 |        9 |        2 |        0 |     75% |17, 36, 56, 68, 78, 117-126 |
@@ -46,7 +46,7 @@
 | FlowCyPy/triggering\_system.py                        |       81 |       28 |       12 |        3 |     65% |46-51, 66-68, 129-140, 156-166, 269-280, 308-325 |
 | FlowCyPy/units.py                                     |       26 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       56 |       56 |       14 |        0 |      0% |     1-134 |
-|                                             **TOTAL** | **2266** |  **870** |  **492** |   **94** | **58%** |           |
+|                                             **TOTAL** | **2259** |  **871** |  **486** |   **94** | **58%** |           |
 
 
 ## Setup coverage badge
