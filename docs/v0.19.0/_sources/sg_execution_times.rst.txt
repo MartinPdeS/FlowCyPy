@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:19.866** total execution time for 6 files **from all galleries**:
+**00:19.065** total execution time for 6 files **from all galleries**:
 
 .. container::
 
@@ -33,20 +33,20 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_gallery_tutorials_workflow.py` (``../examples/tutorials/workflow.py``)
-     - 00:08.413
+     - 00:08.557
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_coupling_model.py` (``../examples/tutorials/coupling_model.py``)
-     - 00:04.977
+     - 00:04.137
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_limit_of_detection.py` (``../examples/tutorials/limit_of_detection.py``)
-     - 00:03.571
+     - 00:03.475
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_signal_processing.py` (``../examples/tutorials/signal_processing.py``)
-     - 00:01.877
+     - 00:01.842
      - 0.0
    * - :ref:`sphx_glr_gallery_noise_sources_shot_noise.py` (``../examples/noise_sources/shot_noise.py``)
-     - 00:00.540
+     - 00:00.531
      - 0.0
    * - :ref:`sphx_glr_gallery_noise_sources_dark_current.py` (``../examples/noise_sources/dark_current.py``)
-     - 00:00.489
+     - 00:00.522
      - 0.0
