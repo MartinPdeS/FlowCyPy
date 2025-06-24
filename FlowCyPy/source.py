@@ -387,4 +387,18 @@ class AstigmaticGaussianBeam(BaseBeam):
         return E0 * np.exp(- y ** 2 / self.waist_y ** 2 - z ** 2 / self.waist_z ** 2)
 
     def get_particle_width(self, velocity: Quantity) -> Quantity:
+        """
+        Returns the width of the particle flow at the waist of the beam, scaled by the velocity
+        of the particles.
+
+        Parameters
+        ----------
+        velocity : Quantity
+            The velocity of the particles in the flow (in meters per second).
+
+        Returns
+        -------
+        Quantity
+            The width of the particle flow at the waist of the beam in meters.
+        """
         return self.waist_z / (2 * velocity)
