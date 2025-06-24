@@ -8,7 +8,7 @@
 | FlowCyPy/circuits.py                                  |       37 |        9 |        0 |        0 |     76% |100-104, 115-120 |
 | FlowCyPy/classifier.py                                |       44 |        0 |        8 |        4 |     92% |32->35, 74->78, 121->125, 172->176 |
 | FlowCyPy/coupling.py                                  |       43 |       10 |       10 |        2 |     74% |50, 137, 154-176 |
-| FlowCyPy/cytometer.py                                 |       54 |        1 |       16 |        2 |     96% |121, 141->148 |
+| FlowCyPy/cytometer.py                                 |       58 |        1 |       16 |        2 |     96% |142, 162->169 |
 | FlowCyPy/detector.py                                  |       67 |        9 |       12 |        6 |     81% |104, 126, 148, 168, 176, 197->201, 286-294 |
 | FlowCyPy/dev.py                                       |      314 |      314 |       54 |        0 |      0% |    1-1114 |
 | FlowCyPy/distribution/base\_class.py                  |       25 |        3 |        0 |        0 |     88% |32, 36, 65 |
@@ -42,12 +42,12 @@
 | FlowCyPy/sub\_frames/base.py                          |        5 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/sub\_frames/classifier.py                    |       15 |        8 |        2 |        0 |     41% |     35-49 |
 | FlowCyPy/sub\_frames/peaks.py                         |       74 |       42 |       12 |        2 |     40% |19, 24, 42-44, 62-64, 80-81, 99-114, 155-172, 243-259 |
-| FlowCyPy/sub\_frames/scatterer.py                     |      108 |       69 |       38 |        3 |     30% |25-32, 48-57, 82-101, 128-140, 176-191, 214, 255, 260-291 |
+| FlowCyPy/sub\_frames/scatterer.py                     |      108 |       69 |       38 |        3 |     30% |25-32, 48-57, 82-101, 128-140, 176-191, 214, 250, 255-286 |
 | FlowCyPy/sub\_frames/utils.py                         |       79 |       45 |       26 |        6 |     38% |41, 43->46, 114-119, 122-125, 128, 130->133, 159-204, 228-243 |
 | FlowCyPy/triggering\_system.py                        |       81 |       28 |       12 |        3 |     65% |46-51, 66-68, 130-141, 157-167, 270-281, 309-326 |
 | FlowCyPy/units.py                                     |       26 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       56 |       56 |       14 |        0 |      0% |     1-134 |
-|                                             **TOTAL** | **2235** |  **865** |  **496** |   **92** | **58%** |           |
+|                                             **TOTAL** | **2239** |  **865** |  **496** |   **92** | **58%** |           |
 
 
 ## Setup coverage badge
