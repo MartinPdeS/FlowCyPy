@@ -74,6 +74,33 @@ class FlowCytometer:
 
         return signal_generator
 
+    @helper.validate_input_units(run_time=units.second)
+    def get_event_dataframe(self, run_time: units.Quantity, compute_cross_section: bool = False) -> pd.DataFrame:
+        """
+        Generates a DataFrame of events based on the scatterer collection and flow cell properties.
+
+        This method samples particle events from the fluidics system and prepares a DataFrame
+        containing the event times, positions, and other relevant properties.
+
+        Parameters
+        ----------
+        run_time : pint.Quantity
+            The duration of the acquisition in seconds.
+
+        Returns
+        -------
+        pd.DataFrame
+            A DataFrame containing event data for the scatterers.
+        """
+        event_dataframe = self.fluidics.generate_event_dataframe(run_time=run_time)
+
+        self.opto_electronics.model_event(
+            event_dataframe=event_dataframe,
+            compute_cross_section=compute_cross_section
+        )
+
+        return event_dataframe
+
 
     @helper.validate_input_units(run_time=units.second)
     def get_acquisition(self, run_time: units.Quantity, processing_steps: list[SignalProcessor] = []) -> AcquisitionDataFrame:
@@ -105,13 +132,7 @@ class FlowCytometer:
         ValueError
             If the scatterer collection lacks required data columns ('Widths', 'Time').
         """
-
-        event_dataframe = self.fluidics.generate_event_dataframe(run_time=run_time)
-
-        self.opto_electronics.model_event(
-            event_dataframe=event_dataframe,
-            compute_cross_section=False
-        )
+        event_dataframe = self.get_event_dataframe(run_time=run_time)
 
         signal_generator = self._create_signal_generator(run_time=run_time)
 

@@ -243,11 +243,6 @@ class ScattererDataFrame(BaseSubFrame):
         duration : Quantity, optional
             If provided, overrides `stop_time = start_time + duration`.
 
-
-        Returns
-        -------
-        pd.DataFrame
-            The reordered DataFrame (only if `inplace=False`).
         """
         scheme = event_scheme.lower()
 
