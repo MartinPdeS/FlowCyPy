@@ -111,6 +111,7 @@ class FixedWindow(FIXEDWINDOW, BaseTrigger):
 
         """
         Initialize the FixedWindow triggering scheme with the specified parameters.
+
         Parameters
         ----------
         digitizer : object

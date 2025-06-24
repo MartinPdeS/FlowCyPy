@@ -4,7 +4,7 @@ from typing import Optional
 import pandas as pd
 
 from FlowCyPy import units
-from FlowCyPy.helper import validate_units
+from FlowCyPy import helper
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.circuits import SignalProcessor
 from FlowCyPy.signal_generator import SignalGenerator
@@ -38,6 +38,7 @@ class FlowCytometer:
         If the number of detectors provided is not exactly two, or if both detectors share the same name.
 
     """
+    @helper.validate_input_units(background_power=units.watt)
     def __init__(self, opto_electronics: OptoElectronics, fluidics: Fluidics, background_power: Optional[units.Quantity] = 0 * units.milliwatt):
         self.fluidics = fluidics
         self.background_power = background_power
@@ -74,7 +75,7 @@ class FlowCytometer:
         return signal_generator
 
 
-    @validate_units(run_time=units.second)
+    @helper.validate_input_units(run_time=units.second)
     def get_acquisition(self, run_time: units.Quantity, processing_steps: list[SignalProcessor] = []) -> AcquisitionDataFrame:
         """
         Simulates the generation of optical signal pulses for each particle event.

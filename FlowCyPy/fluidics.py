@@ -4,6 +4,7 @@ from FlowCyPy.flow_cell import FlowCell
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 from FlowCyPy import units
+from FlowCyPy import helper
 
 class Fluidics:
     def __init__(self, scatterer_collection: ScattererCollection, flow_cell: FlowCell):
@@ -20,6 +21,7 @@ class Fluidics:
         self.scatterer_collection = scatterer_collection
         self.flow_cell = flow_cell
 
+    @helper.validate_input_units(run_time=units.second)
     def generate_event_dataframe(self, run_time: units.Quantity) -> pd.DataFrame:
         """
         Generates a DataFrame of events based on the scatterer collection and flow cell properties.
@@ -45,7 +47,8 @@ class Fluidics:
 
         return event_dataframe
 
-    def plot(self, run_time: units.Quantity, figsize: tuple = (7, 4), ax: plt.Axes = None, show: bool = True) -> None:
+    @helper.validate_input_units(run_time=units.second)
+    def plot(self, run_time: units.Quantity, figure_size: tuple = (7, 4), ax: plt.Axes = None, show: bool = True) -> None:
         r"""
         Plot the spatial distribution of sampled particles with velocity color-coding.
 
@@ -62,7 +65,7 @@ class Fluidics:
         ----------
         n_samples : int
             Number of particles to sample and plot.
-        figsize : tuple, optional
+        figure_size : tuple, optional
             Figure size (width, height) in inches. Default is (7, 4).
         ax : matplotlib.axes.Axes, optional
             A matplotlib Axes instance to draw the plot on. If not provided, a new figure and axes
@@ -91,7 +94,7 @@ class Fluidics:
         # Create plot
         if ax is None:
             with plt.style.context(mps):
-                _, ax = plt.subplots(1, 1, figsize=figsize)
+                _, ax = plt.subplots(1, 1, figsize=figure_size)
 
         x = sampling['x'].pint.to(length_units).pint.quantity.magnitude
         y = sampling['y'].pint.to(length_units).pint.quantity.magnitude

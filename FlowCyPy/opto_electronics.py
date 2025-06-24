@@ -1,6 +1,6 @@
 from typing import List
 import pandas as pd
-from FlowCyPy.coupling import compute_detected_signal
+from FlowCyPy.coupling import ScatteringSimulator
 from FlowCyPy.detector import Detector
 from FlowCyPy.source import BaseBeam
 from FlowCyPy.signal_digitizer import SignalDigitizer
@@ -75,12 +75,15 @@ class OptoElectronics():
             return
 
         for detector in self.detectors:
-            compute_detected_signal(
+            simulator = ScatteringSimulator(
                 source=self.source,
                 detector=detector,
-                signal_digitizer=self.digitizer,
-                event_dataframe=event_dataframe,
-                medium_refractive_index=event_dataframe.medium_refractive_index,
+                digitizer=self.digitizer,
+                medium_refractive_index=event_dataframe.medium_refractive_index
+            )
+
+            simulator.run(
+                event_df=event_dataframe,
                 compute_cross_section=compute_cross_section
             )
 

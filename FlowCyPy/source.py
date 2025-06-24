@@ -105,7 +105,7 @@ class BaseBeam():
 
         return amplitude
 
-    def get_amplitude_signal(self, size: int, bandwidth: float, x: Quantity, y: Quantity, z: Quantity = 0 * units.meter) -> np.ndarray:
+    def get_amplitude_signal(self, bandwidth: float, x: Quantity, y: Quantity, z: Quantity = 0 * units.meter) -> np.ndarray:
         r"""
         Applies Relative Intensity Noise (RIN) to the source amplitude if enabled, accounting for detection bandwidth.
 

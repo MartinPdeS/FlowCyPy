@@ -2,9 +2,11 @@ from typing import Optional, Union, List, Tuple, Any
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy
 from FlowCyPy import units
 from FlowCyPy.sub_frames import utils
 from FlowCyPy.units import Quantity
+from pint_pandas import PintArray
 
 class BaseSubFrame(pd.DataFrame):
     @property
@@ -220,3 +222,70 @@ class ScattererDataFrame(BaseSubFrame):
         ax.get_yaxis().set_visible(False)
         ax.set_xlabel(f"Time [{time_units._repr_latex_()}]")
         ax.legend()
+
+    def re_order_events(self, event_scheme: str = 'uniform-random', start_time: Quantity = None, stop_time: Quantity = None, duration: Quantity = None) -> pd.DataFrame:
+        """
+        Reorders or reschedules the 'Time' column in a scatterer DataFrame using a specified temporal scheme.
+
+        Parameters
+        ----------
+        event_scheme : str
+            The scheme for generating new event times. Options:
+                - 'uniform-random': evenly spaced then shuffled
+                - 'uniform-sequential': evenly spaced
+                - 'sorted': sort the original times
+                - 'poisson': exponential inter-arrival based on average rate
+                - 'preserve': do nothing
+        start_time : Quantity, optional
+            Override for the start time of the event timeline. If not provided, estimated from data.
+        stop_time : Quantity, optional
+            Override for the stop time. If not provided, estimated from data.
+        duration : Quantity, optional
+            If provided, overrides `stop_time = start_time + duration`.
+
+
+        Returns
+        -------
+        pd.DataFrame
+            The reordered DataFrame (only if `inplace=False`).
+        """
+        scheme = event_scheme.lower()
+
+        if self.empty:
+            return None
+
+        if scheme == 'preserve':
+            return None
+
+        time_unit = units.second
+
+        # Determine time bounds
+        original_times = self['Time'].pint.to(time_unit)
+        if start_time is None:
+            start_time = original_times.min() * 1.1
+        if duration is not None:
+            stop_time = start_time + duration
+        elif stop_time is None:
+            stop_time = original_times.max() * 0.9
+
+        total_events = len(self)
+
+
+        if scheme == 'uniform-random':
+            new_times = numpy.linspace(start_time.magnitude, stop_time.magnitude, total_events)
+            numpy.random.shuffle(new_times)
+        elif scheme == 'uniform-sequential':
+            new_times = numpy.linspace(start_time.magnitude, stop_time.magnitude, total_events)
+        elif scheme == 'sorted':
+            new_times = numpy.sort(original_times.magnitude)
+        elif scheme == 'poisson':
+            mean_interval = ((stop_time - start_time) / total_events).to(time_unit).magnitude
+            inter_arrivals = numpy.random.exponential(scale=mean_interval, size=total_events)
+            new_times = numpy.cumsum(inter_arrivals)
+            new_times *= (stop_time.magnitude / new_times[-1])  # normalize to fit in window
+            new_times += start_time.magnitude
+        else:
+            raise ValueError(f"Unsupported event scheme: '{event_scheme}'")
+
+        self['Time'] = PintArray(new_times, time_unit)
+        return None

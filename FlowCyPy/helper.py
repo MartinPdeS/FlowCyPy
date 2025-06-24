@@ -6,7 +6,7 @@ from functools import wraps
 
 
 
-def validate_units(**expected_units):
+def validate_input_units(**expected_units):
     """
     Decorator to enforce that function arguments of type Quantity have the correct units.
 

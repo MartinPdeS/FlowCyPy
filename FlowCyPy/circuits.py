@@ -1,4 +1,4 @@
-from FlowCyPy.helper import validate_units
+from FlowCyPy import helper
 from FlowCyPy import units
 from FlowCyPy.binary import interface_circuits
 
@@ -58,7 +58,7 @@ class BesselLowPass(interface_circuits.BesselLowPassFilter, SignalProcessor):
     gain : float
         The gain applied after filtering.
     """
-    @validate_units(cutoff=units.hertz)
+    @helper.validate_input_units(cutoff=units.hertz)
     def __init__(self, cutoff: units.Quantity, order: int, gain: float):
         self.cutoff = cutoff
         self.order = order
@@ -95,7 +95,7 @@ class ButterworthlLowPass(interface_circuits.ButterworthLowPassFilter, SignalPro
     gain : float
         The gain applied after filtering.
     """
-    @validate_units(cutoff=units.hertz)
+    @helper.validate_input_units(cutoff=units.hertz)
     def __init__(self, cutoff: units.Quantity, order: int, gain: float):
         self.cutoff = cutoff
         self.order = order

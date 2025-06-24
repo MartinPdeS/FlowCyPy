@@ -3,7 +3,7 @@ from pydantic import field_validator
 from FlowCyPy import units
 import numpy as np
 from FlowCyPy.noises import NoiseSetting
-from FlowCyPy.helper import validate_units
+from FlowCyPy import helper
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -96,7 +96,7 @@ class TransimpedanceAmplifier():
         i_rms = self.current_rms_noise
         return np.sqrt(v_rms**2 + i_rms**2)
 
-    @validate_units(signal=units.ampere, dt=units.second)
+    @helper.validate_input_units(signal=units.ampere, dt=units.second)
     def amplify(self, signal_generator: object, sampling_rate: units.Quantity):
         """
         Amplifies the input signal from a detector using the transimpedance amplifier's gain.

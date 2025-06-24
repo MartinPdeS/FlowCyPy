@@ -6,7 +6,7 @@ from FlowCyPy.binary.interface_signal_generator import SignalGenerator
 from PyMieSim.units import Quantity
 from FlowCyPy import units
 from FlowCyPy.physical_constant import PhysicalConstant
-from FlowCyPy.helper import validate_units
+from FlowCyPy import helper
 from FlowCyPy.noises import NoiseSetting
 
 
@@ -293,7 +293,7 @@ class Detector():
 
         return photon_to_power_factor * power_to_current_factor  # Current (A)
 
-    @validate_units(optical_power=units.watt, wavelength=units.meter)
+    @helper.validate_input_units(optical_power=units.watt, wavelength=units.meter)
     def apply_shot_noise(self, signal_generator: SignalGenerator, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
         r"""
         Computes the shot noise photocurrent arising from photon statistics.
