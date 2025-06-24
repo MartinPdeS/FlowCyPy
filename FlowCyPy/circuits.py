@@ -20,7 +20,8 @@ class BaselineRestorator(interface_circuits.BaseLineRestoration, SignalProcessor
         Number of past samples to consider for the minimum value.
         If set to -1, it acts as if the window is infinite.
     """
-    def __init__(self, window_size: int):
+    @helper.validate_input_units(window_size=units.second)
+    def __init__(self, window_size: units.Quantity):
         self.window_size = window_size
         super().__init__()
 
