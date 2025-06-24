@@ -539,7 +539,7 @@ document.write(`
 <h1>FlowCell Class<a class="headerlink" href="#flowcell-class" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.flow_cell.FlowCell">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_volume_flow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheath_volume_flow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu=&lt;Quantity(0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'pascal</span> <span class="pre">*</span> <span class="pre">second')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_terms=25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_int=200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_scheme='poisson'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_volume_flow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheath_volume_flow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu=&lt;Quantity(0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'pascal</span> <span class="pre">*</span> <span class="pre">second')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_terms=25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_int=200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_scheme='preserve'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FLOWCELL</span></code></p>
 <p>Represents a rectangular flow cell in which the velocity field is computed from an
 analytical Fourier series solution for pressure-driven flow. The focused sample region
@@ -655,24 +655,8 @@ The same theoretical framework for rectangular duct flow is applied to these mic
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.flow_cell.FlowCell.event_scheme">
-<span class="sig-name descname"><span class="pre">event_scheme</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'poisson'</span></em><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell.event_scheme" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">event_scheme</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'preserve'</span></em><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell.event_scheme" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.flow_cell.FlowCell.get_dataframe_from_dict">
-<span class="sig-name descname"><span class="pre">get_dataframe_from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionnary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell.get_dataframe_from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell.get_dataframe_from_dict" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dictionnary</strong> (<em>dict</em>)</p></li>
-<li><p><strong>level_names</strong> (<em>list</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>DataFrame</em></p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.flow_cell.FlowCell.get_sample_volume">
@@ -702,26 +686,6 @@ The same theoretical framework for rectangular duct flow is applied to these mic
 <dt class="sig sig-object py" id="FlowCyPy.flow_cell.FlowCell.n_int">
 <span class="sig-name descname"><span class="pre">n_int</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">200</span></em><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell.n_int" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.flow_cell.FlowCell.order_events">
-<span class="sig-name descname"><span class="pre">order_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scatterer_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_scheme</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell.order_events"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell.order_events" title="Link to this definition">#</a></dt>
-<dd><p>Orders the events in the DataFrame by their arrival time.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>scatterer_dataframe</strong> (<em>pd.DataFrame</em>) – DataFrame containing the events with a ‘Time’ column.</p></li>
-<li><p><strong>event_scheme</strong> (<em>str</em>) – The scheme used to generate the events, e.g., ‘uniform-random’ or ‘uniform-sequential’.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Ordered DataFrame with events sorted by ‘Time’.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.flow_cell.FlowCell.sample_transverse_profile">
@@ -814,12 +778,10 @@ z \in [-b_{\text{sample}}, b_{\text{sample}}]\]</div>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.height_sample"><code class="docutils literal notranslate"><span class="pre">FlowCell.height_sample</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.N_terms"><code class="docutils literal notranslate"><span class="pre">FlowCell.N_terms</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.event_scheme"><code class="docutils literal notranslate"><span class="pre">FlowCell.event_scheme</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.get_dataframe_from_dict"><code class="docutils literal notranslate"><span class="pre">FlowCell.get_dataframe_from_dict()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.get_sample_volume"><code class="docutils literal notranslate"><span class="pre">FlowCell.get_sample_volume()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.height"><code class="docutils literal notranslate"><span class="pre">FlowCell.height</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.mu"><code class="docutils literal notranslate"><span class="pre">FlowCell.mu</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.n_int"><code class="docutils literal notranslate"><span class="pre">FlowCell.n_int</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.order_events"><code class="docutils literal notranslate"><span class="pre">FlowCell.order_events()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.sample_transverse_profile"><code class="docutils literal notranslate"><span class="pre">FlowCell.sample_transverse_profile()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.sample_volume_flow"><code class="docutils literal notranslate"><span class="pre">FlowCell.sample_volume_flow</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.sheath_volume_flow"><code class="docutils literal notranslate"><span class="pre">FlowCell.sheath_volume_flow</span></code></a></li>

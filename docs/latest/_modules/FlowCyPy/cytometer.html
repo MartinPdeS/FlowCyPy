@@ -511,7 +511,7 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_units</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">helper</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.acquisition</span><span class="w"> </span><span class="kn">import</span> <span class="n">AcquisitionDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.circuits</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalProcessor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalGenerator</span>
@@ -547,6 +547,7 @@ document.write(`
 <span class="sd">        If the number of detectors provided is not exactly two, or if both detectors share the same name.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@helper</span><span class="o">.</span><span class="n">validate_input_units</span><span class="p">(</span><span class="n">background_power</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opto_electronics</span><span class="p">:</span> <span class="n">OptoElectronics</span><span class="p">,</span> <span class="n">fluidics</span><span class="p">:</span> <span class="n">Fluidics</span><span class="p">,</span> <span class="n">background_power</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span> <span class="o">=</span> <span class="n">fluidics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">background_power</span> <span class="o">=</span> <span class="n">background_power</span>
@@ -585,7 +586,7 @@ document.write(`
 
 <div class="viewcode-block" id="FlowCytometer.get_acquisition">
 <a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.get_acquisition">[docs]</a>
-    <span class="nd">@validate_units</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
+    <span class="nd">@helper</span><span class="o">.</span><span class="n">validate_input_units</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_acquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">,</span> <span class="n">processing_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SignalProcessor</span><span class="p">]</span> <span class="o">=</span> <span class="p">[])</span> <span class="o">-&gt;</span> <span class="n">AcquisitionDataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simulates the generation of optical signal pulses for each particle event.</span>

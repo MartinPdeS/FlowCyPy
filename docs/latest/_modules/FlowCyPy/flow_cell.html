@@ -506,19 +506,17 @@ document.write(`
                   
   <h1>Source code for FlowCyPy.flow_cell</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pint_pandas</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pint_pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">PintArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePopulation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.scatterer</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">helper</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rectangle</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary.interface_flow_cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">FLOWCELL</span><span class="p">,</span> <span class="n">FLUIDREGION</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary.interface_flow_cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">FLOWCELL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluid_region</span><span class="w"> </span><span class="kn">import</span> <span class="n">FluidRegion</span>
 
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -526,49 +524,6 @@ document.write(`
     <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">extra</span><span class="o">=</span><span class="s1">&#39;forbid&#39;</span>
 <span class="p">)</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">FluidRegion</span><span class="p">():</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">FLUIDREGION</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">_cpp_width</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">_cpp_height</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">area</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">volume_flow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">_cpp_volume_flow</span> <span class="o">*</span> <span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">meter</span><span class="o">**</span><span class="mi">3</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">average_flow_speed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">_cpp_average_flow_speed</span> <span class="o">*</span> <span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">max_flow_speed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">_cpp_max_flow_speed</span> <span class="o">*</span> <span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_add_to_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">length_units</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">rect</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">(</span>
-            <span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">length_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span>
-            <span class="n">facecolor</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
-            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
-            <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-            <span class="n">label</span><span class="o">=</span><span class="n">label</span>
-        <span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FlowCell">
 <a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.flow_cell.FlowCell">[docs]</a>
@@ -654,7 +609,7 @@ document.write(`
     <span class="n">mu</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="mf">1e-3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">pascal</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span>
     <span class="n">N_terms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">25</span>
     <span class="n">n_int</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span>
-    <span class="n">event_scheme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;poisson&#39;</span>
+    <span class="n">event_scheme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;preserve&#39;</span>
 
 <div class="viewcode-block" id="FlowCell.validate_length">
 <a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.flow_cell.FlowCell.validate_length">[docs]</a>
@@ -684,7 +639,7 @@ document.write(`
 
 <div class="viewcode-block" id="FlowCell.get_sample_volume">
 <a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.flow_cell.FlowCell.get_sample_volume">[docs]</a>
-    <span class="nd">@helper</span><span class="o">.</span><span class="n">validate_units</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
+    <span class="nd">@helper</span><span class="o">.</span><span class="n">validate_input_units</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the volume passing through the flow cell over the given run time.</span>
@@ -749,8 +704,8 @@ document.write(`
         <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span> <span class="n">y</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span> <span class="n">velocities</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span></div>
 
 
-    <span class="nd">@helper</span><span class="o">.</span><span class="n">validate_units</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_event_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BasePopulation</span><span class="p">],</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="nd">@helper</span><span class="o">.</span><span class="n">validate_input_units</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_event_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BasePopulation</span><span class="p">],</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScattererDataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates a DataFrame of event times and sampled velocities for each population based on the specified scheme.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -760,7 +715,6 @@ document.write(`
 
         <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
             <span class="n">sub_dict</span> <span class="o">=</span> <span class="n">sampling_dict</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-
 
             <span class="n">particle_flux</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">particle_count</span><span class="o">.</span><span class="n">compute_particle_flux</span><span class="p">(</span>
                 <span class="n">flow_speed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">average_flow_speed</span><span class="p">,</span>
@@ -786,58 +740,18 @@ document.write(`
             <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;Velocity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_transverse_profile</span><span class="p">(</span><span class="n">n_events</span><span class="p">)</span>
 
 
-        <span class="n">scatterer_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dataframe_from_dict</span><span class="p">(</span>
+        <span class="n">event_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dataframe_from_dict</span><span class="p">(</span>
             <span class="n">dictionnary</span><span class="o">=</span><span class="n">sampling_dict</span><span class="p">,</span>
             <span class="n">level_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Population&#39;</span><span class="p">,</span> <span class="s1">&#39;ScattererID&#39;</span><span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="n">scatterer_dataframe</span> <span class="o">=</span> <span class="n">ScattererDataFrame</span><span class="p">(</span><span class="n">scatterer_dataframe</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">order_events</span><span class="p">(</span>
-            <span class="n">scatterer_dataframe</span><span class="o">=</span><span class="n">scatterer_dataframe</span><span class="p">,</span>
-            <span class="n">event_scheme</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">event_scheme</span>
+        <span class="n">event_dataframe</span><span class="o">.</span><span class="n">re_order_events</span><span class="p">(</span>
+            <span class="n">event_scheme</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">event_scheme</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">scatterer_dataframe</span>
+        <span class="k">return</span> <span class="n">event_dataframe</span>
 
-<div class="viewcode-block" id="FlowCell.order_events">
-<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.flow_cell.FlowCell.order_events">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">order_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scatterer_dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">event_scheme</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Orders the events in the DataFrame by their arrival time.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        scatterer_dataframe : pd.DataFrame</span>
-<span class="sd">            DataFrame containing the events with a &#39;Time&#39; column.</span>
-<span class="sd">        event_scheme : str</span>
-<span class="sd">            The scheme used to generate the events, e.g., &#39;uniform-random&#39; or &#39;uniform-sequential&#39;.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        pd.DataFrame</span>
-<span class="sd">            Ordered DataFrame with events sorted by &#39;Time&#39;.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-            <span class="k">return</span>
-
-        <span class="n">start_time</span> <span class="o">=</span> <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.1</span>
-        <span class="n">stop_time</span> <span class="o">=</span> <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.9</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">empty</span> <span class="ow">and</span> <span class="n">event_scheme</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;uniform-random&#39;</span><span class="p">,</span> <span class="s1">&#39;uniform-sequential&#39;</span><span class="p">]:</span>
-            <span class="n">total_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scatterer_dataframe</span><span class="p">)</span>
-
-            <span class="n">evenly_spaced_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">stop_time</span><span class="p">,</span> <span class="n">total_events</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_scheme</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;uniform-random&#39;</span><span class="p">:</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">evenly_spaced_times</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
-
-            <span class="n">scatterer_dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">evenly_spaced_times</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="FlowCell.get_dataframe_from_dict">
-<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.flow_cell.FlowCell.get_dataframe_from_dict">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_dataframe_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionnary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">level_names</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_dataframe_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionnary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">level_names</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScattererDataFrame</span><span class="p">:</span>
         <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">pop_name</span><span class="p">,</span> <span class="n">inner_dict</span> <span class="ow">in</span> <span class="n">dictionnary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
 
@@ -858,8 +772,7 @@ document.write(`
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">level_names</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">level_names</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span></div>
-</div>
+        <span class="k">return</span> <span class="n">ScattererDataFrame</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">))</span></div>
 
 </pre></div>
 
