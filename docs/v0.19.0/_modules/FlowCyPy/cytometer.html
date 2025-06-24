@@ -583,6 +583,36 @@ document.write(`
 
         <span class="k">return</span> <span class="n">signal_generator</span>
 
+<div class="viewcode-block" id="FlowCytometer.get_event_dataframe">
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.get_event_dataframe">[docs]</a>
+    <span class="nd">@helper</span><span class="o">.</span><span class="n">validate_input_units</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_event_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">,</span> <span class="n">compute_cross_section</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a DataFrame of events based on the scatterer collection and flow cell properties.</span>
+
+<span class="sd">        This method samples particle events from the fluidics system and prepares a DataFrame</span>
+<span class="sd">        containing the event times, positions, and other relevant properties.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        run_time : pint.Quantity</span>
+<span class="sd">            The duration of the acquisition in seconds.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pd.DataFrame</span>
+<span class="sd">            A DataFrame containing event data for the scatterers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">generate_event_dataframe</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">model_event</span><span class="p">(</span>
+            <span class="n">event_dataframe</span><span class="o">=</span><span class="n">event_dataframe</span><span class="p">,</span>
+            <span class="n">compute_cross_section</span><span class="o">=</span><span class="n">compute_cross_section</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">event_dataframe</span></div>
+
+
 
 <div class="viewcode-block" id="FlowCytometer.get_acquisition">
 <a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.get_acquisition">[docs]</a>
@@ -616,13 +646,7 @@ document.write(`
 <span class="sd">        ValueError</span>
 <span class="sd">            If the scatterer collection lacks required data columns (&#39;Widths&#39;, &#39;Time&#39;).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">event_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">generate_event_dataframe</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">model_event</span><span class="p">(</span>
-            <span class="n">event_dataframe</span><span class="o">=</span><span class="n">event_dataframe</span><span class="p">,</span>
-            <span class="n">compute_cross_section</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
+        <span class="n">event_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_event_dataframe</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
 
         <span class="n">signal_generator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_signal_generator</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
 
