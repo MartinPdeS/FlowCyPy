@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_2404691b0fd86af0_dev_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.9.1">coverage.py v7.9.1</a>,
-            created at 2025-06-23 21:49 +0000
+            created at 2025-06-24 09:49 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -90,7 +90,7 @@
     <p class="run"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t"><span class="key">from</span> <span class="nam">PyMieSim</span><span class="op">.</span><span class="nam">units</span> <span class="key">import</span> <span class="nam">Quantity</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span> <span class="key">import</span> <span class="nam">units</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">physical_constant</span> <span class="key">import</span> <span class="nam">PhysicalConstant</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">helper</span> <span class="key">import</span> <span class="nam">validate_units</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span> <span class="key">import</span> <span class="nam">helper</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">noises</span> <span class="key">import</span> <span class="nam">NoiseSetting</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -377,7 +377,7 @@
     <p class="pln"><span class="n"><a id="t293" href="#t293">293</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t294" href="#t294">294</a></span><span class="t">        <span class="key">return</span> <span class="nam">photon_to_power_factor</span> <span class="op">*</span> <span class="nam">power_to_current_factor</span>  <span class="com"># Current (A)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t295" href="#t295">295</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t296" href="#t296">296</a></span><span class="t">    <span class="op">@</span><span class="nam">validate_units</span><span class="op">(</span><span class="nam">optical_power</span><span class="op">=</span><span class="nam">units</span><span class="op">.</span><span class="nam">watt</span><span class="op">,</span> <span class="nam">wavelength</span><span class="op">=</span><span class="nam">units</span><span class="op">.</span><span class="nam">meter</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t296" href="#t296">296</a></span><span class="t">    <span class="op">@</span><span class="nam">helper</span><span class="op">.</span><span class="nam">validate_input_units</span><span class="op">(</span><span class="nam">optical_power</span><span class="op">=</span><span class="nam">units</span><span class="op">.</span><span class="nam">watt</span><span class="op">,</span> <span class="nam">wavelength</span><span class="op">=</span><span class="nam">units</span><span class="op">.</span><span class="nam">meter</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t297" href="#t297">297</a></span><span class="t">    <span class="key">def</span> <span class="nam">apply_shot_noise</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">signal_generator</span><span class="op">:</span> <span class="nam">SignalGenerator</span><span class="op">,</span> <span class="nam">wavelength</span><span class="op">:</span> <span class="nam">Quantity</span><span class="op">,</span> <span class="nam">bandwidth</span><span class="op">:</span> <span class="nam">Quantity</span><span class="op">)</span> <span class="op">-></span> <span class="nam">Quantity</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t298" href="#t298">298</a></span><span class="t">        <span class="str">r"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t299" href="#t299">299</a></span><span class="t"><span class="str">        Computes the shot noise photocurrent arising from photon statistics.</span>&nbsp;</span><span class="r"></span></p>
@@ -451,7 +451,7 @@
             <a class="nav" href="z_2404691b0fd86af0_dev_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.9.1">coverage.py v7.9.1</a>,
-            created at 2025-06-23 21:49 +0000
+            created at 2025-06-24 09:49 +0000
         </p>
     </div>
 </footer>
