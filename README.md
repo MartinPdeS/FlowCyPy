@@ -18,7 +18,7 @@
 | FlowCyPy/distribution/particle\_size\_distribution.py |       37 |       16 |        4 |        0 |     51% |86-94, 120-130, 133 |
 | FlowCyPy/distribution/uniform.py                      |       34 |        1 |        0 |        0 |     97% |       117 |
 | FlowCyPy/distribution/weibull.py                      |       36 |       16 |        2 |        0 |     53% |28, 32, 36, 57-62, 79, 102-112, 115 |
-| FlowCyPy/flow\_cell.py                                |       73 |        3 |       16 |        3 |     93% |111, 118, 252 |
+| FlowCyPy/flow\_cell.py                                |       73 |        3 |       16 |        3 |     93% |113, 120, 254 |
 | FlowCyPy/fluid\_region.py                             |       28 |        2 |        0 |        0 |     93% |    25, 33 |
 | FlowCyPy/fluidics.py                                  |       40 |        0 |        4 |        2 |     95% |95->99, 143->146 |
 | FlowCyPy/helper.py                                    |       23 |        3 |       10 |        3 |     82% |36, 40, 44 |
