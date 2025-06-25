@@ -92,6 +92,8 @@ class FlowCell(FLOWCELL):
         Width of the focused sample region (m).
     height_sample : Quantity
         Height of the focused sample region (m).
+    event_scheme : str
+        Scheme for event sampling, 'uniform-random', 'sorted', 'poisson', 'preserve' (default: 'preserve').
     """
     width: Quantity
     height: Quantity

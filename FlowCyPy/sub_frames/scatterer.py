@@ -232,9 +232,9 @@ class ScattererDataFrame(BaseSubFrame):
         event_scheme : str
             The scheme for generating new event times. Options:
                 - 'uniform-random': evenly spaced then shuffled
-                - 'uniform-sequential': evenly spaced
+                - 'sequential-uniform': evenly spaced
                 - 'sorted': sort the original times
-                - 'poisson': exponential inter-arrival based on average rate
+                - 'sequential-poisson': exponential inter-arrival based on average rate
                 - 'preserve': do nothing
         start_time : Quantity, optional
             Override for the start time of the event timeline. If not provided, estimated from data.
@@ -269,11 +269,11 @@ class ScattererDataFrame(BaseSubFrame):
         if scheme == 'uniform-random':
             new_times = numpy.linspace(start_time.magnitude, stop_time.magnitude, total_events)
             numpy.random.shuffle(new_times)
-        elif scheme == 'uniform-sequential':
+        elif scheme == 'sequential-uniform':
             new_times = numpy.linspace(start_time.magnitude, stop_time.magnitude, total_events)
         elif scheme == 'sorted':
-            new_times = numpy.sort(original_times.magnitude)
-        elif scheme == 'poisson':
+            new_times = numpy.sort(original_times.pint.quantity.magnitude)
+        elif scheme == 'sequential-poisson':
             mean_interval = ((stop_time - start_time) / total_events).to(time_unit).magnitude
             inter_arrivals = numpy.random.exponential(scale=mean_interval, size=total_events)
             new_times = numpy.cumsum(inter_arrivals)

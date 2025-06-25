@@ -123,10 +123,15 @@ fluidics = Fluidics(
 
 fluidics.plot(run_time=3.5 * units.millisecond)
 
+# %%
+# Generate a DataFrame of events, which contains information about the particles in the flow cell.
+# The DataFrame includes properties like diameter, refractive index, and scattering angles.
+event_dataframe = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)
 
-df = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)
 
-df.plot(x='Diameter', bins='auto')
+# %%
+# Plot the distribution of particle diameters in the DataFrame.
+event_dataframe.plot(x='Diameter', bins='auto')
 
 
 # %%
