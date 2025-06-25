@@ -542,23 +542,6 @@ to download the full example code.</p>
 </div>
 <section class="sphx-glr-example-title" id="limit-of-detection">
 <span id="sphx-glr-gallery-tutorials-limit-of-detection-py"></span><h1>Limit of detection<a class="headerlink" href="#limit-of-detection" title="Link to this heading">#</a></h1>
-<ul class="sphx-glr-horizontal">
-<li><img src="../../_images/sphx_glr_limit_of_detection_001.png" srcset="../../_images/sphx_glr_limit_of_detection_001.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_limit_of_detection_002.png" srcset="../../_images/sphx_glr_limit_of_detection_002.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_limit_of_detection_003.png" srcset="../../_images/sphx_glr_limit_of_detection_003.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_limit_of_detection_004.png" srcset="../../_images/sphx_glr_limit_of_detection_004.png" alt="Peaks properties" class = "sphx-glr-multi-img"/></li>
-</ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:266: UserWarning: Transverse distribution of particle flow exceed the waist of the source
-  warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
-/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:266: UserWarning: Transverse distribution of particle flow exceed the waist of the source
-  warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
-
-&lt;seaborn.axisgrid.JointGrid object at 0x7f71ecd00f50&gt;
-</pre></div>
-</div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">GaussianBeam</span><span class="p">,</span> <span class="n">TransimpedanceAmplifier</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.flow_cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCell</span>
@@ -576,7 +559,7 @@ to download the full example code.</p>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_source_noise</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_dark_current_noise</span> <span class="o">=</span> <span class="kc">False</span>
-
+<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">assume_perfect_hydrodynamic_focusing</span> <span class="o">=</span> <span class="kc">True</span>
 <a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 
 <span class="n">source</span> <span class="o">=</span> <span class="n">GaussianBeam</span><span class="p">(</span>
@@ -590,11 +573,12 @@ to download the full example code.</p>
     <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>        <span class="c1"># Flow speed: 10 microliter per second</span>
     <span class="n">width</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>        <span class="c1"># Flow area: 10 x 10 micrometers</span>
     <span class="n">height</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>        <span class="c1"># Flow area: 10 x 10 micrometers</span>
+    <span class="n">event_scheme</span><span class="o">=</span><span class="s1">&#39;sequential-uniform&#39;</span><span class="p">,</span>  <span class="c1"># Event sampling scheme: uniform random</span>
 <span class="p">)</span>
 
 <span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>  <span class="c1"># Medium refractive index: 1.33</span>
 
-<span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">30</span><span class="p">]:</span>
+<span class="k">for</span> <span class="n">size</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">130</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">90</span><span class="p">]:</span>
 
     <span class="n">population</span> <span class="o">=</span> <span class="n">Sphere</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s1"> nanometer&#39;</span><span class="p">,</span>
@@ -659,12 +643,13 @@ to download the full example code.</p>
 <span class="p">]</span>
 
 <span class="n">analog_acquisition</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span>
-    <span class="n">run_time</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">,</span>
+    <span class="n">run_time</span><span class="o">=</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">,</span>
     <span class="n">processing_steps</span><span class="o">=</span><span class="n">processing_steps</span>
 <span class="p">)</span>
-
-<span class="c1"># Visualize the scatter signals from both detectors</span>
-<span class="n">analog_acquisition</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Visualize the analog acquisition signals</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">analog_acquisition</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
 <span class="n">trigger</span> <span class="o">=</span> <span class="n">DynamicWindow</span><span class="p">(</span>
     <span class="n">dataframe</span><span class="o">=</span><span class="n">analog_acquisition</span><span class="p">,</span>
@@ -678,8 +663,10 @@ to download the full example code.</p>
 <span class="n">analog_trigger</span> <span class="o">=</span> <span class="n">trigger</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
     <span class="n">threshold</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millivolt</span><span class="p">,</span>
 <span class="p">)</span>
-
-<span class="n">analog_trigger</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_limit_of_detection_001.png" srcset="../../_images/sphx_glr_limit_of_detection_001.png" alt="limit of detection" class = "sphx-glr-single-img"/><p>Visualize the analog trigger signals</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">analog_trigger</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
 <span class="n">digital_trigger</span> <span class="o">=</span> <span class="n">analog_trigger</span><span class="o">.</span><span class="n">digitalize</span><span class="p">(</span><span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">)</span>
 
@@ -688,14 +675,23 @@ to download the full example code.</p>
 <span class="n">peak_algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span><span class="p">()</span>
 
 <span class="n">peaks</span> <span class="o">=</span> <span class="n">peak_algorithm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">digital_trigger</span><span class="p">)</span>
-
-<span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+</pre></div>
+</div>
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_limit_of_detection_002.png" srcset="../../_images/sphx_glr_limit_of_detection_002.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_limit_of_detection_003.png" srcset="../../_images/sphx_glr_limit_of_detection_003.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
+</ul>
+<p>Visualize the detected peaks</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
     <span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="s1">&#39;Height&#39;</span><span class="p">),</span>
     <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="s1">&#39;Height&#39;</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.376 seconds)</p>
+<img src="../../_images/sphx_glr_limit_of_detection_004.png" srcset="../../_images/sphx_glr_limit_of_detection_004.png" alt="Peaks properties" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7fb725299310&gt;
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.184 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-limit-of-detection-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc141053ca87c293e1689882fb19bce1/limit_of_detection.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">limit_of_detection.ipynb</span></code></a></p>

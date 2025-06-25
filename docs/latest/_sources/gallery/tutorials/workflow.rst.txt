@@ -156,7 +156,7 @@ given by:
 .. math::
     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
 
-.. GENERATED FROM PYTHON SOURCE LINES 88-132
+.. GENERATED FROM PYTHON SOURCE LINES 88-126
 
 .. code-block:: Python
 
@@ -199,30 +199,60 @@ given by:
     fluidics.plot(run_time=3.5 * units.millisecond)
 
 
-    df = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)
-
-    df.plot(x='Diameter', bins='auto')
 
 
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :alt: Particle Spatial Distribution and Speed
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <Axes: title={'center': 'Particle Spatial Distribution and Speed'}, xlabel='X [µm]', ylabel='Y [µm]'>
 
 
 
-.. rst-class:: sphx-glr-horizontal
+.. GENERATED FROM PYTHON SOURCE LINES 127-129
+
+Generate a DataFrame of events, which contains information about the particles in the flow cell.
+The DataFrame includes properties like diameter, refractive index, and scattering angles.
+
+.. GENERATED FROM PYTHON SOURCE LINES 129-132
+
+.. code-block:: Python
+
+    event_dataframe = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)
 
 
-    *
 
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
-         :alt: Particle Spatial Distribution and Speed
-         :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
-         :class: sphx-glr-multi-img
 
-    *
 
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
-         :alt: Distribution of Diameter
-         :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
-         :class: sphx-glr-multi-img
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 133-134
+
+Plot the distribution of particle diameters in the DataFrame.
+
+.. GENERATED FROM PYTHON SOURCE LINES 134-137
+
+.. code-block:: Python
+
+    event_dataframe.plot(x='Diameter', bins='auto')
+
+
+
+
+
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
+   :alt: Distribution of Diameter
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
@@ -234,14 +264,14 @@ given by:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 133-137
+.. GENERATED FROM PYTHON SOURCE LINES 138-142
 
 Step 5: Define Detectors
 ------------------------
 Detectors measure light intensity. Parameters like responsivity define the conversion of optical
 power to electronic signals, and saturation level represents the maximum signal they can handle.
 
-.. GENERATED FROM PYTHON SOURCE LINES 137-186
+.. GENERATED FROM PYTHON SOURCE LINES 142-191
 
 .. code-block:: Python
 
@@ -301,7 +331,7 @@ power to electronic signals, and saturation level represents the maximum signal 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 187-194
+.. GENERATED FROM PYTHON SOURCE LINES 192-199
 
 Step 6: Simulate Flow Cytometry Experiment
 ------------------------------------------
@@ -311,7 +341,7 @@ and particles follows Mie theory:
 .. math::
     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
 
-.. GENERATED FROM PYTHON SOURCE LINES 194-223
+.. GENERATED FROM PYTHON SOURCE LINES 199-228
 
 .. code-block:: Python
 
@@ -356,11 +386,11 @@ and particles follows Mie theory:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 224-225
+.. GENERATED FROM PYTHON SOURCE LINES 229-230
 
 Visualize the scatter signals from both detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-227
+.. GENERATED FROM PYTHON SOURCE LINES 230-232
 
 .. code-block:: Python
 
@@ -384,14 +414,14 @@ Visualize the scatter signals from both detectors
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 228-232
+.. GENERATED FROM PYTHON SOURCE LINES 233-237
 
 Step 7: Analyze Detected Signals
 --------------------------------
 The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
 window size and threshold.
 
-.. GENERATED FROM PYTHON SOURCE LINES 232-249
+.. GENERATED FROM PYTHON SOURCE LINES 237-254
 
 .. code-block:: Python
 
@@ -430,11 +460,11 @@ window size and threshold.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 250-251
+.. GENERATED FROM PYTHON SOURCE LINES 255-256
 
 Getting and plotting the extracted peaks.
 
-.. GENERATED FROM PYTHON SOURCE LINES 251-263
+.. GENERATED FROM PYTHON SOURCE LINES 256-268
 
 .. code-block:: Python
 
@@ -464,15 +494,15 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f71e0d7be10>
+    <seaborn.axisgrid.JointGrid object at 0x7fb71d921350>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 264-265
+.. GENERATED FROM PYTHON SOURCE LINES 269-270
 
 Step 8: Classifying the collected dataset
 
-.. GENERATED FROM PYTHON SOURCE LINES 265-278
+.. GENERATED FROM PYTHON SOURCE LINES 270-283
 
 .. code-block:: Python
 
@@ -504,7 +534,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 9.050 seconds)
+   **Total running time of the script:** (0 minutes 8.800 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

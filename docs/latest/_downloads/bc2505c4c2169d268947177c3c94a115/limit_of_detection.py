@@ -20,7 +20,7 @@ NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
 NoiseSetting.include_source_noise = False
 NoiseSetting.include_dark_current_noise = False
-
+NoiseSetting.assume_perfect_hydrodynamic_focusing = True
 np.random.seed(3)
 
 source = GaussianBeam(
@@ -34,11 +34,12 @@ flow_cell = FlowCell(
     sheath_volume_flow=0.1 * units.microliter / units.second,        # Flow speed: 10 microliter per second
     width=20 * units.micrometer,        # Flow area: 10 x 10 micrometers
     height=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
+    event_scheme='sequential-uniform',  # Event sampling scheme: uniform random
 )
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)  # Medium refractive index: 1.33
 
-for size in [150, 100, 50, 30]:
+for size in [150, 130, 110, 90]:
 
     population = Sphere(
         name=f'{size} nanometer',
@@ -103,11 +104,12 @@ processing_steps = [
 ]
 
 analog_acquisition, _ = cytometer.get_acquisition(
-    run_time=0.2 * units.millisecond,
+    run_time=0.4 * units.millisecond,
     processing_steps=processing_steps
 )
 
-# Visualize the scatter signals from both detectors
+# %%
+# Visualize the analog acquisition signals
 analog_acquisition.plot()
 
 trigger = DynamicWindow(
@@ -123,6 +125,8 @@ analog_trigger = trigger.run(
     threshold=3 * units.millivolt,
 )
 
+# %%
+# Visualize the analog trigger signals
 analog_trigger.plot()
 
 digital_trigger = analog_trigger.digitalize(digitizer=digitizer)
@@ -133,6 +137,8 @@ peak_algorithm = peak_locator.GlobalPeakLocator()
 
 peaks = peak_algorithm.run(digital_trigger)
 
+# %%
+# Visualize the detected peaks
 peaks.plot(
     x=('side', 'Height'),
     y=('forward', 'Height')

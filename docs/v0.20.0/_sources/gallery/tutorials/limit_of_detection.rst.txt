@@ -21,58 +21,7 @@
 Limit of detection
 ==================
 
-.. GENERATED FROM PYTHON SOURCE LINES 5-140
-
-
-
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_001.png
-         :alt: limit of detection
-         :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_001.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
-         :alt: limit of detection
-         :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
-         :alt: limit of detection
-         :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_004.png
-         :alt: Peaks properties
-         :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_004.png
-         :class: sphx-glr-multi-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:266: UserWarning: Transverse distribution of particle flow exceed the waist of the source
-      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
-    /opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/FlowCyPy/source.py:266: UserWarning: Transverse distribution of particle flow exceed the waist of the source
-      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
-
-    <seaborn.axisgrid.JointGrid object at 0x7f71ecd00f50>
-
-
-
-
-
-|
+.. GENERATED FROM PYTHON SOURCE LINES 5-111
 
 .. code-block:: Python
 
@@ -94,7 +43,7 @@ Limit of detection
     NoiseSetting.include_shot_noise = True
     NoiseSetting.include_source_noise = False
     NoiseSetting.include_dark_current_noise = False
-
+    NoiseSetting.assume_perfect_hydrodynamic_focusing = True
     np.random.seed(3)
 
     source = GaussianBeam(
@@ -108,11 +57,12 @@ Limit of detection
         sheath_volume_flow=0.1 * units.microliter / units.second,        # Flow speed: 10 microliter per second
         width=20 * units.micrometer,        # Flow area: 10 x 10 micrometers
         height=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
+        event_scheme='sequential-uniform',  # Event sampling scheme: uniform random
     )
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)  # Medium refractive index: 1.33
 
-    for size in [150, 100, 50, 30]:
+    for size in [150, 130, 110, 90]:
 
         population = Sphere(
             name=f'{size} nanometer',
@@ -177,11 +127,25 @@ Limit of detection
     ]
 
     analog_acquisition, _ = cytometer.get_acquisition(
-        run_time=0.2 * units.millisecond,
+        run_time=0.4 * units.millisecond,
         processing_steps=processing_steps
     )
 
-    # Visualize the scatter signals from both detectors
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 112-113
+
+Visualize the analog acquisition signals
+
+.. GENERATED FROM PYTHON SOURCE LINES 113-128
+
+.. code-block:: Python
+
     analog_acquisition.plot()
 
     trigger = DynamicWindow(
@@ -197,6 +161,26 @@ Limit of detection
         threshold=3 * units.millivolt,
     )
 
+
+
+
+.. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_001.png
+   :alt: limit of detection
+   :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_001.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 129-130
+
+Visualize the analog trigger signals
+
+.. GENERATED FROM PYTHON SOURCE LINES 130-140
+
+.. code-block:: Python
+
     analog_trigger.plot()
 
     digital_trigger = analog_trigger.digitalize(digitizer=digitizer)
@@ -207,15 +191,64 @@ Limit of detection
 
     peaks = peak_algorithm.run(digital_trigger)
 
+
+
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
+         :alt: limit of detection
+         :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
+         :alt: limit of detection
+         :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
+         :class: sphx-glr-multi-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 141-142
+
+Visualize the detected peaks
+
+.. GENERATED FROM PYTHON SOURCE LINES 142-146
+
+.. code-block:: Python
+
     peaks.plot(
         x=('side', 'Height'),
         y=('forward', 'Height')
     )
 
 
+
+.. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_004.png
+   :alt: Peaks properties
+   :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_004.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <seaborn.axisgrid.JointGrid object at 0x7fb725299310>
+
+
+
+
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.376 seconds)
+   **Total running time of the script:** (0 minutes 5.184 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:
