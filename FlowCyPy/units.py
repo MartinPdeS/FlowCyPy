@@ -12,6 +12,8 @@ for _units_str in _scaled_units_str_list:
         globals()[_unit] = getattr(ureg, _unit)
 
 
+
+
 joule = ureg.joule
 coulomb = ureg.coulomb
 power = ureg.watt.dimensionality
@@ -36,3 +38,10 @@ bit_bins = ureg.bit_bins
 
 ureg.define("sqrt_hertz = Hz**0.5")
 sqrt_hertz = ureg.sqrt_hertz
+
+
+ureg.define("photoelectron = [Float64]")  # Define a custom unit 'photoelectron'
+ureg.define("event = [Int64]")  # Define a custom unit 'events'
+
+photoelectron = ureg.photoelectron
+event = ureg.event

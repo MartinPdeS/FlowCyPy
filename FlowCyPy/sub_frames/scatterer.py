@@ -57,7 +57,7 @@ class ScattererDataFrame(BaseSubFrame):
         return df, units_list
 
     @utils.plot_sns
-    def plot_2d(self, x: str, y: str, alpha: float = 0.8, bandwidth_adjust: float = 1, color_palette: Optional[Union[str, dict]] = None) -> plt.Figure:
+    def plot_2d(self, x: str, y: str, alpha: float = 0.8, bandwidth_adjust: float = 1, color_palette: Optional[Union[str, dict]] = None, figure_size: tuple = (6, 6)) -> plt.Figure:
         """
         Plot the joint distribution of scatterer sizes and refractive indices.
 
@@ -92,7 +92,8 @@ class ScattererDataFrame(BaseSubFrame):
             palette=color_palette,
             kind='scatter',
             alpha=alpha,
-            marginal_kws={'bw_adjust': bandwidth_adjust}
+            marginal_kws={'bw_adjust': bandwidth_adjust},
+            height=figure_size[0] if figure_size else None,
         )
 
         grid.figure.suptitle("Scatterer Sampling Distribution")
@@ -223,7 +224,7 @@ class ScattererDataFrame(BaseSubFrame):
         ax.set_xlabel(f"Time [{time_units._repr_latex_()}]")
         ax.legend()
 
-    def re_order_events(self, event_scheme: str = 'uniform-random', start_time: Quantity = None, stop_time: Quantity = None, duration: Quantity = None) -> pd.DataFrame:
+    def re_order_events(self, event_scheme: str = 'random-uniform', start_time: Quantity = None, stop_time: Quantity = None, duration: Quantity = None) -> pd.DataFrame:
         """
         Reorders or reschedules the 'Time' column in a scatterer DataFrame using a specified temporal scheme.
 
@@ -231,7 +232,7 @@ class ScattererDataFrame(BaseSubFrame):
         ----------
         event_scheme : str
             The scheme for generating new event times. Options:
-                - 'uniform-random': evenly spaced then shuffled
+                - 'random-uniform': evenly spaced then shuffled
                 - 'sequential-uniform': evenly spaced
                 - 'sorted': sort the original times
                 - 'sequential-poisson': exponential inter-arrival based on average rate
@@ -266,7 +267,7 @@ class ScattererDataFrame(BaseSubFrame):
         total_events = len(self)
 
 
-        if scheme == 'uniform-random':
+        if scheme == 'random-uniform':
             new_times = numpy.linspace(start_time.magnitude, stop_time.magnitude, total_events)
             numpy.random.shuffle(new_times)
         elif scheme == 'sequential-uniform':

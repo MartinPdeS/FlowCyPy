@@ -4,7 +4,7 @@ from FlowCyPy import units
 from PyMieSim import experiment
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
-from FlowCyPy.triggering_system import TriggeringSystem
+from FlowCyPy.triggering_system import DynamicWindow
 from typing import Union, Sequence, Optional
 
 import numpy as np
@@ -736,18 +736,18 @@ def get_trigger_metrics(
             plot_digital=plot_digital
         )
 
-        trigger = TriggeringSystem(
+        trigger = DynamicWindow(
+            trigger_detector_name='forward',
+            signal_dataframe=acquisition,
             digitizer=cytometer.digitizer,
-            threshold=threshold,
+
             max_triggers=-1,
             pre_buffer=20,
             post_buffer=20
         )
 
         triggered_analog = trigger.run(
-            trigger_detector_name='forward',
-            signal_dataframe=acquisition
-
+            threshold=threshold,
         )
 
         if plot_trigger:
