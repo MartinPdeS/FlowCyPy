@@ -73,7 +73,7 @@ from FlowCyPy.flow_cell import FlowCell
 flow_cell = FlowCell(
     sample_volume_flow=80 * units.microliter / units.minute,
     sheath_volume_flow=1 * units.milliliter / units.minute,
-    width=100 * units.micrometer,
+    width=200 * units.micrometer,
     height=100 * units.micrometer,
 )
 
@@ -121,7 +121,7 @@ fluidics = Fluidics(
     flow_cell=flow_cell
 )
 
-fluidics.plot(run_time=3.5 * units.millisecond)
+fluidics.plot(run_time=30.5 * units.millisecond)
 
 # %%
 # Generate a DataFrame of events, which contains information about the particles in the flow cell.
