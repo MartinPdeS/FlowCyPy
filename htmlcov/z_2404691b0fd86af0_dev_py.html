@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_a8dd2029198ba351_base_class_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.9.1">coverage.py v7.9.1</a>,
-            created at 2025-06-25 14:55 +0000
+            created at 2025-06-30 16:04 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -88,7 +88,7 @@
     <p class="mis show_mis"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t"><span class="key">from</span> <span class="nam">PyMieSim</span> <span class="key">import</span> <span class="nam">experiment</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="key">import</span> <span class="nam">matplotlib</span><span class="op">.</span><span class="nam">pyplot</span> <span class="key">as</span> <span class="nam">plt</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t"><span class="key">from</span> <span class="nam">MPSPlots</span><span class="op">.</span><span class="nam">styles</span> <span class="key">import</span> <span class="nam">mps</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">triggering_system</span> <span class="key">import</span> <span class="nam">TriggeringSystem</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">triggering_system</span> <span class="key">import</span> <span class="nam">DynamicWindow</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t"><span class="key">from</span> <span class="nam">typing</span> <span class="key">import</span> <span class="nam">Union</span><span class="op">,</span> <span class="nam">Sequence</span><span class="op">,</span> <span class="nam">Optional</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t"><span class="key">import</span> <span class="nam">numpy</span> <span class="key">as</span> <span class="nam">np</span>&nbsp;</span><span class="r"></span></p>
@@ -820,18 +820,18 @@
     <p class="pln"><span class="n"><a id="t736" href="#t736">736</a></span><span class="t">            <span class="nam">plot_digital</span><span class="op">=</span><span class="nam">plot_digital</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t737" href="#t737">737</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t738" href="#t738">738</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t739" href="#t739">739</a></span><span class="t">        <span class="nam">trigger</span> <span class="op">=</span> <span class="nam">TriggeringSystem</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t740" href="#t740">740</a></span><span class="t">            <span class="nam">digitizer</span><span class="op">=</span><span class="nam">cytometer</span><span class="op">.</span><span class="nam">digitizer</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t741" href="#t741">741</a></span><span class="t">            <span class="nam">threshold</span><span class="op">=</span><span class="nam">threshold</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t742" href="#t742">742</a></span><span class="t">            <span class="nam">max_triggers</span><span class="op">=</span><span class="op">-</span><span class="num">1</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t743" href="#t743">743</a></span><span class="t">            <span class="nam">pre_buffer</span><span class="op">=</span><span class="num">20</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t744" href="#t744">744</a></span><span class="t">            <span class="nam">post_buffer</span><span class="op">=</span><span class="num">20</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t745" href="#t745">745</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t746" href="#t746">746</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t747" href="#t747">747</a></span><span class="t">        <span class="nam">triggered_analog</span> <span class="op">=</span> <span class="nam">trigger</span><span class="op">.</span><span class="nam">run</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t748" href="#t748">748</a></span><span class="t">            <span class="nam">trigger_detector_name</span><span class="op">=</span><span class="str">'forward'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t749" href="#t749">749</a></span><span class="t">            <span class="nam">signal_dataframe</span><span class="op">=</span><span class="nam">acquisition</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t750" href="#t750">750</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t739" href="#t739">739</a></span><span class="t">        <span class="nam">trigger</span> <span class="op">=</span> <span class="nam">DynamicWindow</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t740" href="#t740">740</a></span><span class="t">            <span class="nam">trigger_detector_name</span><span class="op">=</span><span class="str">'forward'</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t741" href="#t741">741</a></span><span class="t">            <span class="nam">signal_dataframe</span><span class="op">=</span><span class="nam">acquisition</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t742" href="#t742">742</a></span><span class="t">            <span class="nam">digitizer</span><span class="op">=</span><span class="nam">cytometer</span><span class="op">.</span><span class="nam">digitizer</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t743" href="#t743">743</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t744" href="#t744">744</a></span><span class="t">            <span class="nam">max_triggers</span><span class="op">=</span><span class="op">-</span><span class="num">1</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t745" href="#t745">745</a></span><span class="t">            <span class="nam">pre_buffer</span><span class="op">=</span><span class="num">20</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t746" href="#t746">746</a></span><span class="t">            <span class="nam">post_buffer</span><span class="op">=</span><span class="num">20</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t747" href="#t747">747</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t748" href="#t748">748</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t749" href="#t749">749</a></span><span class="t">        <span class="nam">triggered_analog</span> <span class="op">=</span> <span class="nam">trigger</span><span class="op">.</span><span class="nam">run</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t750" href="#t750">750</a></span><span class="t">            <span class="nam">threshold</span><span class="op">=</span><span class="nam">threshold</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t751" href="#t751">751</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t752" href="#t752">752</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t753" href="#t753">753</a></span><span class="t">        <span class="key">if</span> <span class="nam">plot_trigger</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -1205,7 +1205,7 @@
             <a class="nav" href="z_a8dd2029198ba351_base_class_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.9.1">coverage.py v7.9.1</a>,
-            created at 2025-06-25 14:55 +0000
+            created at 2025-06-30 16:04 +0000
         </p>
     </div>
 </footer>

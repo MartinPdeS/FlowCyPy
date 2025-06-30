@@ -5,6 +5,7 @@
 | Name                                                  |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |------------------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
 | FlowCyPy/amplifier.py                                 |       41 |        3 |        8 |        4 |     86% |67, 73, 131, 134->exit |
+| FlowCyPy/calibration.py                               |      135 |      135 |       16 |        0 |      0% |     1-404 |
 | FlowCyPy/circuits.py                                  |       38 |        9 |        0 |        0 |     76% |101-105, 116-121 |
 | FlowCyPy/classifier.py                                |       44 |        0 |        8 |        4 |     92% |32->35, 74->78, 121->125, 172->176 |
 | FlowCyPy/coupling.py                                  |       43 |       10 |       10 |        2 |     74% |50, 137, 154-176 |
@@ -42,12 +43,12 @@
 | FlowCyPy/sub\_frames/base.py                          |        5 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/sub\_frames/classifier.py                    |       15 |        8 |        2 |        0 |     41% |     35-49 |
 | FlowCyPy/sub\_frames/peaks.py                         |       74 |       42 |       12 |        2 |     40% |19, 24, 42-44, 62-64, 80-81, 99-114, 155-172, 243-259 |
-| FlowCyPy/sub\_frames/scatterer.py                     |      108 |       69 |       38 |        3 |     30% |25-32, 48-57, 82-101, 128-140, 176-191, 214, 250, 255-286 |
+| FlowCyPy/sub\_frames/scatterer.py                     |      108 |       69 |       38 |        3 |     30% |25-32, 48-57, 82-102, 129-141, 177-192, 215, 251, 256-287 |
 | FlowCyPy/sub\_frames/utils.py                         |       79 |       45 |       26 |        6 |     38% |41, 43->46, 114-119, 122-125, 128, 130->133, 159-204, 228-243 |
 | FlowCyPy/triggering\_system.py                        |       81 |       28 |       12 |        3 |     65% |46-51, 66-68, 130-141, 157-167, 270-281, 309-326 |
-| FlowCyPy/units.py                                     |       26 |        0 |        4 |        0 |    100% |           |
+| FlowCyPy/units.py                                     |       30 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       56 |       56 |       14 |        0 |      0% |     1-134 |
-|                                             **TOTAL** | **2240** |  **865** |  **496** |   **92** | **58%** |           |
+|                                             **TOTAL** | **2379** | **1000** |  **512** |   **92** | **55%** |           |
 
 
 ## Setup coverage badge
