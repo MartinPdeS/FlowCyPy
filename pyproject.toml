@@ -111,14 +111,13 @@ build-frontend = "build"
 before-test = ""
 test-command = "python -m pytest -rA {project}/tests"
 test-extras = ["testing"]
-manylinux-x86_64-image = "manylinux_2_28"
-manylinux-aarch64-image = "manylinux_2_28"
+
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64"]
 before-build = "yum install -y fftw-devel"
 build = ["cp310-manylinux*", "cp311-manylinux*", "cp312-manylinux*"]
-manylinux-x86_64-image = "manylinux2014"
+manylinux-x86_64-image = "manylinux_2_28"
 repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.macos]
