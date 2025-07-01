@@ -5,11 +5,11 @@
 | Name                                                  |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |------------------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
 | FlowCyPy/amplifier.py                                 |       41 |        3 |        8 |        4 |     86% |67, 73, 131, 134->exit |
-| FlowCyPy/calibration.py                               |      169 |      169 |       34 |        0 |      0% |     1-320 |
+| FlowCyPy/calibration.py                               |      203 |      203 |       38 |        0 |      0% |     1-356 |
 | FlowCyPy/circuits.py                                  |       38 |        9 |        0 |        0 |     76% |101-105, 116-121 |
 | FlowCyPy/classifier.py                                |       44 |        0 |        8 |        4 |     92% |32->35, 74->78, 121->125, 172->176 |
 | FlowCyPy/coupling.py                                  |       43 |       10 |       10 |        2 |     74% |50, 137, 154-176 |
-| FlowCyPy/cytometer.py                                 |       58 |        1 |       16 |        2 |     96% |142, 162->169 |
+| FlowCyPy/cytometer.py                                 |       58 |        1 |       16 |        2 |     96% |146, 166->173 |
 | FlowCyPy/detector.py                                  |       67 |        9 |       12 |        6 |     81% |104, 126, 148, 168, 176, 197->201, 286-294 |
 | FlowCyPy/dev.py                                       |      314 |      314 |       54 |        0 |      0% |    1-1114 |
 | FlowCyPy/distribution/base\_class.py                  |       25 |        3 |        0 |        0 |     88% |32, 36, 65 |
@@ -48,7 +48,7 @@
 | FlowCyPy/triggering\_system.py                        |       81 |       28 |       12 |        3 |     65% |46-51, 66-68, 130-141, 157-167, 270-281, 309-326 |
 | FlowCyPy/units.py                                     |       30 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       56 |       56 |       14 |        0 |      0% |     1-134 |
-|                                             **TOTAL** | **2413** | **1034** |  **530** |   **92** | **54%** |           |
+|                                             **TOTAL** | **2447** | **1068** |  **534** |   **92** | **53%** |           |
 
 
 ## Setup coverage badge
