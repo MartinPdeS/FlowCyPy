@@ -111,6 +111,8 @@ build-frontend = "build"
 before-test = ""
 test-command = "python -m pytest -rA {project}/tests"
 test-extras = ["testing"]
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64"]
