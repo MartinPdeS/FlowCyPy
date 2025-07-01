@@ -617,7 +617,7 @@ document.write(`
 <div class="viewcode-block" id="FlowCytometer.get_acquisition">
 <a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.get_acquisition">[docs]</a>
     <span class="nd">@helper</span><span class="o">.</span><span class="n">validate_input_units</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_acquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">,</span> <span class="n">processing_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SignalProcessor</span><span class="p">]</span> <span class="o">=</span> <span class="p">[])</span> <span class="o">-&gt;</span> <span class="n">AcquisitionDataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_acquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">units</span><span class="o">.</span><span class="n">Quantity</span><span class="p">,</span> <span class="n">processing_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SignalProcessor</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">compute_cross_section</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AcquisitionDataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Simulates the generation of optical signal pulses for each particle event.</span>
 
@@ -635,6 +635,10 @@ document.write(`
 <span class="sd">        ----------</span>
 <span class="sd">        processing_steps : list of SignalProcessor, optional</span>
 <span class="sd">            List of signal processing steps to apply in order.</span>
+<span class="sd">        run_time : pint.Quantity</span>
+<span class="sd">            The duration of the acquisition in seconds.</span>
+<span class="sd">        compute_cross_section : bool, optional</span>
+<span class="sd">            If True, computes the cross-section for each scatterer in the event DataFrame.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -646,7 +650,7 @@ document.write(`
 <span class="sd">        ValueError</span>
 <span class="sd">            If the scatterer collection lacks required data columns (&#39;Widths&#39;, &#39;Time&#39;).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">event_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_event_dataframe</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
+        <span class="n">event_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_event_dataframe</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span> <span class="n">compute_cross_section</span><span class="o">=</span><span class="n">compute_cross_section</span><span class="p">)</span>
 
         <span class="n">signal_generator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_signal_generator</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
 

@@ -494,7 +494,7 @@ Getting and plotting the extracted peaks.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f6765f0d490>
+    <seaborn.axisgrid.JointGrid object at 0x7f8f2df8d690>
 
 
 
@@ -534,7 +534,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 9.306 seconds)
+   **Total running time of the script:** (0 minutes 8.692 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:
