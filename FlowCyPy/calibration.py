@@ -273,7 +273,6 @@ class Calibration:
             plt.tight_layout()
             plt.show()
 
-
 class JKEstimator:
     def __init__(self):
         self._records: Dict[units.Quantity, List[Dict]] = {}
@@ -281,15 +280,6 @@ class JKEstimator:
     def add_beads_signal(self, diameter: units.Quantity, signal_array: np.ndarray, csca: units.Quantity = None):
         """
         Add a raw signal array for a given bead diameter. Computes median and RCV internally.
-
-        Parameters
-        ----------
-        diameter : units.Quantity
-            Bead diameter (e.g., 800 * units.nanometer)
-        signal_array : np.ndarray
-            Raw signal measurements in arbitrary units (AU)
-        csca : units.Quantity, optional
-            Scattering cross-section in nm²
         """
         stats = SignalStatistics(signal_array)
         if diameter not in self._records:
@@ -297,7 +287,7 @@ class JKEstimator:
 
         self._records[diameter].append({
             'signal': stats.median,
-            'rcv': stats.robust_cv,
+            'rcv': stats.robust_coefficient_of_variation,
             'csca': csca.to('nanometer**2').magnitude if csca else None
         })
 
@@ -308,7 +298,7 @@ class JKEstimator:
         x = np.array([1 / np.sqrt(r['signal']) for r in records])
         y = np.array([r['rcv'] for r in records])
         slope = np.polyfit(x, y, 1)[0]
-        return slope * units.sqrt(units.AU)
+        return slope * (units.AU)**0.5
 
     def estimate_K(self, diameter: units.Quantity) -> units.Quantity:
         records = [r for r in self._records.get(diameter, []) if r['csca'] is not None]
@@ -319,5 +309,48 @@ class JKEstimator:
         slope = np.polyfit(x, y, 1)[0]
         return slope * units.nanometer**2 / units.AU
 
+    def plot_J(self, diameter: units.Quantity):
+        """
+        Plot RCV vs 1/sqrt(signal) and linear regression fit for given diameter.
+        """
+        records = self._records.get(diameter, [])
+        if not records:
+            raise ValueError(f"No records for diameter {diameter}")
 
+        x = np.array([1 / np.sqrt(r['signal']) for r in records])
+        y = np.array([r['rcv'] for r in records])
+        slope = np.polyfit(x, y, 1)[0]
+        x_fit = np.linspace(min(x), max(x), 100)
 
+        plt.figure(figsize=(8, 5))
+        plt.scatter(x, y, label="Measured points")
+        plt.plot(x_fit, slope * x_fit, '--', label=f"Fit: J = {slope:.3f} √AU")
+        plt.xlabel(r"$1 / \sqrt{\mathrm{Median\ Signal}}$")
+        plt.ylabel("Robust CV")
+        plt.title(f"J Estimation – Diameter {diameter:~}")
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
+    def plot_K(self, diameter: units.Quantity):
+        """
+        Plot Csca vs signal and linear regression fit for given diameter.
+        """
+        records = [r for r in self._records.get(diameter, []) if r['csca'] is not None]
+        if not records:
+            raise ValueError(f"No Csca records for diameter {diameter}")
+
+        x = np.array([r['signal'] for r in records])
+        y = np.array([r['csca'] for r in records])
+        slope = np.polyfit(x, y, 1)[0]
+        x_fit = np.linspace(min(x), max(x), 100)
+
+        plt.figure(figsize=(8, 5))
+        plt.scatter(x, y, label="Measured points")
+        plt.plot(x_fit, slope * x_fit, '--', label=f"Fit: K = {slope:.1f} nm²/AU")
+        plt.xlabel("Median signal (AU)")
+        plt.ylabel("Scattering cross-section (nm²)")
+        plt.title(f"K Estimation – Diameter {diameter:~}")
+        plt.legend()
+        plt.tight_layout()
+        plt.show()

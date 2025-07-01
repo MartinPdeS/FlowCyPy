@@ -1,10 +1,6 @@
 
 from FlowCyPy import units
-
 from FlowCyPy.calibration import Calibration
-
-illumination_powers =
-
 
 calibration  = Calibration(
     bead_diameters=[200, 600, 800, 1000, 1200, 2000] * units.nanometer,       # Bead diameters in nanometers,
@@ -27,4 +23,3 @@ calibration.simulate_signals()
 calibration.plot_J(bead_diameters=[200, 600, 1000] * units.nanometer)
 
 _ = calibration.plot_K([60, 80, 100] * units.milliwatt)
-

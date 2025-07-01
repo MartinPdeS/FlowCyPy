@@ -103,7 +103,7 @@ class FlowCytometer:
 
 
     @helper.validate_input_units(run_time=units.second)
-    def get_acquisition(self, run_time: units.Quantity, processing_steps: list[SignalProcessor] = []) -> AcquisitionDataFrame:
+    def get_acquisition(self, run_time: units.Quantity, processing_steps: list[SignalProcessor] = [], compute_cross_section: bool = False) -> AcquisitionDataFrame:
         """
         Simulates the generation of optical signal pulses for each particle event.
 
@@ -121,6 +121,10 @@ class FlowCytometer:
         ----------
         processing_steps : list of SignalProcessor, optional
             List of signal processing steps to apply in order.
+        run_time : pint.Quantity
+            The duration of the acquisition in seconds.
+        compute_cross_section : bool, optional
+            If True, computes the cross-section for each scatterer in the event DataFrame.
 
         Returns
         -------
@@ -132,7 +136,7 @@ class FlowCytometer:
         ValueError
             If the scatterer collection lacks required data columns ('Widths', 'Time').
         """
-        event_dataframe = self.get_event_dataframe(run_time=run_time)
+        event_dataframe = self.get_event_dataframe(run_time=run_time, compute_cross_section=compute_cross_section)
 
         signal_generator = self._create_signal_generator(run_time=run_time)
 
