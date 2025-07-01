@@ -241,14 +241,14 @@ Visualize the detected peaks
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f4507d92b10>
+    <seaborn.axisgrid.JointGrid object at 0x7ffb378f5a90>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.237 seconds)
+   **Total running time of the script:** (0 minutes 5.065 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:
