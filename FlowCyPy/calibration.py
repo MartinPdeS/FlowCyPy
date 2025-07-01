@@ -191,10 +191,8 @@ class Calibration:
 
         for power in self.illumination_powers:
 
-
             # Scale detection efficiency to current power
             scaled_eff = self.detection_efficiency * (power / (20 * units.milliwatt))
-
 
             mean_background = self.gain * scaled_eff * self.background_level
 
@@ -276,43 +274,50 @@ class Calibration:
             plt.show()
 
 
-if __name__ == "__main__":
-    from FlowCyPy import units
-    illumination_powers = [60, 80, 100, 120, 160, 200, 400] * units.milliwatt
-    number_of_bead_events = 1_000 * units.event        # Number of bead events per condition
-    number_of_background_events = 10000 * units.event  # Number of background events to simulate
+class JKEstimator:
+    def __init__(self):
+        self._records: Dict[units.Quantity, List[Dict]] = {}
+
+    def add_beads_signal(self, diameter: units.Quantity, signal_array: np.ndarray, csca: units.Quantity = None):
+        """
+        Add a raw signal array for a given bead diameter. Computes median and RCV internally.
+
+        Parameters
+        ----------
+        diameter : units.Quantity
+            Bead diameter (e.g., 800 * units.nanometer)
+        signal_array : np.ndarray
+            Raw signal measurements in arbitrary units (AU)
+        csca : units.Quantity, optional
+            Scattering cross-section in nm²
+        """
+        stats = SignalStatistics(signal_array)
+        if diameter not in self._records:
+            self._records[diameter] = []
+
+        self._records[diameter].append({
+            'signal': stats.median,
+            'rcv': stats.robust_cv,
+            'csca': csca.to('nanometer**2').magnitude if csca else None
+        })
+
+    def estimate_J(self, diameter: units.Quantity) -> units.Quantity:
+        records = self._records.get(diameter, [])
+        if not records:
+            raise ValueError(f"No records for diameter {diameter}")
+        x = np.array([1 / np.sqrt(r['signal']) for r in records])
+        y = np.array([r['rcv'] for r in records])
+        slope = np.polyfit(x, y, 1)[0]
+        return slope * units.sqrt(units.AU)
+
+    def estimate_K(self, diameter: units.Quantity) -> units.Quantity:
+        records = [r for r in self._records.get(diameter, []) if r['csca'] is not None]
+        if not records:
+            raise ValueError(f"No Csca data for diameter {diameter}")
+        x = np.array([r['signal'] for r in records])
+        y = np.array([r['csca'] for r in records])
+        slope = np.polyfit(x, y, 1)[0]
+        return slope * units.nanometer**2 / units.AU
 
 
-    # Constants and base parameters
-    gain = 1 * units.AU / units.photoelectron                                  # Gain (a.u. per photoelectron)
-    detection_efficiency = 7.3e-05 * units.photoelectron / units.nanometer**2  # Base detection efficiency at 20 mW (photoelectrons per nm^2) measured at 20 mW
-    background_level = (500.0 * units.nanometer)**2                            # Background level expressed in nm² (assumed constant)
-
-
-
-    bead_diameters = [200, 600, 800, 1000, 1200, 2000, 3000, 4000] * units.nanometer  # Bead diameters in nanometers
-
-
-    calibration  = Calibration(
-        bead_diameters=bead_diameters,
-        illumination_powers=illumination_powers,
-        gain=gain,
-        detection_efficiency=detection_efficiency,
-        background_level=background_level,
-        number_of_background_events=number_of_background_events,
-        number_of_bead_events=number_of_bead_events
-    )
-
-    calibration.add_beads(
-        # diameters=bead_diameters,
-        wavelength=455 * units.nanometer,
-        refractive_index=1.4 * units.RIU,
-        medium_refractive_index=1.0 * units.RIU
-    )
-
-    calibration.simulate_signals()
-
-    calibration.plot_J(bead_diameters=[200, 600, 1000] * units.nanometer)
-
-    _ = calibration.plot_K([60, 80, 100] * units.milliwatt)
 
