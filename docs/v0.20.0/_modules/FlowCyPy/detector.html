@@ -707,7 +707,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">apply_shot_noise</span><span class="p">(</span><span class="n">signal_generator</span><span class="o">=</span><span class="n">signal_generator</span><span class="p">,</span> <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="n">bandwidth</span><span class="p">)</span>
 
         <span class="c1"># Step 2: Convert optical power to current using the responsivity</span>
-        <span class="n">signal_generator</span><span class="o">.</span><span class="n">multiply_signal</span><span class="p">(</span>
+        <span class="n">signal_generator</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span>
             <span class="n">signal_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="n">factor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">responsivity</span>
         <span class="p">)</span>
@@ -860,14 +860,15 @@ document.write(`
             <span class="n">bandwidth</span><span class="o">=</span><span class="n">bandwidth</span>
         <span class="p">)</span>
 
-        <span class="n">signal_generator</span><span class="o">.</span><span class="n">multiply_signal</span><span class="p">(</span>
+        <span class="n">signal_generator</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span>
             <span class="n">signal_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="n">factor</span><span class="o">=</span><span class="n">optical_power_to_photo_count_conversion</span>
         <span class="p">)</span>
 
         <span class="n">signal_generator</span><span class="o">.</span><span class="n">apply_poisson_noise</span><span class="p">(</span><span class="n">signal_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="n">signal_generator</span><span class="o">.</span><span class="n">multiply_signal</span><span class="p">(</span>
+
+        <span class="n">signal_generator</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span>
             <span class="n">signal_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="n">factor</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">optical_power_to_photo_count_conversion</span>
         <span class="p">)</span></div>
