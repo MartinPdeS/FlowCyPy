@@ -99,7 +99,7 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         time_data = self._cpp_get_signal("Time")
         return time_data * self.time_units
 
-    def multiply_signal(self, factor: units.Quantity, signal_name: str = None) -> None:
+    def multiply(self, factor: units.Quantity, signal_name: str = None) -> None:
         """
         Multiplies the specified signal by a given factor.
 
@@ -310,6 +310,7 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
             f"Amplitude units {amplitudes.units} do not match signal units {self.signal_units}."
 
         if signal_name is None:
+
             self._cpp_generate_pulses(
                 widths=widths.to(self.time_units).magnitude,
                 centers=centers.to(self.time_units).magnitude,

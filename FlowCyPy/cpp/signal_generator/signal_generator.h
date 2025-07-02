@@ -151,6 +151,7 @@ public:
 private:
     void _apply_poisson_noise_to_signal(const std::string &signal_name);
     void _apply_poisson_noise_as_gaussian_to_signal(const std::string &signal_name);
+    void _apply_mixed_poisson_noise_to_signal(const std::string &signal_name);
 
 public:
     /**

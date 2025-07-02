@@ -1,7 +1,6 @@
 #include "signal_generator.h"
 
 
-
 // ----------------------------- Setters and Getters ---------------------------
 // -----------------------------------------------------------------------------
 
@@ -163,16 +162,37 @@ void SignalGenerator::apply_poisson_noise_to_signal(const std::string &signal_na
 
     std::vector<double> &signal = this->data_dict[signal_name];
 
-    double min_signal_value = *std::min_element(signal.begin(), signal.end());
+    this->_apply_mixed_poisson_noise_to_signal(signal_name);
+}
 
-    if (min_signal_value < 1e6)
-        this->_apply_poisson_noise_to_signal(signal_name);
-    else
-        this->_apply_poisson_noise_as_gaussian_to_signal(signal_name);
+void SignalGenerator::_apply_mixed_poisson_noise_to_signal(const std::string &signal_name) {
+    std::vector<double> &signal = this->data_dict[signal_name];
+
+    if (signal.empty()) {
+        throw std::runtime_error("Signal vector is empty.");
+    }
+
+    std::default_random_engine random_generator(std::random_device{}());
+    constexpr double threshold = 1e6;
+
+    for (size_t i = 0; i < signal.size(); ++i) {
+        double value = signal[i];
+
+        if (value < 0.0) {
+            throw std::runtime_error("Poisson noise requires non-negative values");
+        }
+
+        if (value < threshold) {
+            std::poisson_distribution<int> dist(value);
+            signal[i] = static_cast<double>(dist(random_generator));
+        } else {
+            std::normal_distribution<double> dist(value, std::sqrt(value));
+            signal[i] = std::round(dist(random_generator));
+        }
+    }
 }
 
 void SignalGenerator::_apply_poisson_noise_to_signal(const std::string &signal_name) {
-
     std::vector<double> &signal = this->data_dict[signal_name];
 
     if (signal.empty()) {
@@ -192,7 +212,6 @@ void SignalGenerator::_apply_poisson_noise_to_signal(const std::string &signal_n
 }
 
 void SignalGenerator::_apply_poisson_noise_as_gaussian_to_signal(const std::string &signal_name) {
-
     std::vector<double> &signal = this->data_dict[signal_name];
 
     if (signal.empty()) {

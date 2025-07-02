@@ -198,7 +198,7 @@ class Detector():
             self.apply_shot_noise(signal_generator=signal_generator, wavelength=wavelength, bandwidth=bandwidth)
 
         # Step 2: Convert optical power to current using the responsivity
-        signal_generator.multiply_signal(
+        signal_generator.multiply(
             signal_name=self.name,
             factor=self.responsivity
         )
@@ -346,14 +346,15 @@ class Detector():
             bandwidth=bandwidth
         )
 
-        signal_generator.multiply_signal(
+        signal_generator.multiply(
             signal_name=self.name,
             factor=optical_power_to_photo_count_conversion
         )
 
         signal_generator.apply_poisson_noise(signal_name=self.name)
 
-        signal_generator.multiply_signal(
+
+        signal_generator.multiply(
             signal_name=self.name,
             factor=1 / optical_power_to_photo_count_conversion
         )

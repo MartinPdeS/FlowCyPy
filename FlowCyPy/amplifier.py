@@ -120,15 +120,15 @@ class TransimpedanceAmplifier():
         to the amplified signal if a bandwidth is specified. The filter is applied using the
         `apply_butterworth_lowpass_filter_to_signal` method of the signal generator.
         """
-        if self.bandwidth is not None:
+        if self.bandwidth is None or NoiseSetting.assume_amplifier_bandwidth_is_infinite:
+            signal_generator.multiply(factor=self.gain)
+        else:
             signal_generator.apply_butterworth_lowpass_filter(
                 gain=self.gain,
                 sampling_rate=sampling_rate,
                 cutoff_frequency=self.bandwidth,
                 order=1
             )
-        else:
-            signal_generator.multiply(factor=self.gain)
 
         # Add voltage related noise if enabled
         if NoiseSetting.include_amplifier_noise and NoiseSetting.include_noises:

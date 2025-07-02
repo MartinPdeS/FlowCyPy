@@ -73,6 +73,7 @@ class NoiseSetting(metaclass=RestrictiveMeta):
     include_source_noise = True
     include_amplifier_noise = True
     assume_perfect_hydrodynamic_focusing = False
+    assume_amplifier_bandwidth_is_infinite = False
 
     @property
     def include_noises(self):
