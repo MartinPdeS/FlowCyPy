@@ -5,7 +5,7 @@
 | Name                                                  |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |------------------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
 | FlowCyPy/amplifier.py                                 |       41 |        3 |        8 |        4 |     86% |67, 73, 124, 134->exit |
-| FlowCyPy/calibration.py                               |      121 |      121 |       16 |        0 |      0% |     1-257 |
+| FlowCyPy/calibration.py                               |      207 |      207 |       32 |        0 |      0% |     1-438 |
 | FlowCyPy/circuits.py                                  |       38 |        9 |        0 |        0 |     76% |101-105, 116-121 |
 | FlowCyPy/classifier.py                                |       44 |        0 |        8 |        4 |     92% |32->35, 74->78, 121->125, 172->176 |
 | FlowCyPy/coupling.py                                  |       43 |       10 |       10 |        2 |     74% |50, 137, 154-176 |
@@ -48,7 +48,7 @@
 | FlowCyPy/triggering\_system.py                        |       81 |       28 |       12 |        3 |     65% |46-51, 66-68, 130-141, 157-167, 270-281, 309-326 |
 | FlowCyPy/units.py                                     |       30 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       56 |       56 |       14 |        0 |      0% |     1-134 |
-|                                             **TOTAL** | **2371** |  **988** |  **514** |   **93** | **55%** |           |
+|                                             **TOTAL** | **2457** | **1074** |  **530** |   **93** | **53%** |           |
 
 
 ## Setup coverage badge
