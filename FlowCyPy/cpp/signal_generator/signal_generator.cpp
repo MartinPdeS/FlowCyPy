@@ -159,7 +159,6 @@ void SignalGenerator::add_gaussian_noise_to_signal(std::string &signal_name, con
 }
 
 void SignalGenerator::apply_poisson_noise_to_signal(const std::string &signal_name) {
-
     std::vector<double> &signal = this->data_dict[signal_name];
 
     this->_apply_mixed_poisson_noise_to_signal(signal_name);

@@ -1,141 +1,91 @@
-
-from FlowCyPy import units
 import numpy as np
-from FlowCyPy.calibration import JKEstimator
-from FlowCyPy import units, NoiseSetting
-from FlowCyPy import GaussianBeam, ScattererCollection, Detector, SignalDigitizer, TransimpedanceAmplifier, FlowCell
-from FlowCyPy.population import Sphere, distribution
-from FlowCyPy import FlowCytometer, circuits
-from FlowCyPy import OptoElectronics, Fluidics
+from FlowCyPy import units
+from FlowCyPy import NoiseSetting
+from FlowCyPy import GaussianBeam
+from FlowCyPy.flow_cell import FlowCell
+from FlowCyPy import ScattererCollection
+from FlowCyPy.population import Sphere, CoreShell
+from FlowCyPy.instances import Exosome, distribution
+from FlowCyPy.detector import Detector
+from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy.amplifier import TransimpedanceAmplifier
+
+from FlowCyPy import OptoElectronics, Fluidics, FlowCytometer
+from FlowCyPy.calibration import JEstimator
 
 NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
-NoiseSetting.include_dark_current_noise = True
-NoiseSetting.include_source_noise = True
-NoiseSetting.include_amplifier_noise = True
+NoiseSetting.include_dark_current_noise = False
+NoiseSetting.include_source_noise = False
+NoiseSetting.include_amplifier_noise = False
 NoiseSetting.assume_perfect_hydrodynamic_focusing = True
+NoiseSetting.assume_amplifier_bandwidth_is_infinite = True
+NoiseSetting.assume_perfect_digitizer = True
 
-source = GaussianBeam(
-    numerical_aperture=0.1 * units.AU,
-    wavelength=450 * units.nanometer,
-    optical_power=200 * units.milliwatt,
-    RIN=-140
-)
+np.random.seed(3)  # Ensure reproducibility
 
 flow_cell = FlowCell(
     sample_volume_flow=80 * units.microliter / units.minute,
     sheath_volume_flow=1 * units.milliliter / units.minute,
-    width=100 * units.micrometer,
-    height=100 * units.micrometer,
+    width=400 * units.micrometer,
+    height=400 * units.micrometer,
+    event_scheme='sequential-uniform'
 )
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
-
-custom_population = Sphere(
-    name='Population 1',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
-    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
-)
-
-scatterer_collection.add_population(custom_population)
-
-scatterer_collection.dilute(factor=80)
 
 fluidics = Fluidics(
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell
 )
 
+source = GaussianBeam(
+    numerical_aperture=0.2 * units.AU,
+    wavelength=450 * units.nanometer,
+    optical_power=0 * units.watt
+)
+
 digitizer = SignalDigitizer(
-    bit_depth='14bit',
-    saturation_levels='auto',
+    bit_depth='16bit',
+    saturation_levels=(0 * units.volt, 2 * units.volt),
     sampling_rate=60 * units.megahertz,
 )
 
-detector_0 = Detector(
-    name='forward',
-    phi_angle=0 * units.degree,
-    numerical_aperture=0.3 * units.AU,
-    responsivity=1 * units.ampere / units.watt,
-)
-
-detector_1 = Detector(
-    name='side',
-    phi_angle=90 * units.degree,
-    numerical_aperture=0.3 * units.AU,
-    responsivity=1 * units.ampere / units.watt,
-)
-
-
 amplifier = TransimpedanceAmplifier(
     gain=10 * units.volt / units.ampere,
-    bandwidth=10 * units.megahertz,
-    voltage_noise_density=.1 * units.nanovolt / units.sqrt_hertz,
-    current_noise_density=.2 * units.femtoampere / units.sqrt_hertz
+    bandwidth=60 * units.megahertz,
+)
+
+detector_0 = Detector(
+    name='default',
+    phi_angle=0 * units.degree,                  # Forward scatter angle
+    numerical_aperture=0.2 * units.AU,
+    cache_numerical_aperture=0.0 * units.AU,
+    responsivity=1 * units.ampere / units.watt,
 )
 
 opto_electronics = OptoElectronics(
-    detectors=[detector_0, detector_1],
+    detectors=[detector_0],
     digitizer=digitizer,
     source=source,
     amplifier=amplifier
 )
 
-cytometer = FlowCytometer(
-    fluidics=fluidics,
+flow_cytometer = FlowCytometer(
     opto_electronics=opto_electronics,
-    background_power=0.001 * units.milliwatt
+    fluidics=fluidics,
+    background_power=source.optical_power * 0.00
 )
 
 
-processing_steps = [
-    circuits.BaselineRestorator(window_size=10 * units.microsecond),
-    circuits.BesselLowPass(cutoff=2 * units.megahertz, order=4, gain=2)
-]
+j_estimator = JEstimator(debug_mode=False)
 
-analog, event_df = cytometer.get_acquisition(
-    run_time=2.5 * units.millisecond,
-    processing_steps=processing_steps
+j_estimator.add_batch(
+    illumination_powers=np.linspace(10, 280, 45) * units.milliwatt,
+    bead_diameter=400 * units.nanometer,
+    flow_cytometer=flow_cytometer,
+    particle_count=50 * units.particle
+
 )
 
-analog.normalize_units(signal_units='max', time_units='max')
-
-analog.plot()
-
-from FlowCyPy.triggering_system import DynamicWindow
-
-trigger = DynamicWindow(
-    dataframe=analog,
-    trigger_detector_name='forward',
-    max_triggers=-1,
-    pre_buffer=20,
-    post_buffer=20,
-    digitizer=digitizer
-)
-
-analog_triggered = trigger.run(
-    threshold=10 * units.microvolt
-)
-
-
-
-
-
-
-
-
-
-jk = JKEstimator()
-
-# Simulated raw signal arrays for 800 nm beads
-raw1 = np.random.normal(150, 10, size=1000)
-raw2 = np.random.normal(180, 12, size=1000)
-raw3 = np.random.normal(210, 14, size=1000)
-
-jk.add_beads_signal(800 * units.nanometer, raw1, csca=1.1e5 * units.nanometer**2)
-jk.add_beads_signal(800 * units.nanometer, raw2, csca=1.4e5 * units.nanometer**2)
-jk.add_beads_signal(800 * units.nanometer, raw3, csca=1.7e5 * units.nanometer**2)
-
-print("J:", jk.estimate_J(800 * units.nanometer))
-print("K:", jk.estimate_K(800 * units.nanometer))
+j_estimator.plot()
