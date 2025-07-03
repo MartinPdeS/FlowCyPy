@@ -5,7 +5,7 @@
 | Name                                                  |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |------------------------------------------------------ | -------: | -------: | -------: | -------: | ------: | --------: |
 | FlowCyPy/amplifier.py                                 |       41 |        3 |        8 |        4 |     86% |67, 73, 124, 134->exit |
-| FlowCyPy/calibration.py                               |      203 |      203 |       38 |        0 |      0% |     1-356 |
+| FlowCyPy/calibration.py                               |      121 |      121 |       16 |        0 |      0% |     1-257 |
 | FlowCyPy/circuits.py                                  |       38 |        9 |        0 |        0 |     76% |101-105, 116-121 |
 | FlowCyPy/classifier.py                                |       44 |        0 |        8 |        4 |     92% |32->35, 74->78, 121->125, 172->176 |
 | FlowCyPy/coupling.py                                  |       43 |       10 |       10 |        2 |     74% |50, 137, 154-176 |
@@ -24,7 +24,7 @@
 | FlowCyPy/fluidics.py                                  |       40 |        0 |        4 |        2 |     95% |95->99, 143->146 |
 | FlowCyPy/helper.py                                    |       23 |        3 |       10 |        3 |     82% |36, 40, 44 |
 | FlowCyPy/instances.py                                 |       34 |        9 |        2 |        0 |     75% |17, 36, 56, 68, 78, 117-126 |
-| FlowCyPy/noises.py                                    |       32 |       13 |        6 |        1 |     53% |8-14, 66-68, 80, 84-90 |
+| FlowCyPy/noises.py                                    |       33 |       13 |        6 |        1 |     54% |8-14, 66-68, 81, 85-91 |
 | FlowCyPy/opto\_electronics.py                         |       31 |        3 |        8 |        3 |     85% |75, 150, 155 |
 | FlowCyPy/particle\_count.py                           |       45 |       20 |       20 |        4 |     51% |31-32, 42, 65-73, 102-105, 111, 116-121, 128 |
 | FlowCyPy/peak\_locator/DeepPeak.py                    |       26 |       21 |        0 |        0 |     19% |70-74, 120-153 |
@@ -36,7 +36,7 @@
 | FlowCyPy/physical\_constant.py                        |       10 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/population.py                                |       50 |        8 |       12 |        5 |     79% |46-47, 50, 79-80, 83, 109, 239 |
 | FlowCyPy/scatterer\_collection.py                     |       59 |        9 |       24 |        5 |     78% |54, 111, 129, 133, 140-145, 200 |
-| FlowCyPy/signal\_digitizer.py                         |       49 |        7 |       10 |        4 |     78% |92-93, 116, 129-132, 154 |
+| FlowCyPy/signal\_digitizer.py                         |       53 |        9 |       12 |        5 |     75% |93-94, 117, 130-133, 142-149, 165 |
 | FlowCyPy/signal\_generator.py                         |       68 |       21 |       16 |        5 |     64% |42-45, 70-71, 114, 137, 181, 194-206, 239, 264-278, 314 |
 | FlowCyPy/source.py                                    |      136 |       33 |       50 |       14 |     69% |37, 41, 48-56, 60-66, 74, 86, 89, 94-106, 173, 178, 217, 219, 266, 273, 322, 324, 328, 330, 384, 404 |
 | FlowCyPy/sub\_frames/acquisition.py                   |      112 |       34 |       40 |        1 |     68% |81, 99-103, 200-216, 251, 259-287 |
@@ -48,7 +48,7 @@
 | FlowCyPy/triggering\_system.py                        |       81 |       28 |       12 |        3 |     65% |46-51, 66-68, 130-141, 157-167, 270-281, 309-326 |
 | FlowCyPy/units.py                                     |       30 |        0 |        4 |        0 |    100% |           |
 | FlowCyPy/utils.py                                     |       56 |       56 |       14 |        0 |      0% |     1-134 |
-|                                             **TOTAL** | **2448** | **1068** |  **534** |   **92** | **53%** |           |
+|                                             **TOTAL** | **2371** |  **988** |  **514** |   **93** | **55%** |           |
 
 
 ## Setup coverage badge
