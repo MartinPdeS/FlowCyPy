@@ -246,7 +246,7 @@ Plot estimation and diagnostics
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 49.168 seconds)
+   **Total running time of the script:** (0 minutes 49.412 seconds)
 
 
 .. _sphx_glr_download_gallery_validation_j_estimator.py:
