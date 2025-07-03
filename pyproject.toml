@@ -19,7 +19,7 @@ sdist.exclude = [
 write_to = "FlowCyPy/_version.py"
 version_scheme = "only-version"
 local_scheme = "no-local-version"
-git_describe_command = "git tag --sort=-creatordate | head -n1"
+git_describe_command = ['git', 'tag', '--sort=-creatordate', '|', 'head', '-n1']
 
 [project]
 name = "FlowCyPy"
