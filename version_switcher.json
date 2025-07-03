@@ -6,6 +6,12 @@
 }
 ,
 {
+  "name": "v0.25.0",
+  "version": "v0.25.0",
+  "url": "https://martinpdes.github.io/FlowCyPy/docs/v0.25.0"
+}
+,
+{
   "name": "v0.22.0",
   "version": "v0.22.0",
   "url": "https://martinpdes.github.io/FlowCyPy/docs/v0.22.0"
