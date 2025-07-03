@@ -257,3 +257,182 @@ class JEstimator:
             plt.show()
 
 
+class KEstimator:
+    """
+    Class for estimating the K parameter that characterizes the relationship between signal noise
+    (Robust STD) and signal strength (Median) across varying illumination powers.
+
+    The relationship follows:
+        Robust STD ≈ K * sqrt(Median)
+
+    Parameters
+    ----------
+    debug_mode : bool, optional
+        If True, detailed internal computation information is printed.
+    """
+
+    def __init__(self, debug_mode: bool = False):
+        self.debug_mode = debug_mode
+        self._medians = []
+        self._robust_stds = []
+        self._illumination_powers = []
+
+    def add_measurement(self, signal_array: np.ndarray, illumination_power: units.Quantity) -> None:
+        """
+        Add a single signal measurement and compute its statistics.
+
+        Parameters
+        ----------
+        signal_array : np.ndarray
+            Raw signal values in arbitrary units.
+        illumination_power : units.Quantity
+            Illumination power associated with this signal.
+        """
+        stats = SignalStatistics(signal_array)
+        self._medians.append(stats.median)
+        self._robust_stds.append(stats.robust_std)
+        self._illumination_powers.append(illumination_power)
+
+        if self.debug_mode:
+            print(f"[DEBUG] Illumination Power: {illumination_power}")
+            print(f"[DEBUG] Median: {stats.median:.3e} AU")
+            print(f"[DEBUG] Robust STD: {stats.robust_std:.3e} AU")
+
+    def add_batch(self, particle_count, bead_diameter: units.Quantity, illumination_powers: units.Quantity, flow_cytometer: FlowCytometer) -> None:
+        """
+        Add multiple signal measurements across a range of illumination powers using a FlowCytometer.
+
+        Parameters
+        ----------
+        particle_count : int
+            Number of particles in each population.
+        bead_diameter : units.Quantity
+            Diameter of the beads to simulate.
+        illumination_powers : units.Quantity
+            List of illumination powers to sweep.
+        flow_cytometer : FlowCytometer
+            The instrument used to simulate the experiment.
+        """
+        for idx, power in enumerate(illumination_powers):
+            print(f"[INFO] Running simulation {idx+1}/{len(illumination_powers)}")
+            peaks = self._run_experiment(flow_cytometer, bead_diameter, power, particle_count)
+            signal_array = peaks['Height'].values.astype(float)
+            self.add_measurement(signal_array, power)
+
+    def _run_experiment(self, flow_cytometer, bead_diameter, illumination_power, particle_count):
+        population = Sphere(
+            name='population',
+            particle_count=particle_count,
+            diameter=bead_diameter,
+            refractive_index=1.47 * units.RIU
+        )
+        flow_cytometer.fluidics.scatterer_collection.populations = [population]
+        flow_cytometer.opto_electronics.source.optical_power = illumination_power
+
+        analog, _ = flow_cytometer.get_acquisition(
+            run_time=1.5 * units.millisecond,
+            processing_steps=[circuits.BaselineRestorator(window_size=10 * units.microsecond)],
+            compute_cross_section=True
+        )
+
+        analog.normalize_units(signal_units='max', time_units='max')
+
+        trigger = DynamicWindow(
+            dataframe=analog,
+            trigger_detector_name='default',
+            max_triggers=-1,
+            pre_buffer=20,
+            post_buffer=20,
+            digitizer=flow_cytometer.opto_electronics.digitizer
+        )
+
+        analog_triggered = trigger.run(threshold=0.5 * units.millivolt)
+
+        if self.debug_mode:
+            analog_triggered.plot()
+
+        from FlowCyPy import peak_locator
+        peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
+        analog_triggered.normalize_units(signal_units='volt')
+        digital_signal = analog_triggered.digitalize(digitizer=flow_cytometer.opto_electronics.digitizer)
+        digital_signal.normalize_units(signal_units=units.bit_bins)
+
+        return peak_algorithm.run(digital_signal)
+
+    def estimate_k(self) -> units.Quantity:
+        """
+        Estimate the K parameter using a linear fit of Robust STD vs sqrt(Median).
+
+        Returns
+        -------
+        k_estimate : units.Quantity
+            Estimated slope K in AU^0.5 units.
+        """
+        if len(self._medians) < 2:
+            raise ValueError("At least two measurements are required to estimate K.")
+
+        x = np.sqrt(np.array(self._medians))
+        y = np.array(self._robust_stds)
+        slope, _ = np.polyfit(x, y, 1)
+
+        if self.debug_mode:
+            for i, (xi, yi) in enumerate(zip(x, y)):
+                print(f"[DEBUG] sqrt(Median)={xi:.3e}, STD={yi:.3e}")
+            print(f"[DEBUG] Estimated K = {slope:.5f} AU^0.5")
+
+        return slope * units.AU**0.5
+
+    def plot(self) -> None:
+        """
+        Plot Robust STD vs sqrt(Median) with linear fit (K estimation).
+        """
+        if len(self._medians) < 2:
+            raise ValueError("At least two measurements are required to plot.")
+
+        x = np.sqrt(np.array(self._medians))
+        y = np.array(self._robust_stds)
+        slope, intercept = np.polyfit(x, y, 1)
+        x_fit = np.linspace(min(x), max(x), 200)
+        y_fit = slope * x_fit + intercept
+
+        with plt.style.context(mps):
+            fig, ax = plt.subplots(figsize=(6, 4))
+            ax.scatter(x, y, label="Measured STD", zorder=3)
+            ax.plot(x_fit, y_fit, '--', label=fr"$STD = {slope:.3e} \cdot \sqrt{{M}} + {intercept:.3e}$", zorder=2)
+            ax.set_xlabel(r"$\sqrt{\mathrm{Median\ Signal}}$")
+            ax.set_ylabel("Robust STD")
+            ax.set_title("K Parameter Estimation")
+            ax.legend()
+            plt.tight_layout()
+            plt.show()
+
+    def plot_statistics(self) -> None:
+        """
+        Plot:
+        1. Median vs Illumination Power
+        2. Robust STD vs Illumination Power
+        """
+        if len(self._medians) < 2:
+            raise ValueError("At least two measurements are required to plot statistics.")
+
+        powers = np.array([float(p.to('mW').magnitude) for p in self._illumination_powers])
+        medians = np.array(self._medians)
+        stds = np.array(self._robust_stds)
+
+        with plt.style.context(mps):
+            fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8, 6))
+
+            axs[0].plot(powers, medians, 'o-', color='C0', label="Median")
+            axs[0].set_xlabel("Illumination Power [mW]")
+            axs[0].set_ylabel("Median [AU]")
+            axs[0].set_title("Median Signal vs Illumination Power")
+            axs[0].legend()
+
+            axs[1].plot(powers, stds, 'o-', color='C1', label="Robust STD")
+            axs[1].set_xlabel("Illumination Power [mW]")
+            axs[1].set_ylabel("Robust STD [AU]")
+            axs[1].set_title("STD vs Illumination Power")
+            axs[1].legend()
+
+            plt.tight_layout()
+            plt.show()
