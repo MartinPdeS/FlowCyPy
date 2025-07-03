@@ -259,65 +259,67 @@ class JEstimator:
 
 class KEstimator:
     """
-    Class for estimating the K parameter that characterizes the relationship between signal noise
-    (Robust STD) and signal strength (Median) across varying illumination powers.
+    Estimate the K parameter characterizing how Robust STD scales with sqrt(Median Signal),
+    across varying bead diameters under fixed illumination power.
 
-    The relationship follows:
+    The expected relationship is:
         Robust STD ≈ K * sqrt(Median)
 
     Parameters
     ----------
     debug_mode : bool, optional
-        If True, detailed internal computation information is printed.
+        If True, prints internal computation info.
     """
 
     def __init__(self, debug_mode: bool = False):
         self.debug_mode = debug_mode
         self._medians = []
         self._robust_stds = []
-        self._illumination_powers = []
+        self._bead_diameters = []
 
-    def add_measurement(self, signal_array: np.ndarray, illumination_power: units.Quantity) -> None:
+    def add_measurement(self, signal_array: np.ndarray, bead_diameter: units.Quantity) -> None:
         """
-        Add a single signal measurement and compute its statistics.
+        Add a measurement corresponding to a single bead size.
 
         Parameters
         ----------
         signal_array : np.ndarray
-            Raw signal values in arbitrary units.
-        illumination_power : units.Quantity
-            Illumination power associated with this signal.
+            Measured peak signal array (AU).
+        bead_diameter : units.Quantity
+            Diameter of the simulated bead.
         """
         stats = SignalStatistics(signal_array)
+
         self._medians.append(stats.median)
         self._robust_stds.append(stats.robust_std)
-        self._illumination_powers.append(illumination_power)
+        self._bead_diameters.append(bead_diameter)
 
         if self.debug_mode:
-            print(f"[DEBUG] Illumination Power: {illumination_power}")
+            print(f"[DEBUG] Bead diameter: {bead_diameter}")
             print(f"[DEBUG] Median: {stats.median:.3e} AU")
             print(f"[DEBUG] Robust STD: {stats.robust_std:.3e} AU")
 
-    def add_batch(self, particle_count, bead_diameter: units.Quantity, illumination_powers: units.Quantity, flow_cytometer: FlowCytometer) -> None:
+    def add_batch(self, particle_count: int, bead_diameters: list[units.Quantity],
+                  illumination_power: units.Quantity, flow_cytometer: FlowCytometer) -> None:
         """
-        Add multiple signal measurements across a range of illumination powers using a FlowCytometer.
+        Add multiple measurements for different bead sizes at a fixed illumination power.
 
         Parameters
         ----------
         particle_count : int
-            Number of particles in each population.
-        bead_diameter : units.Quantity
-            Diameter of the beads to simulate.
-        illumination_powers : units.Quantity
-            List of illumination powers to sweep.
+            Number of particles per bead population.
+        bead_diameters : list of units.Quantity
+            List of bead sizes to simulate.
+        illumination_power : units.Quantity
+            Constant power for all simulations.
         flow_cytometer : FlowCytometer
-            The instrument used to simulate the experiment.
+            Simulation engine.
         """
-        for idx, power in enumerate(illumination_powers):
-            print(f"[INFO] Running simulation {idx+1}/{len(illumination_powers)}")
-            peaks = self._run_experiment(flow_cytometer, bead_diameter, power, particle_count)
+        for idx, diameter in enumerate(bead_diameters):
+            print(f"[INFO] Simulating bead {idx+1}/{len(bead_diameters)}: {diameter}")
+            peaks = self._run_experiment(flow_cytometer, diameter, illumination_power, particle_count)
             signal_array = peaks['Height'].values.astype(float)
-            self.add_measurement(signal_array, power)
+            self.add_measurement(signal_array, diameter)
 
     def _run_experiment(self, flow_cytometer, bead_diameter, illumination_power, particle_count):
         population = Sphere(
@@ -353,6 +355,7 @@ class KEstimator:
 
         from FlowCyPy import peak_locator
         peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
+
         analog_triggered.normalize_units(signal_units='volt')
         digital_signal = analog_triggered.digitalize(digitizer=flow_cytometer.opto_electronics.digitizer)
         digital_signal.normalize_units(signal_units=units.bit_bins)
@@ -361,12 +364,12 @@ class KEstimator:
 
     def estimate_k(self) -> units.Quantity:
         """
-        Estimate the K parameter using a linear fit of Robust STD vs sqrt(Median).
+        Estimate the K parameter from a linear fit of STD vs sqrt(Median).
 
         Returns
         -------
         k_estimate : units.Quantity
-            Estimated slope K in AU^0.5 units.
+            Estimated K in AU^0.5
         """
         if len(self._medians) < 2:
             raise ValueError("At least two measurements are required to estimate K.")
@@ -376,15 +379,15 @@ class KEstimator:
         slope, _ = np.polyfit(x, y, 1)
 
         if self.debug_mode:
-            for i, (xi, yi) in enumerate(zip(x, y)):
-                print(f"[DEBUG] sqrt(Median)={xi:.3e}, STD={yi:.3e}")
+            for xi, yi in zip(x, y):
+                print(f"[DEBUG] sqrt(Median): {xi:.3e}, STD: {yi:.3e}")
             print(f"[DEBUG] Estimated K = {slope:.5f} AU^0.5")
 
         return slope * units.AU**0.5
 
     def plot(self) -> None:
         """
-        Plot Robust STD vs sqrt(Median) with linear fit (K estimation).
+        Plot STD vs sqrt(Median) with linear fit (K estimation).
         """
         if len(self._medians) < 2:
             raise ValueError("At least two measurements are required to plot.")
@@ -408,30 +411,28 @@ class KEstimator:
 
     def plot_statistics(self) -> None:
         """
-        Plot:
-        1. Median vs Illumination Power
-        2. Robust STD vs Illumination Power
+        Plot Median and STD vs Bead Diameter.
         """
         if len(self._medians) < 2:
             raise ValueError("At least two measurements are required to plot statistics.")
 
-        powers = np.array([float(p.to('mW').magnitude) for p in self._illumination_powers])
+        diameters = [float(d.to('micrometer').magnitude) for d in self._bead_diameters]
         medians = np.array(self._medians)
         stds = np.array(self._robust_stds)
 
         with plt.style.context(mps):
             fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8, 6))
 
-            axs[0].plot(powers, medians, 'o-', color='C0', label="Median")
-            axs[0].set_xlabel("Illumination Power [mW]")
+            axs[0].plot(diameters, medians, 'o-', color='C0', label="Median")
+            axs[0].set_xlabel("Bead Diameter [µm]")
             axs[0].set_ylabel("Median [AU]")
-            axs[0].set_title("Median Signal vs Illumination Power")
+            axs[0].set_title("Median vs Bead Diameter")
             axs[0].legend()
 
-            axs[1].plot(powers, stds, 'o-', color='C1', label="Robust STD")
-            axs[1].set_xlabel("Illumination Power [mW]")
+            axs[1].plot(diameters, stds, 'o-', color='C1', label="Robust STD")
+            axs[1].set_xlabel("Bead Diameter [µm]")
             axs[1].set_ylabel("Robust STD [AU]")
-            axs[1].set_title("STD vs Illumination Power")
+            axs[1].set_title("STD vs Bead Diameter")
             axs[1].legend()
 
             plt.tight_layout()

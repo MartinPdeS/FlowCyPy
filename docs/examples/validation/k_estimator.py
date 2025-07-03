@@ -101,7 +101,7 @@ flow_cytometer = FlowCytometer(
 k_estimator = KEstimator(debug_mode=False)
 
 k_estimator.add_batch(
-    bead_diameters=np.linspace(100, 900, 15) * units.nanometer,
+    bead_diameters=np.linspace(300, 900, 15) * units.nanometer,
     illumination_power=source.optical_power,
     flow_cytometer=flow_cytometer,
     particle_count=50 * units.particle
