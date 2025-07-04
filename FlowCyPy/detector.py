@@ -7,7 +7,7 @@ from PyMieSim.units import Quantity
 from FlowCyPy import units
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy import helper
-from FlowCyPy.noises import NoiseSetting
+from FlowCyPy.simulation_settings import SimulationSettings
 
 
 config_dict = dict(
@@ -51,25 +51,6 @@ class Detector():
         Default is 0°.
     sampling : Quantity, optional
         The number of spatial sampling points defining the detector's resolution. Default is 100 AU.
-
-    Attributes
-    ----------
-    phi_angle : Quantity
-        The detector's primary azimuthal angle (in degrees).
-    numerical_aperture : Quantity
-        The detector's numerical aperture (dimensionless).
-    cache_numerical_aperture : Quantity
-        The numerical aperture of the cache element (dimensionless).
-    responsivity : Quantity
-        The responsivity of the detector (in amperes per watt).
-    dark_current : Quantity
-        The dark current of the detector (in amperes).
-    gamma_angle : Quantity
-        The complementary (longitudinal) angle (in degrees).
-    sampling : Quantity
-        The number of spatial sampling points.
-    name : str
-        The identifier for the detector.
     """
     phi_angle: Quantity
     numerical_aperture: Quantity
@@ -194,7 +175,7 @@ class Detector():
             The resulting voltage signal (in volts).
         """
         # Step 1: Add shot noise to optical power if enabled
-        if NoiseSetting.include_shot_noise or NoiseSetting.include_noises:
+        if SimulationSettings.include_shot_noise or SimulationSettings.include_noises:
             self.apply_shot_noise(signal_generator=signal_generator, wavelength=wavelength, bandwidth=bandwidth)
 
         # Step 2: Convert optical power to current using the responsivity
@@ -359,3 +340,4 @@ class Detector():
             factor=1 / optical_power_to_photo_count_conversion
         )
 
+from FlowCyPy._detector_instances import *

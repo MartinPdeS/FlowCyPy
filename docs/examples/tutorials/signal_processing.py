@@ -21,11 +21,11 @@ import matplotlib.pyplot as plt
 # Import necessary components from FlowCyPy
 from FlowCyPy import (
     FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell, SignalDigitizer, OptoElectronics,
-    population, distribution, circuits, units, NoiseSetting, TransimpedanceAmplifier, Fluidics
+    population, distribution, circuits, units, SimulationSettings, TransimpedanceAmplifier, Fluidics, SignalProcessing
 )
 
 # Enable noise settings if desired
-NoiseSetting.include_noises = True
+SimulationSettings.include_noises = True
 
 # Set random seed for reproducibility
 np.random.seed(3)
@@ -95,54 +95,58 @@ amplifier = TransimpedanceAmplifier(
     bandwidth = 10 * units.megahertz
 )
 
-
 opto_electronics = OptoElectronics(
     detectors=[detector_0, detector_1],
-    digitizer=digitizer,
     source=source,
     amplifier=amplifier
 )
 
+signal_processing = SignalProcessing(
+    digitizer=digitizer,
+    analog_processing=[],
+)
+
 # Setup the flow cytometer.
-cytometer = FlowCytometer(
+flow_cytometer = FlowCytometer(
     opto_electronics=opto_electronics,
     fluidics=fluidics,
+    signal_processing=signal_processing,
     background_power=2 * units.microwatt,
 )
 
+# %%
 # ---------------------------------------------------------------------------
 # Signal Processing: Acquisition with Different Processing Steps
 # ---------------------------------------------------------------------------
-
 fig, ax = plt.subplots(1, 1, figsize=(12, 6))
 run_time = 0.1 * units.millisecond
 
 # Acquisition 1: Raw Signal (no processing)
-processing_steps_none = []
-acquisition_none, _ = cytometer.get_acquisition(run_time=run_time, processing_steps=processing_steps_none)
+signal_processing.analog_processing = []
+results = flow_cytometer.run(run_time=run_time)
 ax.plot(
-    acquisition_none['Time'].pint.to('microsecond'),
-    acquisition_none['forward'].pint.to('millivolt'),
+    results.analog_acquisition['Time'].pint.to('microsecond'),
+    results.analog_acquisition['forward'].pint.to('millivolt'),
     linestyle='-',
     label='Raw Signal'
 )
 
 # Acquisition 2: Baseline Restoration
-processing_steps_baseline = [circuits.BaselineRestorator(window_size=1000 * units.microsecond)]
-acquisition_baseline, _ = cytometer.get_acquisition(run_time=run_time, processing_steps=processing_steps_baseline)
+signal_processing.analog_processing = [circuits.BaselineRestorator(window_size=1000 * units.microsecond)]
+results = flow_cytometer.run(run_time=run_time)
 ax.plot(
-    acquisition_baseline['Time'].pint.to('microsecond'),
-    acquisition_baseline['forward'].pint.to('millivolt'),
+    results.analog_acquisition['Time'].pint.to('microsecond'),
+    results.analog_acquisition['forward'].pint.to('millivolt'),
     linestyle='--',
     label='Baseline Restored'
 )
 
 # Acquisition 3: Bessel LowPass Filter
-processing_steps_bessel = [circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)]
-acquisition_bessel, _ = cytometer.get_acquisition(run_time=run_time, processing_steps=processing_steps_bessel)
+signal_processing.analog_processing = [circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)]
+results = flow_cytometer.run(run_time=run_time)
 ax.plot(
-    acquisition_bessel['Time'].pint.to('microsecond'),
-    acquisition_bessel['forward'].pint.to('millivolt'),
+    results.analog_acquisition['Time'].pint.to('microsecond'),
+    results.analog_acquisition['forward'].pint.to('millivolt'),
     linestyle='-.',
     label='Bessel LowPass'
 )

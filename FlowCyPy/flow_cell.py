@@ -10,6 +10,7 @@ from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
 from FlowCyPy import helper
 from FlowCyPy.binary.interface_flow_cell import FLOWCELL
 from FlowCyPy.fluid_region import FluidRegion
+from FlowCyPy.simulation_settings import SimulationSettings
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -102,7 +103,6 @@ class FlowCell(FLOWCELL):
     mu: Quantity = 1e-3 * units.pascal * units.second
     N_terms: int = 25
     n_int: int = 200
-    event_scheme: str = 'preserve'
 
     @field_validator('width', 'height', mode='plain')
     def validate_length(cls, value, field):
@@ -220,15 +220,20 @@ class FlowCell(FLOWCELL):
 
             sub_dict["x"], sub_dict["y"], sub_dict["Velocity"] = self.sample_transverse_profile(n_events)
 
-
         event_dataframe = self._get_dataframe_from_dict(
             dictionnary=sampling_dict,
             level_names=['Population', 'ScattererID']
         )
 
-        event_dataframe.re_order_events(
-            event_scheme=self.event_scheme,
-        )
+        if SimulationSettings.sorted_population:
+            event_dataframe.sort_population()
+
+        if SimulationSettings.evenly_spaced_events:
+            event_dataframe.uniformize_events_with_time(
+                run_time=run_time,
+                lower_boundary=0.05,
+                upper_boundary=0.95
+            )
 
         return event_dataframe
 

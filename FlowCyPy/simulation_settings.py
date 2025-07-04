@@ -15,7 +15,7 @@ class RestrictiveMeta(type):
         super().__setattr__(name, value)
 
 
-class NoiseSetting(metaclass=RestrictiveMeta):
+class SimulationSettings(metaclass=RestrictiveMeta):
     """
     A singleton class to manage noise inclusion settings in simulations.
 
@@ -75,6 +75,8 @@ class NoiseSetting(metaclass=RestrictiveMeta):
     assume_perfect_hydrodynamic_focusing = False
     assume_amplifier_bandwidth_is_infinite = False
     assume_perfect_digitizer = False
+    sorted_population = False
+    evenly_spaced_events = False
 
     @property
     def include_noises(self):

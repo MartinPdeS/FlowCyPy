@@ -6,13 +6,17 @@ import pandas as pd
 from FlowCyPy import units
 from FlowCyPy import helper
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
-from FlowCyPy.circuits import SignalProcessor
 from FlowCyPy.signal_generator import SignalGenerator
-from FlowCyPy.noises import NoiseSetting
+from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.opto_electronics import OptoElectronics
 from FlowCyPy.fluidics import Fluidics
+from FlowCyPy.signal_processing import SignalProcessing
 
 
+class Result():
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
 class FlowCytometer:
     """
@@ -39,10 +43,11 @@ class FlowCytometer:
 
     """
     @helper.validate_input_units(background_power=units.watt)
-    def __init__(self, opto_electronics: OptoElectronics, fluidics: Fluidics, background_power: Optional[units.Quantity] = 0 * units.milliwatt):
+    def __init__(self, opto_electronics: OptoElectronics, fluidics: Fluidics, signal_processing: SignalProcessing, background_power: Optional[units.Quantity] = 0 * units.milliwatt):
         self.fluidics = fluidics
         self.background_power = background_power
         self.opto_electronics = opto_electronics
+        self.signal_processing = signal_processing
 
     def _create_signal_generator(self, run_time: units.second) -> SignalGenerator:
         """
@@ -61,7 +66,7 @@ class FlowCytometer:
         SignalGenerator
             An instance of `SignalGenerator` configured for the flow cytometer.
         """
-        time_series = self.opto_electronics.digitizer.get_time_series(
+        time_series = self.signal_processing.digitizer.get_time_series(
             run_time=run_time
         )
 
@@ -75,7 +80,26 @@ class FlowCytometer:
         return signal_generator
 
     @helper.validate_input_units(run_time=units.second)
-    def get_event_dataframe(self, run_time: units.Quantity, compute_cross_section: bool = False) -> pd.DataFrame:
+    def initialize(self, run_time: units.Quantity) -> Result:
+        """
+        Initializes the flow cytometer simulation.
+
+        Parameters
+        ----------
+        run_time : pint.Quantity
+            The duration of the acquisition in seconds.
+
+        Returns
+        -------
+        Result
+            An instance of the Result class containing initialization data.
+        """
+        self.results = Result()
+        self.results.run_time = run_time
+
+        return self.results
+
+    def compute_events(self, compute_cross_section: bool = False) -> pd.DataFrame:
         """
         Generates a DataFrame of events based on the scatterer collection and flow cell properties.
 
@@ -92,102 +116,111 @@ class FlowCytometer:
         pd.DataFrame
             A DataFrame containing event data for the scatterers.
         """
-        event_dataframe = self.fluidics.generate_event_dataframe(run_time=run_time)
+        event_dataframe = self.fluidics.generate_event_dataframe(run_time=self.results.run_time)
 
         self.opto_electronics.model_event(
             event_dataframe=event_dataframe,
             compute_cross_section=compute_cross_section
         )
 
+        self.results.events = event_dataframe
+
         return event_dataframe
 
-
-    @helper.validate_input_units(run_time=units.second)
-    def get_acquisition(self, run_time: units.Quantity, processing_steps: list[SignalProcessor] = [], compute_cross_section: bool = False) -> AcquisitionDataFrame:
+    def compute_analog(self) -> AcquisitionDataFrame:
         """
-        Simulates the generation of optical signal pulses for each particle event.
+        Simulates the analog optical signal response for all detected events.
 
-        This method calculates Gaussian signal pulses based on particle positions, coupling power, and
-        widths. It adds the generated pulses, background power, and noise components (thermal and dark current)
-        to each detector's raw signal.
-
-        Notes
-        -----
-        - Adds Gaussian pulses to each detector's `raw_signal`.
-        - Includes noise and background power in the simulated signals.
-        - Updates detector dataframes with captured signal information.
-
-        Parameters
-        ----------
-        processing_steps : list of SignalProcessor, optional
-            List of signal processing steps to apply in order.
-        run_time : pint.Quantity
-            The duration of the acquisition in seconds.
-        compute_cross_section : bool, optional
-            If True, computes the cross-section for each scatterer in the event DataFrame.
+        This method generates Gaussian-shaped optical pulses based on particle event data
+        (time, width, amplitude), adds background optical power, and propagates the resulting
+        signal through the detector chain:
+        - Optical power → photocurrent → amplified voltage
+        - Includes optional noise models (e.g., dark current)
+        - Final output is voltage signals stored in an `AcquisitionDataFrame`
 
         Returns
         -------
-        Acquisition
-            The simulated acquisition experiment.
+        AcquisitionDataFrame
+            Structured DataFrame representing the multi-detector analog voltage signals.
 
         Raises
         ------
         ValueError
-            If the scatterer collection lacks required data columns ('Widths', 'Time').
+            If the event DataFrame is missing required columns ('Widths', 'Time').
         """
-        event_dataframe = self.get_event_dataframe(run_time=run_time, compute_cross_section=compute_cross_section)
+        signal_generator = self._create_signal_generator(run_time=self.results.run_time)
+        signal_generator.signal_units = units.watt  # Initial unit: optical power
 
-        signal_generator = self._create_signal_generator(run_time=run_time)
-
-        signal_generator.signal_units = units.watt  # Till here the pulses are in optical power units (watt)
         for detector in self.opto_electronics.detectors:
-            if event_dataframe.empty:
+            if self.results.events.empty:
                 signal_generator.add_constant(constant=self.background_power)
-
             else:
                 signal_generator.generate_pulses(
                     signal_name=detector.name,
-                    widths=event_dataframe['Widths'].values.quantity,
-                    centers=event_dataframe['Time'].values.quantity,
-                    amplitudes=event_dataframe[detector.name].values.quantity,
+                    widths=self.results.events['Widths'].values.quantity,
+                    centers=self.results.events['Time'].values.quantity,
+                    amplitudes=self.results.events[detector.name].values.quantity,
                     base_level=self.background_power
                 )
 
-
+        # Optical power → photocurrent
         for detector in self.opto_electronics.detectors:
             detector._transform_coupling_power_to_current(
                 signal_generator=signal_generator,
                 wavelength=self.opto_electronics.source.wavelength,
-                bandwidth=self.opto_electronics.digitizer.bandwidth
+                bandwidth=self.signal_processing.digitizer.bandwidth
             )
 
-        signal_generator.signal_units = units.ampere  # Now the pulses are in current units (ampere)
-        if NoiseSetting.include_dark_current_noise and NoiseSetting.include_noises:
-            for detector in self.opto_electronics.detectors:  # Step 3: Add dark current noise to photo-current if enabled
+        # Add dark current noise if enabled
+        signal_generator.signal_units = units.ampere
+        if SimulationSettings.include_noises and SimulationSettings.include_dark_current_noise:
+            for detector in self.opto_electronics.detectors:
                 detector.apply_dark_current_noise(
                     signal_generator=signal_generator,
-                    bandwidth=self.opto_electronics.digitizer.bandwidth
+                    bandwidth=self.signal_processing.digitizer.bandwidth
                 )
 
-        signal_generator.signal_units = units.volt  # Step 4: Convert current to voltage using the transimpedance amplifier
+        # Photocurrent → voltage
+        signal_generator.signal_units = units.volt
         self.opto_electronics.amplifier.amplify(
             signal_generator=signal_generator,
-            sampling_rate=self.opto_electronics.digitizer.sampling_rate
+            sampling_rate=self.signal_processing.digitizer.sampling_rate
         )
 
-        # Now the pulses are in voltage units (volt)
-        for circuit in processing_steps:
-            circuit.process(
-                signal_generator=signal_generator,
-                sampling_rate=self.opto_electronics.digitizer.sampling_rate
-            )
+        # Final analog signal conditioning
+        self.signal_processing.process_analog(signal_generator)
 
-        acquisition = self._make_dataframe_out_of_signal_generator(
-            event_dataframe=event_dataframe,
+        # Create structured DataFrame output
+        self.results.analog = self._make_dataframe_out_of_signal_generator(
+            event_dataframe=self.results.events,
             signal_generator=signal_generator
         )
-        return acquisition, event_dataframe
+
+        return self.results.analog
+
+    def compute_peaks(self):
+        """
+        Runs the triggering system and extracts signal segments corresponding to detected events.
+
+        The method identifies regions in the analog voltage signals where the threshold condition is met
+        (based on `triggering_system`). It then digitizes the triggered signal segments and applies
+        peak detection, if configured.
+
+        Returns
+        -------
+        Result
+            The internal `results` object populated with:
+            - `triggered_analog_acquisition`
+            - `digital_acquisition`
+            - `peaks` (if `peak_algorithm` is provided)
+        """
+        self.results.triggered_analog = self.signal_processing.triggering_system.run(
+            dataframe=self.results.analog
+        )
+
+        self.signal_processing.process_digital(self.results)
+
+        return self.results.peaks
 
 
     def _make_dataframe_out_of_signal_generator(self, event_dataframe: pd.DataFrame, signal_generator: SignalGenerator) -> AcquisitionDataFrame:
@@ -222,3 +255,37 @@ class FlowCytometer:
         signal_dataframe.normalize_units(signal_units='SI', time_units='SI')
 
         return signal_dataframe
+
+    def run(self, run_time: units.Quantity, compute_cross_section: bool = False) -> Result:
+        """
+        Runs a complete flow cytometry simulation for the specified acquisition duration.
+
+        The pipeline includes:
+        1. Initialization and setup of fluidic/optical components
+        2. Particle event simulation and optical signal generation
+        3. Analog and digital signal processing
+        4. Triggered signal extraction and peak feature detection
+
+        Parameters
+        ----------
+        run_time : Quantity
+            Duration of the simulated acquisition (e.g., `1.0 * units.millisecond`).
+
+        Returns
+        -------
+        Result
+            Simulation output containing all analog, digital, and peak-level data.
+        """
+        self.initialize(run_time=run_time)
+        self.compute_events(compute_cross_section=compute_cross_section)
+        self.compute_analog()
+
+        if self.signal_processing.triggering_system is not None:
+            self.compute_peaks()
+
+        return self.results
+
+
+
+
+from FlowCyPy._flow_cytometer_instances import *

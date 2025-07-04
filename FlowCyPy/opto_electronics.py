@@ -1,9 +1,9 @@
 from typing import List
 import pandas as pd
+from FlowCyPy import units
 from FlowCyPy.coupling import ScatteringSimulator
 from FlowCyPy.detector import Detector
 from FlowCyPy.source import BaseBeam
-from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 
 class OptoElectronics():
@@ -13,7 +13,7 @@ class OptoElectronics():
     This class serves as a base for various optoelectronic components, such as detectors and
     signal generators, providing common functionality and attributes.
     """
-    def __init__(self, detectors: List[Detector], digitizer: SignalDigitizer, source: BaseBeam, amplifier: TransimpedanceAmplifier):
+    def __init__(self, detectors: List[Detector], source: BaseBeam, amplifier: TransimpedanceAmplifier):
         """
         Initializes the OptoElectronics instance.
 
@@ -21,15 +21,12 @@ class OptoElectronics():
         ----------
         detectors : List[Detector], optional
             A list of Detector instances to be included in the optoelectronics setup.
-        digitizer : SignalDigitizer
-            The digitizer instance used for signal digitization.
         source : BaseBeam
             The light source instance used in the setup.
         amplifier : TransimpedanceAmplifier
             The amplifier instance used to amplify the detected signals.
         """
         self.detectors = detectors if detectors is not None else []
-        self.digitizer = digitizer
         self.source = source
         self.amplifier = amplifier
 
@@ -78,7 +75,7 @@ class OptoElectronics():
             simulator = ScatteringSimulator(
                 source=self.source,
                 detector=detector,
-                digitizer=self.digitizer,
+                bandwidth=self.amplifier.bandwidth,
                 medium_refractive_index=event_dataframe.medium_refractive_index
             )
 

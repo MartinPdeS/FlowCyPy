@@ -224,64 +224,49 @@ class ScattererDataFrame(BaseSubFrame):
         ax.set_xlabel(f"Time [{time_units._repr_latex_()}]")
         ax.legend()
 
-    def re_order_events(self, event_scheme: str = 'random-uniform', start_time: Quantity = None, stop_time: Quantity = None, duration: Quantity = None) -> pd.DataFrame:
-        """
-        Reorders or reschedules the 'Time' column in a scatterer DataFrame using a specified temporal scheme.
-
-        Parameters
-        ----------
-        event_scheme : str
-            The scheme for generating new event times. Options:
-                - 'random-uniform': evenly spaced then shuffled
-                - 'sequential-uniform': evenly spaced
-                - 'sorted': sort the original times
-                - 'sequential-poisson': exponential inter-arrival based on average rate
-                - 'preserve': do nothing
-        start_time : Quantity, optional
-            Override for the start time of the event timeline. If not provided, estimated from data.
-        stop_time : Quantity, optional
-            Override for the stop time. If not provided, estimated from data.
-        duration : Quantity, optional
-            If provided, overrides `stop_time = start_time + duration`.
-
-        """
-        scheme = event_scheme.lower()
-
-        if self.empty:
-            return None
-
-        if scheme == 'preserve':
-            return None
-
+    def sort_population(self) -> None:
         time_unit = units.second
 
-        # Determine time bounds
         original_times = self['Time'].pint.to(time_unit)
-        if start_time is None:
-            start_time = original_times.min() * 1.1
-        if duration is not None:
-            stop_time = start_time + duration
-        elif stop_time is None:
-            stop_time = original_times.max() * 0.9
 
-        total_events = len(self)
-
-
-        if scheme == 'random-uniform':
-            new_times = numpy.linspace(start_time.magnitude, stop_time.magnitude, total_events)
-            numpy.random.shuffle(new_times)
-        elif scheme == 'sequential-uniform':
-            new_times = numpy.linspace(start_time.magnitude, stop_time.magnitude, total_events)
-        elif scheme == 'sorted':
-            new_times = numpy.sort(original_times.pint.quantity.magnitude)
-        elif scheme == 'sequential-poisson':
-            mean_interval = ((stop_time - start_time) / total_events).to(time_unit).magnitude
-            inter_arrivals = numpy.random.exponential(scale=mean_interval, size=total_events)
-            new_times = numpy.cumsum(inter_arrivals)
-            new_times *= (stop_time.magnitude / new_times[-1])  # normalize to fit in window
-            new_times += start_time.magnitude
-        else:
-            raise ValueError(f"Unsupported event scheme: '{event_scheme}'")
+        new_times = numpy.sort(original_times.pint.quantity.magnitude)
 
         self['Time'] = PintArray(new_times, time_unit)
-        return None
+
+    def uniformize_events(self) -> None:
+        time_unit = units.second
+
+        original_times = self['Time'].pint.to(time_unit)
+
+        start_time = original_times[0].magnitude
+
+        stop_time = original_times[-1].magnitude
+
+        total_number_of_events = len(self)
+
+        new_times = numpy.linspace(start_time, stop_time, total_number_of_events)
+
+        self['Time'] = PintArray(new_times, time_unit)
+
+    def uniformize_events_with_time(self, run_time: units.Quantity = None, lower_boundary: float = 0.05, upper_boundary: float = 0.95) -> None:
+        time_unit = units.second
+
+        total_number_of_events = len(self)
+
+        start_time = 0 * units.second
+
+        stop_time = run_time
+
+        duration = stop_time - start_time
+
+        new_start_time = lower_boundary * duration
+        new_stop_time = upper_boundary * duration
+
+        new_times = numpy.linspace(
+            new_start_time.to(time_unit).magnitude,
+            new_stop_time.to(time_unit).magnitude,
+            total_number_of_events
+        )
+
+        self['Time'] = PintArray(new_times, time_unit)
+

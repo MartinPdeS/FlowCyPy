@@ -15,7 +15,7 @@ class ScatteringSimulator:
     particles using PyMieSim's sequential interface, and updates a DataFrame of scattering events accordingly.
     """
 
-    def __init__(self, source: BaseBeam, detector: object, digitizer: object, medium_refractive_index: Quantity):
+    def __init__(self, source: BaseBeam, detector: object, bandwidth: units.Quantity, medium_refractive_index: Quantity):
         """
         Initialize the scattering simulator with source, detector, digitizer, and medium refractive index.
 
@@ -25,14 +25,14 @@ class ScatteringSimulator:
             The light source object.
         detector : object
             The detector configuration.
-        digitizer : object
-            Signal digitizer, used to extract bandwidth.
+        bandwidth : object
+            Signal bandwidth.
         medium_refractive_index : Quantity
             Refractive index of the ambient medium.
         """
         self.source = source
         self.detector = detector
-        self.digitizer = digitizer
+        self.bandwidth = bandwidth
         self.medium_refractive_index = medium_refractive_index
 
     def run(self, event_df: pd.DataFrame, compute_cross_section: bool = False) -> None:
@@ -75,7 +75,7 @@ class ScatteringSimulator:
             (PyMieSim PlaneWave source, PyMieSim Photodiode detector)
         """
         amplitude = self.source.get_amplitude_signal(
-            bandwidth=self.digitizer.bandwidth,
+            bandwidth=self.bandwidth,
             x=event_df["x"],
             y=event_df["y"]
         )

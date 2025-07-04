@@ -23,8 +23,9 @@ Overview:
 
 from FlowCyPy import units
 from FlowCyPy import ScattererCollection, FlowCell
-from FlowCyPy.instances import Exosome, HDL
-from FlowCyPy import GaussianBeam, OptoElectronics, SignalDigitizer, PMT, TransimpedanceAmplifier
+from FlowCyPy._population_instances import Exosome, HDL
+from FlowCyPy import GaussianBeam, OptoElectronics, SignalDigitizer, TransimpedanceAmplifier
+from FlowCyPy.detector import PMT
 from FlowCyPy import Fluidics
 
 
@@ -78,7 +79,6 @@ amplifier = TransimpedanceAmplifier(
 
 opto_electronics = OptoElectronics(
     detectors=[detector_0, detector_1],
-    digitizer=digitizer,
     source=source,
     amplifier=amplifier
 )

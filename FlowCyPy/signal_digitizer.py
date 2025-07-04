@@ -1,7 +1,7 @@
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 from typing import Union, Tuple
-from FlowCyPy.noises import NoiseSetting
+from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.units import Quantity
 import pandas as pd
 import numpy as np
@@ -138,7 +138,7 @@ class SignalDigitizer:
         """
         min_level, max_level = self.get_saturation_values(signal)
 
-        if NoiseSetting.assume_perfect_digitizer:
+        if SimulationSettings.assume_perfect_digitizer:
             signal = np.clip(
                 a=signal.pint.quantity.magnitude,
                 a_min=min_level.to(signal.pint.units).magnitude,

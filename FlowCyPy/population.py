@@ -243,3 +243,4 @@ class CoreShell(BasePopulation):
             'ShellRefractiveIndex': self.shell_refractive_index.generate(sampling)
         }
 
+from FlowCyPy._population_instances import *

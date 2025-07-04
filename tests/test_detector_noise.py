@@ -3,12 +3,12 @@ import pytest
 from FlowCyPy import Detector
 from FlowCyPy import units
 from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy import NoiseSetting
+from FlowCyPy import SimulationSettings
 from FlowCyPy.signal_generator import SignalGenerator
 import FlowCyPy
 
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
-NoiseSetting.include_noises = True
+SimulationSettings.include_noises = True
 
 # ----------------- CONSTANTS -----------------
 
@@ -63,9 +63,9 @@ def detector_dark_current():
 def test_shot_noise_generation(detector_shot_noise, signal_generator):
     """Test that shot noise is generated and not zero for a detector."""
     # Generate photon shot noise
-    NoiseSetting.include_shot_noise = True
-    NoiseSetting.include_dark_current_noise = False
-    NoiseSetting.include_source_noise = False
+    SimulationSettings.include_shot_noise = True
+    SimulationSettings.include_dark_current_noise = False
+    SimulationSettings.include_source_noise = False
 
     signal_generator.signal_units = units.watt  # Set signal units to watts for shot noise calculation
     signal_generator.add_constant(1e-3 * units.watt)  # Add constant optical power to the signal units in units.watt
@@ -84,9 +84,9 @@ def test_shot_noise_generation(detector_shot_noise, signal_generator):
 
 def test_dark_current_noise_generation(detector_dark_current, signal_generator):
     """Test that dark current noise is generated and not zero for a detector."""
-    NoiseSetting.include_shot_noise = False
-    NoiseSetting.include_dark_current_noise = True
-    NoiseSetting.include_source_noise = False
+    SimulationSettings.include_shot_noise = False
+    SimulationSettings.include_dark_current_noise = True
+    SimulationSettings.include_source_noise = False
 
     signal_generator.signal_units = units.ampere  # Set signal units to amperes for dark current noise calculation
 

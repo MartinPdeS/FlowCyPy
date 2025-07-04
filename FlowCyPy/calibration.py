@@ -1,5 +1,3 @@
-from typing import Tuple, List, Dict
-
 import numpy as np
 from FlowCyPy import units
 import matplotlib.pyplot as plt
@@ -13,6 +11,7 @@ from FlowCyPy import FlowCytometer
 from FlowCyPy.population import Sphere
 from FlowCyPy import circuits
 from FlowCyPy.triggering_system import DynamicWindow
+from FlowCyPy import peak_locator
 
 
 class SignalStatistics:
@@ -41,7 +40,34 @@ class SignalStatistics:
         }
 
 
-class JEstimator:
+class BaseEstimator:
+    def _get_peaks(self, flow_cytometer):
+        flow_cytometer.signal_processing.analog_processing = [
+            circuits.BaselineRestorator(window_size=10 * units.microsecond),
+        ]
+
+        flow_cytometer.signal_processing.triggering_system = DynamicWindow(
+            trigger_detector_name='default',
+            threshold=0.5 * units.millivolt,
+            max_triggers=-1,
+            pre_buffer=20,
+            post_buffer=20,
+        )
+
+        flow_cytometer.signal_processing.peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
+
+        results = flow_cytometer.run(
+            run_time=1.5 * units.millisecond,
+            compute_cross_section=True
+        )
+
+        if self.debug_mode:
+            results.trigger.plot()
+
+        return results.peaks
+
+
+class JEstimator(BaseEstimator):
     """
     Class for estimating the J parameter that characterizes the relationship between signal variability
     (RCV: Robust Coefficient of Variation) and signal strength (Median) across varying illumination powers.
@@ -113,7 +139,6 @@ class JEstimator:
             self.add_measurement(signal_array, power)
 
     def _run_experiment(self, flow_cytometer: FlowCytometer, bead_diameter, illumination_power, particle_count):
-
         population_0 = Sphere(
             name='population',
             particle_count=particle_count,
@@ -125,45 +150,7 @@ class JEstimator:
 
         flow_cytometer.opto_electronics.source.optical_power = illumination_power
 
-        processing_steps = [
-            circuits.BaselineRestorator(window_size=10 * units.microsecond),
-        ]
-
-        analog, _ = flow_cytometer.get_acquisition(
-            run_time=1.5 * units.millisecond,
-            processing_steps=processing_steps,
-            compute_cross_section=True
-        )
-
-        analog.normalize_units(signal_units='max', time_units='max')
-
-        trigger = DynamicWindow(
-            dataframe=analog,
-            trigger_detector_name='default',
-            max_triggers=-1,
-            pre_buffer=20,
-            post_buffer=20,
-            digitizer=flow_cytometer.opto_electronics.digitizer
-        )
-
-        analog_triggered = trigger.run(
-            threshold=0.5 * units.millivolt
-        )
-
-        if self.debug_mode:
-            analog_triggered.plot()
-
-        from FlowCyPy import peak_locator
-        peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
-
-        analog_triggered.normalize_units(signal_units='volt')
-        digital_signal = analog_triggered.digitalize(digitizer=flow_cytometer.opto_electronics.digitizer)
-
-        digital_signal.normalize_units(signal_units=units.bit_bins)
-
-        peaks = peak_algorithm.run(digital_signal)
-
-        return peaks
+        return self._get_peaks(flow_cytometer)
 
     def estimate_j(self) -> units.Quantity:
         """
@@ -257,7 +244,7 @@ class JEstimator:
             plt.show()
 
 
-class KEstimator:
+class KEstimator(BaseEstimator):
     """
     Estimate the K parameter characterizing how Robust STD scales with sqrt(Median Signal),
     across varying bead diameters under fixed illumination power.
@@ -331,36 +318,7 @@ class KEstimator:
         flow_cytometer.fluidics.scatterer_collection.populations = [population]
         flow_cytometer.opto_electronics.source.optical_power = illumination_power
 
-        analog, _ = flow_cytometer.get_acquisition(
-            run_time=1.5 * units.millisecond,
-            processing_steps=[circuits.BaselineRestorator(window_size=10 * units.microsecond)],
-            compute_cross_section=True
-        )
-
-        analog.normalize_units(signal_units='max', time_units='max')
-
-        trigger = DynamicWindow(
-            dataframe=analog,
-            trigger_detector_name='default',
-            max_triggers=-1,
-            pre_buffer=20,
-            post_buffer=20,
-            digitizer=flow_cytometer.opto_electronics.digitizer
-        )
-
-        analog_triggered = trigger.run(threshold=0.5 * units.millivolt)
-
-        if self.debug_mode:
-            analog_triggered.plot()
-
-        from FlowCyPy import peak_locator
-        peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
-
-        analog_triggered.normalize_units(signal_units='volt')
-        digital_signal = analog_triggered.digitalize(digitizer=flow_cytometer.opto_electronics.digitizer)
-        digital_signal.normalize_units(signal_units=units.bit_bins)
-
-        return peak_algorithm.run(digital_signal)
+        return self._get_peaks(flow_cytometer)
 
     def estimate_k(self) -> units.Quantity:
         """

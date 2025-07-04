@@ -14,27 +14,29 @@ system with fixed bead diameter and varying illumination.
 # -----------------------
 
 import numpy as np
-from FlowCyPy import units, NoiseSetting
+from FlowCyPy import units, SimulationSettings
 from FlowCyPy import GaussianBeam
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy import ScattererCollection
 from FlowCyPy.detector import Detector
 from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.amplifier import TransimpedanceAmplifier
-from FlowCyPy import FlowCytometer, OptoElectronics, Fluidics
+from FlowCyPy import FlowCytometer, OptoElectronics, Fluidics, SignalProcessing
 from FlowCyPy.calibration import JEstimator
 
 # %%
 # Configure simulation-level noise assumptions
 
-NoiseSetting.include_noises = True
-NoiseSetting.include_shot_noise = True
-NoiseSetting.include_dark_current_noise = False
-NoiseSetting.include_source_noise = False
-NoiseSetting.include_amplifier_noise = False
-NoiseSetting.assume_perfect_hydrodynamic_focusing = True
-NoiseSetting.assume_amplifier_bandwidth_is_infinite = True
-NoiseSetting.assume_perfect_digitizer = True
+SimulationSettings.include_noises = True
+SimulationSettings.include_shot_noise = True
+SimulationSettings.include_dark_current_noise = False
+SimulationSettings.include_source_noise = False
+SimulationSettings.include_amplifier_noise = False
+SimulationSettings.assume_perfect_hydrodynamic_focusing = True
+SimulationSettings.assume_amplifier_bandwidth_is_infinite = True
+SimulationSettings.assume_perfect_digitizer = True
+SimulationSettings.evenly_spaced_events = True
+
 
 np.random.seed(3)  # Reproducibility
 
@@ -47,7 +49,7 @@ flow_cell = FlowCell(
     sheath_volume_flow=1 * units.milliliter / units.minute,
     width=400 * units.micrometer,
     height=400 * units.micrometer,
-    event_scheme='sequential-uniform'
+
 )
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
@@ -84,14 +86,19 @@ detector_0 = Detector(
 
 opto_electronics = OptoElectronics(
     detectors=[detector_0],
-    digitizer=digitizer,
     source=source,
     amplifier=amplifier
+)
+
+signal_processing = SignalProcessing(
+    digitizer=digitizer,
+    analog_processing=[],
 )
 
 flow_cytometer = FlowCytometer(
     opto_electronics=opto_electronics,
     fluidics=fluidics,
+    signal_processing=signal_processing,
     background_power=source.optical_power * 0.001
 )
 
@@ -113,4 +120,9 @@ j_estimator.add_batch(
 # -------------------------------
 
 j_estimator.plot()
+
+
+# %%
+# Plot relevant statistics
+# ------------------------
 j_estimator.plot_statistics()

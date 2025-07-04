@@ -28,7 +28,7 @@ from FlowCyPy.signal_digitizer import SignalDigitizer
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 from FlowCyPy import GaussianBeam
 from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy.noises import NoiseSetting
+from FlowCyPy.simulation_settings import NoiseSetting
 from FlowCyPy import ScattererCollection
 from FlowCyPy.population import Exosome, Sphere, distribution
 from FlowCyPy import FlowCytometer, circuits

@@ -7,7 +7,7 @@ import warnings
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy import units
 from FlowCyPy.units import Quantity, meter, joule, particle, degree, volt, AU
-from FlowCyPy.noises import NoiseSetting
+from FlowCyPy.simulation_settings import SimulationSettings
 import pint_pandas
 
 config_dict = dict(
@@ -169,12 +169,12 @@ class BaseBeam():
         - The bandwidth parameter (\(B\)) must be in Hz and reflects the frequency range of the detection system.
         - The function assumes that RIN is specified in dB/Hz. If RIN is already in linear scale, the conversion step can be skipped.
         """
-        if NoiseSetting.assume_perfect_hydrodynamic_focusing:
+        if SimulationSettings.assume_perfect_hydrodynamic_focusing:
             amplitudes = self.amplitude_at(x=0 * x, y=0 * y, z=0 * z).values.quantity
         else:
             amplitudes = self.amplitude_at(x=x, y=y, z=z).values.quantity
 
-        if NoiseSetting.include_source_noise and NoiseSetting.include_noises:
+        if SimulationSettings.include_source_noise and SimulationSettings.include_noises:
             amplitudes = self.add_rin_to_amplitude(amplitudes, bandwidth=bandwidth)
 
         return amplitudes

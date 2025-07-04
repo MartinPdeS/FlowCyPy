@@ -2,7 +2,7 @@ from pydantic.dataclasses import dataclass
 from pydantic import field_validator
 from FlowCyPy import units
 import numpy as np
-from FlowCyPy.noises import NoiseSetting
+from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy import helper
 
 config_dict = dict(
@@ -116,11 +116,11 @@ class TransimpedanceAmplifier():
         Notes
         -----
         This method retrieves the signal from the specified detector, applies the amplifier's gain,
-        and adds noise if enabled in the NoiseSetting. It also applies a low-pass Butterworth filter
+        and adds noise if enabled in the SimulationSettings. It also applies a low-pass Butterworth filter
         to the amplified signal if a bandwidth is specified. The filter is applied using the
         `apply_butterworth_lowpass_filter_to_signal` method of the signal generator.
         """
-        if self.bandwidth is None or NoiseSetting.assume_amplifier_bandwidth_is_infinite:
+        if self.bandwidth is None or SimulationSettings.assume_amplifier_bandwidth_is_infinite:
             signal_generator.multiply(factor=self.gain)
         else:
             signal_generator.apply_butterworth_lowpass_filter(
@@ -131,7 +131,7 @@ class TransimpedanceAmplifier():
             )
 
         # Add voltage related noise if enabled
-        if NoiseSetting.include_amplifier_noise and NoiseSetting.include_noises:
+        if SimulationSettings.include_amplifier_noise and SimulationSettings.include_noises:
             signal_generator.apply_gaussian_noise(
                 mean=0.0 * self.total_output_noise.units,
                 standard_deviation=self.total_output_noise
