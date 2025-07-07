@@ -3,10 +3,8 @@ import numpy as np
 from unittest.mock import patch
 
 # Import necessary components from FlowCyPy.
-from FlowCyPy import units, population, distribution
-from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy import ScattererCollection  # Assuming this is the correct import for scatterer collection
-from FlowCyPy.fluidics import Fluidics
+from FlowCyPy import units
+from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection, population, distribution
 import FlowCyPy
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 

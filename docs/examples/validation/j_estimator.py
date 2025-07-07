@@ -14,14 +14,11 @@ system with fixed bead diameter and varying illumination.
 # -----------------------
 
 import numpy as np
-from FlowCyPy import units, SimulationSettings
-from FlowCyPy import GaussianBeam
-from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy import ScattererCollection
-from FlowCyPy.detector import Detector
-from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy.amplifier import TransimpedanceAmplifier
-from FlowCyPy import FlowCytometer, OptoElectronics, Fluidics, SignalProcessing
+from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection
+from FlowCyPy.opto_electronics import OptoElectronics, source, TransimpedanceAmplifier, Detector
+from FlowCyPy.signal_processing import SignalProcessing, Digitizer
+from FlowCyPy import FlowCytometer, SimulationSettings, units
+
 from FlowCyPy.calibration import JEstimator
 
 # %%
@@ -59,13 +56,13 @@ fluidics = Fluidics(
     flow_cell=flow_cell
 )
 
-source = GaussianBeam(
+source = source.GaussianBeam(
     numerical_aperture=0.2 * units.AU,
     wavelength=450 * units.nanometer,
     optical_power=0 * units.watt
 )
 
-digitizer = SignalDigitizer(
+digitizer = Digitizer(
     bit_depth='16bit',
     saturation_levels=(0 * units.volt, 2 * units.volt),
     sampling_rate=60 * units.megahertz,

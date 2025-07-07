@@ -1,8 +1,8 @@
 import pytest
 import numpy as np
-from FlowCyPy.detector import Detector
+from FlowCyPy.opto_electronics import Detector
 from FlowCyPy.physical_constant import PhysicalConstant
-from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy.signal_processing import Digitizer
 from FlowCyPy import units
 from FlowCyPy.signal_generator import SignalGenerator
 import FlowCyPy
@@ -30,10 +30,10 @@ def signal_generator():
 @pytest.fixture
 def signal_digitizer():
     """
-    Returns a SignalDigitizer instance with default parameters.
+    Returns a Digitizer instance with default parameters.
     This is used to avoid code duplication in tests.
     """
-    return SignalDigitizer(
+    return Digitizer(
         bit_depth=1024,
         saturation_levels='auto',
         sampling_rate=1e6 * units.hertz  # Default sampling rate

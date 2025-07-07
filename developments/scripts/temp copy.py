@@ -6,7 +6,7 @@ from FlowCyPy import GaussianBeam
 from FlowCyPy import ScattererCollection
 from FlowCyPy.population import Exosome, Sphere, distribution
 from FlowCyPy.detector import Detector
-from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy.digitizer import SignalDigitizer
 from FlowCyPy import TransimpedanceAmplifier
 
 source = GaussianBeam(

@@ -24,7 +24,7 @@ Overview:
 import numpy as np
 from FlowCyPy import units
 from FlowCyPy.detector import Detector
-from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy.digitizer import SignalDigitizer
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 from FlowCyPy import GaussianBeam
 from FlowCyPy.flow_cell import FlowCell

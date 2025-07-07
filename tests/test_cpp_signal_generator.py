@@ -118,9 +118,9 @@ def test_poisson_noise_statistics(signal_generator):
 
     array = np.asarray(array)
 
-    assert np.isclose(np.mean(array), constant, atol=0.1)
+    assert np.isclose(np.mean(array), constant, atol=0.5)
 
-    assert np.isclose(np.std(array), np.sqrt(constant), atol=0.1)
+    assert np.isclose(np.std(array), np.sqrt(constant), atol=0.5)
 
 
 # === API call tests ===

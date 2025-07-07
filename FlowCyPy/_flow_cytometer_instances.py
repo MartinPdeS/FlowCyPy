@@ -6,7 +6,7 @@ from FlowCyPy.cytometer import FlowCytometer
 from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy.fluidics import Fluidics
 from FlowCyPy.source import GaussianBeam
-from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy.digitizer import Digitizer
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 from FlowCyPy.detector import PMT
 from FlowCyPy.opto_electronics import OptoElectronics
@@ -21,7 +21,6 @@ class FacsCanto():
         saturation_level: units.Quantity = 1 * units.volt):
         """
         Defines the FacsCanto flowcytometer with estimated parameters
-
 
         """
         flow_cell = FlowCell(
@@ -44,7 +43,7 @@ class FacsCanto():
             optical_power=optical_power
         )
 
-        digitizer = SignalDigitizer(
+        digitizer = Digitizer(
             bit_depth='14bit',
             saturation_levels=(0 * units.volt, saturation_level),
             sampling_rate=10 * units.megahertz,

@@ -2,16 +2,11 @@ import numpy as np
 import pytest
 import matplotlib.pyplot as plt
 from unittest.mock import patch
-from FlowCyPy import FlowCytometer, Detector, ScattererCollection, GaussianBeam, TransimpedanceAmplifier
-from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy import distribution
-from FlowCyPy.population import Sphere
+from FlowCyPy import FlowCytometer
+from FlowCyPy.opto_electronics import OptoElectronics, Detector, source, TransimpedanceAmplifier
+from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection, distribution, population
+from FlowCyPy.signal_processing import SignalProcessing, Digitizer, triggering_system, circuits, peak_locator
 from FlowCyPy import units
-from FlowCyPy import peak_locator
-from FlowCyPy import circuits
-from FlowCyPy.triggering_system import DynamicWindow
-from FlowCyPy import OptoElectronics, Fluidics, SignalProcessing
 import FlowCyPy
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
@@ -28,7 +23,7 @@ def amplifier():
 @pytest.fixture
 def digitizer():
     """Fixture for creating a default signal digitizer."""
-    return SignalDigitizer(
+    return Digitizer(
         bit_depth=1024,
         saturation_levels='auto',
         sampling_rate=5e6 * units.hertz,
@@ -55,14 +50,6 @@ def detector_1():
     )
 
 @pytest.fixture
-def source():
-    return GaussianBeam(
-        numerical_aperture=0.1 * units.AU,
-        wavelength=1550 * units.nanometer,
-        optical_power=100e-3 * units.watt,
-    )
-
-@pytest.fixture
 def flow_cell():
     """Fixture for creating a default flow cell."""
     return FlowCell(
@@ -73,46 +60,43 @@ def flow_cell():
     )
 
 @pytest.fixture
-def diameter_distribution():
-    """Fixture for creating a normal size distribution."""
-    return distribution.Normal(
+def scatterer_collection():
+    """Fixture for creating a scatterer collection with a default population."""
+    scatterer = ScattererCollection()
+
+    diameter_distribution = distribution.Normal(
         mean=1.0 * units.micrometer,
         std_dev=0.1 * units.micrometer
     )
 
-@pytest.fixture
-def ri_distribution():
-    """Fixture for creating a normal refractive index distribution."""
-    return distribution.Normal(
+    ri_distribution = distribution.Normal(
         mean=1.5 * units.RIU,
         std_dev=0.1 * units.RIU
     )
 
-@pytest.fixture
-def population(diameter_distribution, ri_distribution):
-    """Fixture for creating a default population."""
-    return Sphere(
+    _population = population.Sphere(
         particle_count=110 * units.particle,
         diameter=diameter_distribution,
         refractive_index=ri_distribution,
         name="Default population"
     )
 
-@pytest.fixture
-def scatterer_collection(population):
-    """Fixture for creating a scatterer collection with a default population."""
-    scatterer = ScattererCollection()
-    scatterer.add_population(population)
+    scatterer.add_population(_population)
     return scatterer
 
 @pytest.fixture
-def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, source, amplifier, digitizer):
+def flow_cytometer(detector_0, detector_1, scatterer_collection, flow_cell, amplifier, digitizer):
     """Fixture for creating a default Flow Cytometer."""
+
+    beam = source.GaussianBeam(
+        numerical_aperture=0.1 * units.AU,
+        wavelength=1550 * units.nanometer,
+        optical_power=100e-3 * units.watt,
+    )
 
     opto_electronics = OptoElectronics(
         detectors=[detector_0, detector_1],
-
-        source=source,
+        source=beam,
         amplifier=amplifier
     )
 
@@ -173,7 +157,7 @@ def test_flow_cytometer_triggered_acquisition(flow_cytometer):
     """Test triggered acquisition with a defined threshold."""
     results = flow_cytometer.run(run_time=0.05 * units.millisecond)
 
-    triggering_system = DynamicWindow(
+    _triggering_system = triggering_system.DynamicWindow(
         trigger_detector_name='default',
         threshold='3 sigma',
         max_triggers=-1,
@@ -181,7 +165,7 @@ def test_flow_cytometer_triggered_acquisition(flow_cytometer):
         post_buffer=20,
     )
 
-    triggered_signal = triggering_system.run(
+    triggered_signal = _triggering_system.run(
         dataframe=results.analog,
 
     )
@@ -194,7 +178,7 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
     """Test filtering and baseline restoration on the acquired signal."""
     results = flow_cytometer.run(run_time=0.05 * units.millisecond)
 
-    triggering_system = DynamicWindow(
+    _triggering_system = triggering_system.DynamicWindow(
         trigger_detector_name='default',
         max_triggers=-1,
         pre_buffer=20,
@@ -202,7 +186,7 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
         threshold='3 sigma',
     )
 
-    triggered_signal = triggering_system.run(
+    triggered_signal = _triggering_system.run(
         dataframe=results.analog,
 
     )
@@ -219,7 +203,7 @@ def test_peak_detection(flow_cytometer, digitizer):
 
     results = flow_cytometer.run(run_time=0.05 * units.millisecond)
 
-    triggering_system = DynamicWindow(
+    _triggering_system = triggering_system.DynamicWindow(
         threshold='3 sigma',
         trigger_detector_name='default',
         max_triggers=-1,
@@ -227,9 +211,8 @@ def test_peak_detection(flow_cytometer, digitizer):
         post_buffer=20,
     )
 
-    triggered_acquisition = triggering_system.run(
+    triggered_acquisition = _triggering_system.run(
         dataframe=results.analog,
-
     )
 
     peak_algorithm = peak_locator.GlobalPeakLocator()
@@ -247,7 +230,7 @@ def test_peak_plot(mock_show, flow_cytometer, digitizer):
     results = flow_cytometer.run(run_time=0.05 * units.millisecond)
     results.analog.plot()
 
-    trigger = DynamicWindow(
+    trigger = triggering_system.DynamicWindow(
         trigger_detector_name='default',
         max_triggers=-1,
         pre_buffer=20,
@@ -269,6 +252,7 @@ def test_peak_plot(mock_show, flow_cytometer, digitizer):
         x=('default', 'Height'),
         y=('default_bis', 'Height')
     )
+
     plt.close()
 
 

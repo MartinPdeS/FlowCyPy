@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 from FlowCyPy import units
 from FlowCyPy import helper
+from FlowCyPy import population # noqa: F401
+from FlowCyPy import distribution # noqa: F401
 
 class Fluidics:
     def __init__(self, scatterer_collection: ScattererCollection, flow_cell: FlowCell):

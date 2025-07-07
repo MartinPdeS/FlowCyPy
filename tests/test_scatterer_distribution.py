@@ -2,10 +2,7 @@ import pytest
 from unittest.mock import patch
 import matplotlib.pyplot as plt
 import numpy as np
-from FlowCyPy import ScattererCollection
-from FlowCyPy import distribution as dist
-from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy.population import Sphere
+from FlowCyPy.fluidics import FlowCell, ScattererCollection, population, distribution
 from FlowCyPy import units
 import FlowCyPy
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
@@ -27,26 +24,26 @@ def default_flow_cell():
 
 # Parametrize different distributions
 distributions = [
-    dist.Normal(mean=1.0 * units.micrometer, std_dev=100.0 * units.nanometer),
-    dist.LogNormal(mean=1.0 * units.micrometer, std_dev=0.01 * units.micrometer),
-    dist.Uniform(lower_bound=0.5 * units.micrometer, upper_bound=1.5 * units.micrometer),
-    dist.RosinRammler(characteristic_property=0.5 * units.micrometer, spread=1.5),
+    distribution.Normal(mean=1.0 * units.micrometer, std_dev=100.0 * units.nanometer),
+    distribution.LogNormal(mean=1.0 * units.micrometer, std_dev=0.01 * units.micrometer),
+    distribution.Uniform(lower_bound=0.5 * units.micrometer, upper_bound=1.5 * units.micrometer),
+    distribution.RosinRammler(characteristic_property=0.5 * units.micrometer, spread=1.5),
 ]
 
 
-@pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__)
-def test_generate_distribution_size(distribution, default_flow_cell):
+@pytest.mark.parametrize("dist", distributions, ids=lambda x: x.__class__)
+def test_generate_distribution_size(dist, default_flow_cell):
     """Test if the ScattererCollection generates sizes correctly for each distribution type."""
     # Get the distribution from the fixtures
 
-    ri_distribution = dist.Normal(
+    ri_distribution = distribution.Normal(
         mean=1.4 * units.RIU,
         std_dev=0.01 * units.RIU
     )
 
-    population_0 = Sphere(
+    population_0 = population.Sphere(
         particle_count=CONCENTRATION,
-        diameter=distribution,
+        diameter=dist,
         refractive_index=ri_distribution,
         name="Default population"
     )
@@ -69,8 +66,8 @@ def test_generate_distribution_size(distribution, default_flow_cell):
     assert np.all(dataframe['Diameter'] > 0), "Some generated sizes are not positive."
 
     # Check if the sizes follow the expected bounds depending on the distribution type
-    if isinstance(distribution, dist.Normal):
-        expected_mean = distribution.mean
+    if isinstance(dist, distribution.Normal):
+        expected_mean = dist.mean
 
         generated_mean = dataframe['Diameter'].mean()
 
@@ -78,36 +75,36 @@ def test_generate_distribution_size(distribution, default_flow_cell):
             f"Normal distribution: Expected mean {expected_mean}, but got {generated_mean}"
         )
 
-    elif isinstance(distribution, dist.LogNormal):
+    elif isinstance(dist, distribution.LogNormal):
         assert np.all(dataframe['Diameter'] > 0 * units.meter), "Lognormal distribution generated non-positive sizes."
 
-    elif isinstance(distribution, dist.Uniform):
-        lower_bound = distribution.lower_bound
-        upper_bound = distribution.upper_bound
+    elif isinstance(dist, distribution.Uniform):
+        lower_bound = dist.lower_bound
+        upper_bound = dist.upper_bound
 
         assert np.all((dataframe['Diameter'] >= lower_bound) & (dataframe['Diameter'] <= upper_bound)), (
             f"Uniform distribution: Diameters are out of bounds [{lower_bound}, {upper_bound}]"
         )
 
-    elif isinstance(distribution, dist.Delta):
-        singular_value = distribution.size_value
+    elif isinstance(dist, distribution.Delta):
+        singular_value = dist.size_value
 
         assert np.all(dataframe['Diameter'] == singular_value), (
             f"Singular distribution: All sizes should be {singular_value}, but got varying sizes."
         )
 
 
-@pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__)
-def test_generate_longitudinal_positions(default_flow_cell, distribution):
+@pytest.mark.parametrize("dist", distributions, ids=lambda x: x.__class__)
+def test_generate_longitudinal_positions(default_flow_cell, dist):
     """Test the generation of longitudinal positions based on Poisson process."""
-    ri_distribution = dist.Normal(
+    ri_distribution = distribution.Normal(
         mean=1.4 * units.RIU,
         std_dev=0.01 * units.RIU
     )
 
-    population_0 = Sphere(
+    population_0 = population.Sphere(
         particle_count=CONCENTRATION,
-        diameter=distribution,
+        diameter=dist,
         refractive_index=ri_distribution,
         name="Default population"
     )
@@ -135,17 +132,17 @@ def test_generate_longitudinal_positions(default_flow_cell, distribution):
 
 
 @patch('matplotlib.pyplot.show')
-@pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__)
-def test_plot_positions(mock_show, distribution):
+@pytest.mark.parametrize("dist", distributions, ids=lambda x: x.__class__)
+def test_plot_positions(mock_show, dist):
     """Test the plotting of longitudinal positions."""
-    ri_distribution = dist.Normal(
+    ri_distribution = distribution.Normal(
         mean=1.4 * units.RIU,
         std_dev=0.01 * units.RIU
     )
 
-    population_0 = Sphere(
+    population_0 = population.Sphere(
         particle_count=CONCENTRATION,
-        diameter=distribution,
+        diameter=dist,
         refractive_index=ri_distribution,
         name="Default population"
     )
@@ -158,24 +155,24 @@ def test_plot_positions(mock_show, distribution):
 
     plt.close()
 
-@pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__)
-def test_extra(distribution):
+@pytest.mark.parametrize("dist", distributions, ids=lambda x: x.__class__)
+def test_extra(dist):
     """Test the generation of longitudinal positions based on Poisson process."""
-    ri_distribution = dist.Normal(
+    ri_distribution = distribution.Normal(
         mean=1.4 * units.RIU,
         std_dev=0.01 * units.RIU
     )
 
-    population_0 = Sphere(
+    population_0 = population.Sphere(
         particle_count=CONCENTRATION,
-        diameter=distribution,
+        diameter=dist,
         refractive_index=ri_distribution,
         name="Default population"
     )
 
-    population_1 = Sphere(
+    population_1 = population.Sphere(
         particle_count=CONCENTRATION,
-        diameter=distribution,
+        diameter=dist,
         refractive_index=ri_distribution,
         name="Default population"
     )

@@ -2,8 +2,8 @@ from typing import List
 import pandas as pd
 from FlowCyPy.coupling import ScatteringSimulator
 from FlowCyPy.detector import Detector
-from FlowCyPy.source import BaseBeam
 from FlowCyPy.amplifier import TransimpedanceAmplifier
+from FlowCyPy import source
 
 class OptoElectronics():
     """
@@ -12,7 +12,7 @@ class OptoElectronics():
     This class serves as a base for various optoelectronic components, such as detectors and
     signal generators, providing common functionality and attributes.
     """
-    def __init__(self, detectors: List[Detector], source: BaseBeam, amplifier: TransimpedanceAmplifier):
+    def __init__(self, detectors: List[Detector], source: source.BaseBeam, amplifier: TransimpedanceAmplifier):
         """
         Initializes the OptoElectronics instance.
 
@@ -20,7 +20,7 @@ class OptoElectronics():
         ----------
         detectors : List[Detector], optional
             A list of Detector instances to be included in the optoelectronics setup.
-        source : BaseBeam
+        source : source.BaseBeam
             The light source instance used in the setup.
         amplifier : TransimpedanceAmplifier
             The amplifier instance used to amplify the detected signals.

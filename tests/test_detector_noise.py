@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
-from FlowCyPy import Detector
 from FlowCyPy import units
-from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy.opto_electronics import Detector
+from FlowCyPy.signal_processing import Digitizer
 from FlowCyPy import SimulationSettings
 from FlowCyPy.signal_generator import SignalGenerator
 import FlowCyPy
@@ -28,7 +28,7 @@ def signal_generator():
     signal_generator.create_zero_signal(signal_name="TestDetector")
     return signal_generator
 
-digitizer = SignalDigitizer(
+digitizer = Digitizer(
     bit_depth=1024,
     saturation_levels=[0 * units.volt, 1e30 * units.volt],
     sampling_rate=1e6 * units.hertz,  # High sampling frequency

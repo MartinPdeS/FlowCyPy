@@ -13,14 +13,10 @@ when varying bead size under fixed illumination power.
 # -----------------------
 
 import numpy as np
-from FlowCyPy import units, SimulationSettings
-from FlowCyPy import GaussianBeam
-from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy import ScattererCollection
-from FlowCyPy.detector import Detector
-from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy.amplifier import TransimpedanceAmplifier
-from FlowCyPy import FlowCytometer, OptoElectronics, Fluidics, SignalProcessing
+from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection
+from FlowCyPy.opto_electronics import OptoElectronics, source, TransimpedanceAmplifier, Detector
+from FlowCyPy.signal_processing import SignalProcessing, Digitizer
+from FlowCyPy import FlowCytometer, SimulationSettings, units
 from FlowCyPy.calibration import KEstimator
 
 # %%
@@ -56,13 +52,13 @@ fluidics = Fluidics(
     flow_cell=flow_cell
 )
 
-source = GaussianBeam(
+_source = source.GaussianBeam(
     numerical_aperture=0.2 * units.AU,
     wavelength=450 * units.nanometer,
     optical_power=150 * units.milliwatt  # Fixed illumination power
 )
 
-digitizer = SignalDigitizer(
+digitizer = Digitizer(
     bit_depth='16bit',
     saturation_levels=(0 * units.volt, 2 * units.volt),
     sampling_rate=60 * units.megahertz,
@@ -83,7 +79,7 @@ detector_0 = Detector(
 
 opto_electronics = OptoElectronics(
     detectors=[detector_0],
-    source=source,
+    source=_source,
     amplifier=amplifier
 )
 
@@ -96,7 +92,7 @@ flow_cytometer = FlowCytometer(
     opto_electronics=opto_electronics,
     fluidics=fluidics,
     signal_processing=signal_processing,
-    background_power=source.optical_power * 0.001
+    background_power=_source.optical_power * 0.001
 )
 
 
@@ -108,7 +104,7 @@ k_estimator = KEstimator(debug_mode=False)
 
 k_estimator.add_batch(
     bead_diameters=np.linspace(300, 900, 15) * units.nanometer,
-    illumination_power=source.optical_power,
+    illumination_power=_source.optical_power,
     flow_cytometer=flow_cytometer,
     particle_count=50 * units.particle
 )

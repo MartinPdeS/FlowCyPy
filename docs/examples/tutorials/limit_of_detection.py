@@ -13,18 +13,10 @@ scatter signals in the presence of system noise and fluidic variability.
 
 # %% Imports
 import numpy as np
-from FlowCyPy import units, SimulationSettings
-from FlowCyPy import (
-    FlowCytometer, ScattererCollection, Detector, GaussianBeam,
-    TransimpedanceAmplifier, OptoElectronics, Fluidics, SignalProcessing
-)
-from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy.population import Sphere
-from FlowCyPy import distribution
-from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy import peak_locator
-from FlowCyPy.triggering_system import DynamicWindow
-from FlowCyPy import circuits
+from FlowCyPy.fluidics import Fluidics, FlowCell, population, distribution, ScattererCollection
+from FlowCyPy.opto_electronics import OptoElectronics, source, TransimpedanceAmplifier, Detector
+from FlowCyPy.signal_processing import SignalProcessing, Digitizer, circuits, peak_locator, triggering_system
+from FlowCyPy import FlowCytometer, SimulationSettings, units
 
 # %% Simulation Configuration
 SimulationSettings.include_noises = True
@@ -38,7 +30,7 @@ SimulationSettings.sorted_population = True
 np.random.seed(3)
 
 # %% Optical Source
-source = GaussianBeam(
+source = source.GaussianBeam(
     numerical_aperture=0.1 * units.AU,
     wavelength=488 * units.nanometer,
     optical_power=200 * units.milliwatt
@@ -56,13 +48,13 @@ flow_cell = FlowCell(
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
 for size in [150, 130, 110, 90]:
-    population = Sphere(
+    pop = population.Sphere(
         name=f'{size} nm',
         particle_count=20 * units.particle,
         diameter=distribution.Delta(position=size * units.nanometer),
         refractive_index=distribution.Delta(position=1.39 * units.RIU)
     )
-    scatterer_collection.add_population(population)
+    scatterer_collection.add_population(pop)
 
 # %% Fluidics Subsystem
 fluidics = Fluidics(
@@ -71,7 +63,7 @@ fluidics = Fluidics(
 )
 
 # %% Signal Digitizer
-digitizer = SignalDigitizer(
+digitizer = Digitizer(
     bit_depth='14bit',
     saturation_levels='auto',
     sampling_rate=60 * units.megahertz
@@ -113,7 +105,7 @@ analog_processing = [
 ]
 
 # %% Triggering and Peak Detection
-triggering_system = DynamicWindow(
+triggering_system = triggering_system.DynamicWindow(
     trigger_detector_name='forward',
     threshold=0.4 * units.millivolt,
     max_triggers=-1,

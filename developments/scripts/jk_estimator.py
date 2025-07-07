@@ -68,7 +68,7 @@ source = GaussianBeam(
 # Step 3: Configure the Detectors and Electronics
 # -----------------------------------------------
 from FlowCyPy.detector import Detector
-from FlowCyPy.signal_digitizer import SignalDigitizer
+from FlowCyPy.digitizer import SignalDigitizer
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 
 digitizer = SignalDigitizer(
