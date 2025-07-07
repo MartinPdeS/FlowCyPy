@@ -269,14 +269,14 @@ Step 7: Visualize Scattering Intensity
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f7fbeed1610>
+    <seaborn.axisgrid.JointGrid object at 0x7f1cbb5c5390>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.559 seconds)
+   **Total running time of the script:** (0 minutes 4.320 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_coupling_model.py:

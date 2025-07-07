@@ -802,6 +802,7 @@ document.write(`
 <span class="sd">        Result</span>
 <span class="sd">            Simulation output containing all analog, digital, and peak-level data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compute_events</span><span class="p">(</span><span class="n">compute_cross_section</span><span class="o">=</span><span class="n">compute_cross_section</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compute_analog</span><span class="p">()</span>
