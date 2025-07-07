@@ -36,7 +36,7 @@ from FlowCyPy import OptoElectronics
 # -----------------------------
 laser = source.GaussianBeam(
     numerical_aperture=0.3 * units.AU,
-    wavelength=200 * units.nanometer,
+    wavelength=750 * units.nanometer,
     optical_power=20 * units.milliwatt
 )
 
@@ -54,11 +54,8 @@ scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.
 
 # Add Exosome and HDL populations
 scatterer_collection.add_population(
-    population.Exosome(particle_count=5e9 * units.particle / units.milliliter),
-    population.HDL(particle_count=5e9 * units.particle / units.milliliter)
+    population.Exosome(particle_count=5e10 * units.particle / units.milliliter),
 )
-
-scatterer_collection.dilute(factor=0.1)
 
 fluidics = Fluidics(
     scatterer_collection=scatterer_collection,
@@ -121,6 +118,5 @@ event_dataframe = opto_electronics.model_event(
 # --------------------------------------
 event_dataframe.plot(
     x='side',
-    y='forward',
-    z='Csca'  # Color-coded by scattering cross-section
+    y='Csca'  # Color-coded by scattering cross-section
 )

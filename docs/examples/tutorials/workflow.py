@@ -150,6 +150,10 @@ results = cytometer.run(run_time=0.8 * units.millisecond)
 # ------------------------------------------
 _ = results.events.plot(x='side', y='forward', z='RefractiveIndex')
 
+
+# %%
+# Plot raw analog signals
+# -----------------------
 results.analog.normalize_units(signal_units='max')
 _ = results.analog.plot()
 
