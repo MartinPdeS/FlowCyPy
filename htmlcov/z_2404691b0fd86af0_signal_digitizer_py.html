@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_2404691b0fd86af0_signal_generator_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.9.2">coverage.py v7.9.2</a>,
-            created at 2025-07-03 23:03 +0000
+            created at 2025-07-07 17:47 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -85,7 +85,7 @@
     <p class="run"><span class="n"><a id="t1" href="#t1">1</a></span><span class="t"><span class="key">from</span> <span class="nam">pydantic</span><span class="op">.</span><span class="nam">dataclasses</span> <span class="key">import</span> <span class="nam">dataclass</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t2" href="#t2">2</a></span><span class="t"><span class="key">from</span> <span class="nam">pydantic</span> <span class="key">import</span> <span class="nam">field_validator</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t"><span class="key">from</span> <span class="nam">typing</span> <span class="key">import</span> <span class="nam">Union</span><span class="op">,</span> <span class="nam">Tuple</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">noises</span> <span class="key">import</span> <span class="nam">NoiseSetting</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">simulation_settings</span> <span class="key">import</span> <span class="nam">SimulationSettings</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">units</span> <span class="key">import</span> <span class="nam">Quantity</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t"><span class="key">import</span> <span class="nam">pandas</span> <span class="key">as</span> <span class="nam">pd</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t"><span class="key">import</span> <span class="nam">numpy</span> <span class="key">as</span> <span class="nam">np</span>&nbsp;</span><span class="r"></span></p>
@@ -222,7 +222,7 @@
     <p class="pln"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t">        <span class="nam">min_level</span><span class="op">,</span> <span class="nam">max_level</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">get_saturation_values</span><span class="op">(</span><span class="nam">signal</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t140" href="#t140">140</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="par run show_par"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t">        <span class="key">if</span> <span class="nam">NoiseSetting</span><span class="op">.</span><span class="nam">assume_perfect_digitizer</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">141&#x202F;&#x219B;&#x202F;142</span><span class="annotate long">line 141 didn't jump to line 142 because the condition on line 141 was never true</span></span></p>
+    <p class="par run show_par"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t">        <span class="key">if</span> <span class="nam">SimulationSettings</span><span class="op">.</span><span class="nam">assume_perfect_digitizer</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">141&#x202F;&#x219B;&#x202F;142</span><span class="annotate long">line 141 didn't jump to line 142 because the condition on line 141 was never true</span></span></p>
     <p class="mis show_mis"><span class="n"><a id="t142" href="#t142">142</a></span><span class="t">            <span class="nam">signal</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">clip</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t143" href="#t143">143</a></span><span class="t">                <span class="nam">a</span><span class="op">=</span><span class="nam">signal</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">quantity</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t144" href="#t144">144</a></span><span class="t">                <span class="nam">a_min</span><span class="op">=</span><span class="nam">min_level</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">signal</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">units</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -258,7 +258,7 @@
             <a class="nav" href="z_2404691b0fd86af0_signal_generator_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.9.2">coverage.py v7.9.2</a>,
-            created at 2025-07-03 23:03 +0000
+            created at 2025-07-07 17:47 +0000
         </p>
     </div>
 </footer>
