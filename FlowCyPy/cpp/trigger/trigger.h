@@ -17,6 +17,15 @@ struct Trigger {
 
     Trigger() = default;
 
+
+    void clear() {
+        // signal_map.clear();
+        signal_segments.clear();
+        // global_time.clear();
+        time_out.clear();
+        segment_ids_out.clear();
+    }
+
     /**
      * @brief Add a signal to the trigger system.
      * @param signal_name Name of the signal to add.

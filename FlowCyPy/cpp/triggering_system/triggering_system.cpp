@@ -28,6 +28,7 @@ void BaseTrigger::validate_detector_existence(const std::string &detector_name) 
 
 // ------------- FixedWindow class implementation-------------//
 void FixedWindow::run(const double threshold) {
+    this->trigger.clear();
     if (this->trigger.global_time.empty())
         throw pybind11::value_error("Global time axis must be set before running triggers");
 
@@ -68,6 +69,8 @@ void FixedWindow::run(const double threshold) {
 
 // ------------- DynamicWindow class implementation-------------//
 void DynamicWindow::run(const double threshold) {
+    this->trigger.clear();
+
     if (this->trigger.global_time.empty())
         throw pybind11::value_error("Global time axis must be set before running triggers");
 
@@ -115,6 +118,8 @@ void DynamicWindow::run(const double threshold) {
 
 // ------------- DoubleThreshold class implementation-------------//
 void DoubleThreshold::run(const double threshold, const double lower_threshold, const bool debounce_enabled, const int min_window_duration) {
+    this->trigger.clear();
+
     if (this->trigger.global_time.empty())
         throw pybind11::value_error("Global time axis must be set before running triggers");
 

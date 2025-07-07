@@ -279,6 +279,7 @@ class FlowCytometer:
         Result
             Simulation output containing all analog, digital, and peak-level data.
         """
+        self.results = None
         self.initialize(run_time=run_time)
         self.compute_events(compute_cross_section=compute_cross_section)
         self.compute_analog()
