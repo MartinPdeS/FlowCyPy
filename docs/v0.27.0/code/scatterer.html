@@ -54,8 +54,8 @@
     <link rel="icon" href="../_static/thumbnail.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Detectors" href="detector.html" />
-    <link rel="prev" title="Laser Sources" href="source.html" />
+    <link rel="next" title="Laser Sources" href="source.html" />
+    <link rel="prev" title="FlowCell Class" href="flow_cell.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -465,9 +465,13 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="base.html">Classes and Methods</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="flow_cell.html">FlowCell Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source.html">Laser Sources</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Scatterers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source.html">Laser Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="detector.html">Detectors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="amplifier.html">Amplifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digitizer.html">Signal Digitizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triggering_systems.html">Triggering Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="peak_locator.html">PeakFinder Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flow_cytometer.html">FlowCytometer</a></li>
 </ul>
 </details></li>
@@ -537,6 +541,160 @@ document.write(`
   <section id="scatterers">
 <span id="id1"></span><h1>Scatterers<a class="headerlink" href="#scatterers" title="Link to this heading">#</a></h1>
 <p>Classes representing particles and populations within the cytometer.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.scatterer_collection.ScattererCollection">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ScattererCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">medium_refractive_index=&lt;Quantity(1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'refractive_index_unit')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">populations=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.scatterer_collection.ScattererCollection" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Defines and manages the diameter and refractive index distributions of scatterers (particles)
+passing through a flow cytometer. This class generates random scatterer diameters and refractive
+indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>medium_refractive_index</strong> (<em>Quantity</em>)</p></li>
+<li><p><strong>populations</strong> (<em>List</em><em>[</em><em>BasePopulation</em><em>]</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.scatterer_collection.ScattererCollection.add_population">
+<span class="sig-name descname"><span class="pre">add_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">population</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.add_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.scatterer_collection.ScattererCollection.add_population" title="Link to this definition">#</a></dt>
+<dd><p>Adds a population to the ScattererCollection instance with the specified attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the population.</p></li>
+<li><p><strong>diameter</strong> (<em>BaseDistribution</em>) – The diameter distribution of the population.</p></li>
+<li><p><strong>refractive_index</strong> (<em>BaseDistribution</em>) – The refractive index distribution of the population.</p></li>
+<li><p><strong>population</strong> (<em>BasePopulation</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ScattererCollection instance (to support chaining).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#FlowCyPy.scatterer_collection.ScattererCollection" title="FlowCyPy.scatterer_collection.ScattererCollection">ScattererCollection</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the concentration does not have the expected dimensionality.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.scatterer_collection.ScattererCollection.concentrations">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">concentrations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Quantity</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#FlowCyPy.scatterer_collection.ScattererCollection.concentrations" title="Link to this definition">#</a></dt>
+<dd><p>Gets the concentration of each population in the ScattererCollection instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of concentrations for each population.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[Quantity]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.scatterer_collection.ScattererCollection.dilute">
+<span class="sig-name descname"><span class="pre">dilute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.dilute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.scatterer_collection.ScattererCollection.dilute" title="Link to this definition">#</a></dt>
+<dd><p>Dilutes the populations in the flow cytometry system by a given factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>factor</strong> (<em>float</em>) – The dilution factor to apply to each population. For example, a factor
+of 0.5 reduces the population density by half.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The method modifies the populations in place.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>This method iterates over all populations in the system and applies the <cite>dilute</cite> method of each population.</p></li>
+<li><p>The specific implementation of how a population is diluted depends on the <cite>dilute</cite> method defined in the <cite>population</cite> object.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<p>Dilute all populations by 50%:
+&gt;&gt;&gt; system.dilute(0.5)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.scatterer_collection.ScattererCollection.fill_dataframe_with_sampling">
+<span class="sig-name descname"><span class="pre">fill_dataframe_with_sampling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scatterer_dataframe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.fill_dataframe_with_sampling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.scatterer_collection.ScattererCollection.fill_dataframe_with_sampling" title="Link to this definition">#</a></dt>
+<dd><p>Fills a DataFrame with diameter and refractive index sampling data for each population.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>scatterer_dataframe</strong> (<em>pd.DataFrame</em>) – A DataFrame indexed by population names (first level) and containing the
+following columns: <cite>‘Diameter’</cite>: To be filled with particle diameter data. <cite>‘RefractiveIndex’</cite>:
+To be filled with refractive index data. The DataFrame must already have the required structure.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>None</em> – The method modifies the <cite>scatterer_dataframe</cite> in place, adding diameter and
+refractive index sampling data.</p></li>
+<li><p><em>After filling, the DataFrame will be populated with diameter and refractive index data.</em></p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.scatterer_collection.ScattererCollection.get_population_dataframe">
+<span class="sig-name descname"><span class="pre">get_population_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">total_sampling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.get_population_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.scatterer_collection.ScattererCollection.get_population_dataframe" title="Link to this definition">#</a></dt>
+<dd><p>Generate a DataFrame by sampling particles from populations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>total_sampling</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – Total number of samples to draw, distributed across populations based on their ratios.</p></li>
+<li><p><strong>use_ratio</strong> (<em>bool</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A MultiIndex DataFrame containing the sampled data from all populations. The first
+index level indicates the population name, and the second level indexes the sampled data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.scatterer_collection.ScattererCollection.get_population_ratios">
+<span class="sig-name descname"><span class="pre">get_population_ratios</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.get_population_ratios"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.scatterer_collection.ScattererCollection.get_population_ratios" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.scatterer_collection.ScattererCollection.set_concentrations">
+<span class="sig-name descname"><span class="pre">set_concentrations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/scatterer_collection.html#ScattererCollection.set_concentrations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.scatterer_collection.ScattererCollection.set_concentrations" title="Link to this definition">#</a></dt>
+<dd><p>Sets the concentration of each population in the ScattererCollection instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>values</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>Quantity</em><em>]</em><em>, </em><em>Quantity</em><em>]</em>) – A list of concentrations to set for each population, or a single concentration value to set for all populations.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the length of the values list does not match the number of populations or if any concentration has an incorrect dimensionality.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.population.Sphere">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refractive_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_count</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/population.html#Sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.population.Sphere" title="Link to this definition">#</a></dt>
@@ -711,6 +869,16 @@ and shell refractive index from their underlying distributions (or fixed values)
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.scatterer_collection.ScattererCollection"><code class="docutils literal notranslate"><span class="pre">ScattererCollection</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.scatterer_collection.ScattererCollection.add_population"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.add_population()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.scatterer_collection.ScattererCollection.concentrations"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.concentrations</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.scatterer_collection.ScattererCollection.dilute"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.dilute()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.scatterer_collection.ScattererCollection.fill_dataframe_with_sampling"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.fill_dataframe_with_sampling()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.scatterer_collection.ScattererCollection.get_population_dataframe"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.get_population_dataframe()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.scatterer_collection.ScattererCollection.get_population_ratios"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.get_population_ratios()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.scatterer_collection.ScattererCollection.set_concentrations"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.set_concentrations()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Sphere"><code class="docutils literal notranslate"><span class="pre">Sphere</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Sphere.diameter"><code class="docutils literal notranslate"><span class="pre">Sphere.diameter</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.population.Sphere.generate_property_sampling"><code class="docutils literal notranslate"><span class="pre">Sphere.generate_property_sampling()</span></code></a></li>

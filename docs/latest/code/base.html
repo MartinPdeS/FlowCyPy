@@ -465,9 +465,13 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Classes and Methods</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="flow_cell.html">FlowCell Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source.html">Laser Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scatterer.html">Scatterers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source.html">Laser Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="detector.html">Detectors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="amplifier.html">Amplifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digitizer.html">Signal Digitizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triggering_systems.html">Triggering Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="peak_locator.html">PeakFinder Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flow_cytometer.html">FlowCytometer</a></li>
 </ul>
 </details></li>
@@ -534,24 +538,61 @@ document.write(`
   <section id="classes-and-methods">
 <h1>Classes and Methods<a class="headerlink" href="#classes-and-methods" title="Link to this heading">#</a></h1>
 <p>This section documents the main classes and methods available in the <strong>FlowCyPy</strong> library, grouped by functionality.</p>
+<section id="fluidics">
+<h2>Fluidics<a class="headerlink" href="#fluidics" title="Link to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="flow_cell.html">FlowCell Class</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="flow_cell.html#FlowCyPy.flow_cell.FlowCell"><code class="docutils literal notranslate"><span class="pre">FlowCell</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="scatterer.html">Scatterers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="scatterer.html#FlowCyPy.scatterer_collection.ScattererCollection"><code class="docutils literal notranslate"><span class="pre">ScattererCollection</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scatterer.html#FlowCyPy.population.Sphere"><code class="docutils literal notranslate"><span class="pre">Sphere</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="scatterer.html#FlowCyPy.population.CoreShell"><code class="docutils literal notranslate"><span class="pre">CoreShell</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="optoelectronics">
+<h2>OptoElectronics<a class="headerlink" href="#optoelectronics" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="source.html">Laser Sources</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="source.html#FlowCyPy.source.GaussianBeam"><code class="docutils literal notranslate"><span class="pre">GaussianBeam</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="source.html#FlowCyPy.source.AstigmaticGaussianBeam"><code class="docutils literal notranslate"><span class="pre">AstigmaticGaussianBeam</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="scatterer.html">Scatterers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="scatterer.html#FlowCyPy.population.Sphere"><code class="docutils literal notranslate"><span class="pre">Sphere</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="scatterer.html#FlowCyPy.population.CoreShell"><code class="docutils literal notranslate"><span class="pre">CoreShell</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="detector.html">Detectors</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="detector.html#FlowCyPy.detector.Detector"><code class="docutils literal notranslate"><span class="pre">Detector</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="amplifier.html">Amplifier</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="amplifier.html#available-amplifier">Available Amplifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="amplifier.html#usage-example">Usage Example</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="signal-processing">
+<h2>Signal Processing<a class="headerlink" href="#signal-processing" title="Link to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="digitizer.html">Signal Digitizer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="digitizer.html#FlowCyPy.digitizer.Digitizer"><code class="docutils literal notranslate"><span class="pre">Digitizer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="triggering_systems.html">Triggering Systems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="triggering_systems.html#available-triggering-systems">Available Triggering Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triggering_systems.html#usage-notes">Usage Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="peak_locator.html">PeakFinder Classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="peak_locator.html#base-class">Base Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="peak_locator.html#moving-average-class">Moving-average Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="peak_locator.html#derivative-based-class">Derivative based Class</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="flow_cytometer.html">FlowCytometer</a><ul>
@@ -560,6 +601,7 @@ document.write(`
 </li>
 </ul>
 </div>
+</section>
 </section>
 
 
@@ -575,6 +617,20 @@ document.write(`
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fluidics">Fluidics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optoelectronics">OptoElectronics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#signal-processing">Signal Processing</a></li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
 
