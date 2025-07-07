@@ -514,7 +514,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.physical_constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysicalConstant</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">meter</span><span class="p">,</span> <span class="n">joule</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">volt</span><span class="p">,</span> <span class="n">AU</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.noises</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoiseSetting</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.simulation_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pint_pandas</span>
 
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -676,12 +676,12 @@ document.write(`
 <span class="sd">        - The bandwidth parameter (\(B\)) must be in Hz and reflects the frequency range of the detection system.</span>
 <span class="sd">        - The function assumes that RIN is specified in dB/Hz. If RIN is already in linear scale, the conversion step can be skipped.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">assume_perfect_hydrodynamic_focusing</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">assume_perfect_hydrodynamic_focusing</span><span class="p">:</span>
             <span class="n">amplitudes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude_at</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">amplitudes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude_at</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span>
 
-        <span class="k">if</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_source_noise</span> <span class="ow">and</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_source_noise</span> <span class="ow">and</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
             <span class="n">amplitudes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_rin_to_amplitude</span><span class="p">(</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="n">bandwidth</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">amplitudes</span>

@@ -33,7 +33,7 @@ forward scatter detector signals. Three acquisitions are performed:
 
 The resulting signals are plotted for comparison.
 
-.. GENERATED FROM PYTHON SOURCE LINES 17-40
+.. GENERATED FROM PYTHON SOURCE LINES 17-41
 
 .. code-block:: Python
 
@@ -42,19 +42,20 @@ The resulting signals are plotted for comparison.
     import matplotlib.pyplot as plt
 
     # Import necessary components from FlowCyPy
-    from FlowCyPy import (
-        FlowCytometer, ScattererCollection, Detector, GaussianBeam, FlowCell, SignalDigitizer, OptoElectronics,
-        population, distribution, circuits, units, NoiseSetting, TransimpedanceAmplifier, Fluidics
-    )
+    from FlowCyPy.fluidics import Fluidics, FlowCell, population, distribution, ScattererCollection
+    from FlowCyPy.opto_electronics import OptoElectronics, source, TransimpedanceAmplifier, Detector
+    from FlowCyPy.signal_processing import SignalProcessing, Digitizer, circuits, peak_locator, triggering_system
+    from FlowCyPy import FlowCytometer, SimulationSettings, units
+
 
     # Enable noise settings if desired
-    NoiseSetting.include_noises = True
+    SimulationSettings.include_noises = True
 
     # Set random seed for reproducibility
     np.random.seed(3)
 
     # Define the optical source: a Gaussian beam.
-    source = GaussianBeam(
+    source = source.GaussianBeam(
         numerical_aperture=0.3 * units.AU,            # Numerical aperture of the laser
         wavelength=488 * units.nanometer,             # Laser wavelength: 488 nm
         optical_power=100 * units.milliwatt           # Laser optical power: 100 mW
@@ -67,11 +68,11 @@ The resulting signals are plotted for comparison.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 41-42
+.. GENERATED FROM PYTHON SOURCE LINES 42-43
 
 Define and plot the flow cell.
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-157
+.. GENERATED FROM PYTHON SOURCE LINES 43-118
 
 .. code-block:: Python
 
@@ -103,7 +104,7 @@ Define and plot the flow cell.
     fluidics.plot(run_time=1.5 * units.millisecond)
 
     # Define the signal digitizer.
-    digitizer = SignalDigitizer(
+    digitizer = Digitizer(
         bit_depth='14bit',
         saturation_levels='auto',
         sampling_rate=60 * units.megahertz  # Sampling rate: 60 MHz
@@ -131,54 +132,76 @@ Define and plot the flow cell.
         bandwidth = 10 * units.megahertz
     )
 
-
     opto_electronics = OptoElectronics(
         detectors=[detector_0, detector_1],
-        digitizer=digitizer,
         source=source,
         amplifier=amplifier
     )
 
+    signal_processing = SignalProcessing(
+        digitizer=digitizer,
+        analog_processing=[],
+    )
+
     # Setup the flow cytometer.
-    cytometer = FlowCytometer(
+    flow_cytometer = FlowCytometer(
         opto_electronics=opto_electronics,
         fluidics=fluidics,
+        signal_processing=signal_processing,
         background_power=2 * units.microwatt,
     )
 
-    # ---------------------------------------------------------------------------
-    # Signal Processing: Acquisition with Different Processing Steps
-    # ---------------------------------------------------------------------------
+
+
+
+.. image-sg:: /gallery/tutorials/images/sphx_glr_signal_processing_001.png
+   :alt: Particle Spatial Distribution and Speed
+   :srcset: /gallery/tutorials/images/sphx_glr_signal_processing_001.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 119-122
+
+---------------------------------------------------------------------------
+Signal Processing: Acquisition with Different Processing Steps
+---------------------------------------------------------------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 122-162
+
+.. code-block:: Python
 
     fig, ax = plt.subplots(1, 1, figsize=(12, 6))
     run_time = 0.1 * units.millisecond
 
     # Acquisition 1: Raw Signal (no processing)
-    processing_steps_none = []
-    acquisition_none, _ = cytometer.get_acquisition(run_time=run_time, processing_steps=processing_steps_none)
+    signal_processing.analog_processing = []
+    results = flow_cytometer.run(run_time=run_time)
     ax.plot(
-        acquisition_none['Time'].pint.to('microsecond'),
-        acquisition_none['forward'].pint.to('millivolt'),
+        results.analog['Time'].pint.to('microsecond'),
+        results.analog['forward'].pint.to('millivolt'),
         linestyle='-',
         label='Raw Signal'
     )
 
     # Acquisition 2: Baseline Restoration
-    processing_steps_baseline = [circuits.BaselineRestorator(window_size=1000 * units.microsecond)]
-    acquisition_baseline, _ = cytometer.get_acquisition(run_time=run_time, processing_steps=processing_steps_baseline)
+    signal_processing.analog_processing = [circuits.BaselineRestorator(window_size=1000 * units.microsecond)]
+    results = flow_cytometer.run(run_time=run_time)
     ax.plot(
-        acquisition_baseline['Time'].pint.to('microsecond'),
-        acquisition_baseline['forward'].pint.to('millivolt'),
+        results.analog['Time'].pint.to('microsecond'),
+        results.analog['forward'].pint.to('millivolt'),
         linestyle='--',
         label='Baseline Restored'
     )
 
     # Acquisition 3: Bessel LowPass Filter
-    processing_steps_bessel = [circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)]
-    acquisition_bessel, _ = cytometer.get_acquisition(run_time=run_time, processing_steps=processing_steps_bessel)
+    signal_processing.analog_processing = [circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)]
+    results = flow_cytometer.run(run_time=run_time)
     ax.plot(
-        acquisition_bessel['Time'].pint.to('microsecond'),
-        acquisition_bessel['forward'].pint.to('millivolt'),
+        results.analog['Time'].pint.to('microsecond'),
+        results.analog['forward'].pint.to('millivolt'),
         linestyle='-.',
         label='Bessel LowPass'
     )
@@ -193,22 +216,10 @@ Define and plot the flow cell.
 
 
 
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_signal_processing_001.png
-         :alt: Particle Spatial Distribution and Speed
-         :srcset: /gallery/tutorials/images/sphx_glr_signal_processing_001.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_signal_processing_002.png
-         :alt: Flow Cytometry Signal Processing
-         :srcset: /gallery/tutorials/images/sphx_glr_signal_processing_002.png
-         :class: sphx-glr-multi-img
+.. image-sg:: /gallery/tutorials/images/sphx_glr_signal_processing_002.png
+   :alt: Flow Cytometry Signal Processing
+   :srcset: /gallery/tutorials/images/sphx_glr_signal_processing_002.png
+   :class: sphx-glr-single-img
 
 
 
@@ -217,7 +228,7 @@ Define and plot the flow cell.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.884 seconds)
+   **Total running time of the script:** (0 minutes 1.957 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_signal_processing.py:

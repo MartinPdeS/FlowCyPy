@@ -18,148 +18,262 @@
 .. _sphx_glr_gallery_tutorials_limit_of_detection.py:
 
 
-Limit of detection
+Limit of Detection
 ==================
 
-.. GENERATED FROM PYTHON SOURCE LINES 5-111
+This example simulates the detection of small nanoparticles (90–150 nm diameter)
+in a flow cytometry setup using a dual-detector configuration (side and forward scatter).
+The simulation includes noise models, realistic fluidics, analog signal conditioning,
+digitization, triggering, and peak detection.
+
+The main goal is to evaluate whether such particles produce detectable and distinguishable
+scatter signals in the presence of system noise and fluidic variability.
+
+.. GENERATED FROM PYTHON SOURCE LINES 15-21
 
 .. code-block:: Python
 
-
     import numpy as np
-    from FlowCyPy import FlowCytometer, ScattererCollection, Detector, GaussianBeam, TransimpedanceAmplifier
-    from FlowCyPy.flow_cell import FlowCell
-    from FlowCyPy import units
-    from FlowCyPy import NoiseSetting
-    from FlowCyPy.population import Sphere
-    from FlowCyPy import distribution
-    from FlowCyPy.signal_digitizer import SignalDigitizer
-    from FlowCyPy import peak_locator
-    from FlowCyPy.triggering_system import DynamicWindow
-    from FlowCyPy import circuits
-    from FlowCyPy import OptoElectronics, Fluidics
+    from FlowCyPy.fluidics import Fluidics, FlowCell, population, distribution, ScattererCollection
+    from FlowCyPy.opto_electronics import OptoElectronics, source, TransimpedanceAmplifier, Detector
+    from FlowCyPy.signal_processing import SignalProcessing, Digitizer, circuits, peak_locator, triggering_system
+    from FlowCyPy import FlowCytometer, SimulationSettings, units
 
-    NoiseSetting.include_noises = True
-    NoiseSetting.include_shot_noise = True
-    NoiseSetting.include_source_noise = False
-    NoiseSetting.include_dark_current_noise = False
-    NoiseSetting.assume_perfect_hydrodynamic_focusing = True
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 22-32
+
+.. code-block:: Python
+
+    SimulationSettings.include_noises = True
+    SimulationSettings.include_shot_noise = True
+    SimulationSettings.include_source_noise = True
+    SimulationSettings.include_dark_current_noise = True
+    SimulationSettings.assume_perfect_hydrodynamic_focusing = True
+    SimulationSettings.evenly_spaced_events = True
+    SimulationSettings.sorted_population = True
+
     np.random.seed(3)
 
-    source = GaussianBeam(
-        numerical_aperture=0.3 * units.AU,             # Numerical aperture of the laser: 0.3
-        wavelength=488 * units.nanometer,              # Laser wavelength: 800 nanometers
-        optical_power=100 * units.milliwatt             # Laser optical power: 10 milliwatts
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 33-39
+
+.. code-block:: Python
+
+    source = source.GaussianBeam(
+        numerical_aperture=0.1 * units.AU,
+        wavelength=488 * units.nanometer,
+        optical_power=200 * units.milliwatt
     )
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 40-47
+
+.. code-block:: Python
 
     flow_cell = FlowCell(
-        sample_volume_flow=0.02 * units.microliter / units.second,        # Flow speed: 10 microliter per second
-        sheath_volume_flow=0.1 * units.microliter / units.second,        # Flow speed: 10 microliter per second
-        width=20 * units.micrometer,        # Flow area: 10 x 10 micrometers
-        height=10 * units.micrometer,        # Flow area: 10 x 10 micrometers
-        event_scheme='sequential-uniform',  # Event sampling scheme: uniform random
+        sample_volume_flow=0.02 * units.microliter / units.second,
+        sheath_volume_flow=0.1 * units.microliter / units.second,
+        width=20 * units.micrometer,
+        height=10 * units.micrometer,
     )
 
-    scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)  # Medium refractive index: 1.33
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 48-59
+
+.. code-block:: Python
+
+    scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
     for size in [150, 130, 110, 90]:
-
-        population = Sphere(
-            name=f'{size} nanometer',
+        pop = population.Sphere(
+            name=f'{size} nm',
             particle_count=20 * units.particle,
             diameter=distribution.Delta(position=size * units.nanometer),
             refractive_index=distribution.Delta(position=1.39 * units.RIU)
         )
+        scatterer_collection.add_population(pop)
 
-        scatterer_collection.add_population(population)
 
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 60-65
+
+.. code-block:: Python
 
     fluidics = Fluidics(
         scatterer_collection=scatterer_collection,
         flow_cell=flow_cell
     )
 
-    digitizer = SignalDigitizer(
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 66-72
+
+.. code-block:: Python
+
+    digitizer = Digitizer(
         bit_depth='14bit',
         saturation_levels='auto',
-        sampling_rate=60 * units.megahertz,            # Sampling frequency: 60 MHz
+        sampling_rate=60 * units.megahertz
     )
 
-    detector_0 = Detector(
-        name='side',                             # Detector name: Side scatter detector
-        phi_angle=90 * units.degree,                   # Angle: 90 degrees (Side Scatter)
-        numerical_aperture=.2 * units.AU,             # Numerical aperture: 1.2
-        responsivity=1 * units.ampere / units.watt,        # Responsitivity: 1 ampere per watt
-        dark_current=0.01 * units.milliampere,          # Dark current: 0.1 milliamps
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 73-89
+
+.. code-block:: Python
+
+    detector_side = Detector(
+        name='side',
+        phi_angle=90 * units.degree,
+        numerical_aperture=0.2 * units.AU,
+        responsivity=1 * units.ampere / units.watt,
+        dark_current=0.001 * units.milliampere
     )
 
-    detector_1 = Detector(
-        name='forward',                          # Detector name: Forward scatter detector
-        phi_angle=0 * units.degree,                    # Angle: 0 degrees (Forward Scatter)
-        numerical_aperture=.2 * units.AU,             # Numerical aperture: 1.2
-        responsivity=1 * units.ampere / units.watt,        # Responsitivity: 1 ampere per watt
-        dark_current=0.01 * units.milliampere,          # Dark current: 0.1 milliamps
+    detector_forward = Detector(
+        name='forward',
+        phi_angle=0 * units.degree,
+        numerical_aperture=0.2 * units.AU,
+        responsivity=1 * units.ampere / units.watt,
+        dark_current=0.001 * units.milliampere
     )
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 90-101
+
+.. code-block:: Python
 
     amplifier = TransimpedanceAmplifier(
         gain=10000 * units.volt / units.ampere,
-        bandwidth = 10 * units.megahertz
+        bandwidth=10 * units.megahertz
     )
 
     opto_electronics = OptoElectronics(
-        detectors=[detector_0, detector_1],
-        digitizer=digitizer,
+        detectors=[detector_side, detector_forward],
         source=source,
         amplifier=amplifier
     )
 
 
-    cytometer = FlowCytometer(
-        opto_electronics=opto_electronics,
-        fluidics=fluidics,
-        background_power=0.01 * units.milliwatt,
-    )
-
-    # Run the flow cytometry simulation
-    processing_steps = [
-        circuits.BaselineRestorator(window_size=1000 * units.microsecond),
-        circuits.BesselLowPass(cutoff=3 * units.megahertz, order=4, gain=2)
-    ]
-
-    analog_acquisition, _ = cytometer.get_acquisition(
-        run_time=0.4 * units.millisecond,
-        processing_steps=processing_steps
-    )
 
 
 
 
 
 
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 112-113
-
-Visualize the analog acquisition signals
-
-.. GENERATED FROM PYTHON SOURCE LINES 113-128
+.. GENERATED FROM PYTHON SOURCE LINES 102-107
 
 .. code-block:: Python
 
-    analog_acquisition.plot()
+    analog_processing = [
+        circuits.BaselineRestorator(window_size=10 * units.microsecond),
+        circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
+    ]
 
-    trigger = DynamicWindow(
-        dataframe=analog_acquisition,
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 108-123
+
+.. code-block:: Python
+
+    triggering_system = triggering_system.DynamicWindow(
         trigger_detector_name='forward',
-        max_triggers=15,
+        threshold=0.4 * units.millivolt,
+        max_triggers=-1,
         pre_buffer=64,
-        post_buffer=64,
-        digitizer=digitizer
+        post_buffer=64
     )
 
-    analog_trigger = trigger.run(
-        threshold=3 * units.millivolt,
+    signal_processing = SignalProcessing(
+        digitizer=digitizer,
+        analog_processing=analog_processing,
+        triggering_system=triggering_system,
+        peak_algorithm=peak_locator.GlobalPeakLocator()
     )
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 124-133
+
+.. code-block:: Python
+
+    cytometer = FlowCytometer(
+        opto_electronics=opto_electronics,
+        fluidics=fluidics,
+        signal_processing=signal_processing,
+        background_power=0.0001 * units.milliwatt
+    )
+
+    results = cytometer.run(run_time=1.0 * units.millisecond)
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 134-137
+
+.. code-block:: Python
+
+    results.analog.normalize_units(time_units='max', signal_units='max')
+    results.analog.plot()
 
 
 
@@ -170,69 +284,27 @@ Visualize the analog acquisition signals
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <Figure size 1200x500 with 3 Axes>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 129-130
-
-Visualize the analog trigger signals
-
-.. GENERATED FROM PYTHON SOURCE LINES 130-140
-
-.. code-block:: Python
-
-    analog_trigger.plot()
-
-    digital_trigger = analog_trigger.digitalize(digitizer=digitizer)
-
-    digital_trigger.plot()
-
-    peak_algorithm = peak_locator.GlobalPeakLocator()
-
-    peaks = peak_algorithm.run(digital_trigger)
-
-
-
-
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
-         :alt: limit of detection
-         :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
-         :alt: limit of detection
-         :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
-         :class: sphx-glr-multi-img
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 141-142
-
-Visualize the detected peaks
-
-.. GENERATED FROM PYTHON SOURCE LINES 142-146
+.. GENERATED FROM PYTHON SOURCE LINES 138-140
 
 .. code-block:: Python
 
-    peaks.plot(
-        x=('side', 'Height'),
-        y=('forward', 'Height')
-    )
+    results.triggered_analog.plot()
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_004.png
-   :alt: Peaks properties
-   :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_004.png
+
+.. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
+   :alt: limit of detection
+   :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
    :class: sphx-glr-single-img
 
 
@@ -241,14 +313,40 @@ Visualize the detected peaks
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f9b45159650>
+    <Figure size 1200x500 with 3 Axes>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 141-145
+
+.. code-block:: Python
+
+    results.peaks.plot(
+        x=('side', 'Height'),
+        y=('forward', 'Height')
+    )
+
+
+
+.. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
+   :alt: Peaks properties
+   :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <seaborn.axisgrid.JointGrid object at 0x7ff02424d4d0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.733 seconds)
+   **Total running time of the script:** (0 minutes 8.363 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:

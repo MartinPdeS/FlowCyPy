@@ -30,20 +30,16 @@ when varying bead size under fixed illumination power.
 Setup and configuration
 -----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 14-26
+.. GENERATED FROM PYTHON SOURCE LINES 14-22
 
 .. code-block:: Python
 
 
     import numpy as np
-    from FlowCyPy import units, NoiseSetting
-    from FlowCyPy import GaussianBeam
-    from FlowCyPy.flow_cell import FlowCell
-    from FlowCyPy import ScattererCollection
-    from FlowCyPy.detector import Detector
-    from FlowCyPy.signal_digitizer import SignalDigitizer
-    from FlowCyPy.amplifier import TransimpedanceAmplifier
-    from FlowCyPy import FlowCytometer, OptoElectronics, Fluidics
+    from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection
+    from FlowCyPy.opto_electronics import OptoElectronics, source, TransimpedanceAmplifier, Detector
+    from FlowCyPy.signal_processing import SignalProcessing, Digitizer
+    from FlowCyPy import FlowCytometer, SimulationSettings, units
     from FlowCyPy.calibration import KEstimator
 
 
@@ -53,23 +49,24 @@ Setup and configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 27-28
+.. GENERATED FROM PYTHON SOURCE LINES 23-24
 
 Configure simulation-level noise assumptions
 
-.. GENERATED FROM PYTHON SOURCE LINES 28-40
+.. GENERATED FROM PYTHON SOURCE LINES 24-37
 
 .. code-block:: Python
 
 
-    NoiseSetting.include_noises = True
-    NoiseSetting.include_shot_noise = True
-    NoiseSetting.include_dark_current_noise = False
-    NoiseSetting.include_source_noise = False
-    NoiseSetting.include_amplifier_noise = False
-    NoiseSetting.assume_perfect_hydrodynamic_focusing = True
-    NoiseSetting.assume_amplifier_bandwidth_is_infinite = True
-    NoiseSetting.assume_perfect_digitizer = True
+    SimulationSettings.include_noises = True
+    SimulationSettings.include_shot_noise = True
+    SimulationSettings.include_dark_current_noise = False
+    SimulationSettings.include_source_noise = False
+    SimulationSettings.include_amplifier_noise = False
+    SimulationSettings.assume_perfect_hydrodynamic_focusing = True
+    SimulationSettings.assume_amplifier_bandwidth_is_infinite = True
+    SimulationSettings.assume_perfect_digitizer = True
+    SimulationSettings.evenly_spaced_events = True
 
     np.random.seed(3)  # Reproducibility
 
@@ -80,12 +77,12 @@ Configure simulation-level noise assumptions
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 41-43
+.. GENERATED FROM PYTHON SOURCE LINES 38-40
 
 Construct simulation components
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 43-97
+.. GENERATED FROM PYTHON SOURCE LINES 40-99
 
 .. code-block:: Python
 
@@ -95,7 +92,6 @@ Construct simulation components
         sheath_volume_flow=1 * units.milliliter / units.minute,
         width=400 * units.micrometer,
         height=400 * units.micrometer,
-        event_scheme='sequential-uniform'
     )
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
@@ -105,13 +101,13 @@ Construct simulation components
         flow_cell=flow_cell
     )
 
-    source = GaussianBeam(
+    _source = source.GaussianBeam(
         numerical_aperture=0.2 * units.AU,
         wavelength=450 * units.nanometer,
         optical_power=150 * units.milliwatt  # Fixed illumination power
     )
 
-    digitizer = SignalDigitizer(
+    digitizer = Digitizer(
         bit_depth='16bit',
         saturation_levels=(0 * units.volt, 2 * units.volt),
         sampling_rate=60 * units.megahertz,
@@ -132,15 +128,20 @@ Construct simulation components
 
     opto_electronics = OptoElectronics(
         detectors=[detector_0],
-        digitizer=digitizer,
-        source=source,
+        source=_source,
         amplifier=amplifier
+    )
+
+    signal_processing = SignalProcessing(
+        digitizer=digitizer,
+        analog_processing=[],
     )
 
     flow_cytometer = FlowCytometer(
         opto_electronics=opto_electronics,
         fluidics=fluidics,
-        background_power=source.optical_power * 0.001
+        signal_processing=signal_processing,
+        background_power=_source.optical_power * 0.001
     )
 
 
@@ -150,12 +151,13 @@ Construct simulation components
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 98-100
+
+.. GENERATED FROM PYTHON SOURCE LINES 100-102
 
 Run K Estimation Simulation
 ---------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 100-110
+.. GENERATED FROM PYTHON SOURCE LINES 102-112
 
 .. code-block:: Python
 
@@ -164,7 +166,7 @@ Run K Estimation Simulation
 
     k_estimator.add_batch(
         bead_diameters=np.linspace(300, 900, 15) * units.nanometer,
-        illumination_power=source.optical_power,
+        illumination_power=_source.optical_power,
         flow_cytometer=flow_cytometer,
         particle_count=50 * units.particle
     )
@@ -196,37 +198,46 @@ Run K Estimation Simulation
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-113
+.. GENERATED FROM PYTHON SOURCE LINES 113-115
 
-Plot estimation and diagnostics
--------------------------------
+Plot estimation
+---------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 113-116
+.. GENERATED FROM PYTHON SOURCE LINES 115-117
 
 .. code-block:: Python
 
-
     k_estimator.plot()
+
+
+
+
+.. image-sg:: /gallery/validation/images/sphx_glr_k_estimator_001.png
+   :alt: K Parameter Estimation
+   :srcset: /gallery/validation/images/sphx_glr_k_estimator_001.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 118-120
+
+Plot relevant statistics
+------------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 120-121
+
+.. code-block:: Python
+
     k_estimator.plot_statistics()
 
 
 
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image-sg:: /gallery/validation/images/sphx_glr_k_estimator_001.png
-         :alt: K Parameter Estimation
-         :srcset: /gallery/validation/images/sphx_glr_k_estimator_001.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/validation/images/sphx_glr_k_estimator_002.png
-         :alt: Median vs Bead Diameter, STD vs Bead Diameter
-         :srcset: /gallery/validation/images/sphx_glr_k_estimator_002.png
-         :class: sphx-glr-multi-img
+.. image-sg:: /gallery/validation/images/sphx_glr_k_estimator_002.png
+   :alt: Median vs Bead Diameter, STD vs Bead Diameter
+   :srcset: /gallery/validation/images/sphx_glr_k_estimator_002.png
+   :class: sphx-glr-single-img
 
 
 
@@ -235,7 +246,7 @@ Plot estimation and diagnostics
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 30.071 seconds)
+   **Total running time of the script:** (0 minutes 29.073 seconds)
 
 
 .. _sphx_glr_download_gallery_validation_k_estimator.py:

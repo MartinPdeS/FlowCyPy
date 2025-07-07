@@ -18,34 +18,42 @@
 .. _sphx_glr_gallery_tutorials_workflow.py:
 
 
-Workflow
-========
+Flow Cytometry Simulation: Full System Example
+==============================================
 
-This tutorial demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library.
-The simulation involves configuring a flow setup, defining a single population of particles, and
-analyzing scattering signals from two detectors to produce a 2D density plot of scattering intensities.
+This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library.
+It models fluidics, optics, signal processing, and classification of multiple particle populations.
 
-Overview:
----------
-1. Configure the flow cell and particle population.
-2. Define the laser source and detector parameters.
-3. Simulate the flow cytometry experiment.
-4. Analyze the generated signals and visualize results.
+Steps Covered:
+--------------
+1. Configure simulation parameters and noise models
+2. Define laser source, flow cell geometry, and fluidics
+3. Add synthetic particle populations
+4. Set up detectors, amplifier, and digitizer
+5. Simulate analog and digital signal acquisition
+6. Apply triggering and peak detection
+7. Classify particle events based on peak features
 
-.. GENERATED FROM PYTHON SOURCE LINES 19-23
+.. GENERATED FROM PYTHON SOURCE LINES 20-22
 
-Step 0: Import Necessary Libraries
+Step 0: Global Settings and Imports
 -----------------------------------
-Here, we import the necessary libraries and units for the simulation. The units module helps us
-define physical quantities like meters, seconds, and watts in a concise and consistent manner.
 
-.. GENERATED FROM PYTHON SOURCE LINES 23-28
+.. GENERATED FROM PYTHON SOURCE LINES 22-34
 
 .. code-block:: Python
-
 
     import numpy as np
-    from FlowCyPy import units
+    from FlowCyPy import units, SimulationSettings
+
+    SimulationSettings.include_noises = True
+    SimulationSettings.include_shot_noise = True
+    SimulationSettings.include_dark_current_noise = True
+    SimulationSettings.include_source_noise = True
+    SimulationSettings.include_amplifier_noise = True
+    SimulationSettings.assume_perfect_hydrodynamic_focusing = True
+
+    np.random.seed(3)
 
 
 
@@ -54,140 +62,40 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 
 
 
+.. GENERATED FROM PYTHON SOURCE LINES 35-37
 
-.. GENERATED FROM PYTHON SOURCE LINES 29-33
+Step 1: Define Flow Cell and Fluidics
+-------------------------------------
 
-Step 1: Configure Noise Settings
----------------------------------
-Noise settings are configured to simulate real-world imperfections. In this example, we include noise
-globally but exclude specific types, such as shot noise and thermal noise.
-
-.. GENERATED FROM PYTHON SOURCE LINES 33-46
-
-.. code-block:: Python
-
-
-    from FlowCyPy import NoiseSetting
-
-    NoiseSetting.include_noises = True
-    NoiseSetting.include_shot_noise = True
-    NoiseSetting.include_dark_current_noise = True
-    NoiseSetting.include_source_noise = True
-    NoiseSetting.include_amplifier_noise = True
-    NoiseSetting.assume_perfect_hydrodynamic_focusing = True
-
-    np.random.seed(3)  # Ensure reproducibility
-
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 47-51
-
-Step 2: Configure the Laser Source
-----------------------------------
-The laser source generates light that interacts with the particles. Its parameters, like numerical
-aperture and wavelength, affect how light scatters, governed by Mie theory.
-
-.. GENERATED FROM PYTHON SOURCE LINES 51-62
+.. GENERATED FROM PYTHON SOURCE LINES 37-70
 
 .. code-block:: Python
-
-
-    from FlowCyPy import GaussianBeam
-
-    source = GaussianBeam(
-        numerical_aperture=0.1 * units.AU,           # Numerical aperture
-        wavelength=450 * units.nanometer,           # Wavelength
-        optical_power=200 * units.milliwatt,          # Optical power
-        RIN=-140
-    )
-
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 63-70
-
-Step 3: Set Up the Flow Cell
-----------------------------
-The flow cell models the movement of particles in the cytometer. For example, the volume of fluid
-passing through the cross-sectional area is calculated as:
-
-.. math::
-    \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
-
-.. GENERATED FROM PYTHON SOURCE LINES 70-80
-
-.. code-block:: Python
-
 
     from FlowCyPy.flow_cell import FlowCell
+    from FlowCyPy.fluidics import Fluidics, ScattererCollection, population, distribution
 
     flow_cell = FlowCell(
         sample_volume_flow=80 * units.microliter / units.minute,
         sheath_volume_flow=1 * units.milliliter / units.minute,
         width=200 * units.micrometer,
-        height=100 * units.micrometer,
+        height=100 * units.micrometer
     )
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 81-88
-
-Step 4: Define ScattererCollection and Population
--------------------------------------------------
-The scatterer represents particles in the flow. The concentration of particles in the flow cell is
-given by:
-
-.. math::
-    \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
-
-.. GENERATED FROM PYTHON SOURCE LINES 88-126
-
-.. code-block:: Python
-
-
-    from FlowCyPy import Fluidics, ScattererCollection
-    from FlowCyPy.instances import Exosome, Sphere, distribution
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
-    exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
-
-    custom_population = Sphere(
+    scatterer_collection.add_population(population.Sphere(
         name='Pop 0',
         particle_count=5e9 * units.particle / units.milliliter,
-        diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
-        refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
-    )
+        diameter=distribution.RosinRammler(150 * units.nanometer, spread=30),
+        refractive_index=distribution.Normal(1.44 * units.RIU, std_dev=0.002 * units.RIU)
+    ))
 
-    # Add an Exosome population
-    scatterer_collection.add_population(custom_population)
-
-
-    custom_population = Sphere(
+    scatterer_collection.add_population(population.Sphere(
         name='Pop 1',
         particle_count=5e9 * units.particle / units.milliliter,
-        diameter=distribution.RosinRammler(characteristic_property=200 * units.nanometer, spread=30),
-        refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
-    )
-
-    # Add an Exosome population
-    scatterer_collection.add_population(custom_population)
+        diameter=distribution.RosinRammler(200 * units.nanometer, spread=30),
+        refractive_index=distribution.Normal(1.44 * units.RIU, std_dev=0.002 * units.RIU)
+    ))
 
     scatterer_collection.dilute(factor=80)
 
@@ -196,129 +104,46 @@ given by:
         flow_cell=flow_cell
     )
 
-    fluidics.plot(run_time=30.5 * units.millisecond)
 
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
-   :alt: Particle Spatial Distribution and Speed
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
-   :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <Axes: title={'center': 'Particle Spatial Distribution and Speed'}, xlabel='X [µm]', ylabel='Y [µm]'>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-129
+.. GENERATED FROM PYTHON SOURCE LINES 71-73
 
-Generate a DataFrame of events, which contains information about the particles in the flow cell.
-The DataFrame includes properties like diameter, refractive index, and scattering angles.
+Step 2: Define Optical Subsystem
+--------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 129-132
+.. GENERATED FROM PYTHON SOURCE LINES 73-101
 
 .. code-block:: Python
 
-    event_dataframe = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)
+    from FlowCyPy.opto_electronics import source, Detector, TransimpedanceAmplifier, OptoElectronics
 
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 133-134
-
-Plot the distribution of particle diameters in the DataFrame.
-
-.. GENERATED FROM PYTHON SOURCE LINES 134-137
-
-.. code-block:: Python
-
-    event_dataframe.plot(x='Diameter', bins='auto')
-
-
-
-
-
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
-   :alt: Distribution of Diameter
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
-   :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <Figure size 1000x600 with 1 Axes>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 138-142
-
-Step 5: Define Detectors
-------------------------
-Detectors measure light intensity. Parameters like responsivity define the conversion of optical
-power to electronic signals, and saturation level represents the maximum signal they can handle.
-
-.. GENERATED FROM PYTHON SOURCE LINES 142-191
-
-.. code-block:: Python
-
-
-    from FlowCyPy.detector import Detector
-    from FlowCyPy.signal_digitizer import SignalDigitizer
-    from FlowCyPy.amplifier import TransimpedanceAmplifier
-
-    digitizer = SignalDigitizer(
-        bit_depth='14bit',
-        saturation_levels='auto',
-        sampling_rate=60 * units.megahertz,
+    source = source.GaussianBeam(
+        numerical_aperture=0.1 * units.AU,
+        wavelength=450 * units.nanometer,
+        optical_power=200 * units.milliwatt,
+        RIN=-140
     )
 
-    detector_0 = Detector(
-        name='forward',
-        phi_angle=0 * units.degree,
-        numerical_aperture=0.3 * units.AU,
-        responsivity=1 * units.ampere / units.watt,
-    )
-
-    detector_1 = Detector(
-        name='side',
-        phi_angle=90 * units.degree,
-        numerical_aperture=0.3 * units.AU,
-        responsivity=1 * units.ampere / units.watt,
-    )
-
-    detector_2 = Detector(
-        name='det 2',
-        phi_angle=30 * units.degree,
-        numerical_aperture=0.3 * units.AU,
-        responsivity=1 * units.ampere / units.watt,
-    )
+    detectors = [
+        Detector(name='forward', phi_angle=0 * units.degree,  numerical_aperture=0.3 * units.AU, responsivity=1 * units.ampere / units.watt),
+        Detector(name='side',    phi_angle=90 * units.degree, numerical_aperture=0.3 * units.AU, responsivity=1 * units.ampere / units.watt),
+        Detector(name='det 2',   phi_angle=30 * units.degree, numerical_aperture=0.3 * units.AU, responsivity=1 * units.ampere / units.watt),
+    ]
 
     amplifier = TransimpedanceAmplifier(
         gain=10 * units.volt / units.ampere,
         bandwidth=10 * units.megahertz,
-        voltage_noise_density=.1 * units.nanovolt / units.sqrt_hertz,
-        current_noise_density=.2 * units.femtoampere / units.sqrt_hertz
+        voltage_noise_density=0.1 * units.nanovolt / units.sqrt_hertz,
+        current_noise_density=0.2 * units.femtoampere / units.sqrt_hertz
     )
 
-    from FlowCyPy import OptoElectronics
-
     opto_electronics = OptoElectronics(
-        detectors=[detector_0, detector_1, detector_2],
-        digitizer=digitizer,
+        detectors=detectors,
         source=source,
         amplifier=amplifier
     )
@@ -330,55 +155,133 @@ power to electronic signals, and saturation level represents the maximum signal 
 
 
 
+.. GENERATED FROM PYTHON SOURCE LINES 102-104
 
-.. GENERATED FROM PYTHON SOURCE LINES 192-199
+Step 3: Signal Processing Configuration
+---------------------------------------
 
-Step 6: Simulate Flow Cytometry Experiment
-------------------------------------------
-The FlowCytometer combines all components to simulate scattering. The interaction between light
-and particles follows Mie theory:
-
-.. math::
-    \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
-
-.. GENERATED FROM PYTHON SOURCE LINES 199-228
+.. GENERATED FROM PYTHON SOURCE LINES 104-134
 
 .. code-block:: Python
 
-    from FlowCyPy import FlowCytometer, circuits
+    from FlowCyPy.signal_processing import SignalProcessing, Digitizer, circuits, peak_locator, triggering_system
 
-    cytometer = FlowCytometer(
-        opto_electronics=opto_electronics,
-        fluidics=fluidics,
-        background_power=0.001 * units.milliwatt
+    digitizer = Digitizer(
+        bit_depth='14bit',
+        saturation_levels='auto',
+        sampling_rate=60 * units.megahertz
     )
 
-    cytometer.opto_electronics = opto_electronics
-
-    processing_steps = [
+    analog_processing = [
         circuits.BaselineRestorator(window_size=10 * units.microsecond),
         circuits.BesselLowPass(cutoff=2 * units.megahertz, order=4, gain=2)
     ]
 
-    # Run the flow cytometry simulation
-    acquisition, event_dataframe = cytometer.get_acquisition(
-        run_time=.5 * units.millisecond,
-        processing_steps=processing_steps
+    triggering = triggering_system.DynamicWindow(
+        trigger_detector_name='forward',
+        threshold=10 * units.microvolt,
+        pre_buffer=20,
+        post_buffer=20,
+        max_triggers=-1
     )
 
-    acquisition.normalize_units(time_units='max', signal_units='max')
+    peak_algo = peak_locator.GlobalPeakLocator(compute_width=False)
 
-    _ = acquisition.scatterer.plot(
-        x='side',
-        y='forward',
-        z='RefractiveIndex'
+    signal_processing = SignalProcessing(
+        digitizer=digitizer,
+        analog_processing=analog_processing,
+        triggering_system=triggering,
+        peak_algorithm=peak_algo
     )
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 135-137
+
+Step 4: Run Simulation
+----------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 137-148
+
+.. code-block:: Python
+
+    from FlowCyPy import FlowCytometer
+
+    cytometer = FlowCytometer(
+        opto_electronics=opto_electronics,
+        fluidics=fluidics,
+        signal_processing=signal_processing,
+        background_power=0.001 * units.milliwatt
+    )
+
+    results = cytometer.run(run_time=0.8 * units.millisecond)
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 149-151
+
+Step 5: Plot Events and Raw Analog Signals
+------------------------------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 151-156
+
+.. code-block:: Python
+
+    _ = results.events.plot(x='side', y='forward', z='RefractiveIndex')
+
+    results.analog.normalize_units(signal_units='max')
+    _ = results.analog.plot()
+
+
+
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
+         :alt: Scatterer Sampling Distribution
+         :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
+         :class: sphx-glr-multi-img
+
+    *
+
+      .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
+         :alt: workflow
+         :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
+         :class: sphx-glr-multi-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 157-159
+
+Step 6: Plot Triggered Analog Segments
+--------------------------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 159-161
+
+.. code-block:: Python
+
+    _ = results.triggered_analog.plot()
 
 
 
 
 .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_003.png
-   :alt: Scatterer Sampling Distribution
+   :alt: workflow
    :srcset: /gallery/tutorials/images/sphx_glr_workflow_003.png
    :class: sphx-glr-single-img
 
@@ -386,123 +289,12 @@ and particles follows Mie theory:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 229-230
+.. GENERATED FROM PYTHON SOURCE LINES 162-164
 
-Visualize the scatter signals from both detectors
+Step 7: Classify Events from Peak Features
+------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 230-232
-
-.. code-block:: Python
-
-    acquisition.plot()
-
-
-
-
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_004.png
-   :alt: workflow
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_004.png
-   :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <Figure size 1200x500 with 4 Axes>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 233-237
-
-Step 7: Analyze Detected Signals
---------------------------------
-The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
-window size and threshold.
-
-.. GENERATED FROM PYTHON SOURCE LINES 237-254
-
-.. code-block:: Python
-
-    from FlowCyPy.triggering_system import DynamicWindow
-
-    trigger = DynamicWindow(
-        dataframe=acquisition,
-        trigger_detector_name='forward',
-        max_triggers=-1,
-        pre_buffer=20,
-        post_buffer=20,
-        digitizer=digitizer
-    )
-
-    analog_triggered = trigger.run(
-        threshold=10 * units.microvolt
-    )
-
-    analog_triggered.plot()
-
-
-
-
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
-   :alt: workflow
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_005.png
-   :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <Figure size 1200x500 with 4 Axes>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 255-256
-
-Getting and plotting the extracted peaks.
-
-.. GENERATED FROM PYTHON SOURCE LINES 256-268
-
-.. code-block:: Python
-
-    from FlowCyPy import peak_locator
-    peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
-
-    digital_signal = analog_triggered.digitalize(digitizer=digitizer)
-
-    peaks = peak_algorithm.run(digital_signal)
-
-    peaks.plot(
-        x=('side', 'Height'),
-        y=('forward', 'Height')
-    )
-
-
-
-
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_006.png
-   :alt: Peaks properties
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_006.png
-   :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <seaborn.axisgrid.JointGrid object at 0x7f9b3c9a97d0>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 269-270
-
-Step 8: Classifying the collected dataset
-
-.. GENERATED FROM PYTHON SOURCE LINES 270-283
+.. GENERATED FROM PYTHON SOURCE LINES 164-178
 
 .. code-block:: Python
 
@@ -510,21 +302,22 @@ Step 8: Classifying the collected dataset
 
     classifier = KmeansClassifier(number_of_cluster=2)
 
-    data = classifier.run(
-        dataframe=peaks.unstack('Detector'),
+    classified = classifier.run(
+        dataframe=results.peaks.unstack('Detector'),
         features=['Height'],
         detectors=['side', 'forward']
     )
 
-    _ = data.plot(
+    _ = classified.plot(
         x=('side', 'Height'),
         y=('forward', 'Height')
     )
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_007.png
+
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_004.png
    :alt: Event classification
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_007.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_004.png
    :class: sphx-glr-single-img
 
 
@@ -534,7 +327,7 @@ Step 8: Classifying the collected dataset
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 9.246 seconds)
+   **Total running time of the script:** (0 minutes 12.468 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

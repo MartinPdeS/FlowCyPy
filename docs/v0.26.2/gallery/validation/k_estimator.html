@@ -54,6 +54,8 @@
     <link rel="icon" href="../../_static/thumbnail.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Theory" href="../../theory.html" />
+    <link rel="prev" title="J Estimator Validation — Fixed Bead Size, Variable Illumination" href="j_estimator.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -156,7 +158,7 @@
 </li>
 
 
-<li class="nav-item ">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="../../examples.html">
     Examples
   </a>
@@ -338,7 +340,7 @@ document.write(`
 </li>
 
 
-<li class="nav-item ">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="../../examples.html">
     Examples
   </a>
@@ -460,7 +462,26 @@ document.write(`
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"></div>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/coupling_model.html">Flow Cytometry Workflow: Single Population Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/limit_of_detection.html">Limit of Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/signal_processing.html">Signal Processing in Flow Cytometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Flow Cytometry Simulation: Full System Example</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../noise_sources/index.html">Examples: Noises</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../noise_sources/dark_current.html">Dark Current</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../noise_sources/shot_noise.html">Shot noise</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Validation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="j_estimator.html">J Estimator Validation — Fixed Bead Size, Variable Illumination</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">K Estimator Validation — Fixed Illumination, Variable Bead Size</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
 </nav></div>
     </div>
   
@@ -496,6 +517,12 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
+    
+    <li class="breadcrumb-item"><a href="../../examples.html" class="nav-link"><strong>Examples</strong></a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples: Validation</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">K Estimator...</li>
   </ul>
 </nav>
@@ -526,26 +553,23 @@ when varying bead size under fixed illumination power.</p>
 <section id="setup-and-configuration">
 <h2>Setup and configuration<a class="headerlink" href="#setup-and-configuration" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span><span class="p">,</span> <span class="n">NoiseSetting</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">GaussianBeam</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.flow_cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCell</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererCollection</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">Detector</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.amplifier</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransimpedanceAmplifier</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">OptoElectronics</span><span class="p">,</span> <span class="n">Fluidics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluidics</span><span class="p">,</span> <span class="n">FlowCell</span><span class="p">,</span> <span class="n">ScattererCollection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.opto_electronics</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptoElectronics</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">TransimpedanceAmplifier</span><span class="p">,</span> <span class="n">Detector</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalProcessing</span><span class="p">,</span> <span class="n">Digitizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">SimulationSettings</span><span class="p">,</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">KEstimator</span>
 </pre></div>
 </div>
 <p>Configure simulation-level noise assumptions</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_dark_current_noise</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_source_noise</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_amplifier_noise</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">assume_perfect_hydrodynamic_focusing</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">assume_amplifier_bandwidth_is_infinite</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">assume_perfect_digitizer</span> <span class="o">=</span> <span class="kc">True</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_dark_current_noise</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_source_noise</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_amplifier_noise</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">SimulationSettings</span><span class="o">.</span><span class="n">assume_perfect_hydrodynamic_focusing</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">SimulationSettings</span><span class="o">.</span><span class="n">assume_amplifier_bandwidth_is_infinite</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">SimulationSettings</span><span class="o">.</span><span class="n">assume_perfect_digitizer</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">SimulationSettings</span><span class="o">.</span><span class="n">evenly_spaced_events</span> <span class="o">=</span> <span class="kc">True</span>
 
 <a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># Reproducibility</span>
 </pre></div>
@@ -558,7 +582,6 @@ when varying bead size under fixed illumination power.</p>
     <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
     <span class="n">width</span><span class="o">=</span><span class="mi">400</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
     <span class="n">height</span><span class="o">=</span><span class="mi">400</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
-    <span class="n">event_scheme</span><span class="o">=</span><span class="s1">&#39;sequential-uniform&#39;</span>
 <span class="p">)</span>
 
 <span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
@@ -568,13 +591,13 @@ when varying bead size under fixed illumination power.</p>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span>
 <span class="p">)</span>
 
-<span class="n">source</span> <span class="o">=</span> <span class="n">GaussianBeam</span><span class="p">(</span>
+<span class="n">_source</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">GaussianBeam</span><span class="p">(</span>
     <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>
     <span class="n">wavelength</span><span class="o">=</span><span class="mi">450</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
     <span class="n">optical_power</span><span class="o">=</span><span class="mi">150</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span>  <span class="c1"># Fixed illumination power</span>
 <span class="p">)</span>
 
-<span class="n">digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
+<span class="n">digitizer</span> <span class="o">=</span> <span class="n">Digitizer</span><span class="p">(</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;16bit&#39;</span><span class="p">,</span>
     <span class="n">saturation_levels</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span><span class="p">),</span>
     <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
@@ -595,15 +618,20 @@ when varying bead size under fixed illumination power.</p>
 
 <span class="n">opto_electronics</span> <span class="o">=</span> <span class="n">OptoElectronics</span><span class="p">(</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">],</span>
-    <span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">,</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">_source</span><span class="p">,</span>
     <span class="n">amplifier</span><span class="o">=</span><span class="n">amplifier</span>
+<span class="p">)</span>
+
+<span class="n">signal_processing</span> <span class="o">=</span> <span class="n">SignalProcessing</span><span class="p">(</span>
+    <span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">,</span>
+    <span class="n">analog_processing</span><span class="o">=</span><span class="p">[],</span>
 <span class="p">)</span>
 
 <span class="n">flow_cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
     <span class="n">opto_electronics</span><span class="o">=</span><span class="n">opto_electronics</span><span class="p">,</span>
     <span class="n">fluidics</span><span class="o">=</span><span class="n">fluidics</span><span class="p">,</span>
-    <span class="n">background_power</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">optical_power</span> <span class="o">*</span> <span class="mf">0.001</span>
+    <span class="n">signal_processing</span><span class="o">=</span><span class="n">signal_processing</span><span class="p">,</span>
+    <span class="n">background_power</span><span class="o">=</span><span class="n">_source</span><span class="o">.</span><span class="n">optical_power</span> <span class="o">*</span> <span class="mf">0.001</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -614,7 +642,7 @@ when varying bead size under fixed illumination power.</p>
 
 <span class="n">k_estimator</span><span class="o">.</span><span class="n">add_batch</span><span class="p">(</span>
     <span class="n">bead_diameters</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">900</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
-    <span class="n">illumination_power</span><span class="o">=</span><span class="n">source</span><span class="o">.</span><span class="n">optical_power</span><span class="p">,</span>
+    <span class="n">illumination_power</span><span class="o">=</span><span class="n">_source</span><span class="o">.</span><span class="n">optical_power</span><span class="p">,</span>
     <span class="n">flow_cytometer</span><span class="o">=</span><span class="n">flow_cytometer</span><span class="p">,</span>
     <span class="n">particle_count</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span>
 <span class="p">)</span>
@@ -638,17 +666,18 @@ when varying bead size under fixed illumination power.</p>
 </pre></div>
 </div>
 </section>
-<section id="plot-estimation-and-diagnostics">
-<h2>Plot estimation and diagnostics<a class="headerlink" href="#plot-estimation-and-diagnostics" title="Link to this heading">#</a></h2>
+<section id="plot-estimation">
+<h2>Plot estimation<a class="headerlink" href="#plot-estimation" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">k_estimator</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-<span class="n">k_estimator</span><span class="o">.</span><span class="n">plot_statistics</span><span class="p">()</span>
 </pre></div>
 </div>
-<ul class="sphx-glr-horizontal">
-<li><img src="../../_images/sphx_glr_k_estimator_001.png" srcset="../../_images/sphx_glr_k_estimator_001.png" alt="K Parameter Estimation" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_k_estimator_002.png" srcset="../../_images/sphx_glr_k_estimator_002.png" alt="Median vs Bead Diameter, STD vs Bead Diameter" class = "sphx-glr-multi-img"/></li>
-</ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 30.071 seconds)</p>
+<img src="../../_images/sphx_glr_k_estimator_001.png" srcset="../../_images/sphx_glr_k_estimator_001.png" alt="K Parameter Estimation" class = "sphx-glr-single-img"/></section>
+<section id="plot-relevant-statistics">
+<h2>Plot relevant statistics<a class="headerlink" href="#plot-relevant-statistics" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">k_estimator</span><span class="o">.</span><span class="n">plot_statistics</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_k_estimator_002.png" srcset="../../_images/sphx_glr_k_estimator_002.png" alt="Median vs Bead Diameter, STD vs Bead Diameter" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 29.073 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-validation-k-estimator-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/f0de7a381f0317db9890cbd87489980f/k_estimator.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">k_estimator.ipynb</span></code></a></p>
@@ -689,7 +718,8 @@ when varying bead size under fixed illumination power.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-and-configuration">Setup and configuration</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#construct-simulation-components">Construct simulation components</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-k-estimation-simulation">Run K Estimation Simulation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-estimation-and-diagnostics">Plot estimation and diagnostics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-estimation">Plot estimation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-relevant-statistics">Plot relevant statistics</a></li>
 </ul>
   </nav></div>
 

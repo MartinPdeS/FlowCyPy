@@ -13,16 +13,17 @@ from FlowCyPy.detector import Detector
 from FlowCyPy import units
 from FlowCyPy.signal_generator import SignalGenerator
 import numpy
-from FlowCyPy import NoiseSetting
+from FlowCyPy import SimulationSettings
 
-NoiseSetting.include_noises = True
-NoiseSetting.include_shot_noise = False
-NoiseSetting.include_dark_current_noise = True
-NoiseSetting.include_source_noise = False
+SimulationSettings.include_noises = True
+SimulationSettings.include_shot_noise = False
+SimulationSettings.include_dark_current_noise = True
+SimulationSettings.include_source_noise = False
 
 # Define dark current levels
 dark_currents = [1e-9 * units.ampere, 5e-9 * units.ampere, 1e-8 * units.ampere]  # Dark current levels in amperes
 
+# %%
 # Create a figure for signal visualization
 fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
 
@@ -67,6 +68,7 @@ ax_hist.set_xlabel("Signal Voltage (A)")
 ax_hist.set_ylabel("Frequency")
 ax_hist.legend()
 
+
 # Show the plots
 plt.tight_layout()
-plt.show()
+_ = plt.show()

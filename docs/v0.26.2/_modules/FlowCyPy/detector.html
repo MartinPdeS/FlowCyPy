@@ -514,7 +514,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.physical_constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysicalConstant</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">helper</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.noises</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoiseSetting</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.simulation_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
 
 
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -560,25 +560,6 @@ document.write(`
 <span class="sd">        Default is 0°.</span>
 <span class="sd">    sampling : Quantity, optional</span>
 <span class="sd">        The number of spatial sampling points defining the detector&#39;s resolution. Default is 100 AU.</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    phi_angle : Quantity</span>
-<span class="sd">        The detector&#39;s primary azimuthal angle (in degrees).</span>
-<span class="sd">    numerical_aperture : Quantity</span>
-<span class="sd">        The detector&#39;s numerical aperture (dimensionless).</span>
-<span class="sd">    cache_numerical_aperture : Quantity</span>
-<span class="sd">        The numerical aperture of the cache element (dimensionless).</span>
-<span class="sd">    responsivity : Quantity</span>
-<span class="sd">        The responsivity of the detector (in amperes per watt).</span>
-<span class="sd">    dark_current : Quantity</span>
-<span class="sd">        The dark current of the detector (in amperes).</span>
-<span class="sd">    gamma_angle : Quantity</span>
-<span class="sd">        The complementary (longitudinal) angle (in degrees).</span>
-<span class="sd">    sampling : Quantity</span>
-<span class="sd">        The number of spatial sampling points.</span>
-<span class="sd">    name : str</span>
-<span class="sd">        The identifier for the detector.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">phi_angle</span><span class="p">:</span> <span class="n">Quantity</span>
     <span class="n">numerical_aperture</span><span class="p">:</span> <span class="n">Quantity</span>
@@ -703,7 +684,7 @@ document.write(`
 <span class="sd">            The resulting voltage signal (in volts).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Step 1: Add shot noise to optical power if enabled</span>
-        <span class="k">if</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="ow">or</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="ow">or</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">apply_shot_noise</span><span class="p">(</span><span class="n">signal_generator</span><span class="o">=</span><span class="n">signal_generator</span><span class="p">,</span> <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="n">bandwidth</span><span class="p">)</span>
 
         <span class="c1"># Step 2: Convert optical power to current using the responsivity</span>
@@ -875,6 +856,7 @@ document.write(`
 </div>
 
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy._detector_instances</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 
                 </article>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Workflow &#8212; FlowCyPy  documentation</title>
+    <title>Flow Cytometry Workflow: Single Population Example &#8212; FlowCyPy  documentation</title>
   
   
   
@@ -54,7 +54,7 @@
     <link rel="icon" href="../../_static/thumbnail.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Limit of detection" href="limit_of_detection.html" />
+    <link rel="next" title="Limit of Detection" href="limit_of_detection.html" />
     <link rel="prev" title="Examples: Tutorials" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -464,15 +464,20 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Workflow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of detection</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Flow Cytometry Workflow: Single Population Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of Detection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workflow.html">Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflow.html">Flow Cytometry Simulation: Full System Example</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../noise_sources/index.html">Examples: Noises</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/dark_current.html">Dark Current</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/shot_noise.html">Shot noise</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../validation/index.html">Examples: Validation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../validation/j_estimator.html">J Estimator Validation — Fixed Bead Size, Variable Illumination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validation/k_estimator.html">K Estimator Validation — Fixed Illumination, Variable Bead Size</a></li>
 </ul>
 </details></li>
 </ul>
@@ -518,7 +523,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples: Tutorials</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Workflow</li>
+    <li class="breadcrumb-item active" aria-current="page">Flow...</li>
   </ul>
 </nav>
 </div>
@@ -540,50 +545,61 @@ document.write(`
 <p><a class="reference internal" href="#sphx-glr-download-gallery-tutorials-coupling-model-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code.</p>
 </div>
-<section class="sphx-glr-example-title" id="workflow">
-<span id="sphx-glr-gallery-tutorials-coupling-model-py"></span><h1>Workflow<a class="headerlink" href="#workflow" title="Link to this heading">#</a></h1>
-<p>This tutorial demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library.
-The simulation involves configuring a flow setup, defining a single population of particles, and
-analyzing scattering signals from two detectors to produce a 2D density plot of scattering intensities.</p>
-<section id="overview">
-<h2>Overview:<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<section class="sphx-glr-example-title" id="flow-cytometry-workflow-single-population-example">
+<span id="sphx-glr-gallery-tutorials-coupling-model-py"></span><h1>Flow Cytometry Workflow: Single Population Example<a class="headerlink" href="#flow-cytometry-workflow-single-population-example" title="Link to this heading">#</a></h1>
+<p>This tutorial demonstrates a basic flow cytometry simulation using the FlowCyPy library.</p>
+<p>The example covers the configuration of:
+- A fluidic channel with hydrodynamic focusing
+- A synthetic particle population (Exosome + HDL)
+- A laser source and dual-detector optical system
+- Scattering intensity calculation per detector</p>
+<p>The resulting data are visualized using event-based plots.</p>
+<section id="workflow-steps">
+<h2>Workflow Steps:<a class="headerlink" href="#workflow-steps" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
-<li><p>Configure the flow cell and particle population.</p></li>
-<li><p>Define the laser source and detector parameters.</p></li>
-<li><p>Simulate the flow cytometry experiment.</p></li>
-<li><p>Analyze the generated signals and visualize results.</p></li>
+<li><p>Define laser source and flow cell geometry</p></li>
+<li><p>Add synthetic particle populations</p></li>
+<li><p>Model optical scattering with two detectors</p></li>
+<li><p>Visualize population and scattering response</p></li>
 </ol>
 </section>
-<section id="step-0-import-necessary-libraries">
-<h2>Step 0: Import Necessary Libraries<a class="headerlink" href="#step-0-import-necessary-libraries" title="Link to this heading">#</a></h2>
-<p>Here, we import the necessary libraries and units for the simulation. The units module helps us
-define physical quantities like meters, seconds, and watts in a concise and consistent manner.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">FlowCell</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.instances</span><span class="w"> </span><span class="kn">import</span> <span class="n">Exosome</span><span class="p">,</span> <span class="n">HDL</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">GaussianBeam</span><span class="p">,</span> <span class="n">OptoElectronics</span><span class="p">,</span> <span class="n">SignalDigitizer</span><span class="p">,</span> <span class="n">PMT</span><span class="p">,</span> <span class="n">TransimpedanceAmplifier</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluidics</span>
-
-
-<span class="n">source</span> <span class="o">=</span> <span class="n">GaussianBeam</span><span class="p">(</span>
+<section id="step-0-imports-and-setup">
+<h2>Step 0: Imports and Setup<a class="headerlink" href="#step-0-imports-and-setup" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.opto_electronics</span><span class="w"> </span><span class="kn">import</span> <span class="n">source</span><span class="p">,</span> <span class="n">TransimpedanceAmplifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluidics</span><span class="p">,</span> <span class="n">FlowCell</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">population</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">PMT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Digitizer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptoElectronics</span>
+</pre></div>
+</div>
+</section>
+<section id="step-1-define-optical-source">
+<h2>Step 1: Define Optical Source<a class="headerlink" href="#step-1-define-optical-source" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">laser</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">GaussianBeam</span><span class="p">(</span>
     <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>
     <span class="n">wavelength</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
     <span class="n">optical_power</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span>
 <span class="p">)</span>
-
-<span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
+</pre></div>
+</div>
+</section>
+<section id="step-2-configure-flow-cell-and-fluidics">
+<h2>Step 2: Configure Flow Cell and Fluidics<a class="headerlink" href="#step-2-configure-flow-cell-and-fluidics" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
     <span class="n">sample_volume_flow</span><span class="o">=</span><span class="mf">0.02</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
     <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
     <span class="n">width</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
-    <span class="n">height</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span>
 <span class="p">)</span>
 
 <span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
 
-<span class="c1"># Add an Exosome and HDL population</span>
+<span class="c1"># Add Exosome and HDL populations</span>
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span>
-    <span class="n">Exosome</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span><span class="p">),</span>
-    <span class="n">HDL</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span><span class="p">)</span>
+    <span class="n">population</span><span class="o">.</span><span class="n">Exosome</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span><span class="p">),</span>
+    <span class="n">population</span><span class="o">.</span><span class="n">HDL</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span><span class="p">)</span>
 <span class="p">)</span>
 
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
@@ -592,59 +608,86 @@ define physical quantities like meters, seconds, and watts in a concise and cons
     <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
     <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span>
 <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="step-3-generate-particle-event-dataframe">
+<h2>Step 3: Generate Particle Event DataFrame<a class="headerlink" href="#step-3-generate-particle-event-dataframe" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">event_dataframe</span> <span class="o">=</span> <span class="n">fluidics</span><span class="o">.</span><span class="n">generate_event_dataframe</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">3.5</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 
-
-<span class="n">event_dataframe</span> <span class="o">=</span> <span class="n">fluidics</span><span class="o">.</span><span class="n">generate_event_dataframe</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">3.5</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>  <span class="c1"># Visualize the particle population</span>
-
+<span class="c1"># Plot the diameter distribution of the particles</span>
 <span class="n">event_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;Diameter&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
-
-<span class="n">digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
-    <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>
-    <span class="n">saturation_levels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
-    <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_coupling_model_001.png" srcset="../../_images/sphx_glr_coupling_model_001.png" alt="Distribution of Diameter" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 1000x600 with 1 Axes&gt;
+</pre></div>
+</div>
+</section>
+<section id="step-4-define-detectors-and-amplifier">
+<h2>Step 4: Define Detectors and Amplifier<a class="headerlink" href="#step-4-define-detectors-and-amplifier" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">detector_forward</span> <span class="o">=</span> <span class="n">PMT</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
+    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span>
 <span class="p">)</span>
 
-<span class="n">detector_0</span> <span class="o">=</span> <span class="n">PMT</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">)</span>
-
-<span class="n">detector_1</span> <span class="o">=</span> <span class="n">PMT</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">)</span>
+<span class="n">detector_side</span> <span class="o">=</span> <span class="n">PMT</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>
+    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span>
+<span class="p">)</span>
 
 <span class="n">amplifier</span> <span class="o">=</span> <span class="n">TransimpedanceAmplifier</span><span class="p">(</span>
     <span class="n">gain</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span>
-    <span class="n">bandwidth</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span>
-<span class="p">)</span>
-
-<span class="n">opto_electronics</span> <span class="o">=</span> <span class="n">OptoElectronics</span><span class="p">(</span>
-    <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">],</span>
-    <span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">,</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
-    <span class="n">amplifier</span><span class="o">=</span><span class="n">amplifier</span>
-<span class="p">)</span>
-
-<span class="n">event_dataframe</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">model_event</span><span class="p">(</span>
-    <span class="n">event_dataframe</span><span class="o">=</span><span class="n">event_dataframe</span><span class="p">,</span>
-    <span class="n">compute_cross_section</span><span class="o">=</span><span class="kc">True</span>
-<span class="p">)</span>
-
-<span class="n">event_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>
-    <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
-    <span class="n">z</span><span class="o">=</span><span class="s1">&#39;Csca&#39;</span>
+    <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<ul class="sphx-glr-horizontal">
-<li><img src="../../_images/sphx_glr_coupling_model_001.png" srcset="../../_images/sphx_glr_coupling_model_001.png" alt="Distribution of Diameter" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_coupling_model_002.png" srcset="../../_images/sphx_glr_coupling_model_002.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-multi-img"/></li>
-</ul>
+</section>
+<section id="step-5-configure-digitizer-and-opto-electronics">
+<h2>Step 5: Configure Digitizer and Opto-Electronics<a class="headerlink" href="#step-5-configure-digitizer-and-opto-electronics" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">digitizer</span> <span class="o">=</span> <span class="n">Digitizer</span><span class="p">(</span>
+    <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>
+    <span class="n">saturation_levels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+    <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span>
+<span class="p">)</span>
+
+<span class="n">opto_electronics</span> <span class="o">=</span> <span class="n">OptoElectronics</span><span class="p">(</span>
+    <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_forward</span><span class="p">,</span> <span class="n">detector_side</span><span class="p">],</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">laser</span><span class="p">,</span>
+    <span class="n">amplifier</span><span class="o">=</span><span class="n">amplifier</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="step-6-model-scattering-signals">
+<h2>Step 6: Model Scattering Signals<a class="headerlink" href="#step-6-model-scattering-signals" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">event_dataframe</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">model_event</span><span class="p">(</span>
+    <span class="n">event_dataframe</span><span class="o">=</span><span class="n">event_dataframe</span><span class="p">,</span>
+    <span class="n">compute_cross_section</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:266: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
 /opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:266: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
-
-&lt;Figure size 800x800 with 1 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.385 seconds)</p>
+</section>
+<section id="step-7-visualize-scattering-intensity">
+<h2>Step 7: Visualize Scattering Intensity<a class="headerlink" href="#step-7-visualize-scattering-intensity" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">event_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
+    <span class="n">z</span><span class="o">=</span><span class="s1">&#39;Csca&#39;</span>  <span class="c1"># Color-coded by scattering cross-section</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_coupling_model_002.png" srcset="../../_images/sphx_glr_coupling_model_002.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 800x800 with 1 Axes&gt;
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.913 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-coupling-model-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/4c330faf84cd5e64e28ee463763b4944/coupling_model.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">coupling_model.ipynb</span></code></a></p>
@@ -682,8 +725,15 @@ define physical quantities like meters, seconds, and watts in a concise and cons
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-0-import-necessary-libraries">Step 0: Import Necessary Libraries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#workflow-steps">Workflow Steps:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-0-imports-and-setup">Step 0: Imports and Setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-define-optical-source">Step 1: Define Optical Source</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-configure-flow-cell-and-fluidics">Step 2: Configure Flow Cell and Fluidics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-generate-particle-event-dataframe">Step 3: Generate Particle Event DataFrame</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-define-detectors-and-amplifier">Step 4: Define Detectors and Amplifier</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-configure-digitizer-and-opto-electronics">Step 5: Configure Digitizer and Opto-Electronics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-model-scattering-signals">Step 6: Model Scattering Signals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-visualize-scattering-intensity">Step 7: Visualize Scattering Intensity</a></li>
 </ul>
   </nav></div>
 

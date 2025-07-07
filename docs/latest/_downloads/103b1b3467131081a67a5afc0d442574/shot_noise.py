@@ -12,18 +12,19 @@ import matplotlib.pyplot as plt
 from FlowCyPy.detector import Detector
 from FlowCyPy import units
 import numpy
-from FlowCyPy import NoiseSetting
+from FlowCyPy import SimulationSettings
 from FlowCyPy.signal_generator import SignalGenerator
 
-NoiseSetting.include_noises = True
-NoiseSetting.include_shot_noise = True
-NoiseSetting.include_dark_current_noise = False
-NoiseSetting.include_source_noise = False
+SimulationSettings.include_noises = True
+SimulationSettings.include_shot_noise = True
+SimulationSettings.include_dark_current_noise = False
+SimulationSettings.include_source_noise = False
 
 # Define optical power levels
 optical_powers = [1 * units.nanowatt, 2 * units.nanowatt, 4 * units.nanowatt]  # Powers in watts
 sequence_length = 300
 
+# %%
 # Create a figure for signal visualization
 fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
 
@@ -72,6 +73,7 @@ ax_hist.set_xlabel("Signal Voltage (V)")
 ax_hist.set_ylabel("Frequency")
 ax_hist.legend()
 
+
 # Show the plots
 plt.tight_layout()
-plt.show()
+_ = plt.show()

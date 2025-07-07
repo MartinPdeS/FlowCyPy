@@ -12,4 +12,4 @@ Explore our gallery of examples demonstrating the usage of FlowCyPy. These examp
 
     /gallery/tutorials/index.rst
     /gallery/noise_sources/index.rst
-    /gallery/extras/index.rst
+    /gallery/validation/index.rst

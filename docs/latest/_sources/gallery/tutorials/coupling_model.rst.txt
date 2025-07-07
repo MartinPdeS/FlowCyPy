@@ -18,58 +18,94 @@
 .. _sphx_glr_gallery_tutorials_coupling_model.py:
 
 
-Workflow
-========
+Flow Cytometry Workflow: Single Population Example
+==================================================
 
-This tutorial demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library.
-The simulation involves configuring a flow setup, defining a single population of particles, and
-analyzing scattering signals from two detectors to produce a 2D density plot of scattering intensities.
+This tutorial demonstrates a basic flow cytometry simulation using the FlowCyPy library.
 
-Overview:
----------
-1. Configure the flow cell and particle population.
-2. Define the laser source and detector parameters.
-3. Simulate the flow cytometry experiment.
-4. Analyze the generated signals and visualize results.
+The example covers the configuration of:
+- A fluidic channel with hydrodynamic focusing
+- A synthetic particle population (Exosome + HDL)
+- A laser source and dual-detector optical system
+- Scattering intensity calculation per detector
 
-.. GENERATED FROM PYTHON SOURCE LINES 19-23
+The resulting data are visualized using event-based plots.
 
-Step 0: Import Necessary Libraries
------------------------------------
-Here, we import the necessary libraries and units for the simulation. The units module helps us
-define physical quantities like meters, seconds, and watts in a concise and consistent manner.
+Workflow Steps:
+---------------
+1. Define laser source and flow cell geometry
+2. Add synthetic particle populations
+3. Model optical scattering with two detectors
+4. Visualize population and scattering response
 
-.. GENERATED FROM PYTHON SOURCE LINES 23-96
+.. GENERATED FROM PYTHON SOURCE LINES 24-26
+
+Step 0: Imports and Setup
+--------------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 26-34
 
 .. code-block:: Python
 
-
+    import numpy as np
     from FlowCyPy import units
-    from FlowCyPy import ScattererCollection, FlowCell
-    from FlowCyPy.instances import Exosome, HDL
-    from FlowCyPy import GaussianBeam, OptoElectronics, SignalDigitizer, PMT, TransimpedanceAmplifier
-    from FlowCyPy import Fluidics
+    from FlowCyPy.opto_electronics import source, TransimpedanceAmplifier
+    from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection, population
+    from FlowCyPy.detector import PMT
+    from FlowCyPy.signal_processing import Digitizer
+    from FlowCyPy import OptoElectronics
 
 
-    source = GaussianBeam(
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 35-37
+
+Step 1: Define Optical Source
+-----------------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 37-43
+
+.. code-block:: Python
+
+    laser = source.GaussianBeam(
         numerical_aperture=0.3 * units.AU,
         wavelength=200 * units.nanometer,
         optical_power=20 * units.milliwatt
     )
 
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 44-46
+
+Step 2: Configure Flow Cell and Fluidics
+----------------------------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 46-68
+
+.. code-block:: Python
+
     flow_cell = FlowCell(
         sample_volume_flow=0.02 * units.microliter / units.second,
         sheath_volume_flow=0.1 * units.microliter / units.second,
         width=20 * units.micrometer,
-        height=10 * units.micrometer,
+        height=10 * units.micrometer
     )
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
-    # Add an Exosome and HDL population
+    # Add Exosome and HDL populations
     scatterer_collection.add_population(
-        Exosome(particle_count=5e9 * units.particle / units.milliliter),
-        HDL(particle_count=5e9 * units.particle / units.milliliter)
+        population.Exosome(particle_count=5e9 * units.particle / units.milliliter),
+        population.HDL(particle_count=5e9 * units.particle / units.milliliter)
     )
 
     scatterer_collection.dilute(factor=0.1)
@@ -80,61 +116,121 @@ define physical quantities like meters, seconds, and watts in a concise and cons
     )
 
 
-    event_dataframe = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)  # Visualize the particle population
 
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 69-71
+
+Step 3: Generate Particle Event DataFrame
+-----------------------------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 71-76
+
+.. code-block:: Python
+
+    event_dataframe = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)
+
+    # Plot the diameter distribution of the particles
     event_dataframe.plot(x='Diameter', bins='auto')
 
-    digitizer = SignalDigitizer(
-        bit_depth='14bit',
-        saturation_levels='auto',
-        sampling_rate=60 * units.megahertz,
+
+
+
+.. image-sg:: /gallery/tutorials/images/sphx_glr_coupling_model_001.png
+   :alt: Distribution of Diameter
+   :srcset: /gallery/tutorials/images/sphx_glr_coupling_model_001.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <Figure size 1000x600 with 1 Axes>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 77-79
+
+Step 4: Define Detectors and Amplifier
+--------------------------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 79-96
+
+.. code-block:: Python
+
+    detector_forward = PMT(
+        name='forward',
+        phi_angle=0 * units.degree,
+        numerical_aperture=0.3 * units.AU
     )
 
-    detector_0 = PMT(name='forward', phi_angle=0 * units.degree, numerical_aperture=0.3 * units.AU)
-
-    detector_1 = PMT(name='side', phi_angle=90 * units.degree, numerical_aperture=0.3 * units.AU)
+    detector_side = PMT(
+        name='side',
+        phi_angle=90 * units.degree,
+        numerical_aperture=0.3 * units.AU
+    )
 
     amplifier = TransimpedanceAmplifier(
         gain=100 * units.volt / units.ampere,
-        bandwidth = 10 * units.megahertz
+        bandwidth=10 * units.megahertz
+    )
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 97-99
+
+Step 5: Configure Digitizer and Opto-Electronics
+------------------------------------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 99-111
+
+.. code-block:: Python
+
+    digitizer = Digitizer(
+        bit_depth='14bit',
+        saturation_levels='auto',
+        sampling_rate=60 * units.megahertz
     )
 
     opto_electronics = OptoElectronics(
-        detectors=[detector_0, detector_1],
-        digitizer=digitizer,
-        source=source,
+        detectors=[detector_forward, detector_side],
+        source=laser,
         amplifier=amplifier
     )
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 112-114
+
+Step 6: Model Scattering Signals
+--------------------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 114-119
+
+.. code-block:: Python
 
     event_dataframe = opto_electronics.model_event(
         event_dataframe=event_dataframe,
         compute_cross_section=True
     )
 
-    event_dataframe.plot(
-        x='side',
-        y='forward',
-        z='Csca'
-    )
 
 
-
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_coupling_model_001.png
-         :alt: Distribution of Diameter
-         :srcset: /gallery/tutorials/images/sphx_glr_coupling_model_001.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_coupling_model_002.png
-         :alt: Scatterer Sampling Distribution
-         :srcset: /gallery/tutorials/images/sphx_glr_coupling_model_002.png
-         :class: sphx-glr-multi-img
 
 
 .. rst-class:: sphx-glr-script-out
@@ -146,6 +242,37 @@ define physical quantities like meters, seconds, and watts in a concise and cons
     /opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:266: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 120-122
+
+Step 7: Visualize Scattering Intensity
+--------------------------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 122-127
+
+.. code-block:: Python
+
+    event_dataframe.plot(
+        x='side',
+        y='forward',
+        z='Csca'  # Color-coded by scattering cross-section
+    )
+
+
+
+.. image-sg:: /gallery/tutorials/images/sphx_glr_coupling_model_002.png
+   :alt: Scatterer Sampling Distribution
+   :srcset: /gallery/tutorials/images/sphx_glr_coupling_model_002.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
     <Figure size 800x800 with 1 Axes>
 
 
@@ -153,7 +280,7 @@ define physical quantities like meters, seconds, and watts in a concise and cons
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.385 seconds)
+   **Total running time of the script:** (0 minutes 3.913 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_coupling_model.py:

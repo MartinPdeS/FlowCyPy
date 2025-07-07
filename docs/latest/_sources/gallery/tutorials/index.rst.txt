@@ -12,7 +12,7 @@ Examples: Tutorials
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library. The simulation involves configuring a flow setup, defining a single population of particles, and analyzing scattering signals from two detectors to produce a 2D density plot of scattering intensities.">
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates a basic flow cytometry simulation using the FlowCyPy library.">
 
 .. only:: html
 
@@ -23,13 +23,13 @@ Examples: Tutorials
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Workflow</div>
+      <div class="sphx-glr-thumbnail-title">Flow Cytometry Workflow: Single Population Example</div>
     </div>
 
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Limit of detection">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example simulates the detection of small nanoparticles (90–150 nm diameter) in a flow cytometry setup using a dual-detector configuration (side and forward scatter). The simulation includes noise models, realistic fluidics, analog signal conditioning, digitization, triggering, and peak detection.">
 
 .. only:: html
 
@@ -40,7 +40,7 @@ Examples: Tutorials
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Limit of detection</div>
+      <div class="sphx-glr-thumbnail-title">Limit of Detection</div>
     </div>
 
 
@@ -63,7 +63,7 @@ Examples: Tutorials
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library. The simulation involves configuring a flow setup, defining a single population of particles, and analyzing scattering signals from two detectors to produce a 2D density plot of scattering intensities.">
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library. It models fluidics, optics, signal processing, and classification of multiple particle populations.">
 
 .. only:: html
 
@@ -74,7 +74,7 @@ Examples: Tutorials
 
 .. raw:: html
 
-      <div class="sphx-glr-thumbnail-title">Workflow</div>
+      <div class="sphx-glr-thumbnail-title">Flow Cytometry Simulation: Full System Example</div>
     </div>
 
 

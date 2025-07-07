@@ -25,29 +25,7 @@ This example illustrates the impact of varying dark current levels on a flow cyt
 The detector is initialized, dark current noise is applied, and the resulting signals are visualized
 along with their distributions.
 
-.. GENERATED FROM PYTHON SOURCE LINES 10-73
-
-
-
-.. image-sg:: /gallery/noise_sources/images/sphx_glr_dark_current_001.png
-   :alt: Raw Signals with Different Dark Current Levels, Histogram of Raw Signals
-   :srcset: /gallery/noise_sources/images/sphx_glr_dark_current_001.png
-   :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    /home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/dark_current.py:63: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
-      ax_signal.legend()
-
-
-
-
-
-
-|
+.. GENERATED FROM PYTHON SOURCE LINES 10-26
 
 .. code-block:: Python
 
@@ -57,17 +35,31 @@ along with their distributions.
     from FlowCyPy import units
     from FlowCyPy.signal_generator import SignalGenerator
     import numpy
-    from FlowCyPy import NoiseSetting
+    from FlowCyPy import SimulationSettings
 
-    NoiseSetting.include_noises = True
-    NoiseSetting.include_shot_noise = False
-    NoiseSetting.include_dark_current_noise = True
-    NoiseSetting.include_source_noise = False
+    SimulationSettings.include_noises = True
+    SimulationSettings.include_shot_noise = False
+    SimulationSettings.include_dark_current_noise = True
+    SimulationSettings.include_source_noise = False
 
     # Define dark current levels
     dark_currents = [1e-9 * units.ampere, 5e-9 * units.ampere, 1e-8 * units.ampere]  # Dark current levels in amperes
 
-    # Create a figure for signal visualization
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 27-28
+
+Create a figure for signal visualization
+
+.. GENERATED FROM PYTHON SOURCE LINES 28-75
+
+.. code-block:: Python
+
     fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
 
     # Loop over the dark current levels
@@ -111,14 +103,33 @@ along with their distributions.
     ax_hist.set_ylabel("Frequency")
     ax_hist.legend()
 
+
     # Show the plots
     plt.tight_layout()
-    plt.show()
+    _ = plt.show()
+
+
+
+.. image-sg:: /gallery/noise_sources/images/sphx_glr_dark_current_001.png
+   :alt: Raw Signals with Different Dark Current Levels, Histogram of Raw Signals
+   :srcset: /gallery/noise_sources/images/sphx_glr_dark_current_001.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /home/runner/work/FlowCyPy/FlowCyPy/docs/examples/noise_sources/dark_current.py:64: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+      ax_signal.legend()
+
+
+
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.509 seconds)
+   **Total running time of the script:** (0 minutes 0.520 seconds)
 
 
 .. _sphx_glr_download_gallery_noise_sources_dark_current.py:
