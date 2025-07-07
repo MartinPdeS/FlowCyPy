@@ -31,8 +31,8 @@ class SignalProcessing:
     """
 
     def __init__(self,
-        analog_processing: list[SignalProcessor],
         digitizer: SignalDigitizer,
+        analog_processing: list[SignalProcessor] = (),
         triggering_system: BaseTrigger = None,
         peak_algorithm: BasePeakLocator = None):
 

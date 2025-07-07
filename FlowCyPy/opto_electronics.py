@@ -1,6 +1,5 @@
 from typing import List
 import pandas as pd
-from FlowCyPy import units
 from FlowCyPy.coupling import ScatteringSimulator
 from FlowCyPy.detector import Detector
 from FlowCyPy.source import BaseBeam

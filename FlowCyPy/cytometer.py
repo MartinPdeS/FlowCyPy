@@ -14,6 +14,9 @@ from FlowCyPy.signal_processing import SignalProcessing
 
 
 class Result():
+    analog: Optional[AcquisitionDataFrame] = None
+    triggered_analog: Optional[AcquisitionDataFrame] = None
+    events: Optional[pd.DataFrame] = None
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
