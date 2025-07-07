@@ -26,14 +26,14 @@ class CallablePopulation(metaclass=CallablePopulationMeta):
 
 # Define populations
 _populations = (
-    ('Exosome',          70 * units.nanometer, 2.0, 1.39 * units.RIU, 0.02 * units.RIU),
-    ('MicroVesicle',    400 * units.nanometer, 1.5, 1.39 * units.RIU, 0.02 * units.RIU),
-    ('ApoptoticBodies',  2 * units.micrometer, 1.2, 1.40 * units.RIU, 0.03 * units.RIU),
-    ('HDL',              10 * units.nanometer, 3.5, 1.33 * units.RIU, 0.01 * units.RIU),
-    ('LDL',              20 * units.nanometer, 3.0, 1.35 * units.RIU, 0.02 * units.RIU),
-    ('VLDL',             50 * units.nanometer, 2.0, 1.445 * units.RIU, 0.0005 * units.RIU),
-    ('Platelet',       2000 * units.nanometer, 2.5, 1.38 * units.RIU, 0.01 * units.RIU),
-    ('CellularDebris',   3 * units.micrometer, 1.0, 1.40 * units.RIU, 0.03 * units.RIU),
+    ('Exosome',          70 * units.nanometer, 20, 1.39 * units.RIU, 0.02 * units.RIU),
+    ('MicroVesicle',    400 * units.nanometer, 15, 1.39 * units.RIU, 0.02 * units.RIU),
+    ('ApoptoticBodies',  2 * units.micrometer, 12, 1.40 * units.RIU, 0.03 * units.RIU),
+    ('HDL',              10 * units.nanometer, 35, 1.33 * units.RIU, 0.01 * units.RIU),
+    ('LDL',              20 * units.nanometer, 30, 1.35 * units.RIU, 0.02 * units.RIU),
+    ('VLDL',             50 * units.nanometer, 20, 1.445 * units.RIU, 0.0005 * units.RIU),
+    ('Platelet',       2000 * units.nanometer, 25, 1.38 * units.RIU, 0.01 * units.RIU),
+    ('CellularDebris',   3 * units.micrometer, 10, 1.40 * units.RIU, 0.03 * units.RIU),
 )
 
 # Dynamically create population classes

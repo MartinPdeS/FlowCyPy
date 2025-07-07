@@ -67,6 +67,7 @@ examples_files = [
 ]
 
 sphinx_gallery_conf = {
+    'reset_modules_order': 'after',
     "examples_dirs": ['../examples/' + f for f in examples_files],
     "gallery_dirs": ['gallery/' + f for f in examples_files],
     'image_scrapers': ('matplotlib'),
