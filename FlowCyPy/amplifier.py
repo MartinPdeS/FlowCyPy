@@ -111,7 +111,7 @@ class TransimpedanceAmplifier():
         Raises
         ------
         ValueError
-            If the signal generator does not have a method to get the signal for the specified detector.
+            If the signal  generator does not have a method to get the signal for the specified detector.
 
         Notes
         -----
