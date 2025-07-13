@@ -711,9 +711,12 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">signal_processing</span><span class="o">.</span><span class="n">process_analog</span><span class="p">(</span><span class="n">signal_generator</span><span class="p">)</span>
 
         <span class="c1"># Create structured DataFrame output</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">analog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_dataframe_out_of_signal_generator</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">analog</span> <span class="o">=</span> <span class="n">AcquisitionDataFrame</span><span class="o">.</span><span class="n">_construct_from_signal_generator</span><span class="p">(</span>
             <span class="n">event_dataframe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">events</span><span class="p">,</span>
-            <span class="n">signal_generator</span><span class="o">=</span><span class="n">signal_generator</span>
+            <span class="n">signal_generator</span><span class="o">=</span><span class="n">signal_generator</span><span class="p">,</span>
+            <span class="n">is_digital</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">time_units</span><span class="o">=</span><span class="s1">&#39;second&#39;</span><span class="p">,</span>
+            <span class="n">signal_units</span><span class="o">=</span><span class="s1">&#39;volt&#39;</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">analog</span></div>
@@ -745,40 +748,6 @@ document.write(`
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="o">.</span><span class="n">peaks</span></div>
 
-
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_make_dataframe_out_of_signal_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event_dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">signal_generator</span><span class="p">:</span> <span class="n">SignalGenerator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AcquisitionDataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Converts a signal generator&#39;s output into a pandas DataFrame.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        signal_generator : SignalGenerator</span>
-<span class="sd">            The signal generator instance containing the generated signals.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        AcquisitionDataFrame</span>
-<span class="sd">            A DataFrame containing the signals from the signal generator.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">signal_dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-
-        <span class="n">time</span> <span class="o">=</span> <span class="n">signal_generator</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
-
-        <span class="n">signal_dataframe</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;pint[second]&quot;</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
-            <span class="n">signal_dataframe</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">signal_generator</span><span class="o">.</span><span class="n">get_signal</span><span class="p">(</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;pint[volt]&quot;</span><span class="p">)</span>
-
-        <span class="n">signal_dataframe</span> <span class="o">=</span> <span class="n">AcquisitionDataFrame</span><span class="p">(</span>
-            <span class="n">signal_dataframe</span><span class="p">,</span>
-            <span class="n">scatterer</span><span class="o">=</span><span class="n">event_dataframe</span><span class="p">,</span>
-            <span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;analog&#39;</span>
-        <span class="p">)</span>
-
-        <span class="n">signal_dataframe</span><span class="o">.</span><span class="n">normalize_units</span><span class="p">(</span><span class="n">signal_units</span><span class="o">=</span><span class="s1">&#39;SI&#39;</span><span class="p">,</span> <span class="n">time_units</span><span class="o">=</span><span class="s1">&#39;SI&#39;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">signal_dataframe</span>
 
 <div class="viewcode-block" id="FlowCytometer.run">
 <a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.cytometer.FlowCytometer.run">[docs]</a>
