@@ -269,7 +269,7 @@ Step 7: Visualize Scattering Intensity
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7fcab2ccac90>
+    <seaborn.axisgrid.JointGrid object at 0x7f2e408258d0>
 
 
 
