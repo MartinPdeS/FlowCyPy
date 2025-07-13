@@ -158,6 +158,11 @@ PYBIND11_MODULE(interface_signal_generator, module) {
             py::arg("signal_name"),
             "Adds Poisson noise to the specified signal."
         )
+        .def(
+            "_cpp_get_signal_names",
+            &SignalGenerator::get_signal_names,
+            "Returns a list of all signal names in the data dictionary."
+        )
         ;
 
 }

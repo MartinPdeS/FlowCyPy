@@ -84,7 +84,7 @@ class BaseTrigger:
 
         tidy = pd.DataFrame(data).set_index("SegmentID")
 
-        tidy = TriggerDataFrame(tidy, plot_type="analog")
+        tidy = TriggerDataFrame(tidy, is_digital=False)
 
         tidy.normalize_units(signal_units='max', time_units='max')
 

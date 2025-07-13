@@ -274,6 +274,34 @@ class Detector():
 
         return photon_to_power_factor * power_to_current_factor  # Current (A)
 
+    def _transform_optical_power_to_photon_count(self, signal_generator: SignalGenerator, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
+        """
+        Converts optical power to photon count using the detector's responsivity.
+
+        Parameters
+        ----------
+        signal_generator : SignalGenerator
+            The signal generator instance used to apply the conversion.
+        wavelength : Quantity
+            The wavelength of the incident light (in meters).
+        bandwidth : Quantity
+            The bandwidth of the signal (in Hz).
+
+        Returns
+        -------
+        Quantity
+            The resulting photon count signal (in photons).
+        """
+        optical_power_to_photo_count_conversion = self._get_optical_power_to_photon_factor(
+            wavelength=wavelength,
+            bandwidth=bandwidth
+        )
+
+        signal_generator.multiply(
+            signal_name=self.name,
+            factor=optical_power_to_photo_count_conversion
+        )
+
     @helper.validate_input_units(optical_power=units.watt, wavelength=units.meter)
     def apply_shot_noise(self, signal_generator: SignalGenerator, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
         r"""

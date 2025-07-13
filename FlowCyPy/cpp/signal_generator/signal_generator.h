@@ -212,4 +212,18 @@ public:
      * This function rounds each signal in the data dictionary (except the "Time" signal) to the nearest integer.
      */
     void round();
+
+    /**
+     * @brief Retrieves the names of all signals in the data dictionary.
+     * This function returns a vector containing the names of all signals stored in the data dictionary.
+     * @return A vector of strings representing the names of the signals.
+     */
+    std::vector<std::string> get_signal_names() const {
+        std::vector<std::string> signal_names;
+        for (const auto &pair : data_dict) {
+            if (pair.first == "Time") continue; // Skip the "Time" signal
+            signal_names.push_back(pair.first);
+        }
+        return signal_names;
+    }
 };

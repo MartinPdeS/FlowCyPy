@@ -7,6 +7,7 @@ import pint_pandas
 from FlowCyPy import units
 from FlowCyPy.sub_frames.base import BaseSubFrame
 from FlowCyPy.sub_frames import utils
+from FlowCyPy.signal_generator import SignalGenerator
 
 class BaseAcquisitionDataFrame(BaseSubFrame):
     """
@@ -17,6 +18,55 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         self.attrs['scatterer'] = scatterer
         self.attrs.update(attributes)
+
+
+    @classmethod
+    def _construct_from_signal_generator(cls,
+        event_dataframe: pd.DataFrame,
+        signal_generator: SignalGenerator,
+        is_digital: bool,
+        time_units: units.Quantity | str,
+        signal_units: units.Quantity | str) -> "AcquisitionDataFrame":
+        """
+        Converts a signal generator's output into a pandas DataFrame.
+
+        Parameters
+        ----------
+        event_dataframe : pd.DataFrame
+            A DataFrame containing event data, typically including time and scatterer properties.
+        signal_generator : SignalGenerator
+            The signal generator instance containing the generated signals.
+        is_digital : bool, optional
+            A flag indicating whether the signals are digital.
+        time_units : units.Quantity | str
+            The units for the time column in the resulting DataFrame.
+        signal_units : units.Quantity | str
+            The units for the signal columns in the resulting DataFrame.
+
+        Returns
+        -------
+        AcquisitionDataFrame
+            A DataFrame containing the signals from the signal generator.
+        """
+        signal_dataframe = pd.DataFrame()
+
+        time = signal_generator.get_time()
+
+        signal_dataframe["Time"] = pd.Series(time, dtype=f"pint[{time_units}]")
+
+        for detector_name in signal_generator._cpp_get_signal_names():
+            signal_dataframe[detector_name] = pd.Series(signal_generator.get_signal(detector_name), dtype=f"pint[{signal_units}]")
+
+
+        signal_dataframe = cls(
+            signal_dataframe,
+            scatterer=event_dataframe,
+            is_digital=is_digital
+        )
+
+        signal_dataframe.normalize_units(signal_units='SI', time_units='SI')
+
+        return signal_dataframe
 
 
     def digitalize(self, digitizer: object):
@@ -47,7 +97,7 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         output = self.__class__(
             dataframe=digital_df,
-            plot_type='digital',
+            is_digital=True,
             scatterer=self.attrs['scatterer']
         )
 
@@ -230,10 +280,10 @@ class AcquisitionDataFrame(BaseAcquisitionDataFrame):
             time = self["Time"].pint.to(self.time_units)
             signal = self[detector_name].pint.to(self.signal_units)
 
-            if self.attrs['plot_type'] == 'analog':
+            if not self.attrs['is_digital']:
                 ax.plot(time, signal, label='Analog Signal', linestyle='-', color='black')
             else:
-                ax.step(time, signal, where='mid', color='black', label='Digitized Signal')
+                ax.step(time, signal, where='mid', color='black', label='Digital Signal')
 
 
 class TriggerDataFrame(BaseAcquisitionDataFrame):
@@ -269,7 +319,7 @@ class TriggerDataFrame(BaseAcquisitionDataFrame):
 
                 ax.axvspan(start_time, end_time, facecolor=color, alpha=0.3)
 
-                if self.attrs['plot_type'] == 'analog':
+                if not self.attrs['is_digital']:
                     ax.plot(time, signal, color='black', linestyle='-')
                 else:
                     ax.step(time, signal, where='mid', color='black', linestyle='-')

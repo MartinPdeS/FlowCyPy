@@ -194,9 +194,12 @@ class FlowCytometer:
         self.signal_processing.process_analog(signal_generator)
 
         # Create structured DataFrame output
-        self.results.analog = self._make_dataframe_out_of_signal_generator(
+        self.results.analog = AcquisitionDataFrame._construct_from_signal_generator(
             event_dataframe=self.results.events,
-            signal_generator=signal_generator
+            signal_generator=signal_generator,
+            is_digital=False,
+            time_units='second',
+            signal_units='volt'
         )
 
         return self.results.analog
@@ -224,40 +227,6 @@ class FlowCytometer:
         self.signal_processing.process_digital(self.results)
 
         return self.results.peaks
-
-
-    def _make_dataframe_out_of_signal_generator(self, event_dataframe: pd.DataFrame, signal_generator: SignalGenerator) -> AcquisitionDataFrame:
-        """
-        Converts a signal generator's output into a pandas DataFrame.
-
-        Parameters
-        ----------
-        signal_generator : SignalGenerator
-            The signal generator instance containing the generated signals.
-
-        Returns
-        -------
-        AcquisitionDataFrame
-            A DataFrame containing the signals from the signal generator.
-        """
-        signal_dataframe = pd.DataFrame()
-
-        time = signal_generator.get_time()
-
-        signal_dataframe["Time"] = pd.Series(time, dtype="pint[second]")
-
-        for detector in self.opto_electronics.detectors:
-            signal_dataframe[detector.name] = pd.Series(signal_generator.get_signal(detector.name), dtype="pint[volt]")
-
-        signal_dataframe = AcquisitionDataFrame(
-            signal_dataframe,
-            scatterer=event_dataframe,
-            plot_type='analog'
-        )
-
-        signal_dataframe.normalize_units(signal_units='SI', time_units='SI')
-
-        return signal_dataframe
 
     def run(self, run_time: units.Quantity, compute_cross_section: bool = False) -> Result:
         """
