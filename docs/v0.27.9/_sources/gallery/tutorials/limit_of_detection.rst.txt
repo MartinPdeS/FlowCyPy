@@ -339,14 +339,14 @@ scatter signals in the presence of system noise and fluidic variability.
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7fbee0a6ac90>
+    <seaborn.axisgrid.JointGrid object at 0x7f210c7d0dd0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 8.723 seconds)
+   **Total running time of the script:** (0 minutes 8.660 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:
