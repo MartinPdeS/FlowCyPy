@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Coverage for FlowCyPy/peak_locator/scipy.py: 92%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
-    <link rel="stylesheet" href="style_cb_81f8c14c.css" type="text/css">
+    <link rel="stylesheet" href="style_cb_6b508a39.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
 </head>
 <body class="pyfile">
@@ -66,8 +66,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_2404691b0fd86af0_physical_constant_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.9.2">coverage.py v7.9.2</a>,
-            created at 2025-07-13 17:03 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.3">coverage.py v7.10.3</a>,
+            created at 2025-08-19 00:46 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -116,8 +116,8 @@
     <p class="pln"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t">    <span class="key">def</span> <span class="nam">__init__</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">height</span><span class="op">:</span> <span class="nam">float</span> <span class="op">=</span> <span class="num">2000</span><span class="op">,</span> <span class="nam">distance</span><span class="op">:</span> <span class="nam">int</span> <span class="op">=</span> <span class="num">1</span><span class="op">,</span> <span class="nam">width</span><span class="op">:</span> <span class="nam">float</span> <span class="op">=</span> <span class="key">None</span><span class="op">,</span> <span class="nam">prominence</span><span class="op">:</span> <span class="nam">float</span> <span class="op">=</span> <span class="key">None</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t">                 <span class="nam">max_number_of_peaks</span><span class="op">:</span> <span class="nam">int</span> <span class="op">=</span> <span class="num">5</span><span class="op">,</span> <span class="nam">padding_value</span><span class="op">:</span> <span class="nam">object</span> <span class="op">=</span> <span class="op">-</span><span class="num">1</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t">                 <span class="nam">compute_width</span><span class="op">:</span> <span class="nam">bool</span> <span class="op">=</span> <span class="key">False</span><span class="op">,</span> <span class="nam">compute_area</span><span class="op">:</span> <span class="nam">bool</span> <span class="op">=</span> <span class="key">False</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t">                 <span class="nam">max_number_of_peaks</span><span class="op">:</span> <span class="nam">int</span> <span class="op">=</span> <span class="num">5</span><span class="op">,</span> <span class="nam">padding_value</span><span class="op">:</span> <span class="nam">object</span> <span class="op">=</span> <span class="op">-</span><span class="num">1</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t">                 <span class="nam">compute_width</span><span class="op">:</span> <span class="nam">bool</span> <span class="op">=</span> <span class="key">False</span><span class="op">,</span> <span class="nam">compute_area</span><span class="op">:</span> <span class="nam">bool</span> <span class="op">=</span> <span class="key">False</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">height</span> <span class="op">=</span> <span class="nam">height</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">distance</span> <span class="op">=</span> <span class="nam">distance</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">width</span> <span class="op">=</span> <span class="nam">width</span>&nbsp;</span><span class="r"></span></p>
@@ -160,12 +160,12 @@
     <p class="pln"><span class="n"><a id="t76" href="#t76">76</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t77" href="#t77">77</a></span><span class="t">        <span class="com"># Detect peaks using SciPy's find_peaks.</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t78" href="#t78">78</a></span><span class="t">        <span class="nam">peaks</span><span class="op">,</span> <span class="nam">properties</span> <span class="op">=</span> <span class="nam">find_peaks</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t79" href="#t79">79</a></span><span class="t">            <span class="nam">array</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t80" href="#t80">80</a></span><span class="t">            <span class="nam">height</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">height</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t">            <span class="nam">distance</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">distance</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t">            <span class="nam">width</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">width</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t">            <span class="nam">prominence</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">prominence</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t79" href="#t79">79</a></span><span class="t">            <span class="nam">array</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t80" href="#t80">80</a></span><span class="t">            <span class="nam">height</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">height</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t">            <span class="nam">distance</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">distance</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t">            <span class="nam">width</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">width</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t">            <span class="nam">prominence</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">prominence</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="par run show_par"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t">        <span class="key">if</span> <span class="nam">self</span><span class="op">.</span><span class="nam">compute_width</span> <span class="key">or</span> <span class="nam">self</span><span class="op">.</span><span class="nam">compute_area</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">86&#x202F;&#x219B;&#x202F;94</span><span class="annotate long">line 86 didn't jump to line 94 because the condition on line 86 was always true</span></span></p>
     <p class="pln"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t">            <span class="com"># Compute additional metrics using peak_widths (returns widths, left_ips, right_ips, prominences).</span>&nbsp;</span><span class="r"></span></p>
@@ -211,8 +211,8 @@
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_2404691b0fd86af0_physical_constant_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.9.2">coverage.py v7.9.2</a>,
-            created at 2025-07-13 17:03 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.3">coverage.py v7.10.3</a>,
+            created at 2025-08-19 00:46 +0000
         </p>
     </div>
 </footer>

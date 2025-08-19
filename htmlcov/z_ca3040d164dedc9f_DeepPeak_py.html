@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Coverage for FlowCyPy/peak_locator/DeepPeak.py: 19%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
-    <link rel="stylesheet" href="style_cb_81f8c14c.css" type="text/css">
+    <link rel="stylesheet" href="style_cb_6b508a39.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
 </head>
 <body class="pyfile">
@@ -66,8 +66,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_ca3040d164dedc9f_base_class_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.9.2">coverage.py v7.9.2</a>,
-            created at 2025-07-13 17:03 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.3">coverage.py v7.10.3</a>,
+            created at 2025-08-19 00:46 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -218,21 +218,21 @@
     <p class="pln"><span class="n"><a id="t134" href="#t134">134</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t135" href="#t135">135</a></span><span class="t">        <span class="com"># Predict peak regions using the deep learning model</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t136" href="#t136">136</a></span><span class="t">        <span class="nam">predictions</span><span class="op">,</span> <span class="nam">_</span> <span class="op">=</span> <span class="nam">filter_predictions</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t137" href="#t137">137</a></span><span class="t">            <span class="nam">signals</span><span class="op">=</span><span class="nam">array</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t">            <span class="nam">model</span><span class="op">=</span><span class="nam">roi_model</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t">            <span class="nam">n_samples</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">n_samples</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t140" href="#t140">140</a></span><span class="t">            <span class="nam">threshold</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">uncertainty</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t137" href="#t137">137</a></span><span class="t">            <span class="nam">signals</span><span class="op">=</span><span class="nam">array</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t">            <span class="nam">model</span><span class="op">=</span><span class="nam">roi_model</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t">            <span class="nam">n_samples</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">n_samples</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t140" href="#t140">140</a></span><span class="t">            <span class="nam">threshold</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">uncertainty</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t142" href="#t142">142</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t143" href="#t143">143</a></span><span class="t">        <span class="com"># Ensure predictions are at least 2D for consistency</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t144" href="#t144">144</a></span><span class="t">        <span class="nam">predictions</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">atleast_2d</span><span class="op">(</span><span class="nam">predictions</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t145" href="#t145">145</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t146" href="#t146">146</a></span><span class="t">        <span class="com"># Extract middle indices of detected peak regions</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t147" href="#t147">147</a></span><span class="t">        <span class="nam">indices</span> <span class="op">=</span> <span class="nam">find_middle_indices</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t148" href="#t148">148</a></span><span class="t">            <span class="nam">ROIs</span><span class="op">=</span><span class="nam">predictions</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t149" href="#t149">149</a></span><span class="t">            <span class="nam">pad_width</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">max_number_of_peaks</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t150" href="#t150">150</a></span><span class="t">            <span class="nam">fill_value</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">padding_value</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t151" href="#t151">151</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t148" href="#t148">148</a></span><span class="t">            <span class="nam">ROIs</span><span class="op">=</span><span class="nam">predictions</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t149" href="#t149">149</a></span><span class="t">            <span class="nam">pad_width</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">max_number_of_peaks</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t150" href="#t150">150</a></span><span class="t">            <span class="nam">fill_value</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">padding_value</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t151" href="#t151">151</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t152" href="#t152">152</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t153" href="#t153">153</a></span><span class="t">        <span class="key">return</span> <span class="nam">indices</span>&nbsp;</span><span class="r"></span></p>
 </main>
@@ -243,8 +243,8 @@
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_ca3040d164dedc9f_base_class_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.9.2">coverage.py v7.9.2</a>,
-            created at 2025-07-13 17:03 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.3">coverage.py v7.10.3</a>,
+            created at 2025-08-19 00:46 +0000
         </p>
     </div>
 </footer>

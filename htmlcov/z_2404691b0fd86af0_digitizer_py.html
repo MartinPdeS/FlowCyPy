@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Coverage for FlowCyPy/digitizer.py: 75%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
-    <link rel="stylesheet" href="style_cb_81f8c14c.css" type="text/css">
+    <link rel="stylesheet" href="style_cb_6b508a39.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
 </head>
 <body class="pyfile">
@@ -66,8 +66,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_a8dd2029198ba351_base_class_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.9.2">coverage.py v7.9.2</a>,
-            created at 2025-07-13 17:03 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.3">coverage.py v7.10.3</a>,
+            created at 2025-08-19 00:46 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -92,11 +92,11 @@
     <p class="run"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t"><span class="key">import</span> <span class="nam">logging</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t"><span class="nam">config_dict</span> <span class="op">=</span> <span class="nam">dict</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t">    <span class="nam">arbitrary_types_allowed</span><span class="op">=</span><span class="key">True</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t">    <span class="nam">kw_only</span><span class="op">=</span><span class="key">True</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t">    <span class="nam">slots</span><span class="op">=</span><span class="key">True</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t">    <span class="nam">extra</span><span class="op">=</span><span class="str">'forbid'</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t"><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t">    <span class="nam">arbitrary_types_allowed</span><span class="op">=</span><span class="key">True</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t">    <span class="nam">kw_only</span><span class="op">=</span><span class="key">True</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t">    <span class="nam">slots</span><span class="op">=</span><span class="key">True</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t">    <span class="nam">extra</span><span class="op">=</span><span class="str">'forbid'</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t"><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t"><span class="op">@</span><span class="nam">dataclass</span><span class="op">(</span><span class="nam">config</span><span class="op">=</span><span class="nam">config_dict</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t"><span class="key">class</span> <span class="nam">Digitizer</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -224,10 +224,10 @@
     <p class="pln"><span class="n"><a id="t140" href="#t140">140</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="par run show_par"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t">        <span class="key">if</span> <span class="nam">SimulationSettings</span><span class="op">.</span><span class="nam">assume_perfect_digitizer</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">141&#x202F;&#x219B;&#x202F;142</span><span class="annotate long">line 141 didn't jump to line 142 because the condition on line 141 was never true</span></span></p>
     <p class="mis show_mis"><span class="n"><a id="t142" href="#t142">142</a></span><span class="t">            <span class="nam">signal</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">clip</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t143" href="#t143">143</a></span><span class="t">                <span class="nam">a</span><span class="op">=</span><span class="nam">signal</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">quantity</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t144" href="#t144">144</a></span><span class="t">                <span class="nam">a_min</span><span class="op">=</span><span class="nam">min_level</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">signal</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">units</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t145" href="#t145">145</a></span><span class="t">                <span class="nam">a_max</span><span class="op">=</span><span class="nam">max_level</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">signal</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">units</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t146" href="#t146">146</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t143" href="#t143">143</a></span><span class="t">                <span class="nam">a</span><span class="op">=</span><span class="nam">signal</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">quantity</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t144" href="#t144">144</a></span><span class="t">                <span class="nam">a_min</span><span class="op">=</span><span class="nam">min_level</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">signal</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">units</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t145" href="#t145">145</a></span><span class="t">                <span class="nam">a_max</span><span class="op">=</span><span class="nam">max_level</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">signal</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">units</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t146" href="#t146">146</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t147" href="#t147">147</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t148" href="#t148">148</a></span><span class="t">            <span class="com"># If the digitizer is assumed to be perfect, return the signal without processing</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t149" href="#t149">149</a></span><span class="t">            <span class="key">return</span> <span class="nam">signal</span><span class="op">,</span> <span class="op">(</span><span class="nam">min_level</span><span class="op">,</span> <span class="nam">max_level</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -237,10 +237,10 @@
     <p class="run"><span class="n"><a id="t153" href="#t153">153</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">_saturation_levels</span> <span class="op">=</span> <span class="nam">min_level</span><span class="op">,</span> <span class="nam">max_level</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t154" href="#t154">154</a></span><span class="t">        <span class="com"># Generate bins for discretization</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t">        <span class="nam">bins</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">linspace</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t">            <span class="nam">min_level</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">signal</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">units</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t">            <span class="nam">max_level</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">signal</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">units</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t">            <span class="nam">self</span><span class="op">.</span><span class="nam">_bit_depth</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t">            <span class="nam">min_level</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">signal</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">units</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t">            <span class="nam">max_level</span><span class="op">.</span><span class="nam">to</span><span class="op">(</span><span class="nam">signal</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">units</span><span class="op">)</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t">            <span class="nam">self</span><span class="op">.</span><span class="nam">_bit_depth</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t160" href="#t160">160</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t161" href="#t161">161</a></span><span class="t">        <span class="nam">digitized_signal</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">digitize</span><span class="op">(</span><span class="nam">signal</span><span class="op">.</span><span class="nam">pint</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span> <span class="nam">bins</span><span class="op">,</span> <span class="nam">right</span><span class="op">=</span><span class="key">True</span><span class="op">)</span><span class="op">.</span><span class="nam">astype</span><span class="op">(</span><span class="nam">float</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t162" href="#t162">162</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -257,8 +257,8 @@
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_a8dd2029198ba351_base_class_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.9.2">coverage.py v7.9.2</a>,
-            created at 2025-07-13 17:03 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.3">coverage.py v7.10.3</a>,
+            created at 2025-08-19 00:46 +0000
         </p>
     </div>
 </footer>

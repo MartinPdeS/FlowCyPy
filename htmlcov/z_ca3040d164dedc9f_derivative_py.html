@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Coverage for FlowCyPy/peak_locator/derivative.py: 7%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
-    <link rel="stylesheet" href="style_cb_81f8c14c.css" type="text/css">
+    <link rel="stylesheet" href="style_cb_6b508a39.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
 </head>
 <body class="pyfile">
@@ -66,8 +66,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_ca3040d164dedc9f_global__py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.9.2">coverage.py v7.9.2</a>,
-            created at 2025-07-13 17:03 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.3">coverage.py v7.10.3</a>,
+            created at 2025-08-19 00:46 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -130,7 +130,7 @@
     <p class="pln"><span class="n"><a id="t46" href="#t46">46</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t47" href="#t47">47</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t48" href="#t48">48</a></span><span class="t">    <span class="key">def</span> <span class="nam">__init__</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">max_number_of_peaks</span><span class="op">:</span> <span class="nam">int</span> <span class="op">=</span> <span class="num">5</span><span class="op">,</span> <span class="nam">padding_value</span><span class="op">:</span> <span class="nam">object</span> <span class="op">=</span> <span class="op">-</span><span class="num">1</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t">                 <span class="nam">compute_width</span><span class="op">:</span> <span class="nam">bool</span> <span class="op">=</span> <span class="key">False</span><span class="op">,</span> <span class="nam">compute_area</span><span class="op">:</span> <span class="nam">bool</span> <span class="op">=</span> <span class="key">False</span><span class="op">,</span> <span class="nam">threshold</span><span class="op">:</span> <span class="nam">float</span> <span class="op">=</span> <span class="num">0.5</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t">                 <span class="nam">compute_width</span><span class="op">:</span> <span class="nam">bool</span> <span class="op">=</span> <span class="key">False</span><span class="op">,</span> <span class="nam">compute_area</span><span class="op">:</span> <span class="nam">bool</span> <span class="op">=</span> <span class="key">False</span><span class="op">,</span> <span class="nam">threshold</span><span class="op">:</span> <span class="nam">float</span> <span class="op">=</span> <span class="num">0.5</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t50" href="#t50">50</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">max_number_of_peaks</span> <span class="op">=</span> <span class="nam">max_number_of_peaks</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t51" href="#t51">51</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">padding_value</span> <span class="op">=</span> <span class="nam">padding_value</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t52" href="#t52">52</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">compute_width</span> <span class="op">=</span> <span class="nam">compute_width</span>&nbsp;</span><span class="r"></span></p>
@@ -180,7 +180,7 @@
     <p class="pln"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t">            <span class="com"># Identify indices where the first derivative changes sign from positive to negative and second derivative is negative.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t">            <span class="com"># Note: Since derivatives have reduced lengths, adjust indices by +1.</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t">            <span class="nam">candidates</span> <span class="op">=</span> <span class="nam">np</span><span class="op">.</span><span class="nam">where</span><span class="op">(</span><span class="op">(</span><span class="nam">np</span><span class="op">.</span><span class="nam">sign</span><span class="op">(</span><span class="nam">first_derivative</span><span class="op">[</span><span class="op">:</span><span class="op">-</span><span class="num">1</span><span class="op">]</span><span class="op">)</span> <span class="op">></span> <span class="nam">np</span><span class="op">.</span><span class="nam">sign</span><span class="op">(</span><span class="nam">first_derivative</span><span class="op">[</span><span class="num">1</span><span class="op">:</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">&amp;</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t">                                  <span class="op">(</span><span class="nam">second_derivative</span> <span class="op">&lt;</span> <span class="num">0</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="num">0</span><span class="op">]</span> <span class="op">+</span> <span class="num">1</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t">                                  <span class="op">(</span><span class="nam">second_derivative</span> <span class="op">&lt;</span> <span class="num">0</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="num">0</span><span class="op">]</span> <span class="op">+</span> <span class="num">1</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t100" href="#t100">100</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t">            <span class="com"># If no candidates found, continue.</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t102" href="#t102">102</a></span><span class="t">            <span class="key">if</span> <span class="nam">candidates</span><span class="op">.</span><span class="nam">size</span> <span class="op">==</span> <span class="num">0</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -228,8 +228,8 @@
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_ca3040d164dedc9f_global__py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.9.2">coverage.py v7.9.2</a>,
-            created at 2025-07-13 17:03 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.3">coverage.py v7.10.3</a>,
+            created at 2025-08-19 00:46 +0000
         </p>
     </div>
 </footer>

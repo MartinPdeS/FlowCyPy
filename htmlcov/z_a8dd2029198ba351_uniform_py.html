@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Coverage for FlowCyPy/distribution/uniform.py: 97%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
-    <link rel="stylesheet" href="style_cb_81f8c14c.css" type="text/css">
+    <link rel="stylesheet" href="style_cb_6b508a39.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
 </head>
 <body class="pyfile">
@@ -66,8 +66,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_a8dd2029198ba351_weibull_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.9.2">coverage.py v7.9.2</a>,
-            created at 2025-07-13 17:03 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.3">coverage.py v7.10.3</a>,
+            created at 2025-08-19 00:46 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -166,10 +166,10 @@
     <p class="pln"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t"><span class="str">            An array of scatterer properties in meters.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t">        <span class="key">return</span> <span class="nam">np</span><span class="op">.</span><span class="nam">random</span><span class="op">.</span><span class="nam">uniform</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t">            <span class="nam">self</span><span class="op">.</span><span class="nam">_lower_bound</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t">            <span class="nam">self</span><span class="op">.</span><span class="nam">_upper_bound</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t">            <span class="nam">n_samples</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t">            <span class="nam">self</span><span class="op">.</span><span class="nam">_lower_bound</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t">            <span class="nam">self</span><span class="op">.</span><span class="nam">_upper_bound</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t">            <span class="nam">n_samples</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t">    <span class="key">def</span> <span class="nam">get_pdf</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">n_samples</span><span class="op">:</span> <span class="nam">int</span> <span class="op">=</span> <span class="num">100</span><span class="op">)</span> <span class="op">-></span> <span class="nam">Tuple</span><span class="op">[</span><span class="nam">Quantity</span><span class="op">,</span> <span class="nam">np</span><span class="op">.</span><span class="nam">ndarray</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t">        <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
@@ -190,10 +190,10 @@
     <p class="run"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t">        <span class="nam">x</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_generate_default_x</span><span class="op">(</span><span class="nam">n_samples</span><span class="op">=</span><span class="nam">n_samples</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t108" href="#t108">108</a></span><span class="t">        <span class="nam">pdf</span> <span class="op">=</span> <span class="nam">uniform</span><span class="op">.</span><span class="nam">pdf</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t">            <span class="nam">x</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t">            <span class="nam">loc</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">_lower_bound</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t111" href="#t111">111</a></span><span class="t">            <span class="nam">scale</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">_upper_bound</span><span class="op">.</span><span class="nam">magnitude</span> <span class="op">-</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_lower_bound</span><span class="op">.</span><span class="nam">magnitude</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t112" href="#t112">112</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t">            <span class="nam">x</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t">            <span class="nam">loc</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">_lower_bound</span><span class="op">.</span><span class="nam">magnitude</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t111" href="#t111">111</a></span><span class="t">            <span class="nam">scale</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">_upper_bound</span><span class="op">.</span><span class="nam">magnitude</span> <span class="op">-</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_lower_bound</span><span class="op">.</span><span class="nam">magnitude</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t112" href="#t112">112</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t113" href="#t113">113</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t114" href="#t114">114</a></span><span class="t">        <span class="key">return</span> <span class="nam">x</span><span class="op">,</span> <span class="nam">pdf</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t115" href="#t115">115</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -207,8 +207,8 @@
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_a8dd2029198ba351_weibull_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.9.2">coverage.py v7.9.2</a>,
-            created at 2025-07-13 17:03 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.3">coverage.py v7.10.3</a>,
+            created at 2025-08-19 00:46 +0000
         </p>
     </div>
 </footer>
