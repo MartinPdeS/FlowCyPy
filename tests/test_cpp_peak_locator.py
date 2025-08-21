@@ -5,23 +5,22 @@ from FlowCyPy.binary.interface_peak_locator import SlidingWindowPeakLocator, Glo
 
 # ----------------- HELPER FUNCTIONS -----------------
 
-def generate_peak_signal(length=100, peaks=None, mode="square"):
+def generate_peak_signal(length=100, peaks=None, mode="square") -> np.ndarray:
     """
     Generate a 1D signal with square or Gaussian peaks.
 
-    Parameters:
-    - length: int
-        Length of the signal array.
-    - peaks: list of dicts
+    Parameters
+    ----------
+    length : int
+        Length of the signal.
+    peaks : list of dicts
         Each dict should have:
             - 'center' (float or int): center of the peak
             - 'height' (float): amplitude of the peak
             - 'width' (float): width of the peak (FWHM for Gaussian)
-    - mode: str
+    mode : str
         One of "square" or "gaussian"
 
-    Returns:
-    - np.ndarray: signal array
     """
     signal = np.zeros(length)
     if not peaks:

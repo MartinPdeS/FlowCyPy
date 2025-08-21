@@ -66,8 +66,8 @@ class BaseTrigger:
 
         if len(self.trigger.get_segmented_signal(self.trigger_detector_name)) == 0:
             warnings.warn(f"No signal met the trigger criteria. Try adjusting the threshold. Signal min/max: {dataframe[self.trigger_detector_name].min().to_compact()}, {dataframe[self.trigger_detector_name].max().to_compact()}", UserWarning)
-            self._warn_no_hits(dataframe, self.trigger_detector_name)
-            return None
+            # df = pd.DataFrame(columns=['SegmentID', 'Time'])
+            # return TriggerDataFrame(df, is_digital=False)
 
         detectors = dataframe.detector_names
 

@@ -2,7 +2,7 @@
 
 from FlowCyPy import units
 from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy.cytometer import FlowCytometer
+from FlowCyPy.flow_cytometer import FlowCytometer
 from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy.fluidics import Fluidics
 from FlowCyPy.source import GaussianBeam

@@ -1,6 +1,7 @@
 # Initialize a unit registry
 from PyMieSim.units import ureg, Quantity # noqa F401
 from PyMieSim.units import *  # noqa F401
+import pint
 
 _scaled_units_str_list = [
     'watt', 'volt', 'meter', 'second', 'liter', 'hertz', 'ohm', 'ampere'
@@ -45,3 +46,35 @@ ureg.define("event = [Int64]")  # Define a custom unit 'events'
 
 photoelectron = ureg.photoelectron
 event = ureg.event
+
+# def _validate_dimension(value: Quantity, dimensionality: pint.util.UnitsContainer):
+#     if not isinstance(value, Quantity):
+#         raise TypeError(f"Expected a Quantity, got {type(value)}")
+
+#     assert value.dimensionality == dimensionality, f"Value units {value.units} do not match {dimensionality}."
+
+# def _validate_dimension(function):
+#     def wrapper(value: Quantity):
+#         if not isinstance(value, Quantity):
+#             raise TypeError(f"Expected a Quantity, got {type(value)}")
+
+#         if value.dimensionality != function.__annotations__.get('dimensionality'):
+#             raise ValueError(f"Value units {value.units} do not match expected dimensionality {function.__annotations__.get('dimensionality')}.")
+
+#         return function(value)
+
+#     return wrapper
+
+# @_validate_dimension
+# def test(value: ):
+#     print('yoyo')
+
+# a = 1 * joule
+
+# test(a)
+
+
+def function(value: joule):
+    print('yoyo')
+
+print(function.__annotations__['value'])

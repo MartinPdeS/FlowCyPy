@@ -4,6 +4,7 @@ from FlowCyPy.coupling import ScatteringSimulator
 from FlowCyPy.detector import Detector
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 from FlowCyPy import source
+from FlowCyPy.source import GaussianBeam
 
 class OptoElectronics():
     """

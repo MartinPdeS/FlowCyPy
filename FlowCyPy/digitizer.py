@@ -125,6 +125,9 @@ class Digitizer:
         return time_series
 
     def get_saturation_values(self, signal: pd.Series) -> Tuple[Quantity, Quantity]:
+
+        if signal.size == 0:
+            return Quantity(0, signal.pint.units), Quantity(0, signal.pint.units)
         if self.saturation_levels == 'auto':
             return signal.pint.quantity.min(), signal.pint.quantity.max()
         elif isinstance(self.saturation_levels, tuple) and len(self.saturation_levels) == 2:

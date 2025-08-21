@@ -4,7 +4,7 @@ try:
 except ImportError:
     __version__ = "0.0.0"
 
-from .cytometer import FlowCytometer
+from .flow_cytometer import FlowCytometer
 from .simulation_settings import SimulationSettings
 from .opto_electronics import OptoElectronics
 from .fluidics import Fluidics

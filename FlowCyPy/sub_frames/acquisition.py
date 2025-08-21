@@ -118,19 +118,25 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
         """
 
         if signal_units == 'max':
-            signal_units = self[self.detector_names[0]].max().to_compact().units
-
-        if time_units == 'max':
-            time_units = self['Time'].max().to_compact().units
-
-        if time_units == 'SI':
-            time_units = units.second
+            if self[self.detector_names[0]].size == 0:
+                signal_units = 0 * self[self.detector_names[0]].pint.units
+            else:
+                signal_units = self[self.detector_names[0]].max().to_compact().units
 
         if signal_units == 'SI':
             if self[self.detector_names[0]].pint.units.dimensionality == units.bit_bins.dimensionality:
                 signal_units = units.bit_bins
             else:
                 signal_units = units.volt
+
+        if time_units == 'max':
+            if self['Time'].size == 0:
+                time_units = 0 * units.second
+            else:
+                time_units = self['Time'].max().to_compact().units
+
+        if time_units == 'SI':
+            time_units = units.second
 
         for columns in self.columns:
             if columns == 'Time' and time_units is not None:

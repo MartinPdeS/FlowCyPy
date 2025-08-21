@@ -7,8 +7,7 @@ class RestrictiveMeta(type):
             # Collect valid attribute names (excluding private and dunder)
             valid_attrs = [attr for attr in dir(cls) if not attr.startswith("_")]
             warnings.warn(
-                f"Attribute '{name}' not recognized in {cls.__name__}. "
-                f"Valid attributes are: {valid_attrs}",
+                f"Attribute '{name}' not recognized in {cls.__name__}. Valid attributes are: {valid_attrs}",
                 UserWarning
             )
             return
