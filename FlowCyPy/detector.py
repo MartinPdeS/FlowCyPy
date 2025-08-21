@@ -8,7 +8,7 @@ from FlowCyPy import units
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy import helper
 from FlowCyPy.simulation_settings import SimulationSettings
-
+from FlowCyPy.units import Angle, Dimensionless, Current
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -32,102 +32,35 @@ class Detector():
     ----------
     name : str, optional
         A unique identifier for the detector. If not provided, a unique ID is generated.
-    phi_angle : Quantity
+    phi_angle : Angle
         The primary azimuthal angle of incidence for the detector (in degrees).
-    numerical_aperture : Quantity
+    numerical_aperture : Dimensionless
         The numerical aperture of the detector (dimensionless).
-    cache_numerical_aperture : Quantity, optional
+    cache_numerical_aperture : Dimensionless, optional
         The numerical aperture of the caching element placed in front of the detector
         (dimensionless). Default is 0 AU.
     responsivity : Quantity, optional
         The responsivity of the detector (in amperes per watt). Default is 1 A/W. Typical
         ranges include 0.4-0.7 A/W for silicon-based detectors and 0.8-0.9 A/W for InGaAs-based
         detectors.
-    dark_current : Quantity, optional
+    dark_current : Current, optional
         The dark current of the detector (in amperes). Default is 0 A. Typical values are in the
         range of 1-100 nA.
-    gamma_angle : Quantity, optional
+    gamma_angle : Angle, optional
         The complementary (longitudinal) angle of incidence, if applicable (in degrees).
         Default is 0°.
     sampling : Quantity, optional
         The number of spatial sampling points defining the detector's resolution. Default is 100 AU.
     """
-    phi_angle: Quantity
-    numerical_aperture: Quantity
+    phi_angle: Angle
+    numerical_aperture: Dimensionless
 
-    cache_numerical_aperture: Quantity = Quantity(0, units.AU)
-    gamma_angle: Optional[Quantity] = Quantity(0, units.degree)
+    cache_numerical_aperture: Dimensionless = Quantity(0, units.AU)
+    gamma_angle: Optional[Angle] = Quantity(0, units.degree)
     sampling: Optional[Quantity] = Quantity(100, units.AU)
     responsivity: Optional[Quantity] = Quantity(1, units.ampere / units.watt)
-    dark_current: Optional[Quantity] = Quantity(0.0, units.ampere)
+    dark_current: Optional[Current] = Quantity(0.0, units.ampere)
     name: Optional[str] = None
-
-
-    @field_validator('dark_current')
-    def _validate_current(cls, value):
-        """
-        Validates that the provided dark_current are in ampere units.
-
-        Parameters
-        ----------
-        value : Quantity
-            The angle value to validate.
-
-        Returns
-        -------
-        Quantity
-            The validated angle.
-
-        Raises:
-            ValueError: If the angle is not in degrees.
-        """
-        if not value.check(units.ampere):
-            raise ValueError(f"dark_current must be in Ampere, but got {value.units}")
-        return value
-
-    @field_validator('numerical_aperture', 'numerical_aperture')
-    def _validate_numerical_aperture(cls, value):
-        """
-        Validates that the provided angles are in arbitrary units.
-
-        Parameters
-        ----------
-        value : Quantity
-            The angle value to validate.
-
-        Returns
-        -------
-        Quantity
-            The validated angle.
-
-        Raises:
-            ValueError: If the angle is not in degrees.
-        """
-        if not value.check(units.AU):
-            raise ValueError(f"Angle must be in arbitrary units, but got {value.units}")
-        return value
-
-    @field_validator('phi_angle', 'gamma_angle')
-    def _validate_angles(cls, value):
-        """
-        Validates that the provided angles are in degrees.
-
-        Parameters
-        ----------
-        value : Quantity
-            The angle value to validate.
-
-        Returns
-        -------
-        Quantity
-            The validated angle.
-
-        Raises:
-            ValueError: If the angle is not in degrees.
-        """
-        if not value.check('degree'):
-            raise ValueError(f"Angle must be in degrees, but got {value.units}")
-        return value
 
     @field_validator('responsivity')
     def _validate_responsivity(cls, value):

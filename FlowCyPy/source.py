@@ -9,6 +9,7 @@ from FlowCyPy import units
 from FlowCyPy.units import Quantity, meter, joule, particle, degree, volt, AU
 from FlowCyPy.simulation_settings import SimulationSettings
 import pint_pandas
+from FlowCyPy.units import Length, Power, Angle, Dimensionless
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -41,53 +42,6 @@ class BaseBeam():
             return function(*args, **kwargs)
 
         return wrapper
-
-    @_validation
-    @field_validator('wavelength', 'waist', 'waist_y', 'waist_z', mode='plain')
-    def validate_length(cls, value, field):
-        if value is None:
-            return value
-        if not isinstance(value, Quantity):
-            raise ValueError(f"{value} must be a Quantity with distance units [<prefix>meter].")
-
-        if not value.check('meter'):
-            raise ValueError(f"{field} must be a Quantity with distance units [<prefix>meter], but got {value.units}.")
-
-        return value
-
-    @field_validator('polarization', mode='plain')
-    def validate_angle(cls, value, field):
-        if not isinstance(value, Quantity):
-            raise ValueError(f"{value} must be a Quantity with angle units [<prefix>degree or <prefix>radian].")
-
-        if not value.check('degree'):
-            raise ValueError(f"{field} must be a Quantity with angle units [<prefix>degree or <prefix>radian], but got {value.units}.")
-
-        return value
-
-    @field_validator('optical_power', mode='plain')
-    def validate_power(cls, value, field):
-        if not isinstance(value, Quantity):
-            raise ValueError(f"{value} must be a Quantity with power units [<prefix>watt].")
-
-        if not value.check('watt'):
-            raise ValueError(f"{field} must be a Quantity with power units [<prefix>watt], but got {value.units}.")
-
-        return value
-
-    @field_validator('numerical_aperture', 'numerical_aperture_y', 'numerical_aperture_z', mode='plain')
-    def validate_AU(cls, value, field):
-        if value is None:
-            return value
-        if not isinstance(value, Quantity):
-            raise ValueError(f"{value} must be a Quantity with arbitrary units [AU].")
-
-        if not value.check(AU):
-            raise ValueError(f"{field} must be a Quantity with arbitrary units [AU], but got {value.units}.")
-
-        if value.magnitude < 0 or value.magnitude > 1:
-            raise ValueError(f"{field} must be between 0 and 1, but got {value.magnitude}")
-        return value
 
     def add_rin_to_amplitude(self, amplitude: Quantity, bandwidth: Quantity) -> Quantity:
         # Convert RIN from dB/Hz to linear scale if necessary
@@ -187,25 +141,25 @@ class GaussianBeam(BaseBeam):
 
     Parameters
     ----------
-    optical_power : Quantity
+    optical_power : Power
         The optical power of the laser (in watts).
-    wavelength : Quantity
+    wavelength : Length
         The wavelength of the laser (in meters).
-    numerical_aperture : Optional[Quantity]
+    numerical_aperture : Optional[Dimensionless]
         The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).
-    waist : Optional[Quantity]
+    waist : Optional[Length]
         The beam waist at the focus, calculated as `waist = wavelength / (pi * numerical_aperture)` if not provided.
         Alternatively, if this is provided, the numerical aperture will be computed as `numerical_aperture = wavelength / (pi * waist)`.
-    polarization : Optional[Quantity]
+    polarization : Optional[Angle]
         The polarization of the laser source in degrees (default is 0 degrees).
     RIN : Optional[float]
         The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a stable laser.
     """
-    optical_power: Quantity
-    wavelength: Quantity
-    numerical_aperture: Optional[Quantity] = None
-    waist: Optional[Quantity] = None
-    polarization: Optional[Quantity] = 0 * degree
+    optical_power: Power
+    wavelength: Length
+    numerical_aperture: Optional[Dimensionless] = None
+    waist: Optional[Length] = None
+    polarization: Optional[Angle] = 0 * degree
     RIN: Optional[float] = -120.0
 
     def __post_init__(self):
@@ -282,34 +236,34 @@ class AstigmaticGaussianBeam(BaseBeam):
 
     Parameters
     ----------
-    optical_power : Quantity
+    optical_power : Power
         The optical power of the laser (in watts).
-    wavelength : Quantity
+    wavelength : Length
         The wavelength of the laser (in meters).
-    numerical_aperture_y : Optional[Quantity]
+    numerical_aperture_y : Optional[Dimensionless]
         The numerical aperture of the lens along the x-axis (unitless).
-    waist_y : Optional[Quantity]
+    waist_y : Optional[Length]
         The beam waist along the x-axis. If not provided, it will be computed as:
         waist_y = wavelength / (pi * numerical_aperture_y).
-    numerical_aperture_z : Optional[Quantity]
+    numerical_aperture_z : Optional[Dimensionless]
         The numerical aperture of the lens along the y-axis (unitless).
-    waist_z : Optional[Quantity]
+    waist_z : Optional[Length]
         The beam waist along the y-axis. If not provided, it will be computed as:
         waist_z = wavelength / (pi * numerical_aperture_z).
-    polarization : Optional[Quantity]
+    polarization : Optional[Angle]
         The polarization of the laser source in degrees (default is 0 degrees).
     RIN : Optional[float]
         The Relative Intensity Noise (RIN) of the laser, specified as a fractional value.
         Default is 0.0, representing a perfectly stable laser.
 
     """
-    optical_power: Quantity
-    wavelength: Quantity
-    numerical_aperture_y: Optional[Quantity] = None
-    waist_y: Optional[Quantity] = None
-    numerical_aperture_z: Optional[Quantity] = None
-    waist_z: Optional[Quantity] = None
-    polarization: Optional[Quantity] = 0 * degree
+    optical_power: Power
+    wavelength: Length
+    numerical_aperture_y: Optional[Dimensionless] = None
+    waist_y: Optional[Length] = None
+    numerical_aperture_z: Optional[Dimensionless] = None
+    waist_z: Optional[Length] = None
+    polarization: Optional[Angle] = 0 * degree
     RIN: Optional[float] = 0.0
 
     def __post_init__(self):

@@ -2,7 +2,6 @@ from typing import List
 import pandas as pd
 import pint_pandas
 from pydantic.dataclasses import dataclass
-from pydantic import field_validator
 from FlowCyPy.population import BasePopulation
 from FlowCyPy.units import Quantity
 from FlowCyPy import units
@@ -11,6 +10,7 @@ from FlowCyPy import helper
 from FlowCyPy.binary.interface_flow_cell import FLOWCELL
 from FlowCyPy.fluid_region import FluidRegion
 from FlowCyPy.simulation_settings import SimulationSettings
+from FlowCyPy.units import Length, FlowRate
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -66,15 +66,15 @@ class FlowCell(FLOWCELL):
 
     Parameters
     ----------
-    width : Quantity
+    width : Length
         Width of the channel in the y-direction (m).
-    height : Quantity
+    height : Length
         Height of the channel in the z-direction (m).
     mu : Quantity
         Dynamic viscosity of the fluid (Pa·s).
-    sample_volume_flow : Quantity
+    sample_volume_flow : FlowRate
         Volumetric flow rate of the sample fluid (m³/s).
-    sheath_volume_flow : Quantity
+    sheath_volume_flow : FlowRate
         Volumetric flow rate of the sheath fluid (m³/s).
     N_terms : int, optional
         Number of odd terms to use in the Fourier series solution (default: 25).
@@ -96,33 +96,14 @@ class FlowCell(FLOWCELL):
     event_scheme : str
         Scheme for event sampling, 'uniform-random', 'sorted', 'poisson', 'preserve' (default: 'preserve').
     """
-    width: Quantity
-    height: Quantity
-    sample_volume_flow: Quantity
-    sheath_volume_flow: Quantity
+    width: Length
+    height: Length
+    sample_volume_flow: FlowRate
+    sheath_volume_flow: FlowRate
     mu: Quantity = 1e-3 * units.pascal * units.second
     N_terms: int = 25
     n_int: int = 200
 
-    @field_validator('width', 'height', mode='plain')
-    def validate_length(cls, value, field):
-        if not isinstance(value, Quantity):
-            raise ValueError(f"{value} must be a Quantity with length units [<prefix>meter].")
-
-        if not value.check('meter'):
-            raise ValueError(f"{field} must be a Quantity with meter units [<prefix>meter], but got {value.units}.")
-
-        return value
-
-    @field_validator('sample_volume_flow', 'sheath_volume_flow', mode='plain')
-    def validate_volumn_flow(cls, value, field):
-        if not isinstance(value, Quantity):
-            raise ValueError(f"{value} must be a Quantity with volume flow [<prefix>liter / second].")
-
-        if not value.check('liter / second'):
-            raise ValueError(f"{field} must be a Quantity with volume flow units [<prefix>liter / second], but got {value.units}.")
-
-        return value
 
     @helper.validate_input_units(run_time=units.second)
     def get_sample_volume(self, run_time: Quantity) -> Quantity:

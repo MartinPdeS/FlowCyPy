@@ -222,11 +222,8 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         signal_name : str, optional
             The name of the signal to apply the filter to.
         """
-        assert sampling_rate.dimensionality == units.hertz.dimensionality, \
-            f"Sampling rate units {sampling_rate.units} do not match hertz."
-
-        assert cutoff_frequency.dimensionality == units.hertz.dimensionality, \
-            f"Cutoff frequency units {cutoff_frequency.units} do not match hertz."
+        units.Frequency.check(sampling_rate)
+        units.Frequency.check(cutoff_frequency)
 
         if signal_name is None:
             self._cpp_apply_butterworth_lowpass_filter(
@@ -261,11 +258,8 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         signal_name : str, optional
             The name of the signal to apply the filter to.
         """
-        assert sampling_rate.dimensionality == units.hertz.dimensionality, \
-            f"Sampling rate units {sampling_rate.units} do not match hertz."
-
-        assert cutoff_frequency.dimensionality == units.hertz.dimensionality, \
-            f"Cutoff frequency units {cutoff_frequency.units} do not match hertz."
+        units.Frequency.check(sampling_rate)
+        units.Frequency.check(cutoff_frequency)
 
         if signal_name is None:
             self._cpp_apply_bessel_lowpass_filter(
@@ -300,11 +294,8 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         base_level : units.Quantity
             The base level of the signal, which is added to the amplitudes of the pulses.
         """
-        assert widths.units.dimensionality == self.time_units.dimensionality, \
-            f"Width units {widths.units} do not match time units {self.time_units}."
-
-        assert centers.units.dimensionality == self.time_units.dimensionality, \
-            f"Center units {centers.units} do not match time units {self.time_units}."
+        units.Time.check(widths)
+        units.Time.check(centers)
 
         assert amplitudes.units.dimensionality == self.signal_units.dimensionality, \
             f"Amplitude units {amplitudes.units} do not match signal units {self.signal_units}."
