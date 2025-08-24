@@ -2,12 +2,13 @@ import pytest
 from unittest.mock import patch
 import matplotlib.pyplot as plt
 import numpy as np
+from TypedUnit import ureg
+
 from FlowCyPy.fluidics import FlowCell, ScattererCollection, population, distribution
-from FlowCyPy import units
 import FlowCyPy
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
-CONCENTRATION = 3e+5 * units.particle / units.milliliter
+CONCENTRATION = 3e+5 * ureg.particle / ureg.milliliter
 
 
 # Fixtures to set up a default Flow and Distributions
@@ -15,19 +16,19 @@ CONCENTRATION = 3e+5 * units.particle / units.milliliter
 def default_flow_cell():
     """Fixture for creating a default Flow object."""
     return FlowCell(
-        sample_volume_flow=10 * units.microliter / units.second,
-        sheath_volume_flow=6 * units.microliter / units.second,
-        width=20 * units.micrometer,
-        height=10 * units.micrometer,
+        sample_volume_flow=10 * ureg.microliter / ureg.second,
+        sheath_volume_flow=6 * ureg.microliter / ureg.second,
+        width=20 * ureg.micrometer,
+        height=10 * ureg.micrometer,
     )
 
 
 # Parametrize different distributions
 distributions = [
-    distribution.Normal(mean=1.0 * units.micrometer, std_dev=100.0 * units.nanometer),
-    distribution.LogNormal(mean=1.0 * units.micrometer, std_dev=0.01 * units.micrometer),
-    distribution.Uniform(lower_bound=0.5 * units.micrometer, upper_bound=1.5 * units.micrometer),
-    distribution.RosinRammler(characteristic_property=0.5 * units.micrometer, spread=1.5),
+    distribution.Normal(mean=1.0 * ureg.micrometer, std_dev=100.0 * ureg.nanometer),
+    distribution.LogNormal(mean=1.0 * ureg.micrometer, std_dev=0.01 * ureg.micrometer),
+    distribution.Uniform(lower_bound=0.5 * ureg.micrometer, upper_bound=1.5 * ureg.micrometer),
+    distribution.RosinRammler(characteristic_property=0.5 * ureg.micrometer, spread=1.5),
 ]
 
 
@@ -37,8 +38,8 @@ def test_generate_distribution_size(dist, default_flow_cell):
     # Get the distribution from the fixtures
 
     ri_distribution = distribution.Normal(
-        mean=1.4 * units.RIU,
-        std_dev=0.01 * units.RIU
+        mean=1.4 * ureg.RIU,
+        std_dev=0.01 * ureg.RIU
     )
 
     population_0 = population.Sphere(
@@ -55,7 +56,7 @@ def test_generate_distribution_size(dist, default_flow_cell):
 
     dataframe = default_flow_cell._generate_event_dataframe(
         scatterer_collection.populations,
-        run_time=100e-4 * units.second
+        run_time=100e-4 * ureg.second
     )
 
     # # Check that sizes were generated and are positive
@@ -76,7 +77,7 @@ def test_generate_distribution_size(dist, default_flow_cell):
         )
 
     elif isinstance(dist, distribution.LogNormal):
-        assert np.all(dataframe['Diameter'] > 0 * units.meter), "Lognormal distribution generated non-positive sizes."
+        assert np.all(dataframe['Diameter'] > 0 * ureg.meter), "Lognormal distribution generated non-positive sizes."
 
     elif isinstance(dist, distribution.Uniform):
         lower_bound = dist.lower_bound
@@ -98,8 +99,8 @@ def test_generate_distribution_size(dist, default_flow_cell):
 def test_generate_longitudinal_positions(default_flow_cell, dist):
     """Test the generation of longitudinal positions based on Poisson process."""
     ri_distribution = distribution.Normal(
-        mean=1.4 * units.RIU,
-        std_dev=0.01 * units.RIU
+        mean=1.4 * ureg.RIU,
+        std_dev=0.01 * ureg.RIU
     )
 
     population_0 = population.Sphere(
@@ -115,7 +116,7 @@ def test_generate_longitudinal_positions(default_flow_cell, dist):
 
     dataframe = default_flow_cell._generate_event_dataframe(
         scatterer_collection.populations,
-        run_time=100e-4 * units.second
+        run_time=100e-4 * ureg.second
     )
 
     # Assert correct shape of generated longitudinal positions
@@ -124,11 +125,11 @@ def test_generate_longitudinal_positions(default_flow_cell, dist):
 
     # Assert that longitudinal positions are increasing (since they are cumulative)
     for _, group in dataframe.groupby('Population'):
-        assert np.all(np.diff(group['Time']) >= 0 * units.second), "Longitudinal positions are not monotonically increasing."
+        assert np.all(np.diff(group['Time']) >= 0 * ureg.second), "Longitudinal positions are not monotonically increasing."
 
     # Assert that no positions are negative
     for _, group in dataframe.groupby('Population'):
-        assert np.all(group['Time'] >= 0 * units.second), "Some longitudinal positions are negative."
+        assert np.all(group['Time'] >= 0 * ureg.second), "Some longitudinal positions are negative."
 
 
 @patch('matplotlib.pyplot.show')
@@ -136,8 +137,8 @@ def test_generate_longitudinal_positions(default_flow_cell, dist):
 def test_plot_positions(mock_show, dist):
     """Test the plotting of longitudinal positions."""
     ri_distribution = distribution.Normal(
-        mean=1.4 * units.RIU,
-        std_dev=0.01 * units.RIU
+        mean=1.4 * ureg.RIU,
+        std_dev=0.01 * ureg.RIU
     )
 
     population_0 = population.Sphere(
@@ -159,8 +160,8 @@ def test_plot_positions(mock_show, dist):
 def test_extra(dist):
     """Test the generation of longitudinal positions based on Poisson process."""
     ri_distribution = distribution.Normal(
-        mean=1.4 * units.RIU,
-        std_dev=0.01 * units.RIU
+        mean=1.4 * ureg.RIU,
+        std_dev=0.01 * ureg.RIU
     )
 
     population_0 = population.Sphere(
@@ -183,7 +184,7 @@ def test_extra(dist):
 
     scatterer_collection.dilute(factor=2)
 
-    assert np.isclose(population_0.particle_count.value, CONCENTRATION / 2), "Dilution mechanism does not return expected results"
+    assert np.isclose(population_0.particle_count, CONCENTRATION / 2), "Dilution mechanism does not return expected results"
 
     scatterer_collection.set_concentrations([CONCENTRATION, CONCENTRATION])
 

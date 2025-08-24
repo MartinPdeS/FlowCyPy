@@ -1,24 +1,15 @@
 from typing import Optional
 import numpy as np
 from pydantic.dataclasses import dataclass
-from pydantic import field_validator
-from FlowCyPy.binary.interface_signal_generator import SignalGenerator
-from PyMieSim.units import Quantity
-from FlowCyPy import units
+from TypedUnit import Angle, Dimensionless, AnyUnit, Current, ureg, Length, Frequency, Responsitivity, validate_units
+
 from FlowCyPy.physical_constant import PhysicalConstant
-from FlowCyPy import helper
 from FlowCyPy.simulation_settings import SimulationSettings
-from FlowCyPy.units import Angle, Dimensionless, Current
-
-config_dict = dict(
-    arbitrary_types_allowed=True,
-    kw_only=True,
-    slots=True,
-    extra='forbid'
-)
+from FlowCyPy.binary.interface_signal_generator import SignalGenerator
+from FlowCyPy.utils import config_dict
 
 
-@dataclass(config=config_dict, unsafe_hash=True)
+@dataclass(config=config_dict, kw_only=True, unsafe_hash=True)
 class Detector():
     """
     Represents a photodetector for flow cytometry simulations.
@@ -39,7 +30,7 @@ class Detector():
     cache_numerical_aperture : Dimensionless, optional
         The numerical aperture of the caching element placed in front of the detector
         (dimensionless). Default is 0 AU.
-    responsivity : Quantity, optional
+    responsivity : Current / Power, optional
         The responsivity of the detector (in amperes per watt). Default is 1 A/W. Typical
         ranges include 0.4-0.7 A/W for silicon-based detectors and 0.8-0.9 A/W for InGaAs-based
         detectors.
@@ -49,38 +40,18 @@ class Detector():
     gamma_angle : Angle, optional
         The complementary (longitudinal) angle of incidence, if applicable (in degrees).
         Default is 0°.
-    sampling : Quantity, optional
+    sampling : Dimensionless, optional
         The number of spatial sampling points defining the detector's resolution. Default is 100 AU.
     """
     phi_angle: Angle
     numerical_aperture: Dimensionless
 
-    cache_numerical_aperture: Dimensionless = Quantity(0, units.AU)
-    gamma_angle: Optional[Angle] = Quantity(0, units.degree)
-    sampling: Optional[Quantity] = Quantity(100, units.AU)
-    responsivity: Optional[Quantity] = Quantity(1, units.ampere / units.watt)
-    dark_current: Optional[Current] = Quantity(0.0, units.ampere)
+    cache_numerical_aperture: Dimensionless = 0 * ureg.AU
+    gamma_angle: Optional[Angle] = 0 * ureg.degree
+    sampling: Optional[Dimensionless] = 100 * ureg.AU
+    responsivity: Optional[Responsitivity] = 1 * ureg.ampere / ureg.watt
+    dark_current: Optional[Current] = 0.0 * ureg.ampere
     name: Optional[str] = None
-
-    @field_validator('responsivity')
-    def _validate_responsivity(cls, value):
-        """
-        Validates that the detector's responsivity is provided in volts per watt.
-
-        Parameters
-        ----------
-        value : Quantity
-            The responsivity value to validate.
-
-        Returns:
-            Quantity: The validated responsivity.
-
-        Raises:
-            ValueError: If the responsivity is not in volts per watt.
-        """
-        if not value.check('A / W'):
-            raise ValueError(f"Responsitivity must be in ampere per watt, but got {value.units}")
-        return value
 
     def __post_init__(self) -> None:
         """
@@ -89,7 +60,7 @@ class Detector():
         if self.name is None:
             self.name = str(id(self))
 
-    def _transform_coupling_power_to_current(self, signal_generator: SignalGenerator, bandwidth: Quantity, wavelength: Quantity) -> Quantity:
+    def _transform_coupling_power_to_current(self, signal_generator: SignalGenerator, bandwidth: Frequency, wavelength: Length) -> Current:
         """
         Converts the coupling power (in watts) to voltage using the detector's responsivity.
 
@@ -97,14 +68,14 @@ class Detector():
         ----------
         signal_generator : SignalGenerator
             The signal generator instance used to apply the conversion.
-        wavelength : Quantity
+        wavelength : Length
             The wavelength of the incident light (in meters).
-        bandwidth : Quantity
+        bandwidth : Frequency
             The bandwidth of the signal (in Hz).
 
         Returns
         -------
-        Quantity
+        Current
             The resulting voltage signal (in volts).
         """
         # Step 1: Add shot noise to optical power if enabled
@@ -117,7 +88,7 @@ class Detector():
             factor=self.responsivity
         )
 
-    def apply_dark_current_noise(self, signal_generator: SignalGenerator, bandwidth: Quantity) -> Quantity:
+    def apply_dark_current_noise(self, signal_generator: SignalGenerator, bandwidth: Frequency) -> None:
         r"""
         Compute and return the dark current noise.
 
@@ -125,7 +96,7 @@ class Detector():
         ----------
         signal_generator : SignalGenerator
             The signal generator instance used to apply noise to the signal.
-        bandwidth : Quantity
+        bandwidth : Frequency
             The bandwidth of the signal (in Hz).
 
         Dark current noise is computed as:
@@ -137,13 +108,8 @@ class Detector():
             - :math:`q` is the elementary charge (1.602176634 x 10⁻¹⁹ C),
             - :math:`I_d` is the dark current,
             - :math:`B` is the bandwidth.
-
-        Returns
-        -------
-        dict
-            Dictionary containing noise parameters for 'thermal' and 'dark_current'.
         """
-        std_noise = np.sqrt(2 * 1.602176634e-19 * units.coulomb * self.dark_current * bandwidth)
+        std_noise = np.sqrt(2 * 1.602176634e-19 * ureg.coulomb * self.dark_current * bandwidth)
 
         signal_generator.apply_gaussian_noise(
             signal_name=self.name,
@@ -151,7 +117,7 @@ class Detector():
             standard_deviation=std_noise
         )
 
-    def _get_optical_power_to_photon_factor(self, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
+    def _get_optical_power_to_photon_factor(self, wavelength: Length, bandwidth: Frequency) -> AnyUnit:
         """
         Computes the conversion factor from optical power to photon count.
 
@@ -159,14 +125,14 @@ class Detector():
 
         Parameters
         ----------
-        bandwidth : Quantity
+        bandwidth : Frequency
             The bandwidth of the signal (in Hz).
-        wavelength : Quantity
+        wavelength : Length
             The wavelength of the incident light (in meters).
 
         Returns
         -------
-        Quantity
+        AnyUnit
             The conversion factor from optical power to photon count (in 1/watt).
         """
         # Step 1: Compute photon energy
@@ -178,7 +144,7 @@ class Detector():
         optical_power_to_photo_count_conversion_factor = (sampling_interval / energy_photon).to('1 / watt')  # Conversion factor (1/W)
         return optical_power_to_photo_count_conversion_factor
 
-    def _get_photon_count_to_current_factor(self, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
+    def _get_photon_count_to_current_factor(self, wavelength: Length, bandwidth: Frequency) -> Current:
         """
         Computes the conversion factor from photon count to current.
 
@@ -207,7 +173,7 @@ class Detector():
 
         return photon_to_power_factor * power_to_current_factor  # Current (A)
 
-    def _transform_optical_power_to_photon_count(self, signal_generator: SignalGenerator, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
+    def _transform_optical_power_to_photon_count(self, signal_generator: SignalGenerator, wavelength: Length, bandwidth: Frequency) -> None:
         """
         Converts optical power to photon count using the detector's responsivity.
 
@@ -215,15 +181,10 @@ class Detector():
         ----------
         signal_generator : SignalGenerator
             The signal generator instance used to apply the conversion.
-        wavelength : Quantity
+        wavelength : Length
             The wavelength of the incident light (in meters).
-        bandwidth : Quantity
+        bandwidth : Frequency
             The bandwidth of the signal (in Hz).
-
-        Returns
-        -------
-        Quantity
-            The resulting photon count signal (in photons).
         """
         optical_power_to_photo_count_conversion = self._get_optical_power_to_photon_factor(
             wavelength=wavelength,
@@ -235,8 +196,8 @@ class Detector():
             factor=optical_power_to_photo_count_conversion
         )
 
-    @helper.validate_input_units(optical_power=units.watt, wavelength=units.meter)
-    def apply_shot_noise(self, signal_generator: SignalGenerator, wavelength: Quantity, bandwidth: Quantity) -> Quantity:
+    @validate_units
+    def apply_shot_noise(self, signal_generator: SignalGenerator, wavelength: Length, bandwidth: Frequency) -> None:
         r"""
         Computes the shot noise photocurrent arising from photon statistics.
 
@@ -278,10 +239,6 @@ class Detector():
         wavelength : Quantity
             The wavelength of the incident light (in meters).
 
-        Returns
-        -------
-        Quantity
-            The shot noise-added current distribution (in current).
         """
         optical_power_to_photo_count_conversion = self._get_optical_power_to_photon_factor(
             wavelength=wavelength,

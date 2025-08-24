@@ -1,6 +1,5 @@
+from TypedUnit import Voltage, Power, FlowRate, ureg
 
-
-from FlowCyPy import units
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.flow_cytometer import FlowCytometer
 from FlowCyPy.scatterer_collection import ScattererCollection
@@ -14,11 +13,11 @@ from FlowCyPy.opto_electronics import OptoElectronics
 
 class FacsCanto():
     def __new__(self,
-        sample_volume_flow: units.Quantity,
-        sheath_volume_flow: units.Quantity,
-        optical_power: units.Quantity,
-        background_power: units.Quantity,
-        saturation_level: units.Quantity = 1 * units.volt):
+        sample_volume_flow: FlowRate,
+        sheath_volume_flow: FlowRate,
+        optical_power: Power,
+        background_power: Power,
+        saturation_level: Voltage = 1 * ureg.volt):
         """
         Defines the FacsCanto flowcytometer with estimated parameters
 
@@ -26,11 +25,11 @@ class FacsCanto():
         flow_cell = FlowCell(
             sample_volume_flow=sample_volume_flow,
             sheath_volume_flow=sheath_volume_flow,
-            width=400 * units.micrometer,
-            height=400 * units.micrometer,
+            width=400 * ureg.micrometer,
+            height=400 * ureg.micrometer,
         )
 
-        scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
+        scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
 
         fluidics = Fluidics(
             scatterer_collection=scatterer_collection,
@@ -38,33 +37,33 @@ class FacsCanto():
         )
 
         source = GaussianBeam(
-            numerical_aperture=0.2 * units.AU,
-            wavelength=450 * units.nanometer,
+            numerical_aperture=0.2 * ureg.AU,
+            wavelength=450 * ureg.nanometer,
             optical_power=optical_power
         )
 
         digitizer = Digitizer(
             bit_depth='14bit',
-            saturation_levels=(0 * units.volt, saturation_level),
-            sampling_rate=10 * units.megahertz,
+            saturation_levels=(0 * ureg.volt, saturation_level),
+            sampling_rate=10 * ureg.megahertz,
         )
 
         amplifier = TransimpedanceAmplifier(
-            gain=10 * units.volt / units.ampere,
-            bandwidth=60 * units.megahertz,
+            gain=10 * ureg.volt / ureg.ampere,
+            bandwidth=60 * ureg.megahertz,
         )
 
         detector_0 = PMT(
             name='forward',
-            phi_angle=0 * units.degree,
-            numerical_aperture=0.7 * units.AU,
+            phi_angle=0 * ureg.degree,
+            numerical_aperture=0.7 * ureg.AU,
         )
 
         detector_1 = PMT(
             name='side',
-            phi_angle=0 * units.degree,
-            numerical_aperture=0.3 * units.AU,
-            cache_numerical_aperture=0.1 * units.AU,
+            phi_angle=0 * ureg.degree,
+            numerical_aperture=0.3 * ureg.AU,
+            cache_numerical_aperture=0.1 * ureg.AU,
         )
 
         opto_electronics = OptoElectronics(

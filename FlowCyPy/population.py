@@ -1,23 +1,74 @@
 # -*- coding: utf-8 -*-
-from typing import Union
-from FlowCyPy import distribution
 from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-from FlowCyPy.units import Quantity, RIU
-from FlowCyPy.particle_count import ParticleCount
+from TypedUnit import RefractiveIndex, Length, Particle, Area, Velocity, Time, Dimensionless, ParticleFlux, Concentration
 
-from PyMieSim.units import Quantity, RIU, meter
-
-
-config_dict = dict(
-    arbitrary_types_allowed=True,
-    kw_only=True,
-    slots=True,
-    extra='forbid'
-)
+from FlowCyPy import distribution
+from FlowCyPy.utils import config_dict
 
 
 class BasePopulation:
+    def calculate_number_of_events(self, flow_area: Area, flow_speed: Velocity, run_time: Time) -> Particle:
+        """
+        Calculates the total number of particles based on the flow volume and the defined concentration.
+
+        Parameters
+        ----------
+        flow_area : Area
+            The cross-sectional area of the flow (e.g., in square meters).
+        flow_speed : Velocity
+            The speed of the flow (e.g., in meters per second).
+        run_time : Time
+            The total duration of the flow (e.g., in seconds).
+
+        Returns
+        -------
+        Particle
+            The total number of particles.
+
+        Raises
+        ------
+        ValueError
+            If no concentration is defined and the total number of particles cannot be calculated.
+        """
+        if isinstance(self.particle_count, Particle):
+            return self.particle_count
+
+        elif isinstance(self.particle_count, Concentration):
+            flow_volume = flow_area * flow_speed * run_time
+            return (self.concentration * flow_volume)
+
+        raise ValueError("Invalid particle count representation.")
+
+    def compute_particle_flux(self, flow_speed: Velocity, flow_area: Area, run_time: Time) -> ParticleFlux:
+        """
+        Computes the particle flux in the flow system, accounting for flow speed,
+        flow area, and either the particle concentration or a predefined number of particles.
+
+        Parameters
+        ----------
+        flow_speed : Velocity
+            The speed of the flow (e.g., in meters per second).
+        flow_area : Area
+            The cross-sectional area of the flow tube (e.g., in square meters).
+        run_time : Time
+            The total duration of the flow (e.g., in seconds).
+
+        Returns
+        -------
+        ParticleFlux
+            The particle flux in particles per second (particle/second).
+        """
+        if isinstance(self.particle_count, Particle):
+            return self.particle_count / run_time
+
+        elif isinstance(self.particle_count, Concentration):
+            flow_volume_per_second = (flow_speed * flow_area)
+            return (self.particle_count * flow_volume_per_second)
+
+        raise ValueError("Invalid particle count representation.")
+
+
     @field_validator('refractive_index', 'core_refractive_index', 'shell_refractive_index')
     def _validate_refractive_index(cls, value):
         """
@@ -42,11 +93,10 @@ class BasePopulation:
         TypeError
             If the input is not a Quantity with RIU units or a valid distribution.Base instance.
         """
-        if isinstance(value, Quantity):
-            assert value.check(RIU), "The refractive index must have refractive index units [RIU]."
-            return distribution.Delta(position=value)
         if isinstance(value, distribution.Base):
             return value
+        elif RefractiveIndex.check(value):
+            return distribution.Delta(position=value)
         raise TypeError(
             f"refractive_index must be of type Quantity (with RIU) or distribution.Base, but got {type(value)}"
         )
@@ -75,11 +125,10 @@ class BasePopulation:
         TypeError
             If the input is not a Quantity with length units or a valid distribution.Base instance.
         """
-        if isinstance(value, Quantity):
-            assert value.check(meter), "The diameter must have length units (meter)."
-            return distribution.Delta(position=value)
         if isinstance(value, distribution.Base):
             return value
+        elif Length.check(value):
+            return distribution.Delta(position=value)
         raise TypeError(
             f"Diameter must be of type Quantity or distribution.Base, but got {type(value)}"
         )
@@ -97,17 +146,6 @@ class BasePopulation:
         """
         self.particle_count /= factor
 
-    def __post_init__(self):
-        """
-        This method converts any Quantity attributes to their base SI units (i.e., removes any prefixes)
-        and ensures that the particle_count is stored as a ParticleCount instance.
-        """
-        self.particle_count = ParticleCount(self.particle_count)
-        # Convert all attributes that are Quantity instances to their base SI units.
-        for attr_name, attr_value in vars(self).items():
-            if isinstance(attr_value, Quantity):
-                setattr(self, attr_name, attr_value.to_base_units())
-
 
 @dataclass(config=config_dict)
 class Sphere(BasePopulation):
@@ -124,23 +162,22 @@ class Sphere(BasePopulation):
     ----------
     name : str
         The identifier or label for the population.
-    refractive_index : Union[distribution.Base, Quantity]
+    refractive_index : distribution.Base | RefractiveIndex
         The refractive index (or its distribution) of the particles. If provided as a Quantity,
         it must have units of refractive index (RIU). If provided as a distribution, it should be an
         instance of distribution.Base.
-    diameter : Union[distribution.Base, Quantity]
+    diameter : distribution.Base | Length
         The particle diameter (or its distribution). If provided as a Quantity, it must have units
         of length (e.g., meters). If provided as a distribution, it should be an instance of
         distribution.Base.
-    particle_count : ParticleCount | Quantity
-        The number density of particles (scatterers) per cubic meter. If a Quantity is provided,
-        it should be convertible to a ParticleCount.
+    particle_count : Particle | Concentration
+        The number density of particles (scatterers) per cubic meter.
 
     """
     name: str
-    refractive_index: Union[distribution.Base, Quantity]
-    diameter: Union[distribution.Base, Quantity]
-    particle_count: ParticleCount | Quantity
+    refractive_index: distribution.Base | RefractiveIndex
+    diameter: distribution.Base | Length
+    particle_count: Particle | Concentration
 
     def generate_property_sampling(self, sampling: int) -> tuple:
         """
@@ -188,31 +225,31 @@ class CoreShell(BasePopulation):
     ----------
     name : str
         The identifier or label for the population.
-    core_diameter : Union[distribution.Base, Quantity]
+    core_diameter : distribution.Base | Length
         The diameter of the particle core. If provided as a Quantity, it must have length units
         (e.g., meter). If provided as a distribution, it must be an instance of distribution.Base.
-    shell_thickness : Union[distribution.Base, Quantity]
+    shell_thickness : distribution.Base | Length
         The thickness of the particle shell. If provided as a Quantity, it must have length units.
         If provided as a distribution, it must be an instance of distribution.Base.
-    refractive_index_core : Union[distribution.Base, Quantity]
+    refractive_index_core : distribution.Base | RefractiveIndex
         The refractive index (or its distribution) of the core. If provided as a Quantity, it must have
         refractive index units (RIU).
-    refractive_index_shell : Union[distribution.Base, Quantity]
+    refractive_index_shell : distribution.Base | RefractiveIndex
         The refractive index (or its distribution) of the shell. If provided as a Quantity, it must have
         refractive index units (RIU).
-    particle_count : ParticleCount | Quantity
+    particle_count : Particle | Concentration
         The particle density in particles per cubic meter.
 
     """
 
     name: str
-    core_diameter: Union[distribution.Base, Quantity]
-    shell_thickness: Union[distribution.Base, Quantity]
-    core_refractive_index: Union[distribution.Base, Quantity]
-    shell_refractive_index: Union[distribution.Base, Quantity]
-    particle_count: ParticleCount | Quantity
+    core_diameter: distribution.Base | Length
+    shell_thickness: distribution.Base | Length
+    core_refractive_index: distribution.Base | RefractiveIndex
+    shell_refractive_index: distribution.Base | RefractiveIndex
+    particle_count: Particle | Concentration
 
-    def generate_property_sampling(self, sampling: Quantity) -> tuple:
+    def generate_property_sampling(self, sampling: Dimensionless) -> tuple:
         r"""
         Generate a sampling of core-shell particle properties.
 

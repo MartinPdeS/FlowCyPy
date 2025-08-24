@@ -1,9 +1,9 @@
 from pydantic.dataclasses import dataclass
-from pydantic import field_validator
-from FlowCyPy import units
 import numpy as np
+from TypedUnit import Ohm, AnyUnit, Frequency, ureg, validate_units
+
 from FlowCyPy.simulation_settings import SimulationSettings
-from FlowCyPy import helper
+
 
 config_dict = dict(
     arbitrary_types_allowed=True,
@@ -40,13 +40,13 @@ class TransimpedanceAmplifier():
 
     Attributes
     ----------
-    gain : Quantity
+    gain : Ohm
         The amplifier gain (Ω) used to convert photocurrent into voltage.
-    bandwidth : Quantity
+    bandwidth : Frequency/
         The -3 dB frequency bandwidth (Hz) of the amplifier.
-    voltage_noise_density : Quantity
+    voltage_noise_density : AnyUnit
         The spectral density of voltage noise at the amplifier input (V/√Hz).
-    current_noise_density : Quantity
+    current_noise_density : AnyUnit
         The spectral density of current noise at the amplifier input (A/√Hz).
 
     Notes
@@ -56,39 +56,27 @@ class TransimpedanceAmplifier():
     of the detection system. This model allows simulation of how the gain and noise parameters
     affect the output voltage and the signal-to-noise ratio.
     """
-    gain: units.Quantity
-    bandwidth: units.Quantity
-    voltage_noise_density: units.Quantity = 0 * units.volt / units.sqrt_hertz
-    current_noise_density: units.Quantity = 0 * units.ampere / units.sqrt_hertz
-
-    @field_validator('gain')
-    def _validate_gain(cls, value):
-        if not value.check('ohm'):
-            raise ValueError(f"gain must be in ohms, got {value.units}")
-        return value
-
-    @field_validator('bandwidth')
-    def _validate_bandwidth(cls, value):
-        if not value.check('Hz'):
-            raise ValueError(f"bandwidth must be in Hz, got {value.units}")
-        return value
+    gain: Ohm
+    bandwidth: Frequency
+    voltage_noise_density: AnyUnit = 0 * ureg.volt / ureg.sqrt_hertz
+    current_noise_density: AnyUnit = 0 * ureg.ampere / ureg.sqrt_hertz
 
     @property
-    def voltage_rms_noise(self) -> units.Quantity:
+    def voltage_rms_noise(self) -> AnyUnit:
         """
         Total RMS voltage noise introduced by the amplifier over its bandwidth.
         """
         return self.voltage_noise_density * np.sqrt(self.bandwidth)
 
     @property
-    def current_rms_noise(self) -> units.Quantity:
+    def current_rms_noise(self) -> AnyUnit:
         """
         Total RMS current noise (converted to voltage via gain).
         """
         return self.current_noise_density * np.sqrt(self.bandwidth) * self.gain
 
     @property
-    def total_output_noise(self) -> units.Quantity:
+    def total_output_noise(self) -> AnyUnit:
         """
         Total RMS output noise (in volts) from both voltage and current contributions.
         """
@@ -96,8 +84,8 @@ class TransimpedanceAmplifier():
         i_rms = self.current_rms_noise
         return np.sqrt(v_rms**2 + i_rms**2)
 
-    @helper.validate_input_units(signal=units.ampere, dt=units.second)
-    def amplify(self, signal_generator: object, sampling_rate: units.Quantity):
+    @validate_units
+    def amplify(self, signal_generator: object, sampling_rate: Frequency):
         """
         Amplifies the input signal from a detector using the transimpedance amplifier's gain.
         The noise is added after the amplification.
@@ -106,7 +94,7 @@ class TransimpedanceAmplifier():
         ----------
         signal_generator : object
             An instance of a signal generator that provides the input signal to be amplified.
-        sampling_rate : units.Quantity
+        sampling_rate : Frequency
             The sampling rate of the signal generator, used for filtering and noise calculations.
         Raises
         ------

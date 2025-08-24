@@ -34,6 +34,7 @@ requirements:
     - scikit-learn
     - martinpdes::pymiesim =v3.5.4.3
     - martinpdes::mpsplots
+    - martinpdes::typedunit
 
 about:
   home: https://github.com/MartinPdeS/FlowCyPy

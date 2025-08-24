@@ -2,14 +2,8 @@ import numpy as np
 from typing import Optional, Tuple, Callable
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
-from FlowCyPy.units import Quantity
+from TypedUnit import Any
 
-config_dict = dict(
-    arbitrary_types_allowed=True,
-    kw_only=True,
-    slots=True,
-    extra='forbid'
-)
 
 class Base:
     """
@@ -65,7 +59,7 @@ class Base:
         return self.__repr__()
 
     def pre_generate(function: Callable) -> Callable:
-        def wrapper(self, n_samples: Quantity):
+        def wrapper(self, n_samples: Any):
 
             return function(self=self, n_samples=n_samples) * self._units
 

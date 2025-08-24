@@ -1,18 +1,13 @@
 from pydantic.dataclasses import dataclass
-from pydantic import field_validator
 from typing import Union, Tuple
-from FlowCyPy.simulation_settings import SimulationSettings
-from FlowCyPy.units import Quantity
+from TypedUnit import Quantity, Frequency, Voltage, Time
 import pandas as pd
 import numpy as np
 import logging
 
-config_dict = dict(
-    arbitrary_types_allowed=True,
-    kw_only=True,
-    slots=True,
-    extra='forbid'
-)
+from FlowCyPy.simulation_settings import SimulationSettings
+from FlowCyPy.utils import config_dict
+
 
 @dataclass(config=config_dict)
 class Digitizer:
@@ -26,7 +21,7 @@ class Digitizer:
 
     Parameters
     ----------
-    sampling_rate : Quantity
+    sampling_rate : Frequency
         The sampling frequency of the digitizer in hertz (Hz), defining how frequently the
         analog signal is sampled.
     bit_depth : Union[int, str]
@@ -39,11 +34,11 @@ class Digitizer:
 
     Attributes
     ----------
-    sampling_rate : Quantity
+    sampling_rate : Frequency
         The digitizer's sampling rate in Hz.
     bit_depth : Union[int, str]
         The bit-depth or the number of discrete levels available for digitizing the analog signal.
-    saturation_levels : Union[str, Tuple[Quantity, Quantity]]
+    saturation_levels : Union[str, Tuple[Voltage, Voltage]]
         The defined saturation range as a tuple (lower bound, upper bound) or 'auto' if the limits
         are determined dynamically.
 
@@ -54,22 +49,22 @@ class Digitizer:
     dynamic range. This class provides the flexibility to configure both the sampling resolution
     and saturation behavior for simulation purposes.
     """
-    sampling_rate: Quantity
+    sampling_rate: Frequency
     bit_depth: Union[int, str] = '10bit'
-    saturation_levels: Union[str, Tuple[Quantity, Quantity], Quantity] = 'auto'
+    saturation_levels: Union[str, Tuple[Voltage, Voltage], Voltage] = 'auto'
 
     @property
     def _bit_depth(self) -> int:
         return self._process_bit_depth(self.bit_depth)
 
     @property
-    def bandwidth(self) -> Quantity:
+    def bandwidth(self) -> Frequency:
         """
         Automatically calculates the bandwidth based on the sampling frequency.
 
         Returns
         -------
-        Quantity
+        Frequency
             The bandwidth of the detector, which is half the sampling frequency (Nyquist limit).
         """
         return self.sampling_rate / 2
@@ -95,29 +90,7 @@ class Digitizer:
 
         return bit_depth
 
-    @field_validator('sampling_rate')
-    def _validate_sampling_rate(cls, value):
-        """
-        Validates that the sampling frequency is provided in hertz.
-
-        Parameters
-        ----------
-        value : Quantity
-            The sampling frequency to validate.
-
-        Returns
-        -------
-        Quantity
-            The validated sampling frequency.
-
-        Raises:
-            ValueError: If the sampling frequency is not in hertz.
-        """
-        if not value.check('Hz'):
-            raise ValueError(f"sampling_rate must be in hertz, but got {value.units}")
-        return value
-
-    def get_time_series(self, run_time: Quantity) -> Quantity:
+    def get_time_series(self, run_time: Time) -> Quantity:
         time_points = int(self.sampling_rate * run_time)
 
         time_series = np.linspace(0, run_time.magnitude, time_points) * run_time.units

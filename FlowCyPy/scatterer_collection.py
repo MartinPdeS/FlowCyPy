@@ -2,8 +2,8 @@
 from typing import List, Union
 import pandas as pd
 from pint_pandas import PintArray
+from TypedUnit import RefractiveIndex, Concentration, ureg
 
-from FlowCyPy.units import Quantity, RIU, particle, liter
 from FlowCyPy.population import BasePopulation
 from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
 
@@ -15,13 +15,13 @@ class ScattererCollection():
     indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).
 
     """
-    def __init__(self, medium_refractive_index: Quantity = 1.0 * RIU, populations: List[BasePopulation] = None):
+    def __init__(self, medium_refractive_index: RefractiveIndex = 1.0 * ureg.RIU, populations: List[BasePopulation] = None):
         """
         Parameters
         ----------
         populations : List[BasePopulation]
             A list of Population instances that define different scatterer populations.
-        medium_refractive_index : float
+        medium_refractive_index : RefractiveIndex
             The refractive index of the medium. Default is 1.0.
         """
         self.populations = populations or []
@@ -29,9 +29,17 @@ class ScattererCollection():
         self.dataframe: pd.DataFrame = None
 
     def get_population_ratios(self) -> list[float]:
-        total_concentration = sum([p.particle_count.value for p in self.populations])
+        """
+        Get the ratios of each population's concentration to the total concentration.
 
-        return [(p.particle_count.value / total_concentration).magnitude for p in self.populations]
+        Returns
+        -------
+        list[float]
+            A list of concentration ratios for each population.
+        """
+        total_concentration = sum([p.particle_count for p in self.populations])
+
+        return [(p.particle_count / total_concentration).magnitude for p in self.populations]
 
     def get_population_dataframe(self, total_sampling: int = 200, use_ratio: bool = True) -> pd.DataFrame:
         """
@@ -39,7 +47,7 @@ class ScattererCollection():
 
         Parameters
         ----------
-        total_sampling : Quantity, optional
+        total_sampling : int, optional
             Total number of samples to draw, distributed across populations based on their ratios.
 
         Returns
@@ -99,24 +107,24 @@ class ScattererCollection():
         return population
 
     @property
-    def concentrations(self) -> List[Quantity]:
+    def concentrations(self) -> List[Concentration]:
         """
         Gets the concentration of each population in the ScattererCollection instance.
 
         Returns
         -------
-        List[Quantity]
+        List[Concentration]
             A list of concentrations for each population.
         """
         return [population.concentration for population in self.populations]
 
-    def set_concentrations(self, values: Union[List[Quantity], Quantity]) -> None:
+    def set_concentrations(self, values: Union[List[Concentration], Concentration]) -> None:
         """
         Sets the concentration of each population in the ScattererCollection instance.
 
         Parameters
         ----------
-        values : Union[List[Quantity], Quantity]
+        values : Union[List[Concentration], Concentration]
             A list of concentrations to set for each population, or a single concentration value to set for all populations.
 
         Raises
@@ -129,18 +137,13 @@ class ScattererCollection():
                 raise ValueError("The length of the values list must match the number of populations.")
 
             for value in values:
-                if value.dimensionality != (particle / liter).dimensionality:
-                    raise ValueError(
-                        f"Invalid concentration dimensionality: {value.dimensionality}. Expected dimensionality is 'particles per liter' or similar."
-                    )
+                Concentration.check(value)
 
             for population, value in zip(self.populations, values):
                 population.concentration = value
         else:
-            if values.dimensionality != (particle / liter).dimensionality:
-                raise ValueError(
-                    f"Invalid concentration dimensionality: {values.dimensionality}. Expected dimensionality is 'particles per liter' or similar."
-                )
+            Concentration.check(values)
+
             for population in self.populations:
                 population.concentration = values
 

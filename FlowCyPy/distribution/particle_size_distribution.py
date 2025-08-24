@@ -1,8 +1,10 @@
-from FlowCyPy.distribution.base_class import Base, config_dict
 import numpy as np
 from typing import Tuple
-from PyMieSim.units import Quantity
 from pydantic.dataclasses import dataclass
+from TypedUnit import Length, RefractiveIndex
+
+from FlowCyPy.distribution.base_class import Base
+from FlowCyPy.utils import config_dict
 
 
 @dataclass(config=config_dict)
@@ -32,26 +34,26 @@ class RosinRammler(Base):
         The spread parameter (shape factor).
     """
 
-    characteristic_property: Quantity
+    characteristic_property: Length | RefractiveIndex
     spread: float
 
     @property
-    def _units(self) -> Quantity:
+    def _units(self) -> Length | RefractiveIndex:
         return self.characteristic_property.units
 
     @Base.pre_generate
-    def generate(self, n_samples: int) -> Quantity:
+    def generate(self, n_samples: int) -> Length | RefractiveIndex:
         """
         Generates a particle property distribution based on the Rosin-Rammler model.
 
         Parameters
         ----------
-        n_samples : Quantity
+        n_samples : int
             The number of particle properties to generate (dimensionless).
 
         Returns
         -------
-        Quantity
+        Length | RefractiveIndex
             An array of particle properties in meters (or other units).
         """
         # Convert characteristic size to main units

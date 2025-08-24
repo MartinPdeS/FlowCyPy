@@ -1,10 +1,11 @@
-from FlowCyPy.distribution.base_class import Base, config_dict
 import numpy as np
 from typing import Tuple
 from scipy.stats import lognorm
-from PyMieSim.units import Quantity
+from TypedUnit import Length, RefractiveIndex
 from pydantic.dataclasses import dataclass
 
+from FlowCyPy.distribution.base_class import Base
+from FlowCyPy.utils import config_dict
 
 @dataclass(config=config_dict)
 class LogNormal(Base):
@@ -22,31 +23,31 @@ class LogNormal(Base):
 
     Parameters
     ----------
-    mean : Quantity
+    mean : Length | RefractiveIndex
         The mean particle properties.
-    std_dev : Quantity
+    std_dev : Length | RefractiveIndex
         The standard deviation of the logarithm of particle properties.
     scale_factor : float, optional
         A scaling factor applied to the PDF (not the properties).
     """
 
-    mean: Quantity
-    std_dev: Quantity
+    mean: Length | RefractiveIndex
+    std_dev: Length | RefractiveIndex
 
     @property
-    def _units(self) -> Quantity:
+    def _units(self) -> Length | RefractiveIndex:
         return self.mean.units
 
     @property
-    def _mean(self) -> Quantity:
+    def _mean(self) -> Length | RefractiveIndex:
         return self.mean.to(self._units)
 
     @property
-    def _std_dev(self) -> Quantity:
+    def _std_dev(self) -> Length | RefractiveIndex:
         return self.std_dev.to(self._units)
 
     @Base.pre_generate
-    def generate(self, n_samples: int) -> Quantity:
+    def generate(self, n_samples: int) -> Length | RefractiveIndex:
         """
         Generates a log-normal distribution of scatterer properties.
 

@@ -1,10 +1,11 @@
-from FlowCyPy.distribution.base_class import Base, config_dict
 import numpy as np
 from typing import Tuple
 from scipy.stats import norm
-from PyMieSim.units import Quantity
 from pydantic.dataclasses import dataclass
+from TypedUnit import Length, RefractiveIndex
 
+from FlowCyPy.distribution.base_class import Base
+from FlowCyPy.utils import config_dict
 
 @dataclass(config=config_dict)
 class Normal(Base):
@@ -23,25 +24,25 @@ class Normal(Base):
 
     Parameters
     ----------
-    mean : Quantity
+    mean : Length | RefractiveIndex
         The mean (average) particle property in meters.
-    std_dev : Quantity
+    std_dev : Length | RefractiveIndex
         The standard deviation of particle properties in meters.
     """
 
-    mean: Quantity
-    std_dev: Quantity
+    mean: Length | RefractiveIndex
+    std_dev: Length | RefractiveIndex
 
     @property
-    def _units(self) -> Quantity:
+    def _units(self) -> Length | RefractiveIndex:
         return self.mean.units
 
     @property
-    def _mean(self) -> Quantity:
+    def _mean(self) -> Length | RefractiveIndex:
         return self.mean.to(self._units)
 
     @property
-    def _std_dev(self) -> Quantity:
+    def _std_dev(self) -> Length | RefractiveIndex:
         return self.std_dev.to(self._units)
 
     @Base.pre_generate

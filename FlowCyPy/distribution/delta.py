@@ -1,9 +1,10 @@
-from FlowCyPy.distribution.base_class import Base, config_dict
 import numpy as np
 from typing import Tuple
-from PyMieSim.units import Quantity
+from TypedUnit import Length, RefractiveIndex
 from pydantic.dataclasses import dataclass
 
+from FlowCyPy.distribution.base_class import Base
+from FlowCyPy.utils import config_dict
 
 @dataclass(config=config_dict)
 class Delta(Base):
@@ -20,25 +21,25 @@ class Delta(Base):
 
     Parameters
     ----------
-    position : Quantity
+    position : Length | RefractiveIndex
         The particle property for the delta distribution in meters.
     """
 
-    position: Quantity
+    position: Length | RefractiveIndex
 
     @property
-    def _units(self) -> Quantity:
+    def _units(self) -> Length | RefractiveIndex:
         return self.position.units
 
     def __post_init__(self):
         self._main_units = self.position.units
 
     @Base.pre_generate
-    def generate(self, n_samples: int) -> Quantity:
+    def generate(self, n_samples: int) -> Length | RefractiveIndex:
         r"""
         Generates a singular distribution of scatterer properties.
 
-        All sipropertieszes generated will be exactly the same as `position`.
+        All properties generated will be exactly the same as `position`.
 
         Parameters
         ----------
@@ -47,12 +48,12 @@ class Delta(Base):
 
         Returns
         -------
-        Quantity
+        AnyUnit
             An array of identical scatterer properties in meters.
         """
         return np.ones(n_samples) * self.position.magnitude
 
-    def _generate_default_x(self, x_min_factor: float = 0.9, x_max_factor: float = 1.1, n_samples: int = 100) -> Quantity:
+    def _generate_default_x(self, x_min_factor: float = 0.9, x_max_factor: float = 1.1, n_samples: int = 100) -> Length | RefractiveIndex:
         """
         Generates a default range of x-values around the `position`.
 
@@ -67,7 +68,7 @@ class Delta(Base):
 
         Returns
         -------
-        Quantity
+        Length | RefractiveIndex
             A range of x-values with appropriate units.
         """
         if x_min_factor >= x_max_factor:
@@ -77,13 +78,13 @@ class Delta(Base):
         x_max = self.position.magnitude * x_max_factor
         return np.linspace(x_min, x_max, n_samples) * self.position.units
 
-    def get_pdf(self, x_min_factor: float = 0.99, x_max_factor: float = 1.01, n_samples: int = 21) -> Tuple[Quantity, np.ndarray]:
+    def get_pdf(self, x_min_factor: float = 0.99, x_max_factor: float = 1.01, n_samples: int = 21) -> Tuple[Length | RefractiveIndex, np.ndarray]:
         r"""
         Returns the x-values and the scaled PDF values for the singular distribution.
 
         Returns
         -------
-        Tuple[Quantity, np.ndarray]
+        Tuple[Length | RefractiveIndex, np.ndarray]
             The input x-values and the corresponding scaled PDF values.
         """
         x = self._generate_default_x(

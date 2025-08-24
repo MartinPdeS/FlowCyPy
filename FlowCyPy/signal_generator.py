@@ -1,5 +1,7 @@
+from TypedUnit import Time, AnyUnit, Frequency, validate_units, ureg
+
 from FlowCyPy.binary import interface_signal_generator
-from FlowCyPy import units
+
 
 class SignalGenerator(interface_signal_generator.SignalGenerator):
     """
@@ -9,7 +11,7 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
     to provide additional functionality specific to flow cytometry signal generation.
     """
 
-    def __init__(self, n_elements: int, time_units: units.Quantity, signal_units: units.Quantity):
+    def __init__(self, n_elements: int, time_units: Time, signal_units: AnyUnit):
 
         """
         Initializes the SignalGenerator with the specified number of elements and units.
@@ -18,9 +20,9 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         ----------
         n_elements : int
             The number of elements in the signal.
-        time_units : units.Quantity, optional
+        time_units : Time, optional
             The units for time, default is seconds.
-        signal_units : units.Quantity, optional
+        signal_units : AnyUnit, optional
             The units for the signal, default is volts.
         """
         self.time_units = time_units
@@ -28,7 +30,7 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
 
         super().__init__(n_elements)
 
-    def add_signal(self, signal_name: str, signal_data: units.Quantity) -> None:
+    def add_signal(self, signal_name: str, signal_data: AnyUnit) -> None:
         """
         Adds a signal with the specified name and data, converting the data to the defined signal units.
 
@@ -36,7 +38,7 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         ----------
         signal_name : str
             The name of the signal to add.
-        signal_data : units.Quantity
+        signal_data : AnyUnit
             The signal data in the specified units.
         """
         assert signal_data.dimensionality == self.signal_units.dimensionality, \
@@ -44,13 +46,13 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
 
         self._cpp_add_signal(signal_name, signal_data.to(self.signal_units).magnitude)
 
-    def add_time(self, time_data: units.Quantity) -> None:
+    def add_time(self, time_data: Time) -> None:
         """
         Adds a time array to the signal generator, converting it to the defined time units.
 
         Parameters
         ----------
-        time_data : units.Quantity
+        time_data : Time
             The time data in the specified units.
         """
         assert time_data.dimensionality == self.time_units.dimensionality, \
@@ -58,19 +60,19 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
 
         self._cpp_add_signal("Time", time_data.to(self.time_units).magnitude)
 
-    def get_time(self) -> units.Quantity:
+    def get_time(self) -> Time:
         """
         Retrieves the time array for the signal generator.
 
         Returns
         -------
-        units.Quantity
+        Any
             The time array in the specified time units.
         """
         time_data = self._cpp_get_signal("Time")
         return time_data * self.time_units
 
-    def get_signal(self, signal_name: str) -> units.Quantity:
+    def get_signal(self, signal_name: str) -> AnyUnit:
         """
         Retrieves the signal with the specified name and converts it to the defined signal units.
 
@@ -81,25 +83,13 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
 
         Returns
         -------
-        units.Quantity
+        AnyUnit
             The signal data in the specified units.
         """
         signal_data = self._cpp_get_signal(signal_name)
         return signal_data * self.signal_units
 
-    def get_time(self) -> units.Quantity:
-        """
-        Retrieves the time array for the signal generator.
-
-        Returns
-        -------
-        units.Quantity
-            The time array in the specified time units.
-        """
-        time_data = self._cpp_get_signal("Time")
-        return time_data * self.time_units
-
-    def multiply(self, factor: units.Quantity, signal_name: str = None) -> None:
+    def multiply(self, factor: AnyUnit, signal_name: str = None) -> None:
         """
         Multiplies the specified signal by a given factor.
 
@@ -107,7 +97,7 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         ----------
         signal_name : str
             The name of the signal to multiply.
-        factor : float
+        factor : AnyUnit
             The factor by which to multiply the signal.
         """
         if signal_name is None:
@@ -115,7 +105,7 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         else:
             self._cpp_multiply_signal(signal_name=signal_name, factor=factor.magnitude)
 
-    def add_constant(self, constant: units.Quantity, signal_name: str = None) -> None:
+    def add_constant(self, constant: AnyUnit, signal_name: str = None) -> None:
         """
         Adds a constant value to the specified signal.
 
@@ -139,7 +129,7 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
                 constant=constant.to(self.signal_units).magnitude
             )
 
-    def apply_gaussian_noise(self, mean: units.Quantity, standard_deviation: units.Quantity, signal_name: str = None) -> None:
+    def apply_gaussian_noise(self, mean: AnyUnit, standard_deviation: AnyUnit, signal_name: str = None) -> None:
         """
         Adds Gaussian noise to the specified signal.
 
@@ -182,18 +172,18 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         else:
             self._cpp_apply_poisson_noise_to_signal(signal_name=signal_name)
 
-    def apply_baseline_restoration(self, window_size: units.Quantity, signal_name: str = None) -> None:
+    @validate_units
+    def apply_baseline_restoration(self, window_size: Time, signal_name: str = None) -> None:
         """
         Applies baseline restoration to the specified signal.
 
         Parameters
         ----------
+        window_size : Time
+            The size of the window to use for baseline restoration.
         signal_name : str
             The name of the signal to apply baseline restoration to.
         """
-        assert window_size.dimensionality == self.time_units.dimensionality, \
-            f"Window size units {window_size.units} do not match time units {self.time_units}."
-
         time = self._cpp_get_signal("Time")
 
         dt = time[1] - time[0]  # Assuming uniform time intervals
@@ -205,98 +195,107 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         else:
             self._cpp_apply_baseline_restoration_to_signal(window_size=window_size_bins, signal_name=signal_name)
 
-    def apply_butterworth_lowpass_filter(self, sampling_rate: units.Quantity, cutoff_frequency: units.Quantity, order: int = 1, gain: units.Quantity = 1.0 * units.dimensionless, signal_name: str = None) -> None:
+    @validate_units
+    def apply_butterworth_lowpass_filter(self,
+        sampling_rate: Frequency,
+        cutoff_frequency: Frequency,
+        order: int = 1,
+        gain: AnyUnit = 1.0 * ureg.dimensionless,
+        signal_name: str = None) -> None:
         """
         Applies a Butterworth low-pass filter to the specified signal.
 
         Parameters
         ----------
-        sampling_rate : units.Quantity
+        sampling_rate : Frequency
             The sampling rate of the signal.
-        cutoff_frequency : units.Quantity
+        cutoff_frequency : Frequency
             The cutoff frequency of the filter.
         order : int, optional
             The order of the Butterworth filter, default is 1.
-        gain : units.Quantity, optional
+        gain : Dimensionless, optional
             The gain of the filter, default is 1.0.
         signal_name : str, optional
             The name of the signal to apply the filter to.
         """
-        units.Frequency.check(sampling_rate)
-        units.Frequency.check(cutoff_frequency)
-
         if signal_name is None:
             self._cpp_apply_butterworth_lowpass_filter(
-                sampling_rate=sampling_rate.to(units.hertz).magnitude,
-                cutoff_frequency=cutoff_frequency.to(units.hertz).magnitude,
+                sampling_rate=sampling_rate.to(ureg.hertz).magnitude,
+                cutoff_frequency=cutoff_frequency.to(ureg.hertz).magnitude,
                 order=order,
                 gain=gain.magnitude
             )
         else:
             self._cpp_apply_butterworth_lowpass_filter_to_signal(
                 signal_name=signal_name,
-                sampling_rate=sampling_rate.to(units.hertz).magnitude,
-                cutoff_frequency=cutoff_frequency.to(units.hertz).magnitude,
+                sampling_rate=sampling_rate.to(ureg.hertz).magnitude,
+                cutoff_frequency=cutoff_frequency.to(ureg.hertz).magnitude,
                 order=order,
                 gain=gain.magnitude
             )
 
-    def apply_bessel_lowpass_filter(self, sampling_rate: units.Quantity, cutoff_frequency: units.Quantity, gain: units.Quantity = 1.0 * units.dimensionless, order: int = 1, signal_name: str = None) -> None:
+    @validate_units
+    def apply_bessel_lowpass_filter(self,
+        sampling_rate: Frequency,
+        cutoff_frequency: Frequency,
+        gain: AnyUnit = 1.0 * ureg.dimensionless,
+        order: int = 1,
+        signal_name: str = None) -> None:
         """
         Applies a Bessel low-pass filter to the specified signal.
 
         Parameters
         ----------
-        sampling_rate : units.Quantity
+        sampling_rate : Frequency
             The sampling rate of the signal.
-        cutoff_frequency : units.Quantity
+        cutoff_frequency : Frequency
             The cutoff frequency of the filter.
         order : int, optional
             The order of the Bessel filter, default is 1.
-        gain : units.Quantity, optional
+        gain : Dimensionless, optional
             The gain of the filter, default is 1.0.
         signal_name : str, optional
             The name of the signal to apply the filter to.
         """
-        units.Frequency.check(sampling_rate)
-        units.Frequency.check(cutoff_frequency)
-
         if signal_name is None:
             self._cpp_apply_bessel_lowpass_filter(
-                sampling_rate=sampling_rate.to(units.hertz).magnitude,
-                cutoff_frequency=cutoff_frequency.to(units.hertz).magnitude,
+                sampling_rate=sampling_rate.to(ureg.hertz).magnitude,
+                cutoff_frequency=cutoff_frequency.to(ureg.hertz).magnitude,
                 order=order,
                 gain=gain.magnitude
             )
         else:
             self._cpp_apply_bessel_lowpass_filter_to_signal(
                 signal_name=signal_name,
-                sampling_rate=sampling_rate.to(units.hertz).magnitude,
-                cutoff_frequency=cutoff_frequency.to(units.hertz).magnitude,
+                sampling_rate=sampling_rate.to(ureg.hertz).magnitude,
+                cutoff_frequency=cutoff_frequency.to(ureg.hertz).magnitude,
                 order=order,
                 gain=gain.magnitude
             )
 
-    def generate_pulses(self, widths: units.Quantity, centers: units.Quantity, amplitudes: units.Quantity, base_level: units.Quantity, signal_name: str = None) -> None:
+    @validate_units
+    def generate_pulses(self,
+        widths: Time,
+        centers: Time,
+        amplitudes: AnyUnit,
+        base_level: AnyUnit,
+        signal_name: str = None) -> None:
         """
         Generates gaussian pulses with specified widths, centers, and amplitudes.
 
         Parameters
         ----------
-        widths : units.Quantity
+        widths : Time
             The widths of the pulses.
-        centers : units.Quantity
+        centers : Time
             The centers of the pulses.
-        amplitudes : units.Quantity
+        amplitudes : Any
             The amplitudes of the pulses.
         signal_name : str, optional
             The name of the signal to add the pulses to.
-        base_level : units.Quantity
+        base_level : Any
             The base level of the signal, which is added to the amplitudes of the pulses.
         """
-        units.Time.check(widths)
-        units.Time.check(centers)
-
         assert amplitudes.units.dimensionality == self.signal_units.dimensionality, \
             f"Amplitude units {amplitudes.units} do not match signal units {self.signal_units}."
 

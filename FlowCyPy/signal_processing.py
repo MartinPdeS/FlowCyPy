@@ -1,5 +1,6 @@
 
-from FlowCyPy import units
+from TypedUnit import ureg
+
 from FlowCyPy import circuits
 from FlowCyPy.digitizer import Digitizer
 from FlowCyPy import peak_locator
@@ -82,7 +83,7 @@ class SignalProcessing:
         """
         results.triggered_digital = results.triggered_analog.digitalize(digitizer=self.digitizer)
 
-        results.triggered_digital.normalize_units(signal_units=units.bit_bins)
+        results.triggered_digital.normalize_units(signal_units=ureg.bit_bins)
 
         if self.peak_algorithm is not None:
             results.peaks = self.peak_algorithm.run(results.triggered_digital)

@@ -6,6 +6,7 @@ from FlowCyPy.amplifier import TransimpedanceAmplifier
 from FlowCyPy import source
 from FlowCyPy.source import GaussianBeam
 
+
 class OptoElectronics():
     """
     Base class for optoelectronic components in flow cytometry simulations.

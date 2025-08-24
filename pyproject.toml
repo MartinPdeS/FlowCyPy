@@ -59,7 +59,8 @@ dependencies = [
     "scipy >=1.15.3",
     'PyMieSim ==3.7.0',
     'MPSPlots',
-    'scikit-learn'
+    'scikit-learn',
+    "TypedUnit"
 ]
 
 

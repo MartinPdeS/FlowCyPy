@@ -1,12 +1,8 @@
 import numpy as np
-from FlowCyPy import units
+from TypedUnit import ureg
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 
-import numpy as np
-import matplotlib.pyplot as plt
-from MPSPlots.styles import mps
-from FlowCyPy import units
 from FlowCyPy import FlowCytometer
 from FlowCyPy.population import Sphere
 from FlowCyPy import circuits
@@ -43,12 +39,12 @@ class SignalStatistics:
 class BaseEstimator:
     def _get_peaks(self, flow_cytometer):
         flow_cytometer.signal_processing.analog_processing = [
-            circuits.BaselineRestorator(window_size=10 * units.microsecond),
+            circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
         ]
 
         flow_cytometer.signal_processing.triggering_system = DynamicWindow(
             trigger_detector_name='default',
-            threshold=0.5 * units.millivolt,
+            threshold=0.5 * ureg.millivolt,
             max_triggers=-1,
             pre_buffer=20,
             post_buffer=20,
@@ -57,7 +53,7 @@ class BaseEstimator:
         flow_cytometer.signal_processing.peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
 
         results = flow_cytometer.run(
-            run_time=1.5 * units.millisecond,
+            run_time=1.5 * ureg.millisecond,
             compute_cross_section=True
         )
 
@@ -88,15 +84,15 @@ class JEstimator(BaseEstimator):
         self._robust_cvs = []
         self._illumination_powers = []
 
-    def add_measurement(self, signal_array: np.ndarray, illumination_power: units.Quantity) -> None:
+    def add_measurement(self, signal_array: np.ndarray, illumination_power: ureg.Quantity) -> None:
         """
         Add a single signal measurement and compute its statistics.
 
         Parameters
         ----------
         signal_array : np.ndarray
-            Raw signal values in arbitrary units.
-        illumination_power : units.Quantity
+            Raw signal values in arbitrary ureg.
+        illumination_power : ureg.Quantity
             Illumination power associated with this signal.
         """
         stats = SignalStatistics(signal_array)
@@ -112,15 +108,15 @@ class JEstimator(BaseEstimator):
             print(f"[DEBUG] Robust STD: {stats.robust_std:.3e} AU")
             print(f"[DEBUG] Robust CV: {stats.robust_coefficient_of_variation:.5f}")
 
-    def add_batch(self, particle_count, bead_diameter: units.Quantity, illumination_powers: units.Quantity, flow_cytometer: FlowCytometer) -> None:
+    def add_batch(self, particle_count, bead_diameter: ureg.Quantity, illumination_powers: ureg.Quantity, flow_cytometer: FlowCytometer) -> None:
         """
         Add multiple signal measurements across a range of illumination powers using a provided generator.
 
         Parameters
         ----------
-        bead_diameter : units.Quantity
+        bead_diameter : ureg.Quantity
             Bead size used in the experiment (for `run_function`).
-        illumination_powers : units.Quantity
+        illumination_powers : ureg.Quantity
             Sequence of illumination powers to test.
         run_function : callable
             Function that accepts bead_diameter and illumination_power, and returns a signal peak dataframe.
@@ -143,7 +139,7 @@ class JEstimator(BaseEstimator):
             name='population',
             particle_count=particle_count,
             diameter=bead_diameter,
-            refractive_index=1.47 * units.RIU
+            refractive_index=1.47 * ureg.RIU
         )
 
         flow_cytometer.fluidics.scatterer_collection.populations = [population_0]
@@ -152,14 +148,14 @@ class JEstimator(BaseEstimator):
 
         return self._get_peaks(flow_cytometer)
 
-    def estimate_j(self) -> units.Quantity:
+    def estimate_j(self) -> ureg.Quantity:
         """
         Estimate the J parameter by performing a linear fit of RCV vs 1/sqrt(Median).
 
         Returns
         -------
-        j_estimate : units.Quantity
-            Estimated slope J in √AU units.
+        j_estimate : ureg.Quantity
+            Estimated slope J in √AU ureg.
         """
         if len(self._medians) < 2:
             raise ValueError("At least two measurements are required to estimate J.")
@@ -174,7 +170,7 @@ class JEstimator(BaseEstimator):
                 print(f"[DEBUG] x={xi:.3e}, y={yi:.3e}")
             print(f"[DEBUG] Estimated J = {slope:.5f} √AU")
 
-        return slope * units.AU**0.5
+        return slope * ureg.AU**0.5
 
     def plot(self) -> None:
         """
@@ -264,7 +260,7 @@ class KEstimator(BaseEstimator):
         self._robust_stds = []
         self._bead_diameters = []
 
-    def add_measurement(self, signal_array: np.ndarray, bead_diameter: units.Quantity) -> None:
+    def add_measurement(self, signal_array: np.ndarray, bead_diameter: ureg.Quantity) -> None:
         """
         Add a measurement corresponding to a single bead size.
 
@@ -272,7 +268,7 @@ class KEstimator(BaseEstimator):
         ----------
         signal_array : np.ndarray
             Measured peak signal array (AU).
-        bead_diameter : units.Quantity
+        bead_diameter : ureg.Quantity
             Diameter of the simulated bead.
         """
         stats = SignalStatistics(signal_array)
@@ -286,8 +282,8 @@ class KEstimator(BaseEstimator):
             print(f"[DEBUG] Median: {stats.median:.3e} AU")
             print(f"[DEBUG] Robust STD: {stats.robust_std:.3e} AU")
 
-    def add_batch(self, particle_count: int, bead_diameters: list[units.Quantity],
-                  illumination_power: units.Quantity, flow_cytometer: FlowCytometer) -> None:
+    def add_batch(self, particle_count: int, bead_diameters: list[ureg.Quantity],
+                  illumination_power: ureg.Quantity, flow_cytometer: FlowCytometer) -> None:
         """
         Add multiple measurements for different bead sizes at a fixed illumination power.
 
@@ -295,9 +291,9 @@ class KEstimator(BaseEstimator):
         ----------
         particle_count : int
             Number of particles per bead population.
-        bead_diameters : list of units.Quantity
+        bead_diameters : list of ureg.Quantity
             List of bead sizes to simulate.
-        illumination_power : units.Quantity
+        illumination_power : ureg.Quantity
             Constant power for all simulations.
         flow_cytometer : FlowCytometer
             Simulation engine.
@@ -313,20 +309,20 @@ class KEstimator(BaseEstimator):
             name='population',
             particle_count=particle_count,
             diameter=bead_diameter,
-            refractive_index=1.47 * units.RIU
+            refractive_index=1.47 * ureg.RIU
         )
         flow_cytometer.fluidics.scatterer_collection.populations = [population]
         flow_cytometer.opto_electronics.source.optical_power = illumination_power
 
         return self._get_peaks(flow_cytometer)
 
-    def estimate_k(self) -> units.Quantity:
+    def estimate_k(self) -> ureg.Quantity:
         """
         Estimate the K parameter from a linear fit of STD vs sqrt(Median).
 
         Returns
         -------
-        k_estimate : units.Quantity
+        k_estimate : ureg.Quantity
             Estimated K in AU^0.5
         """
         if len(self._medians) < 2:
@@ -341,7 +337,7 @@ class KEstimator(BaseEstimator):
                 print(f"[DEBUG] sqrt(Median): {xi:.3e}, STD: {yi:.3e}")
             print(f"[DEBUG] Estimated K = {slope:.5f} AU^0.5")
 
-        return slope * units.AU**0.5
+        return slope * ureg.AU**0.5
 
     def plot(self) -> None:
         """

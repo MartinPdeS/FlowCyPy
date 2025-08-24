@@ -1,9 +1,9 @@
 import pytest
 import numpy as np
 from unittest.mock import patch
+from TypedUnit import ureg
 
 # Import necessary components from FlowCyPy.
-from FlowCyPy import units
 from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection, population, distribution
 import FlowCyPy
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
@@ -17,11 +17,11 @@ def valid_flowcell():
     Create a valid FlowCell instance using typical microfluidic and flow cytometry parameters.
     """
     return FlowCell(
-        width=10 * units.micrometer,
-        height=10 * units.micrometer,
-        sample_volume_flow=0.3 * units.microliter / units.second,
-        sheath_volume_flow=3 * units.microliter / units.second,
-        mu=1e-3 * units.pascal * units.second,
+        width=10 * ureg.micrometer,
+        height=10 * ureg.micrometer,
+        sample_volume_flow=0.3 * ureg.microliter / ureg.second,
+        sheath_volume_flow=3 * ureg.microliter / ureg.second,
+        mu=1e-3 * ureg.pascal * ureg.second,
         N_terms=25,
         n_int=200,
     )
@@ -33,9 +33,9 @@ def real_population():
     """
     return population.Sphere(
         name='Population',
-        particle_count=10 * units.particle,
-        diameter=distribution.Delta(position=150 * units.nanometer),
-        refractive_index=distribution.Delta(position=1.39 * units.RIU)
+        particle_count=10 * ureg.particle,
+        diameter=distribution.Delta(position=150 * ureg.nanometer),
+        refractive_index=distribution.Delta(position=1.39 * ureg.RIU)
     )
 
 @pytest.fixture
@@ -44,7 +44,7 @@ def real_scatterer_collection(real_population):
     Create a real ScattererCollection containing the real Population instance.
     """
     return ScattererCollection(
-        medium_refractive_index=1.33 * units.RIU,
+        medium_refractive_index=1.33 * ureg.RIU,
         populations=[real_population]
     )
 
@@ -62,20 +62,20 @@ def test_invalid_width_type():
     with pytest.raises(ValueError):
         FlowCell(
             width=10e-6,  # Not a Quantity
-            height=10e-6 * units.meter,
-            sample_volume_flow=0.3 * units.microliter / units.second,
-            sheath_volume_flow=3 * units.microliter / units.second,
-            mu=1e-3 * units.pascal * units.second,
+            height=10e-6 * ureg.meter,
+            sample_volume_flow=0.3 * ureg.microliter / ureg.second,
+            sheath_volume_flow=3 * ureg.microliter / ureg.second,
+            mu=1e-3 * ureg.pascal * ureg.second,
         )
 
 def test_invalid_flow_units():
     with pytest.raises(ValueError):
         FlowCell(
-            width=10 * units.micrometer,
-            height=10 * units.micrometer,
-            sample_volume_flow=0.3 * units.meter,  # Wrong unit
-            sheath_volume_flow=3 * units.microliter / units.second,
-            mu=1e-3 * units.pascal * units.second,
+            width=10 * ureg.micrometer,
+            height=10 * ureg.micrometer,
+            sample_volume_flow=0.3 * ureg.meter,  # Wrong unit
+            sheath_volume_flow=3 * ureg.microliter / ureg.second,
+            mu=1e-3 * ureg.pascal * ureg.second,
         )
 
 def test_velocity_output(valid_flowcell):
@@ -107,17 +107,17 @@ def test_plot_method(mock_show, valid_flowcell, real_scatterer_collection):
         flow_cell=valid_flowcell
     )
 
-    fluidics.plot(run_time=1 * units.millisecond)
+    fluidics.plot(run_time=1 * ureg.millisecond)
 
 
 def test_get_sample_volume(valid_flowcell):
-    run_time = 10 * units.second
+    run_time = 10 * ureg.second
     volume = valid_flowcell.get_sample_volume(run_time)
     volume_microliters = volume.to("microliter")
     assert volume_microliters.magnitude > 0
 
 def test_generate_poisson_events(valid_flowcell, real_population):
-    run_time = 10 * units.second
+    run_time = 10 * ureg.second
     df = valid_flowcell._generate_event_dataframe(run_time=run_time, populations=[real_population])
     expected_columns = {"Time", "Velocity", "x", "y"}
     assert expected_columns.issubset(set(df.columns))
@@ -125,7 +125,7 @@ def test_generate_poisson_events(valid_flowcell, real_population):
         assert len(df) > 0
 
 def test_generate_event_dataframe(valid_flowcell, real_population):
-    run_time = 10 * units.second
+    run_time = 10 * ureg.second
     df_event = valid_flowcell._generate_event_dataframe(populations=[real_population], run_time=run_time)
     # Check that the DataFrame has a MultiIndex with "Population" and "Index"
     assert "Population" in df_event.index.names
@@ -133,7 +133,7 @@ def test_generate_event_dataframe(valid_flowcell, real_population):
     assert len(df_event) > 0
 
 def test_event_dataframe_units(valid_flowcell, real_scatterer_collection):
-    run_time = 10 * units.second
+    run_time = 10 * ureg.second
     df_event = valid_flowcell._generate_event_dataframe(populations=real_scatterer_collection.populations, run_time=run_time)
     # Check that each column has pint arrays with units (assume the column has .pint attribute)
     for col in df_event.columns:

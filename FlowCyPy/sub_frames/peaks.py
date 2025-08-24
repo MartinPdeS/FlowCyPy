@@ -3,9 +3,11 @@ import pandas as pd
 import numpy
 import matplotlib.pyplot as plt
 import seaborn as sns
-from FlowCyPy import units
+from TypedUnit import ureg
+
 from FlowCyPy.sub_frames.base import BaseSubFrame
 from FlowCyPy.sub_frames import utils
+from FlowCyPy import helper
 
 class PeakDataFrame(BaseSubFrame):
     """
@@ -36,7 +38,7 @@ class PeakDataFrame(BaseSubFrame):
 
         Returns
         -------
-        units.Quantity
+        Any
             The standard deviation of the signal in the specified units.
         """
         sub_frame = self.loc[detector_name, metrics]
@@ -56,7 +58,7 @@ class PeakDataFrame(BaseSubFrame):
 
         Returns
         -------
-        units.Quantity
+        Any
             The robust standard deviation of the signal in the specified units.
         """
         sub_frame = self.loc[detector_name, metrics]
@@ -74,7 +76,7 @@ class PeakDataFrame(BaseSubFrame):
 
         Returns
         -------
-        units.Quantity
+        Any
             The mean of the signal in the specified units.
         """
         sub_frame = self.loc[detector_name, metrics]
@@ -105,23 +107,22 @@ class PeakDataFrame(BaseSubFrame):
                 unit_list.append('None')
             else:
                 unit = col_data.max().to_compact().units
-                if unit.dimensionality == units.bit_bins.dimensionality:
-                    unit = units.bit_bins
+                if unit.dimensionality == ureg.bit_bins.dimensionality:
+                    unit = ureg.bit_bins
                 # df.loc[:, col_name] = col_data.pint.to(unit)
                 df[col_name] = col_data.pint.to(unit)
                 unit_list.append(unit)
 
         return df, unit_list
 
-    @utils._pre_plot
-    def hist(
-        self,
+    @helper.mpl_plot
+    def hist(self,
         x: tuple[str, str],
         figure_size: tuple = (10, 6),
         kde: bool = False,
         bins: Optional[int] = 'auto',
         color: Optional[Union[str, dict]] = None,
-        clip_data: Optional[Union[str, units.Quantity]] = None
+        clip_data: Optional[Union[str, Any]] = None
     ) -> plt.Figure:
         """
         Plot a histogram distribution for a given column using Seaborn, with an option to remove extreme values.
@@ -138,7 +139,7 @@ class PeakDataFrame(BaseSubFrame):
             Number of bins for the histogram (default: 'auto', letting Seaborn decide).
         color : Optional[Union[str, dict]], optional
             Color specification for the plot (default: None).
-        clip_data : Optional[Union[str, units.Quantity]], optional
+        clip_data : Optional[Union[str, Any]], optional
             If provided, removes data above a threshold. If a string ending with '%' (e.g., "20%") is given,
             values above the corresponding quantile (e.g. the top 20% of values) are excluded.
             If a pint.Quantity is given, values above that absolute value are removed.
@@ -171,8 +172,11 @@ class PeakDataFrame(BaseSubFrame):
 
         return figure
 
-    @utils.plot_sns
-    def plot_2d(self, x: tuple[str, str], y: tuple[str, str], feature: str = 'Height', bandwidth_adjust: float = 0.8) -> plt.Figure:
+    @helper.plot_sns
+    def plot_2d(self,
+        x: tuple[str, str],
+        y: tuple[str, str],
+        bandwidth_adjust: float = 0.8) -> plt.Figure:
         """
         Plot the joint KDE distribution of a feature between two detectors.
 
@@ -217,7 +221,7 @@ class PeakDataFrame(BaseSubFrame):
         grid.set_axis_labels(f"Detector: {x_detector} : feature: {x_feature}", f"Detector: {y_detector} : feature: {y_feature}")
         return grid
 
-    @utils.plot_3d
+    @helper.plot_3d
     def plot_3d(self, ax: plt.Axes, x: str, y: str, z: str) -> plt.Figure:
         """
         Create a 3D scatter plot of a feature across three detectors.
@@ -248,7 +252,6 @@ class PeakDataFrame(BaseSubFrame):
         x_series = df.loc[x].values
         y_series = df.loc[y].values
         z_series = df.loc[z].values
-
 
         ax.scatter(x_series, y_series, z_series)
 

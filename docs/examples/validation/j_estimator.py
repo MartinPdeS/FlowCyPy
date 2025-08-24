@@ -17,7 +17,8 @@ import numpy as np
 from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection
 from FlowCyPy.opto_electronics import OptoElectronics, source, TransimpedanceAmplifier, Detector
 from FlowCyPy.signal_processing import SignalProcessing, Digitizer
-from FlowCyPy import FlowCytometer, SimulationSettings, units
+from FlowCyPy import FlowCytometer, SimulationSettings
+from TypedUnit import ureg
 
 from FlowCyPy.calibration import JEstimator
 
@@ -42,14 +43,14 @@ np.random.seed(3)  # Reproducibility
 # -------------------------------
 
 flow_cell = FlowCell(
-    sample_volume_flow=80 * units.microliter / units.minute,
-    sheath_volume_flow=1 * units.milliliter / units.minute,
-    width=400 * units.micrometer,
-    height=400 * units.micrometer,
+    sample_volume_flow=80 * ureg.microliter / ureg.minute,
+    sheath_volume_flow=1 * ureg.milliliter / ureg.minute,
+    width=400 * ureg.micrometer,
+    height=400 * ureg.micrometer,
 
 )
 
-scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
+scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
 
 fluidics = Fluidics(
     scatterer_collection=scatterer_collection,
@@ -57,28 +58,28 @@ fluidics = Fluidics(
 )
 
 source = source.GaussianBeam(
-    numerical_aperture=0.2 * units.AU,
-    wavelength=450 * units.nanometer,
-    optical_power=0 * units.watt
+    numerical_aperture=0.2 * ureg.AU,
+    wavelength=450 * ureg.nanometer,
+    optical_power=0 * ureg.watt
 )
 
 digitizer = Digitizer(
     bit_depth='16bit',
-    saturation_levels=(0 * units.volt, 2 * units.volt),
-    sampling_rate=60 * units.megahertz,
+    saturation_levels=(0 * ureg.volt, 2 * ureg.volt),
+    sampling_rate=60 * ureg.megahertz,
 )
 
 amplifier = TransimpedanceAmplifier(
-    gain=10 * units.volt / units.ampere,
-    bandwidth=60 * units.megahertz,
+    gain=10 * ureg.volt / ureg.ampere,
+    bandwidth=60 * ureg.megahertz,
 )
 
 detector_0 = Detector(
     name='default',
-    phi_angle=0 * units.degree,  # Forward scatter
-    numerical_aperture=0.2 * units.AU,
-    cache_numerical_aperture=0.0 * units.AU,
-    responsivity=1 * units.ampere / units.watt,
+    phi_angle=0 * ureg.degree,  # Forward scatter
+    numerical_aperture=0.2 * ureg.AU,
+    cache_numerical_aperture=0.0 * ureg.AU,
+    responsivity=1 * ureg.ampere / ureg.watt,
 )
 
 opto_electronics = OptoElectronics(
@@ -106,10 +107,10 @@ flow_cytometer = FlowCytometer(
 j_estimator = JEstimator(debug_mode=False)
 
 j_estimator.add_batch(
-    illumination_powers=np.linspace(10, 380, 25) * units.milliwatt,
-    bead_diameter=400 * units.nanometer,
+    illumination_powers=np.linspace(10, 380, 25) * ureg.milliwatt,
+    bead_diameter=400 * ureg.nanometer,
     flow_cytometer=flow_cytometer,
-    particle_count=50 * units.particle
+    particle_count=50 * ureg.particle
 )
 
 # %%

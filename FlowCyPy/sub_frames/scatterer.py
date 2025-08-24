@@ -1,12 +1,14 @@
+import numpy
 from typing import Optional, Union, List, Tuple, Any
 import pandas as pd
+from pint_pandas import PintArray
 import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy
-from FlowCyPy import units
+from TypedUnit import Time, AnyUnit, ureg
+
+from FlowCyPy import helper
 from FlowCyPy.sub_frames import utils
-from FlowCyPy.units import Quantity
-from pint_pandas import PintArray
+
 
 class BaseSubFrame(pd.DataFrame):
     @property
@@ -18,7 +20,7 @@ class ScattererDataFrame(BaseSubFrame):
     """
     A subclass of pandas DataFrame with custom plotting and logging for scatterer data.
     """
-    def plot(self, x: str = None, y: str = None, z: str = None, **kwargs) -> Any:
+    def plot(self, x: str = None, y: str = None, z: str = None, **kwargs) -> AnyUnit:
         """
         Dispatch plotting to 2D or 3D methods based on provided kwargs.
         """
@@ -56,7 +58,7 @@ class ScattererDataFrame(BaseSubFrame):
 
         return df, units_list
 
-    @utils.plot_sns
+    @helper.plot_sns
     def plot_2d(self, x: str, y: str, alpha: float = 0.8, bandwidth_adjust: float = 1, color_palette: Optional[Union[str, dict]] = None, figure_size: tuple = (6, 6)) -> plt.Figure:
         """
         Plot the joint distribution of scatterer sizes and refractive indices.
@@ -101,8 +103,15 @@ class ScattererDataFrame(BaseSubFrame):
         grid.ax_joint.set_ylabel(f"{y} [{y_unit._repr_latex_()}]")
         return grid
 
-    @utils.plot_3d
-    def plot_3d(self, ax: plt.Axes, x: str, y: str, z: str = None, hue: str = 'Population', alpha: float = 0.8) -> plt.Figure:
+    @helper.plot_3d
+    def plot_3d(self,
+        ax: plt.Axes,
+        x: str,
+        y: str,
+        z: str = None,
+        hue: str = 'Population',
+        alpha: float = 0.8
+    ) -> plt.Figure:
         """
         Visualize a 3D scatter plot of scatterer properties.
 
@@ -140,15 +149,16 @@ class ScattererDataFrame(BaseSubFrame):
         ax.set_title("Scatterer Sampling Distribution")
         return ax.figure
 
-    @utils._pre_plot
+    @helper.mpl_plot
     def hist(
         self,
+        figure: plt.Figure,
+        ax: plt.Axes,
         x: str = 'Diameter',
         kde: bool = False,
-        figure_size: tuple = (10, 6),
         bins: Optional[int] = 'auto',
         color: Optional[Union[str, dict]] = None,
-        clip_data: Optional[Union[str, units.Quantity]] = None) -> plt.Figure:
+        clip_data: Optional[Union[str, Any]] = None) -> plt.Figure:
         """
         Plot a histogram distribution for a given column using Seaborn, with an option to remove extreme values.
 
@@ -164,10 +174,10 @@ class ScattererDataFrame(BaseSubFrame):
             Number of bins for the histogram (default: 'auto', letting Seaborn decide).
         color : Optional[Union[str, dict]], optional
             Color specification for the plot (default: None).
-        clip_data : Optional[Union[str, units.Quantity]], optional
+        clip_data : Optional[Union[str, Any]], optional
             If provided, removes data above a threshold. If a string ending with '%' (e.g., "20%") is given,
             the function removes values above the corresponding quantile (e.g., the top 20% of values).
-            If a pint.Quantity is given, it removes values above that absolute value.
+            If a Any is given, it removes values above that absolute value.
 
         Returns
         -------
@@ -179,8 +189,6 @@ class ScattererDataFrame(BaseSubFrame):
 
         df, [unit] = self.get_sub_dataframe(x)
 
-        figure, ax = plt.subplots(nrows=1, ncols=1, figsize=figure_size)
-
         df = df.reset_index('Population').pint.dequantify().droplevel('unit', axis=1)
 
         df[x] = utils.clip_data(signal=df[[x]], clip_value=clip_data)
@@ -189,9 +197,11 @@ class ScattererDataFrame(BaseSubFrame):
         ax.set_xlabel(f"{x} [{unit._repr_latex_()}]")
         ax.set_title(f"Distribution of {x}")
 
-        return figure
-
-    def _add_event_to_ax(self, ax: plt.Axes, time_units: Quantity, palette: str = 'tab10', filter_population: str | List[str] = None) -> None:
+    def _add_event_to_ax(self,
+        ax: plt.Axes,
+        time_units: Time,
+        palette: str = 'tab10',
+        filter_population: str | List[str] = None) -> None:
         """
         Adds vertical markers for event occurrences in the scatterer data.
 
@@ -199,7 +209,7 @@ class ScattererDataFrame(BaseSubFrame):
         ----------
         ax : plt.Axes
             The matplotlib axis to modify.
-        time_units : Quantity
+        time_units : Time
             Time units to use for plotting.
         palette : str, optional
             Color palette for different populations (default: 'tab10').
@@ -214,7 +224,7 @@ class ScattererDataFrame(BaseSubFrame):
             if filter_population is not None and population_name not in filter_population:
                 continue
 
-            x = group.Time.pint.to(time_units)
+            x = group.Time.pint.to(time_units).pint.quantity
 
             color = color_mapping[population_name]
             ax.vlines(x, ymin=0, ymax=1, transform=ax.get_xaxis_transform(), label=population_name, color=color)
@@ -225,7 +235,10 @@ class ScattererDataFrame(BaseSubFrame):
         ax.legend()
 
     def sort_population(self) -> None:
-        time_unit = units.second
+        """
+        Sorts the population by their event times.
+        """
+        time_unit = ureg.second
 
         original_times = self['Time'].pint.to(time_unit)
 
@@ -234,7 +247,10 @@ class ScattererDataFrame(BaseSubFrame):
         self['Time'] = PintArray(new_times, time_unit)
 
     def uniformize_events(self) -> None:
-        time_unit = units.second
+        """
+        Uniformizes the event times.
+        """
+        time_unit = ureg.second
 
         original_times = self['Time'].pint.to(time_unit)
 
@@ -248,12 +264,27 @@ class ScattererDataFrame(BaseSubFrame):
 
         self['Time'] = PintArray(new_times, time_unit)
 
-    def uniformize_events_with_time(self, run_time: units.Quantity = None, lower_boundary: float = 0.05, upper_boundary: float = 0.95) -> None:
-        time_unit = units.second
+    def uniformize_events_with_time(self,
+        run_time: Time = None,
+        lower_boundary: float = 0.05,
+        upper_boundary: float = 0.95) -> None:
+        """
+        Uniformizes the event times within a specified range.
+
+        Parameters
+        ----------
+        run_time : Time, optional
+            The total run time for the events (default: None).
+        lower_boundary : float, optional
+            The lower boundary for the uniformization (default: 0.05).
+        upper_boundary : float, optional
+            The upper boundary for the uniformization (default: 0.95).
+        """
+        time_unit = ureg.second
 
         total_number_of_events = len(self)
 
-        start_time = 0 * units.second
+        start_time = 0 * ureg.second
 
         stop_time = run_time
 

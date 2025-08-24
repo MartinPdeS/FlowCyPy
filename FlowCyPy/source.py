@@ -1,22 +1,13 @@
 import numpy as np
+import pint_pandas
 from typing import Optional
 from pydantic.dataclasses import dataclass
-from pydantic import field_validator
 import warnings
+from TypedUnit import Frequency, Length, Dimensionless, Velocity, ElectricField, Power, Any, Angle, ureg
 
 from FlowCyPy.physical_constant import PhysicalConstant
-from FlowCyPy import units
-from FlowCyPy.units import Quantity, meter, joule, particle, degree, volt, AU
 from FlowCyPy.simulation_settings import SimulationSettings
-import pint_pandas
-from FlowCyPy.units import Length, Power, Angle, Dimensionless
-
-config_dict = dict(
-    arbitrary_types_allowed=True,
-    kw_only=True,
-    slots=True,
-    extra='forbid'
-)
+from FlowCyPy.utils import config_dict
 
 
 class BaseBeam():
@@ -29,12 +20,12 @@ class BaseBeam():
         Initialize beam waists based on the numerical apertures and calculate electric field amplitude at the focus.
         """
         self.frequency = PhysicalConstant.c / self.wavelength
-        self.photon_energy = (PhysicalConstant.h * self.frequency).to(joule) / particle
+        self.photon_energy = (PhysicalConstant.h * self.frequency).to(ureg.joule) / ureg.particle
 
         # Calculate amplitude at focus
         self.amplitude = self.calculate_field_amplitude_at_focus()
 
-    def calculate_field_amplitude_at_focus(self) -> Quantity:
+    def calculate_field_amplitude_at_focus(self) -> None:
         return NotImplementedError('This method should be implemneted by the derived class!')
 
     def _validation(*args, **kwargs):
@@ -43,12 +34,12 @@ class BaseBeam():
 
         return wrapper
 
-    def add_rin_to_amplitude(self, amplitude: Quantity, bandwidth: Quantity) -> Quantity:
+    def add_rin_to_amplitude(self, amplitude: Any, bandwidth: Frequency) -> Any:
         # Convert RIN from dB/Hz to linear scale if necessary
         rin_linear = 10**(self.RIN / 10)
 
         # Compute noise standard deviation, scaled by bandwidth
-        std_dev_amplitude = np.sqrt(rin_linear * bandwidth.to(units.hertz).magnitude) * self.amplitude
+        std_dev_amplitude = np.sqrt(rin_linear * bandwidth.to(ureg.hertz).magnitude) * self.amplitude
 
         # Apply Gaussian noise to the amplitude
         amplitude += np.random.normal(
@@ -59,7 +50,7 @@ class BaseBeam():
 
         return amplitude
 
-    def get_amplitude_signal(self, bandwidth: float, x: Quantity, y: Quantity, z: Quantity = 0 * units.meter) -> np.ndarray:
+    def get_amplitude_signal(self, bandwidth: Frequency, x: Length, y: Length, z: Length = 0 * ureg.meter) -> np.ndarray:
         r"""
         Applies Relative Intensity Noise (RIN) to the source amplitude if enabled, accounting for detection bandwidth.
 
@@ -67,7 +58,7 @@ class BaseBeam():
         ----------
         size : int
             The number of particles being simulated.
-        bandwidth : float
+        bandwidth : Frequency
             The detection bandwidth in Hz.
 
         Returns
@@ -159,7 +150,7 @@ class GaussianBeam(BaseBeam):
     wavelength: Length
     numerical_aperture: Optional[Dimensionless] = None
     waist: Optional[Length] = None
-    polarization: Optional[Angle] = 0 * degree
+    polarization: Optional[Angle] = 0 * ureg.degree
     RIN: Optional[float] = -120.0
 
     def __post_init__(self):
@@ -179,7 +170,7 @@ class GaussianBeam(BaseBeam):
 
         self.initialization()
 
-    def calculate_field_amplitude_at_focus(self) -> Quantity:
+    def calculate_field_amplitude_at_focus(self) -> ElectricField:
         r"""
         Calculate the electric field amplitude (E0) at the focus for a Gaussian beam.
 
@@ -202,9 +193,9 @@ class GaussianBeam(BaseBeam):
         # Ensure that waist has been computed
         area = self.waist ** 2
         E0 = np.sqrt(4 * self.optical_power / (PhysicalConstant.pi * PhysicalConstant.epsilon_0 * PhysicalConstant.c * area))
-        return E0.to(volt / meter)
+        return E0.to(ureg.volt / ureg.meter)
 
-    def amplitude_at(self, x: Quantity, y: Quantity, z: Quantity = 0 * units.meter) -> Quantity:
+    def amplitude_at(self, x: Length, y: Length, z: Length = 0 * ureg.meter) -> ElectricField:
         r"""
         Returns the electric field amplitude at a position (x,y) in the focal plane.
 
@@ -216,15 +207,16 @@ class GaussianBeam(BaseBeam):
         Quantity
             The electric field amplitude at the focus in volts per meter.
         """
+        print(y, self.waist)
         if np.any(y > self.waist):
             warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
         E0 = self.calculate_field_amplitude_at_focus()
         return E0 * np.exp(-(y ** 2) / (self.waist ** 2) - (z ** 2) / (self.waist ** 2))
 
-    def get_particle_width(self, velocity: Quantity) -> Quantity:
+    def get_particle_width(self, velocity: Velocity) -> Length:
         if len(velocity) == 0:
-            return pint_pandas.PintArray([], units.meter)
+            return pint_pandas.PintArray([], ureg.meter)
         return self.waist / (2 * velocity)
 
 
@@ -263,7 +255,7 @@ class AstigmaticGaussianBeam(BaseBeam):
     waist_y: Optional[Length] = None
     numerical_aperture_z: Optional[Dimensionless] = None
     waist_z: Optional[Length] = None
-    polarization: Optional[Angle] = 0 * degree
+    polarization: Optional[Angle] = 0 * ureg.degree
     RIN: Optional[float] = 0.0
 
     def __post_init__(self):
@@ -297,7 +289,7 @@ class AstigmaticGaussianBeam(BaseBeam):
 
         self.initialization()
 
-    def calculate_field_amplitude_at_focus(self) -> Quantity:
+    def calculate_field_amplitude_at_focus(self) -> ElectricField:
         r"""
         Calculate the electric field amplitude (E0) at the focus for an astigmatic Gaussian beam.
 
@@ -315,14 +307,14 @@ class AstigmaticGaussianBeam(BaseBeam):
 
         Returns
         -------
-        Quantity
+        ElectricField
             The electric field amplitude at the focus in volts per meter.
         """
         area = self.waist_y * self.waist_z
         E0 = np.sqrt(4 * self.optical_power / (PhysicalConstant.pi * PhysicalConstant.epsilon_0 * PhysicalConstant.c * area))
-        return E0.to(volt / meter)
+        return E0.to(ureg.volt / ureg.meter)
 
-    def amplitude_at(self, x: Quantity, y: Quantity, z: Quantity = 0 * units.meter) -> Quantity:
+    def amplitude_at(self, x: Length, y: Length, z: Length = 0 * ureg.meter) -> ElectricField:
         r"""
         Returns the electric field amplitude at position (x,y) in the focal plane.
 
@@ -331,7 +323,7 @@ class AstigmaticGaussianBeam(BaseBeam):
 
         Returns
         -------
-        Quantity
+        ElectricField
             The electric field amplitude at the focus in volts per meter.
         """
         if np.any(y > self.waist_z):
@@ -340,19 +332,19 @@ class AstigmaticGaussianBeam(BaseBeam):
         E0 = self.calculate_field_amplitude_at_focus()
         return E0 * np.exp(- y ** 2 / self.waist_y ** 2 - z ** 2 / self.waist_z ** 2)
 
-    def get_particle_width(self, velocity: Quantity) -> Quantity:
+    def get_particle_width(self, velocity: Velocity) -> Length:
         """
         Returns the width of the particle flow at the waist of the beam, scaled by the velocity
         of the particles.
 
         Parameters
         ----------
-        velocity : Quantity
+        velocity : Velocity
             The velocity of the particles in the flow (in meters per second).
 
         Returns
         -------
-        Quantity
+        Length
             The width of the particle flow at the waist of the beam in meters.
         """
         return self.waist_z / (2 * velocity)

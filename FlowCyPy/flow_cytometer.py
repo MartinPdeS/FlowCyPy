@@ -3,8 +3,8 @@
 from typing import Optional
 import pandas as pd
 
-from FlowCyPy import units
-from FlowCyPy import helper
+from TypedUnit import Time, Power, ureg, validate_units
+
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.simulation_settings import SimulationSettings
@@ -45,14 +45,14 @@ class FlowCytometer:
         If the number of detectors provided is not exactly two, or if both detectors share the same name.
 
     """
-    @helper.validate_input_units(background_power=units.watt)
-    def __init__(self, opto_electronics: OptoElectronics, fluidics: Fluidics, signal_processing: SignalProcessing, background_power: Optional[units.Quantity] = 0 * units.milliwatt):
+    @validate_units
+    def __init__(self, opto_electronics: OptoElectronics, fluidics: Fluidics, signal_processing: SignalProcessing, background_power: Optional[Power] = 0 * ureg.milliwatt):
         self.fluidics = fluidics
         self.background_power = background_power
         self.opto_electronics = opto_electronics
         self.signal_processing = signal_processing
 
-    def _create_signal_generator(self, run_time: units.second) -> SignalGenerator:
+    def _create_signal_generator(self, run_time: Time) -> SignalGenerator:
         """
         Creates a signal generator for the flow cytometer.
 
@@ -73,7 +73,11 @@ class FlowCytometer:
             run_time=run_time
         )
 
-        signal_generator = SignalGenerator(n_elements=len(time_series), time_units=units.second, signal_units=units.watt)
+        signal_generator = SignalGenerator(
+            n_elements=len(time_series),
+            time_units=ureg.second,
+            signal_units=ureg.watt
+        )
 
         signal_generator.add_time(time_series)
 
@@ -82,14 +86,14 @@ class FlowCytometer:
 
         return signal_generator
 
-    @helper.validate_input_units(run_time=units.second)
-    def initialize(self, run_time: units.Quantity) -> Result:
+    @validate_units
+    def initialize(self, run_time: Time) -> Result:
         """
         Initializes the flow cytometer simulation.
 
         Parameters
         ----------
-        run_time : pint.Quantity
+        run_time : Time
             The duration of the acquisition in seconds.
 
         Returns
@@ -111,7 +115,7 @@ class FlowCytometer:
 
         Parameters
         ----------
-        run_time : pint.Quantity
+        run_time : Time
             The duration of the acquisition in seconds.
 
         Returns
@@ -152,7 +156,7 @@ class FlowCytometer:
             If the event DataFrame is missing required columns ('Widths', 'Time').
         """
         signal_generator = self._create_signal_generator(run_time=self.results.run_time)
-        signal_generator.signal_units = units.watt  # Initial unit: optical power
+        signal_generator.signal_units = ureg.watt  # Initial unit: optical power
 
         for detector in self.opto_electronics.detectors:
             if self.results.events.empty:
@@ -175,7 +179,7 @@ class FlowCytometer:
             )
 
         # Add dark current noise if enabled
-        signal_generator.signal_units = units.ampere
+        signal_generator.signal_units = ureg.ampere
         if SimulationSettings.include_noises and SimulationSettings.include_dark_current_noise:
             for detector in self.opto_electronics.detectors:
                 detector.apply_dark_current_noise(
@@ -184,7 +188,7 @@ class FlowCytometer:
                 )
 
         # Photocurrent → voltage
-        signal_generator.signal_units = units.volt
+        signal_generator.signal_units = ureg.volt
         self.opto_electronics.amplifier.amplify(
             signal_generator=signal_generator,
             sampling_rate=self.signal_processing.digitizer.sampling_rate
@@ -228,7 +232,7 @@ class FlowCytometer:
 
         return self.results.peaks
 
-    def run(self, run_time: units.Quantity, compute_cross_section: bool = False) -> Result:
+    def run(self, run_time: Time, compute_cross_section: bool = False) -> Result:
         """
         Runs a complete flow cytometry simulation for the specified acquisition duration.
 
@@ -240,8 +244,8 @@ class FlowCytometer:
 
         Parameters
         ----------
-        run_time : Quantity
-            Duration of the simulated acquisition (e.g., `1.0 * units.millisecond`).
+        run_time : Time
+            Duration of the simulated acquisition (e.g., `1.0 * ureg.millisecond`).
 
         Returns
         -------

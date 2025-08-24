@@ -23,8 +23,8 @@ Workflow Steps:
 # %%
 # Step 0: Imports and Setup
 # --------------------------
-import numpy as np
-from FlowCyPy import units
+
+from TypedUnit import ureg
 from FlowCyPy.opto_electronics import source, TransimpedanceAmplifier
 from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection, population
 from FlowCyPy.detector import PMT
@@ -35,26 +35,26 @@ from FlowCyPy import OptoElectronics
 # Step 1: Define Optical Source
 # -----------------------------
 laser = source.GaussianBeam(
-    numerical_aperture=0.3 * units.AU,
-    wavelength=750 * units.nanometer,
-    optical_power=20 * units.milliwatt
+    numerical_aperture=0.3 * ureg.AU,
+    wavelength=750 * ureg.nanometer,
+    optical_power=20 * ureg.milliwatt
 )
 
 # %%
 # Step 2: Configure Flow Cell and Fluidics
 # ----------------------------------------
 flow_cell = FlowCell(
-    sample_volume_flow=0.02 * units.microliter / units.second,
-    sheath_volume_flow=0.1 * units.microliter / units.second,
-    width=20 * units.micrometer,
-    height=10 * units.micrometer
+    sample_volume_flow=0.02 * ureg.microliter / ureg.second,
+    sheath_volume_flow=0.1 * ureg.microliter / ureg.second,
+    width=20 * ureg.micrometer,
+    height=10 * ureg.micrometer
 )
 
-scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
+scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
 
 # Add Exosome and HDL populations
 scatterer_collection.add_population(
-    population.Exosome(particle_count=5e10 * units.particle / units.milliliter),
+    population.Exosome(particle_count=5e10 * ureg.particle / ureg.milliliter),
 )
 
 fluidics = Fluidics(
@@ -65,7 +65,7 @@ fluidics = Fluidics(
 # %%
 # Step 3: Generate Particle Event DataFrame
 # -----------------------------------------
-event_dataframe = fluidics.generate_event_dataframe(run_time=3.5 * units.millisecond)
+event_dataframe = fluidics.generate_event_dataframe(run_time=3.5 * ureg.millisecond)
 
 # Plot the diameter distribution of the particles
 event_dataframe.plot(x='Diameter', bins='auto')
@@ -75,19 +75,19 @@ event_dataframe.plot(x='Diameter', bins='auto')
 # --------------------------------------
 detector_forward = PMT(
     name='forward',
-    phi_angle=0 * units.degree,
-    numerical_aperture=0.3 * units.AU
+    phi_angle=0 * ureg.degree,
+    numerical_aperture=0.3 * ureg.AU
 )
 
 detector_side = PMT(
     name='side',
-    phi_angle=90 * units.degree,
-    numerical_aperture=0.3 * units.AU
+    phi_angle=90 * ureg.degree,
+    numerical_aperture=0.3 * ureg.AU
 )
 
 amplifier = TransimpedanceAmplifier(
-    gain=100 * units.volt / units.ampere,
-    bandwidth=10 * units.megahertz
+    gain=100 * ureg.volt / ureg.ampere,
+    bandwidth=10 * ureg.megahertz
 )
 
 # %%
@@ -96,7 +96,7 @@ amplifier = TransimpedanceAmplifier(
 digitizer = Digitizer(
     bit_depth='14bit',
     saturation_levels='auto',
-    sampling_rate=60 * units.megahertz
+    sampling_rate=60 * ureg.megahertz
 )
 
 opto_electronics = OptoElectronics(

@@ -1,5 +1,5 @@
-from FlowCyPy import helper
-from FlowCyPy import units
+from TypedUnit import Time, Frequency, Any, validate_units
+
 from FlowCyPy.binary import interface_circuits
 
 
@@ -20,12 +20,11 @@ class BaselineRestorator(interface_circuits.BaseLineRestoration, SignalProcessor
         Number of past samples to consider for the minimum value.
         If set to -1, it acts as if the window is infinite.
     """
-    @helper.validate_input_units(window_size=units.second)
-    def __init__(self, window_size: units.Quantity):
+    def __init__(self, window_size: Time):
         self.window_size = window_size
         super().__init__()
 
-    def process(self, signal_generator: object, sampling_rate: units.Quantity, **kwargs) -> None:
+    def process(self, signal_generator: object, sampling_rate: Frequency, **kwargs) -> Any:
         """
         Processes the signal generator to apply baseline restoration.
 
@@ -33,12 +32,12 @@ class BaselineRestorator(interface_circuits.BaseLineRestoration, SignalProcessor
         ----------
         signal_generator : object
             An object that generates the signal to be processed.
-        sampling_rate : units.Quantity
+        sampling_rate : Frequency
             The sampling rate of the signal.
 
         Returns
         -------
-        units.Quantity
+        Any
             The processed signal with baseline restoration applied.
         """
         self._cpp_window_size = int((self.window_size * sampling_rate).to('').magnitude)
@@ -59,15 +58,14 @@ class BesselLowPass(interface_circuits.BesselLowPassFilter, SignalProcessor):
     gain : float
         The gain applied after filtering.
     """
-    @helper.validate_input_units(cutoff=units.hertz)
-    def __init__(self, cutoff: units.Quantity, order: int, gain: float):
+    def __init__(self, cutoff: Frequency, order: int, gain: float):
         self.cutoff = cutoff
         self.order = order
         self.gain = gain
 
         super().__init__()
 
-    def process(self, signal_generator: object, sampling_rate: units.Quantity, **kwargs) -> units.Quantity:
+    def process(self, signal_generator: object, sampling_rate: Frequency, **kwargs) -> Any:
         """
         Applies Bessel low-pass filtering in-place.
 
@@ -96,15 +94,14 @@ class ButterworthlLowPass(interface_circuits.ButterworthLowPassFilter, SignalPro
     gain : float
         The gain applied after filtering.
     """
-    @helper.validate_input_units(cutoff=units.hertz)
-    def __init__(self, cutoff: units.Quantity, order: int, gain: float):
+    def __init__(self, cutoff: Frequency, order: int, gain: float):
         self.cutoff = cutoff
         self.order = order
         self.gain = gain
 
         super().__init__()
 
-    def process(self, signal_generator: object, sampling_rate: units.Quantity, **kwargs) -> None:
+    def process(self, signal_generator: object, sampling_rate: Frequency, **kwargs) -> None:
         """
         Applies Bessel low-pass filtering in-place.
 

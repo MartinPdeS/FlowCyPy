@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 import pint_pandas
 
+from TypedUnit import Frequency, RefractiveIndex, ureg
+
 import PyMieSim.experiment as _PyMieSim
-from FlowCyPy import units
 from FlowCyPy.source import BaseBeam
-from PyMieSim.units import Quantity
 
 class ScatteringSimulator:
     """
@@ -15,7 +15,7 @@ class ScatteringSimulator:
     particles using PyMieSim's sequential interface, and updates a DataFrame of scattering events accordingly.
     """
 
-    def __init__(self, source: BaseBeam, detector: object, bandwidth: units.Quantity, medium_refractive_index: Quantity):
+    def __init__(self, source: BaseBeam, detector: object, bandwidth: Frequency, medium_refractive_index: RefractiveIndex):
         """
         Initialize the scattering simulator with source, detector, digitizer, and medium refractive index.
 
@@ -25,9 +25,9 @@ class ScatteringSimulator:
             The light source object.
         detector : object
             The detector configuration.
-        bandwidth : object
+        bandwidth : Frequency
             Signal bandwidth.
-        medium_refractive_index : Quantity
+        medium_refractive_index : RefractiveIndex
             Refractive index of the ambient medium.
         """
         self.source = source
@@ -83,7 +83,7 @@ class ScatteringSimulator:
         pms_source = _PyMieSim.source.PlaneWave.build_sequential(
             total_size=num_particles,
             wavelength=self.source.wavelength,
-            polarization=0 * units.degree,
+            polarization=0 * ureg.degree,
             amplitude=amplitude
         )
 
@@ -94,9 +94,9 @@ class ScatteringSimulator:
             cache_NA=self.detector.cache_numerical_aperture,
             gamma_offset=self.detector.gamma_angle,
             phi_offset=self.detector.phi_angle,
-            polarization_filter=np.nan * units.degree,
+            polarization_filter=np.nan * ureg.degree,
             sampling=self.detector.sampling,
-            rotation=0 * units.degree
+            rotation=0 * ureg.degree
         )
 
         return pms_source, pms_detector
@@ -130,12 +130,12 @@ class ScatteringSimulator:
         experiment = _PyMieSim.Setup(source=pms_source, scatterer=scatterer, detector=pms_detector)
 
         event_df.loc[mask, self.detector.name] = pint_pandas.PintArray(
-            experiment.get_sequential("coupling"), dtype=units.watt
+            experiment.get_sequential("coupling"), dtype=ureg.watt
         )
 
         if compute_cross_section:
             event_df.loc[mask, "Csca"] = pint_pandas.PintArray(
-                experiment.get_sequential("Csca"), dtype=units.meter * units.meter
+                experiment.get_sequential("Csca"), dtype=ureg.meter * ureg.meter
             )
 
     def _process_coreshell(self, event_df: pd.DataFrame, mask: pd.Series, compute_cross_section: bool):
@@ -169,10 +169,10 @@ class ScatteringSimulator:
         experiment = _PyMieSim.Setup(source=pms_source, scatterer=scatterer, detector=pms_detector)
 
         event_df.loc[mask, self.detector.name] = pint_pandas.PintArray(
-            experiment.get_sequential("coupling"), dtype=units.watt
+            experiment.get_sequential("coupling"), dtype=ureg.watt
         )
 
         if compute_cross_section:
             event_df.loc[mask, "Csca"] = pint_pandas.PintArray(
-                experiment.get_sequential("Csca"), dtype=units.meter * units.meter
+                experiment.get_sequential("Csca"), dtype=ureg.meter * ureg.meter
             )

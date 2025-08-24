@@ -6,15 +6,15 @@ import warnings
 import numpy as np
 import pandas as pd
 import pint_pandas
+from TypedUnit import AnyUnit, Time, ureg
 
-from FlowCyPy import units
 from FlowCyPy.sub_frames.acquisition import TriggerDataFrame
 from FlowCyPy.binary.interface_triggering_system import FIXEDWINDOW, DYNAMICWINDOW, DOUBLETHRESHOLD
 
 
 class BaseTrigger:
     def init_data(self, dataframe):
-        dataframe.normalize_units(time_units=units.second, signal_units=units.volt)
+        dataframe.normalize_units(time_units=ureg.second, signal_units=ureg.volt)
 
         # feed time + all detector signals
         self._cpp_add_time(dataframe["Time"].pint.quantity.magnitude)
@@ -22,7 +22,7 @@ class BaseTrigger:
         for detector_name in dataframe.detector_names:
             self._cpp_add_signal(detector_name, dataframe[detector_name].pint.quantity.magnitude)
 
-    def _parse_threshold(self, threshold: units.Quantity | str, signal_dataframe: pd.DataFrame) -> units.Quantity:
+    def _parse_threshold(self, threshold: AnyUnit | str, signal_dataframe: pd.DataFrame) -> AnyUnit:
         """
         Parse the threshold value and return it in the correct units.
         If the threshold is a string ending with "sigma", it calculates the threshold
@@ -47,7 +47,7 @@ class BaseTrigger:
             else:
                 raise ValueError(f"Unknown threshold format: {threshold!r}")
 
-        elif isinstance(threshold, units.Quantity):
+        elif isinstance(threshold, AnyUnit):
             return threshold
         else:
             raise TypeError(f"Unsupported threshold type: {type(threshold)}")
@@ -105,7 +105,7 @@ class FixedWindow(FIXEDWINDOW, BaseTrigger):
 
     def __init__(self,
         trigger_detector_name: str,
-        threshold: units.Quantity | str,
+        threshold: AnyUnit | str,
         max_triggers: int = -1,
         pre_buffer: int = 64,
         post_buffer: int = 64) -> None:
@@ -117,8 +117,8 @@ class FixedWindow(FIXEDWINDOW, BaseTrigger):
         ----------
         trigger_detector_name : str
             Name of the detector to use for triggering.
-        threshold : units.Quantity | str
-            Threshold for triggering, can be a string like "3sigma" or a Quantity.
+        threshold : AnyUnit | str
+            Threshold for triggering, can be a string like "3sigma" or a AnyUnit.
         max_triggers : int, optional
             Maximum number of triggers to extract. -1 means unlimited (default is -1).
         pre_buffer : int, optional
@@ -170,7 +170,7 @@ class DynamicWindow(DYNAMICWINDOW, BaseTrigger):
     """
     def __init__(self,
         trigger_detector_name: str,
-        threshold: units.Quantity | str,
+        threshold: AnyUnit | str,
         max_triggers: int = -1,
         pre_buffer: int = 64,
         post_buffer: int = 64) -> None:
@@ -181,7 +181,7 @@ class DynamicWindow(DYNAMICWINDOW, BaseTrigger):
         ----------
         trigger_detector_name : str
             Name of the detector to use for triggering.
-        threshold : units.Quantity | str
+        threshold : AnyUnit | str
             Threshold for triggering, can be a string like "3sigma" or a Quantity.
         max_triggers : int, optional
             Maximum number of triggers to extract. -1 means unlimited (default is -1).
@@ -236,9 +236,9 @@ class DoubleThreshold(DOUBLETHRESHOLD, BaseTrigger):
 
     def __init__(self,
         trigger_detector_name: str,
-        upper_threshold: units.Quantity | str,
-        lower_threshold: Optional[units.Quantity] = np.nan * units.volt,
-        min_window_duration: Optional[units.Quantity] = None,
+        upper_threshold: AnyUnit | str,
+        lower_threshold: Optional[AnyUnit] = np.nan * ureg.volt,
+        min_window_duration: Optional[Time] = None,
         debounce_enabled: bool = True,
         max_triggers: int = -1,
         pre_buffer: int = 64,

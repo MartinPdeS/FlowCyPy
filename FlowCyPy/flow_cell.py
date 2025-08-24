@@ -2,22 +2,15 @@ from typing import List
 import pandas as pd
 import pint_pandas
 from pydantic.dataclasses import dataclass
+from TypedUnit import Length, FlowRate, Viscosity, Volume, Time, ureg, validate_units
+
 from FlowCyPy.population import BasePopulation
-from FlowCyPy.units import Quantity
-from FlowCyPy import units
 from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
-from FlowCyPy import helper
 from FlowCyPy.binary.interface_flow_cell import FLOWCELL
 from FlowCyPy.fluid_region import FluidRegion
 from FlowCyPy.simulation_settings import SimulationSettings
-from FlowCyPy.units import Length, FlowRate
+from FlowCyPy.utils import config_dict
 
-config_dict = dict(
-    arbitrary_types_allowed=True,
-    kw_only=True,
-    slots=True,
-    extra='forbid'
-)
 
 @dataclass(config=config_dict, kw_only=True)
 class FlowCell(FLOWCELL):
@@ -100,13 +93,13 @@ class FlowCell(FLOWCELL):
     height: Length
     sample_volume_flow: FlowRate
     sheath_volume_flow: FlowRate
-    mu: Quantity = 1e-3 * units.pascal * units.second
+    mu: Viscosity = 1e-3 * ureg.pascal * ureg.second
     N_terms: int = 25
     n_int: int = 200
 
 
-    @helper.validate_input_units(run_time=units.second)
-    def get_sample_volume(self, run_time: Quantity) -> Quantity:
+    @validate_units
+    def get_sample_volume(self, run_time: Time) -> Volume:
         """
         Computes the volume passing through the flow cell over the given run time.
         """
@@ -164,10 +157,10 @@ class FlowCell(FLOWCELL):
         """
         x, y, velocities = self._cpp_sample_transverse_profile(n_samples)
 
-        return x * units.meter, y * units.meter, velocities * units.meter / units.second
+        return x * ureg.meter, y * ureg.meter, velocities * ureg.meter / ureg.second
 
-    @helper.validate_input_units(run_time=units.second)
-    def _generate_event_dataframe(self, populations: List[BasePopulation], run_time: Quantity) -> ScattererDataFrame:
+    @validate_units
+    def _generate_event_dataframe(self, populations: List[BasePopulation], run_time: Time) -> ScattererDataFrame:
         """
         Generates a DataFrame of event times and sampled velocities for each population based on the specified scheme.
         """
@@ -178,7 +171,7 @@ class FlowCell(FLOWCELL):
         for population in populations:
             sub_dict = sampling_dict[population.name]
 
-            particle_flux = population.particle_count.compute_particle_flux(
+            particle_flux = population.compute_particle_flux(
                 flow_speed=self.sample.average_flow_speed,
                 flow_area=self.sample.area,
                 run_time=run_time
@@ -187,7 +180,7 @@ class FlowCell(FLOWCELL):
             arrival_time = self._cpp_sample_arrival_times(
                 run_time=run_time.to('second').magnitude,
                 particle_flux=particle_flux.to('particle / second').magnitude,
-            ) * units.second
+            ) * ureg.second
 
             n_events = len(arrival_time)
 

@@ -1,10 +1,10 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+from TypedUnit import Time, validate_units
+
+from FlowCyPy import helper
 from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy.flow_cell import FlowCell
-import matplotlib.pyplot as plt
-from MPSPlots.styles import mps
-from FlowCyPy import units
-from FlowCyPy import helper
 from FlowCyPy import population # noqa: F401
 from FlowCyPy import distribution # noqa: F401
 
@@ -23,14 +23,14 @@ class Fluidics:
         self.scatterer_collection = scatterer_collection
         self.flow_cell = flow_cell
 
-    @helper.validate_input_units(run_time=units.second)
-    def generate_event_dataframe(self, run_time: units.Quantity) -> pd.DataFrame:
+    @validate_units
+    def generate_event_dataframe(self, run_time: Time) -> pd.DataFrame:
         """
         Generates a DataFrame of events based on the scatterer collection and flow cell properties.
 
         Parameters
         ----------
-        run_time : pint.Quantity
+        run_time : Time
             The duration of the acquisition in seconds.
 
         Returns
@@ -49,8 +49,9 @@ class Fluidics:
 
         return event_dataframe
 
-    @helper.validate_input_units(run_time=units.second)
-    def plot(self, run_time: units.Quantity, figure_size: tuple = (7, 4), ax: plt.Axes = None, show: bool = True) -> None:
+    @helper.mpl_plot
+    @validate_units
+    def plot(self, figure: plt.Figure, ax: plt.Axes, run_time: Time) -> None:
         r"""
         Plot the spatial distribution of sampled particles with velocity color-coding.
 
@@ -65,13 +66,10 @@ class Fluidics:
 
         Parameters
         ----------
-        n_samples : int
-            Number of particles to sample and plot.
+        run_time : Time
+            The duration of the acquisition in seconds.
         figure_size : tuple, optional
             Figure size (width, height) in inches. Default is (7, 4).
-        ax : matplotlib.axes.Axes, optional
-            A matplotlib Axes instance to draw the plot on. If not provided, a new figure and axes
-            are created.
         show : bool, optional
             Whether to display the plot immediately. Default is True.
 
@@ -92,11 +90,6 @@ class Fluidics:
         sampling = self.generate_event_dataframe(run_time=run_time)
 
         length_units = self.flow_cell.width.units
-
-        # Create plot
-        if ax is None:
-            with plt.style.context(mps):
-                _, ax = plt.subplots(1, 1, figsize=figure_size)
 
         x = sampling['x'].pint.to(length_units).pint.quantity.magnitude
         y = sampling['y'].pint.to(length_units).pint.quantity.magnitude
@@ -139,10 +132,4 @@ class Fluidics:
         )
 
         ax.set_aspect('equal')
-        plt.tight_layout()
         ax.legend(loc='upper right')
-
-        if show:
-            plt.show()
-
-        return ax

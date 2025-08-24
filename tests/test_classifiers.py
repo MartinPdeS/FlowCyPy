@@ -2,12 +2,12 @@ import pytest
 import pandas as pd
 import numpy as np
 from sklearn.datasets import make_blobs
+
 from FlowCyPy.classifier import KmeansClassifier, GaussianMixtureClassifier, DBSCANClassifier
 import FlowCyPy
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
 # ----------------- FIXTURES -----------------
-
 @pytest.fixture
 def generate_test_data():
     """

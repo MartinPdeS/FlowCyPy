@@ -1,9 +1,10 @@
 import pytest
 import numpy as np
-from FlowCyPy import distribution as dist
 from unittest.mock import patch
-from FlowCyPy import units
 import matplotlib.pyplot as plt
+from TypedUnit import ureg
+
+from FlowCyPy import distribution as dist
 import FlowCyPy
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
@@ -11,16 +12,16 @@ FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 # ----------------- CONSTANTS -----------------
 
 N_SAMPLES = 1000
-X_VALUES = np.linspace(0.01, 1, N_SAMPLES) * units.micrometer
+X_VALUES = np.linspace(0.01, 1, N_SAMPLES) * ureg.micrometer
 
 
 # ----------------- DISTRIBUTIONS -----------------
 
 distributions = [
-    dist.Normal(mean=1.0 * units.micrometer, std_dev=1.0 * units.nanometer),
-    dist.LogNormal(mean=1.0 * units.micrometer, std_dev=0.01 * units.micrometer),
-    dist.Uniform(lower_bound=0.5 * units.micrometer, upper_bound=1.5 * units.micrometer),
-    dist.Delta(position=1 * units.micrometer),
+    dist.Normal(mean=1.0 * ureg.micrometer, std_dev=1.0 * ureg.nanometer),
+    dist.LogNormal(mean=1.0 * ureg.micrometer, std_dev=0.01 * ureg.micrometer),
+    dist.Uniform(lower_bound=0.5 * ureg.micrometer, upper_bound=1.5 * ureg.micrometer),
+    dist.Delta(position=1 * ureg.micrometer),
 ]
 
 

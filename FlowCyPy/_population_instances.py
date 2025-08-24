@@ -1,5 +1,7 @@
 
-from FlowCyPy import units
+# from FlowCyPy import units
+from TypedUnit import ureg
+
 from FlowCyPy.population import Sphere
 from FlowCyPy import distribution
 
@@ -15,7 +17,7 @@ class CallablePopulation(metaclass=CallablePopulationMeta):
         self._diameter_distribution = diameter_dist
         self._ri_distribution = ri_dist
 
-    def __call__(self, particle_count: units.Quantity = 1 * units.particle):
+    def __call__(self, particle_count: ureg.Quantity = 1 * ureg.particle):
         return Sphere(
             particle_count=particle_count,
             name=self._name,
@@ -26,14 +28,14 @@ class CallablePopulation(metaclass=CallablePopulationMeta):
 
 # Define populations
 _populations = (
-    ('Exosome',          70 * units.nanometer, 20, 1.39 * units.RIU, 0.02 * units.RIU),
-    ('MicroVesicle',    400 * units.nanometer, 15, 1.39 * units.RIU, 0.02 * units.RIU),
-    ('ApoptoticBodies',  2 * units.micrometer, 12, 1.40 * units.RIU, 0.03 * units.RIU),
-    ('HDL',              10 * units.nanometer, 35, 1.33 * units.RIU, 0.01 * units.RIU),
-    ('LDL',              20 * units.nanometer, 30, 1.35 * units.RIU, 0.02 * units.RIU),
-    ('VLDL',             50 * units.nanometer, 20, 1.445 * units.RIU, 0.0005 * units.RIU),
-    ('Platelet',       2000 * units.nanometer, 25, 1.38 * units.RIU, 0.01 * units.RIU),
-    ('CellularDebris',   3 * units.micrometer, 10, 1.40 * units.RIU, 0.03 * units.RIU),
+    ('Exosome',          70 * ureg.nanometer, 20, 1.39 * ureg.RIU, 0.02 * ureg.RIU),
+    ('MicroVesicle',    400 * ureg.nanometer, 15, 1.39 * ureg.RIU, 0.02 * ureg.RIU),
+    ('ApoptoticBodies',  2 * ureg.micrometer, 12, 1.40 * ureg.RIU, 0.03 * ureg.RIU),
+    ('HDL',              10 * ureg.nanometer, 35, 1.33 * ureg.RIU, 0.01 * ureg.RIU),
+    ('LDL',              20 * ureg.nanometer, 30, 1.35 * ureg.RIU, 0.02 * ureg.RIU),
+    ('VLDL',             50 * ureg.nanometer, 20, 1.445 * ureg.RIU, 0.0005 * ureg.RIU),
+    ('Platelet',       2000 * ureg.nanometer, 25, 1.38 * ureg.RIU, 0.01 * ureg.RIU),
+    ('CellularDebris',   3 * ureg.micrometer, 10, 1.40 * ureg.RIU, 0.03 * ureg.RIU),
 )
 
 # Dynamically create population classes
@@ -54,7 +56,7 @@ for (name, diameter, diameter_spread, ri, ri_spread) in _populations:
 
 
 # Helper function for microbeads
-def get_microbeads(diameter: units.Quantity, refractive_index: units.Quantity, name: str) -> Sphere:
+def get_microbeads(diameter: ureg.Quantity, refractive_index: ureg.Quantity, name: str) -> Sphere:
     diameter_distribution = distribution.Delta(position=diameter)
     ri_distribution = distribution.Delta(position=refractive_index)
 

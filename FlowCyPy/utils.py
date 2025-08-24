@@ -1,12 +1,21 @@
 import numpy as np
 from typing import List
-from FlowCyPy.units import second, Quantity
 import pandas as pd
 import pint_pandas
-from FlowCyPy.peak_locator import BasePeakLocator
 from copy import copy
 import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
+from pydantic import ConfigDict
+from TypedUnit import ureg
+
+from FlowCyPy.peak_locator import BasePeakLocator
+
+config_dict = ConfigDict(
+    arbitrary_types_allowed=True,
+    kw_only=True,
+    slots=True,
+    extra='forbid'
+)
 
 
 class ProxyDetector():
@@ -63,9 +72,9 @@ def generate_dummy_detector(time: np.ndarray, centers: List[float], heights: Lis
     numpy.ndarray
         A numpy array representing the generated signal composed of Gaussian pulses.
     """
-    time = Quantity(time, second)
-    centers = Quantity(centers, second)
-    stds = Quantity(stds, second)
+    time = ureg.Quantity(time, ureg.second)
+    centers = ureg.Quantity(centers, ureg.second)
+    stds = ureg.Quantity(stds, ureg.second)
 
     signal = np.zeros_like(time) * heights.units
 
@@ -73,6 +82,7 @@ def generate_dummy_detector(time: np.ndarray, centers: List[float], heights: Lis
         signal += height * np.exp(-((time - center) ** 2) / (2 * sigma ** 2))
 
     return ProxyDetector(time=time, signal=signal)
+
 
 def plot_signal_and_peaks(signal_dataframe: pd.DataFrame, peaks_dataframe: pd.DataFrame) -> None:
     """

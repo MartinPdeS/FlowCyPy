@@ -1,5 +1,4 @@
-from FlowCyPy.units import Quantity
-from FlowCyPy import units
+from TypedUnit import Length, Area, FlowRate, ureg
 
 from matplotlib.patches import Rectangle
 from FlowCyPy.binary.interface_flow_cell import FLUIDREGION
@@ -9,28 +8,28 @@ class FluidRegion():
         self.instance = instance
 
     @property
-    def width(self) -> Quantity:
-        return self.instance._cpp_width * units.meter
+    def width(self) -> Length:
+        return self.instance._cpp_width * ureg.meter
 
     @property
-    def height(self) -> Quantity:
-        return self.instance._cpp_height * units.meter
+    def height(self) -> Length:
+        return self.instance._cpp_height * ureg.meter
 
     @property
-    def area(self) -> Quantity:
+    def area(self) -> Area:
         return self.width * self.height
 
     @property
-    def volume_flow(self) -> Quantity:
-        return self.instance._cpp_volume_flow * (units.meter**3 / units.second)
+    def volume_flow(self) -> FlowRate:
+        return self.instance._cpp_volume_flow * (ureg.meter**3 / ureg.second)
 
     @property
-    def average_flow_speed(self) -> Quantity:
-        return self.instance._cpp_average_flow_speed * (units.meter / units.second)
+    def average_flow_speed(self) -> FlowRate:
+        return self.instance._cpp_average_flow_speed * (ureg.meter / ureg.second)
 
     @property
-    def max_flow_speed(self) -> Quantity:
-        return self.instance._cpp_max_flow_speed * (units.meter / units.second)
+    def max_flow_speed(self) -> FlowRate:
+        return self.instance._cpp_max_flow_speed * (ureg.meter / ureg.second)
 
     def _add_to_plot(self, ax, length_units, color, label=None):
         rect = Rectangle(

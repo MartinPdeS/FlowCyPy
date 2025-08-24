@@ -4,10 +4,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pint_pandas
-from FlowCyPy import units
+from TypedUnit import Time, Voltage, Dimensionless, ureg
+
 from FlowCyPy.sub_frames.base import BaseSubFrame
 from FlowCyPy.sub_frames import utils
 from FlowCyPy.signal_generator import SignalGenerator
+from FlowCyPy import helper
+
 
 class BaseAcquisitionDataFrame(BaseSubFrame):
     """
@@ -25,8 +28,8 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
         event_dataframe: pd.DataFrame,
         signal_generator: SignalGenerator,
         is_digital: bool,
-        time_units: units.Quantity | str,
-        signal_units: units.Quantity | str) -> "AcquisitionDataFrame":
+        time_units: Time | str,
+        signal_units: Voltage | str) -> "AcquisitionDataFrame":
         """
         Converts a signal generator's output into a pandas DataFrame.
 
@@ -38,9 +41,9 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
             The signal generator instance containing the generated signals.
         is_digital : bool, optional
             A flag indicating whether the signals are digital.
-        time_units : units.Quantity | str
+        time_units : Time | str
             The units for the time column in the resulting DataFrame.
-        signal_units : units.Quantity | str
+        signal_units : Voltage | str
             The units for the signal columns in the resulting DataFrame.
 
         Returns
@@ -93,7 +96,7 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
             analog_signal = self[detector_name]
             digitized_signal, _ = digitizer.capture_signal(signal=analog_signal)
 
-            digital_df[detector_name] = pint_pandas.PintArray(digitized_signal, units.bit_bins)
+            digital_df[detector_name] = pint_pandas.PintArray(digitized_signal, ureg.bit_bins)
 
         output = self.__class__(
             dataframe=digital_df,
@@ -105,15 +108,15 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         return output
 
-    def normalize_units(self, signal_units: units.Quantity | str = None, time_units: units.Quantity | str = None) -> None:
+    def normalize_units(self, signal_units: Voltage | str = None, time_units: Time | str = None) -> None:
         """
         Normalize the DataFrame's signal and time columns to specified units.
 
         Parameters
         ----------
-        signal_units : units.Quantity
+        signal_units : Voltage
             The units to which the signal columns should be normalized.
-        time_units : units.Quantity
+        time_units : Time
             The units to which the time column should be normalized.
         """
 
@@ -124,19 +127,19 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
                 signal_units = self[self.detector_names[0]].max().to_compact().units
 
         if signal_units == 'SI':
-            if self[self.detector_names[0]].pint.units.dimensionality == units.bit_bins.dimensionality:
-                signal_units = units.bit_bins
+            if self[self.detector_names[0]].pint.units.dimensionality == ureg.bit_bins.dimensionality:
+                signal_units = ureg.bit_bins
             else:
-                signal_units = units.volt
+                signal_units = ureg.volt
 
         if time_units == 'max':
             if self['Time'].size == 0:
-                time_units = 0 * units.second
+                time_units = 0 * ureg.second
             else:
                 time_units = self['Time'].max().to_compact().units
 
         if time_units == 'SI':
-            time_units = units.second
+            time_units = ureg.second
 
         for columns in self.columns:
             if columns == 'Time' and time_units is not None:
@@ -168,7 +171,7 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
         return [col for col in self.columns if col != 'Time']
 
 
-    @utils._pre_plot
+    @helper.mpl_plot
     def plot(self, filter_population: Union[str, List[str]] = None, figure_size: tuple = (12, 5), **kwargs) -> None:
         """
         Plot acquisition data for each detector and the scatterer events.
@@ -219,14 +222,14 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         return figure
 
-    @utils._pre_plot
+    @helper.mpl_plot
     def hist(
         self,
         figure_size: tuple = (10, 6),
         kde: bool = False,
         bins: Optional[int] = 'auto',
         color: Optional[Union[str, dict]] = None,
-        clip_data: Optional[Union[str, units.Quantity]] = None,
+        clip_data: Optional[Union[str, Voltage | Dimensionless]] = None,
     ) -> plt.Figure:
         """
         Plot a histogram distribution for a given column using Seaborn, with an option to remove extreme values.
@@ -283,8 +286,8 @@ class AcquisitionDataFrame(BaseAcquisitionDataFrame):
         for detector_name in self.detector_names:
             ax = axes[detector_name]
 
-            time = self["Time"].pint.to(self.time_units)
-            signal = self[detector_name].pint.to(self.signal_units)
+            time = self["Time"].pint.to(self.time_units).pint.quantity
+            signal = self[detector_name].pint.to(self.signal_units).pint.quantity
 
             if not self.attrs['is_digital']:
                 ax.plot(time, signal, label='Analog Signal', linestyle='-', color='black')
