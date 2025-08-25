@@ -229,65 +229,13 @@ Signal Processing: Acquisition with Different Processing Steps
 
     Population  ScattererID
     Population  0               0.0
-                1               0.0
-                2              -0.0
-                3               0.0
-                4              -0.0
-                               ... 
-                110             0.0
-                111             0.0
-                112             0.0
-                113             0.0
-                114            -0.0
-    Name: y, Length: 115, dtype: pint[meter][Float64] 517.7840815256328 nanometer
-    Population  ScattererID
-    Population  0               0.0
-                1               0.0
-                2              -0.0
-                3               0.0
-                4              -0.0
-                               ... 
-                110             0.0
-                111             0.0
-                112             0.0
-                113             0.0
-                114            -0.0
-    Name: y, Length: 115, dtype: pint[meter][Float64] 517.7840815256328 nanometer
-    Population  ScattererID
-    Population  0              -0.0
-                1               0.0
-                2               0.0
-                3              -0.0
-                4              -0.0
-                               ... 
-                95             -0.0
-                96             -0.0
-                97              0.0
-                98             -0.0
-                99             -0.0
-    Name: y, Length: 100, dtype: pint[meter][Float64] 517.7840815256328 nanometer
-    Population  ScattererID
-    Population  0              -0.0
-                1               0.0
-                2               0.0
-                3              -0.0
-                4              -0.0
-                               ... 
-                95             -0.0
-                96             -0.0
-                97              0.0
-                98             -0.0
-                99             -0.0
-    Name: y, Length: 100, dtype: pint[meter][Float64] 517.7840815256328 nanometer
-    Population  ScattererID
-    Population  0               0.0
                 1              -0.0
                 2               0.0
                 3               0.0
                 4              -0.0
                                ... 
                 108            -0.0
-                109             0.0
+                109            -0.0
                 110             0.0
                 111             0.0
                 112            -0.0
@@ -300,11 +248,63 @@ Signal Processing: Acquisition with Different Processing Steps
                 4              -0.0
                                ... 
                 108            -0.0
-                109             0.0
+                109            -0.0
                 110             0.0
                 111             0.0
                 112            -0.0
     Name: y, Length: 113, dtype: pint[meter][Float64] 517.7840815256328 nanometer
+    Population  ScattererID
+    Population  0              -0.0
+                1               0.0
+                2              -0.0
+                3              -0.0
+                4              -0.0
+                               ... 
+                111            -0.0
+                112            -0.0
+                113             0.0
+                114            -0.0
+                115             0.0
+    Name: y, Length: 116, dtype: pint[meter][Float64] 517.7840815256328 nanometer
+    Population  ScattererID
+    Population  0              -0.0
+                1               0.0
+                2              -0.0
+                3              -0.0
+                4              -0.0
+                               ... 
+                111            -0.0
+                112            -0.0
+                113             0.0
+                114            -0.0
+                115             0.0
+    Name: y, Length: 116, dtype: pint[meter][Float64] 517.7840815256328 nanometer
+    Population  ScattererID
+    Population  0              -0.0
+                1               0.0
+                2              -0.0
+                3              -0.0
+                4               0.0
+                               ... 
+                87              0.0
+                88              0.0
+                89              0.0
+                90             -0.0
+                91              0.0
+    Name: y, Length: 92, dtype: pint[meter][Float64] 517.7840815256328 nanometer
+    Population  ScattererID
+    Population  0              -0.0
+                1               0.0
+                2              -0.0
+                3              -0.0
+                4               0.0
+                               ... 
+                87              0.0
+                88              0.0
+                89              0.0
+                90             -0.0
+                91              0.0
+    Name: y, Length: 92, dtype: pint[meter][Float64] 517.7840815256328 nanometer
 
 
 
@@ -312,7 +312,7 @@ Signal Processing: Acquisition with Different Processing Steps
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.969 seconds)
+   **Total running time of the script:** (0 minutes 2.029 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_signal_processing.py:
