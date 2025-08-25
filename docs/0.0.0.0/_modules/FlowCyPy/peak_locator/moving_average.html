@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -507,10 +507,11 @@ document.write(`
   <h1>Source code for FlowCyPy.peak_locator.moving_average</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary</span><span class="w"> </span><span class="kn">import</span> <span class="n">interface_peak_locator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.peak_locator.base_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePeakLocator</span>
 
 <div class="viewcode-block" id="SlidingWindowPeakLocator">
-<a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.moving_average.SlidingWindowPeakLocator">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">SlidingWindowPeakLocator</span><span class="p">:</span>
+<a class="viewcode-back" href="../../../code/peak_locator.html#FlowCyPy.peak_locator.SlidingWindowPeakLocator">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SlidingWindowPeakLocator</span><span class="p">(</span><span class="n">BasePeakLocator</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    SlidingWindowPeakLocator(window_size, window_step=-1, max_number_of_peaks=5, padding_value=-1,</span>
 <span class="sd">                               compute_width=False, compute_area=False, threshold=0.5)</span>

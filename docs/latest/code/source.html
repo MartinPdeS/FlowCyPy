@@ -49,7 +49,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.15.4';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v0.27.9';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.0.0.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = true;
         </script>
     <link rel="icon" href="../_static/thumbnail.png"/>
@@ -550,12 +550,12 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>optical_power</strong> (<em>Quantity</em>) – The optical power of the laser (in watts).</p></li>
-<li><p><strong>wavelength</strong> (<em>Quantity</em>) – The wavelength of the laser (in meters).</p></li>
-<li><p><strong>numerical_aperture</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).</p></li>
-<li><p><strong>waist</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The beam waist at the focus, calculated as <cite>waist = wavelength / (pi * numerical_aperture)</cite> if not provided.
+<li><p><strong>optical_power</strong> (<em>Power</em>) – The optical power of the laser (in watts).</p></li>
+<li><p><strong>wavelength</strong> (<em>Length</em>) – The wavelength of the laser (in meters).</p></li>
+<li><p><strong>numerical_aperture</strong> (<em>Optional</em><em>[</em><em>Dimensionless</em><em>]</em>) – The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).</p></li>
+<li><p><strong>waist</strong> (<em>Optional</em><em>[</em><em>Length</em><em>]</em>) – The beam waist at the focus, calculated as <cite>waist = wavelength / (pi * numerical_aperture)</cite> if not provided.
 Alternatively, if this is provided, the numerical aperture will be computed as <cite>numerical_aperture = wavelength / (pi * waist)</cite>.</p></li>
-<li><p><strong>polarization</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The polarization of the laser source in degrees (default is 0 degrees).</p></li>
+<li><p><strong>polarization</strong> (<em>Optional</em><em>[</em><em>Angle</em><em>]</em>) – The polarization of the laser source in degrees (default is 0 degrees).</p></li>
 <li><p><strong>RIN</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a stable laser.</p></li>
 </ul>
 </dd>
@@ -582,9 +582,9 @@ Alternatively, if this is provided, the numerical aperture will be computed as <
 </dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>Quantity</em>)</p></li>
-<li><p><strong>y</strong> (<em>Quantity</em>)</p></li>
-<li><p><strong>z</strong> (<em>Quantity</em>)</p></li>
+<li><p><strong>x</strong> (<em>Length</em>)</p></li>
+<li><p><strong>y</strong> (<em>Length</em>)</p></li>
+<li><p><strong>z</strong> (<em>Length</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -621,17 +621,17 @@ Alternatively, if this is provided, the numerical aperture will be computed as <
 <span class="sig-name descname"><span class="pre">get_particle_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">velocity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/source.html#GaussianBeam.get_particle_width"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.get_particle_width" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>velocity</strong> (<em>Quantity</em>)</p>
+<dd class="field-odd"><p><strong>velocity</strong> (<em>Velocity</em>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Quantity</em></p>
+<dd class="field-even"><p><em>Length</em></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.source.GaussianBeam.waist">
-<span class="sig-name descname"><span class="pre">waist</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.waist" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">waist</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.source.GaussianBeam.waist" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -644,15 +644,15 @@ Alternatively, if this is provided, the numerical aperture will be computed as <
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>optical_power</strong> (<em>Quantity</em>) – The optical power of the laser (in watts).</p></li>
-<li><p><strong>wavelength</strong> (<em>Quantity</em>) – The wavelength of the laser (in meters).</p></li>
-<li><p><strong>numerical_aperture_y</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The numerical aperture of the lens along the x-axis (unitless).</p></li>
-<li><p><strong>waist_y</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The beam waist along the x-axis. If not provided, it will be computed as:
+<li><p><strong>optical_power</strong> (<em>Power</em>) – The optical power of the laser (in watts).</p></li>
+<li><p><strong>wavelength</strong> (<em>Length</em>) – The wavelength of the laser (in meters).</p></li>
+<li><p><strong>numerical_aperture_y</strong> (<em>Optional</em><em>[</em><em>Dimensionless</em><em>]</em>) – The numerical aperture of the lens along the x-axis (unitless).</p></li>
+<li><p><strong>waist_y</strong> (<em>Optional</em><em>[</em><em>Length</em><em>]</em>) – The beam waist along the x-axis. If not provided, it will be computed as:
 waist_y = wavelength / (pi * numerical_aperture_y).</p></li>
-<li><p><strong>numerical_aperture_z</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The numerical aperture of the lens along the y-axis (unitless).</p></li>
-<li><p><strong>waist_z</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The beam waist along the y-axis. If not provided, it will be computed as:
+<li><p><strong>numerical_aperture_z</strong> (<em>Optional</em><em>[</em><em>Dimensionless</em><em>]</em>) – The numerical aperture of the lens along the y-axis (unitless).</p></li>
+<li><p><strong>waist_z</strong> (<em>Optional</em><em>[</em><em>Length</em><em>]</em>) – The beam waist along the y-axis. If not provided, it will be computed as:
 waist_z = wavelength / (pi * numerical_aperture_z).</p></li>
-<li><p><strong>polarization</strong> (<em>Optional</em><em>[</em><em>Quantity</em><em>]</em>) – The polarization of the laser source in degrees (default is 0 degrees).</p></li>
+<li><p><strong>polarization</strong> (<em>Optional</em><em>[</em><em>Angle</em><em>]</em>) – The polarization of the laser source in degrees (default is 0 degrees).</p></li>
 <li><p><strong>RIN</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The Relative Intensity Noise (RIN) of the laser, specified as a fractional value.
 Default is 0.0, representing a perfectly stable laser.</p></li>
 </ul>
@@ -676,13 +676,13 @@ Default is 0.0, representing a perfectly stable laser.</p></li>
 <dd class="field-odd"><p>The electric field amplitude at the focus in volts per meter.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>Quantity</p>
+<dd class="field-even"><p>ElectricField</p>
 </dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>Quantity</em>)</p></li>
-<li><p><strong>y</strong> (<em>Quantity</em>)</p></li>
-<li><p><strong>z</strong> (<em>Quantity</em>)</p></li>
+<li><p><strong>x</strong> (<em>Length</em>)</p></li>
+<li><p><strong>y</strong> (<em>Length</em>)</p></li>
+<li><p><strong>z</strong> (<em>Length</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -710,7 +710,7 @@ Default is 0.0, representing a perfectly stable laser.</p></li>
 <dd class="field-odd"><p>The electric field amplitude at the focus in volts per meter.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>Quantity</p>
+<dd class="field-even"><p>ElectricField</p>
 </dd>
 </dl>
 </dd></dl>
@@ -722,30 +722,30 @@ Default is 0.0, representing a perfectly stable laser.</p></li>
 of the particles.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>velocity</strong> (<em>Quantity</em>) – The velocity of the particles in the flow (in meters per second).</p>
+<dd class="field-odd"><p><strong>velocity</strong> (<em>Velocity</em>) – The velocity of the particles in the flow (in meters per second).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The width of the particle flow at the waist of the beam in meters.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Quantity</p>
+<dd class="field-odd"><p>Length</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.numerical_aperture_z">
-<span class="sig-name descname"><span class="pre">numerical_aperture_z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.numerical_aperture_z" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">numerical_aperture_z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dimensionless</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.numerical_aperture_z" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.waist_y">
-<span class="sig-name descname"><span class="pre">waist_y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_y" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">waist_y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_y" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.source.AstigmaticGaussianBeam.waist_z">
-<span class="sig-name descname"><span class="pre">waist_z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_z" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">waist_z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.source.AstigmaticGaussianBeam.waist_z" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

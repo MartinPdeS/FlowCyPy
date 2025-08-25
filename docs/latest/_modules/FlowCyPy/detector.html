@@ -47,7 +47,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.15.4';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v0.27.9';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.0.0.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = true;
         </script>
     <link rel="icon" href="../../_static/thumbnail.png"/>
@@ -508,26 +508,17 @@ document.write(`
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary.interface_signal_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalGenerator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">PyMieSim.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Angle</span><span class="p">,</span> <span class="n">Dimensionless</span><span class="p">,</span> <span class="n">AnyUnit</span><span class="p">,</span> <span class="n">Current</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">Length</span><span class="p">,</span> <span class="n">Frequency</span><span class="p">,</span> <span class="n">Responsitivity</span><span class="p">,</span> <span class="n">validate_units</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.physical_constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysicalConstant</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">helper</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.simulation_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
-
-
-<span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">extra</span><span class="o">=</span><span class="s1">&#39;forbid&#39;</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary.interface_signal_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">config_dict</span>
 
 
 <div class="viewcode-block" id="Detector">
 <a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector">[docs]</a>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">unsafe_hash</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unsafe_hash</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Detector</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a photodetector for flow cytometry simulations.</span>
@@ -541,122 +532,35 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    name : str, optional</span>
 <span class="sd">        A unique identifier for the detector. If not provided, a unique ID is generated.</span>
-<span class="sd">    phi_angle : Quantity</span>
+<span class="sd">    phi_angle : Angle</span>
 <span class="sd">        The primary azimuthal angle of incidence for the detector (in degrees).</span>
-<span class="sd">    numerical_aperture : Quantity</span>
+<span class="sd">    numerical_aperture : Dimensionless</span>
 <span class="sd">        The numerical aperture of the detector (dimensionless).</span>
-<span class="sd">    cache_numerical_aperture : Quantity, optional</span>
+<span class="sd">    cache_numerical_aperture : Dimensionless, optional</span>
 <span class="sd">        The numerical aperture of the caching element placed in front of the detector</span>
 <span class="sd">        (dimensionless). Default is 0 AU.</span>
-<span class="sd">    responsivity : Quantity, optional</span>
+<span class="sd">    responsivity : Current / Power, optional</span>
 <span class="sd">        The responsivity of the detector (in amperes per watt). Default is 1 A/W. Typical</span>
 <span class="sd">        ranges include 0.4-0.7 A/W for silicon-based detectors and 0.8-0.9 A/W for InGaAs-based</span>
 <span class="sd">        detectors.</span>
-<span class="sd">    dark_current : Quantity, optional</span>
+<span class="sd">    dark_current : Current, optional</span>
 <span class="sd">        The dark current of the detector (in amperes). Default is 0 A. Typical values are in the</span>
 <span class="sd">        range of 1-100 nA.</span>
-<span class="sd">    gamma_angle : Quantity, optional</span>
+<span class="sd">    gamma_angle : Angle, optional</span>
 <span class="sd">        The complementary (longitudinal) angle of incidence, if applicable (in degrees).</span>
 <span class="sd">        Default is 0°.</span>
-<span class="sd">    sampling : Quantity, optional</span>
+<span class="sd">    sampling : Dimensionless, optional</span>
 <span class="sd">        The number of spatial sampling points defining the detector&#39;s resolution. Default is 100 AU.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">phi_angle</span><span class="p">:</span> <span class="n">Quantity</span>
-    <span class="n">numerical_aperture</span><span class="p">:</span> <span class="n">Quantity</span>
+    <span class="n">phi_angle</span><span class="p">:</span> <span class="n">Angle</span>
+    <span class="n">numerical_aperture</span><span class="p">:</span> <span class="n">Dimensionless</span>
 
-    <span class="n">cache_numerical_aperture</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">)</span>
-    <span class="n">gamma_angle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">)</span>
-    <span class="n">sampling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">)</span>
-    <span class="n">responsivity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">)</span>
-    <span class="n">dark_current</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="n">Quantity</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span><span class="p">)</span>
+    <span class="n">cache_numerical_aperture</span><span class="p">:</span> <span class="n">Dimensionless</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span>
+    <span class="n">gamma_angle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Angle</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span>
+    <span class="n">sampling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dimensionless</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span>
+    <span class="n">responsivity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Responsitivity</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span>
+    <span class="n">dark_current</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Current</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;dark_current&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_current</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validates that the provided dark_current are in ampere units.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        value : Quantity</span>
-<span class="sd">            The angle value to validate.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
-<span class="sd">            The validated angle.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If the angle is not in degrees.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">ampere</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dark_current must be in Ampere, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;numerical_aperture&#39;</span><span class="p">,</span> <span class="s1">&#39;numerical_aperture&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_numerical_aperture</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validates that the provided angles are in arbitrary units.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        value : Quantity</span>
-<span class="sd">            The angle value to validate.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
-<span class="sd">            The validated angle.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If the angle is not in degrees.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Angle must be in arbitrary units, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;phi_angle&#39;</span><span class="p">,</span> <span class="s1">&#39;gamma_angle&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_angles</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validates that the provided angles are in degrees.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        value : Quantity</span>
-<span class="sd">            The angle value to validate.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
-<span class="sd">            The validated angle.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If the angle is not in degrees.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;degree&#39;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Angle must be in degrees, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;responsivity&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_responsivity</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Validates that the detector&#39;s responsivity is provided in volts per watt.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        value : Quantity</span>
-<span class="sd">            The responsivity value to validate.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Quantity: The validated responsivity.</span>
-
-<span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If the responsivity is not in volts per watt.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;A / W&#39;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Responsitivity must be in ampere per watt, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -665,7 +569,7 @@ document.write(`
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_transform_coupling_power_to_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_generator</span><span class="p">:</span> <span class="n">SignalGenerator</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_transform_coupling_power_to_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_generator</span><span class="p">:</span> <span class="n">SignalGenerator</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Frequency</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">:</span> <span class="n">Length</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Current</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts the coupling power (in watts) to voltage using the detector&#39;s responsivity.</span>
 
@@ -673,14 +577,14 @@ document.write(`
 <span class="sd">        ----------</span>
 <span class="sd">        signal_generator : SignalGenerator</span>
 <span class="sd">            The signal generator instance used to apply the conversion.</span>
-<span class="sd">        wavelength : Quantity</span>
+<span class="sd">        wavelength : Length</span>
 <span class="sd">            The wavelength of the incident light (in meters).</span>
-<span class="sd">        bandwidth : Quantity</span>
+<span class="sd">        bandwidth : Frequency</span>
 <span class="sd">            The bandwidth of the signal (in Hz).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
+<span class="sd">        Current</span>
 <span class="sd">            The resulting voltage signal (in volts).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Step 1: Add shot noise to optical power if enabled</span>
@@ -695,7 +599,7 @@ document.write(`
 
 <div class="viewcode-block" id="Detector.apply_dark_current_noise">
 <a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector.apply_dark_current_noise">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply_dark_current_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_generator</span><span class="p">:</span> <span class="n">SignalGenerator</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_dark_current_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_generator</span><span class="p">:</span> <span class="n">SignalGenerator</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Frequency</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute and return the dark current noise.</span>
 
@@ -703,7 +607,7 @@ document.write(`
 <span class="sd">        ----------</span>
 <span class="sd">        signal_generator : SignalGenerator</span>
 <span class="sd">            The signal generator instance used to apply noise to the signal.</span>
-<span class="sd">        bandwidth : Quantity</span>
+<span class="sd">        bandwidth : Frequency</span>
 <span class="sd">            The bandwidth of the signal (in Hz).</span>
 
 <span class="sd">        Dark current noise is computed as:</span>
@@ -715,13 +619,8 @@ document.write(`
 <span class="sd">            - :math:`q` is the elementary charge (1.602176634 x 10⁻¹⁹ C),</span>
 <span class="sd">            - :math:`I_d` is the dark current,</span>
 <span class="sd">            - :math:`B` is the bandwidth.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        dict</span>
-<span class="sd">            Dictionary containing noise parameters for &#39;thermal&#39; and &#39;dark_current&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">std_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mf">1.602176634e-19</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">coulomb</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span> <span class="o">*</span> <span class="n">bandwidth</span><span class="p">)</span>
+        <span class="n">std_noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mf">1.602176634e-19</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">coulomb</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span> <span class="o">*</span> <span class="n">bandwidth</span><span class="p">)</span>
 
         <span class="n">signal_generator</span><span class="o">.</span><span class="n">apply_gaussian_noise</span><span class="p">(</span>
             <span class="n">signal_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
@@ -730,7 +629,7 @@ document.write(`
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_optical_power_to_photon_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_optical_power_to_photon_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">:</span> <span class="n">Length</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Frequency</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnyUnit</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the conversion factor from optical power to photon count.</span>
 
@@ -738,14 +637,14 @@ document.write(`
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        bandwidth : Quantity</span>
+<span class="sd">        bandwidth : Frequency</span>
 <span class="sd">            The bandwidth of the signal (in Hz).</span>
-<span class="sd">        wavelength : Quantity</span>
+<span class="sd">        wavelength : Length</span>
 <span class="sd">            The wavelength of the incident light (in meters).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
+<span class="sd">        AnyUnit</span>
 <span class="sd">            The conversion factor from optical power to photon count (in 1/watt).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Step 1: Compute photon energy</span>
@@ -757,7 +656,7 @@ document.write(`
         <span class="n">optical_power_to_photo_count_conversion_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">sampling_interval</span> <span class="o">/</span> <span class="n">energy_photon</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;1 / watt&#39;</span><span class="p">)</span>  <span class="c1"># Conversion factor (1/W)</span>
         <span class="k">return</span> <span class="n">optical_power_to_photo_count_conversion_factor</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_photon_count_to_current_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_photon_count_to_current_factor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">:</span> <span class="n">Length</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Frequency</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Current</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the conversion factor from photon count to current.</span>
 
@@ -786,7 +685,7 @@ document.write(`
 
         <span class="k">return</span> <span class="n">photon_to_power_factor</span> <span class="o">*</span> <span class="n">power_to_current_factor</span>  <span class="c1"># Current (A)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_transform_optical_power_to_photon_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_generator</span><span class="p">:</span> <span class="n">SignalGenerator</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_transform_optical_power_to_photon_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_generator</span><span class="p">:</span> <span class="n">SignalGenerator</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">:</span> <span class="n">Length</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Frequency</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Converts optical power to photon count using the detector&#39;s responsivity.</span>
 
@@ -794,15 +693,10 @@ document.write(`
 <span class="sd">        ----------</span>
 <span class="sd">        signal_generator : SignalGenerator</span>
 <span class="sd">            The signal generator instance used to apply the conversion.</span>
-<span class="sd">        wavelength : Quantity</span>
+<span class="sd">        wavelength : Length</span>
 <span class="sd">            The wavelength of the incident light (in meters).</span>
-<span class="sd">        bandwidth : Quantity</span>
+<span class="sd">        bandwidth : Frequency</span>
 <span class="sd">            The bandwidth of the signal (in Hz).</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
-<span class="sd">            The resulting photon count signal (in photons).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">optical_power_to_photo_count_conversion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_optical_power_to_photon_factor</span><span class="p">(</span>
             <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span>
@@ -814,10 +708,8 @@ document.write(`
             <span class="n">factor</span><span class="o">=</span><span class="n">optical_power_to_photo_count_conversion</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Detector.apply_shot_noise">
-<a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector.apply_shot_noise">[docs]</a>
-    <span class="nd">@helper</span><span class="o">.</span><span class="n">validate_input_units</span><span class="p">(</span><span class="n">optical_power</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span> <span class="n">wavelength</span><span class="o">=</span><span class="n">units</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">apply_shot_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_generator</span><span class="p">:</span> <span class="n">SignalGenerator</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="nd">@validate_units</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_shot_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_generator</span><span class="p">:</span> <span class="n">SignalGenerator</span><span class="p">,</span> <span class="n">wavelength</span><span class="p">:</span> <span class="n">Length</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Frequency</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the shot noise photocurrent arising from photon statistics.</span>
 
@@ -859,10 +751,6 @@ document.write(`
 <span class="sd">        wavelength : Quantity</span>
 <span class="sd">            The wavelength of the incident light (in meters).</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
-<span class="sd">            The shot noise-added current distribution (in current).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">optical_power_to_photo_count_conversion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_optical_power_to_photon_factor</span><span class="p">(</span>
             <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span>
@@ -881,7 +769,6 @@ document.write(`
             <span class="n">signal_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="n">factor</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">optical_power_to_photo_count_conversion</span>
         <span class="p">)</span></div>
-</div>
 
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy._detector_instances</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>

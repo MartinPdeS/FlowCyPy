@@ -8,37 +8,50 @@ along with their distributions.
 
 """
 
-import matplotlib.pyplot as plt
-from FlowCyPy.detector import Detector
-from FlowCyPy import units
-from FlowCyPy import TransimpedanceAmplifier
 import numpy
-from FlowCyPy import NoiseSetting
+import matplotlib.pyplot as plt
+from TypedUnit import ureg
 
-NoiseSetting.include_noises = True
-NoiseSetting.include_shot_noise = False
-NoiseSetting.include_dark_current_noise = True
-NoiseSetting.include_source_noise = False
+from FlowCyPy.detector import Detector
+from FlowCyPy.signal_generator import SignalGenerator
+from FlowCyPy import SimulationSettings
+
+SimulationSettings.include_noises = True
+SimulationSettings.include_shot_noise = False
+SimulationSettings.include_dark_current_noise = True
+SimulationSettings.include_source_noise = False
 
 # Define dark current levels
-dark_currents = [1e-9 * units.ampere, 5e-9 * units.ampere, 1e-8 * units.ampere]  # Dark current levels in amperes
+dark_currents = [1, 5, 10] * ureg.nanoampere  # Dark current levels in amperes
 
+# %%
 # Create a figure for signal visualization
 fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
 
 # Loop over the dark current levels
 for dark_current in dark_currents:
+    detector_name = f"{dark_current.magnitude:.1e} A"
+
+    signal_generator = SignalGenerator(n_elements=200, time_units=ureg.second, signal_units=ureg.ampere)
+
+    signal_generator.create_zero_signal(detector_name)
+
     # Initialize the detector
     detector = Detector(
-        name=f"{dark_current.magnitude:.1e} A",
-        responsivity=1 * units.ampere / units.watt,  # Responsitivity (current per power)
-        numerical_aperture=0.2 * units.AU,      # Numerical aperture
-        phi_angle=0 * units.degree,             # Detector orientation angle
-        dark_current=dark_current         # Dark current level
+        name=detector_name,
+        responsivity=1 * ureg.ampere / ureg.watt,  # Responsitivity (current per power)
+        numerical_aperture=0.2 * ureg.AU,           # Numerical aperture
+        phi_angle=0 * ureg.degree,                  # Detector orientation angle
+        dark_current=dark_current                    # Dark current level
     )
 
     # Add dark current noise to the raw signal
-    noise_current = detector.get_dark_current_noise(sequence_length=200, bandwidth=10 * units.megahertz).to(units.ampere)
+    detector.apply_dark_current_noise(
+        signal_generator=signal_generator,
+        bandwidth=10 * ureg.megahertz
+    )
+
+    noise_current = signal_generator.get_signal(detector_name)
 
     # Plot the raw signal on the first axis
     ax_signal.step(x=numpy.arange(200), y=noise_current)
@@ -56,6 +69,7 @@ ax_hist.set_xlabel("Signal Voltage (A)")
 ax_hist.set_ylabel("Frequency")
 ax_hist.legend()
 
+
 # Show the plots
 plt.tight_layout()
-plt.show()
+_ = plt.show()

@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -506,22 +506,15 @@ document.write(`
                   
   <h1>Source code for FlowCyPy.source</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pint_pandas</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Frequency</span><span class="p">,</span> <span class="n">Length</span><span class="p">,</span> <span class="n">Dimensionless</span><span class="p">,</span> <span class="n">Velocity</span><span class="p">,</span> <span class="n">ElectricField</span><span class="p">,</span> <span class="n">Power</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Angle</span><span class="p">,</span> <span class="n">ureg</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.physical_constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysicalConstant</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">meter</span><span class="p">,</span> <span class="n">joule</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">volt</span><span class="p">,</span> <span class="n">AU</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.noises</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoiseSetting</span>
-
-<span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">extra</span><span class="o">=</span><span class="s1">&#39;forbid&#39;</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.simulation_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">config_dict</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseBeam</span><span class="p">():</span>
@@ -534,76 +527,26 @@ document.write(`
 <span class="sd">        Initialize beam waists based on the numerical apertures and calculate electric field amplitude at the focus.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span> <span class="o">=</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">c</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelength</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">photon_energy</span> <span class="o">=</span> <span class="p">(</span><span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">joule</span><span class="p">)</span> <span class="o">/</span> <span class="n">particle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">photon_energy</span> <span class="o">=</span> <span class="p">(</span><span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequency</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">joule</span><span class="p">)</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span>
 
         <span class="c1"># Calculate amplitude at focus</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_field_amplitude_at_focus</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_field_amplitude_at_focus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_field_amplitude_at_focus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;This method should be implemneted by the derived class!&#39;</span><span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;wavelength&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;plain&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_length</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> must be a Quantity with distance units [&lt;prefix&gt;meter].&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validation</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="n">function</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> must be a Quantity with distance units [&lt;prefix&gt;meter], but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">wrapper</span>
 
-        <span class="k">return</span> <span class="n">value</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;waist&#39;</span><span class="p">,</span> <span class="s1">&#39;waist_y&#39;</span><span class="p">,</span> <span class="s1">&#39;waist_z&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;plain&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_waist</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">value</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> must be a Quantity with distance units [&lt;prefix&gt;meter].&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> must be a Quantity with distance units [&lt;prefix&gt;meter], but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">value</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;polarization&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;plain&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_polarization</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> must be a Quantity with angle units [&lt;prefix&gt;degree or &lt;prefix&gt;radian].&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;degree&#39;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> must be a Quantity with angle units [&lt;prefix&gt;degree or &lt;prefix&gt;radian], but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">value</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;optical_power&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;plain&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_optical_power</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> must be a Quantity with power units [&lt;prefix&gt;watt].&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s1">&#39;watt&#39;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> must be a Quantity with power units [&lt;prefix&gt;watt], but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">value</span>
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;numerical_aperture&#39;</span><span class="p">,</span> <span class="s1">&#39;numerical_aperture_y&#39;</span><span class="p">,</span> <span class="s1">&#39;numerical_aperture_z&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;plain&#39;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_numerical_apertures</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">value</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> must be a Quantity with arbitrary units [AU].&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">AU</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> must be a Quantity with arbitrary units [AU], but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">value</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> must be between 0 and 1, but got </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">magnitude</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">value</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_rin_to_amplitude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_rin_to_amplitude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Frequency</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="c1"># Convert RIN from dB/Hz to linear scale if necessary</span>
         <span class="n">rin_linear</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">RIN</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span>
 
         <span class="c1"># Compute noise standard deviation, scaled by bandwidth</span>
-        <span class="n">std_dev_amplitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rin_linear</span> <span class="o">*</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">units</span><span class="o">.</span><span class="n">hertz</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span>
+        <span class="n">std_dev_amplitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">rin_linear</span> <span class="o">*</span> <span class="n">bandwidth</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">hertz</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span>
 
         <span class="c1"># Apply Gaussian noise to the amplitude</span>
         <span class="n">amplitude</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
@@ -614,7 +557,7 @@ document.write(`
 
         <span class="k">return</span> <span class="n">amplitude</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_amplitude_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_amplitude_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Frequency</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Length</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Length</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">Length</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Applies Relative Intensity Noise (RIN) to the source amplitude if enabled, accounting for detection bandwidth.</span>
 
@@ -622,7 +565,7 @@ document.write(`
 <span class="sd">        ----------</span>
 <span class="sd">        size : int</span>
 <span class="sd">            The number of particles being simulated.</span>
-<span class="sd">        bandwidth : float</span>
+<span class="sd">        bandwidth : Frequency</span>
 <span class="sd">            The detection bandwidth in Hz.</span>
 
 <span class="sd">        Returns</span>
@@ -678,12 +621,12 @@ document.write(`
 <span class="sd">        - The bandwidth parameter (\(B\)) must be in Hz and reflects the frequency range of the detection system.</span>
 <span class="sd">        - The function assumes that RIN is specified in dB/Hz. If RIN is already in linear scale, the conversion step can be skipped.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">assume_perfect_hydrodynamic_focusing</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">assume_perfect_hydrodynamic_focusing</span><span class="p">:</span>
             <span class="n">amplitudes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude_at</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">amplitudes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude_at</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span>
 
-        <span class="k">if</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_source_noise</span> <span class="ow">and</span> <span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_source_noise</span> <span class="ow">and</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
             <span class="n">amplitudes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_rin_to_amplitude</span><span class="p">(</span><span class="n">amplitudes</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="n">bandwidth</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">amplitudes</span>
@@ -698,25 +641,25 @@ document.write(`
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    optical_power : Quantity</span>
+<span class="sd">    optical_power : Power</span>
 <span class="sd">        The optical power of the laser (in watts).</span>
-<span class="sd">    wavelength : Quantity</span>
+<span class="sd">    wavelength : Length</span>
 <span class="sd">        The wavelength of the laser (in meters).</span>
-<span class="sd">    numerical_aperture : Optional[Quantity]</span>
+<span class="sd">    numerical_aperture : Optional[Dimensionless]</span>
 <span class="sd">        The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).</span>
-<span class="sd">    waist : Optional[Quantity]</span>
+<span class="sd">    waist : Optional[Length]</span>
 <span class="sd">        The beam waist at the focus, calculated as `waist = wavelength / (pi * numerical_aperture)` if not provided.</span>
 <span class="sd">        Alternatively, if this is provided, the numerical aperture will be computed as `numerical_aperture = wavelength / (pi * waist)`.</span>
-<span class="sd">    polarization : Optional[Quantity]</span>
+<span class="sd">    polarization : Optional[Angle]</span>
 <span class="sd">        The polarization of the laser source in degrees (default is 0 degrees).</span>
 <span class="sd">    RIN : Optional[float]</span>
 <span class="sd">        The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a stable laser.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">optical_power</span><span class="p">:</span> <span class="n">Quantity</span>
-    <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span>
-    <span class="n">numerical_aperture</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">waist</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">polarization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">degree</span>
+    <span class="n">optical_power</span><span class="p">:</span> <span class="n">Power</span>
+    <span class="n">wavelength</span><span class="p">:</span> <span class="n">Length</span>
+    <span class="n">numerical_aperture</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dimensionless</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">waist</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Length</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">polarization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Angle</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span>
     <span class="n">RIN</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">120.0</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -738,7 +681,7 @@ document.write(`
 
 <div class="viewcode-block" id="GaussianBeam.calculate_field_amplitude_at_focus">
 <a class="viewcode-back" href="../../code/source.html#FlowCyPy.source.GaussianBeam.calculate_field_amplitude_at_focus">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_field_amplitude_at_focus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_field_amplitude_at_focus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElectricField</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the electric field amplitude (E0) at the focus for a Gaussian beam.</span>
 
@@ -761,12 +704,12 @@ document.write(`
         <span class="c1"># Ensure that waist has been computed</span>
         <span class="n">area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist</span> <span class="o">**</span> <span class="mi">2</span>
         <span class="n">E0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">optical_power</span> <span class="o">/</span> <span class="p">(</span><span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">epsilon_0</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">c</span> <span class="o">*</span> <span class="n">area</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">E0</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">volt</span> <span class="o">/</span> <span class="n">meter</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">E0</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GaussianBeam.amplitude_at">
 <a class="viewcode-back" href="../../code/source.html#FlowCyPy.source.GaussianBeam.amplitude_at">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">amplitude_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">amplitude_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Length</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Length</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">Length</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElectricField</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the electric field amplitude at a position (x,y) in the focal plane.</span>
 
@@ -778,6 +721,7 @@ document.write(`
 <span class="sd">        Quantity</span>
 <span class="sd">            The electric field amplitude at the focus in volts per meter.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist</span><span class="p">):</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Transverse distribution of particle flow exceed the waist of the source&#39;</span><span class="p">)</span>
 
@@ -787,7 +731,9 @@ document.write(`
 
 <div class="viewcode-block" id="GaussianBeam.get_particle_width">
 <a class="viewcode-back" href="../../code/source.html#FlowCyPy.source.GaussianBeam.get_particle_width">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_particle_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">velocity</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_particle_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">velocity</span><span class="p">:</span> <span class="n">Velocity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Length</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">velocity</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">([],</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">velocity</span><span class="p">)</span></div>
 </div>
 
@@ -803,34 +749,34 @@ document.write(`
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    optical_power : Quantity</span>
+<span class="sd">    optical_power : Power</span>
 <span class="sd">        The optical power of the laser (in watts).</span>
-<span class="sd">    wavelength : Quantity</span>
+<span class="sd">    wavelength : Length</span>
 <span class="sd">        The wavelength of the laser (in meters).</span>
-<span class="sd">    numerical_aperture_y : Optional[Quantity]</span>
+<span class="sd">    numerical_aperture_y : Optional[Dimensionless]</span>
 <span class="sd">        The numerical aperture of the lens along the x-axis (unitless).</span>
-<span class="sd">    waist_y : Optional[Quantity]</span>
+<span class="sd">    waist_y : Optional[Length]</span>
 <span class="sd">        The beam waist along the x-axis. If not provided, it will be computed as:</span>
 <span class="sd">        waist_y = wavelength / (pi * numerical_aperture_y).</span>
-<span class="sd">    numerical_aperture_z : Optional[Quantity]</span>
+<span class="sd">    numerical_aperture_z : Optional[Dimensionless]</span>
 <span class="sd">        The numerical aperture of the lens along the y-axis (unitless).</span>
-<span class="sd">    waist_z : Optional[Quantity]</span>
+<span class="sd">    waist_z : Optional[Length]</span>
 <span class="sd">        The beam waist along the y-axis. If not provided, it will be computed as:</span>
 <span class="sd">        waist_z = wavelength / (pi * numerical_aperture_z).</span>
-<span class="sd">    polarization : Optional[Quantity]</span>
+<span class="sd">    polarization : Optional[Angle]</span>
 <span class="sd">        The polarization of the laser source in degrees (default is 0 degrees).</span>
 <span class="sd">    RIN : Optional[float]</span>
 <span class="sd">        The Relative Intensity Noise (RIN) of the laser, specified as a fractional value.</span>
 <span class="sd">        Default is 0.0, representing a perfectly stable laser.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">optical_power</span><span class="p">:</span> <span class="n">Quantity</span>
-    <span class="n">wavelength</span><span class="p">:</span> <span class="n">Quantity</span>
-    <span class="n">numerical_aperture_y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">waist_y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">numerical_aperture_z</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">waist_z</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">polarization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">degree</span>
+    <span class="n">optical_power</span><span class="p">:</span> <span class="n">Power</span>
+    <span class="n">wavelength</span><span class="p">:</span> <span class="n">Length</span>
+    <span class="n">numerical_aperture_y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dimensionless</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">waist_y</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Length</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">numerical_aperture_z</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dimensionless</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">waist_z</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Length</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">polarization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Angle</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span>
     <span class="n">RIN</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -866,7 +812,7 @@ document.write(`
 
 <div class="viewcode-block" id="AstigmaticGaussianBeam.calculate_field_amplitude_at_focus">
 <a class="viewcode-back" href="../../code/source.html#FlowCyPy.source.AstigmaticGaussianBeam.calculate_field_amplitude_at_focus">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_field_amplitude_at_focus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_field_amplitude_at_focus</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElectricField</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the electric field amplitude (E0) at the focus for an astigmatic Gaussian beam.</span>
 
@@ -884,17 +830,17 @@ document.write(`
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
+<span class="sd">        ElectricField</span>
 <span class="sd">            The electric field amplitude at the focus in volts per meter.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_y</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_z</span>
         <span class="n">E0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">optical_power</span> <span class="o">/</span> <span class="p">(</span><span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">epsilon_0</span> <span class="o">*</span> <span class="n">PhysicalConstant</span><span class="o">.</span><span class="n">c</span> <span class="o">*</span> <span class="n">area</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">E0</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">volt</span> <span class="o">/</span> <span class="n">meter</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">E0</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">ureg</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AstigmaticGaussianBeam.amplitude_at">
 <a class="viewcode-back" href="../../code/source.html#FlowCyPy.source.AstigmaticGaussianBeam.amplitude_at">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">amplitude_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">amplitude_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Length</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">Length</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">Length</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElectricField</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the electric field amplitude at position (x,y) in the focal plane.</span>
 
@@ -903,7 +849,7 @@ document.write(`
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Quantity</span>
+<span class="sd">        ElectricField</span>
 <span class="sd">            The electric field amplitude at the focus in volts per meter.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_z</span><span class="p">):</span>
@@ -915,7 +861,21 @@ document.write(`
 
 <div class="viewcode-block" id="AstigmaticGaussianBeam.get_particle_width">
 <a class="viewcode-back" href="../../code/source.html#FlowCyPy.source.AstigmaticGaussianBeam.get_particle_width">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_particle_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">velocity</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Quantity</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_particle_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">velocity</span><span class="p">:</span> <span class="n">Velocity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Length</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the width of the particle flow at the waist of the beam, scaled by the velocity</span>
+<span class="sd">        of the particles.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        velocity : Velocity</span>
+<span class="sd">            The velocity of the particles in the flow (in meters per second).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Length</span>
+<span class="sd">            The width of the particle flow at the waist of the beam in meters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_z</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">velocity</span><span class="p">)</span></div>
 </div>
 

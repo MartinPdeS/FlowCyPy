@@ -47,7 +47,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.15.4';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v0.27.9';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.0.0.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = true;
         </script>
     <link rel="icon" href="../../_static/thumbnail.png"/>
@@ -506,25 +506,76 @@ document.write(`
                   
   <h1>Source code for FlowCyPy.population</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">RIU</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.particle_count</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParticleCount</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">RefractiveIndex</span><span class="p">,</span> <span class="n">Length</span><span class="p">,</span> <span class="n">Particle</span><span class="p">,</span> <span class="n">Area</span><span class="p">,</span> <span class="n">Velocity</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">Dimensionless</span><span class="p">,</span> <span class="n">ParticleFlux</span><span class="p">,</span> <span class="n">Concentration</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">PyMieSim.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">meter</span>
-
-
-<span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">extra</span><span class="o">=</span><span class="s1">&#39;forbid&#39;</span>
-<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">config_dict</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">BasePopulation</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_number_of_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flow_area</span><span class="p">:</span> <span class="n">Area</span><span class="p">,</span> <span class="n">flow_speed</span><span class="p">:</span> <span class="n">Velocity</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Particle</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the total number of particles based on the flow volume and the defined concentration.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        flow_area : Area</span>
+<span class="sd">            The cross-sectional area of the flow (e.g., in square meters).</span>
+<span class="sd">        flow_speed : Velocity</span>
+<span class="sd">            The speed of the flow (e.g., in meters per second).</span>
+<span class="sd">        run_time : Time</span>
+<span class="sd">            The total duration of the flow (e.g., in seconds).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Particle</span>
+<span class="sd">            The total number of particles.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If no concentration is defined and the total number of particles cannot be calculated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span><span class="p">,</span> <span class="n">Particle</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span><span class="p">,</span> <span class="n">Concentration</span><span class="p">):</span>
+            <span class="n">flow_volume</span> <span class="o">=</span> <span class="n">flow_area</span> <span class="o">*</span> <span class="n">flow_speed</span> <span class="o">*</span> <span class="n">run_time</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">concentration</span> <span class="o">*</span> <span class="n">flow_volume</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid particle count representation.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_particle_flux</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flow_speed</span><span class="p">:</span> <span class="n">Velocity</span><span class="p">,</span> <span class="n">flow_area</span><span class="p">:</span> <span class="n">Area</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParticleFlux</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the particle flux in the flow system, accounting for flow speed,</span>
+<span class="sd">        flow area, and either the particle concentration or a predefined number of particles.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        flow_speed : Velocity</span>
+<span class="sd">            The speed of the flow (e.g., in meters per second).</span>
+<span class="sd">        flow_area : Area</span>
+<span class="sd">            The cross-sectional area of the flow tube (e.g., in square meters).</span>
+<span class="sd">        run_time : Time</span>
+<span class="sd">            The total duration of the flow (e.g., in seconds).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ParticleFlux</span>
+<span class="sd">            The particle flux in particles per second (particle/second).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span><span class="p">,</span> <span class="n">Particle</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">/</span> <span class="n">run_time</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span><span class="p">,</span> <span class="n">Concentration</span><span class="p">):</span>
+            <span class="n">flow_volume_per_second</span> <span class="o">=</span> <span class="p">(</span><span class="n">flow_speed</span> <span class="o">*</span> <span class="n">flow_area</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">*</span> <span class="n">flow_volume_per_second</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid particle count representation.&quot;</span><span class="p">)</span>
+
+
     <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;refractive_index&#39;</span><span class="p">,</span> <span class="s1">&#39;core_refractive_index&#39;</span><span class="p">,</span> <span class="s1">&#39;shell_refractive_index&#39;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_refractive_index</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -549,11 +600,10 @@ document.write(`
 <span class="sd">        TypeError</span>
 <span class="sd">            If the input is not a Quantity with RIU units or a valid distribution.Base instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-            <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">RIU</span><span class="p">),</span> <span class="s2">&quot;The refractive index must have refractive index units [RIU].&quot;</span>
-            <span class="k">return</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">value</span>
+        <span class="k">elif</span> <span class="n">RefractiveIndex</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;refractive_index must be of type Quantity (with RIU) or distribution.Base, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
@@ -582,11 +632,10 @@ document.write(`
 <span class="sd">        TypeError</span>
 <span class="sd">            If the input is not a Quantity with length units or a valid distribution.Base instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-            <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">meter</span><span class="p">),</span> <span class="s2">&quot;The diameter must have length units (meter).&quot;</span>
-            <span class="k">return</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">value</span>
+        <span class="k">elif</span> <span class="n">Length</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="n">position</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Diameter must be of type Quantity or distribution.Base, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
@@ -603,17 +652,6 @@ document.write(`
 <span class="sd">            The dilution factor by which the particle count is divided.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">/=</span> <span class="n">factor</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This method converts any Quantity attributes to their base SI units (i.e., removes any prefixes)</span>
-<span class="sd">        and ensures that the particle_count is stored as a ParticleCount instance.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">=</span> <span class="n">ParticleCount</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span><span class="p">)</span>
-        <span class="c1"># Convert all attributes that are Quantity instances to their base SI units.</span>
-        <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_value</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">):</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">())</span>
 
 
 <div class="viewcode-block" id="Sphere">
@@ -633,23 +671,22 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    name : str</span>
 <span class="sd">        The identifier or label for the population.</span>
-<span class="sd">    refractive_index : Union[distribution.Base, Quantity]</span>
+<span class="sd">    refractive_index : distribution.Base | RefractiveIndex</span>
 <span class="sd">        The refractive index (or its distribution) of the particles. If provided as a Quantity,</span>
 <span class="sd">        it must have units of refractive index (RIU). If provided as a distribution, it should be an</span>
 <span class="sd">        instance of distribution.Base.</span>
-<span class="sd">    diameter : Union[distribution.Base, Quantity]</span>
+<span class="sd">    diameter : distribution.Base | Length</span>
 <span class="sd">        The particle diameter (or its distribution). If provided as a Quantity, it must have units</span>
 <span class="sd">        of length (e.g., meters). If provided as a distribution, it should be an instance of</span>
 <span class="sd">        distribution.Base.</span>
-<span class="sd">    particle_count : ParticleCount | Quantity</span>
-<span class="sd">        The number density of particles (scatterers) per cubic meter. If a Quantity is provided,</span>
-<span class="sd">        it should be convertible to a ParticleCount.</span>
+<span class="sd">    particle_count : Particle | Concentration</span>
+<span class="sd">        The number density of particles (scatterers) per cubic meter.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">refractive_index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
-    <span class="n">diameter</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
-    <span class="n">particle_count</span><span class="p">:</span> <span class="n">ParticleCount</span> <span class="o">|</span> <span class="n">Quantity</span>
+    <span class="n">refractive_index</span><span class="p">:</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span> <span class="o">|</span> <span class="n">RefractiveIndex</span>
+    <span class="n">diameter</span><span class="p">:</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span> <span class="o">|</span> <span class="n">Length</span>
+    <span class="n">particle_count</span><span class="p">:</span> <span class="n">Particle</span> <span class="o">|</span> <span class="n">Concentration</span>
 
 <div class="viewcode-block" id="Sphere.generate_property_sampling">
 <a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.Sphere.generate_property_sampling">[docs]</a>
@@ -703,33 +740,33 @@ document.write(`
 <span class="sd">    ----------</span>
 <span class="sd">    name : str</span>
 <span class="sd">        The identifier or label for the population.</span>
-<span class="sd">    core_diameter : Union[distribution.Base, Quantity]</span>
+<span class="sd">    core_diameter : distribution.Base | Length</span>
 <span class="sd">        The diameter of the particle core. If provided as a Quantity, it must have length units</span>
 <span class="sd">        (e.g., meter). If provided as a distribution, it must be an instance of distribution.Base.</span>
-<span class="sd">    shell_thickness : Union[distribution.Base, Quantity]</span>
+<span class="sd">    shell_thickness : distribution.Base | Length</span>
 <span class="sd">        The thickness of the particle shell. If provided as a Quantity, it must have length units.</span>
 <span class="sd">        If provided as a distribution, it must be an instance of distribution.Base.</span>
-<span class="sd">    refractive_index_core : Union[distribution.Base, Quantity]</span>
+<span class="sd">    refractive_index_core : distribution.Base | RefractiveIndex</span>
 <span class="sd">        The refractive index (or its distribution) of the core. If provided as a Quantity, it must have</span>
 <span class="sd">        refractive index units (RIU).</span>
-<span class="sd">    refractive_index_shell : Union[distribution.Base, Quantity]</span>
+<span class="sd">    refractive_index_shell : distribution.Base | RefractiveIndex</span>
 <span class="sd">        The refractive index (or its distribution) of the shell. If provided as a Quantity, it must have</span>
 <span class="sd">        refractive index units (RIU).</span>
-<span class="sd">    particle_count : ParticleCount | Quantity</span>
+<span class="sd">    particle_count : Particle | Concentration</span>
 <span class="sd">        The particle density in particles per cubic meter.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">core_diameter</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
-    <span class="n">shell_thickness</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
-    <span class="n">core_refractive_index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
-    <span class="n">shell_refractive_index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">distribution</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]</span>
-    <span class="n">particle_count</span><span class="p">:</span> <span class="n">ParticleCount</span> <span class="o">|</span> <span class="n">Quantity</span>
+    <span class="n">core_diameter</span><span class="p">:</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span> <span class="o">|</span> <span class="n">Length</span>
+    <span class="n">shell_thickness</span><span class="p">:</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span> <span class="o">|</span> <span class="n">Length</span>
+    <span class="n">core_refractive_index</span><span class="p">:</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span> <span class="o">|</span> <span class="n">RefractiveIndex</span>
+    <span class="n">shell_refractive_index</span><span class="p">:</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span> <span class="o">|</span> <span class="n">RefractiveIndex</span>
+    <span class="n">particle_count</span><span class="p">:</span> <span class="n">Particle</span> <span class="o">|</span> <span class="n">Concentration</span>
 
 <div class="viewcode-block" id="CoreShell.generate_property_sampling">
 <a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.CoreShell.generate_property_sampling">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">generate_property_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_property_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="n">Dimensionless</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a sampling of core-shell particle properties.</span>
 

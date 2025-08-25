@@ -16,9 +16,11 @@ import numpy as np
 from FlowCyPy.fluidics import Fluidics, FlowCell, population, distribution, ScattererCollection
 from FlowCyPy.opto_electronics import OptoElectronics, source, TransimpedanceAmplifier, Detector
 from FlowCyPy.signal_processing import SignalProcessing, Digitizer, circuits, peak_locator, triggering_system
-from FlowCyPy import FlowCytometer, SimulationSettings, units
+from FlowCyPy import FlowCytometer, SimulationSettings
+from TypedUnit import ureg
 
-# %% Simulation Configuration
+# %%
+# Simulation Configuration
 SimulationSettings.include_noises = True
 SimulationSettings.include_shot_noise = True
 SimulationSettings.include_source_noise = True
@@ -29,67 +31,74 @@ SimulationSettings.sorted_population = True
 
 np.random.seed(3)
 
-# %% Optical Source
+# %%
+# Optical Source
 source = source.GaussianBeam(
-    numerical_aperture=0.1 * units.AU,
-    wavelength=488 * units.nanometer,
-    optical_power=200 * units.milliwatt
+    numerical_aperture=0.1 * ureg.AU,
+    wavelength=488 * ureg.nanometer,
+    optical_power=200 * ureg.milliwatt
 )
 
-# %% Flow Cell Configuration
+# %%
+# Flow Cell Configuration
 flow_cell = FlowCell(
-    sample_volume_flow=0.02 * units.microliter / units.second,
-    sheath_volume_flow=0.1 * units.microliter / units.second,
-    width=20 * units.micrometer,
-    height=10 * units.micrometer,
+    sample_volume_flow=0.02 * ureg.microliter / ureg.second,
+    sheath_volume_flow=0.1 * ureg.microliter / ureg.second,
+    width=20 * ureg.micrometer,
+    height=10 * ureg.micrometer,
 )
 
-# %% Define Scatterer Populations (90–150 nm spheres)
-scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
+# %%
+# Define Scatterer Populations (90–150 nm spheres)
+scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
 
 for size in [150, 130, 110, 90]:
     pop = population.Sphere(
         name=f'{size} nm',
-        particle_count=20 * units.particle,
-        diameter=distribution.Delta(position=size * units.nanometer),
-        refractive_index=distribution.Delta(position=1.39 * units.RIU)
+        particle_count=20 * ureg.particle,
+        diameter=distribution.Delta(position=size * ureg.nanometer),
+        refractive_index=distribution.Delta(position=1.39 * ureg.RIU)
     )
     scatterer_collection.add_population(pop)
 
-# %% Fluidics Subsystem
+# %%
+# Fluidics Subsystem
 fluidics = Fluidics(
     scatterer_collection=scatterer_collection,
     flow_cell=flow_cell
 )
 
-# %% Signal Digitizer
+# %%
+# Signal Digitizer
 digitizer = Digitizer(
     bit_depth='14bit',
     saturation_levels='auto',
-    sampling_rate=60 * units.megahertz
+    sampling_rate=60 * ureg.megahertz
 )
 
-# %% Detectors
+# %%
+# Detectors
 detector_side = Detector(
     name='side',
-    phi_angle=90 * units.degree,
-    numerical_aperture=0.2 * units.AU,
-    responsivity=1 * units.ampere / units.watt,
-    dark_current=0.001 * units.milliampere
+    phi_angle=90 * ureg.degree,
+    numerical_aperture=0.2 * ureg.AU,
+    responsivity=1 * ureg.ampere / ureg.watt,
+    dark_current=0.001 * ureg.milliampere
 )
 
 detector_forward = Detector(
     name='forward',
-    phi_angle=0 * units.degree,
-    numerical_aperture=0.2 * units.AU,
-    responsivity=1 * units.ampere / units.watt,
-    dark_current=0.001 * units.milliampere
+    phi_angle=0 * ureg.degree,
+    numerical_aperture=0.2 * ureg.AU,
+    responsivity=1 * ureg.ampere / ureg.watt,
+    dark_current=0.001 * ureg.milliampere
 )
 
-# %% Amplifier and Opto-Electronics
+# %%
+# Amplifier and Opto-Electronics
 amplifier = TransimpedanceAmplifier(
-    gain=10000 * units.volt / units.ampere,
-    bandwidth=10 * units.megahertz
+    gain=10000 * ureg.volt / ureg.ampere,
+    bandwidth=10 * ureg.megahertz
 )
 
 opto_electronics = OptoElectronics(
@@ -98,16 +107,18 @@ opto_electronics = OptoElectronics(
     amplifier=amplifier
 )
 
-# %% Analog Processing Pipeline
+# %%
+# Analog Processing Pipeline
 analog_processing = [
-    circuits.BaselineRestorator(window_size=10 * units.microsecond),
-    circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
+    circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
+    circuits.BesselLowPass(cutoff=1 * ureg.megahertz, order=4, gain=2)
 ]
 
-# %% Triggering and Peak Detection
+# %%
+# Triggering and Peak Detection
 triggering_system = triggering_system.DynamicWindow(
     trigger_detector_name='forward',
-    threshold=0.4 * units.millivolt,
+    threshold=0.4 * ureg.millivolt,
     max_triggers=-1,
     pre_buffer=64,
     post_buffer=64
@@ -125,19 +136,22 @@ cytometer = FlowCytometer(
     opto_electronics=opto_electronics,
     fluidics=fluidics,
     signal_processing=signal_processing,
-    background_power=0.0001 * units.milliwatt
+    background_power=0.0001 * ureg.milliwatt
 )
 
-results = cytometer.run(run_time=1.0 * units.millisecond)
+results = cytometer.run(run_time=1.0 * ureg.millisecond)
 
-# %% Plot Raw Analog Signal
+# %%
+# Plot Raw Analog Signal
 results.analog.normalize_units(time_units='max', signal_units='max')
 results.analog.plot()
 
-# %% Plot Triggered Analog Signal Segments
+# %%
+# Plot Triggered Analog Signal Segments
 results.triggered_analog.plot()
 
-# %% Plot Peak Features (Side vs Forward Height)
+# %%
+# Plot Peak Features (Side vs Forward Height)
 results.peaks.plot(
     x=('side', 'Height'),
     y=('forward', 'Height')

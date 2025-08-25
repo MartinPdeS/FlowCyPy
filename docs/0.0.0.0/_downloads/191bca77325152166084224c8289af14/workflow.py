@@ -1,239 +1,190 @@
 """
-Workflow
-========
+Flow Cytometry Simulation: Full System Example
+==============================================
 
-This tutorial demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library.
-The simulation involves configuring a flow setup, defining a single population of particles, and
-analyzing scattering signals from two detectors to produce a 2D density plot of scattering intensities.
+This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library.
+It models fluidics, optics, signal processing, and classification of multiple particle populations.
 
-Overview:
----------
-1. Configure the flow cell and particle population.
-2. Define the laser source and detector parameters.
-3. Simulate the flow cytometry experiment.
-4. Analyze the generated signals and visualize results.
-
+Steps Covered:
+--------------
+1. Configure simulation parameters and noise models
+2. Define laser source, flow cell geometry, and fluidics
+3. Add synthetic particle populations
+4. Set up detectors, amplifier, and digitizer
+5. Simulate analog and digital signal acquisition
+6. Apply triggering and peak detection
+7. Classify particle events based on peak features
 """
 
 # %%
-# Step 0: Import Necessary Libraries
+# Step 0: Global Settings and Imports
 # -----------------------------------
-# Here, we import the necessary libraries and units for the simulation. The units module helps us
-# define physical quantities like meters, seconds, and watts in a concise and consistent manner.
-
 import numpy as np
-from FlowCyPy import units
+from TypedUnit import ureg
+from FlowCyPy import SimulationSettings
+
+SimulationSettings.include_noises = True
+SimulationSettings.include_shot_noise = True
+SimulationSettings.include_dark_current_noise = True
+SimulationSettings.include_source_noise = True
+SimulationSettings.include_amplifier_noise = True
+SimulationSettings.assume_perfect_hydrodynamic_focusing = True
+
+np.random.seed(3)
 
 
 # %%
-# Step 1: Configure Noise Settings
-# ---------------------------------
-# Noise settings are configured to simulate real-world imperfections. In this example, we include noise
-# globally but exclude specific types, such as shot noise and thermal noise.
+# Step 1: Define Flow Cell and Fluidics
+# -------------------------------------
+from FlowCyPy.flow_cell import FlowCell
+from FlowCyPy.fluidics import Fluidics, ScattererCollection, population, distribution
 
-from FlowCyPy import NoiseSetting
+flow_cell = FlowCell(
+    sample_volume_flow=80 * ureg.microliter / ureg.minute,
+    sheath_volume_flow=1 * ureg.milliliter / ureg.minute,
+    width=200 * ureg.micrometer,
+    height=100 * ureg.micrometer
+)
 
-NoiseSetting.include_noises = True
-NoiseSetting.include_shot_noise = True
-NoiseSetting.include_dark_current_noise = True
-NoiseSetting.include_source_noise = True
-NoiseSetting.include_amplifier_noise = True
+scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
 
+population_0 = population.Sphere(
+    name='Pop 0',
+    particle_count=5e9 * ureg.particle / ureg.milliliter,
+    diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
+    refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU)
+)
 
-np.random.seed(3)  # Ensure reproducibility
+population_1 = population.Sphere(
+    name='Pop 1',
+    particle_count=5e9 * ureg.particle / ureg.milliliter,
+    diameter=distribution.RosinRammler(200 * ureg.nanometer, spread=30),
+    refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU)
+)
+
+scatterer_collection.add_population(population_0, population_1)
+
+scatterer_collection.dilute(factor=80)
+
+fluidics = Fluidics(
+    scatterer_collection=scatterer_collection,
+    flow_cell=flow_cell
+)
 
 
 # %%
-# Step 2: Configure the Laser Source
-# ----------------------------------
-# The laser source generates light that interacts with the particles. Its parameters, like numerical
-# aperture and wavelength, affect how light scatters, governed by Mie theory.
+# Step 2: Define Optical Subsystem
+# --------------------------------
+from FlowCyPy.opto_electronics import source, Detector, TransimpedanceAmplifier, OptoElectronics
 
-from FlowCyPy import GaussianBeam
-
-source = GaussianBeam(
-    numerical_aperture=0.1 * units.AU,           # Numerical aperture
-    wavelength=450 * units.nanometer,           # Wavelength
-    optical_power=200 * units.milliwatt,          # Optical power
+source = source.GaussianBeam(
+    numerical_aperture=0.1 * ureg.AU,
+    wavelength=450 * ureg.nanometer,
+    optical_power=200 * ureg.milliwatt,
     RIN=-140
 )
 
-
-# %%
-# Step 3: Set Up the Flow Cell
-# ----------------------------
-# The flow cell models the movement of particles in the cytometer. For example, the volume of fluid
-# passing through the cross-sectional area is calculated as:
-#
-# .. math::
-#     \text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}
-
-from FlowCyPy.flow_cell import FlowCell
-
-flow_cell = FlowCell(
-    sample_volume_flow=80 * units.microliter / units.minute,
-    sheath_volume_flow=1 * units.milliliter / units.minute,
-    width=100 * units.micrometer,
-    height=100 * units.micrometer,
-)
-
-# flow_cell.plot(n_samples=300)
-
-
-# %%
-# Step 4: Define ScattererCollection and Population
-# -------------------------------------------------
-# The scatterer represents particles in the flow. The concentration of particles in the flow cell is
-# given by:
-#
-# .. math::
-#     \text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}
-
-from FlowCyPy import ScattererCollection
-from FlowCyPy.population import Exosome, Sphere, distribution
-
-scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
-
-exosome = Exosome(particle_count=5e9 * units.particle / units.milliliter)
-
-custom_population = Sphere(
-    name='Pop 0',
-    particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
-    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
-)
-
-# Add an Exosome population
-scatterer_collection.add_population(custom_population)
-
-scatterer_collection.dilute(factor=8)
-
-# Initialize the scatterer with the flow cell
-df = scatterer_collection.get_population_dataframe(total_sampling=600, use_ratio=False)  # Visualize the particle population
-
-# df.plot(x='Diameter', bins='auto')
-
-# %%
-# Step 5: Define Detectors
-# ------------------------
-# Detectors measure light intensity. Parameters like responsivity define the conversion of optical
-# power to electronic signals, and saturation level represents the maximum signal they can handle.
-
-from FlowCyPy.detector import Detector
-from FlowCyPy.signal_digitizer import SignalDigitizer
-from FlowCyPy.amplifier import TransimpedanceAmplifier
-
-signal_digitizer = SignalDigitizer(
-    bit_depth='14bit',
-    saturation_levels='auto',
-    sampling_rate=60 * units.megahertz,
-)
-
-detector_0 = Detector(
-    name='forward',
-    phi_angle=0 * units.degree,                  # Forward scatter angle
-    numerical_aperture=0.3 * units.AU,
-    responsivity=1 * units.ampere / units.watt,
-)
-
-detector_1 = Detector(
-    name='side',
-    phi_angle=90 * units.degree,                 # Side scatter angle
-    numerical_aperture=0.3 * units.AU,
-    responsivity=1 * units.ampere / units.watt,
-)
-
-detector_2 = Detector(
-    name='det_2',
-    phi_angle=30 * units.degree,                 # Side scatter angle
-    numerical_aperture=0.3 * units.AU,
-    responsivity=1 * units.ampere / units.watt,
-)
-
-amplifier = TransimpedanceAmplifier(
-    gain=10 * units.volt / units.ampere,
-    bandwidth=10 * units.megahertz,
-    voltage_noise_density=.1 * units.nanovolt / units.sqrt_hertz,
-    current_noise_density=.2 * units.femtoampere / units.sqrt_hertz
-)
-
-
-# %%
-# Step 6: Simulate Flow Cytometry Experiment
-# ------------------------------------------
-# The FlowCytometer combines all components to simulate scattering. The interaction between light
-# and particles follows Mie theory:
-#
-# .. math::
-#     \sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)
-from FlowCyPy import FlowCytometer, circuits
-
-cytometer = FlowCytometer(
-    source=source,
-    transimpedance_amplifier=amplifier,
-    scatterer_collection=scatterer_collection,
-    signal_digitizer=signal_digitizer,
-    detectors=[detector_0, detector_1, detector_2],
-    flow_cell=flow_cell,
-    background_power=0.000 * units.milliwatt
-)
-
-processing_steps = [
-    circuits.BaselineRestorator(window_size=100 * units.microsecond),
-    circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
+detectors = [
+    Detector(name='forward', phi_angle=0 * ureg.degree,  numerical_aperture=0.3 * ureg.AU, responsivity=1 * ureg.ampere / ureg.watt),
+    Detector(name='side',    phi_angle=90 * ureg.degree, numerical_aperture=0.3 * ureg.AU, responsivity=1 * ureg.ampere / ureg.watt),
+    Detector(name='det 2',   phi_angle=30 * ureg.degree, numerical_aperture=0.3 * ureg.AU, responsivity=1 * ureg.ampere / ureg.watt),
 ]
 
-# Run the flow cytometry simulation
-cytometer.prepare_acquisition(run_time=0.5 * units.millisecond)
-acquisition = cytometer.get_acquisition(processing_steps=processing_steps)
-
-_ = acquisition.scatterer.plot(
-    x='side',
-    y='forward',
-    z='RefractiveIndex'
+amplifier = TransimpedanceAmplifier(
+    gain=10 * ureg.volt / ureg.ampere,
+    bandwidth=10 * ureg.megahertz,
+    voltage_noise_density=0.1 * ureg.nanovolt / ureg.sqrt_hertz,
+    current_noise_density=0.2 * ureg.femtoampere / ureg.sqrt_hertz
 )
 
-# %%
-# Visualize the scatter signals from both detectors
-acquisition.analog.plot()
+opto_electronics = OptoElectronics(
+    detectors=detectors,
+    source=source,
+    amplifier=amplifier
+)
+
 
 # %%
-# Step 7: Analyze Detected Signals
-# --------------------------------
-# The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
-# window size and threshold.
-triggered_acquisition = acquisition.run_triggering(
-    threshold=2 * units.microvolt,
+# Step 3: Signal Processing Configuration
+# ---------------------------------------
+from FlowCyPy.signal_processing import SignalProcessing, Digitizer, circuits, peak_locator, triggering_system
+
+digitizer = Digitizer(
+    bit_depth='14bit',
+    saturation_levels='auto',
+    sampling_rate=60 * ureg.megahertz
+)
+
+analog_processing = [
+    circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
+    circuits.BesselLowPass(cutoff=2 * ureg.megahertz, order=4, gain=2)
+]
+
+triggering = triggering_system.DynamicWindow(
     trigger_detector_name='forward',
-    max_triggers=-1,
+    threshold=10 * ureg.microvolt,
     pre_buffer=20,
-    post_buffer=20
+    post_buffer=20,
+    max_triggers=-1
 )
 
-triggered_acquisition.analog.plot()
+peak_algo = peak_locator.GlobalPeakLocator(compute_width=False)
+
+signal_processing = SignalProcessing(
+    digitizer=digitizer,
+    analog_processing=analog_processing,
+    triggering_system=triggering,
+    peak_algorithm=peak_algo
+)
+
+# %%
+# Step 4: Run Simulation
+# ----------------------
+from FlowCyPy import FlowCytometer
+
+cytometer = FlowCytometer(
+    opto_electronics=opto_electronics,
+    fluidics=fluidics,
+    signal_processing=signal_processing,
+    background_power=0.001 * ureg.milliwatt
+)
+
+results = cytometer.run(run_time=1.8 * ureg.millisecond)
 
 
 # %%
-# Getting and plotting the extracted peaks.
-from FlowCyPy import peak_locator
-peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
+# Step 5: Plot Events and Raw Analog Signals
+# ------------------------------------------
+_ = results.events.plot(x='side', y='forward', z='RefractiveIndex')
 
-
-peaks = triggered_acquisition.detect_peaks(peak_algorithm)
-
-
-peaks.plot(feature='Height', x='side', y='forward')
 
 # %%
-# Step 8: Classifying the collected dataset
+# Plot raw analog signals
+# -----------------------
+results.analog.normalize_units(signal_units='max')
+_ = results.analog.plot()
+
+
+# %%
+# Step 6: Plot Triggered Analog Segments
+# --------------------------------------
+_ = results.triggered_analog.plot()
+
+
+# %%
+# Step 7: Classify Events from Peak Features
+# ------------------------------------------
 from FlowCyPy.classifier import KmeansClassifier
 
 classifier = KmeansClassifier(number_of_cluster=2)
 
-data = classifier.run(
-    dataframe=peaks.unstack('Detector'),
+classified = classifier.run(
+    dataframe=results.peaks.unstack('Detector'),
     features=['Height'],
     detectors=['side', 'forward']
 )
 
-_ = data.plot(feature='Height', x='side', y='forward')
+_ = classified.plot(
+    x=('side', 'Height'),
+    y=('forward', 'Height')
+)

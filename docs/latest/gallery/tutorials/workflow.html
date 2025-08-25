@@ -48,7 +48,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.15.4';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v0.27.9';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.0.0.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = true;
         </script>
     <link rel="icon" href="../../_static/thumbnail.png"/>
@@ -564,7 +564,8 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <section id="step-0-global-settings-and-imports">
 <h2>Step 0: Global Settings and Imports<a class="headerlink" href="#step-0-global-settings-and-imports" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span><span class="p">,</span> <span class="n">SimulationSettings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
 
 <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="o">=</span> <span class="kc">True</span>
@@ -583,27 +584,29 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluidics</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">distribution</span>
 
 <span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
-    <span class="n">sample_volume_flow</span><span class="o">=</span><span class="mi">80</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
-    <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
-    <span class="n">width</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
-    <span class="n">height</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span>
+    <span class="n">sample_volume_flow</span><span class="o">=</span><span class="mi">80</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+    <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span>
 <span class="p">)</span>
 
-<span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
+<span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
 
-<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
+<span class="n">population_0</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Pop 0&#39;</span><span class="p">,</span>
-    <span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
-    <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="mi">150</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
-    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">1.44</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.002</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
-<span class="p">))</span>
+    <span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
+    <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="mi">150</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
+    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">1.44</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.002</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
+<span class="p">)</span>
 
-<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
+<span class="n">population_1</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Pop 1&#39;</span><span class="p">,</span>
-    <span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
-    <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="mi">200</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
-    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">1.44</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.002</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
-<span class="p">))</span>
+    <span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
+    <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="mi">200</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
+    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">1.44</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.002</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population_0</span><span class="p">,</span> <span class="n">population_1</span><span class="p">)</span>
 
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
 
@@ -619,23 +622,23 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.opto_electronics</span><span class="w"> </span><span class="kn">import</span> <span class="n">source</span><span class="p">,</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">TransimpedanceAmplifier</span><span class="p">,</span> <span class="n">OptoElectronics</span>
 
 <span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">GaussianBeam</span><span class="p">(</span>
-    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>
-    <span class="n">wavelength</span><span class="o">=</span><span class="mi">450</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
-    <span class="n">optical_power</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>
+    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>
+    <span class="n">wavelength</span><span class="o">=</span><span class="mi">450</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+    <span class="n">optical_power</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>
     <span class="n">RIN</span><span class="o">=-</span><span class="mi">140</span>
 <span class="p">)</span>
 
 <span class="n">detectors</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">Detector</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>  <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span> <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">),</span>
-    <span class="n">Detector</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span> <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">),</span>
-    <span class="n">Detector</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;det 2&#39;</span><span class="p">,</span>   <span class="n">phi_angle</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span> <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">),</span>
+    <span class="n">Detector</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>  <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span> <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">),</span>
+    <span class="n">Detector</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span> <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">),</span>
+    <span class="n">Detector</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;det 2&#39;</span><span class="p">,</span>   <span class="n">phi_angle</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span> <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">),</span>
 <span class="p">]</span>
 
 <span class="n">amplifier</span> <span class="o">=</span> <span class="n">TransimpedanceAmplifier</span><span class="p">(</span>
-    <span class="n">gain</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span>
-    <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
-    <span class="n">voltage_noise_density</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanovolt</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">sqrt_hertz</span><span class="p">,</span>
-    <span class="n">current_noise_density</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">femtoampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">sqrt_hertz</span>
+    <span class="n">gain</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span>
+    <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
+    <span class="n">voltage_noise_density</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanovolt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">sqrt_hertz</span><span class="p">,</span>
+    <span class="n">current_noise_density</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">femtoampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">sqrt_hertz</span>
 <span class="p">)</span>
 
 <span class="n">opto_electronics</span> <span class="o">=</span> <span class="n">OptoElectronics</span><span class="p">(</span>
@@ -653,17 +656,17 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <span class="n">digitizer</span> <span class="o">=</span> <span class="n">Digitizer</span><span class="p">(</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>
     <span class="n">saturation_levels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
-    <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span>
+    <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span>
 <span class="p">)</span>
 
 <span class="n">analog_processing</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microsecond</span><span class="p">),</span>
-    <span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">),</span>
+    <span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="p">]</span>
 
 <span class="n">triggering</span> <span class="o">=</span> <span class="n">triggering_system</span><span class="o">.</span><span class="n">DynamicWindow</span><span class="p">(</span>
     <span class="n">trigger_detector_name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microvolt</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microvolt</span><span class="p">,</span>
     <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
     <span class="n">post_buffer</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
     <span class="n">max_triggers</span><span class="o">=-</span><span class="mi">1</span>
@@ -688,10 +691,51 @@ It models fluidics, optics, signal processing, and classification of multiple pa
     <span class="n">opto_electronics</span><span class="o">=</span><span class="n">opto_electronics</span><span class="p">,</span>
     <span class="n">fluidics</span><span class="o">=</span><span class="n">fluidics</span><span class="p">,</span>
     <span class="n">signal_processing</span><span class="o">=</span><span class="n">signal_processing</span><span class="p">,</span>
-    <span class="n">background_power</span><span class="o">=</span><span class="mf">0.001</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span>
+    <span class="n">background_power</span><span class="o">=</span><span class="mf">0.001</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span>
 <span class="p">)</span>
 
-<span class="n">results</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.8</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">1.8</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Population  ScattererID
+Pop 0       0               0.0
+            1               0.0
+            2              -0.0
+            3              -0.0
+            4               0.0
+                           ...
+Pop 1       147            -0.0
+            148            -0.0
+            149             0.0
+            150             0.0
+            151            -0.0
+Name: y, Length: 288, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
+Population  ScattererID
+Pop 0       0               0.0
+            1               0.0
+            2              -0.0
+            3              -0.0
+            4               0.0
+                           ...
+Pop 1       147            -0.0
+            148            -0.0
+            149             0.0
+            150             0.0
+            151            -0.0
+Name: y, Length: 288, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
+Population  ScattererID
+Pop 0       0               0.0
+            1               0.0
+            2              -0.0
+            3              -0.0
+            4               0.0
+                           ...
+Pop 1       147            -0.0
+            148            -0.0
+            149             0.0
+            150             0.0
+            151            -0.0
+Name: y, Length: 288, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
 </pre></div>
 </div>
 </section>
@@ -707,13 +751,21 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <span class="n">_</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_002.png" srcset="../../_images/sphx_glr_workflow_002.png" alt="workflow" class = "sphx-glr-single-img"/></section>
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_workflow_002.png" srcset="../../_images/sphx_glr_workflow_002.png" alt="workflow" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_workflow_003.png" srcset="../../_images/sphx_glr_workflow_003.png" alt="workflow" class = "sphx-glr-multi-img"/></li>
+</ul>
+</section>
 <section id="step-6-plot-triggered-analog-segments">
 <h2>Step 6: Plot Triggered Analog Segments<a class="headerlink" href="#step-6-plot-triggered-analog-segments" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">triggered_analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_003.png" srcset="../../_images/sphx_glr_workflow_003.png" alt="workflow" class = "sphx-glr-single-img"/></section>
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_workflow_004.png" srcset="../../_images/sphx_glr_workflow_004.png" alt="workflow" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="workflow" class = "sphx-glr-multi-img"/></li>
+</ul>
+</section>
 <section id="step-7-classify-events-from-peak-features">
 <h2>Step 7: Classify Events from Peak Features<a class="headerlink" href="#step-7-classify-events-from-peak-features" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.classifier</span><span class="w"> </span><span class="kn">import</span> <span class="n">KmeansClassifier</span>
@@ -732,7 +784,7 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_004.png" srcset="../../_images/sphx_glr_workflow_004.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 12.283 seconds)</p>
+<img src="../../_images/sphx_glr_workflow_006.png" srcset="../../_images/sphx_glr_workflow_006.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.364 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/67e0cd555ca79f8bdb69184b227f40a4/workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow.ipynb</span></code></a></p>

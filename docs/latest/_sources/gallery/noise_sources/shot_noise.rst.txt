@@ -25,16 +25,17 @@ This example demonstrates the effect of different optical power levels on a flow
 We initialize the detector, apply varying optical power levels, and visualize the resulting signals
 and their distributions.
 
-.. GENERATED FROM PYTHON SOURCE LINES 10-27
+.. GENERATED FROM PYTHON SOURCE LINES 10-28
 
 .. code-block:: Python
 
 
-    import matplotlib.pyplot as plt
-    from FlowCyPy.detector import Detector
-    from FlowCyPy import units
     import numpy
+    import matplotlib.pyplot as plt
+    from TypedUnit import ureg
+
     from FlowCyPy import SimulationSettings
+    from FlowCyPy.detector import Detector
     from FlowCyPy.signal_generator import SignalGenerator
 
     SimulationSettings.include_noises = True
@@ -43,7 +44,7 @@ and their distributions.
     SimulationSettings.include_source_noise = False
 
     # Define optical power levels
-    optical_powers = [1 * units.nanowatt, 2 * units.nanowatt, 4 * units.nanowatt]  # Powers in watts
+    optical_powers = [1, 2, 4] * ureg.nanowatt  # Powers in watts
     sequence_length = 300
 
 
@@ -53,11 +54,11 @@ and their distributions.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 28-29
+.. GENERATED FROM PYTHON SOURCE LINES 29-30
 
 Create a figure for signal visualization
 
-.. GENERATED FROM PYTHON SOURCE LINES 29-80
+.. GENERATED FROM PYTHON SOURCE LINES 30-81
 
 .. code-block:: Python
 
@@ -67,7 +68,7 @@ Create a figure for signal visualization
     for optical_power in optical_powers:
         detector_name = f"{optical_power.magnitude:.1e} W"
 
-        signal_generator = SignalGenerator(n_elements=sequence_length, time_units=units.second, signal_units=units.watt)
+        signal_generator = SignalGenerator(n_elements=sequence_length, time_units=ureg.second, signal_units=ureg.watt)
 
         signal_generator.create_zero_signal(detector_name)
 
@@ -79,18 +80,18 @@ Create a figure for signal visualization
         # Initialize the detector
         detector = Detector(
             name=detector_name,
-            responsivity=1 * units.ampere / units.watt,
-            numerical_aperture=0.2 * units.AU,
-            phi_angle=0 * units.degree
+            responsivity=1 * ureg.ampere / ureg.watt,
+            numerical_aperture=0.2 * ureg.AU,
+            phi_angle=0 * ureg.degree
         )
 
         detector.apply_shot_noise(
             signal_generator=signal_generator,
-            wavelength=1550 * units.nanometer,
-            bandwidth=10 * units.megahertz
+            wavelength=1550 * ureg.nanometer,
+            bandwidth=10 * ureg.megahertz
         )
 
-        noise_current = signal_generator.get_signal(detector_name) * units.ampere
+        noise_current = signal_generator.get_signal(detector_name) * ureg.ampere
 
         # Plot the raw signal on the first axis
         ax_signal.step(numpy.arange(sequence_length), noise_current, label=detector.name)
@@ -127,7 +128,7 @@ Create a figure for signal visualization
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.574 seconds)
+   **Total running time of the script:** (0 minutes 0.541 seconds)
 
 
 .. _sphx_glr_download_gallery_noise_sources_shot_noise.py:

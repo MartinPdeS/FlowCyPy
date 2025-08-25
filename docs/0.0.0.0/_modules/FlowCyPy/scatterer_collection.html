@@ -28,7 +28,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -505,25 +505,18 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for FlowCyPy.scatterer_collection</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pint_pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">PintArray</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">RefractiveIndex</span><span class="p">,</span> <span class="n">Concentration</span><span class="p">,</span> <span class="n">ureg</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">particle</span><span class="p">,</span> <span class="n">liter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePopulation</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.dataframe_subclass</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererDataFrame</span>
-
-
-<span class="k">class</span><span class="w"> </span><span class="nc">CouplingModel</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="n">MIE</span> <span class="o">=</span> <span class="s1">&#39;mie&#39;</span>
-    <span class="n">RAYLEIGH</span> <span class="o">=</span> <span class="s1">&#39;rayleigh&#39;</span>
-    <span class="n">UNIFORM</span> <span class="o">=</span> <span class="s1">&#39;uniform&#39;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.scatterer</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererDataFrame</span>
 
 
 <div class="viewcode-block" id="ScattererCollection">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection">[docs]</a>
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.scatterer_collection.ScattererCollection">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ScattererCollection</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Defines and manages the diameter and refractive index distributions of scatterers (particles)</span>
@@ -531,39 +524,44 @@ document.write(`
 <span class="sd">    indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">medium_refractive_index</span><span class="p">:</span> <span class="n">Quantity</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">RIU</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BasePopulation</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">coupling_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CouplingModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">CouplingModel</span><span class="o">.</span><span class="n">MIE</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">medium_refractive_index</span><span class="p">:</span> <span class="n">RefractiveIndex</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BasePopulation</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        populations : List[BasePopulation]</span>
 <span class="sd">            A list of Population instances that define different scatterer populations.</span>
-<span class="sd">        coupling_model : Optional[CouplingModel], optional</span>
-<span class="sd">            The type of coupling factor to use (CouplingModel.MIE, CouplingModel.RAYLEIGH, CouplingModel.UNIFORM). Default is CouplingModel.MIE.</span>
-<span class="sd">        medium_refractive_index : float</span>
+<span class="sd">        medium_refractive_index : RefractiveIndex</span>
 <span class="sd">            The refractive index of the medium. Default is 1.0.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">populations</span> <span class="o">=</span> <span class="n">populations</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">medium_refractive_index</span> <span class="o">=</span> <span class="n">medium_refractive_index</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">coupling_model</span> <span class="o">=</span> <span class="n">coupling_model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="ScattererCollection.get_population_ratios">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.get_population_ratios">[docs]</a>
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.scatterer_collection.ScattererCollection.get_population_ratios">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_population_ratios</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-        <span class="n">total_concentration</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">particle_count</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">])</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the ratios of each population&#39;s concentration to the total concentration.</span>
 
-        <span class="k">return</span> <span class="p">[(</span><span class="n">p</span><span class="o">.</span><span class="n">particle_count</span><span class="o">.</span><span class="n">value</span> <span class="o">/</span> <span class="n">total_concentration</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">]</span></div>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[float]</span>
+<span class="sd">            A list of concentration ratios for each population.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">total_concentration</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">particle_count</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="p">[(</span><span class="n">p</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">/</span> <span class="n">total_concentration</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="ScattererCollection.get_population_dataframe">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.get_population_dataframe">[docs]</a>
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.scatterer_collection.ScattererCollection.get_population_dataframe">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_population_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">total_sampling</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span> <span class="n">use_ratio</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a DataFrame by sampling particles from populations.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        total_sampling : Quantity, optional</span>
+<span class="sd">        total_sampling : int, optional</span>
 <span class="sd">            Total number of samples to draw, distributed across populations based on their ratios.</span>
 
 <span class="sd">        Returns</span>
@@ -598,7 +596,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="ScattererCollection.add_population">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.add_population">[docs]</a>
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.scatterer_collection.ScattererCollection.add_population">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">population</span><span class="p">:</span> <span class="n">BasePopulation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;ScattererCollection&#39;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a population to the ScattererCollection instance with the specified attributes.</span>
@@ -627,26 +625,26 @@ document.write(`
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">concentrations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Quantity</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">concentrations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Concentration</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the concentration of each population in the ScattererCollection instance.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        List[Quantity]</span>
+<span class="sd">        List[Concentration]</span>
 <span class="sd">            A list of concentrations for each population.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">concentration</span> <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">]</span>
 
 <div class="viewcode-block" id="ScattererCollection.set_concentrations">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.set_concentrations">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">set_concentrations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Quantity</span><span class="p">],</span> <span class="n">Quantity</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.scatterer_collection.ScattererCollection.set_concentrations">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_concentrations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Concentration</span><span class="p">],</span> <span class="n">Concentration</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the concentration of each population in the ScattererCollection instance.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        values : Union[List[Quantity], Quantity]</span>
+<span class="sd">        values : Union[List[Concentration], Concentration]</span>
 <span class="sd">            A list of concentrations to set for each population, or a single concentration value to set for all populations.</span>
 
 <span class="sd">        Raises</span>
@@ -659,24 +657,19 @@ document.write(`
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The length of the values list must match the number of populations.&quot;</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">dimensionality</span> <span class="o">!=</span> <span class="p">(</span><span class="n">particle</span> <span class="o">/</span> <span class="n">liter</span><span class="p">)</span><span class="o">.</span><span class="n">dimensionality</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Invalid concentration dimensionality: </span><span class="si">{</span><span class="n">value</span><span class="o">.</span><span class="n">dimensionality</span><span class="si">}</span><span class="s2">. Expected dimensionality is &#39;particles per liter&#39; or similar.&quot;</span>
-                    <span class="p">)</span>
+                <span class="n">Concentration</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">population</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
                 <span class="n">population</span><span class="o">.</span><span class="n">concentration</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">dimensionality</span> <span class="o">!=</span> <span class="p">(</span><span class="n">particle</span> <span class="o">/</span> <span class="n">liter</span><span class="p">)</span><span class="o">.</span><span class="n">dimensionality</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Invalid concentration dimensionality: </span><span class="si">{</span><span class="n">values</span><span class="o">.</span><span class="n">dimensionality</span><span class="si">}</span><span class="s2">. Expected dimensionality is &#39;particles per liter&#39; or similar.&quot;</span>
-                <span class="p">)</span>
+            <span class="n">Concentration</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
             <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
                 <span class="n">population</span><span class="o">.</span><span class="n">concentration</span> <span class="o">=</span> <span class="n">values</span></div>
 
 
 <div class="viewcode-block" id="ScattererCollection.dilute">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.dilute">[docs]</a>
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.scatterer_collection.ScattererCollection.dilute">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">dilute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Dilutes the populations in the flow cytometry system by a given factor.</span>
@@ -708,7 +701,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="ScattererCollection.fill_dataframe_with_sampling">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.ScattererCollection.fill_dataframe_with_sampling">[docs]</a>
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.scatterer_collection.ScattererCollection.fill_dataframe_with_sampling">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fill_dataframe_with_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scatterer_dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fills a DataFrame with diameter and refractive index sampling data for each population.</span>
@@ -728,6 +721,7 @@ document.write(`
 
 <span class="sd">        After filling, the DataFrame will be populated with diameter and refractive index data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">medium_refractive_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">medium_refractive_index</span>
         <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
             <span class="c1"># Create a boolean mask for rows where the first index level equals population.name</span>
             <span class="n">mask</span> <span class="o">=</span> <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="n">population</span><span class="o">.</span><span class="n">name</span>
@@ -739,7 +733,7 @@ document.write(`
             <span class="n">sampling</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sub_dataframe</span><span class="p">)</span>
 
             <span class="c1"># Generate sampling data for this population</span>
-            <span class="n">sampling_data</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">generate_sampling</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+            <span class="n">sampling_data</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">generate_property_sampling</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">sampling_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">scatterer_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>

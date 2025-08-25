@@ -29,7 +29,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -54,7 +54,7 @@
     <link rel="icon" href="../../_static/thumbnail.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Limit of detection" href="limit_of_detection.html" />
+    <link rel="next" title="Flow Cytometry Workflow: Single Population Example" href="coupling_model.html" />
     <link rel="prev" title="Examples" href="../../examples.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -464,10 +464,10 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pre_defined_workflow.html">Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coupling_model.html">Flow Cytometry Workflow: Single Population Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of Detection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workflow.html">Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workflow.html">Flow Cytometry Simulation: Full System Example</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../noise_sources/index.html">Examples: Noises</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -475,13 +475,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/shot_noise.html">Shot noise</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../extras/index.html">Examples: extras</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../extras/continuous_acquisition.html">WorkFlow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/distributions.html">Particle Distribution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/flow_cell_profiles.html">Flow Cell geometries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/flow_cytometer_signal.html">Generating Signal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/scatterer_distribution.html">Scatterer Collection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/triggered_acquisition.html">WorkFlow</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../validation/index.html">Examples: Validation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../validation/j_estimator.html">J Estimator Validation — Fixed Bead Size, Variable Illumination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validation/k_estimator.html">K Estimator Validation — Fixed Illumination, Variable Bead Size</a></li>
 </ul>
 </details></li>
 </ul>
@@ -543,18 +539,18 @@ document.write(`
                   
   <section id="examples-tutorials">
 <h1>Examples: Tutorials<a class="headerlink" href="#examples-tutorials" title="Link to this heading">#</a></h1>
-<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="Limit of detection"><img alt="" src="../../_images/sphx_glr_limit_of_detection_thumb.png" />
-<p><a class="reference internal" href="limit_of_detection.html#sphx-glr-gallery-tutorials-limit-of-detection-py"><span class="std std-ref">Limit of detection</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Limit of detection</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library. The simulation involves configuring a flow setup, defining a single population of particles, and analyzing scattering signals from two detectors to produce a 2D density plot of scattering intensities."><img alt="" src="../../_images/sphx_glr_pre_defined_workflow_thumb.png" />
-<p><a class="reference internal" href="pre_defined_workflow.html#sphx-glr-gallery-tutorials-pre-defined-workflow-py"><span class="std std-ref">Workflow</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Workflow</div>
+<div class="sphx-glr-thumbnails"><div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates a basic flow cytometry simulation using the FlowCyPy library."><img alt="" src="../../_images/sphx_glr_coupling_model_thumb.png" />
+<p><a class="reference internal" href="coupling_model.html#sphx-glr-gallery-tutorials-coupling-model-py"><span class="std std-ref">Flow Cytometry Workflow: Single Population Example</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Flow Cytometry Workflow: Single Population Example</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example simulates the detection of small nanoparticles (90–150 nm diameter) in a flow cytometry setup using a dual-detector configuration (side and forward scatter). The simulation includes noise models, realistic fluidics, analog signal conditioning, digitization, triggering, and peak detection."><img alt="" src="../../_images/sphx_glr_limit_of_detection_thumb.png" />
+<p><a class="reference internal" href="limit_of_detection.html#sphx-glr-gallery-tutorials-limit-of-detection-py"><span class="std std-ref">Limit of Detection</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Limit of Detection</div>
 </div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to apply signal processing techniques to flow cytometry data using FlowCyPy. The simulation is set up with a Gaussian beam, a flow cell, and two detectors. A single population of scatterers (with delta distributions) is used, and the focus here is on processing the forward scatter detector signals. Three acquisitions are performed:"><img alt="" src="../../_images/sphx_glr_signal_processing_thumb.png" />
 <p><a class="reference internal" href="signal_processing.html#sphx-glr-gallery-tutorials-signal-processing-py"><span class="std std-ref">Signal Processing in Flow Cytometry</span></a></p>
   <div class="sphx-glr-thumbnail-title">Signal Processing in Flow Cytometry</div>
-</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library. The simulation involves configuring a flow setup, defining a single population of particles, and analyzing scattering signals from two detectors to produce a 2D density plot of scattering intensities."><img alt="" src="../../_images/sphx_glr_workflow_thumb.png" />
-<p><a class="reference internal" href="workflow.html#sphx-glr-gallery-tutorials-workflow-py"><span class="std std-ref">Workflow</span></a></p>
-  <div class="sphx-glr-thumbnail-title">Workflow</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library. It models fluidics, optics, signal processing, and classification of multiple particle populations."><img alt="" src="../../_images/sphx_glr_workflow_thumb.png" />
+<p><a class="reference internal" href="workflow.html#sphx-glr-gallery-tutorials-workflow-py"><span class="std std-ref">Flow Cytometry Simulation: Full System Example</span></a></p>
+  <div class="sphx-glr-thumbnail-title">Flow Cytometry Simulation: Full System Example</div>
 </div></div><div class="toctree-wrapper compound">
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>

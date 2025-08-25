@@ -48,7 +48,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.15.4';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v0.27.9';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.0.0.0';
         DOCUMENTATION_OPTIONS.show_version_warning_banner = true;
         </script>
     <link rel="icon" href="../_static/thumbnail.png"/>
@@ -541,137 +541,6 @@ document.write(`
   <section id="flowcytometer">
 <span id="cytometry-systems"></span><h1>FlowCytometer<a class="headerlink" href="#flowcytometer" title="Link to this heading">#</a></h1>
 <p>Classes related to the overall configuration of a flow cytometry system.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCytometer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opto_electronics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fluidics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_processing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_power=&lt;Quantity(0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'milliwatt')&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A simulation class for modeling flow cytometer signals, including Forward Scatter (FSC) and Side Scatter (SSC) channels.</p>
-<p>The FlowCytometer class integrates optical and flow dynamics to simulate signal generation in a flow cytometer.
-It handles particle distributions, flow cell properties, laser source configurations, and detector behavior to
-replicate realistic cytometry conditions. This includes the generation of synthetic signal pulses for each
-particle event and noise modeling for accurate signal representation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>opto_electronics</strong> (<em>OptoElectronics</em>) – An instance of the OptoElectronics class, which contains the configuration of detectors, digitizer, source, and amplifier.</p></li>
-<li><p><strong>fluidics</strong> (<em>Fluidics</em>) – An instance of the Fluidics class, which manages the flow cell and scatterer collection.</p></li>
-<li><p><strong>background_power</strong> (<em>pint.Quantity</em><em>, </em><em>optional</em>) – The background power level in the system, defaulting to 0 mW. This represents the constant background signal that is present in the system, which can affect the detection of actual signals.</p></li>
-<li><p><strong>signal_processing</strong> (<em>SignalProcessing</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>AssertionError</strong> – If the number of detectors provided is not exactly two, or if both detectors share the same name.</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.compute_analog">
-<span class="sig-name descname"><span class="pre">compute_analog</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.compute_analog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.compute_analog" title="Link to this definition">#</a></dt>
-<dd><p>Simulates the analog optical signal response for all detected events.</p>
-<p>This method generates Gaussian-shaped optical pulses based on particle event data
-(time, width, amplitude), adds background optical power, and propagates the resulting
-signal through the detector chain:
-- Optical power → photocurrent → amplified voltage
-- Includes optional noise models (e.g., dark current)
-- Final output is voltage signals stored in an <cite>AcquisitionDataFrame</cite></p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Structured DataFrame representing the multi-detector analog voltage signals.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>AcquisitionDataFrame</p>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – If the event DataFrame is missing required columns (‘Widths’, ‘Time’).</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.compute_events">
-<span class="sig-name descname"><span class="pre">compute_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compute_cross_section</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.compute_events"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.compute_events" title="Link to this definition">#</a></dt>
-<dd><p>Generates a DataFrame of events based on the scatterer collection and flow cell properties.</p>
-<p>This method samples particle events from the fluidics system and prepares a DataFrame
-containing the event times, positions, and other relevant properties.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>run_time</strong> (<em>pint.Quantity</em>) – The duration of the acquisition in seconds.</p></li>
-<li><p><strong>compute_cross_section</strong> (<em>bool</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A DataFrame containing event data for the scatterers.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pd.DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.compute_peaks">
-<span class="sig-name descname"><span class="pre">compute_peaks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.compute_peaks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.compute_peaks" title="Link to this definition">#</a></dt>
-<dd><p>Runs the triggering system and extracts signal segments corresponding to detected events.</p>
-<p>The method identifies regions in the analog voltage signals where the threshold condition is met
-(based on <cite>triggering_system</cite>). It then digitizes the triggered signal segments and applies
-peak detection, if configured.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The internal <cite>results</cite> object populated with:
-- <cite>triggered_analog_acquisition</cite>
-- <cite>digital_acquisition</cite>
-- <cite>peaks</cite> (if <cite>peak_algorithm</cite> is provided)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>Result</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.initialize">
-<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.initialize" title="Link to this definition">#</a></dt>
-<dd><p>Initializes the flow cytometer simulation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>run_time</strong> (<em>pint.Quantity</em>) – The duration of the acquisition in seconds.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of the Result class containing initialization data.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Result</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="FlowCyPy.cytometer.FlowCytometer.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_cross_section</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/cytometer.html#FlowCytometer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.cytometer.FlowCytometer.run" title="Link to this definition">#</a></dt>
-<dd><p>Runs a complete flow cytometry simulation for the specified acquisition duration.</p>
-<p>The pipeline includes:
-1. Initialization and setup of fluidic/optical components
-2. Particle event simulation and optical signal generation
-3. Analog and digital signal processing
-4. Triggered signal extraction and peak feature detection</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>run_time</strong> (<em>Quantity</em>) – Duration of the simulated acquisition (e.g., <cite>1.0 * units.millisecond</cite>).</p></li>
-<li><p><strong>compute_cross_section</strong> (<em>bool</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Simulation output containing all analog, digital, and peak-level data.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Result</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 
@@ -687,25 +556,6 @@ peak detection, if configured.</p>
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer"><code class="docutils literal notranslate"><span class="pre">FlowCytometer</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.compute_analog"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.compute_analog()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.compute_events"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.compute_events()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.compute_peaks"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.compute_peaks()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.initialize"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.initialize()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.cytometer.FlowCytometer.run"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.run()</span></code></a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
 
   <div class="sidebar-secondary-item">
 

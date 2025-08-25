@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Workflow &#8212; FlowCyPy  documentation</title>
+    <title>Flow Cytometry Simulation: Full System Example &#8212; FlowCyPy  documentation</title>
   
   
   
@@ -29,7 +29,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -44,7 +44,6 @@
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'gallery/tutorials/workflow';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.15.4';
@@ -465,10 +464,10 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of detection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pre_defined_workflow.html">Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coupling_model.html">Flow Cytometry Workflow: Single Population Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of Detection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Workflow</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Flow Cytometry Simulation: Full System Example</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../noise_sources/index.html">Examples: Noises</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -476,13 +475,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../noise_sources/shot_noise.html">Shot noise</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../extras/index.html">Examples: extras</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../extras/continuous_acquisition.html">WorkFlow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/distributions.html">Particle Distribution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/flow_cell_profiles.html">Flow Cell geometries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/flow_cytometer_signal.html">Generating Signal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/scatterer_distribution.html">Scatterer Collection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../extras/triggered_acquisition.html">WorkFlow</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../validation/index.html">Examples: Validation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../validation/j_estimator.html">J Estimator Validation — Fixed Bead Size, Variable Illumination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validation/k_estimator.html">K Estimator Validation — Fixed Illumination, Variable Bead Size</a></li>
 </ul>
 </details></li>
 </ul>
@@ -528,7 +523,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples: Tutorials</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Workflow</li>
+    <li class="breadcrumb-item active" aria-current="page">Flow...</li>
   </ul>
 </nav>
 </div>
@@ -550,247 +545,246 @@ document.write(`
 <p><a class="reference internal" href="#sphx-glr-download-gallery-tutorials-workflow-py"><span class="std std-ref">Go to the end</span></a>
 to download the full example code.</p>
 </div>
-<section class="sphx-glr-example-title" id="workflow">
-<span id="sphx-glr-gallery-tutorials-workflow-py"></span><h1>Workflow<a class="headerlink" href="#workflow" title="Link to this heading">#</a></h1>
-<p>This tutorial demonstrates how to simulate a flow cytometry experiment using the FlowCyPy library.
-The simulation involves configuring a flow setup, defining a single population of particles, and
-analyzing scattering signals from two detectors to produce a 2D density plot of scattering intensities.</p>
-<section id="overview">
-<h2>Overview:<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<section class="sphx-glr-example-title" id="flow-cytometry-simulation-full-system-example">
+<span id="sphx-glr-gallery-tutorials-workflow-py"></span><h1>Flow Cytometry Simulation: Full System Example<a class="headerlink" href="#flow-cytometry-simulation-full-system-example" title="Link to this heading">#</a></h1>
+<p>This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library.
+It models fluidics, optics, signal processing, and classification of multiple particle populations.</p>
+<section id="steps-covered">
+<h2>Steps Covered:<a class="headerlink" href="#steps-covered" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
-<li><p>Configure the flow cell and particle population.</p></li>
-<li><p>Define the laser source and detector parameters.</p></li>
-<li><p>Simulate the flow cytometry experiment.</p></li>
-<li><p>Analyze the generated signals and visualize results.</p></li>
+<li><p>Configure simulation parameters and noise models</p></li>
+<li><p>Define laser source, flow cell geometry, and fluidics</p></li>
+<li><p>Add synthetic particle populations</p></li>
+<li><p>Set up detectors, amplifier, and digitizer</p></li>
+<li><p>Simulate analog and digital signal acquisition</p></li>
+<li><p>Apply triggering and peak detection</p></li>
+<li><p>Classify particle events based on peak features</p></li>
 </ol>
 </section>
-<section id="step-0-import-necessary-libraries">
-<h2>Step 0: Import Necessary Libraries<a class="headerlink" href="#step-0-import-necessary-libraries" title="Link to this heading">#</a></h2>
-<p>Here, we import the necessary libraries and units for the simulation. The units module helps us
-define physical quantities like meters, seconds, and watts in a concise and consistent manner.</p>
+<section id="step-0-global-settings-and-imports">
+<h2>Step 0: Global Settings and Imports<a class="headerlink" href="#step-0-global-settings-and-imports" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">units</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
+
+<span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_dark_current_noise</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_source_noise</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_amplifier_noise</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">SimulationSettings</span><span class="o">.</span><span class="n">assume_perfect_hydrodynamic_focusing</span> <span class="o">=</span> <span class="kc">True</span>
+
+<a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="step-1-configure-noise-settings">
-<h2>Step 1: Configure Noise Settings<a class="headerlink" href="#step-1-configure-noise-settings" title="Link to this heading">#</a></h2>
-<p>Noise settings are configured to simulate real-world imperfections. In this example, we include noise
-globally but exclude specific types, such as shot noise and thermal noise.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">NoiseSetting</span>
-
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_dark_current_noise</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_source_noise</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">NoiseSetting</span><span class="o">.</span><span class="n">include_amplifier_noise</span> <span class="o">=</span> <span class="kc">True</span>
-
-
-<a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># Ensure reproducibility</span>
-</pre></div>
-</div>
-</section>
-<section id="step-2-configure-the-laser-source">
-<h2>Step 2: Configure the Laser Source<a class="headerlink" href="#step-2-configure-the-laser-source" title="Link to this heading">#</a></h2>
-<p>The laser source generates light that interacts with the particles. Its parameters, like numerical
-aperture and wavelength, affect how light scatters, governed by Mie theory.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">GaussianBeam</span>
-
-<span class="n">source</span> <span class="o">=</span> <span class="n">GaussianBeam</span><span class="p">(</span>
-    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>           <span class="c1"># Numerical aperture</span>
-    <span class="n">wavelength</span><span class="o">=</span><span class="mi">450</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>           <span class="c1"># Wavelength</span>
-    <span class="n">optical_power</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>          <span class="c1"># Optical power</span>
-    <span class="n">RIN</span><span class="o">=-</span><span class="mi">140</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="step-3-set-up-the-flow-cell">
-<h2>Step 3: Set Up the Flow Cell<a class="headerlink" href="#step-3-set-up-the-flow-cell" title="Link to this heading">#</a></h2>
-<p>The flow cell models the movement of particles in the cytometer. For example, the volume of fluid
-passing through the cross-sectional area is calculated as:</p>
-<div class="math notranslate nohighlight">
-\[\text{Flow Volume} = \text{Flow Speed} \times \text{Flow Area} \times \text{Run Time}\]</div>
+<section id="step-1-define-flow-cell-and-fluidics">
+<h2>Step 1: Define Flow Cell and Fluidics<a class="headerlink" href="#step-1-define-flow-cell-and-fluidics" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.flow_cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCell</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluidics</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">distribution</span>
 
 <span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
-    <span class="n">sample_volume_flow</span><span class="o">=</span><span class="mi">80</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
-    <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
-    <span class="n">width</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
-    <span class="n">height</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
+    <span class="n">sample_volume_flow</span><span class="o">=</span><span class="mi">80</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+    <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span>
 <span class="p">)</span>
 
-<span class="c1"># flow_cell.plot(n_samples=300)</span>
-</pre></div>
-</div>
-</section>
-<section id="step-4-define-scatterercollection-and-population">
-<h2>Step 4: Define ScattererCollection and Population<a class="headerlink" href="#step-4-define-scatterercollection-and-population" title="Link to this heading">#</a></h2>
-<p>The scatterer represents particles in the flow. The concentration of particles in the flow cell is
-given by:</p>
-<div class="math notranslate nohighlight">
-\[\text{Concentration} = \frac{\text{Number of Particles}}{\text{Volume of Flow}}\]</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererCollection</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Exosome</span><span class="p">,</span> <span class="n">Sphere</span><span class="p">,</span> <span class="n">distribution</span>
+<span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
 
-<span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
-
-<span class="n">exosome</span> <span class="o">=</span> <span class="n">Exosome</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span><span class="p">)</span>
-
-<span class="n">custom_population</span> <span class="o">=</span> <span class="n">Sphere</span><span class="p">(</span>
+<span class="n">population_0</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Pop 0&#39;</span><span class="p">,</span>
-    <span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
-    <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="n">characteristic_property</span><span class="o">=</span><span class="mi">150</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
-    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">1.44</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.002</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
+    <span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
+    <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="mi">150</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
+    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">1.44</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.002</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
 <span class="p">)</span>
 
-<span class="c1"># Add an Exosome population</span>
-<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">custom_population</span><span class="p">)</span>
-
-<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
-
-<span class="c1"># Initialize the scatterer with the flow cell</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">get_population_dataframe</span><span class="p">(</span><span class="n">total_sampling</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">use_ratio</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Visualize the particle population</span>
-
-<span class="c1"># df.plot(x=&#39;Diameter&#39;, bins=&#39;auto&#39;)</span>
-</pre></div>
-</div>
-</section>
-<section id="step-5-define-detectors">
-<h2>Step 5: Define Detectors<a class="headerlink" href="#step-5-define-detectors" title="Link to this heading">#</a></h2>
-<p>Detectors measure light intensity. Parameters like responsivity define the conversion of optical
-power to electronic signals, and saturation level represents the maximum signal they can handle.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">Detector</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_digitizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalDigitizer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.amplifier</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransimpedanceAmplifier</span>
-
-<span class="n">signal_digitizer</span> <span class="o">=</span> <span class="n">SignalDigitizer</span><span class="p">(</span>
-    <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>
-    <span class="n">saturation_levels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
-    <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
+<span class="n">population_1</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Pop 1&#39;</span><span class="p">,</span>
+    <span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
+    <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="mi">200</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
+    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">1.44</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="n">std_dev</span><span class="o">=</span><span class="mf">0.002</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
 <span class="p">)</span>
 
-<span class="n">detector_0</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
-    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>                  <span class="c1"># Forward scatter angle</span>
-    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>
-    <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population_0</span><span class="p">,</span> <span class="n">population_1</span><span class="p">)</span>
 
-<span class="n">detector_1</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>
-    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>                 <span class="c1"># Side scatter angle</span>
-    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>
-    <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
 
-<span class="n">detector_2</span> <span class="o">=</span> <span class="n">Detector</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;det_2&#39;</span><span class="p">,</span>
-    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>                 <span class="c1"># Side scatter angle</span>
-    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>
-    <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">amplifier</span> <span class="o">=</span> <span class="n">TransimpedanceAmplifier</span><span class="p">(</span>
-    <span class="n">gain</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span>
-    <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
-    <span class="n">voltage_noise_density</span><span class="o">=</span><span class="mf">.1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">nanovolt</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">sqrt_hertz</span><span class="p">,</span>
-    <span class="n">current_noise_density</span><span class="o">=</span><span class="mf">.2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">femtoampere</span> <span class="o">/</span> <span class="n">units</span><span class="o">.</span><span class="n">sqrt_hertz</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="step-6-simulate-flow-cytometry-experiment">
-<h2>Step 6: Simulate Flow Cytometry Experiment<a class="headerlink" href="#step-6-simulate-flow-cytometry-experiment" title="Link to this heading">#</a></h2>
-<p>The FlowCytometer combines all components to simulate scattering. The interaction between light
-and particles follows Mie theory:</p>
-<div class="math notranslate nohighlight">
-\[\sigma_s = \frac{2 \pi}{k} \sum_{n=1}^\infty (2n + 1) (\lvert a_n \rvert^2 + \lvert b_n \rvert^2)\]</div>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span><span class="p">,</span> <span class="n">circuits</span>
-
-<span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
-    <span class="n">transimpedance_amplifier</span><span class="o">=</span><span class="n">amplifier</span><span class="p">,</span>
+<span class="n">fluidics</span> <span class="o">=</span> <span class="n">Fluidics</span><span class="p">(</span>
     <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
-    <span class="n">signal_digitizer</span><span class="o">=</span><span class="n">signal_digitizer</span><span class="p">,</span>
-    <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_0</span><span class="p">,</span> <span class="n">detector_1</span><span class="p">,</span> <span class="n">detector_2</span><span class="p">],</span>
-    <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>
-    <span class="n">background_power</span><span class="o">=</span><span class="mf">0.000</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">milliwatt</span>
+    <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="step-2-define-optical-subsystem">
+<h2>Step 2: Define Optical Subsystem<a class="headerlink" href="#step-2-define-optical-subsystem" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.opto_electronics</span><span class="w"> </span><span class="kn">import</span> <span class="n">source</span><span class="p">,</span> <span class="n">Detector</span><span class="p">,</span> <span class="n">TransimpedanceAmplifier</span><span class="p">,</span> <span class="n">OptoElectronics</span>
+
+<span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">GaussianBeam</span><span class="p">(</span>
+    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>
+    <span class="n">wavelength</span><span class="o">=</span><span class="mi">450</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+    <span class="n">optical_power</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>
+    <span class="n">RIN</span><span class="o">=-</span><span class="mi">140</span>
 <span class="p">)</span>
 
-<span class="n">processing_steps</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microsecond</span><span class="p">),</span>
-    <span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">detectors</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Detector</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>  <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span> <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">),</span>
+    <span class="n">Detector</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span> <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">),</span>
+    <span class="n">Detector</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;det 2&#39;</span><span class="p">,</span>   <span class="n">phi_angle</span><span class="o">=</span><span class="mi">30</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span> <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">),</span>
 <span class="p">]</span>
 
-<span class="c1"># Run the flow cytometry simulation</span>
-<span class="n">cytometer</span><span class="o">.</span><span class="n">prepare_acquisition</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
-<span class="n">acquisition</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">get_acquisition</span><span class="p">(</span><span class="n">processing_steps</span><span class="o">=</span><span class="n">processing_steps</span><span class="p">)</span>
+<span class="n">amplifier</span> <span class="o">=</span> <span class="n">TransimpedanceAmplifier</span><span class="p">(</span>
+    <span class="n">gain</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span>
+    <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
+    <span class="n">voltage_noise_density</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanovolt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">sqrt_hertz</span><span class="p">,</span>
+    <span class="n">current_noise_density</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">femtoampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">sqrt_hertz</span>
+<span class="p">)</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">acquisition</span><span class="o">.</span><span class="n">scatterer</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>
-    <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
-    <span class="n">z</span><span class="o">=</span><span class="s1">&#39;RefractiveIndex&#39;</span>
+<span class="n">opto_electronics</span> <span class="o">=</span> <span class="n">OptoElectronics</span><span class="p">(</span>
+    <span class="n">detectors</span><span class="o">=</span><span class="n">detectors</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">source</span><span class="p">,</span>
+    <span class="n">amplifier</span><span class="o">=</span><span class="n">amplifier</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:268: UserWarning: Transverse distribution of particle flow exceed the waist of the source
-  warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
-/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:268: UserWarning: Transverse distribution of particle flow exceed the waist of the source
-  warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
-/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/FlowCyPy/source.py:268: UserWarning: Transverse distribution of particle flow exceed the waist of the source
-  warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
-</pre></div>
-</div>
-<p>Visualize the scatter signals from both detectors</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">acquisition</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-</pre></div>
-</div>
-<img src="../../_images/sphx_glr_workflow_002.png" srcset="../../_images/sphx_glr_workflow_002.png" alt="workflow" class = "sphx-glr-single-img"/></section>
-<section id="step-7-analyze-detected-signals">
-<h2>Step 7: Analyze Detected Signals<a class="headerlink" href="#step-7-analyze-detected-signals" title="Link to this heading">#</a></h2>
-<p>The Peak algorithm detects peaks in signals by analyzing local maxima within a defined
-window size and threshold.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">triggered_acquisition</span> <span class="o">=</span> <span class="n">acquisition</span><span class="o">.</span><span class="n">run_triggering</span><span class="p">(</span>
-    <span class="n">threshold</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">units</span><span class="o">.</span><span class="n">microvolt</span><span class="p">,</span>
+</section>
+<section id="step-3-signal-processing-configuration">
+<h2>Step 3: Signal Processing Configuration<a class="headerlink" href="#step-3-signal-processing-configuration" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalProcessing</span><span class="p">,</span> <span class="n">Digitizer</span><span class="p">,</span> <span class="n">circuits</span><span class="p">,</span> <span class="n">peak_locator</span><span class="p">,</span> <span class="n">triggering_system</span>
+
+<span class="n">digitizer</span> <span class="o">=</span> <span class="n">Digitizer</span><span class="p">(</span>
+    <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>
+    <span class="n">saturation_levels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+    <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span>
+<span class="p">)</span>
+
+<span class="n">analog_processing</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">),</span>
+    <span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">triggering</span> <span class="o">=</span> <span class="n">triggering_system</span><span class="o">.</span><span class="n">DynamicWindow</span><span class="p">(</span>
     <span class="n">trigger_detector_name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
-    <span class="n">max_triggers</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microvolt</span><span class="p">,</span>
     <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-    <span class="n">post_buffer</span><span class="o">=</span><span class="mi">20</span>
+    <span class="n">post_buffer</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">max_triggers</span><span class="o">=-</span><span class="mi">1</span>
 <span class="p">)</span>
 
-<span class="n">triggered_acquisition</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">peak_algo</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span><span class="p">(</span><span class="n">compute_width</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">signal_processing</span> <span class="o">=</span> <span class="n">SignalProcessing</span><span class="p">(</span>
+    <span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">,</span>
+    <span class="n">analog_processing</span><span class="o">=</span><span class="n">analog_processing</span><span class="p">,</span>
+    <span class="n">triggering_system</span><span class="o">=</span><span class="n">triggering</span><span class="p">,</span>
+    <span class="n">peak_algorithm</span><span class="o">=</span><span class="n">peak_algo</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_003.png" srcset="../../_images/sphx_glr_workflow_003.png" alt="workflow" class = "sphx-glr-single-img"/><p>Getting and plotting the extracted peaks.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">peak_locator</span>
-<span class="n">peak_algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span><span class="p">(</span><span class="n">compute_width</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</section>
+<section id="step-4-run-simulation">
+<h2>Step 4: Run Simulation<a class="headerlink" href="#step-4-run-simulation" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span>
 
+<span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
+    <span class="n">opto_electronics</span><span class="o">=</span><span class="n">opto_electronics</span><span class="p">,</span>
+    <span class="n">fluidics</span><span class="o">=</span><span class="n">fluidics</span><span class="p">,</span>
+    <span class="n">signal_processing</span><span class="o">=</span><span class="n">signal_processing</span><span class="p">,</span>
+    <span class="n">background_power</span><span class="o">=</span><span class="mf">0.001</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span>
+<span class="p">)</span>
 
-<span class="n">peaks</span> <span class="o">=</span> <span class="n">triggered_acquisition</span><span class="o">.</span><span class="n">detect_peaks</span><span class="p">(</span><span class="n">peak_algorithm</span><span class="p">)</span>
-
-
-<span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;Height&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">1.8</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_004.png" srcset="../../_images/sphx_glr_workflow_004.png" alt="Peaks properties" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7f05367c99d0&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Population  ScattererID
+Pop 0       0               0.0
+            1               0.0
+            2              -0.0
+            3              -0.0
+            4               0.0
+                           ...
+Pop 1       147            -0.0
+            148            -0.0
+            149             0.0
+            150             0.0
+            151            -0.0
+Name: y, Length: 288, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
+Population  ScattererID
+Pop 0       0               0.0
+            1               0.0
+            2              -0.0
+            3              -0.0
+            4               0.0
+                           ...
+Pop 1       147            -0.0
+            148            -0.0
+            149             0.0
+            150             0.0
+            151            -0.0
+Name: y, Length: 288, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
+Population  ScattererID
+Pop 0       0               0.0
+            1               0.0
+            2              -0.0
+            3              -0.0
+            4               0.0
+                           ...
+Pop 1       147            -0.0
+            148            -0.0
+            149             0.0
+            150             0.0
+            151            -0.0
+Name: y, Length: 288, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
 </pre></div>
 </div>
-<p>Step 8: Classifying the collected dataset</p>
+</section>
+<section id="step-5-plot-events-and-raw-analog-signals">
+<h2>Step 5: Plot Events and Raw Analog Signals<a class="headerlink" href="#step-5-plot-events-and-raw-analog-signals" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/></section>
+<section id="plot-raw-analog-signals">
+<h2>Plot raw analog signals<a class="headerlink" href="#plot-raw-analog-signals" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">normalize_units</span><span class="p">(</span><span class="n">signal_units</span><span class="o">=</span><span class="s1">&#39;max&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_workflow_002.png" srcset="../../_images/sphx_glr_workflow_002.png" alt="workflow" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_workflow_003.png" srcset="../../_images/sphx_glr_workflow_003.png" alt="workflow" class = "sphx-glr-multi-img"/></li>
+</ul>
+</section>
+<section id="step-6-plot-triggered-analog-segments">
+<h2>Step 6: Plot Triggered Analog Segments<a class="headerlink" href="#step-6-plot-triggered-analog-segments" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">triggered_analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<ul class="sphx-glr-horizontal">
+<li><img src="../../_images/sphx_glr_workflow_004.png" srcset="../../_images/sphx_glr_workflow_004.png" alt="workflow" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="workflow" class = "sphx-glr-multi-img"/></li>
+</ul>
+</section>
+<section id="step-7-classify-events-from-peak-features">
+<h2>Step 7: Classify Events from Peak Features<a class="headerlink" href="#step-7-classify-events-from-peak-features" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.classifier</span><span class="w"> </span><span class="kn">import</span> <span class="n">KmeansClassifier</span>
 
 <span class="n">classifier</span> <span class="o">=</span> <span class="n">KmeansClassifier</span><span class="p">(</span><span class="n">number_of_cluster</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
-<span class="n">data</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-    <span class="n">dataframe</span><span class="o">=</span><span class="n">peaks</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="s1">&#39;Detector&#39;</span><span class="p">),</span>
+<span class="n">classified</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+    <span class="n">dataframe</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">peaks</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="s1">&#39;Detector&#39;</span><span class="p">),</span>
     <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Height&#39;</span><span class="p">],</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="s1">&#39;forward&#39;</span><span class="p">]</span>
 <span class="p">)</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">feature</span><span class="o">=</span><span class="s1">&#39;Height&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">classified</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;side&#39;</span><span class="p">,</span> <span class="s1">&#39;Height&#39;</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span> <span class="s1">&#39;Height&#39;</span><span class="p">)</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 10.671 seconds)</p>
+<img src="../../_images/sphx_glr_workflow_006.png" srcset="../../_images/sphx_glr_workflow_006.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.364 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/67e0cd555ca79f8bdb69184b227f40a4/workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow.ipynb</span></code></a></p>
@@ -828,15 +822,16 @@ window size and threshold.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-0-import-necessary-libraries">Step 0: Import Necessary Libraries</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-configure-noise-settings">Step 1: Configure Noise Settings</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-configure-the-laser-source">Step 2: Configure the Laser Source</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-set-up-the-flow-cell">Step 3: Set Up the Flow Cell</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-define-scatterercollection-and-population">Step 4: Define ScattererCollection and Population</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-define-detectors">Step 5: Define Detectors</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-simulate-flow-cytometry-experiment">Step 6: Simulate Flow Cytometry Experiment</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-analyze-detected-signals">Step 7: Analyze Detected Signals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#steps-covered">Steps Covered:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-0-global-settings-and-imports">Step 0: Global Settings and Imports</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-define-flow-cell-and-fluidics">Step 1: Define Flow Cell and Fluidics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-define-optical-subsystem">Step 2: Define Optical Subsystem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-signal-processing-configuration">Step 3: Signal Processing Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-4-run-simulation">Step 4: Run Simulation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-plot-events-and-raw-analog-signals">Step 5: Plot Events and Raw Analog Signals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-raw-analog-signals">Plot raw analog signals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-plot-triggered-analog-segments">Step 6: Plot Triggered Analog Segments</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-classify-events-from-peak-features">Step 7: Classify Events from Peak Features</a></li>
 </ul>
   </nav></div>
 

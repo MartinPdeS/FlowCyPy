@@ -29,7 +29,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.11/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
@@ -55,7 +55,7 @@
     <link rel="icon" href="../_static/thumbnail.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="PeakFinder Classes" href="peak_locator.html" />
+    <link rel="next" title="Examples" href="../examples.html" />
     <link rel="prev" title="FlowCytometer" href="flow_cytometer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -466,9 +466,13 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="base.html">Classes and Methods</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="flow_cell.html">FlowCell Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source.html">Laser Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scatterer.html">Scatterers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source.html">Laser Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="detector.html">Detectors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="amplifier.html">Amplifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="digitizer.html">Signal Digitizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="triggering_systems.html">Triggering Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="peak_locator.html">PeakFinder Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flow_cytometer.html">FlowCytometer</a></li>
 </ul>
 </details></li>
@@ -559,8 +563,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mean</strong> (<em>Quantity</em>) – The mean (average) particle property in meters.</p></li>
-<li><p><strong>std_dev</strong> (<em>Quantity</em>) – The standard deviation of particle properties in meters.</p></li>
+<li><p><strong>mean</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The mean (average) particle property in meters.</p></li>
+<li><p><strong>std_dev</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The standard deviation of particle properties in meters.</p></li>
 </ul>
 </dd>
 </dl>
@@ -570,7 +574,7 @@ document.write(`
 <dd><p>Generate a distribution of scatterer diameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>Any</em>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -599,12 +603,12 @@ document.write(`
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Normal.mean">
-<span class="sig-name descname"><span class="pre">mean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.distribution.Normal.mean" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">mean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.Normal.mean" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Normal.std_dev">
-<span class="sig-name descname"><span class="pre">std_dev</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.distribution.Normal.std_dev" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">std_dev</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.Normal.std_dev" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -629,8 +633,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mean</strong> (<em>Quantity</em>) – The mean particle properties.</p></li>
-<li><p><strong>std_dev</strong> (<em>Quantity</em>) – The standard deviation of the logarithm of particle properties.</p></li>
+<li><p><strong>mean</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The mean particle properties.</p></li>
+<li><p><strong>std_dev</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The standard deviation of the logarithm of particle properties.</p></li>
 <li><p><strong>scale_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – A scaling factor applied to the PDF (not the properties).</p></li>
 </ul>
 </dd>
@@ -641,7 +645,7 @@ document.write(`
 <dd><p>Generate a distribution of scatterer diameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>Any</em>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -669,12 +673,12 @@ document.write(`
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal.mean">
-<span class="sig-name descname"><span class="pre">mean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.mean" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">mean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.mean" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal.std_dev">
-<span class="sig-name descname"><span class="pre">std_dev</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.std_dev" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">std_dev</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.std_dev" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -714,7 +718,7 @@ powders or granular materials.</p>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.characteristic_property">
-<span class="sig-name descname"><span class="pre">characteristic_property</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.characteristic_property" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">characteristic_property</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.characteristic_property" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -723,7 +727,7 @@ powders or granular materials.</p>
 <dd><p>Generate a distribution of scatterer diameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>Any</em>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -774,8 +778,8 @@ powders or granular materials.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<em>Quantity</em>) – The shape parameter (k), controls the skewness of the distribution.</p></li>
-<li><p><strong>scale</strong> (<em>Quantity</em>) – The scale parameter (λ), controls the spread of the distribution.</p></li>
+<li><p><strong>shape</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The shape parameter (k), controls the skewness of the distribution.</p></li>
+<li><p><strong>scale</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The scale parameter (λ), controls the spread of the distribution.</p></li>
 </ul>
 </dd>
 </dl>
@@ -785,7 +789,7 @@ powders or granular materials.</p>
 <dd><p>Generate a distribution of scatterer diameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>Any</em>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -798,7 +802,7 @@ powders or granular materials.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>Quantity</em><em>, </em><em>optional</em>) – The input x-values (particle properties) over which to compute the PDF. If not provided, a range is generated.</p></li>
+<li><p><strong>x</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em><em>, </em><em>optional</em>) – The input x-values (particle properties) over which to compute the PDF. If not provided, a range is generated.</p></li>
 <li><p><strong>n_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points in the generated range if <cite>x</cite> is not provided. Default is 100.</p></li>
 <li><p><strong>n_samples</strong> (<em>int</em>)</p></li>
 </ul>
@@ -807,19 +811,19 @@ powders or granular materials.</p>
 <dd class="field-even"><p>The input x-values and the corresponding PDF values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[Quantity, np.ndarray]</p>
+<dd class="field-odd"><p>Tuple[Length | RefractiveIndex, np.ndarray]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Weibull.scale">
-<span class="sig-name descname"><span class="pre">scale</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.distribution.Weibull.scale" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">scale</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.Weibull.scale" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Weibull.shape">
-<span class="sig-name descname"><span class="pre">shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.distribution.Weibull.shape" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.Weibull.shape" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -842,7 +846,7 @@ powders or granular materials.</p>
 - <span class="math notranslate nohighlight">\(x_0\)</span> is the singular particle property.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>position</strong> (<em>Quantity</em>) – The particle property for the delta distribution in meters.</p>
+<dd class="field-odd"><p><strong>position</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The particle property for the delta distribution in meters.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -851,7 +855,7 @@ powders or granular materials.</p>
 <dd><p>Generate a distribution of scatterer diameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>Any</em>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -865,7 +869,7 @@ powders or granular materials.</p>
 <dd class="field-odd"><p>The input x-values and the corresponding scaled PDF values.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>Tuple[Quantity, np.ndarray]</p>
+<dd class="field-even"><p>Tuple[Length | RefractiveIndex, np.ndarray]</p>
 </dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -879,7 +883,7 @@ powders or granular materials.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Delta.position">
-<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.distribution.Delta.position" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.Delta.position" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -904,8 +908,8 @@ powders or granular materials.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lower_bound</strong> (<em>Quantity</em>) – The lower bound for particle properties in meters.</p></li>
-<li><p><strong>upper_bound</strong> (<em>Quantity</em>) – The upper bound for particle properties in meters.</p></li>
+<li><p><strong>lower_bound</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The lower bound for particle properties in meters.</p></li>
+<li><p><strong>upper_bound</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The upper bound for particle properties in meters.</p></li>
 </ul>
 </dd>
 </dl>
@@ -915,7 +919,7 @@ powders or granular materials.</p>
 <dd><p>Generate a distribution of scatterer diameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_samples</strong> (<em>Quantity</em>)</p>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>Any</em>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -933,19 +937,19 @@ powders or granular materials.</p>
 <dd class="field-even"><p>The input x-values and the corresponding PDF values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[Quantity, np.ndarray]</p>
+<dd class="field-odd"><p>Tuple[Length | RefractiveIndex, np.ndarray]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Uniform.lower_bound">
-<span class="sig-name descname"><span class="pre">lower_bound</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.distribution.Uniform.lower_bound" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">lower_bound</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.Uniform.lower_bound" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Uniform.upper_bound">
-<span class="sig-name descname"><span class="pre">upper_bound</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Quantity</span></em><a class="headerlink" href="#FlowCyPy.distribution.Uniform.upper_bound" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">upper_bound</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.Uniform.upper_bound" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
