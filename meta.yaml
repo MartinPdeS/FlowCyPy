@@ -1,0 +1,74 @@
+package:
+  name: flowcypy
+  version: "{{ GIT_DESCRIBE_TAG | replace('v', '', 1) }}"
+
+source:
+  git_url: https://github.com/MartinPdeS/FlowCyPy.git
+
+build:
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  host:
+    - {{ compiler('cxx') }}
+    - python {{ PY_VER }}*
+    - scikit-build-core ~=0.3
+    - pybind11 ~=2.13
+    - python-build ~=1.2
+    - setuptools_scm[toml] ~=8.0
+    - fftw
+  build:
+    - fftw
+  run:
+    - fftw
+    - python {{PY_VER}}*
+    - pandas ~=2.2
+    - pint-pandas ~=0.6
+    - seaborn ~=0.13
+    - pydantic ~=2.9
+    - tabulate ~=0.9
+    - numpy >=2.0
+    - pint ~=0.24
+    - scipy >=1.15.3
+    - scikit-learn
+    - martinpdes::pymiesim
+    - martinpdes::mpsplots
+    - martinpdes::typedunit
+
+about:
+  home: https://github.com/MartinPdeS/FlowCyPy
+  license: MIT
+  summary: "A package for flow-cytometry simulations."
+  description: FlowCyPy is a library that simulate source - scatterer - detector systems in the context of flow-cytometry systems.
+  dev_url: https://github.com/MartinPdeS/FlowCyPy
+  doc_url: https://martinpdes.github.io/FlowCyPy/
+  license_file: LICENSE
+  keywords:
+    - optics
+    - refractive index
+    - material
+    - microbeads
+    - Mie scattering
+
+files:
+  include:
+    - "FlowCyPy/binary/*.so"
+
+test:
+  imports:
+    - FlowCyPy
+  requires:
+    - python {{PY_VER}}*
+    - pytest >=0.6
+    - pytest-cov >=2.0
+    - pytest-json-report ~=1.5.0
+    - coverage ~=7.6.1
+  commands:
+    - python -m pytest
+  source_files:
+    - tests
+
+extra:
+  recipe-maintainers:
+    - MartinPdeS
