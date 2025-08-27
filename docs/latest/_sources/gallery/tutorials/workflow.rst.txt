@@ -238,43 +238,43 @@ Step 4: Run Simulation
 
     Population  ScattererID
     Pop 0       0               0.0
-                1              -0.0
+                1               0.0
                 2              -0.0
-                3               0.0
-                4              -0.0
+                3              -0.0
+                4               0.0
                                ... 
-    Pop 1       160            -0.0
-                161             0.0
-                162             0.0
-                163            -0.0
+    Pop 1       163            -0.0
                 164            -0.0
-    Name: y, Length: 309, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
+                165            -0.0
+                166             0.0
+                167            -0.0
+    Name: y, Length: 325, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
     Population  ScattererID
     Pop 0       0               0.0
-                1              -0.0
+                1               0.0
                 2              -0.0
-                3               0.0
-                4              -0.0
+                3              -0.0
+                4               0.0
                                ... 
-    Pop 1       160            -0.0
-                161             0.0
-                162             0.0
-                163            -0.0
+    Pop 1       163            -0.0
                 164            -0.0
-    Name: y, Length: 309, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
+                165            -0.0
+                166             0.0
+                167            -0.0
+    Name: y, Length: 325, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
     Population  ScattererID
     Pop 0       0               0.0
-                1              -0.0
+                1               0.0
                 2              -0.0
-                3               0.0
-                4              -0.0
+                3              -0.0
+                4               0.0
                                ... 
-    Pop 1       160            -0.0
-                161             0.0
-                162             0.0
-                163            -0.0
+    Pop 1       163            -0.0
                 164            -0.0
-    Name: y, Length: 309, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
+                165            -0.0
+                166             0.0
+                167            -0.0
+    Name: y, Length: 325, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
 
 
 
@@ -414,7 +414,7 @@ Step 7: Classify Events from Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 18.136 seconds)
+   **Total running time of the script:** (0 minutes 17.364 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:
