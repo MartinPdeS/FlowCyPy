@@ -311,31 +311,31 @@ Triggering and Peak Detection
  .. code-block:: none
 
     Population  ScattererID
-    150 nm      0               0.0
+    150 nm      0              -0.0
                 1              -0.0
-                2               0.0
-                3              -0.0
+                2              -0.0
+                3               0.0
                 4               0.0
                                ... 
-    90 nm       14             -0.0
-                15              0.0
-                16             -0.0
-                17              0.0
-                18             -0.0
-    Name: y, Length: 73, dtype: pint[meter][Float64] 1553.3522445768986 nanometer
+    90 nm       9              -0.0
+                10              0.0
+                11             -0.0
+                12             -0.0
+                13              0.0
+    Name: y, Length: 80, dtype: pint[meter][Float64] 1553.3522445768986 nanometer
     Population  ScattererID
-    150 nm      0               0.0
+    150 nm      0              -0.0
                 1              -0.0
-                2               0.0
-                3              -0.0
+                2              -0.0
+                3               0.0
                 4               0.0
                                ... 
-    90 nm       14             -0.0
-                15              0.0
-                16             -0.0
-                17              0.0
-                18             -0.0
-    Name: y, Length: 73, dtype: pint[meter][Float64] 1553.3522445768986 nanometer
+    90 nm       9              -0.0
+                10              0.0
+                11             -0.0
+                12             -0.0
+                13              0.0
+    Name: y, Length: 80, dtype: pint[meter][Float64] 1553.3522445768986 nanometer
 
 
 
@@ -447,14 +447,14 @@ Plot Peak Features (Side vs Forward Height)
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7febb821a050>
+    <seaborn.axisgrid.JointGrid object at 0x7f11bc9f2e50>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.213 seconds)
+   **Total running time of the script:** (0 minutes 5.865 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:

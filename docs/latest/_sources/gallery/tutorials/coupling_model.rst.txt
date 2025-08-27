@@ -235,33 +235,33 @@ Step 6: Model Scattering Signals
  .. code-block:: none
 
     Population  ScattererID
-    Exosome     0                -9.83386295620313e-07
-                1              -1.4325693025775694e-06
-                2               -7.712569089009288e-07
-                3               1.1011500235213227e-06
-                4               1.3718043532015838e-06
-                                        ...           
-                3536             -8.51598579990886e-07
-                3537            1.3000955036951133e-06
-                3538            1.3132471504638904e-06
-                3539              6.51967792894681e-08
-                3540            1.2983087906527802e-06
-    Name: y, Length: 3541, dtype: pint[meter][Float64] 795.7747154594767 nanometer
+    Exosome     0              3.0833666721549365e-07
+                1              1.1154636957141859e-06
+                2               3.813449675501583e-08
+                3              -7.116885682671695e-07
+                4               9.731954086870798e-07
+                                        ...          
+                3517            6.877780911712585e-07
+                3518           -1.436181201220531e-06
+                3519            1.938883035163824e-07
+                3520            9.001541388028773e-07
+                3521           -4.145346376873727e-07
+    Name: y, Length: 3522, dtype: pint[meter][Float64] 795.7747154594767 nanometer
     /opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:212: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
     Population  ScattererID
-    Exosome     0                -9.83386295620313e-07
-                1              -1.4325693025775694e-06
-                2               -7.712569089009288e-07
-                3               1.1011500235213227e-06
-                4               1.3718043532015838e-06
-                                        ...           
-                3536             -8.51598579990886e-07
-                3537            1.3000955036951133e-06
-                3538            1.3132471504638904e-06
-                3539              6.51967792894681e-08
-                3540            1.2983087906527802e-06
-    Name: y, Length: 3541, dtype: pint[meter][Float64] 795.7747154594767 nanometer
+    Exosome     0              3.0833666721549365e-07
+                1              1.1154636957141859e-06
+                2               3.813449675501583e-08
+                3              -7.116885682671695e-07
+                4               9.731954086870798e-07
+                                        ...          
+                3517            6.877780911712585e-07
+                3518           -1.436181201220531e-06
+                3519            1.938883035163824e-07
+                3520            9.001541388028773e-07
+                3521           -4.145346376873727e-07
+    Name: y, Length: 3522, dtype: pint[meter][Float64] 795.7747154594767 nanometer
     /opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:212: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
 
@@ -295,14 +295,14 @@ Step 7: Visualize Scattering Intensity
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7febbdce7a50>
+    <seaborn.axisgrid.JointGrid object at 0x7f11bc9faed0>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.847 seconds)
+   **Total running time of the script:** (0 minutes 3.871 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_coupling_model.py:
