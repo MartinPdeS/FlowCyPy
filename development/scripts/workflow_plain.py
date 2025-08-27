@@ -1,8 +1,18 @@
-from FlowCyPy import units, NoiseSetting
-from FlowCyPy import GaussianBeam, ScattererCollection, Detector, SignalDigitizer, TransimpedanceAmplifier, FlowCell
+from FlowCyPy import (
+    Detector,
+    FlowCell,
+    FlowCytometer,
+    Fluidics,
+    GaussianBeam,
+    NoiseSetting,
+    OptoElectronics,
+    ScattererCollection,
+    SignalDigitizer,
+    TransimpedanceAmplifier,
+    circuits,
+    units,
+)
 from FlowCyPy.population import Sphere, distribution
-from FlowCyPy import FlowCytometer, circuits
-from FlowCyPy import OptoElectronics, Fluidics
 
 NoiseSetting.include_noises = True
 NoiseSetting.include_shot_noise = True
@@ -15,7 +25,7 @@ source = GaussianBeam(
     numerical_aperture=0.1 * units.AU,
     wavelength=450 * units.nanometer,
     optical_power=200 * units.milliwatt,
-    RIN=-140
+    RIN=-140,
 )
 
 flow_cell = FlowCell(
@@ -28,36 +38,37 @@ flow_cell = FlowCell(
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * units.RIU)
 
 custom_population = Sphere(
-    name='Population 1',
+    name="Population 1",
     particle_count=5e9 * units.particle / units.milliliter,
-    diameter=distribution.RosinRammler(characteristic_property=150 * units.nanometer, spread=30),
-    refractive_index=distribution.Normal(mean=1.44 * units.RIU, std_dev=0.002 * units.RIU)
+    diameter=distribution.RosinRammler(
+        characteristic_property=150 * units.nanometer, spread=30
+    ),
+    refractive_index=distribution.Normal(
+        mean=1.44 * units.RIU, std_dev=0.002 * units.RIU
+    ),
 )
 
 scatterer_collection.add_population(custom_population)
 
 scatterer_collection.dilute(factor=80)
 
-fluidics = Fluidics(
-    scatterer_collection=scatterer_collection,
-    flow_cell=flow_cell
-)
+fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
 digitizer = SignalDigitizer(
-    bit_depth='14bit',
-    saturation_levels='auto',
+    bit_depth="14bit",
+    saturation_levels="auto",
     sampling_rate=60 * units.megahertz,
 )
 
 detector_0 = Detector(
-    name='forward',
+    name="forward",
     phi_angle=0 * units.degree,
     numerical_aperture=0.3 * units.AU,
     responsivity=1 * units.ampere / units.watt,
 )
 
 detector_1 = Detector(
-    name='side',
+    name="side",
     phi_angle=90 * units.degree,
     numerical_aperture=0.3 * units.AU,
     responsivity=1 * units.ampere / units.watt,
@@ -67,34 +78,33 @@ detector_1 = Detector(
 amplifier = TransimpedanceAmplifier(
     gain=10 * units.volt / units.ampere,
     bandwidth=10 * units.megahertz,
-    voltage_noise_density=.1 * units.nanovolt / units.sqrt_hertz,
-    current_noise_density=.2 * units.femtoampere / units.sqrt_hertz
+    voltage_noise_density=0.1 * units.nanovolt / units.sqrt_hertz,
+    current_noise_density=0.2 * units.femtoampere / units.sqrt_hertz,
 )
 
 opto_electronics = OptoElectronics(
     detectors=[detector_0, detector_1],
     digitizer=digitizer,
     source=source,
-    amplifier=amplifier
+    amplifier=amplifier,
 )
 
 cytometer = FlowCytometer(
     fluidics=fluidics,
     opto_electronics=opto_electronics,
-    background_power=0.001 * units.milliwatt
+    background_power=0.001 * units.milliwatt,
 )
 
 processing_steps = [
     circuits.BaselineRestorator(window_size=10 * units.microsecond),
-    circuits.BesselLowPass(cutoff=2 * units.megahertz, order=4, gain=2)
+    circuits.BesselLowPass(cutoff=2 * units.megahertz, order=4, gain=2),
 ]
 
 analog, event_df = cytometer.get_acquisition(
-    run_time=2.5 * units.millisecond,
-    processing_steps=processing_steps
+    run_time=2.5 * units.millisecond, processing_steps=processing_steps
 )
 
-analog.normalize_units(signal_units='max', time_units='max')
+analog.normalize_units(signal_units="max", time_units="max")
 
 analog.plot()
 
@@ -102,15 +112,13 @@ from FlowCyPy.triggering_system import DynamicWindow
 
 trigger = DynamicWindow(
     dataframe=analog,
-    trigger_detector_name='forward',
+    trigger_detector_name="forward",
     max_triggers=-1,
     pre_buffer=20,
     post_buffer=20,
-    digitizer=digitizer
+    digitizer=digitizer,
 )
 
-analog_triggered = trigger.run(
-    threshold=10 * units.microvolt
-)
+analog_triggered = trigger.run(threshold=10 * units.microvolt)
 
 analog_triggered.plot()

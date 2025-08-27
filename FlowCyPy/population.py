@@ -1,14 +1,26 @@
 # -*- coding: utf-8 -*-
-from pydantic.dataclasses import dataclass
 from pydantic import field_validator
-from TypedUnit import RefractiveIndex, Length, Particle, Area, Velocity, Time, Dimensionless, ParticleFlux, Concentration
+from pydantic.dataclasses import dataclass
+from TypedUnit import (
+    Area,
+    Concentration,
+    Dimensionless,
+    Length,
+    Particle,
+    ParticleFlux,
+    RefractiveIndex,
+    Time,
+    Velocity,
+)
 
 from FlowCyPy import distribution
 from FlowCyPy.utils import config_dict
 
 
 class BasePopulation:
-    def calculate_number_of_events(self, flow_area: Area, flow_speed: Velocity, run_time: Time) -> Particle:
+    def calculate_number_of_events(
+        self, flow_area: Area, flow_speed: Velocity, run_time: Time
+    ) -> Particle:
         """
         Calculates the total number of particles based on the flow volume and the defined concentration.
 
@@ -36,11 +48,13 @@ class BasePopulation:
 
         elif isinstance(self.particle_count, Concentration):
             flow_volume = flow_area * flow_speed * run_time
-            return (self.concentration * flow_volume)
+            return self.concentration * flow_volume
 
         raise ValueError("Invalid particle count representation.")
 
-    def compute_particle_flux(self, flow_speed: Velocity, flow_area: Area, run_time: Time) -> ParticleFlux:
+    def compute_particle_flux(
+        self, flow_speed: Velocity, flow_area: Area, run_time: Time
+    ) -> ParticleFlux:
         """
         Computes the particle flux in the flow system, accounting for flow speed,
         flow area, and either the particle concentration or a predefined number of particles.
@@ -63,13 +77,14 @@ class BasePopulation:
             return self.particle_count / run_time
 
         elif isinstance(self.particle_count, Concentration):
-            flow_volume_per_second = (flow_speed * flow_area)
-            return (self.particle_count * flow_volume_per_second)
+            flow_volume_per_second = flow_speed * flow_area
+            return self.particle_count * flow_volume_per_second
 
         raise ValueError("Invalid particle count representation.")
 
-
-    @field_validator('refractive_index', 'core_refractive_index', 'shell_refractive_index')
+    @field_validator(
+        "refractive_index", "core_refractive_index", "shell_refractive_index"
+    )
     def _validate_refractive_index(cls, value):
         """
         Validate the refractive index input.
@@ -101,7 +116,7 @@ class BasePopulation:
             f"refractive_index must be of type Quantity (with RIU) or distribution.Base, but got {type(value)}"
         )
 
-    @field_validator('diameter', 'core_diameter', 'shell_thickness')
+    @field_validator("diameter", "core_diameter", "shell_thickness")
     def _validate_diameter(cls, value):
         """
         Validate the diameter input.
@@ -174,6 +189,7 @@ class Sphere(BasePopulation):
         The number density of particles (scatterers) per cubic meter.
 
     """
+
     name: str
     refractive_index: distribution.Base | RefractiveIndex
     diameter: distribution.Base | Length
@@ -202,8 +218,8 @@ class Sphere(BasePopulation):
             A tuple containing the generated diameter sample and refractive index sample.
         """
         return {
-            'Diameter': self.diameter.generate(sampling),
-            'RefractiveIndex': self.refractive_index.generate(sampling)
+            "Diameter": self.diameter.generate(sampling),
+            "RefractiveIndex": self.refractive_index.generate(sampling),
         }
 
 
@@ -274,10 +290,11 @@ class CoreShell(BasePopulation):
             (core_diameter, shell_thickness, refractive_index_core, refractive_index_shell).
         """
         return {
-            'CoreDiameter':  self.core_diameter.generate(sampling),
-            'ShellThickness':  self.shell_thickness.generate(sampling),
-            'CoreRefractiveIndex': self.core_refractive_index.generate(sampling),
-            'ShellRefractiveIndex': self.shell_refractive_index.generate(sampling)
+            "CoreDiameter": self.core_diameter.generate(sampling),
+            "ShellThickness": self.shell_thickness.generate(sampling),
+            "CoreRefractiveIndex": self.core_refractive_index.generate(sampling),
+            "ShellRefractiveIndex": self.shell_refractive_index.generate(sampling),
         }
+
 
 from FlowCyPy._population_instances import *

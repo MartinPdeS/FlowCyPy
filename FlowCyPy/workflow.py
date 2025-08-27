@@ -1,25 +1,31 @@
-
-from pydantic.dataclasses import dataclass
-from pydantic import ConfigDict
 from typing import List
 
-from FlowCyPy import units
-from FlowCyPy.population import Sphere
-from FlowCyPy import distribution
-from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection
-from FlowCyPy.opto_electronics import OptoElectronics, TransimpedanceAmplifier, Detector, GaussianBeam
-from FlowCyPy.signal_processing import SignalProcessing, Digitizer, circuits, peak_locator, triggering_system
-from FlowCyPy.flow_cytometer import FlowCytometer
+from pydantic import ConfigDict
+from pydantic.dataclasses import dataclass
 
-from FlowCyPy.peak_locator.base_class import BasePeakLocator
-from FlowCyPy.triggering_system import BaseTrigger
+from FlowCyPy import distribution, units
 from FlowCyPy.circuits import SignalProcessor
-
-config_dict = ConfigDict(
-    arbitrary_types_allowed=True,
-    extra='forbid',
-    kw_only=True
+from FlowCyPy.flow_cytometer import FlowCytometer
+from FlowCyPy.fluidics import FlowCell, Fluidics, ScattererCollection
+from FlowCyPy.opto_electronics import (
+    Detector,
+    GaussianBeam,
+    OptoElectronics,
+    TransimpedanceAmplifier,
 )
+from FlowCyPy.peak_locator.base_class import BasePeakLocator
+from FlowCyPy.population import Sphere
+from FlowCyPy.signal_processing import (
+    Digitizer,
+    SignalProcessing,
+    circuits,
+    peak_locator,
+    triggering_system,
+)
+from FlowCyPy.triggering_system import BaseTrigger
+
+config_dict = ConfigDict(arbitrary_types_allowed=True, extra="forbid", kw_only=True)
+
 
 @dataclass(config=config_dict, kw_only=True)
 class Workflow:
@@ -68,7 +74,7 @@ class Workflow:
         """
         scatterer_collection = ScattererCollection(
             medium_refractive_index=self.medium_refractive_index,
-            populations=self.populations
+            populations=self.populations,
         )
 
         flow_cell = FlowCell(
@@ -78,10 +84,7 @@ class Workflow:
             height=self.height,
         )
 
-        return Fluidics(
-            scatterer_collection=scatterer_collection,
-            flow_cell=flow_cell
-        )
+        return Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
     def _get_opto_electronics(self) -> OptoElectronics:
         """
@@ -94,13 +97,10 @@ class Workflow:
         source = GaussianBeam(
             numerical_aperture=self.source_numerical_aperture,
             wavelength=self.wavelength,
-            optical_power=self.optical_power
+            optical_power=self.optical_power,
         )
 
-        amplifier = TransimpedanceAmplifier(
-            gain=self.gain,
-            bandwidth=self.bandwidth
-        )
+        amplifier = TransimpedanceAmplifier(gain=self.gain, bandwidth=self.bandwidth)
 
         return OptoElectronics(
             detectors=self.detectors,
@@ -119,14 +119,14 @@ class Workflow:
         digitizer = Digitizer(
             bit_depth=self.bit_depth,
             sampling_rate=self.sampling_rate,
-            saturation_levels=self.saturation_levels
+            saturation_levels=self.saturation_levels,
         )
 
         return SignalProcessing(
             digitizer=digitizer,
             peak_algorithm=self.peak_locator,
             triggering_system=self.trigger,
-            analog_processing=self.analog_processing
+            analog_processing=self.analog_processing,
         )
 
     def initialize(self) -> None:
@@ -142,7 +142,7 @@ class Workflow:
             opto_electronics=self.opto_electronics,
             fluidics=self.fluidics,
             signal_processing=self.signal_processing,
-            background_power=self.background_power
+            background_power=self.background_power,
         )
 
     def run(self, run_time: units.Quantity):

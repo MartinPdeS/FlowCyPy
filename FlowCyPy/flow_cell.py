@@ -1,14 +1,15 @@
 from typing import List
+
 import pandas as pd
 import pint_pandas
 from pydantic.dataclasses import dataclass
-from TypedUnit import Length, FlowRate, Viscosity, Volume, Time, ureg, validate_units
+from TypedUnit import FlowRate, Length, Time, Viscosity, Volume, ureg, validate_units
 
-from FlowCyPy.population import BasePopulation
-from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
 from FlowCyPy.binary.interface_flow_cell import FLOWCELL
 from FlowCyPy.fluid_region import FluidRegion
+from FlowCyPy.population import BasePopulation
 from FlowCyPy.simulation_settings import SimulationSettings
+from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
 from FlowCyPy.utils import config_dict
 
 
@@ -89,6 +90,7 @@ class FlowCell(FLOWCELL):
     event_scheme : str
         Scheme for event sampling, 'uniform-random', 'sorted', 'poisson', 'preserve' (default: 'preserve').
     """
+
     width: Length
     height: Length
     sample_volume_flow: FlowRate
@@ -97,21 +99,26 @@ class FlowCell(FLOWCELL):
     N_terms: int = 25
     n_int: int = 200
 
-
     @validate_units
     def get_sample_volume(self, run_time: Time) -> Volume:
         """
         Computes the volume passing through the flow cell over the given run time.
         """
-        return (self.sample.area * self.sample.average_flow_speed * run_time).to_compact()
+        return (
+            self.sample.area * self.sample.average_flow_speed * run_time
+        ).to_compact()
 
     def __post_init__(self):
         super().__init__(
-            width=self.width.to('meter').magnitude,
-            height=self.height.to('meter').magnitude,
-            sample_volume_flow=self.sample_volume_flow.to('meter**3 / second').magnitude,
-            sheath_volume_flow=self.sheath_volume_flow.to('meter**3 / second').magnitude,
-            viscosity=self.mu.to('pascal * second').magnitude,
+            width=self.width.to("meter").magnitude,
+            height=self.height.to("meter").magnitude,
+            sample_volume_flow=self.sample_volume_flow.to(
+                "meter**3 / second"
+            ).magnitude,
+            sheath_volume_flow=self.sheath_volume_flow.to(
+                "meter**3 / second"
+            ).magnitude,
+            viscosity=self.mu.to("pascal * second").magnitude,
             N_terms=self.N_terms,
             n_int=self.n_int,
         )
@@ -160,13 +167,13 @@ class FlowCell(FLOWCELL):
         return x * ureg.meter, y * ureg.meter, velocities * ureg.meter / ureg.second
 
     @validate_units
-    def _generate_event_dataframe(self, populations: List[BasePopulation], run_time: Time) -> ScattererDataFrame:
+    def _generate_event_dataframe(
+        self, populations: List[BasePopulation], run_time: Time
+    ) -> ScattererDataFrame:
         """
         Generates a DataFrame of event times and sampled velocities for each population based on the specified scheme.
         """
-        sampling_dict = {
-            p.name: {} for p in populations
-        }
+        sampling_dict = {p.name: {} for p in populations}
 
         for population in populations:
             sub_dict = sampling_dict[population.name]
@@ -174,29 +181,31 @@ class FlowCell(FLOWCELL):
             particle_flux = population.compute_particle_flux(
                 flow_speed=self.sample.average_flow_speed,
                 flow_area=self.sample.area,
-                run_time=run_time
+                run_time=run_time,
             )
 
-            arrival_time = self._cpp_sample_arrival_times(
-                run_time=run_time.to('second').magnitude,
-                particle_flux=particle_flux.to('particle / second').magnitude,
-            ) * ureg.second
+            arrival_time = (
+                self._cpp_sample_arrival_times(
+                    run_time=run_time.to("second").magnitude,
+                    particle_flux=particle_flux.to("particle / second").magnitude,
+                )
+                * ureg.second
+            )
 
             n_events = len(arrival_time)
 
-            sub_dict['n_elements'] = len(arrival_time)
+            sub_dict["n_elements"] = len(arrival_time)
 
-            sub_dict['Time'] = arrival_time
+            sub_dict["Time"] = arrival_time
 
-            sub_dict.update(
-                population.generate_property_sampling(n_events)
+            sub_dict.update(population.generate_property_sampling(n_events))
+
+            sub_dict["x"], sub_dict["y"], sub_dict["Velocity"] = (
+                self.sample_transverse_profile(n_events)
             )
 
-            sub_dict["x"], sub_dict["y"], sub_dict["Velocity"] = self.sample_transverse_profile(n_events)
-
         event_dataframe = self._get_dataframe_from_dict(
-            dictionnary=sampling_dict,
-            level_names=['Population', 'ScattererID']
+            dictionnary=sampling_dict, level_names=["Population", "ScattererID"]
         )
 
         if SimulationSettings.sorted_population:
@@ -204,24 +213,20 @@ class FlowCell(FLOWCELL):
 
         if SimulationSettings.evenly_spaced_events:
             event_dataframe.uniformize_events_with_time(
-                run_time=run_time,
-                lower_boundary=0.05,
-                upper_boundary=0.95
+                run_time=run_time, lower_boundary=0.05, upper_boundary=0.95
             )
 
         return event_dataframe
 
-    def _get_dataframe_from_dict(self, dictionnary: dict, level_names: list = None) -> ScattererDataFrame:
+    def _get_dataframe_from_dict(
+        self, dictionnary: dict, level_names: list = None
+    ) -> ScattererDataFrame:
         dfs = []
         for pop_name, inner_dict in dictionnary.items():
-
-            df_pop = pd.DataFrame(
-                index=range(inner_dict.pop('n_elements'))
-            )
+            df_pop = pd.DataFrame(index=range(inner_dict.pop("n_elements")))
 
             df_pop.index = pd.MultiIndex.from_product(
-                [[pop_name], df_pop.index],
-                names=level_names
+                [[pop_name], df_pop.index], names=level_names
             )
 
             for k, v in inner_dict.items():

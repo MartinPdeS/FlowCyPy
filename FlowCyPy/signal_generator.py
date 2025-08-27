@@ -1,4 +1,4 @@
-from TypedUnit import Time, AnyUnit, Frequency, validate_units, ureg
+from TypedUnit import AnyUnit, Frequency, Time, ureg, validate_units
 
 from FlowCyPy.binary import interface_signal_generator
 
@@ -12,7 +12,6 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
     """
 
     def __init__(self, n_elements: int, time_units: Time, signal_units: AnyUnit):
-
         """
         Initializes the SignalGenerator with the specified number of elements and units.
 
@@ -41,8 +40,9 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         signal_data : AnyUnit
             The signal data in the specified units.
         """
-        assert signal_data.dimensionality == self.signal_units.dimensionality, \
-            f"Signal units {signal_data.units} do not match defined signal units {self.signal_units}."
+        assert (
+            signal_data.dimensionality == self.signal_units.dimensionality
+        ), f"Signal units {signal_data.units} do not match defined signal units {self.signal_units}."
 
         self._cpp_add_signal(signal_name, signal_data.to(self.signal_units).magnitude)
 
@@ -55,8 +55,9 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         time_data : Time
             The time data in the specified units.
         """
-        assert time_data.dimensionality == self.time_units.dimensionality, \
-            f"Time units {time_data.units} do not match defined time units {self.time_units}."
+        assert (
+            time_data.dimensionality == self.time_units.dimensionality
+        ), f"Time units {time_data.units} do not match defined time units {self.time_units}."
 
         self._cpp_add_signal("Time", time_data.to(self.time_units).magnitude)
 
@@ -116,20 +117,21 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         constant : float
             The constant value to add to the signal.
         """
-        assert constant.dimensionality == self.signal_units.dimensionality, \
-            f"Constant units {constant.units} do not match signal units {self.signal_units}."
+        assert (
+            constant.dimensionality == self.signal_units.dimensionality
+        ), f"Constant units {constant.units} do not match signal units {self.signal_units}."
 
         if signal_name is None:
-            self._cpp_add_constant(
-                constant=constant.to(self.signal_units).magnitude
-            )
+            self._cpp_add_constant(constant=constant.to(self.signal_units).magnitude)
         else:
             self._cpp_add_constant_to_signal(
                 signal_name=signal_name,
-                constant=constant.to(self.signal_units).magnitude
+                constant=constant.to(self.signal_units).magnitude,
             )
 
-    def apply_gaussian_noise(self, mean: AnyUnit, standard_deviation: AnyUnit, signal_name: str = None) -> None:
+    def apply_gaussian_noise(
+        self, mean: AnyUnit, standard_deviation: AnyUnit, signal_name: str = None
+    ) -> None:
         """
         Adds Gaussian noise to the specified signal.
 
@@ -140,22 +142,24 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         std : float
             The standard deviation of the Gaussian noise.
         """
-        assert standard_deviation.dimensionality == self.signal_units.dimensionality, \
-            f"Noise units {standard_deviation.units} do not match signal units {self.signal_units}."
+        assert (
+            standard_deviation.dimensionality == self.signal_units.dimensionality
+        ), f"Noise units {standard_deviation.units} do not match signal units {self.signal_units}."
 
-        assert mean.dimensionality == self.signal_units.dimensionality, \
-            f"Mean units {mean.units} do not match signal units {self.signal_units}."
+        assert (
+            mean.dimensionality == self.signal_units.dimensionality
+        ), f"Mean units {mean.units} do not match signal units {self.signal_units}."
 
         if signal_name is None:
             self._cpp_apply_gaussian_noise(
                 mean=mean.to(self.signal_units).magnitude,
-                standard_deviation=standard_deviation.to(self.signal_units).magnitude
+                standard_deviation=standard_deviation.to(self.signal_units).magnitude,
             )
         else:
             self._cpp_apply_gaussian_noise_to_signal(
                 signal_name=signal_name,
                 mean=mean.to(self.signal_units).magnitude,
-                standard_deviation=standard_deviation.to(self.signal_units).magnitude
+                standard_deviation=standard_deviation.to(self.signal_units).magnitude,
             )
 
     def apply_poisson_noise(self, signal_name: str = None) -> None:
@@ -173,7 +177,9 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
             self._cpp_apply_poisson_noise_to_signal(signal_name=signal_name)
 
     @validate_units
-    def apply_baseline_restoration(self, window_size: Time, signal_name: str = None) -> None:
+    def apply_baseline_restoration(
+        self, window_size: Time, signal_name: str = None
+    ) -> None:
         """
         Applies baseline restoration to the specified signal.
 
@@ -193,15 +199,19 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         if signal_name is None:
             self._cpp_apply_baseline_restoration(window_size=window_size_bins)
         else:
-            self._cpp_apply_baseline_restoration_to_signal(window_size=window_size_bins, signal_name=signal_name)
+            self._cpp_apply_baseline_restoration_to_signal(
+                window_size=window_size_bins, signal_name=signal_name
+            )
 
     @validate_units
-    def apply_butterworth_lowpass_filter(self,
+    def apply_butterworth_lowpass_filter(
+        self,
         sampling_rate: Frequency,
         cutoff_frequency: Frequency,
         order: int = 1,
         gain: AnyUnit = 1.0 * ureg.dimensionless,
-        signal_name: str = None) -> None:
+        signal_name: str = None,
+    ) -> None:
         """
         Applies a Butterworth low-pass filter to the specified signal.
 
@@ -223,7 +233,7 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
                 sampling_rate=sampling_rate.to(ureg.hertz).magnitude,
                 cutoff_frequency=cutoff_frequency.to(ureg.hertz).magnitude,
                 order=order,
-                gain=gain.magnitude
+                gain=gain.magnitude,
             )
         else:
             self._cpp_apply_butterworth_lowpass_filter_to_signal(
@@ -231,16 +241,18 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
                 sampling_rate=sampling_rate.to(ureg.hertz).magnitude,
                 cutoff_frequency=cutoff_frequency.to(ureg.hertz).magnitude,
                 order=order,
-                gain=gain.magnitude
+                gain=gain.magnitude,
             )
 
     @validate_units
-    def apply_bessel_lowpass_filter(self,
+    def apply_bessel_lowpass_filter(
+        self,
         sampling_rate: Frequency,
         cutoff_frequency: Frequency,
         gain: AnyUnit = 1.0 * ureg.dimensionless,
         order: int = 1,
-        signal_name: str = None) -> None:
+        signal_name: str = None,
+    ) -> None:
         """
         Applies a Bessel low-pass filter to the specified signal.
 
@@ -262,7 +274,7 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
                 sampling_rate=sampling_rate.to(ureg.hertz).magnitude,
                 cutoff_frequency=cutoff_frequency.to(ureg.hertz).magnitude,
                 order=order,
-                gain=gain.magnitude
+                gain=gain.magnitude,
             )
         else:
             self._cpp_apply_bessel_lowpass_filter_to_signal(
@@ -270,16 +282,18 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
                 sampling_rate=sampling_rate.to(ureg.hertz).magnitude,
                 cutoff_frequency=cutoff_frequency.to(ureg.hertz).magnitude,
                 order=order,
-                gain=gain.magnitude
+                gain=gain.magnitude,
             )
 
     @validate_units
-    def generate_pulses(self,
+    def generate_pulses(
+        self,
         widths: Time,
         centers: Time,
         amplitudes: AnyUnit,
         base_level: AnyUnit,
-        signal_name: str = None) -> None:
+        signal_name: str = None,
+    ) -> None:
         """
         Generates gaussian pulses with specified widths, centers, and amplitudes.
 
@@ -296,16 +310,16 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
         base_level : Any
             The base level of the signal, which is added to the amplitudes of the pulses.
         """
-        assert amplitudes.units.dimensionality == self.signal_units.dimensionality, \
-            f"Amplitude units {amplitudes.units} do not match signal units {self.signal_units}."
+        assert (
+            amplitudes.units.dimensionality == self.signal_units.dimensionality
+        ), f"Amplitude units {amplitudes.units} do not match signal units {self.signal_units}."
 
         if signal_name is None:
-
             self._cpp_generate_pulses(
                 widths=widths.to(self.time_units).magnitude,
                 centers=centers.to(self.time_units).magnitude,
                 amplitudes=amplitudes.to(self.signal_units).magnitude,
-                base_level=base_level.to(self.signal_units).magnitude
+                base_level=base_level.to(self.signal_units).magnitude,
             )
         else:
             self._cpp_generate_pulses_to_signal(
@@ -313,5 +327,5 @@ class SignalGenerator(interface_signal_generator.SignalGenerator):
                 widths=widths.to(self.time_units).magnitude,
                 centers=centers.to(self.time_units).magnitude,
                 amplitudes=amplitudes.to(self.signal_units).magnitude,
-                base_level=base_level.to(self.signal_units).magnitude
+                base_level=base_level.to(self.signal_units).magnitude,
             )

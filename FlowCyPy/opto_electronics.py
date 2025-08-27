@@ -1,20 +1,28 @@
 from typing import List
+
 import pandas as pd
+
+from FlowCyPy import source
+from FlowCyPy.amplifier import TransimpedanceAmplifier
 from FlowCyPy.coupling import ScatteringSimulator
 from FlowCyPy.detector import Detector
-from FlowCyPy.amplifier import TransimpedanceAmplifier
-from FlowCyPy import source
 from FlowCyPy.source import GaussianBeam
 
 
-class OptoElectronics():
+class OptoElectronics:
     """
     Base class for optoelectronic components in flow cytometry simulations.
 
     This class serves as a base for various optoelectronic components, such as detectors and
     signal generators, providing common functionality and attributes.
     """
-    def __init__(self, detectors: List[Detector], source: source.BaseBeam, amplifier: TransimpedanceAmplifier):
+
+    def __init__(
+        self,
+        detectors: List[Detector],
+        source: source.BaseBeam,
+        amplifier: TransimpedanceAmplifier,
+    ):
         """
         Initializes the OptoElectronics instance.
 
@@ -31,7 +39,9 @@ class OptoElectronics():
         self.source = source
         self.amplifier = amplifier
 
-    def model_event(self, event_dataframe: pd.DataFrame, compute_cross_section: bool = False):
+    def model_event(
+        self, event_dataframe: pd.DataFrame, compute_cross_section: bool = False
+    ):
         """
         Adds optoelectronic parameters to the provided DataFrame.
 
@@ -44,17 +54,16 @@ class OptoElectronics():
             DataFrame to which the optoelectronic parameters will be added.
         """
         self._add_coupling_to_dataframe(
-            event_dataframe=event_dataframe,
-            compute_cross_section=compute_cross_section
+            event_dataframe=event_dataframe, compute_cross_section=compute_cross_section
         )
 
-        self._add_pulse_width_to_dataframe(
-            event_dataframe=event_dataframe
-        )
+        self._add_pulse_width_to_dataframe(event_dataframe=event_dataframe)
 
         return event_dataframe
 
-    def _add_coupling_to_dataframe(self, event_dataframe: pd.DataFrame, compute_cross_section: bool = False):
+    def _add_coupling_to_dataframe(
+        self, event_dataframe: pd.DataFrame, compute_cross_section: bool = False
+    ):
         """
         Computes the detected signal for each scatterer in the provided DataFrame and updates it in place.
         This method iterates over the list of detectors and computes the detected signal for each scatterer
@@ -77,12 +86,11 @@ class OptoElectronics():
                 source=self.source,
                 detector=detector,
                 bandwidth=self.amplifier.bandwidth,
-                medium_refractive_index=event_dataframe.medium_refractive_index
+                medium_refractive_index=event_dataframe.medium_refractive_index,
             )
 
             simulator.run(
-                event_df=event_dataframe,
-                compute_cross_section=compute_cross_section
+                event_df=event_dataframe, compute_cross_section=compute_cross_section
             )
 
     def _add_pulse_width_to_dataframe(self, event_dataframe: pd.DataFrame):
@@ -147,13 +155,13 @@ class OptoElectronics():
         if event_dataframe.empty:
             return
 
-        assert "Velocity" in event_dataframe.columns, "Event DataFrame must contain 'Velocity' column to compute the pulses width."
+        assert (
+            "Velocity" in event_dataframe.columns
+        ), "Event DataFrame must contain 'Velocity' column to compute the pulses width."
         # Calculate the pulse width (standard deviation in time, σₜ) based on the beam waist and flow speed.
         if event_dataframe.empty:
             return
 
-        widths = self.source.get_particle_width(
-            velocity=event_dataframe['Velocity']
-        )
+        widths = self.source.get_particle_width(velocity=event_dataframe["Velocity"])
 
-        event_dataframe['Widths'] = widths
+        event_dataframe["Widths"] = widths

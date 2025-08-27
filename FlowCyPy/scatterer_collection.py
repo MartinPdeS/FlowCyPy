@@ -1,21 +1,27 @@
 # -*- coding: utf-8 -*-
 from typing import List, Union
+
 import pandas as pd
 from pint_pandas import PintArray
-from TypedUnit import RefractiveIndex, Concentration, ureg
+from TypedUnit import Concentration, RefractiveIndex, ureg
 
 from FlowCyPy.population import BasePopulation
 from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
 
 
-class ScattererCollection():
+class ScattererCollection:
     """
     Defines and manages the diameter and refractive index distributions of scatterers (particles)
     passing through a flow cytometer. This class generates random scatterer diameters and refractive
     indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).
 
     """
-    def __init__(self, medium_refractive_index: RefractiveIndex = 1.0 * ureg.RIU, populations: List[BasePopulation] = None):
+
+    def __init__(
+        self,
+        medium_refractive_index: RefractiveIndex = 1.0 * ureg.RIU,
+        populations: List[BasePopulation] = None,
+    ):
         """
         Parameters
         ----------
@@ -39,9 +45,13 @@ class ScattererCollection():
         """
         total_concentration = sum([p.particle_count for p in self.populations])
 
-        return [(p.particle_count / total_concentration).magnitude for p in self.populations]
+        return [
+            (p.particle_count / total_concentration).magnitude for p in self.populations
+        ]
 
-    def get_population_dataframe(self, total_sampling: int = 200, use_ratio: bool = True) -> pd.DataFrame:
+    def get_population_dataframe(
+        self, total_sampling: int = 200, use_ratio: bool = True
+    ) -> pd.DataFrame:
         """
         Generate a DataFrame by sampling particles from populations.
 
@@ -67,11 +77,15 @@ class ScattererCollection():
 
         # Create tuples for the MultiIndex
         multi_index_tuples = [
-            (pop_name, idx) for pop_name, n in zip(population_names, sampling_list) for idx in range(n)
+            (pop_name, idx)
+            for pop_name, n in zip(population_names, sampling_list)
+            for idx in range(n)
         ]
 
         # Create the MultiIndex
-        multi_index = pd.MultiIndex.from_tuples(multi_index_tuples, names=["Population", "Index"])
+        multi_index = pd.MultiIndex.from_tuples(
+            multi_index_tuples, names=["Population", "Index"]
+        )
 
         # Initialize an empty DataFrame with the MultiIndex
         scatterer_dataframe = pd.DataFrame(index=multi_index)
@@ -80,7 +94,7 @@ class ScattererCollection():
 
         return ScattererDataFrame(scatterer_dataframe)
 
-    def add_population(self, *population: BasePopulation) -> 'ScattererCollection':
+    def add_population(self, *population: BasePopulation) -> "ScattererCollection":
         """
         Adds a population to the ScattererCollection instance with the specified attributes.
 
@@ -118,7 +132,9 @@ class ScattererCollection():
         """
         return [population.concentration for population in self.populations]
 
-    def set_concentrations(self, values: Union[List[Concentration], Concentration]) -> None:
+    def set_concentrations(
+        self, values: Union[List[Concentration], Concentration]
+    ) -> None:
         """
         Sets the concentration of each population in the ScattererCollection instance.
 
@@ -134,7 +150,9 @@ class ScattererCollection():
         """
         if isinstance(values, (list, tuple)):
             if len(values) != len(self.populations):
-                raise ValueError("The length of the values list must match the number of populations.")
+                raise ValueError(
+                    "The length of the values list must match the number of populations."
+                )
 
             for value in values:
                 Concentration.check(value)
@@ -211,4 +229,6 @@ class ScattererCollection():
 
             for key, value in sampling_data.items():
                 scatterer_dataframe.loc[mask, key] = PintArray(value, dtype=value.units)
-                scatterer_dataframe.loc[mask, 'type'] = str(population.__class__.__name__)
+                scatterer_dataframe.loc[mask, "type"] = str(
+                    population.__class__.__name__
+                )

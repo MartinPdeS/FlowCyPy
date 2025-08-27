@@ -1,5 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Generate Poisson data for different means
 mean_values = [1, 5, 20, 50]

@@ -1,12 +1,15 @@
 import numpy as np
 import pytest
 
-# Import the C++ module exposed via pybind11.
-from FlowCyPy.binary.interface_triggering_system import DOUBLETHRESHOLD # type: ignore
 import FlowCyPy
+
+# Import the C++ module exposed via pybind11.
+from FlowCyPy.binary.interface_triggering_system import DOUBLETHRESHOLD  # type: ignore
+
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
 # ----------------- FIXTURES -----------------
+
 
 @pytest.fixture
 def simple_signal():
@@ -22,6 +25,7 @@ def simple_signal():
     signal = 0.5 * np.sin(2 * np.pi * 1 * t) + 0.5
     return t, signal
 
+
 @pytest.fixture
 def no_trigger_signal():
     """
@@ -32,6 +36,7 @@ def no_trigger_signal():
     t = np.linspace(0, 10, 1000)
     signal = np.full_like(t, 0.5)  # constant signal
     return t, signal
+
 
 # ---------------------------------------------------------------------------
 # Tests for DOUBLETHRESHOLD functionality
@@ -54,7 +59,9 @@ def test_add_signal_and_time(simple_signal):
     # Check that the global time array is set.
     np.testing.assert_array_equal(triggering_system.trigger.global_time, time)
 
+
 # ----------------- TESTS -----------------
+
 
 def test_no_time_error(simple_signal):
     """
@@ -68,7 +75,13 @@ def test_no_time_error(simple_signal):
     )
     triggering_system._cpp_add_signal("detector1", signal)
     with pytest.raises(ValueError):
-        triggering_system._cpp_run(threshold=0.6, lower_threshold=0.6, min_window_duration=-1, debounce_enabled=False)
+        triggering_system._cpp_run(
+            threshold=0.6,
+            lower_threshold=0.6,
+            min_window_duration=-1,
+            debounce_enabled=False,
+        )
+
 
 def test_no_trigger(no_trigger_signal):
     """
@@ -85,11 +98,17 @@ def test_no_trigger(no_trigger_signal):
     triggering_system._cpp_add_signal("detector2", signal)
 
     with pytest.raises(IndexError):
-        triggering_system._cpp_run(threshold=0.6, lower_threshold=0.6, min_window_duration=-1, debounce_enabled=False)
+        triggering_system._cpp_run(
+            threshold=0.6,
+            lower_threshold=0.6,
+            min_window_duration=-1,
+            debounce_enabled=False,
+        )
 
     # Expect that no triggers are found (empty arrays returned)
     assert len(triggering_system.trigger.segmented_time) == 0
     assert len(triggering_system.trigger.get_segmented_signal("detector2")) == 0
+
 
 def test_trigger_fixed_window(simple_signal):
     """
@@ -104,16 +123,20 @@ def test_trigger_fixed_window(simple_signal):
     signal = np.zeros_like(time)
     signal[410:415] = 1.0  # spike well above a threshold of 0.6
     triggering_system = DOUBLETHRESHOLD(
-        trigger_detector_name="detector1",
-        pre_buffer=5,
-        post_buffer=5
+        trigger_detector_name="detector1", pre_buffer=5, post_buffer=5
     )
     triggering_system._cpp_add_time(time)
     triggering_system._cpp_add_signal("detector1", signal)
-    triggering_system._cpp_run(threshold=0.6, lower_threshold=0.6, min_window_duration=-1, debounce_enabled=False)
+    triggering_system._cpp_run(
+        threshold=0.6,
+        lower_threshold=0.6,
+        min_window_duration=-1,
+        debounce_enabled=False,
+    )
     # Expect non-empty output arrays (i.e. at least one trigger is detected).
     assert len(triggering_system.trigger.segmented_time) > 0
     assert len(triggering_system.trigger.get_segmented_signal("detector1")) > 0
+
 
 def test_trigger_dynamic_single_threshold(simple_signal):
     """
@@ -134,13 +157,16 @@ def test_trigger_dynamic_single_threshold(simple_signal):
     )
     triggering_system._cpp_add_time(time)
     triggering_system._cpp_add_signal("detector1", signal)
-    triggering_system._cpp_run(threshold=0.6, lower_threshold=0.6, debounce_enabled=True, min_window_duration=3)
+    triggering_system._cpp_run(
+        threshold=0.6, lower_threshold=0.6, debounce_enabled=True, min_window_duration=3
+    )
     # Ensure that triggers are detected.
     assert len(triggering_system.trigger.segmented_time) > 0
     assert len(triggering_system.trigger.get_segmented_signal("detector1")) > 0
     # Check that at least one segment is present by examining segment IDs.
     unique_ids = np.unique(triggering_system.trigger.segment_ids)
     assert len(unique_ids) >= 1
+
 
 if __name__ == "__main__":
     pytest.main(["-W error", __file__])

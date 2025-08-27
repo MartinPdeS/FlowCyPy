@@ -85,7 +85,7 @@ Best Practices for Git
 - Use branches to isolate different tasks or features.
 
 .. admonition:: Mini Objective
-  
+
   Try creating a new branch, making a change, committing it, and merging it back into the main branch.
 
 *Recommended Resource*: Master Git workflows through the `Pro Git Book <https://git-scm.com/book/en/v2>`_.

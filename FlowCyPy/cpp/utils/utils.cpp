@@ -228,8 +228,3 @@ void utils::add_poisson_noise_to_signal(std::vector<double> &signal) {
         signal[i] = static_cast<double>(dist(rng));
     }
 }
-
-
-
-
-

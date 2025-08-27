@@ -2,13 +2,15 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from FlowCyPy.sub_frames.base import BaseSubFrame
 from FlowCyPy import helper
+from FlowCyPy.sub_frames.base import BaseSubFrame
+
 
 class ClassifierDataFrame(BaseSubFrame):
     """
     A subclass of pandas DataFrame for classifying peaks.
     """
+
     @helper.plot_sns
     def plot(self, x: str, y: str) -> plt.Figure:
         """
@@ -35,16 +37,18 @@ class ClassifierDataFrame(BaseSubFrame):
         """
         x_detector, x_feature = x
         y_detector, y_feature = y
-        if 'Label' not in self.columns:
-            raise ValueError("Missing 'Label' column. Run `classify_dataset` before plotting.")
+        if "Label" not in self.columns:
+            raise ValueError(
+                "Missing 'Label' column. Run `classify_dataset` before plotting."
+            )
 
         temp = self.pint.dequantify().sort_index(axis=1)
 
         grid = sns.jointplot(
             x=temp[(x_feature, x_detector)].values.squeeze(),
             y=temp[(y_feature, y_detector)].values.squeeze(),
-            hue=temp['Label'].values.squeeze()
+            hue=temp["Label"].values.squeeze(),
         )
 
-        grid.figure.suptitle('Event classification')
+        grid.figure.suptitle("Event classification")
         return grid

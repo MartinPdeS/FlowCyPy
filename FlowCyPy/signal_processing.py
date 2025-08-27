@@ -1,11 +1,9 @@
-
 from TypedUnit import ureg
 
-from FlowCyPy import circuits
+from FlowCyPy import circuits, peak_locator, triggering_system
 from FlowCyPy.digitizer import Digitizer
-from FlowCyPy import peak_locator
-from FlowCyPy import triggering_system
 from FlowCyPy.signal_generator import SignalGenerator
+
 
 class SignalProcessing:
     """
@@ -31,12 +29,13 @@ class SignalProcessing:
         (e.g., based on amplitude, area, or width).
     """
 
-    def __init__(self,
+    def __init__(
+        self,
         digitizer: Digitizer,
         analog_processing: list[circuits.SignalProcessor] = (),
         triggering_system: triggering_system.BaseTrigger = None,
-        peak_algorithm: peak_locator.BasePeakLocator = None):
-
+        peak_algorithm: peak_locator.BasePeakLocator = None,
+    ):
         self.analog_processing = analog_processing
         self.digitizer = digitizer
         self.triggering_system = triggering_system
@@ -58,7 +57,7 @@ class SignalProcessing:
         for circuit in self.analog_processing:
             circuit.process(
                 signal_generator=signal_generator,
-                sampling_rate=self.digitizer.sampling_rate
+                sampling_rate=self.digitizer.sampling_rate,
             )
 
     def process_digital(self, results: object) -> None:
@@ -81,10 +80,11 @@ class SignalProcessing:
             analog signal segment previously extracted by the triggering system. The method
             attaches `digital_acquisition` and `peaks` attributes to this object.
         """
-        results.triggered_digital = results.triggered_analog.digitalize(digitizer=self.digitizer)
+        results.triggered_digital = results.triggered_analog.digitalize(
+            digitizer=self.digitizer
+        )
 
         results.triggered_digital.normalize_units(signal_units=ureg.bit_bins)
 
         if self.peak_algorithm is not None:
             results.peaks = self.peak_algorithm.run(results.triggered_digital)
-

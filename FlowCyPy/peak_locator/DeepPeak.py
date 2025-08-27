@@ -1,5 +1,7 @@
 import numpy as np
+
 from FlowCyPy.peak_locator.base_class import BasePeakLocator
+
 
 class DeepPeakLocator(BasePeakLocator):
     """
@@ -52,7 +54,14 @@ class DeepPeakLocator(BasePeakLocator):
         Detects peaks in a 2D NumPy array using the deep learning model.
     """
 
-    def __init__(self, model_name: str, uncertainty: float = 0.9, n_samples: int = 30, padding_value: object = -1, max_number_of_peaks: int = 5):
+    def __init__(
+        self,
+        model_name: str,
+        uncertainty: float = 0.9,
+        n_samples: int = 30,
+        padding_value: object = -1,
+        max_number_of_peaks: int = 5,
+    ):
         """
         Initializes the DeepPeakLocator with the specified model and detection parameters.
 
@@ -119,14 +128,16 @@ class DeepPeakLocator(BasePeakLocator):
         """
         try:
             from DeepPeak.directories import weights_path
-            from DeepPeak.utils.ROI import find_middle_indices
             from DeepPeak.models import filter_predictions
+            from DeepPeak.utils.ROI import find_middle_indices
             from tensorflow import keras
         except ImportError as e:
-            raise ImportError("DeepPeak and TensorFlow are required for this method.") from e
+            raise ImportError(
+                "DeepPeak and TensorFlow are required for this method."
+            ) from e
 
         # Load trained deep learning model
-        model_path = weights_path / f'{self.model_name}.keras'
+        model_path = weights_path / f"{self.model_name}.keras"
         try:
             roi_model = keras.models.load_model(model_path)
         except Exception as e:
@@ -137,7 +148,7 @@ class DeepPeakLocator(BasePeakLocator):
             signals=array,
             model=roi_model,
             n_samples=self.n_samples,
-            threshold=self.uncertainty
+            threshold=self.uncertainty,
         )
 
         # Ensure predictions are at least 2D for consistency
@@ -147,7 +158,7 @@ class DeepPeakLocator(BasePeakLocator):
         indices = find_middle_indices(
             ROIs=predictions,
             pad_width=self.max_number_of_peaks,
-            fill_value=self.padding_value
+            fill_value=self.padding_value,
         )
 
         return indices

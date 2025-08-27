@@ -1,6 +1,7 @@
-import numpy as np
-from typing import Optional, Tuple, Callable
+from typing import Callable, Optional, Tuple
+
 import matplotlib.pyplot as plt
+import numpy as np
 from MPSPlots.styles import mps
 from TypedUnit import Any
 
@@ -45,12 +46,12 @@ class Base:
         # Plotting the PDF
         with plt.style.context(mps):  # Assuming mps is a custom style
             figure, ax = plt.subplots(1, 1)
-            ax.hist(samples, bins=bins, color='blue', edgecolor='black', alpha=0.7)
+            ax.hist(samples, bins=bins, color="blue", edgecolor="black", alpha=0.7)
 
             ax.set(
-                title='Distribution',
-                xlabel=f'Distributed parameter [{self._units}]',
-                ylabel='Probability Density Function (PDF)'
+                title="Distribution",
+                xlabel=f"Distributed parameter [{self._units}]",
+                ylabel="Probability Density Function (PDF)",
             )
 
             plt.show()
@@ -60,7 +61,6 @@ class Base:
 
     def pre_generate(function: Callable) -> Callable:
         def wrapper(self, n_samples: Any):
-
             return function(self=self, n_samples=n_samples) * self._units
 
         return wrapper

@@ -1,19 +1,18 @@
-import numpy as np
-from TypedUnit import ureg
 import matplotlib.pyplot as plt
+import numpy as np
 from MPSPlots.styles import mps
+from TypedUnit import ureg
 
-from FlowCyPy import FlowCytometer
+from FlowCyPy import FlowCytometer, circuits, peak_locator
 from FlowCyPy.population import Sphere
-from FlowCyPy import circuits
 from FlowCyPy.triggering_system import DynamicWindow
-from FlowCyPy import peak_locator
 
 
 class SignalStatistics:
     """
     Compute robust and standard statistics from an event signal array.
     """
+
     def __init__(self, data):
         self.data = data
         self.median = np.median(data)
@@ -22,17 +21,21 @@ class SignalStatistics:
         self.mean = np.mean(data)
         self.std = np.std(data)
         self.robust_std = (self.perc84 - self.perc15) / 2.0
-        self.coefficient_of_variation = self.std / self.median if self.median != 0 else np.nan
-        self.robust_coefficient_of_variation = self.robust_std / self.median if self.median != 0 else np.nan
+        self.coefficient_of_variation = (
+            self.std / self.median if self.median != 0 else np.nan
+        )
+        self.robust_coefficient_of_variation = (
+            self.robust_std / self.median if self.median != 0 else np.nan
+        )
 
     def as_dict(self):
         return {
-            'mean': self.mean,
-            'median': self.median,
-            'std': self.std,
-            'cv': self.cv,
-            'robust_std': self.robust_std,
-            'robust_cv': self.robust_cv
+            "mean": self.mean,
+            "median": self.median,
+            "std": self.std,
+            "cv": self.cv,
+            "robust_std": self.robust_std,
+            "robust_cv": self.robust_cv,
         }
 
 
@@ -43,18 +46,19 @@ class BaseEstimator:
         ]
 
         flow_cytometer.signal_processing.triggering_system = DynamicWindow(
-            trigger_detector_name='default',
+            trigger_detector_name="default",
             threshold=0.5 * ureg.millivolt,
             max_triggers=-1,
             pre_buffer=20,
             post_buffer=20,
         )
 
-        flow_cytometer.signal_processing.peak_algorithm = peak_locator.GlobalPeakLocator(compute_width=False)
+        flow_cytometer.signal_processing.peak_algorithm = (
+            peak_locator.GlobalPeakLocator(compute_width=False)
+        )
 
         results = flow_cytometer.run(
-            run_time=1.5 * ureg.millisecond,
-            compute_cross_section=True
+            run_time=1.5 * ureg.millisecond, compute_cross_section=True
         )
 
         if self.debug_mode:
@@ -90,7 +94,9 @@ class JEstimator(BaseEstimator):
         self._robust_cvs = []
         self._illumination_powers = []
 
-    def add_measurement(self, signal_array: np.ndarray, illumination_power: ureg.Quantity) -> None:
+    def add_measurement(
+        self, signal_array: np.ndarray, illumination_power: ureg.Quantity
+    ) -> None:
         """
         Add a single signal measurement and compute its statistics.
 
@@ -114,7 +120,13 @@ class JEstimator(BaseEstimator):
             print(f"[DEBUG] Robust STD: {stats.robust_std:.3e} AU")
             print(f"[DEBUG] Robust CV: {stats.robust_coefficient_of_variation:.5f}")
 
-    def add_batch(self, particle_count, bead_diameter: ureg.Quantity, illumination_powers: ureg.Quantity, flow_cytometer: FlowCytometer) -> None:
+    def add_batch(
+        self,
+        particle_count,
+        bead_diameter: ureg.Quantity,
+        illumination_powers: ureg.Quantity,
+        flow_cytometer: FlowCytometer,
+    ) -> None:
         """
         Add multiple signal measurements across a range of illumination powers using a provided generator.
 
@@ -134,18 +146,24 @@ class JEstimator(BaseEstimator):
                 flow_cytometer=flow_cytometer,
                 bead_diameter=bead_diameter,
                 illumination_power=power,
-                particle_count=particle_count
+                particle_count=particle_count,
             )
 
-            signal_array = result_df['Height'].values.astype(float)
+            signal_array = result_df["Height"].values.astype(float)
             self.add_measurement(signal_array, power)
 
-    def _run_experiment(self, flow_cytometer: FlowCytometer, bead_diameter, illumination_power, particle_count):
+    def _run_experiment(
+        self,
+        flow_cytometer: FlowCytometer,
+        bead_diameter,
+        illumination_power,
+        particle_count,
+    ):
         population_0 = Sphere(
-            name='population',
+            name="population",
             particle_count=particle_count,
             diameter=bead_diameter,
-            refractive_index=1.47 * ureg.RIU
+            refractive_index=1.47 * ureg.RIU,
         )
 
         flow_cytometer.fluidics.scatterer_collection.populations = [population_0]
@@ -196,7 +214,13 @@ class JEstimator(BaseEstimator):
             y_fit = slope * x_fit + intercept
 
             ax.scatter(x, y, label="Measured RCV", zorder=3)
-            ax.plot(x_fit, y_fit, '--', label=fr"$RCV = {slope:.3e} \cdot x + {intercept:.3e}$", zorder=2)
+            ax.plot(
+                x_fit,
+                y_fit,
+                "--",
+                label=rf"$RCV = {slope:.3e} \cdot x + {intercept:.3e}$",
+                zorder=2,
+            )
             ax.set_xlabel(r"$1 / \sqrt{\mathrm{Median\ Signal}}$")
             ax.set_ylabel("Robust CV")
             ax.set_title("J Parameter Estimation")
@@ -205,7 +229,6 @@ class JEstimator(BaseEstimator):
             plt.tight_layout()
             plt.show()
 
-
     def plot_statistics(self) -> None:
         """
         Plot:
@@ -213,17 +236,21 @@ class JEstimator(BaseEstimator):
         2. Robust STD vs Illumination Power with √(Median) fit
         """
         if len(self._medians) < 2:
-            raise ValueError("At least two measurements are required to plot statistics.")
+            raise ValueError(
+                "At least two measurements are required to plot statistics."
+            )
 
         with plt.style.context(mps):
             fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8, 6))
 
-            powers = np.array([float(p.to('mW').magnitude) for p in self._illumination_powers])
+            powers = np.array(
+                [float(p.to("mW").magnitude) for p in self._illumination_powers]
+            )
             medians = np.array(self._medians)
             stds = np.array(self._robust_stds)
 
             # Median vs Illumination
-            axs[0].plot(powers, medians, 'o-', color='C0', label="Median")
+            axs[0].plot(powers, medians, "o-", color="C0", label="Median")
             axs[0].set_xlabel("Illumination Power [mW]")
             axs[0].set_ylabel("Median [AU]")
             axs[0].set_title("Median Signal vs Illumination Power")
@@ -234,9 +261,14 @@ class JEstimator(BaseEstimator):
             coeffs = np.polyfit(sqrt_medians, stds, 1)
             std_fit = coeffs[0] * sqrt_medians + coeffs[1]
 
-            axs[1].plot(powers, stds, 'o', color='C1', label="Robust STD")
-            axs[1].plot(powers, std_fit, '--', color='C1',
-                label=fr"$STD = {coeffs[0]:.2e} \cdot \sqrt{{M}} + {coeffs[1]:.2e}$")
+            axs[1].plot(powers, stds, "o", color="C1", label="Robust STD")
+            axs[1].plot(
+                powers,
+                std_fit,
+                "--",
+                color="C1",
+                label=rf"$STD = {coeffs[0]:.2e} \cdot \sqrt{{M}} + {coeffs[1]:.2e}$",
+            )
             axs[1].set_xlabel("Illumination Power [mW]")
             axs[1].set_ylabel("Robust STD [AU]")
             axs[1].set_title("STD vs Illumination Power")
@@ -266,7 +298,9 @@ class KEstimator(BaseEstimator):
         self._robust_stds = []
         self._bead_diameters = []
 
-    def add_measurement(self, signal_array: np.ndarray, bead_diameter: ureg.Quantity) -> None:
+    def add_measurement(
+        self, signal_array: np.ndarray, bead_diameter: ureg.Quantity
+    ) -> None:
         """
         Add a measurement corresponding to a single bead size.
 
@@ -288,8 +322,13 @@ class KEstimator(BaseEstimator):
             print(f"[DEBUG] Median: {stats.median:.3e} AU")
             print(f"[DEBUG] Robust STD: {stats.robust_std:.3e} AU")
 
-    def add_batch(self, particle_count: int, bead_diameters: list[ureg.Quantity],
-                  illumination_power: ureg.Quantity, flow_cytometer: FlowCytometer) -> None:
+    def add_batch(
+        self,
+        particle_count: int,
+        bead_diameters: list[ureg.Quantity],
+        illumination_power: ureg.Quantity,
+        flow_cytometer: FlowCytometer,
+    ) -> None:
         """
         Add multiple measurements for different bead sizes at a fixed illumination power.
 
@@ -306,16 +345,20 @@ class KEstimator(BaseEstimator):
         """
         for idx, diameter in enumerate(bead_diameters):
             print(f"[INFO] Simulating bead {idx+1}/{len(bead_diameters)}: {diameter}")
-            peaks = self._run_experiment(flow_cytometer, diameter, illumination_power, particle_count)
-            signal_array = peaks['Height'].values.astype(float)
+            peaks = self._run_experiment(
+                flow_cytometer, diameter, illumination_power, particle_count
+            )
+            signal_array = peaks["Height"].values.astype(float)
             self.add_measurement(signal_array, diameter)
 
-    def _run_experiment(self, flow_cytometer, bead_diameter, illumination_power, particle_count):
+    def _run_experiment(
+        self, flow_cytometer, bead_diameter, illumination_power, particle_count
+    ):
         population = Sphere(
-            name='population',
+            name="population",
             particle_count=particle_count,
             diameter=bead_diameter,
-            refractive_index=1.47 * ureg.RIU
+            refractive_index=1.47 * ureg.RIU,
         )
         flow_cytometer.fluidics.scatterer_collection.populations = [population]
         flow_cytometer.opto_electronics.source.optical_power = illumination_power
@@ -361,7 +404,13 @@ class KEstimator(BaseEstimator):
         with plt.style.context(mps):
             fig, ax = plt.subplots(figsize=(6, 4))
             ax.scatter(x, y, label="Measured STD", zorder=3)
-            ax.plot(x_fit, y_fit, '--', label=fr"$STD = {slope:.3e} \cdot \sqrt{{M}} + {intercept:.3e}$", zorder=2)
+            ax.plot(
+                x_fit,
+                y_fit,
+                "--",
+                label=rf"$STD = {slope:.3e} \cdot \sqrt{{M}} + {intercept:.3e}$",
+                zorder=2,
+            )
             ax.set_xlabel(r"$\sqrt{\mathrm{Median\ Signal}}$")
             ax.set_ylabel("Robust STD")
             ax.set_title("K Parameter Estimation")
@@ -374,22 +423,24 @@ class KEstimator(BaseEstimator):
         Plot Median and STD vs Bead Diameter.
         """
         if len(self._medians) < 2:
-            raise ValueError("At least two measurements are required to plot statistics.")
+            raise ValueError(
+                "At least two measurements are required to plot statistics."
+            )
 
-        diameters = [float(d.to('micrometer').magnitude) for d in self._bead_diameters]
+        diameters = [float(d.to("micrometer").magnitude) for d in self._bead_diameters]
         medians = np.array(self._medians)
         stds = np.array(self._robust_stds)
 
         with plt.style.context(mps):
             fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8, 6))
 
-            axs[0].plot(diameters, medians, 'o-', color='C0', label="Median")
+            axs[0].plot(diameters, medians, "o-", color="C0", label="Median")
             axs[0].set_xlabel("Bead Diameter [µm]")
             axs[0].set_ylabel("Median [AU]")
             axs[0].set_title("Median vs Bead Diameter")
             axs[0].legend()
 
-            axs[1].plot(diameters, stds, 'o-', color='C1', label="Robust STD")
+            axs[1].plot(diameters, stds, "o-", color="C1", label="Robust STD")
             axs[1].set_xlabel("Bead Diameter [µm]")
             axs[1].set_ylabel("Robust STD [AU]")
             axs[1].set_title("STD vs Bead Diameter")

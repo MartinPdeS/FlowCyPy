@@ -153,4 +153,3 @@ public:
     void run(const double threshold, const double lower_threshold, const bool debounce_enabled, const int min_window_duration = -1);
 
 };
-

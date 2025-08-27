@@ -1,5 +1,7 @@
 import numpy as np
+
 from FlowCyPy.peak_locator.base_class import BasePeakLocator
+
 
 class DerivativePeakLocator(BasePeakLocator):
     r"""
@@ -45,8 +47,14 @@ class DerivativePeakLocator(BasePeakLocator):
     >>> print("Areas:\n", result["area"])
     """
 
-    def __init__(self, max_number_of_peaks: int = 5, padding_value: object = -1,
-                 compute_width: bool = False, compute_area: bool = False, threshold: float = 0.5):
+    def __init__(
+        self,
+        max_number_of_peaks: int = 5,
+        padding_value: object = -1,
+        compute_width: bool = False,
+        compute_area: bool = False,
+        threshold: float = 0.5,
+    ):
         self.max_number_of_peaks = max_number_of_peaks
         self.padding_value = padding_value
         self.compute_width = compute_width
@@ -83,9 +91,19 @@ class DerivativePeakLocator(BasePeakLocator):
         """
         assert array.ndim == 2, "Input must be a 2D NumPy array."
         num_rows = array.shape[0]
-        peak_indices = np.full((num_rows, self.max_number_of_peaks), self.padding_value, dtype=float)
-        widths = np.full((num_rows, self.max_number_of_peaks), np.nan, dtype=float) if self.compute_width else None
-        areas = np.full((num_rows, self.max_number_of_peaks), np.nan, dtype=float) if self.compute_area else None
+        peak_indices = np.full(
+            (num_rows, self.max_number_of_peaks), self.padding_value, dtype=float
+        )
+        widths = (
+            np.full((num_rows, self.max_number_of_peaks), np.nan, dtype=float)
+            if self.compute_width
+            else None
+        )
+        areas = (
+            np.full((num_rows, self.max_number_of_peaks), np.nan, dtype=float)
+            if self.compute_area
+            else None
+        )
 
         for i in range(num_rows):
             row = array[i]
@@ -95,15 +113,20 @@ class DerivativePeakLocator(BasePeakLocator):
 
             # Identify indices where the first derivative changes sign from positive to negative and second derivative is negative.
             # Note: Since derivatives have reduced lengths, adjust indices by +1.
-            candidates = np.where((np.sign(first_derivative[:-1]) > np.sign(first_derivative[1:])) &
-                                  (second_derivative < 0))[0] + 1
+            candidates = (
+                np.where(
+                    (np.sign(first_derivative[:-1]) > np.sign(first_derivative[1:]))
+                    & (second_derivative < 0)
+                )[0]
+                + 1
+            )
 
             # If no candidates found, continue.
             if candidates.size == 0:
                 continue
 
             # Limit number of detected peaks to max_number_of_peaks.
-            selected_peaks = candidates[:self.max_number_of_peaks]
+            selected_peaks = candidates[: self.max_number_of_peaks]
             num_found = len(selected_peaks)
             peak_indices[i, :num_found] = selected_peaks
 
@@ -128,7 +151,7 @@ class DerivativePeakLocator(BasePeakLocator):
                     if self.compute_width:
                         widths[i, j] = right_boundary - left_boundary + 1
                     if self.compute_area:
-                        areas[i, j] = np.sum(row[left_boundary:right_boundary + 1])
+                        areas[i, j] = np.sum(row[left_boundary : right_boundary + 1])
 
         result = {"peak_index": peak_indices}
         if self.compute_width:

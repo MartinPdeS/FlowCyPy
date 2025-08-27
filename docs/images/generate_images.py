@@ -1,13 +1,25 @@
+import os
+
 import numpy as np
 from TypedUnit import ureg
-from FlowCyPy import SimulationSettings
-from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy.fluidics import Fluidics, ScattererCollection, population, distribution
-from FlowCyPy.opto_electronics import source, Detector, TransimpedanceAmplifier, OptoElectronics
-from FlowCyPy.signal_processing import SignalProcessing, Digitizer, circuits, peak_locator, triggering_system
+
+from FlowCyPy import FlowCytometer, SimulationSettings
 from FlowCyPy.classifier import KmeansClassifier
-from FlowCyPy import FlowCytometer
-import os
+from FlowCyPy.flow_cell import FlowCell
+from FlowCyPy.fluidics import Fluidics, ScattererCollection, distribution, population
+from FlowCyPy.opto_electronics import (
+    Detector,
+    OptoElectronics,
+    TransimpedanceAmplifier,
+    source,
+)
+from FlowCyPy.signal_processing import (
+    Digitizer,
+    SignalProcessing,
+    circuits,
+    peak_locator,
+    triggering_system,
+)
 
 current_directory = os.path.dirname(os.path.realpath(__file__))
 
@@ -24,33 +36,30 @@ flow_cell = FlowCell(
     sample_volume_flow=80 * ureg.microliter / ureg.minute,
     sheath_volume_flow=1 * ureg.milliliter / ureg.minute,
     width=200 * ureg.micrometer,
-    height=100 * ureg.micrometer
+    height=100 * ureg.micrometer,
 )
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
 
 population_0 = population.Sphere(
-    name='Population: 150nm',
+    name="Population: 150nm",
     particle_count=5e9 * ureg.particle / ureg.milliliter,
     diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
-    refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU)
+    refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU),
 )
 
 population_1 = population.Sphere(
-    name='Population: 200nm',
+    name="Population: 200nm",
     particle_count=5e9 * ureg.particle / ureg.milliliter,
     diameter=distribution.RosinRammler(200 * ureg.nanometer, spread=30),
-    refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU)
+    refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU),
 )
 
 scatterer_collection.add_population(population_0, population_1)
 
 scatterer_collection.dilute(factor=80)
 
-fluidics = Fluidics(
-    scatterer_collection=scatterer_collection,
-    flow_cell=flow_cell
-)
+fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
 # figure = fluidics.plot(
 #     run_time=0.5 * ureg.millisecond,
@@ -61,42 +70,48 @@ fluidics = Fluidics(
 event_df = fluidics.generate_event_dataframe(run_time=0.5 * ureg.millisecond)
 
 event_df.plot(
-    x='RefractiveIndex',
-    y='Diameter',
-    save_as=f'{current_directory}/example_scatterers.png',
-    show=False
+    x="RefractiveIndex",
+    y="Diameter",
+    save_as=f"{current_directory}/example_scatterers.png",
+    show=False,
 )
 
 source = source.GaussianBeam(
     numerical_aperture=0.1 * ureg.AU,
     wavelength=450 * ureg.nanometer,
     optical_power=200 * ureg.milliwatt,
-    RIN=-140
+    RIN=-140,
 )
 
 detectors = [
-    Detector(name='forward', phi_angle=0 * ureg.degree,  numerical_aperture=0.3 * ureg.AU, responsivity=1 * ureg.ampere / ureg.watt),
-    Detector(name='side',    phi_angle=90 * ureg.degree, numerical_aperture=0.3 * ureg.AU, responsivity=1 * ureg.ampere / ureg.watt)
+    Detector(
+        name="forward",
+        phi_angle=0 * ureg.degree,
+        numerical_aperture=0.3 * ureg.AU,
+        responsivity=1 * ureg.ampere / ureg.watt,
+    ),
+    Detector(
+        name="side",
+        phi_angle=90 * ureg.degree,
+        numerical_aperture=0.3 * ureg.AU,
+        responsivity=1 * ureg.ampere / ureg.watt,
+    ),
 ]
 
 amplifier = TransimpedanceAmplifier(
     gain=10 * ureg.volt / ureg.ampere,
     bandwidth=10 * ureg.megahertz,
     voltage_noise_density=0.1 * ureg.nanovolt / ureg.sqrt_hertz,
-    current_noise_density=0.2 * ureg.femtoampere / ureg.sqrt_hertz
+    current_noise_density=0.2 * ureg.femtoampere / ureg.sqrt_hertz,
 )
 
 opto_electronics = OptoElectronics(
-    detectors=detectors,
-    source=source,
-    amplifier=amplifier
+    detectors=detectors, source=source, amplifier=amplifier
 )
 
 
 digitizer = Digitizer(
-    bit_depth='14bit',
-    saturation_levels='auto',
-    sampling_rate=60 * ureg.megahertz
+    bit_depth="14bit", saturation_levels="auto", sampling_rate=60 * ureg.megahertz
 )
 
 # analog_processing = [

@@ -1,9 +1,10 @@
-from pydantic.dataclasses import dataclass
-from typing import Union, Tuple
-from TypedUnit import Quantity, Frequency, Voltage, Time
-import pandas as pd
-import numpy as np
 import logging
+from typing import Tuple, Union
+
+import numpy as np
+import pandas as pd
+from pydantic.dataclasses import dataclass
+from TypedUnit import Frequency, Quantity, Time, Voltage
 
 from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.utils import config_dict
@@ -49,9 +50,10 @@ class Digitizer:
     dynamic range. This class provides the flexibility to configure both the sampling resolution
     and saturation behavior for simulation purposes.
     """
+
     sampling_rate: Frequency
-    bit_depth: Union[int, str] = '10bit'
-    saturation_levels: Union[str, Tuple[Voltage, Voltage], Voltage] = 'auto'
+    bit_depth: Union[int, str] = "10bit"
+    saturation_levels: Union[str, Tuple[Voltage, Voltage], Voltage] = "auto"
 
     @property
     def _bit_depth(self) -> int:
@@ -85,8 +87,8 @@ class Digitizer:
             The number of bins corresponding to the bit-depth.
         """
         if isinstance(bit_depth, str):
-            bit_depth = int(bit_depth.rstrip('bit'))
-            bit_depth = 2 ** bit_depth
+            bit_depth = int(bit_depth.rstrip("bit"))
+            bit_depth = 2**bit_depth
 
         return bit_depth
 
@@ -98,15 +100,19 @@ class Digitizer:
         return time_series
 
     def get_saturation_values(self, signal: pd.Series) -> Tuple[Quantity, Quantity]:
-
         if signal.size == 0:
             return Quantity(0, signal.pint.units), Quantity(0, signal.pint.units)
-        if self.saturation_levels == 'auto':
+        if self.saturation_levels == "auto":
             return signal.pint.quantity.min(), signal.pint.quantity.max()
-        elif isinstance(self.saturation_levels, tuple) and len(self.saturation_levels) == 2:
+        elif (
+            isinstance(self.saturation_levels, tuple)
+            and len(self.saturation_levels) == 2
+        ):
             return self.saturation_levels
 
-        raise ValueError("saturation_levels must be 'auto' or a tuple of two Quantities.")
+        raise ValueError(
+            "saturation_levels must be 'auto' or a tuple of two Quantities."
+        )
 
     def capture_signal(self, signal: pd.Series) -> Tuple[Quantity, Quantity, Quantity]:
         """
@@ -118,26 +124,32 @@ class Digitizer:
             signal = np.clip(
                 a=signal.pint.quantity.magnitude,
                 a_min=min_level.to(signal.pint.units).magnitude,
-                a_max=max_level.to(signal.pint.units).magnitude
+                a_max=max_level.to(signal.pint.units).magnitude,
             )
 
             # If the digitizer is assumed to be perfect, return the signal without processing
             return signal, (min_level, max_level)
 
-        assert signal.pint.check(min_level.units), f"Signal units: {signal.pint.units} do not match the saturation level units: {min_level.units}"
+        assert signal.pint.check(
+            min_level.units
+        ), f"Signal units: {signal.pint.units} do not match the saturation level units: {min_level.units}"
 
         self._saturation_levels = min_level, max_level
         # Generate bins for discretization
         bins = np.linspace(
             min_level.to(signal.pint.units).magnitude,
             max_level.to(signal.pint.units).magnitude,
-            self._bit_depth
+            self._bit_depth,
         )
 
-        digitized_signal = np.digitize(signal.pint.magnitude, bins, right=True).astype(float)
+        digitized_signal = np.digitize(signal.pint.magnitude, bins, right=True).astype(
+            float
+        )
 
         # Throw a warning if saturated
         if np.any((signal < min_level) | (signal > max_level)):
-            logging.info("Signal values have been clipped to the saturation boundaries.")
+            logging.info(
+                "Signal values have been clipped to the saturation boundaries."
+            )
 
         return digitized_signal, (min_level, max_level)

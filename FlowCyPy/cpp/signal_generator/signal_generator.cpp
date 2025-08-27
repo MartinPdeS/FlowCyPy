@@ -238,8 +238,3 @@ void SignalGenerator::apply_poisson_noise() {
             this->apply_poisson_noise_to_signal(entry.first);
 
 }
-
-
-
-
-

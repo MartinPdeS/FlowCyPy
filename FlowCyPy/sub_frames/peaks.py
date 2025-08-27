@@ -1,31 +1,36 @@
-from typing import Optional, Union, List, Tuple, Any
-import pandas as pd
-import numpy
+from typing import Any, List, Optional, Tuple, Union
+
 import matplotlib.pyplot as plt
+import numpy
+import pandas as pd
 import seaborn as sns
 from TypedUnit import ureg
 
-from FlowCyPy.sub_frames.base import BaseSubFrame
-from FlowCyPy.sub_frames import utils
 from FlowCyPy import helper
+from FlowCyPy.sub_frames import utils
+from FlowCyPy.sub_frames.base import BaseSubFrame
+
 
 class PeakDataFrame(BaseSubFrame):
     """
     A subclass of pandas DataFrame for handling peak data with custom plotting.
     """
+
     def plot(self, **kwargs) -> Any:
         """
         Dispatch plotting to 2D or 3D methods based on provided kwargs.
         """
-        if 'z' in kwargs:
+        if "z" in kwargs:
             return self.plot_3d(**kwargs)
 
-        if 'y' in kwargs:
+        if "y" in kwargs:
             return self.plot_2d(**kwargs)
 
         return self.hist(**kwargs)
 
-    def standard_deviation(self, detector_name: str, metrics: str | slice = slice(None)):
+    def standard_deviation(
+        self, detector_name: str, metrics: str | slice = slice(None)
+    ):
         """
         Calculate the standard deviation of the specified detector's signal.
 
@@ -45,7 +50,9 @@ class PeakDataFrame(BaseSubFrame):
 
         return sub_frame.std()
 
-    def robust_standard_deviation(self, detector_name: str, metrics: str | slice = slice(None)):
+    def robust_standard_deviation(
+        self, detector_name: str, metrics: str | slice = slice(None)
+    ):
         """
         Calculate the robust standard deviation of the specified detector's signal.
 
@@ -82,7 +89,9 @@ class PeakDataFrame(BaseSubFrame):
         sub_frame = self.loc[detector_name, metrics]
         return sub_frame.mean(axis=0)
 
-    def get_sub_dataframe(self, columns: List[str], rows: List[str]) -> Tuple[pd.DataFrame, List[Any]]:
+    def get_sub_dataframe(
+        self, columns: List[str], rows: List[str]
+    ) -> Tuple[pd.DataFrame, List[Any]]:
         """
         Extract sub-dataframe for given rows and columns with Pint unit conversion.
 
@@ -102,9 +111,9 @@ class PeakDataFrame(BaseSubFrame):
         unit_list = []
 
         for col_name, col_data in df.items():
-            if not hasattr(col_data, 'pint'):
+            if not hasattr(col_data, "pint"):
                 df[col_name] = col_data
-                unit_list.append('None')
+                unit_list.append("None")
             else:
                 unit = col_data.max().to_compact().units
                 if unit.dimensionality == ureg.bit_bins.dimensionality:
@@ -116,13 +125,14 @@ class PeakDataFrame(BaseSubFrame):
         return df, unit_list
 
     @helper.mpl_plot
-    def hist(self,
+    def hist(
+        self,
         x: tuple[str, str],
         figure_size: tuple = (10, 6),
         kde: bool = False,
-        bins: Optional[int] = 'auto',
+        bins: Optional[int] = "auto",
         color: Optional[Union[str, dict]] = None,
-        clip_data: Optional[Union[str, Any]] = None
+        clip_data: Optional[Union[str, Any]] = None,
     ) -> plt.Figure:
         """
         Plot a histogram distribution for a given column using Seaborn, with an option to remove extreme values.
@@ -173,10 +183,9 @@ class PeakDataFrame(BaseSubFrame):
         return figure
 
     @helper.plot_sns
-    def plot_2d(self,
-        x: tuple[str, str],
-        y: tuple[str, str],
-        bandwidth_adjust: float = 0.8) -> plt.Figure:
+    def plot_2d(
+        self, x: tuple[str, str], y: tuple[str, str], bandwidth_adjust: float = 0.8
+    ) -> plt.Figure:
         """
         Plot the joint KDE distribution of a feature between two detectors.
 
@@ -204,21 +213,19 @@ class PeakDataFrame(BaseSubFrame):
         grid = sns.jointplot(
             x=df.loc[x],
             y=df.loc[y],
-            kind='kde',
+            kind="kde",
             fill=True,
             cmap="Blues",
-            joint_kws={'bw_adjust': bandwidth_adjust, 'alpha': 0.7}
+            joint_kws={"bw_adjust": bandwidth_adjust, "alpha": 0.7},
         )
 
         grid.figure.suptitle("Peaks properties")
-        grid.ax_joint.scatter(
-            df.loc[x],
-            df.loc[y],
-            color='C1',
-            alpha=0.6
-        )
+        grid.ax_joint.scatter(df.loc[x], df.loc[y], color="C1", alpha=0.6)
 
-        grid.set_axis_labels(f"Detector: {x_detector} : feature: {x_feature}", f"Detector: {y_detector} : feature: {y_feature}")
+        grid.set_axis_labels(
+            f"Detector: {x_detector} : feature: {x_feature}",
+            f"Detector: {y_detector} : feature: {y_feature}",
+        )
         return grid
 
     @helper.plot_3d

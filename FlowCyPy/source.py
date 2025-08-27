@@ -1,16 +1,27 @@
+import warnings
+from typing import Optional
+
 import numpy as np
 import pint_pandas
-from typing import Optional
 from pydantic.dataclasses import dataclass
-import warnings
-from TypedUnit import Frequency, Length, Dimensionless, Velocity, ElectricField, Power, Any, Angle, ureg
+from TypedUnit import (
+    Angle,
+    Any,
+    Dimensionless,
+    ElectricField,
+    Frequency,
+    Length,
+    Power,
+    Velocity,
+    ureg,
+)
 
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.utils import config_dict
 
 
-class BaseBeam():
+class BaseBeam:
     """
     Mixin class providing unit validation for quantities used in optical sources.
     """
@@ -20,13 +31,17 @@ class BaseBeam():
         Initialize beam waists based on the numerical apertures and calculate electric field amplitude at the focus.
         """
         self.frequency = PhysicalConstant.c / self.wavelength
-        self.photon_energy = (PhysicalConstant.h * self.frequency).to(ureg.joule) / ureg.particle
+        self.photon_energy = (PhysicalConstant.h * self.frequency).to(
+            ureg.joule
+        ) / ureg.particle
 
         # Calculate amplitude at focus
         self.amplitude = self.calculate_field_amplitude_at_focus()
 
     def calculate_field_amplitude_at_focus(self) -> None:
-        return NotImplementedError('This method should be implemneted by the derived class!')
+        return NotImplementedError(
+            "This method should be implemneted by the derived class!"
+        )
 
     def _validation(*args, **kwargs):
         def wrapper(function):
@@ -36,21 +51,28 @@ class BaseBeam():
 
     def add_rin_to_amplitude(self, amplitude: Any, bandwidth: Frequency) -> Any:
         # Convert RIN from dB/Hz to linear scale if necessary
-        rin_linear = 10**(self.RIN / 10)
+        rin_linear = 10 ** (self.RIN / 10)
 
         # Compute noise standard deviation, scaled by bandwidth
-        std_dev_amplitude = np.sqrt(rin_linear * bandwidth.to(ureg.hertz).magnitude) * self.amplitude
+        std_dev_amplitude = (
+            np.sqrt(rin_linear * bandwidth.to(ureg.hertz).magnitude) * self.amplitude
+        )
 
         # Apply Gaussian noise to the amplitude
-        amplitude += np.random.normal(
-            loc=0,
-            scale=std_dev_amplitude.to(self.amplitude.units).magnitude,
-            size=len(amplitude)
-        ) * amplitude.units
+        amplitude += (
+            np.random.normal(
+                loc=0,
+                scale=std_dev_amplitude.to(self.amplitude.units).magnitude,
+                size=len(amplitude),
+            )
+            * amplitude.units
+        )
 
         return amplitude
 
-    def get_amplitude_signal(self, bandwidth: Frequency, x: Length, y: Length, z: Length = 0 * ureg.meter) -> np.ndarray:
+    def get_amplitude_signal(
+        self, bandwidth: Frequency, x: Length, y: Length, z: Length = 0 * ureg.meter
+    ) -> np.ndarray:
         r"""
         Applies Relative Intensity Noise (RIN) to the source amplitude if enabled, accounting for detection bandwidth.
 
@@ -119,7 +141,10 @@ class BaseBeam():
         else:
             amplitudes = self.amplitude_at(x=x, y=y, z=z).values.quantity
 
-        if SimulationSettings.include_source_noise and SimulationSettings.include_noises:
+        if (
+            SimulationSettings.include_source_noise
+            and SimulationSettings.include_noises
+        ):
             amplitudes = self.add_rin_to_amplitude(amplitudes, bandwidth=bandwidth)
 
         return amplitudes
@@ -146,6 +171,7 @@ class GaussianBeam(BaseBeam):
     RIN : Optional[float]
         The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a stable laser.
     """
+
     optical_power: Power
     wavelength: Length
     numerical_aperture: Optional[Dimensionless] = None
@@ -161,12 +187,18 @@ class GaussianBeam(BaseBeam):
         if (self.numerical_aperture is None) and (self.waist is None):
             raise ValueError("Either numerical_aperture or waist must be provided.")
         if (self.numerical_aperture is not None) and (self.waist is not None):
-            raise ValueError("Provide only one: either numerical_aperture or waist, not both.")
+            raise ValueError(
+                "Provide only one: either numerical_aperture or waist, not both."
+            )
 
         if self.numerical_aperture is not None:
-            self.waist = self.wavelength / (PhysicalConstant.pi * self.numerical_aperture)
+            self.waist = self.wavelength / (
+                PhysicalConstant.pi * self.numerical_aperture
+            )
         else:
-            self.numerical_aperture = self.wavelength / (PhysicalConstant.pi * self.waist)
+            self.numerical_aperture = self.wavelength / (
+                PhysicalConstant.pi * self.waist
+            )
 
         self.initialization()
 
@@ -191,11 +223,22 @@ class GaussianBeam(BaseBeam):
             The electric field amplitude at the focus in volts per meter.
         """
         # Ensure that waist has been computed
-        area = self.waist ** 2
-        E0 = np.sqrt(4 * self.optical_power / (PhysicalConstant.pi * PhysicalConstant.epsilon_0 * PhysicalConstant.c * area))
+        area = self.waist**2
+        E0 = np.sqrt(
+            4
+            * self.optical_power
+            / (
+                PhysicalConstant.pi
+                * PhysicalConstant.epsilon_0
+                * PhysicalConstant.c
+                * area
+            )
+        )
         return E0.to(ureg.volt / ureg.meter)
 
-    def amplitude_at(self, x: Length, y: Length, z: Length = 0 * ureg.meter) -> ElectricField:
+    def amplitude_at(
+        self, x: Length, y: Length, z: Length = 0 * ureg.meter
+    ) -> ElectricField:
         r"""
         Returns the electric field amplitude at a position (x,y) in the focal plane.
 
@@ -209,16 +252,17 @@ class GaussianBeam(BaseBeam):
         """
         print(y, self.waist)
         if np.any(y > self.waist):
-            warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+            warnings.warn(
+                "Transverse distribution of particle flow exceed the waist of the source"
+            )
 
         E0 = self.calculate_field_amplitude_at_focus()
-        return E0 * np.exp(-(y ** 2) / (self.waist ** 2) - (z ** 2) / (self.waist ** 2))
+        return E0 * np.exp(-(y**2) / (self.waist**2) - (z**2) / (self.waist**2))
 
     def get_particle_width(self, velocity: Velocity) -> Length:
         if len(velocity) == 0:
             return pint_pandas.PintArray([], ureg.meter)
         return self.waist / (2 * velocity)
-
 
 
 @dataclass(config=config_dict)
@@ -249,6 +293,7 @@ class AstigmaticGaussianBeam(BaseBeam):
         Default is 0.0, representing a perfectly stable laser.
 
     """
+
     optical_power: Power
     wavelength: Length
     numerical_aperture_y: Optional[Dimensionless] = None
@@ -267,25 +312,37 @@ class AstigmaticGaussianBeam(BaseBeam):
         if (self.numerical_aperture_y is None) and (self.waist_y is None):
             raise ValueError("Either numerical_aperture_y or waist_y must be provided.")
         if (self.numerical_aperture_y is not None) and (self.waist_y is not None):
-            raise ValueError("Provide only one: either numerical_aperture_y or waist_y, not both.")
+            raise ValueError(
+                "Provide only one: either numerical_aperture_y or waist_y, not both."
+            )
 
         # Check for y-axis parameters
         if (self.numerical_aperture_z is None) and (self.waist_z is None):
             raise ValueError("Either numerical_aperture_z or waist_z must be provided.")
         if (self.numerical_aperture_z is not None) and (self.waist_z is not None):
-            raise ValueError("Provide only one: either numerical_aperture_z or waist_z, not both.")
+            raise ValueError(
+                "Provide only one: either numerical_aperture_z or waist_z, not both."
+            )
 
         # Compute missing values for y-axis
         if self.numerical_aperture_y is not None:
-            self.waist_y = self.wavelength / (PhysicalConstant.pi * self.numerical_aperture_y)
+            self.waist_y = self.wavelength / (
+                PhysicalConstant.pi * self.numerical_aperture_y
+            )
         else:
-            self.numerical_aperture_y = self.wavelength / (PhysicalConstant.pi * self.waist_y)
+            self.numerical_aperture_y = self.wavelength / (
+                PhysicalConstant.pi * self.waist_y
+            )
 
         # Compute missing values for z-axis
         if self.numerical_aperture_z is not None:
-            self.waist_z = self.wavelength / (PhysicalConstant.pi * self.numerical_aperture_z)
+            self.waist_z = self.wavelength / (
+                PhysicalConstant.pi * self.numerical_aperture_z
+            )
         else:
-            self.numerical_aperture_z = self.wavelength / (PhysicalConstant.pi * self.waist_z)
+            self.numerical_aperture_z = self.wavelength / (
+                PhysicalConstant.pi * self.waist_z
+            )
 
         self.initialization()
 
@@ -311,10 +368,21 @@ class AstigmaticGaussianBeam(BaseBeam):
             The electric field amplitude at the focus in volts per meter.
         """
         area = self.waist_y * self.waist_z
-        E0 = np.sqrt(4 * self.optical_power / (PhysicalConstant.pi * PhysicalConstant.epsilon_0 * PhysicalConstant.c * area))
+        E0 = np.sqrt(
+            4
+            * self.optical_power
+            / (
+                PhysicalConstant.pi
+                * PhysicalConstant.epsilon_0
+                * PhysicalConstant.c
+                * area
+            )
+        )
         return E0.to(ureg.volt / ureg.meter)
 
-    def amplitude_at(self, x: Length, y: Length, z: Length = 0 * ureg.meter) -> ElectricField:
+    def amplitude_at(
+        self, x: Length, y: Length, z: Length = 0 * ureg.meter
+    ) -> ElectricField:
         r"""
         Returns the electric field amplitude at position (x,y) in the focal plane.
 
@@ -327,10 +395,12 @@ class AstigmaticGaussianBeam(BaseBeam):
             The electric field amplitude at the focus in volts per meter.
         """
         if np.any(y > self.waist_z):
-            warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+            warnings.warn(
+                "Transverse distribution of particle flow exceed the waist of the source"
+            )
 
         E0 = self.calculate_field_amplitude_at_focus()
-        return E0 * np.exp(- y ** 2 / self.waist_y ** 2 - z ** 2 / self.waist_z ** 2)
+        return E0 * np.exp(-(y**2) / self.waist_y**2 - z**2 / self.waist_z**2)
 
     def get_particle_width(self, velocity: Velocity) -> Length:
         """

@@ -8,7 +8,7 @@ class RestrictiveMeta(type):
             valid_attrs = [attr for attr in dir(cls) if not attr.startswith("_")]
             warnings.warn(
                 f"Attribute '{name}' not recognized in {cls.__name__}. Valid attributes are: {valid_attrs}",
-                UserWarning
+                UserWarning,
             )
             return
         super().__setattr__(name, value)
@@ -59,6 +59,7 @@ class SimulationSettings(metaclass=RestrictiveMeta):
     - The singleton pattern is enforced by overriding the `__new__` method, ensuring
       a single shared instance.
     """
+
     _instance = None
 
     def __new__(cls, *args, **kwargs):

@@ -2,7 +2,10 @@ import numpy as np
 import pint_pandas
 from TypedUnit import Quantity
 
-def clip_data(signal: pint_pandas.PintArray, clip_value: str | Quantity = None) -> pint_pandas.PintArray:
+
+def clip_data(
+    signal: pint_pandas.PintArray, clip_value: str | Quantity = None
+) -> pint_pandas.PintArray:
     """
     Clips the data in a PintArray based on a specified threshold.
     If `clip_value` is a string ending with '%', it is treated as a percentage of the maximum value.
@@ -26,9 +29,9 @@ def clip_data(signal: pint_pandas.PintArray, clip_value: str | Quantity = None) 
 
     # Remove data above the clip threshold if clip_value is provided.
     if clip_value is not None:
-        if isinstance(clip_value, str) and clip_value.endswith('%'):
+        if isinstance(clip_value, str) and clip_value.endswith("%"):
             # For a percentage clip, compute the threshold quantile.
-            percent = float(clip_value.rstrip('%'))
+            percent = float(clip_value.rstrip("%"))
             clip_value = np.percentile(signal, 100 - percent)
         else:
             clip_value = clip_value.to(signal.pint.signal_units).magnitude

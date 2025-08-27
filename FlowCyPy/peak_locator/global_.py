@@ -1,6 +1,8 @@
 import numpy as np
+
 from FlowCyPy.binary import interface_peak_locator
 from FlowCyPy.peak_locator.base_class import BasePeakLocator
+
 
 class GlobalPeakLocator(BasePeakLocator):
     r"""
@@ -46,7 +48,14 @@ class GlobalPeakLocator(BasePeakLocator):
     >>> print("Areas:\n", results["area"])
     """
 
-    def __init__(self, padding_value: object = -1, compute_width: bool = False, compute_area: bool = False, threshold: float = 0.5, max_number_of_peaks: int = 1):
+    def __init__(
+        self,
+        padding_value: object = -1,
+        compute_width: bool = False,
+        compute_area: bool = False,
+        threshold: float = 0.5,
+        max_number_of_peaks: int = 1,
+    ):
         """
         Initializes the BasicPeakLocator with a specified padding value and options
         to compute additional metrics (width and area).
@@ -58,8 +67,7 @@ class GlobalPeakLocator(BasePeakLocator):
             compute_width=compute_width,
             compute_area=compute_area,
             threshold=threshold,
-            padding_value=padding_value
-
+            padding_value=padding_value,
         )
 
         self.output = dict(
@@ -68,10 +76,10 @@ class GlobalPeakLocator(BasePeakLocator):
         )
 
         if compute_area:
-            self.output['Area'] = None
+            self.output["Area"] = None
 
         if compute_width:
-            self.output['Width'] = None
+            self.output["Width"] = None
 
     def __call__(self, array: np.ndarray) -> dict:
         """

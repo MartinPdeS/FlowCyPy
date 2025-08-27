@@ -1,10 +1,12 @@
-import numpy as np
 from typing import Tuple
-from TypedUnit import Length, RefractiveIndex
+
+import numpy as np
 from pydantic.dataclasses import dataclass
+from TypedUnit import Length, RefractiveIndex
 
 from FlowCyPy.distribution.base_class import Base
 from FlowCyPy.utils import config_dict
+
 
 @dataclass(config=config_dict)
 class Delta(Base):
@@ -53,7 +55,9 @@ class Delta(Base):
         """
         return np.ones(n_samples) * self.position.magnitude
 
-    def _generate_default_x(self, x_min_factor: float = 0.9, x_max_factor: float = 1.1, n_samples: int = 100) -> Length | RefractiveIndex:
+    def _generate_default_x(
+        self, x_min_factor: float = 0.9, x_max_factor: float = 1.1, n_samples: int = 100
+    ) -> Length | RefractiveIndex:
         """
         Generates a default range of x-values around the `position`.
 
@@ -78,7 +82,12 @@ class Delta(Base):
         x_max = self.position.magnitude * x_max_factor
         return np.linspace(x_min, x_max, n_samples) * self.position.units
 
-    def get_pdf(self, x_min_factor: float = 0.99, x_max_factor: float = 1.01, n_samples: int = 21) -> Tuple[Length | RefractiveIndex, np.ndarray]:
+    def get_pdf(
+        self,
+        x_min_factor: float = 0.99,
+        x_max_factor: float = 1.01,
+        n_samples: int = 21,
+    ) -> Tuple[Length | RefractiveIndex, np.ndarray]:
         r"""
         Returns the x-values and the scaled PDF values for the singular distribution.
 
@@ -88,9 +97,7 @@ class Delta(Base):
             The input x-values and the corresponding scaled PDF values.
         """
         x = self._generate_default_x(
-            x_min_factor=x_min_factor,
-            x_max_factor=x_max_factor,
-            n_samples=n_samples
+            x_min_factor=x_min_factor, x_max_factor=x_max_factor, n_samples=n_samples
         )
 
         common_units = x.units

@@ -1,5 +1,6 @@
-import numpy as np
 from typing import Tuple
+
+import numpy as np
 from pydantic.dataclasses import dataclass
 from TypedUnit import Length, RefractiveIndex
 
@@ -64,9 +65,11 @@ class RosinRammler(Base):
         u = np.clip(u, 1e-10, 1 - 1e-10)  # Avoid numerical issues
 
         # Apply inverse CDF of Rosin-Rammler distribution
-        return d * (-np.log(1 - u))**(1 / -self.spread)
+        return d * (-np.log(1 - u)) ** (1 / -self.spread)
 
-    def _generate_default_x(self, x_min: float, x_max: float, n_samples: int = 100) -> np.ndarray:
+    def _generate_default_x(
+        self, x_min: float, x_max: float, n_samples: int = 100
+    ) -> np.ndarray:
         """
         Generates a default range for x-values based on the characteristic property
         and spread of the Rosin-Rammler distribution.
@@ -90,12 +93,16 @@ class RosinRammler(Base):
         if x_max <= x_min:
             raise ValueError("x_max must be greater than x_min.")
 
-        d = self.characteristic_property.magnitude  # Characteristic property in base units
+        d = (
+            self.characteristic_property.magnitude
+        )  # Characteristic property in base units
         x_min = d * x_min  # Scale x_min by characteristic property
         x_max = d * x_max  # Scale x_max by characteristic property
         return np.linspace(x_min, x_max, n_samples) * self._units
 
-    def get_pdf(self, x_min: float = 0.1, x_max: float = 2, n_samples: int = 100) -> Tuple[np.ndarray, np.ndarray]:
+    def get_pdf(
+        self, x_min: float = 0.1, x_max: float = 2, n_samples: int = 100
+    ) -> Tuple[np.ndarray, np.ndarray]:
         r"""
         Returns the x-values and the scaled PDF values for the particle property distribution.
 
@@ -127,7 +134,7 @@ class RosinRammler(Base):
         k = self.spread
 
         # Rosin-Rammler PDF formula
-        pdf = (k / d) * (_x / d)**(k - 1) * np.exp(-(_x / d)**k)
+        pdf = (k / d) * (_x / d) ** (k - 1) * np.exp(-((_x / d) ** k))
 
         return x, pdf
 

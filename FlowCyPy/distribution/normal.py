@@ -1,11 +1,13 @@
-import numpy as np
 from typing import Tuple
-from scipy.stats import norm
+
+import numpy as np
 from pydantic.dataclasses import dataclass
+from scipy.stats import norm
 from TypedUnit import Length, RefractiveIndex
 
 from FlowCyPy.distribution.base_class import Base
 from FlowCyPy.utils import config_dict
+
 
 @dataclass(config=config_dict)
 class Normal(Base):
@@ -63,12 +65,12 @@ class Normal(Base):
             An array of scatterer properties in meters.
         """
         return np.random.normal(
-            loc=self._mean.magnitude,
-            scale=self._std_dev.magnitude,
-            size=n_samples
+            loc=self._mean.magnitude, scale=self._std_dev.magnitude, size=n_samples
         )
 
-    def _generate_default_x(self, x_min: float = -3, x_max: float = 3, n_samples: int = 20) -> np.ndarray:
+    def _generate_default_x(
+        self, x_min: float = -3, x_max: float = 3, n_samples: int = 20
+    ) -> np.ndarray:
         """
         Generates a range of x-values based on the mean and standard deviation.
 
@@ -95,7 +97,13 @@ class Normal(Base):
         x_max_value = mu + x_max * sigma
         return np.linspace(x_min_value, x_max_value, n_samples) * self._units
 
-    def get_pdf(self, x: np.ndarray = None, x_min: float = -3, x_max: float = 3, n_samples: int = 20) -> Tuple[np.ndarray, np.ndarray]:
+    def get_pdf(
+        self,
+        x: np.ndarray = None,
+        x_min: float = -3,
+        x_max: float = 3,
+        n_samples: int = 20,
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Returns the x-values and the scaled PDF values for the normal distribution.
 
@@ -118,9 +126,7 @@ class Normal(Base):
         x = self._generate_default_x(x_min=x_min, x_max=x_max, n_samples=n_samples)
 
         pdf = norm.pdf(
-            x.magnitude,
-            loc=self.mean.magnitude,
-            scale=self.std_dev.magnitude
+            x.magnitude, loc=self.mean.magnitude, scale=self.std_dev.magnitude
         )
 
         return x, pdf

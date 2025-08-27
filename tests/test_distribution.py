@@ -1,11 +1,13 @@
-import pytest
-import numpy as np
 from unittest.mock import patch
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pytest
 from TypedUnit import ureg
 
-from FlowCyPy import distribution as dist
 import FlowCyPy
+from FlowCyPy import distribution as dist
+
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
 
@@ -27,8 +29,11 @@ distributions = [
 
 # ----------------- TESTS -----------------
 
-@patch('matplotlib.pyplot.show')
-@pytest.mark.parametrize("distribution", distributions, ids=lambda x: x.__class__.__name__)
+
+@patch("matplotlib.pyplot.show")
+@pytest.mark.parametrize(
+    "distribution", distributions, ids=lambda x: x.__class__.__name__
+)
 def test_number_of_samples(mock_show, distribution):
     """Test the generate method of the Distribution class."""
 
@@ -36,23 +41,33 @@ def test_number_of_samples(mock_show, distribution):
     sizes = distribution.generate(N_SAMPLES)
 
     # Assert the shape is correct
-    assert sizes.shape == (N_SAMPLES,), f"{distribution.__class__.__name__}: Generated size array has incorrect shape."
+    assert sizes.shape == (
+        N_SAMPLES,
+    ), f"{distribution.__class__.__name__}: Generated size array has incorrect shape."
 
     # Assert all sizes are positive
-    assert np.all(sizes > 0), f"{distribution.__class__.__name__}: Generated sizes should all be positive."
+    assert np.all(
+        sizes > 0
+    ), f"{distribution.__class__.__name__}: Generated sizes should all be positive."
 
     # Get the PDF and assert it returns values
     x, pdf = distribution.get_pdf()
 
     # Assert PDF has the same shape as input x_values
-    assert pdf.shape == x.shape, f"{distribution.__class__.__name__}: PDF output shape mismatch."
+    assert (
+        pdf.shape == x.shape
+    ), f"{distribution.__class__.__name__}: PDF output shape mismatch."
 
     # Assert PDF values are non-negative
-    assert np.all(pdf >= 0), f"{distribution.__class__.__name__}: PDF should return non-negative values."
+    assert np.all(
+        pdf >= 0
+    ), f"{distribution.__class__.__name__}: PDF should return non-negative values."
 
     # Additional check for DeltaDistribution (which should be a single peak)
     if isinstance(distribution, dist.Delta):
-        assert np.sum(pdf > 0) == 1, "DeltaDistribution: PDF should have only one non-zero value."
+        assert (
+            np.sum(pdf > 0) == 1
+        ), "DeltaDistribution: PDF should have only one non-zero value."
 
     distribution.plot()
 
@@ -66,12 +81,18 @@ def test_uniform_properties():
     x, pdf = distribution.get_pdf()
 
     # Check if the PDF at the lower boundary is reasonable
-    assert pdf[0] >= 0, f"{distribution.__class__.__name__}: PDF at the lower boundary (x_min) should be non-negative."
-    assert pdf[-1] >= 0, f"{distribution.__class__.__name__}: PDF at the upper boundary (x_max) should be non-negative."
+    assert (
+        pdf[0] >= 0
+    ), f"{distribution.__class__.__name__}: PDF at the lower boundary (x_min) should be non-negative."
+    assert (
+        pdf[-1] >= 0
+    ), f"{distribution.__class__.__name__}: PDF at the upper boundary (x_max) should be non-negative."
 
     # For UniformDistribution, check if the PDF is zero outside bounds
     if isinstance(distribution, dist.Uniform):
-        assert pdf[0] == 0 or pdf[-1] == 0, "UniformDistribution: PDF should be zero at boundaries outside of distribution range."
+        assert (
+            pdf[0] == 0 or pdf[-1] == 0
+        ), "UniformDistribution: PDF should be zero at boundaries outside of distribution range."
 
 
 def test_normal_properties():
@@ -82,7 +103,9 @@ def test_normal_properties():
     # Test for NormalDistribution: Check that the mean is approximately correct
     mean_size = np.mean(sizes)
     expected_mean = distribution.mean
-    assert np.isclose(mean_size, expected_mean, rtol=0.1), f"NormalDistribution: Mean size {mean_size} deviates from expected mean {expected_mean}"
+    assert np.isclose(
+        mean_size, expected_mean, rtol=0.1
+    ), f"NormalDistribution: Mean size {mean_size} deviates from expected mean {expected_mean}"
 
 
 def test_lognormal_properties():
@@ -94,8 +117,10 @@ def test_lognormal_properties():
     std_dev_size = np.std(diameters)
     expected_std = distribution.std_dev
 
-    assert np.isclose(std_dev_size, expected_std, rtol=2), f"LogNormalDistribution: Standard deviation {std_dev_size} deviates from expected {expected_std}"
+    assert np.isclose(
+        std_dev_size, expected_std, rtol=2
+    ), f"LogNormalDistribution: Standard deviation {std_dev_size} deviates from expected {expected_std}"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main(["-W error", __file__])

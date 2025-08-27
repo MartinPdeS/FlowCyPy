@@ -1,10 +1,11 @@
-import numpy
-from typing import Optional, Union, List, Tuple, Any
-import pandas as pd
-from pint_pandas import PintArray
+from typing import Any, List, Optional, Tuple, Union
+
 import matplotlib.pyplot as plt
+import numpy
+import pandas as pd
 import seaborn as sns
-from TypedUnit import Time, AnyUnit, ureg
+from pint_pandas import PintArray
+from TypedUnit import AnyUnit, Time, ureg
 
 from FlowCyPy import helper
 from FlowCyPy.sub_frames import utils
@@ -16,10 +17,12 @@ class BaseSubFrame(pd.DataFrame):
         """Ensure operations return instances of ScattererDataFrame."""
         return self.__class__
 
+
 class ScattererDataFrame(BaseSubFrame):
     """
     A subclass of pandas DataFrame with custom plotting and logging for scatterer data.
     """
+
     def plot(self, x: str = None, y: str = None, z: str = None, **kwargs) -> AnyUnit:
         """
         Dispatch plotting to 2D or 3D methods based on provided kwargs.
@@ -31,7 +34,9 @@ class ScattererDataFrame(BaseSubFrame):
         if x and y and z:
             return self.plot_3d(x=x, y=y, z=z, **kwargs)
 
-        raise ValueError("At least one of 'x', 'y', or 'z' must be provided for plotting.")
+        raise ValueError(
+            "At least one of 'x', 'y', or 'z' must be provided for plotting."
+        )
 
     def get_sub_dataframe(self, *columns: str) -> Tuple[pd.DataFrame, List[Any]]:
         """
@@ -59,7 +64,15 @@ class ScattererDataFrame(BaseSubFrame):
         return df, units_list
 
     @helper.plot_sns
-    def plot_2d(self, x: str, y: str, alpha: float = 0.8, bandwidth_adjust: float = 1, color_palette: Optional[Union[str, dict]] = None, figure_size: tuple = (6, 6)) -> plt.Figure:
+    def plot_2d(
+        self,
+        x: str,
+        y: str,
+        alpha: float = 0.8,
+        bandwidth_adjust: float = 1,
+        color_palette: Optional[Union[str, dict]] = None,
+        figure_size: tuple = (6, 6),
+    ) -> plt.Figure:
         """
         Plot the joint distribution of scatterer sizes and refractive indices.
 
@@ -90,11 +103,11 @@ class ScattererDataFrame(BaseSubFrame):
             data=df,
             x=x,
             y=y,
-            hue='Population',
+            hue="Population",
             palette=color_palette,
-            kind='scatter',
+            kind="scatter",
             alpha=alpha,
-            marginal_kws={'bw_adjust': bandwidth_adjust},
+            marginal_kws={"bw_adjust": bandwidth_adjust},
             height=figure_size[0] if figure_size else None,
         )
 
@@ -104,13 +117,14 @@ class ScattererDataFrame(BaseSubFrame):
         return grid
 
     @helper.plot_3d
-    def plot_3d(self,
+    def plot_3d(
+        self,
         ax: plt.Axes,
         x: str,
         y: str,
         z: str = None,
-        hue: str = 'Population',
-        alpha: float = 0.8
+        hue: str = "Population",
+        alpha: float = 0.8,
     ) -> plt.Figure:
         """
         Visualize a 3D scatter plot of scatterer properties.
@@ -154,11 +168,12 @@ class ScattererDataFrame(BaseSubFrame):
         self,
         figure: plt.Figure,
         ax: plt.Axes,
-        x: str = 'Diameter',
+        x: str = "Diameter",
         kde: bool = False,
-        bins: Optional[int] = 'auto',
+        bins: Optional[int] = "auto",
         color: Optional[Union[str, dict]] = None,
-        clip_data: Optional[Union[str, Any]] = None) -> plt.Figure:
+        clip_data: Optional[Union[str, Any]] = None,
+    ) -> plt.Figure:
         """
         Plot a histogram distribution for a given column using Seaborn, with an option to remove extreme values.
 
@@ -189,19 +204,29 @@ class ScattererDataFrame(BaseSubFrame):
 
         df, [unit] = self.get_sub_dataframe(x)
 
-        df = df.reset_index('Population').pint.dequantify().droplevel('unit', axis=1)
+        df = df.reset_index("Population").pint.dequantify().droplevel("unit", axis=1)
 
         df[x] = utils.clip_data(signal=df[[x]], clip_value=clip_data)
 
-        sns.histplot(data=df, x=df[x], ax=ax, kde=kde, bins=bins, color=color, hue=df['Population'])
+        sns.histplot(
+            data=df,
+            x=df[x],
+            ax=ax,
+            kde=kde,
+            bins=bins,
+            color=color,
+            hue=df["Population"],
+        )
         ax.set_xlabel(f"{x} [{unit._repr_latex_()}]")
         ax.set_title(f"Distribution of {x}")
 
-    def _add_event_to_ax(self,
+    def _add_event_to_ax(
+        self,
         ax: plt.Axes,
         time_units: Time,
-        palette: str = 'tab10',
-        filter_population: str | List[str] = None) -> None:
+        palette: str = "tab10",
+        filter_population: str | List[str] = None,
+    ) -> None:
         """
         Adds vertical markers for event occurrences in the scatterer data.
 
@@ -217,19 +242,31 @@ class ScattererDataFrame(BaseSubFrame):
             Populations to display. If None, all populations are shown.
         """
         # Get unique population names
-        unique_populations = self.index.get_level_values('Population').unique()
-        color_mapping = dict(zip(unique_populations, sns.color_palette(palette, len(unique_populations))))
+        unique_populations = self.index.get_level_values("Population").unique()
+        color_mapping = dict(
+            zip(unique_populations, sns.color_palette(palette, len(unique_populations)))
+        )
 
-        for population_name, group in self.groupby('Population'):
-            if filter_population is not None and population_name not in filter_population:
+        for population_name, group in self.groupby("Population"):
+            if (
+                filter_population is not None
+                and population_name not in filter_population
+            ):
                 continue
 
             x = group.Time.pint.to(time_units).pint.quantity
 
             color = color_mapping[population_name]
-            ax.vlines(x, ymin=0, ymax=1, transform=ax.get_xaxis_transform(), label=population_name, color=color)
+            ax.vlines(
+                x,
+                ymin=0,
+                ymax=1,
+                transform=ax.get_xaxis_transform(),
+                label=population_name,
+                color=color,
+            )
 
-        ax.tick_params(axis='y', left=False, labelleft=False)
+        ax.tick_params(axis="y", left=False, labelleft=False)
         ax.get_yaxis().set_visible(False)
         ax.set_xlabel(f"Time [{time_units._repr_latex_()}]")
         ax.legend()
@@ -240,11 +277,11 @@ class ScattererDataFrame(BaseSubFrame):
         """
         time_unit = ureg.second
 
-        original_times = self['Time'].pint.to(time_unit)
+        original_times = self["Time"].pint.to(time_unit)
 
         new_times = numpy.sort(original_times.pint.quantity.magnitude)
 
-        self['Time'] = PintArray(new_times, time_unit)
+        self["Time"] = PintArray(new_times, time_unit)
 
     def uniformize_events(self) -> None:
         """
@@ -252,7 +289,7 @@ class ScattererDataFrame(BaseSubFrame):
         """
         time_unit = ureg.second
 
-        original_times = self['Time'].pint.to(time_unit)
+        original_times = self["Time"].pint.to(time_unit)
 
         start_time = original_times[0].magnitude
 
@@ -262,12 +299,14 @@ class ScattererDataFrame(BaseSubFrame):
 
         new_times = numpy.linspace(start_time, stop_time, total_number_of_events)
 
-        self['Time'] = PintArray(new_times, time_unit)
+        self["Time"] = PintArray(new_times, time_unit)
 
-    def uniformize_events_with_time(self,
+    def uniformize_events_with_time(
+        self,
         run_time: Time = None,
         lower_boundary: float = 0.05,
-        upper_boundary: float = 0.95) -> None:
+        upper_boundary: float = 0.95,
+    ) -> None:
         """
         Uniformizes the event times within a specified range.
 
@@ -296,8 +335,7 @@ class ScattererDataFrame(BaseSubFrame):
         new_times = numpy.linspace(
             new_start_time.to(time_unit).magnitude,
             new_stop_time.to(time_unit).magnitude,
-            total_number_of_events
+            total_number_of_events,
         )
 
-        self['Time'] = PintArray(new_times, time_unit)
-
+        self["Time"] = PintArray(new_times, time_unit)

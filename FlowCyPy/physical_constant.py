@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from TypedUnit import ureg
 import numpy as np
+from TypedUnit import ureg
+
 
 class PhysicalConstant:
     h = 6.62607015e-34 * ureg.joule * ureg.second  # Planck constant

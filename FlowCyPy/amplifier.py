@@ -1,19 +1,16 @@
-from pydantic.dataclasses import dataclass
 import numpy as np
-from TypedUnit import Ohm, AnyUnit, Frequency, ureg, validate_units
+from pydantic.dataclasses import dataclass
+from TypedUnit import AnyUnit, Frequency, Ohm, ureg, validate_units
 
 from FlowCyPy.simulation_settings import SimulationSettings
 
-
 config_dict = dict(
-    arbitrary_types_allowed=True,
-    kw_only=True,
-    slots=True,
-    extra='forbid'
+    arbitrary_types_allowed=True, kw_only=True, slots=True, extra="forbid"
 )
 
+
 @dataclass(config=config_dict)
-class TransimpedanceAmplifier():
+class TransimpedanceAmplifier:
     """
     Represents a transimpedance amplifier (TIA) used to convert photocurrent signals into voltage.
 
@@ -56,6 +53,7 @@ class TransimpedanceAmplifier():
     of the detection system. This model allows simulation of how the gain and noise parameters
     affect the output voltage and the signal-to-noise ratio.
     """
+
     gain: Ohm
     bandwidth: Frequency
     voltage_noise_density: AnyUnit = 0 * ureg.volt / ureg.sqrt_hertz
@@ -108,19 +106,25 @@ class TransimpedanceAmplifier():
         to the amplified signal if a bandwidth is specified. The filter is applied using the
         `apply_butterworth_lowpass_filter_to_signal` method of the signal generator.
         """
-        if self.bandwidth is None or SimulationSettings.assume_amplifier_bandwidth_is_infinite:
+        if (
+            self.bandwidth is None
+            or SimulationSettings.assume_amplifier_bandwidth_is_infinite
+        ):
             signal_generator.multiply(factor=self.gain)
         else:
             signal_generator.apply_butterworth_lowpass_filter(
                 gain=self.gain,
                 sampling_rate=sampling_rate,
                 cutoff_frequency=self.bandwidth,
-                order=1
+                order=1,
             )
 
         # Add voltage related noise if enabled
-        if SimulationSettings.include_amplifier_noise and SimulationSettings.include_noises:
+        if (
+            SimulationSettings.include_amplifier_noise
+            and SimulationSettings.include_noises
+        ):
             signal_generator.apply_gaussian_noise(
                 mean=0.0 * self.total_output_noise.units,
-                standard_deviation=self.total_output_noise
+                standard_deviation=self.total_output_noise,
             )

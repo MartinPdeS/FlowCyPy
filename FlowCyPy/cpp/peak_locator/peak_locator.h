@@ -176,5 +176,3 @@ class GlobalPeakLocator : public BasePeakLocator {
          */
         void compute(const std::vector<double> &array);
     };
-
-

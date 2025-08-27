@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 class BaseSubFrame(pd.DataFrame):
     @property
     def _constructor(self) -> type:

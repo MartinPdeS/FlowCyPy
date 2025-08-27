@@ -13,17 +13,22 @@ when varying bead size under fixed illumination power.
 # -----------------------
 
 import numpy as np
-from FlowCyPy import units, SimulationSettings
-from FlowCyPy import GaussianBeam
-from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy import ScattererCollection
-from FlowCyPy.detector import Detector
-from FlowCyPy.signal_digitizer import SignalDigitizer
+
+from FlowCyPy import (
+    FlowCytometer,
+    Fluidics,
+    GaussianBeam,
+    OptoElectronics,
+    ScattererCollection,
+    SimulationSettings,
+    units,
+)
 from FlowCyPy.amplifier import TransimpedanceAmplifier
-from FlowCyPy import FlowCytometer, OptoElectronics, Fluidics
 from FlowCyPy.calibration import KEstimator
 from FlowCyPy.cytometer import FacsCanto
-
+from FlowCyPy.detector import Detector
+from FlowCyPy.flow_cell import FlowCell
+from FlowCyPy.signal_digitizer import SignalDigitizer
 
 # %%
 # Configure simulation-level noise assumptions
@@ -48,7 +53,7 @@ flow_cytometer = FacsCanto(
     sample_volume_flow=80 * units.microliter / units.minute,
     sheath_volume_flow=1 * units.milliliter / units.minute,
     background_power=0 * units.milliwatt,
-    optical_power=200 * units.milliwatt
+    optical_power=200 * units.milliwatt,
 )
 
 # %%
@@ -61,7 +66,7 @@ k_estimator.add_batch(
     bead_diameters=np.linspace(300, 900, 15) * units.nanometer,
     illumination_power=150 * units.milliwatt,
     flow_cytometer=flow_cytometer,
-    particle_count=50 * units.particle
+    particle_count=50 * units.particle,
 )
 
 # %%

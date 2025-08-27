@@ -1,25 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from typing import Optional
+
 import pandas as pd
+from TypedUnit import Power, Time, ureg, validate_units
 
-from TypedUnit import Time, Power, ureg, validate_units
-
-from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
-from FlowCyPy.signal_generator import SignalGenerator
-from FlowCyPy.simulation_settings import SimulationSettings
-from FlowCyPy.opto_electronics import OptoElectronics
 from FlowCyPy.fluidics import Fluidics
+from FlowCyPy.opto_electronics import OptoElectronics
+from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.signal_processing import SignalProcessing
+from FlowCyPy.simulation_settings import SimulationSettings
+from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 
 
-class Result():
+class Result:
     analog: Optional[AcquisitionDataFrame] = None
     triggered_analog: Optional[AcquisitionDataFrame] = None
     events: Optional[pd.DataFrame] = None
+
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
+
 
 class FlowCytometer:
     """
@@ -45,8 +47,15 @@ class FlowCytometer:
         If the number of detectors provided is not exactly two, or if both detectors share the same name.
 
     """
+
     @validate_units
-    def __init__(self, opto_electronics: OptoElectronics, fluidics: Fluidics, signal_processing: SignalProcessing, background_power: Optional[Power] = 0 * ureg.milliwatt):
+    def __init__(
+        self,
+        opto_electronics: OptoElectronics,
+        fluidics: Fluidics,
+        signal_processing: SignalProcessing,
+        background_power: Optional[Power] = 0 * ureg.milliwatt,
+    ):
         self.fluidics = fluidics
         self.background_power = background_power
         self.opto_electronics = opto_electronics
@@ -74,9 +83,7 @@ class FlowCytometer:
         )
 
         signal_generator = SignalGenerator(
-            n_elements=len(time_series),
-            time_units=ureg.second,
-            signal_units=ureg.watt
+            n_elements=len(time_series), time_units=ureg.second, signal_units=ureg.watt
         )
 
         signal_generator.add_time(time_series)
@@ -123,11 +130,12 @@ class FlowCytometer:
         pd.DataFrame
             A DataFrame containing event data for the scatterers.
         """
-        event_dataframe = self.fluidics.generate_event_dataframe(run_time=self.results.run_time)
+        event_dataframe = self.fluidics.generate_event_dataframe(
+            run_time=self.results.run_time
+        )
 
         self.opto_electronics.model_event(
-            event_dataframe=event_dataframe,
-            compute_cross_section=compute_cross_section
+            event_dataframe=event_dataframe, compute_cross_section=compute_cross_section
         )
 
         self.results.events = event_dataframe
@@ -164,10 +172,10 @@ class FlowCytometer:
             else:
                 signal_generator.generate_pulses(
                     signal_name=detector.name,
-                    widths=self.results.events['Widths'].values.quantity,
-                    centers=self.results.events['Time'].values.quantity,
+                    widths=self.results.events["Widths"].values.quantity,
+                    centers=self.results.events["Time"].values.quantity,
                     amplitudes=self.results.events[detector.name].values.quantity,
-                    base_level=self.background_power
+                    base_level=self.background_power,
                 )
 
         # Optical power → photocurrent
@@ -175,23 +183,26 @@ class FlowCytometer:
             detector._transform_coupling_power_to_current(
                 signal_generator=signal_generator,
                 wavelength=self.opto_electronics.source.wavelength,
-                bandwidth=self.signal_processing.digitizer.bandwidth
+                bandwidth=self.signal_processing.digitizer.bandwidth,
             )
 
         # Add dark current noise if enabled
         signal_generator.signal_units = ureg.ampere
-        if SimulationSettings.include_noises and SimulationSettings.include_dark_current_noise:
+        if (
+            SimulationSettings.include_noises
+            and SimulationSettings.include_dark_current_noise
+        ):
             for detector in self.opto_electronics.detectors:
                 detector.apply_dark_current_noise(
                     signal_generator=signal_generator,
-                    bandwidth=self.signal_processing.digitizer.bandwidth
+                    bandwidth=self.signal_processing.digitizer.bandwidth,
                 )
 
         # Photocurrent → voltage
         signal_generator.signal_units = ureg.volt
         self.opto_electronics.amplifier.amplify(
             signal_generator=signal_generator,
-            sampling_rate=self.signal_processing.digitizer.sampling_rate
+            sampling_rate=self.signal_processing.digitizer.sampling_rate,
         )
 
         # Final analog signal conditioning
@@ -202,8 +213,8 @@ class FlowCytometer:
             event_dataframe=self.results.events,
             signal_generator=signal_generator,
             is_digital=False,
-            time_units='second',
-            signal_units='volt'
+            time_units="second",
+            signal_units="volt",
         )
 
         return self.results.analog
@@ -261,8 +272,6 @@ class FlowCytometer:
             self.compute_peaks()
 
         return self.results
-
-
 
 
 from FlowCyPy._flow_cytometer_instances import *

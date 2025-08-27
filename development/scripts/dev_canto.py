@@ -1,17 +1,40 @@
 import numpy as np
-from FlowCyPy import NoiseSetting
 
 from FlowCyPy import (
-    FlowCytometer, FlowCell, Detector, GaussianBeam, EventCorrelator,
-    peak_locator, classifier, Scatterer, Population, distribution
+    Detector,
+    EventCorrelator,
+    FlowCell,
+    FlowCytometer,
+    GaussianBeam,
+    NoiseSetting,
+    Population,
+    Scatterer,
+    classifier,
+    distribution,
+    peak_locator,
 )
-
-from FlowCyPy.units import (
-    particle, nanometer, RIU, milliwatt, AU, meter, micrometer, millisecond, milliliter,
-    second, degree, ohm, megahertz, ampere, volt, kelvin, watt, microsecond, microvolt
-)
-
 from FlowCyPy.plottings import MetricPlotter
+from FlowCyPy.units import (
+    AU,
+    RIU,
+    ampere,
+    degree,
+    kelvin,
+    megahertz,
+    meter,
+    micrometer,
+    microsecond,
+    microvolt,
+    milliliter,
+    millisecond,
+    milliwatt,
+    nanometer,
+    ohm,
+    particle,
+    second,
+    volt,
+    watt,
+)
 
 NoiseSetting.include_noises = False
 NoiseSetting.include_shot_noise = False
@@ -24,7 +47,7 @@ np.random.seed(3)
 flow_cell = FlowCell(
     flow_speed=7.56 * meter / second,
     flow_area=(10 * micrometer) ** 2,
-    run_time=0.2 * millisecond
+    run_time=0.2 * millisecond,
 )
 
 scatterer = Scatterer(medium_refractive_index=1.33 * RIU)
@@ -40,9 +63,11 @@ combinations = [
 particule_number = 40
 for size, ri in combinations:
     population = Population(
-        name=f'Size: {size}nm',
-        size=distribution.Normal(mean=size * nanometer, std_dev=size/20000 * nanometer),
-        refractive_index=distribution.Normal(mean=ri * RIU, std_dev=0.00001 * RIU)
+        name=f"Size: {size}nm",
+        size=distribution.Normal(
+            mean=size * nanometer, std_dev=size / 20000 * nanometer
+        ),
+        refractive_index=distribution.Normal(mean=ri * RIU, std_dev=0.00001 * RIU),
     )
 
     # scatterer.add_population(population, particle_count=particule_number * particle)
@@ -59,15 +84,14 @@ scatterer._log_properties()
 source = GaussianBeam(
     numerical_aperture=0.3 * AU,
     wavelength=488 * nanometer,
-    optical_power=200 * milliwatt
+    optical_power=200 * milliwatt,
 )
 
 
-
 detector_0 = Detector(
-    name='forward',
+    name="forward",
     phi_angle=0 * degree,
-    numerical_aperture=.2 * AU,
+    numerical_aperture=0.2 * AU,
     responsitivity=1 * ampere / watt,
     sampling_freq=60 * megahertz,
     # noise_level=0.0 * volt,
@@ -77,7 +101,7 @@ detector_0 = Detector(
 )
 
 detector_1 = Detector(
-    name='side',
+    name="side",
     phi_angle=90 * degree,
     numerical_aperture=1.2 * AU,
     responsitivity=1 * ampere / watt,
@@ -90,9 +114,7 @@ detector_1 = Detector(
 
 
 cytometer = FlowCytometer(
-    detectors=[detector_0, detector_1],
-    source=source,
-    scatterer=scatterer
+    detectors=[detector_0, detector_1], source=source, scatterer=scatterer
 )
 
 cytometer.simulate_pulse()
@@ -143,4 +165,3 @@ print(scatterer.dataframe)
 #     log_plot=False,
 #     equal_axes=False
 # )
-

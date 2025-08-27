@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from typing import Callable
 import inspect
-from TypedUnit import Quantity
 from functools import wraps
-from MPSPlots.styles import mps as plot_style
+from typing import Callable
+
 import matplotlib.pyplot as plt
+from MPSPlots.styles import mps as plot_style
+from TypedUnit import Quantity
 
 
 def mpl_plot(function):
@@ -51,6 +52,7 @@ def mpl_plot(function):
 
     return wrapper
 
+
 def validate_input_units(**expected_units):
     """
     Decorator to enforce that function arguments of type Quantity have the correct units.
@@ -65,6 +67,7 @@ def validate_input_units(**expected_units):
     ValueError
         If any argument does not have the expected unit.
     """
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -82,16 +85,22 @@ def validate_input_units(**expected_units):
 
                     # Check if the value is a Pint Quantity
                     if not isinstance(value, Quantity):
-                        raise TypeError(f"Argument '{arg_name}' must be a Pint Quantity, but got {type(value)}")
+                        raise TypeError(
+                            f"Argument '{arg_name}' must be a Pint Quantity, but got {type(value)}"
+                        )
 
                     # Check if the argument has the expected units
                     if not value.check(value.units):
-                        raise ValueError(f"Argument '{arg_name}' must have units of {expected_unit}, but got {value.units}")
+                        raise ValueError(
+                            f"Argument '{arg_name}' must have units of {expected_unit}, but got {value.units}"
+                        )
 
             return func(*bound_args.args, **bound_args.kwargs)
 
         return wrapper
+
     return decorator
+
 
 def plot_3d(function: Callable) -> Callable:
     """
@@ -112,14 +121,22 @@ def plot_3d(function: Callable) -> Callable:
     Callable
         A wrapped function that returns a matplotlib Figure containing the 3D plot.
     """
-    def wrapper(self, ax: plt.Axes = None, show: bool = True, equal_axes: bool = False, save_as: str = None, figsize = (8, 8), **kwargs) -> plt.Figure:
 
+    def wrapper(
+        self,
+        ax: plt.Axes = None,
+        show: bool = True,
+        equal_axes: bool = False,
+        save_as: str = None,
+        figsize=(8, 8),
+        **kwargs,
+    ) -> plt.Figure:
         with plt.style.context(plot_style):
             # If an Axes3D object is not provided, create one using our style context.
             if ax is None:
                 # with plt.style.context(mps):
                 figure = plt.figure(figsize=figsize)
-                ax = figure.add_subplot(111, projection='3d')
+                ax = figure.add_subplot(111, projection="3d")
 
             else:
                 figure = ax.figure
@@ -143,9 +160,9 @@ def plot_3d(function: Callable) -> Callable:
                 y_middle = (y_limits[0] + y_limits[1]) / 2
                 z_middle = (z_limits[0] + z_limits[1]) / 2
 
-                ax.set_xlim3d([x_middle - max_range/2, x_middle + max_range/2])
-                ax.set_ylim3d([y_middle - max_range/2, y_middle + max_range/2])
-                ax.set_zlim3d([z_middle - max_range/2, z_middle + max_range/2])
+                ax.set_xlim3d([x_middle - max_range / 2, x_middle + max_range / 2])
+                ax.set_ylim3d([y_middle - max_range / 2, y_middle + max_range / 2])
+                ax.set_zlim3d([z_middle - max_range / 2, z_middle + max_range / 2])
 
             ax.legend()
 
@@ -161,8 +178,8 @@ def plot_3d(function: Callable) -> Callable:
 
             return figure
 
-
     return wrapper
+
 
 def plot_sns(function: Callable) -> Callable:
     """
@@ -185,7 +202,15 @@ def plot_sns(function: Callable) -> Callable:
     This decorator expects the decorated function to have the following signature:
     `function(self, ax=None, mode_of_interest='all', **kwargs)`.
     """
-    def wrapper(self, show: bool = True, equal_limits: bool = False, save_as: str = None, log_scale: bool = False, **kwargs) -> plt.Figure:
+
+    def wrapper(
+        self,
+        show: bool = True,
+        equal_limits: bool = False,
+        save_as: str = None,
+        log_scale: bool = False,
+        **kwargs,
+    ) -> plt.Figure:
         """
         A wrapped version of the plotting function that provides additional functionality for creating
         and managing plots.
@@ -229,16 +254,16 @@ def plot_sns(function: Callable) -> Callable:
             if equal_limits:
                 limits = [
                     min(grid.ax_joint.get_xlim()[0], grid.ax_joint.get_ylim()[0]),
-                    max(grid.ax_joint.get_xlim()[1], grid.ax_joint.get_ylim()[1])
+                    max(grid.ax_joint.get_xlim()[1], grid.ax_joint.get_ylim()[1]),
                 ]
                 grid.ax_joint.set_xlim(limits)
                 grid.ax_joint.set_ylim(limits)
 
             if log_scale:
-                grid.ax_joint.set_xscale('log')
-                grid.ax_joint.set_yscale('log')
-                grid.ax_marg_x.set_xscale('log')
-                grid.ax_marg_y.set_yscale('log')
+                grid.ax_joint.set_xscale("log")
+                grid.ax_joint.set_yscale("log")
+                grid.ax_marg_x.set_xscale("log")
+                grid.ax_marg_y.set_yscale("log")
 
             if save_as is not None:
                 grid.figure.savefig(save_as)
@@ -249,4 +274,3 @@ def plot_sns(function: Callable) -> Callable:
         return grid
 
     return wrapper
-

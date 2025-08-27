@@ -1,9 +1,10 @@
-import numpy as np
+from copy import copy
 from typing import List
+
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import pint_pandas
-from copy import copy
-import matplotlib.pyplot as plt
 from MPSPlots.styles import mps
 from pydantic import ConfigDict
 from TypedUnit import ureg
@@ -11,14 +12,11 @@ from TypedUnit import ureg
 from FlowCyPy.peak_locator import BasePeakLocator
 
 config_dict = ConfigDict(
-    arbitrary_types_allowed=True,
-    kw_only=True,
-    slots=True,
-    extra='forbid'
+    arbitrary_types_allowed=True, kw_only=True, slots=True, extra="forbid"
 )
 
 
-class ProxyDetector():
+class ProxyDetector:
     def __init__(self, signal, time):
         self.name = str(id(self))
         self.signal = signal
@@ -27,19 +25,23 @@ class ProxyDetector():
 
         self.dataframe = pd.DataFrame(
             data={
-                'Signal': pint_pandas.PintArray(self.signal, dtype=self.signal.units),
-                'Time': pint_pandas.PintArray(self.time, dtype=self.time.units)
+                "Signal": pint_pandas.PintArray(self.signal, dtype=self.signal.units),
+                "Time": pint_pandas.PintArray(self.time, dtype=self.time.units),
             }
         )
 
-    def set_peak_locator(self, algorithm: BasePeakLocator, compute_peak_area: bool = True) -> None:
+    def set_peak_locator(
+        self, algorithm: BasePeakLocator, compute_peak_area: bool = True
+    ) -> None:
         # Ensure the algorithm is an instance of BasePeakLocator
         if not isinstance(algorithm, BasePeakLocator):
             raise TypeError("The algorithm must be an instance of BasePeakLocator.")
 
         # Ensure the detector has signal data available for analysis
-        if not hasattr(self, 'dataframe') or self.dataframe is None:
-            raise RuntimeError("The detector does not have signal data available for peak detection.")
+        if not hasattr(self, "dataframe") or self.dataframe is None:
+            raise RuntimeError(
+                "The detector does not have signal data available for peak detection."
+            )
 
         # Set the algorithm and perform peak detection
         self.algorithm = copy(algorithm)
@@ -47,12 +49,12 @@ class ProxyDetector():
         self.algorithm.detect_peaks(compute_area=compute_peak_area)
 
     def get_properties(self) -> List[List[str]]:
-        return [
-            ['name', 'proxy']
-        ]
+        return [["name", "proxy"]]
 
 
-def generate_dummy_detector(time: np.ndarray, centers: List[float], heights: List[float], stds: List[float]):
+def generate_dummy_detector(
+    time: np.ndarray, centers: List[float], heights: List[float], stds: List[float]
+):
     """
     Generate a synthetic signal composed of multiple Gaussian pulses.
 
@@ -79,12 +81,14 @@ def generate_dummy_detector(time: np.ndarray, centers: List[float], heights: Lis
     signal = np.zeros_like(time) * heights.units
 
     for center, height, sigma in zip(centers, heights, stds):
-        signal += height * np.exp(-((time - center) ** 2) / (2 * sigma ** 2))
+        signal += height * np.exp(-((time - center) ** 2) / (2 * sigma**2))
 
     return ProxyDetector(time=time, signal=signal)
 
 
-def plot_signal_and_peaks(signal_dataframe: pd.DataFrame, peaks_dataframe: pd.DataFrame) -> None:
+def plot_signal_and_peaks(
+    signal_dataframe: pd.DataFrame, peaks_dataframe: pd.DataFrame
+) -> None:
     """
     Plots signal data with detected peaks for multiple detectors.
 
@@ -103,42 +107,53 @@ def plot_signal_and_peaks(signal_dataframe: pd.DataFrame, peaks_dataframe: pd.Da
         If required columns are missing in either DataFrame.
     """
     # Validate input DataFrames
-    required_signal_cols = {'Time', 'Signal'}
-    required_peaks_cols = {'Time'}
+    required_signal_cols = {"Time", "Signal"}
+    required_peaks_cols = {"Time"}
 
-    assert required_signal_cols.issubset(signal_dataframe.columns), \
-        f"signal_dataframe must contain columns {required_signal_cols}, but has {signal_dataframe.columns}"
+    assert required_signal_cols.issubset(
+        signal_dataframe.columns
+    ), f"signal_dataframe must contain columns {required_signal_cols}, but has {signal_dataframe.columns}"
 
-    assert required_peaks_cols.issubset(peaks_dataframe.columns), \
-        f"peaks_dataframe must contain columns {required_peaks_cols}, but has {peaks_dataframe.columns}"
+    assert required_peaks_cols.issubset(
+        peaks_dataframe.columns
+    ), f"peaks_dataframe must contain columns {required_peaks_cols}, but has {peaks_dataframe.columns}"
 
-    detector_names = signal_dataframe.index.get_level_values('Detector').unique()
+    detector_names = signal_dataframe.index.get_level_values("Detector").unique()
 
     with plt.style.context(mps):
-        _, axes = plt.subplots(nrows=len(detector_names), ncols=1, figsize=(18, 8), squeeze=False)
+        _, axes = plt.subplots(
+            nrows=len(detector_names), ncols=1, figsize=(18, 8), squeeze=False
+        )
 
     # Create a mapping of detectors to their respective axes
     axes_dict = {name: ax for name, ax in zip(detector_names, axes.flatten())}
 
     # Plot signal data
-    for (detector_name, segment_id), group in signal_dataframe.groupby(['Detector', 'SegmentID']):
-        axes_dict[detector_name].plot(group['Time'], group['Signal'])
+    for (detector_name, segment_id), group in signal_dataframe.groupby(
+        ["Detector", "SegmentID"]
+    ):
+        axes_dict[detector_name].plot(group["Time"], group["Signal"])
 
     # Plot detected peaks
-    for detector_name, group in peaks_dataframe.groupby('Detector'):
+    for detector_name, group in peaks_dataframe.groupby("Detector"):
         ax = axes_dict.get(detector_name)
         if ax:
             ax.vlines(
-                group['Time'], ymin=0, ymax=1, transform=ax.get_xaxis_transform(),
-                linestyle='--', color='black', label='Detected Peaks'
+                group["Time"],
+                ymin=0,
+                ymax=1,
+                transform=ax.get_xaxis_transform(),
+                linestyle="--",
+                color="black",
+                label="Detected Peaks",
             )
 
     # Customize each plot
     for detector_name, ax in axes_dict.items():
-        ax.set_ylabel(f'{detector_name}')
+        ax.set_ylabel(f"{detector_name}")
         ax.legend()
 
-    plt.xlabel('Time')
-    plt.suptitle('Signal and Detected Peaks')
+    plt.xlabel("Time")
+    plt.suptitle("Signal and Detected Peaks")
     plt.tight_layout()
     plt.show()

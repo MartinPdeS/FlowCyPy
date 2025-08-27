@@ -26,4 +26,3 @@ void BesselLowPassFilter::process(SignalGenerator &signal_generator) {
         if (entry.first != "Time")
             utils::apply_bessel_lowpass_filter_to_signal(entry.second, sampling_rate, cutoff_frequency, order, gain);
 }
-

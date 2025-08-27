@@ -200,5 +200,3 @@ void GlobalPeakLocator::compute(const std::vector<double> &signal) {
     if (compute_area)
         this->peak_areas[0] = area;
 }
-
-

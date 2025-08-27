@@ -25,9 +25,9 @@ for f in focusing_factors:
     cell = CircularFlowCell(volume_flow=volume_flow, radius=radius, focusing_factor=f)
     r, vel = cell.get_velocity_profile(num_points=n_profile_points)
     # Convert velocity to m/s for plotting
-    profile_data[f] = (r, vel.to('meter/second').magnitude)
+    profile_data[f] = (r, vel.to("meter/second").magnitude)
     sampled = cell.sample_velocity(n_samples=n_samples)
-    sampled_data[f] = sampled.to('meter/second').magnitude
+    sampled_data[f] = sampled.to("meter/second").magnitude
 
 
 with plt.style.context(mps):
@@ -43,26 +43,34 @@ with plt.style.context(mps):
     axes = [ax1, ax2, ax3, ax4]
 
     # Plot overlaid velocity profiles on the first subplot
-    axes[0].plot(r, vel, lw=2, label=f'Focusing Factor = {f}')
+    axes[0].plot(r, vel, lw=2, label=f"Focusing Factor = {f}")
 
-    axes[0].set_xlabel('Radial Position (m)')
-    axes[0].set_ylabel('Velocity (m/s)')
-    axes[0].set_title('Velocity Profiles')
+    axes[0].set_xlabel("Radial Position (m)")
+    axes[0].set_ylabel("Velocity (m/s)")
+    axes[0].set_title("Velocity Profiles")
     axes[0].legend()
     axes[0].grid(True)
 
     # Plot overlaid histograms using Seaborn on the second subplot
     colors = sns.color_palette("husl", len(focusing_factors))
     for ax, (i, f) in zip(axes[1:], enumerate(focusing_factors)):
-        sns.histplot(sampled_data[f], fill=True, multiple="stack", kde=False, color=colors[i], ax=ax, alpha=0.3)
+        sns.histplot(
+            sampled_data[f],
+            fill=True,
+            multiple="stack",
+            kde=False,
+            color=colors[i],
+            ax=ax,
+            alpha=0.3,
+        )
 
         ax.set_xlim([0.6, None])
-        ax.set_ylabel('')
-        ax.set_xlabel('Sampled Velocity (m/s)')
-        ax.set_title(f'Focusing Factor = {f}')
+        ax.set_ylabel("")
+        ax.set_xlabel("Sampled Velocity (m/s)")
+        ax.set_title(f"Focusing Factor = {f}")
         # ax.legend()
 
-    axes[1].set_ylabel('Count')
+    axes[1].set_ylabel("Count")
     plt.tight_layout()
     plt.savefig("velocity_profiles_and_histograms.png", dpi=300)
     plt.show()

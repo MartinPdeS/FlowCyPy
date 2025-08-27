@@ -8,8 +8,8 @@ and their distributions.
 
 """
 
-import numpy
 import matplotlib.pyplot as plt
+import numpy
 from TypedUnit import ureg
 
 from FlowCyPy import SimulationSettings
@@ -33,13 +33,14 @@ fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
 for optical_power in optical_powers:
     detector_name = f"{optical_power.magnitude:.1e} W"
 
-    signal_generator = SignalGenerator(n_elements=sequence_length, time_units=ureg.second, signal_units=ureg.watt)
+    signal_generator = SignalGenerator(
+        n_elements=sequence_length, time_units=ureg.second, signal_units=ureg.watt
+    )
 
     signal_generator.create_zero_signal(detector_name)
 
     signal_generator.add_constant(
-        signal_name=detector_name,
-        constant=optical_power.to('watt')
+        signal_name=detector_name, constant=optical_power.to("watt")
     )
 
     # Initialize the detector
@@ -47,13 +48,13 @@ for optical_power in optical_powers:
         name=detector_name,
         responsivity=1 * ureg.ampere / ureg.watt,
         numerical_aperture=0.2 * ureg.AU,
-        phi_angle=0 * ureg.degree
+        phi_angle=0 * ureg.degree,
     )
 
     detector.apply_shot_noise(
         signal_generator=signal_generator,
         wavelength=1550 * ureg.nanometer,
-        bandwidth=10 * ureg.megahertz
+        bandwidth=10 * ureg.megahertz,
     )
 
     noise_current = signal_generator.get_signal(detector_name) * ureg.ampere

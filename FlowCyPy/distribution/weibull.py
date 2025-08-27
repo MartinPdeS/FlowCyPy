@@ -1,5 +1,6 @@
-import numpy as np
 from typing import Tuple
+
+import numpy as np
 from pydantic.dataclasses import dataclass
 from TypedUnit import Length, RefractiveIndex
 
@@ -37,7 +38,9 @@ class Weibull(Base):
     def _scale(self) -> Length | RefractiveIndex:
         return self.scale.to(self._units)
 
-    def _generate_default_x(self, n_samples: int, x_min_factor: float, x_max_factor: float) -> Length | RefractiveIndex:
+    def _generate_default_x(
+        self, n_samples: int, x_min_factor: float, x_max_factor: float
+    ) -> Length | RefractiveIndex:
         """
         Generates a default range of x-values for the Weibull distribution.
 
@@ -78,12 +81,11 @@ class Weibull(Base):
         Length | RefractiveIndex
             An array of particle properties in meters.
         """
-        return np.random.weibull(
-            self.shape.magnitude,
-            size=n_samples
-        )
+        return np.random.weibull(self.shape.magnitude, size=n_samples)
 
-    def get_pdf(self, n_samples: int = 100) -> Tuple[Length | RefractiveIndex, np.ndarray]:
+    def get_pdf(
+        self, n_samples: int = 100
+    ) -> Tuple[Length | RefractiveIndex, np.ndarray]:
         """
         Returns the x-values and the PDF values for the Weibull distribution.
 
@@ -107,9 +109,16 @@ class Weibull(Base):
         scale_magnitude = self.scale.to(common_units).magnitude
         shape_magnitude = self.shape.to(common_units).magnitude
 
-        pdf = (shape_magnitude / scale_magnitude) * \
-              ((x.to(common_units).magnitude / scale_magnitude) ** (shape_magnitude - 1)) * \
-              np.exp(-(x.to(common_units).magnitude / scale_magnitude) ** shape_magnitude)
+        pdf = (
+            (shape_magnitude / scale_magnitude)
+            * (
+                (x.to(common_units).magnitude / scale_magnitude)
+                ** (shape_magnitude - 1)
+            )
+            * np.exp(
+                -((x.to(common_units).magnitude / scale_magnitude) ** shape_magnitude)
+            )
+        )
 
         return x, pdf
 

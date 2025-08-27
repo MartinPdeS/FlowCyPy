@@ -20,7 +20,7 @@ tasks = [
     ("AI/ML Model Training & Benchmarking", 9, 1),
     ("Validation and Testing", 10, 1),
     ("Optimization and Integration", 11, 1),
-    ("Documentation & Dissemination", 12, 1)
+    ("Documentation & Dissemination", 12, 1),
 ]
 
 # Total timeline in months (0 to 13 for a 13-month span)
@@ -33,9 +33,24 @@ task_gap = 15
 for month in range(total_time + 1):
     x = margin_left + month * scale_x
     # Vertical grid line
-    dwg.add(dwg.line(start=(x, margin_top - 10), end=(x, margin_top + chart_height), stroke="lightgray", stroke_width=1))
+    dwg.add(
+        dwg.line(
+            start=(x, margin_top - 10),
+            end=(x, margin_top + chart_height),
+            stroke="lightgray",
+            stroke_width=1,
+        )
+    )
     # Month label (displayed as Month 1, Month 2, etc.)
-    dwg.add(dwg.text(f"Month {month+1}", insert=(x, margin_top - 15), font_size="12px", fill="black", text_anchor="middle"))
+    dwg.add(
+        dwg.text(
+            f"Month {month+1}",
+            insert=(x, margin_top - 15),
+            font_size="12px",
+            fill="black",
+            text_anchor="middle",
+        )
+    )
 
 # Draw tasks as horizontal bars
 for i, (name, start, duration) in enumerate(tasks):
@@ -43,17 +58,36 @@ for i, (name, start, duration) in enumerate(tasks):
     x = margin_left + start * scale_x
     task_width = duration * scale_x
     # Draw the task bar
-    dwg.add(dwg.rect(insert=(x, y), size=(task_width, task_height),
-                     fill="lightblue", stroke="black", stroke_width=1))
+    dwg.add(
+        dwg.rect(
+            insert=(x, y),
+            size=(task_width, task_height),
+            fill="lightblue",
+            stroke="black",
+            stroke_width=1,
+        )
+    )
     # Center the task name inside the bar
-    dwg.add(dwg.text(name,
-                     insert=(x + task_width / 2, y + task_height / 2 + 5),
-                     font_size="14px", fill="black", text_anchor="middle"))
+    dwg.add(
+        dwg.text(
+            name,
+            insert=(x + task_width / 2, y + task_height / 2 + 5),
+            font_size="14px",
+            fill="black",
+            text_anchor="middle",
+        )
+    )
 
 # Draw the outer border for the chart area
-dwg.add(dwg.rect(insert=(margin_left, margin_top),
-                 size=(chart_width, chart_height),
-                 fill="none", stroke="black", stroke_width=1))
+dwg.add(
+    dwg.rect(
+        insert=(margin_left, margin_top),
+        size=(chart_width, chart_height),
+        fill="none",
+        stroke="black",
+        stroke_width=1,
+    )
+)
 
 # Save the SVG file
 dwg.save()

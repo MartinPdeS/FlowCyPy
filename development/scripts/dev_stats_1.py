@@ -4,14 +4,11 @@ Limit of detection
 """
 
 import numpy as np
-from FlowCyPy import units
-from FlowCyPy import SimulationSettings
-from FlowCyPy.population import Sphere
-from FlowCyPy import distribution
-from FlowCyPy import peak_locator
-from FlowCyPy.triggering_system import DynamicWindow
-from FlowCyPy import circuits
+
+from FlowCyPy import SimulationSettings, circuits, distribution, peak_locator, units
 from FlowCyPy.cytometer import FacsCanto
+from FlowCyPy.population import Sphere
+from FlowCyPy.triggering_system import DynamicWindow
 
 SimulationSettings.include_noises = True
 SimulationSettings.include_shot_noise = True
@@ -28,16 +25,15 @@ flow_cytometer = FacsCanto(
     sheath_volume_flow=1 * units.milliliter / units.minute,
     background_power=0 * units.milliwatt,
     optical_power=200 * units.milliwatt,
-    saturation_level=0.1 * units.millivolt
+    saturation_level=0.1 * units.millivolt,
 )
 
 for size in [150, 130, 110, 90]:
-
     population = Sphere(
-        name=f'{size} nanometer',
+        name=f"{size} nanometer",
         particle_count=20 * units.particle,
         diameter=distribution.Delta(position=size * units.nanometer),
-        refractive_index=distribution.Delta(position=1.39 * units.RIU)
+        refractive_index=distribution.Delta(position=1.39 * units.RIU),
     )
 
     flow_cytometer.fluidics.scatterer_collection.add_population(population)
@@ -45,38 +41,39 @@ for size in [150, 130, 110, 90]:
 # Run the flow cytometry simulation
 processing_steps = [
     circuits.BaselineRestorator(window_size=10 * units.microsecond),
-    circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2)
+    circuits.BesselLowPass(cutoff=1 * units.megahertz, order=4, gain=2),
 ]
 
 analog_acquisition, _ = flow_cytometer.get_acquisition(
-    run_time=2.0 * units.millisecond,
-    processing_steps=processing_steps
+    run_time=2.0 * units.millisecond, processing_steps=processing_steps
 )
 
 # %%
 # Run triggering system
-analog_acquisition.normalize_units(signal_units='max', time_units='max')
+analog_acquisition.normalize_units(signal_units="max", time_units="max")
 analog_acquisition.plot()
 
 trigger = DynamicWindow(
     dataframe=analog_acquisition,
-    trigger_detector_name='forward',
+    trigger_detector_name="forward",
     max_triggers=-1,
     pre_buffer=64,
     post_buffer=64,
-    digitizer=flow_cytometer.opto_electronics.digitizer
+    digitizer=flow_cytometer.opto_electronics.digitizer,
 )
 
 analog_trigger = trigger.run(
     # threshold=0.4 * units.millivolt,
-    threshold='3sigma'
+    threshold="3sigma"
 )
 
 # %%
 # Visualize the analog trigger signals
 analog_trigger.plot()
 
-digital_trigger = analog_trigger.digitalize(digitizer=flow_cytometer.opto_electronics.digitizer)
+digital_trigger = analog_trigger.digitalize(
+    digitizer=flow_cytometer.opto_electronics.digitizer
+)
 
 
 # %%
@@ -89,7 +86,4 @@ peaks = peak_algorithm.run(digital_trigger)
 
 # %%
 # Visualize the detected peaks
-peaks.plot(
-    x=('side', 'Height'),
-    y=('forward', 'Height')
-)
+peaks.plot(x=("side", "Height"), y=("forward", "Height"))

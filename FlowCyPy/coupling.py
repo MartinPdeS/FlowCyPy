@@ -1,11 +1,11 @@
 import numpy as np
 import pandas as pd
 import pint_pandas
-
+import PyMieSim.experiment as _PyMieSim
 from TypedUnit import Frequency, RefractiveIndex, ureg
 
-import PyMieSim.experiment as _PyMieSim
 from FlowCyPy.source import BaseBeam
+
 
 class ScatteringSimulator:
     """
@@ -15,7 +15,13 @@ class ScatteringSimulator:
     particles using PyMieSim's sequential interface, and updates a DataFrame of scattering events accordingly.
     """
 
-    def __init__(self, source: BaseBeam, detector: object, bandwidth: Frequency, medium_refractive_index: RefractiveIndex):
+    def __init__(
+        self,
+        source: BaseBeam,
+        detector: object,
+        bandwidth: Frequency,
+        medium_refractive_index: RefractiveIndex,
+    ):
         """
         Initialize the scattering simulator with source, detector, digitizer, and medium refractive index.
 
@@ -51,12 +57,14 @@ class ScatteringSimulator:
 
         masks = {
             "Sphere": event_df["type"] == "Sphere",
-            "CoreShell": event_df["type"] == "CoreShell"
+            "CoreShell": event_df["type"] == "CoreShell",
         }
 
         for kind, mask in masks.items():
             if mask.any():
-                getattr(self, f"_process_{kind.lower()}")(event_df, mask, compute_cross_section)
+                getattr(self, f"_process_{kind.lower()}")(
+                    event_df, mask, compute_cross_section
+                )
 
     def _build_source_and_detector(self, event_df: pd.DataFrame, num_particles: int):
         """
@@ -75,16 +83,14 @@ class ScatteringSimulator:
             (PyMieSim PlaneWave source, PyMieSim Photodiode detector)
         """
         amplitude = self.source.get_amplitude_signal(
-            bandwidth=self.bandwidth,
-            x=event_df["x"],
-            y=event_df["y"]
+            bandwidth=self.bandwidth, x=event_df["x"], y=event_df["y"]
         )
 
         pms_source = _PyMieSim.source.PlaneWave.build_sequential(
             total_size=num_particles,
             wavelength=self.source.wavelength,
             polarization=0 * ureg.degree,
-            amplitude=amplitude
+            amplitude=amplitude,
         )
 
         pms_detector = _PyMieSim.detector.Photodiode.build_sequential(
@@ -96,12 +102,14 @@ class ScatteringSimulator:
             phi_offset=self.detector.phi_angle,
             polarization_filter=np.nan * ureg.degree,
             sampling=self.detector.sampling,
-            rotation=0 * ureg.degree
+            rotation=0 * ureg.degree,
         )
 
         return pms_source, pms_detector
 
-    def _process_sphere(self, event_df: pd.DataFrame, mask: pd.Series, compute_cross_section: bool):
+    def _process_sphere(
+        self, event_df: pd.DataFrame, mask: pd.Series, compute_cross_section: bool
+    ):
         """
         Process and simulate scattering from spherical particles.
 
@@ -124,10 +132,12 @@ class ScatteringSimulator:
             diameter=df["Diameter"].values.quantity,
             property=df["RefractiveIndex"].values.quantity,
             medium_property=self.medium_refractive_index,
-            source=pms_source
+            source=pms_source,
         )
 
-        experiment = _PyMieSim.Setup(source=pms_source, scatterer=scatterer, detector=pms_detector)
+        experiment = _PyMieSim.Setup(
+            source=pms_source, scatterer=scatterer, detector=pms_detector
+        )
 
         event_df.loc[mask, self.detector.name] = pint_pandas.PintArray(
             experiment.get_sequential("coupling"), dtype=ureg.watt
@@ -138,7 +148,9 @@ class ScatteringSimulator:
                 experiment.get_sequential("Csca"), dtype=ureg.meter * ureg.meter
             )
 
-    def _process_coreshell(self, event_df: pd.DataFrame, mask: pd.Series, compute_cross_section: bool):
+    def _process_coreshell(
+        self, event_df: pd.DataFrame, mask: pd.Series, compute_cross_section: bool
+    ):
         """
         Process and simulate scattering from core-shell particles.
 
@@ -163,10 +175,12 @@ class ScatteringSimulator:
             shell_thickness=df["ShellThickness"].values.quantity,
             shell_property=df["ShellRefractiveIndex"].values.quantity,
             medium_property=self.medium_refractive_index,
-            source=pms_source
+            source=pms_source,
         )
 
-        experiment = _PyMieSim.Setup(source=pms_source, scatterer=scatterer, detector=pms_detector)
+        experiment = _PyMieSim.Setup(
+            source=pms_source, scatterer=scatterer, detector=pms_detector
+        )
 
         event_df.loc[mask, self.detector.name] = pint_pandas.PintArray(
             experiment.get_sequential("coupling"), dtype=ureg.watt

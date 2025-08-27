@@ -1,12 +1,15 @@
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 from TypedUnit import Time, validate_units
 
-from FlowCyPy import helper
-from FlowCyPy.scatterer_collection import ScattererCollection
+from FlowCyPy import (
+    distribution,  # noqa: F401
+    helper,
+    population,  # noqa: F401
+)
 from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy import population # noqa: F401
-from FlowCyPy import distribution # noqa: F401
+from FlowCyPy.scatterer_collection import ScattererCollection
+
 
 class Fluidics:
     def __init__(self, scatterer_collection: ScattererCollection, flow_cell: FlowCell):
@@ -39,13 +42,10 @@ class Fluidics:
             A DataFrame containing event data for the scatterers.
         """
         event_dataframe = self.flow_cell._generate_event_dataframe(
-            self.scatterer_collection.populations,
-            run_time=run_time
+            self.scatterer_collection.populations, run_time=run_time
         )
 
-        self.scatterer_collection.fill_dataframe_with_sampling(
-            event_dataframe
-        )
+        self.scatterer_collection.fill_dataframe_with_sampling(event_dataframe)
 
         return event_dataframe
 
@@ -91,9 +91,9 @@ class Fluidics:
 
         length_units = self.flow_cell.width.units
 
-        x = sampling['x'].pint.to(length_units).pint.quantity.magnitude
-        y = sampling['y'].pint.to(length_units).pint.quantity.magnitude
-        velocity = sampling['Velocity'].pint.to("meter/second").pint.quantity
+        x = sampling["x"].pint.to(length_units).pint.quantity.magnitude
+        y = sampling["y"].pint.to(length_units).pint.quantity.magnitude
+        velocity = sampling["Velocity"].pint.to("meter/second").pint.quantity
 
         sc = ax.scatter(
             x,
@@ -101,11 +101,12 @@ class Fluidics:
             c=velocity.magnitude,
             cmap="viridis",
             edgecolor="black",
-            label='Particle sampling'
+            label="Particle sampling",
         )
 
         # Create a dedicated colorbar axes next to the main axes:
         from mpl_toolkits.axes_grid1 import make_axes_locatable
+
         divider = make_axes_locatable(ax)
         cax = divider.append_axes("right", size="5%", pad=0.05)
         plt.colorbar(sc, cax=cax, label=f"Velocity [{sampling['Velocity'].pint.units}]")
@@ -113,23 +114,16 @@ class Fluidics:
         ax.set(
             xlabel=f"X [{length_units}]",
             ylabel=f"Y [{length_units}]",
-            title="Particle Spatial Distribution and Speed"
+            title="Particle Spatial Distribution and Speed",
         )
 
         self.flow_cell.sheath._add_to_plot(
-            ax=ax,
-            length_units=length_units,
-            color='lightblue',
-            label='Sheath Region'
+            ax=ax, length_units=length_units, color="lightblue", label="Sheath Region"
         )
 
         self.flow_cell.sample._add_to_plot(
-            ax=ax,
-            length_units=length_units,
-            color='green',
-            label='Sample Region'
-
+            ax=ax, length_units=length_units, color="green", label="Sample Region"
         )
 
-        ax.set_aspect('equal')
-        ax.legend(loc='upper right')
+        ax.set_aspect("equal")
+        ax.legend(loc="upper right")

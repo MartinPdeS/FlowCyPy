@@ -185,4 +185,3 @@ void DoubleThreshold::run(const double threshold, const double lower_threshold, 
 
     this->trigger.run_segmentation(valid_triggers);
 }
-

@@ -1,6 +1,8 @@
 import numpy as np
+
 from FlowCyPy.binary import interface_peak_locator
 from FlowCyPy.peak_locator.base_class import BasePeakLocator
+
 
 class SlidingWindowPeakLocator(BasePeakLocator):
     r"""
@@ -66,15 +68,17 @@ class SlidingWindowPeakLocator(BasePeakLocator):
     >>> print("Widths:", result["Width"])
     >>> print("Areas:", result["Area"])
     """
-    def __init__(self,
+
+    def __init__(
+        self,
         window_size: int,
         max_number_of_peaks: int = 5,
         padding_value: int = -1,
         window_step: int = -1,
         compute_width: bool = False,
         compute_area: bool = False,
-        threshold: float = 0.5):
-
+        threshold: float = 0.5,
+    ):
         self.max_number_of_peaks = max_number_of_peaks
 
         self.binding = interface_peak_locator.SlidingWindowPeakLocator(
@@ -84,7 +88,7 @@ class SlidingWindowPeakLocator(BasePeakLocator):
             padding_value=padding_value,
             compute_width=compute_width,
             compute_area=compute_area,
-            threshold=threshold
+            threshold=threshold,
         )
 
         self.output = dict(
@@ -93,10 +97,10 @@ class SlidingWindowPeakLocator(BasePeakLocator):
         )
 
         if compute_area:
-            self.output['Area'] = None
+            self.output["Area"] = None
 
         if compute_width:
-            self.output['Width'] = None
+            self.output["Width"] = None
 
     def __call__(self, array: np.ndarray) -> dict:
         """

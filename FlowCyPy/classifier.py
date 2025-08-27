@@ -1,12 +1,14 @@
-from sklearn.cluster import KMeans
-from sklearn.cluster import DBSCAN
-from sklearn.mixture import GaussianMixture
 import pandas as pd
+from sklearn.cluster import DBSCAN, KMeans
+from sklearn.mixture import GaussianMixture
+
 from FlowCyPy.sub_frames.classifier import ClassifierDataFrame
 
 
 class BaseClassifier:
-    def filter_dataframe(self, dataframe: pd.DataFrame, features: list, detectors: list = None) -> object:
+    def filter_dataframe(
+        self, dataframe: pd.DataFrame, features: list, detectors: list = None
+    ) -> object:
         """
         Filter the DataFrame based on the selected features and detectors.
 
@@ -47,7 +49,13 @@ class KmeansClassifier(BaseClassifier):
         """
         self.number_of_cluster = number_of_cluster
 
-    def run(self, dataframe: pd.DataFrame, features: list = ['Height'], detectors: list = None, random_state: int = 42) -> pd.DataFrame:
+    def run(
+        self,
+        dataframe: pd.DataFrame,
+        features: list = ["Height"],
+        detectors: list = None,
+        random_state: int = 42,
+    ) -> pd.DataFrame:
         """
         Run KMeans clustering on the selected features and detectors.
 
@@ -68,19 +76,22 @@ class KmeansClassifier(BaseClassifier):
             DataFrame with clustering labels added.
         """
         # Filter the DataFrame
-        sub_dataframe = self.filter_dataframe(dataframe=dataframe, features=features, detectors=detectors)
+        sub_dataframe = self.filter_dataframe(
+            dataframe=dataframe, features=features, detectors=detectors
+        )
 
         # Ensure data is dequantified if it uses Pint quantities
-        if hasattr(sub_dataframe, 'pint'):
-            sub_dataframe = sub_dataframe.pint.dequantify().droplevel('unit', axis=1)
+        if hasattr(sub_dataframe, "pint"):
+            sub_dataframe = sub_dataframe.pint.dequantify().droplevel("unit", axis=1)
 
         # Run KMeans
         kmeans = KMeans(n_clusters=self.number_of_cluster, random_state=random_state)
         labels = kmeans.fit_predict(sub_dataframe)
 
-        dataframe['Label'] = labels
+        dataframe["Label"] = labels
 
         return ClassifierDataFrame(dataframe)
+
 
 class GaussianMixtureClassifier(BaseClassifier):
     def __init__(self, number_of_components: int) -> None:
@@ -94,7 +105,13 @@ class GaussianMixtureClassifier(BaseClassifier):
         """
         self.number_of_components = number_of_components
 
-    def run(self, dataframe: pd.DataFrame, features: list = ['Height'], detectors: list = None, random_state: int = 42) -> pd.DataFrame:
+    def run(
+        self,
+        dataframe: pd.DataFrame,
+        features: list = ["Height"],
+        detectors: list = None,
+        random_state: int = 42,
+    ) -> pd.DataFrame:
         """
         Run Gaussian Mixture Model (GMM) clustering on the selected features and detectors.
 
@@ -115,20 +132,25 @@ class GaussianMixtureClassifier(BaseClassifier):
             DataFrame with clustering labels added.
         """
         # Filter the DataFrame
-        sub_dataframe = self.filter_dataframe(dataframe=dataframe, features=features, detectors=detectors)
+        sub_dataframe = self.filter_dataframe(
+            dataframe=dataframe, features=features, detectors=detectors
+        )
 
         # Ensure data is dequantified if it uses Pint quantities
-        if hasattr(sub_dataframe, 'pint'):
-            sub_dataframe = sub_dataframe.pint.dequantify().droplevel('unit', axis=1)
+        if hasattr(sub_dataframe, "pint"):
+            sub_dataframe = sub_dataframe.pint.dequantify().droplevel("unit", axis=1)
 
         # Run Gaussian Mixture Model
-        gmm = GaussianMixture(n_components=self.number_of_components, random_state=random_state)
+        gmm = GaussianMixture(
+            n_components=self.number_of_components, random_state=random_state
+        )
         labels = gmm.fit_predict(sub_dataframe)
 
         # Add labels to the original DataFrame
-        dataframe['Label'] = labels
+        dataframe["Label"] = labels
 
         return ClassifierDataFrame(dataframe)
+
 
 class DBSCANClassifier(BaseClassifier):
     def __init__(self, epsilon: float = 0.5, min_samples: int = 5) -> None:
@@ -147,7 +169,12 @@ class DBSCANClassifier(BaseClassifier):
         self.epsilon = epsilon
         self.min_samples = min_samples
 
-    def run(self, dataframe: pd.DataFrame, features: list = ['Height'], detectors: list = None) -> pd.DataFrame:
+    def run(
+        self,
+        dataframe: pd.DataFrame,
+        features: list = ["Height"],
+        detectors: list = None,
+    ) -> pd.DataFrame:
         """
         Run DBSCAN clustering on the selected features and detectors.
 
@@ -166,17 +193,19 @@ class DBSCANClassifier(BaseClassifier):
             DataFrame with clustering labels added. Noise points are labeled as -1.
         """
         # Filter the DataFrame
-        sub_dataframe = self.filter_dataframe(dataframe=dataframe, features=features, detectors=detectors)
+        sub_dataframe = self.filter_dataframe(
+            dataframe=dataframe, features=features, detectors=detectors
+        )
 
         # Ensure data is dequantified if it uses Pint quantities
-        if hasattr(sub_dataframe, 'pint'):
-            sub_dataframe = sub_dataframe.pint.dequantify().droplevel('unit', axis=1)
+        if hasattr(sub_dataframe, "pint"):
+            sub_dataframe = sub_dataframe.pint.dequantify().droplevel("unit", axis=1)
 
         # Run DBSCAN
         dbscan = DBSCAN(eps=self.epsilon, min_samples=self.min_samples)
         labels = dbscan.fit_predict(sub_dataframe)
 
         # Add labels to the original DataFrame
-        dataframe['Label'] = labels
+        dataframe["Label"] = labels
 
         return ClassifierDataFrame(dataframe)

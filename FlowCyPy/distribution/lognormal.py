@@ -1,11 +1,13 @@
-import numpy as np
 from typing import Tuple
+
+import numpy as np
+from pydantic.dataclasses import dataclass
 from scipy.stats import lognorm
 from TypedUnit import Length, RefractiveIndex
-from pydantic.dataclasses import dataclass
 
 from FlowCyPy.distribution.base_class import Base
 from FlowCyPy.utils import config_dict
+
 
 @dataclass(config=config_dict)
 class LogNormal(Base):
@@ -64,12 +66,12 @@ class LogNormal(Base):
             An array of scatterer properties in meters.
         """
         return np.random.lognormal(
-            mean=self._mean.magnitude,
-            sigma=self._std_dev.magnitude,
-            size=n_samples
+            mean=self._mean.magnitude, sigma=self._std_dev.magnitude, size=n_samples
         )
 
-    def _generate_default_x(self, x_min: float = 0.01, x_max: float = 5, n_samples: int = 40) -> np.ndarray:
+    def _generate_default_x(
+        self, x_min: float = 0.01, x_max: float = 5, n_samples: int = 40
+    ) -> np.ndarray:
         """
         Generates a range of x-values based on the log-normal distribution parameters.
 
@@ -97,7 +99,9 @@ class LogNormal(Base):
         x_max_value = x_max * scale
         return np.linspace(x_min_value, x_max_value, n_samples) * self._units
 
-    def get_pdf(self, x_min: float = 0.9, x_max: float = 1.1, n_samples: int = 40) -> Tuple[np.ndarray, np.ndarray]:
+    def get_pdf(
+        self, x_min: float = 0.9, x_max: float = 1.1, n_samples: int = 40
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Returns the x-values and the PDF values for the log-normal distribution.
 

@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
 
-from typing import Optional
 import warnings
+from typing import Optional
 
 import numpy as np
 import pandas as pd
 import pint_pandas
 from TypedUnit import AnyUnit, Time, ureg
 
+from FlowCyPy.binary.interface_triggering_system import (
+    DOUBLETHRESHOLD,
+    DYNAMICWINDOW,
+    FIXEDWINDOW,
+)
 from FlowCyPy.sub_frames.acquisition import TriggerDataFrame
-from FlowCyPy.binary.interface_triggering_system import FIXEDWINDOW, DYNAMICWINDOW, DOUBLETHRESHOLD
 
 
 class BaseTrigger:
@@ -20,9 +24,13 @@ class BaseTrigger:
         self._cpp_add_time(dataframe["Time"].pint.quantity.magnitude)
 
         for detector_name in dataframe.detector_names:
-            self._cpp_add_signal(detector_name, dataframe[detector_name].pint.quantity.magnitude)
+            self._cpp_add_signal(
+                detector_name, dataframe[detector_name].pint.quantity.magnitude
+            )
 
-    def _parse_threshold(self, threshold: AnyUnit | str, signal_dataframe: pd.DataFrame) -> AnyUnit:
+    def _parse_threshold(
+        self, threshold: AnyUnit | str, signal_dataframe: pd.DataFrame
+    ) -> AnyUnit:
         """
         Parse the threshold value and return it in the correct units.
         If the threshold is a string ending with "sigma", it calculates the threshold
@@ -38,12 +46,16 @@ class BaseTrigger:
         """
         if isinstance(threshold, str):
             if threshold.endswith("sigma"):
-                number_of_sigma = float(threshold.strip('sigma'))
-                signal = signal_dataframe[self.trigger_detector_name].pint.quantity.magnitude
+                number_of_sigma = float(threshold.strip("sigma"))
+                signal = signal_dataframe[
+                    self.trigger_detector_name
+                ].pint.quantity.magnitude
                 median_val = np.median(signal)
                 mad = np.median(np.abs(signal - median_val))
                 sigma_mad = mad / 0.6745
-                return (median_val + number_of_sigma * sigma_mad) * signal_dataframe.signal_units
+                return (
+                    median_val + number_of_sigma * sigma_mad
+                ) * signal_dataframe.signal_units
             else:
                 raise ValueError(f"Unknown threshold format: {threshold!r}")
 
@@ -65,7 +77,10 @@ class BaseTrigger:
         """
 
         if len(self.trigger.get_segmented_signal(self.trigger_detector_name)) == 0:
-            warnings.warn(f"No signal met the trigger criteria. Try adjusting the threshold. Signal min/max: {dataframe[self.trigger_detector_name].min().to_compact()}, {dataframe[self.trigger_detector_name].max().to_compact()}", UserWarning)
+            warnings.warn(
+                f"No signal met the trigger criteria. Try adjusting the threshold. Signal min/max: {dataframe[self.trigger_detector_name].min().to_compact()}, {dataframe[self.trigger_detector_name].max().to_compact()}",
+                UserWarning,
+            )
             # df = pd.DataFrame(columns=['SegmentID', 'Time'])
             # return TriggerDataFrame(df, is_digital=False)
 
@@ -79,14 +94,14 @@ class BaseTrigger:
         for detetector_name in detectors:
             data[detetector_name] = pint_pandas.PintArray(
                 self.trigger.get_segmented_signal(detetector_name),
-                dataframe.signal_units
+                dataframe.signal_units,
             )
 
         tidy = pd.DataFrame(data).set_index("SegmentID")
 
         tidy = TriggerDataFrame(tidy, is_digital=False)
 
-        tidy.normalize_units(signal_units='max', time_units='max')
+        tidy.normalize_units(signal_units="max", time_units="max")
 
         meta_data = dict(
             threshold={"detector": self.trigger_detector_name, "value": self.threshold},
@@ -103,13 +118,14 @@ class FixedWindow(FIXEDWINDOW, BaseTrigger):
     Fixed window triggering scheme.
     """
 
-    def __init__(self,
+    def __init__(
+        self,
         trigger_detector_name: str,
         threshold: AnyUnit | str,
         max_triggers: int = -1,
         pre_buffer: int = 64,
-        post_buffer: int = 64) -> None:
-
+        post_buffer: int = 64,
+    ) -> None:
         """
         Initialize the FixedWindow triggering scheme with the specified parameters.
 
@@ -159,7 +175,7 @@ class FixedWindow(FIXEDWINDOW, BaseTrigger):
 
         out_df = self._assemble_dataframe(dataframe)
 
-        out_df.attrs['scatterer'] = dataframe.scatterer
+        out_df.attrs["scatterer"] = dataframe.scatterer
 
         return out_df
 
@@ -168,12 +184,15 @@ class DynamicWindow(DYNAMICWINDOW, BaseTrigger):
     """
     Dynamic window triggering scheme.
     """
-    def __init__(self,
+
+    def __init__(
+        self,
         trigger_detector_name: str,
         threshold: AnyUnit | str,
         max_triggers: int = -1,
         pre_buffer: int = 64,
-        post_buffer: int = 64) -> None:
+        post_buffer: int = 64,
+    ) -> None:
         """
         Initialize the DynamicWindow triggering scheme with the specified parameters.
 
@@ -199,7 +218,6 @@ class DynamicWindow(DYNAMICWINDOW, BaseTrigger):
 
         self.threshold = threshold
 
-
     def run(self, dataframe: pd.DataFrame) -> TriggerDataFrame:
         """
         Run the dynamic window triggering algorithm on the provided DataFrame.
@@ -224,7 +242,7 @@ class DynamicWindow(DYNAMICWINDOW, BaseTrigger):
 
         output = self._assemble_dataframe(dataframe)
 
-        output.attrs['scatterer'] = dataframe.scatterer
+        output.attrs["scatterer"] = dataframe.scatterer
 
         return output
 
@@ -234,7 +252,8 @@ class DoubleThreshold(DOUBLETHRESHOLD, BaseTrigger):
     Double threshold triggering scheme.
     """
 
-    def __init__(self,
+    def __init__(
+        self,
         trigger_detector_name: str,
         upper_threshold: AnyUnit | str,
         lower_threshold: Optional[AnyUnit] = np.nan * ureg.volt,
@@ -242,8 +261,8 @@ class DoubleThreshold(DOUBLETHRESHOLD, BaseTrigger):
         debounce_enabled: bool = True,
         max_triggers: int = -1,
         pre_buffer: int = 64,
-        post_buffer: int = 64) -> None:
-
+        post_buffer: int = 64,
+    ) -> None:
         """
         Initialize the DoubleThreshold triggering scheme with the specified parameters.
 
@@ -296,11 +315,13 @@ class DoubleThreshold(DOUBLETHRESHOLD, BaseTrigger):
         _upper_threshold = self._parse_threshold(self.upper_threshold, dataframe)
         _lower_threshold = self._parse_threshold(self.lower_threshold, dataframe)
 
-        ds = dataframe['Time'][1]-dataframe['Time'][0]
-        sampling_rate = (1 / ds)
+        ds = dataframe["Time"][1] - dataframe["Time"][0]
+        sampling_rate = 1 / ds
 
         min_win_samples = (
-            int((self.min_window_duration * sampling_rate).to("dimensionless").m) if self.min_window_duration is not None else -1
+            int((self.min_window_duration * sampling_rate).to("dimensionless").m)
+            if self.min_window_duration is not None
+            else -1
         )
 
         self._cpp_run(
@@ -312,6 +333,6 @@ class DoubleThreshold(DOUBLETHRESHOLD, BaseTrigger):
 
         out_df = self._assemble_dataframe(dataframe)
 
-        out_df.attrs['scatterer'] = dataframe.scatterer
+        out_df.attrs["scatterer"] = dataframe.scatterer
 
         return out_df

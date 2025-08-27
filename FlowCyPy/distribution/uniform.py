@@ -1,11 +1,13 @@
-import numpy as np
 from typing import Tuple
-from scipy.stats import uniform
+
+import numpy as np
 from pydantic.dataclasses import dataclass
+from scipy.stats import uniform
 from TypedUnit import Length, RefractiveIndex
 
 from FlowCyPy.distribution.base_class import Base
 from FlowCyPy.utils import config_dict
+
 
 @dataclass(config=config_dict)
 class Uniform(Base):
@@ -84,12 +86,12 @@ class Uniform(Base):
             An array of scatterer properties in meters.
         """
         return np.random.uniform(
-            self._lower_bound.magnitude,
-            self._upper_bound.magnitude,
-            n_samples
+            self._lower_bound.magnitude, self._upper_bound.magnitude, n_samples
         )
 
-    def get_pdf(self, n_samples: int = 100) -> Tuple[Length | RefractiveIndex, np.ndarray]:
+    def get_pdf(
+        self, n_samples: int = 100
+    ) -> Tuple[Length | RefractiveIndex, np.ndarray]:
         """
         Returns the x-values and the PDF values for the uniform distribution.
 
@@ -110,7 +112,7 @@ class Uniform(Base):
         pdf = uniform.pdf(
             x.magnitude,
             loc=self._lower_bound.magnitude,
-            scale=self._upper_bound.magnitude - self._lower_bound.magnitude
+            scale=self._upper_bound.magnitude - self._lower_bound.magnitude,
         )
 
         return x, pdf

@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.signal import find_peaks, peak_widths
 
+
 class ScipyPeakLocator:
     """
     A peak detection utility that uses SciPy's find_peaks to detect prominent peaks in each row of a 2D NumPy array.
@@ -31,9 +32,17 @@ class ScipyPeakLocator:
         If True, computes the area (sum over the peak region) for each detected peak. Default is False.
     """
 
-    def __init__(self, height: float = 2000, distance: int = 1, width: float = None, prominence: float = None,
-                 max_number_of_peaks: int = 5, padding_value: object = -1,
-                 compute_width: bool = False, compute_area: bool = False):
+    def __init__(
+        self,
+        height: float = 2000,
+        distance: int = 1,
+        width: float = None,
+        prominence: float = None,
+        max_number_of_peaks: int = 5,
+        padding_value: object = -1,
+        compute_width: bool = False,
+        compute_area: bool = False,
+    ):
         self.height = height
         self.distance = distance
         self.width = width
@@ -80,7 +89,7 @@ class ScipyPeakLocator:
             height=self.height,
             distance=self.distance,
             width=self.width,
-            prominence=self.prominence
+            prominence=self.prominence,
         )
 
         if self.compute_width or self.compute_area:
@@ -98,24 +107,30 @@ class ScipyPeakLocator:
             for j, peak in enumerate(peaks):
                 left = int(np.floor(left_ips[j]))
                 right = int(np.ceil(right_ips[j]))
-                row_areas.append(np.sum(array[left:right+1]))
+                row_areas.append(np.sum(array[left : right + 1]))
 
         # Pad the results to ensure a fixed length (max_number_of_peaks).
         pad_val = self.padding_value
         num_found = len(row_peak_indices)
         padded_peak_indices = np.full(self.max_number_of_peaks, pad_val, dtype=float)
-        padded_peak_indices[:min(num_found, self.max_number_of_peaks)] = row_peak_indices[:self.max_number_of_peaks]
+        padded_peak_indices[: min(num_found, self.max_number_of_peaks)] = (
+            row_peak_indices[: self.max_number_of_peaks]
+        )
 
         result = {"Index": padded_peak_indices}
 
         if self.compute_width:
             padded_widths = np.full(self.max_number_of_peaks, np.nan, dtype=float)
-            padded_widths[:min(num_found, self.max_number_of_peaks)] = np.array(row_widths)[:self.max_number_of_peaks]
+            padded_widths[: min(num_found, self.max_number_of_peaks)] = np.array(
+                row_widths
+            )[: self.max_number_of_peaks]
             result["Width"] = padded_widths
 
         if self.compute_area:
             padded_areas = np.full(self.max_number_of_peaks, np.nan, dtype=float)
-            padded_areas[:min(num_found, self.max_number_of_peaks)] = np.array(row_areas)[:self.max_number_of_peaks]
+            padded_areas[: min(num_found, self.max_number_of_peaks)] = np.array(
+                row_areas
+            )[: self.max_number_of_peaks]
             result["Area"] = padded_areas
 
         return result
