@@ -8,13 +8,13 @@ along with their distributions.
 
 """
 
-import numpy
 import matplotlib.pyplot as plt
+import numpy
 from TypedUnit import ureg
 
+from FlowCyPy import SimulationSettings
 from FlowCyPy.detector import Detector
 from FlowCyPy.signal_generator import SignalGenerator
-from FlowCyPy import SimulationSettings
 
 SimulationSettings.include_noises = True
 SimulationSettings.include_shot_noise = False
@@ -32,7 +32,9 @@ fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
 for dark_current in dark_currents:
     detector_name = f"{dark_current.magnitude:.1e} A"
 
-    signal_generator = SignalGenerator(n_elements=200, time_units=ureg.second, signal_units=ureg.ampere)
+    signal_generator = SignalGenerator(
+        n_elements=200, time_units=ureg.second, signal_units=ureg.ampere
+    )
 
     signal_generator.create_zero_signal(detector_name)
 
@@ -40,15 +42,14 @@ for dark_current in dark_currents:
     detector = Detector(
         name=detector_name,
         responsivity=1 * ureg.ampere / ureg.watt,  # Responsitivity (current per power)
-        numerical_aperture=0.2 * ureg.AU,           # Numerical aperture
-        phi_angle=0 * ureg.degree,                  # Detector orientation angle
-        dark_current=dark_current                    # Dark current level
+        numerical_aperture=0.2 * ureg.AU,  # Numerical aperture
+        phi_angle=0 * ureg.degree,  # Detector orientation angle
+        dark_current=dark_current,  # Dark current level
     )
 
     # Add dark current noise to the raw signal
     detector.apply_dark_current_noise(
-        signal_generator=signal_generator,
-        bandwidth=10 * ureg.megahertz
+        signal_generator=signal_generator, bandwidth=10 * ureg.megahertz
     )
 
     noise_current = signal_generator.get_signal(detector_name)

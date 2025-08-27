@@ -15,11 +15,16 @@ when varying bead size under fixed illumination power.
 import numpy as np
 from TypedUnit import ureg
 
-from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection
-from FlowCyPy.opto_electronics import OptoElectronics, source, TransimpedanceAmplifier, Detector
-from FlowCyPy.signal_processing import SignalProcessing, Digitizer
 from FlowCyPy import FlowCytometer, SimulationSettings
 from FlowCyPy.calibration import KEstimator
+from FlowCyPy.fluidics import FlowCell, Fluidics, ScattererCollection
+from FlowCyPy.opto_electronics import (
+    Detector,
+    OptoElectronics,
+    TransimpedanceAmplifier,
+    source,
+)
+from FlowCyPy.signal_processing import Digitizer, SignalProcessing
 
 # %%
 # Configure simulation-level noise assumptions
@@ -49,19 +54,16 @@ flow_cell = FlowCell(
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
 
-fluidics = Fluidics(
-    scatterer_collection=scatterer_collection,
-    flow_cell=flow_cell
-)
+fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
 _source = source.GaussianBeam(
     numerical_aperture=0.2 * ureg.AU,
     wavelength=450 * ureg.nanometer,
-    optical_power=150 * ureg.milliwatt  # Fixed illumination power
+    optical_power=150 * ureg.milliwatt,  # Fixed illumination power
 )
 
 digitizer = Digitizer(
-    bit_depth='16bit',
+    bit_depth="16bit",
     saturation_levels=(0 * ureg.volt, 2 * ureg.volt),
     sampling_rate=60 * ureg.megahertz,
 )
@@ -72,7 +74,7 @@ amplifier = TransimpedanceAmplifier(
 )
 
 detector_0 = Detector(
-    name='default',
+    name="default",
     phi_angle=0 * ureg.degree,
     numerical_aperture=0.2 * ureg.AU,
     cache_numerical_aperture=0.0 * ureg.AU,
@@ -80,9 +82,7 @@ detector_0 = Detector(
 )
 
 opto_electronics = OptoElectronics(
-    detectors=[detector_0],
-    source=_source,
-    amplifier=amplifier
+    detectors=[detector_0], source=_source, amplifier=amplifier
 )
 
 signal_processing = SignalProcessing(
@@ -94,7 +94,7 @@ flow_cytometer = FlowCytometer(
     opto_electronics=opto_electronics,
     fluidics=fluidics,
     signal_processing=signal_processing,
-    background_power=_source.optical_power * 0.001
+    background_power=_source.optical_power * 0.001,
 )
 
 
@@ -108,7 +108,7 @@ k_estimator.add_batch(
     bead_diameters=np.linspace(300, 900, 15) * ureg.nanometer,
     illumination_power=_source.optical_power,
     flow_cytometer=flow_cytometer,
-    particle_count=50 * ureg.particle
+    particle_count=50 * ureg.particle,
 )
 
 # %%

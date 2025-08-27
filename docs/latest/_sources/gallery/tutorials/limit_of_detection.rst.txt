@@ -29,17 +29,34 @@ digitization, triggering, and peak detection.
 The main goal is to evaluate whether such particles produce detectable and distinguishable
 scatter signals in the presence of system noise and fluidic variability.
 
-.. GENERATED FROM PYTHON SOURCE LINES 15-22
+.. GENERATED FROM PYTHON SOURCE LINES 15-40
 
 .. code-block:: Python
 
     import numpy as np
-    from FlowCyPy.fluidics import Fluidics, FlowCell, population, distribution, ScattererCollection
-    from FlowCyPy.opto_electronics import OptoElectronics, source, TransimpedanceAmplifier, Detector
-    from FlowCyPy.signal_processing import SignalProcessing, Digitizer, circuits, peak_locator, triggering_system
-    from FlowCyPy import FlowCytometer, SimulationSettings
     from TypedUnit import ureg
 
+    from FlowCyPy import FlowCytometer, SimulationSettings
+    from FlowCyPy.fluidics import (
+        FlowCell,
+        Fluidics,
+        ScattererCollection,
+        distribution,
+        population,
+    )
+    from FlowCyPy.opto_electronics import (
+        Detector,
+        OptoElectronics,
+        TransimpedanceAmplifier,
+        source,
+    )
+    from FlowCyPy.signal_processing import (
+        Digitizer,
+        SignalProcessing,
+        circuits,
+        peak_locator,
+        triggering_system,
+    )
 
 
 
@@ -47,11 +64,12 @@ scatter signals in the presence of system noise and fluidic variability.
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 23-24
+
+.. GENERATED FROM PYTHON SOURCE LINES 41-42
 
 Simulation Configuration
 
-.. GENERATED FROM PYTHON SOURCE LINES 24-34
+.. GENERATED FROM PYTHON SOURCE LINES 42-52
 
 .. code-block:: Python
 
@@ -72,18 +90,18 @@ Simulation Configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 35-36
+.. GENERATED FROM PYTHON SOURCE LINES 53-54
 
 Optical Source
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-42
+.. GENERATED FROM PYTHON SOURCE LINES 54-60
 
 .. code-block:: Python
 
     source = source.GaussianBeam(
         numerical_aperture=0.1 * ureg.AU,
         wavelength=488 * ureg.nanometer,
-        optical_power=200 * ureg.milliwatt
+        optical_power=200 * ureg.milliwatt,
     )
 
 
@@ -93,11 +111,11 @@ Optical Source
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 43-44
+.. GENERATED FROM PYTHON SOURCE LINES 61-62
 
 Flow Cell Configuration
 
-.. GENERATED FROM PYTHON SOURCE LINES 44-51
+.. GENERATED FROM PYTHON SOURCE LINES 62-69
 
 .. code-block:: Python
 
@@ -115,11 +133,11 @@ Flow Cell Configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-53
+.. GENERATED FROM PYTHON SOURCE LINES 70-71
 
 Define Scatterer Populations (90–150 nm spheres)
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-64
+.. GENERATED FROM PYTHON SOURCE LINES 71-82
 
 .. code-block:: Python
 
@@ -127,10 +145,10 @@ Define Scatterer Populations (90–150 nm spheres)
 
     for size in [150, 130, 110, 90]:
         pop = population.Sphere(
-            name=f'{size} nm',
+            name=f"{size} nm",
             particle_count=20 * ureg.particle,
             diameter=distribution.Delta(position=size * ureg.nanometer),
-            refractive_index=distribution.Delta(position=1.39 * ureg.RIU)
+            refractive_index=distribution.Delta(position=1.39 * ureg.RIU),
         )
         scatterer_collection.add_population(pop)
 
@@ -141,18 +159,15 @@ Define Scatterer Populations (90–150 nm spheres)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-66
+.. GENERATED FROM PYTHON SOURCE LINES 83-84
 
 Fluidics Subsystem
 
-.. GENERATED FROM PYTHON SOURCE LINES 66-71
+.. GENERATED FROM PYTHON SOURCE LINES 84-86
 
 .. code-block:: Python
 
-    fluidics = Fluidics(
-        scatterer_collection=scatterer_collection,
-        flow_cell=flow_cell
-    )
+    fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
 
 
@@ -161,18 +176,16 @@ Fluidics Subsystem
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 72-73
+.. GENERATED FROM PYTHON SOURCE LINES 87-88
 
 Signal Digitizer
 
-.. GENERATED FROM PYTHON SOURCE LINES 73-79
+.. GENERATED FROM PYTHON SOURCE LINES 88-92
 
 .. code-block:: Python
 
     digitizer = Digitizer(
-        bit_depth='14bit',
-        saturation_levels='auto',
-        sampling_rate=60 * ureg.megahertz
+        bit_depth="14bit", saturation_levels="auto", sampling_rate=60 * ureg.megahertz
     )
 
 
@@ -182,54 +195,28 @@ Signal Digitizer
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 80-81
+.. GENERATED FROM PYTHON SOURCE LINES 93-94
 
 Detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 81-97
+.. GENERATED FROM PYTHON SOURCE LINES 94-110
 
 .. code-block:: Python
 
     detector_side = Detector(
-        name='side',
+        name="side",
         phi_angle=90 * ureg.degree,
         numerical_aperture=0.2 * ureg.AU,
         responsivity=1 * ureg.ampere / ureg.watt,
-        dark_current=0.001 * ureg.milliampere
+        dark_current=0.001 * ureg.milliampere,
     )
 
     detector_forward = Detector(
-        name='forward',
+        name="forward",
         phi_angle=0 * ureg.degree,
         numerical_aperture=0.2 * ureg.AU,
         responsivity=1 * ureg.ampere / ureg.watt,
-        dark_current=0.001 * ureg.milliampere
-    )
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 98-99
-
-Amplifier and Opto-Electronics
-
-.. GENERATED FROM PYTHON SOURCE LINES 99-110
-
-.. code-block:: Python
-
-    amplifier = TransimpedanceAmplifier(
-        gain=10000 * ureg.volt / ureg.ampere,
-        bandwidth=10 * ureg.megahertz
-    )
-
-    opto_electronics = OptoElectronics(
-        detectors=[detector_side, detector_forward],
-        source=source,
-        amplifier=amplifier
+        dark_current=0.001 * ureg.milliampere,
     )
 
 
@@ -241,15 +228,38 @@ Amplifier and Opto-Electronics
 
 .. GENERATED FROM PYTHON SOURCE LINES 111-112
 
+Amplifier and Opto-Electronics
+
+.. GENERATED FROM PYTHON SOURCE LINES 112-120
+
+.. code-block:: Python
+
+    amplifier = TransimpedanceAmplifier(
+        gain=10000 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz
+    )
+
+    opto_electronics = OptoElectronics(
+        detectors=[detector_side, detector_forward], source=source, amplifier=amplifier
+    )
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 121-122
+
 Analog Processing Pipeline
 
-.. GENERATED FROM PYTHON SOURCE LINES 112-117
+.. GENERATED FROM PYTHON SOURCE LINES 122-127
 
 .. code-block:: Python
 
     analog_processing = [
         circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
-        circuits.BesselLowPass(cutoff=1 * ureg.megahertz, order=4, gain=2)
+        circuits.BesselLowPass(cutoff=1 * ureg.megahertz, order=4, gain=2),
     ]
 
 
@@ -259,27 +269,27 @@ Analog Processing Pipeline
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 118-119
+.. GENERATED FROM PYTHON SOURCE LINES 128-129
 
 Triggering and Peak Detection
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-134
+.. GENERATED FROM PYTHON SOURCE LINES 129-144
 
 .. code-block:: Python
 
     triggering_system = triggering_system.DynamicWindow(
-        trigger_detector_name='forward',
+        trigger_detector_name="forward",
         threshold=0.4 * ureg.millivolt,
         max_triggers=-1,
         pre_buffer=64,
-        post_buffer=64
+        post_buffer=64,
     )
 
     signal_processing = SignalProcessing(
         digitizer=digitizer,
         analog_processing=analog_processing,
         triggering_system=triggering_system,
-        peak_algorithm=peak_locator.GlobalPeakLocator()
+        peak_algorithm=peak_locator.GlobalPeakLocator(),
     )
 
 
@@ -289,7 +299,7 @@ Triggering and Peak Detection
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 135-144
+.. GENERATED FROM PYTHON SOURCE LINES 145-154
 
 .. code-block:: Python
 
@@ -297,7 +307,7 @@ Triggering and Peak Detection
         opto_electronics=opto_electronics,
         fluidics=fluidics,
         signal_processing=signal_processing,
-        background_power=0.0001 * ureg.milliwatt
+        background_power=0.0001 * ureg.milliwatt,
     )
 
     results = cytometer.run(run_time=1.0 * ureg.millisecond)
@@ -311,44 +321,44 @@ Triggering and Peak Detection
  .. code-block:: none
 
     Population  ScattererID
-    150 nm      0              -0.0
+    150 nm      0               0.0
                 1              -0.0
                 2              -0.0
-                3               0.0
-                4               0.0
+                3              -0.0
+                4              -0.0
                                ... 
-    90 nm       9              -0.0
-                10              0.0
-                11             -0.0
-                12             -0.0
-                13              0.0
-    Name: y, Length: 80, dtype: pint[meter][Float64] 1553.3522445768986 nanometer
+    90 nm       14              0.0
+                15              0.0
+                16              0.0
+                17              0.0
+                18             -0.0
+    Name: y, Length: 86, dtype: pint[meter][Float64] 1553.3522445768986 nanometer
     Population  ScattererID
-    150 nm      0              -0.0
+    150 nm      0               0.0
                 1              -0.0
                 2              -0.0
-                3               0.0
-                4               0.0
+                3              -0.0
+                4              -0.0
                                ... 
-    90 nm       9              -0.0
-                10              0.0
-                11             -0.0
-                12             -0.0
-                13              0.0
-    Name: y, Length: 80, dtype: pint[meter][Float64] 1553.3522445768986 nanometer
+    90 nm       14              0.0
+                15              0.0
+                16              0.0
+                17              0.0
+                18             -0.0
+    Name: y, Length: 86, dtype: pint[meter][Float64] 1553.3522445768986 nanometer
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 145-146
+.. GENERATED FROM PYTHON SOURCE LINES 155-156
 
 Plot Raw Analog Signal
 
-.. GENERATED FROM PYTHON SOURCE LINES 146-149
+.. GENERATED FROM PYTHON SOURCE LINES 156-159
 
 .. code-block:: Python
 
-    results.analog.normalize_units(time_units='max', signal_units='max')
+    results.analog.normalize_units(time_units="max", signal_units="max")
     results.analog.plot()
 
 
@@ -381,11 +391,11 @@ Plot Raw Analog Signal
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 150-151
+.. GENERATED FROM PYTHON SOURCE LINES 160-161
 
 Plot Triggered Analog Signal Segments
 
-.. GENERATED FROM PYTHON SOURCE LINES 151-153
+.. GENERATED FROM PYTHON SOURCE LINES 161-163
 
 .. code-block:: Python
 
@@ -421,18 +431,15 @@ Plot Triggered Analog Signal Segments
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 154-155
+.. GENERATED FROM PYTHON SOURCE LINES 164-165
 
 Plot Peak Features (Side vs Forward Height)
 
-.. GENERATED FROM PYTHON SOURCE LINES 155-159
+.. GENERATED FROM PYTHON SOURCE LINES 165-166
 
 .. code-block:: Python
 
-    results.peaks.plot(
-        x=('side', 'Height'),
-        y=('forward', 'Height')
-    )
+    results.peaks.plot(x=("side", "Height"), y=("forward", "Height"))
 
 
 
@@ -447,14 +454,14 @@ Plot Peak Features (Side vs Forward Height)
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f11bc9f2e50>
+    <seaborn.axisgrid.JointGrid object at 0x7f8a3e408a90>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.865 seconds)
+   **Total running time of the script:** (0 minutes 5.399 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:

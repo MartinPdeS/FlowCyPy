@@ -505,24 +505,21 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for FlowCyPy.amplifier</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ohm</span><span class="p">,</span> <span class="n">AnyUnit</span><span class="p">,</span> <span class="n">Frequency</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">validate_units</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyUnit</span><span class="p">,</span> <span class="n">Frequency</span><span class="p">,</span> <span class="n">Ohm</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">validate_units</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.simulation_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
 
-
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">extra</span><span class="o">=</span><span class="s1">&#39;forbid&#39;</span>
+    <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span>
 <span class="p">)</span>
+
 
 <div class="viewcode-block" id="TransimpedanceAmplifier">
 <a class="viewcode-back" href="../../code/amplifier.html#FlowCyPy.amplifier.TransimpedanceAmplifier">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">TransimpedanceAmplifier</span><span class="p">():</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TransimpedanceAmplifier</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a transimpedance amplifier (TIA) used to convert photocurrent signals into voltage.</span>
 
@@ -565,6 +562,7 @@ document.write(`
 <span class="sd">    of the detection system. This model allows simulation of how the gain and noise parameters</span>
 <span class="sd">    affect the output voltage and the signal-to-noise ratio.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">gain</span><span class="p">:</span> <span class="n">Ohm</span>
     <span class="n">bandwidth</span><span class="p">:</span> <span class="n">Frequency</span>
     <span class="n">voltage_noise_density</span><span class="p">:</span> <span class="n">AnyUnit</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">sqrt_hertz</span>
@@ -617,21 +615,27 @@ document.write(`
 <span class="sd">        to the amplified signal if a bandwidth is specified. The filter is applied using the</span>
 <span class="sd">        `apply_butterworth_lowpass_filter_to_signal` method of the signal generator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">assume_amplifier_bandwidth_is_infinite</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">or</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">assume_amplifier_bandwidth_is_infinite</span>
+        <span class="p">):</span>
             <span class="n">signal_generator</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gain</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">signal_generator</span><span class="o">.</span><span class="n">apply_butterworth_lowpass_filter</span><span class="p">(</span>
                 <span class="n">gain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gain</span><span class="p">,</span>
                 <span class="n">sampling_rate</span><span class="o">=</span><span class="n">sampling_rate</span><span class="p">,</span>
                 <span class="n">cutoff_frequency</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">,</span>
-                <span class="n">order</span><span class="o">=</span><span class="mi">1</span>
+                <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="c1"># Add voltage related noise if enabled</span>
-        <span class="k">if</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_amplifier_noise</span> <span class="ow">and</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_amplifier_noise</span>
+            <span class="ow">and</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_noises</span>
+        <span class="p">):</span>
             <span class="n">signal_generator</span><span class="o">.</span><span class="n">apply_gaussian_noise</span><span class="p">(</span>
                 <span class="n">mean</span><span class="o">=</span><span class="mf">0.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_output_noise</span><span class="o">.</span><span class="n">units</span><span class="p">,</span>
-                <span class="n">standard_deviation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">total_output_noise</span>
+                <span class="n">standard_deviation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">total_output_noise</span><span class="p">,</span>
             <span class="p">)</span></div>
 
 </pre></div>

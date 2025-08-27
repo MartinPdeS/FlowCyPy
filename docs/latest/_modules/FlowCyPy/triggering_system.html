@@ -507,16 +507,20 @@ document.write(`
   <h1>Source code for FlowCyPy.triggering_system</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pint_pandas</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyUnit</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">ureg</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary.interface_triggering_system</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DOUBLETHRESHOLD</span><span class="p">,</span>
+    <span class="n">DYNAMICWINDOW</span><span class="p">,</span>
+    <span class="n">FIXEDWINDOW</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.acquisition</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriggerDataFrame</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary.interface_triggering_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">FIXEDWINDOW</span><span class="p">,</span> <span class="n">DYNAMICWINDOW</span><span class="p">,</span> <span class="n">DOUBLETHRESHOLD</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseTrigger</span><span class="p">:</span>
@@ -527,9 +531,13 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_add_time</span><span class="p">(</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">detector_name</span> <span class="ow">in</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">detector_names</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_add_signal</span><span class="p">(</span><span class="n">detector_name</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">detector_name</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_add_signal</span><span class="p">(</span>
+                <span class="n">detector_name</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">detector_name</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span>
+            <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="n">AnyUnit</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">signal_dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnyUnit</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_threshold</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="n">AnyUnit</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">signal_dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnyUnit</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse the threshold value and return it in the correct units.</span>
 <span class="sd">        If the threshold is a string ending with &quot;sigma&quot;, it calculates the threshold</span>
@@ -545,12 +553,16 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">threshold</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;sigma&quot;</span><span class="p">):</span>
-                <span class="n">number_of_sigma</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">threshold</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;sigma&#39;</span><span class="p">))</span>
-                <span class="n">signal</span> <span class="o">=</span> <span class="n">signal_dataframe</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger_detector_name</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span>
+                <span class="n">number_of_sigma</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">threshold</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;sigma&quot;</span><span class="p">))</span>
+                <span class="n">signal</span> <span class="o">=</span> <span class="n">signal_dataframe</span><span class="p">[</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">trigger_detector_name</span>
+                <span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span>
                 <span class="n">median_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
                 <span class="n">mad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">signal</span> <span class="o">-</span> <span class="n">median_val</span><span class="p">))</span>
                 <span class="n">sigma_mad</span> <span class="o">=</span> <span class="n">mad</span> <span class="o">/</span> <span class="mf">0.6745</span>
-                <span class="k">return</span> <span class="p">(</span><span class="n">median_val</span> <span class="o">+</span> <span class="n">number_of_sigma</span> <span class="o">*</span> <span class="n">sigma_mad</span><span class="p">)</span> <span class="o">*</span> <span class="n">signal_dataframe</span><span class="o">.</span><span class="n">signal_units</span>
+                <span class="k">return</span> <span class="p">(</span>
+                    <span class="n">median_val</span> <span class="o">+</span> <span class="n">number_of_sigma</span> <span class="o">*</span> <span class="n">sigma_mad</span>
+                <span class="p">)</span> <span class="o">*</span> <span class="n">signal_dataframe</span><span class="o">.</span><span class="n">signal_units</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown threshold format: </span><span class="si">{</span><span class="n">threshold</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -572,7 +584,10 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger</span><span class="o">.</span><span class="n">get_segmented_signal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger_detector_name</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No signal met the trigger criteria. Try adjusting the threshold. Signal min/max: </span><span class="si">{</span><span class="n">dataframe</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger_detector_name</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">dataframe</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger_detector_name</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No signal met the trigger criteria. Try adjusting the threshold. Signal min/max: </span><span class="si">{</span><span class="n">dataframe</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger_detector_name</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">dataframe</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger_detector_name</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="c1"># df = pd.DataFrame(columns=[&#39;SegmentID&#39;, &#39;Time&#39;])</span>
             <span class="c1"># return TriggerDataFrame(df, is_digital=False)</span>
 
@@ -586,14 +601,14 @@ document.write(`
         <span class="k">for</span> <span class="n">detetector_name</span> <span class="ow">in</span> <span class="n">detectors</span><span class="p">:</span>
             <span class="n">data</span><span class="p">[</span><span class="n">detetector_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">trigger</span><span class="o">.</span><span class="n">get_segmented_signal</span><span class="p">(</span><span class="n">detetector_name</span><span class="p">),</span>
-                <span class="n">dataframe</span><span class="o">.</span><span class="n">signal_units</span>
+                <span class="n">dataframe</span><span class="o">.</span><span class="n">signal_units</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="n">tidy</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;SegmentID&quot;</span><span class="p">)</span>
 
         <span class="n">tidy</span> <span class="o">=</span> <span class="n">TriggerDataFrame</span><span class="p">(</span><span class="n">tidy</span><span class="p">,</span> <span class="n">is_digital</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="n">tidy</span><span class="o">.</span><span class="n">normalize_units</span><span class="p">(</span><span class="n">signal_units</span><span class="o">=</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="n">time_units</span><span class="o">=</span><span class="s1">&#39;max&#39;</span><span class="p">)</span>
+        <span class="n">tidy</span><span class="o">.</span><span class="n">normalize_units</span><span class="p">(</span><span class="n">signal_units</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">time_units</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">)</span>
 
         <span class="n">meta_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="n">threshold</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;detector&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_detector_name</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">},</span>
@@ -612,13 +627,14 @@ document.write(`
 <span class="sd">    Fixed window triggering scheme.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
         <span class="n">trigger_detector_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">threshold</span><span class="p">:</span> <span class="n">AnyUnit</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">max_triggers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">pre_buffer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
-        <span class="n">post_buffer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-
+        <span class="n">post_buffer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the FixedWindow triggering scheme with the specified parameters.</span>
 
@@ -670,7 +686,7 @@ document.write(`
 
         <span class="n">out_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assemble_dataframe</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
 
-        <span class="n">out_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;scatterer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">scatterer</span>
+        <span class="n">out_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;scatterer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">scatterer</span>
 
         <span class="k">return</span> <span class="n">out_df</span></div>
 </div>
@@ -683,12 +699,15 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dynamic window triggering scheme.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
         <span class="n">trigger_detector_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">threshold</span><span class="p">:</span> <span class="n">AnyUnit</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">max_triggers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">pre_buffer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
-        <span class="n">post_buffer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">post_buffer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the DynamicWindow triggering scheme with the specified parameters.</span>
 
@@ -713,7 +732,6 @@ document.write(`
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
-
 
 <div class="viewcode-block" id="DynamicWindow.run">
 <a class="viewcode-back" href="../../code/triggering_systems.html#FlowCyPy.triggering_system.DynamicWindow.run">[docs]</a>
@@ -741,7 +759,7 @@ document.write(`
 
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assemble_dataframe</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
 
-        <span class="n">output</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;scatterer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">scatterer</span>
+        <span class="n">output</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;scatterer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">scatterer</span>
 
         <span class="k">return</span> <span class="n">output</span></div>
 </div>
@@ -755,7 +773,8 @@ document.write(`
 <span class="sd">    Double threshold triggering scheme.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
         <span class="n">trigger_detector_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">upper_threshold</span><span class="p">:</span> <span class="n">AnyUnit</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">lower_threshold</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AnyUnit</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">volt</span><span class="p">,</span>
@@ -763,8 +782,8 @@ document.write(`
         <span class="n">debounce_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">max_triggers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">pre_buffer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
-        <span class="n">post_buffer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-
+        <span class="n">post_buffer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the DoubleThreshold triggering scheme with the specified parameters.</span>
 
@@ -819,11 +838,13 @@ document.write(`
         <span class="n">_upper_threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_threshold</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">upper_threshold</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">)</span>
         <span class="n">_lower_threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_threshold</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lower_threshold</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">)</span>
 
-        <span class="n">ds</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">sampling_rate</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">ds</span><span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">sampling_rate</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">ds</span>
 
         <span class="n">min_win_samples</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="nb">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">min_window_duration</span> <span class="o">*</span> <span class="n">sampling_rate</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;dimensionless&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">m</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_window_duration</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="nb">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">min_window_duration</span> <span class="o">*</span> <span class="n">sampling_rate</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;dimensionless&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_window_duration</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_run</span><span class="p">(</span>
@@ -835,7 +856,7 @@ document.write(`
 
         <span class="n">out_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assemble_dataframe</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
 
-        <span class="n">out_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;scatterer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">scatterer</span>
+        <span class="n">out_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;scatterer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">scatterer</span>
 
         <span class="k">return</span> <span class="n">out_df</span></div>
 </div>

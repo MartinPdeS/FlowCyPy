@@ -43,17 +43,18 @@ Workflow Steps:
 Step 0: Imports and Setup
 --------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 26-34
+.. GENERATED FROM PYTHON SOURCE LINES 26-35
 
 .. code-block:: Python
 
 
     from TypedUnit import ureg
-    from FlowCyPy.opto_electronics import source, TransimpedanceAmplifier
-    from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection, population
-    from FlowCyPy.detector import PMT
-    from FlowCyPy.signal_processing import Digitizer
+
     from FlowCyPy import OptoElectronics
+    from FlowCyPy.detector import PMT
+    from FlowCyPy.fluidics import FlowCell, Fluidics, ScattererCollection, population
+    from FlowCyPy.opto_electronics import TransimpedanceAmplifier, source
+    from FlowCyPy.signal_processing import Digitizer
 
 
 
@@ -62,19 +63,19 @@ Step 0: Imports and Setup
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 35-37
+.. GENERATED FROM PYTHON SOURCE LINES 36-38
 
 Step 1: Define Optical Source
 -----------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-43
+.. GENERATED FROM PYTHON SOURCE LINES 38-44
 
 .. code-block:: Python
 
     laser = source.GaussianBeam(
         numerical_aperture=0.3 * ureg.AU,
         wavelength=750 * ureg.nanometer,
-        optical_power=20 * ureg.milliwatt
+        optical_power=20 * ureg.milliwatt,
     )
 
 
@@ -84,12 +85,12 @@ Step 1: Define Optical Source
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 44-46
+.. GENERATED FROM PYTHON SOURCE LINES 45-47
 
 Step 2: Configure Flow Cell and Fluidics
 ----------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 46-65
+.. GENERATED FROM PYTHON SOURCE LINES 47-63
 
 .. code-block:: Python
 
@@ -97,7 +98,7 @@ Step 2: Configure Flow Cell and Fluidics
         sample_volume_flow=0.02 * ureg.microliter / ureg.second,
         sheath_volume_flow=0.1 * ureg.microliter / ureg.second,
         width=20 * ureg.micrometer,
-        height=10 * ureg.micrometer
+        height=10 * ureg.micrometer,
     )
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
@@ -107,10 +108,7 @@ Step 2: Configure Flow Cell and Fluidics
         population.Exosome(particle_count=5e10 * ureg.particle / ureg.milliliter),
     )
 
-    fluidics = Fluidics(
-        scatterer_collection=scatterer_collection,
-        flow_cell=flow_cell
-    )
+    fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
 
 
@@ -119,19 +117,19 @@ Step 2: Configure Flow Cell and Fluidics
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 66-68
+.. GENERATED FROM PYTHON SOURCE LINES 64-66
 
 Step 3: Generate Particle Event DataFrame
 -----------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 68-73
+.. GENERATED FROM PYTHON SOURCE LINES 66-71
 
 .. code-block:: Python
 
     event_dataframe = fluidics.generate_event_dataframe(run_time=3.5 * ureg.millisecond)
 
     # Plot the diameter distribution of the particles
-    event_dataframe.plot(x='Diameter', bins='auto')
+    event_dataframe.plot(x="Diameter", bins="auto")
 
 
 
@@ -151,30 +149,25 @@ Step 3: Generate Particle Event DataFrame
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 74-76
+.. GENERATED FROM PYTHON SOURCE LINES 72-74
 
 Step 4: Define Detectors and Amplifier
 --------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 76-93
+.. GENERATED FROM PYTHON SOURCE LINES 74-86
 
 .. code-block:: Python
 
     detector_forward = PMT(
-        name='forward',
-        phi_angle=0 * ureg.degree,
-        numerical_aperture=0.3 * ureg.AU
+        name="forward", phi_angle=0 * ureg.degree, numerical_aperture=0.3 * ureg.AU
     )
 
     detector_side = PMT(
-        name='side',
-        phi_angle=90 * ureg.degree,
-        numerical_aperture=0.3 * ureg.AU
+        name="side", phi_angle=90 * ureg.degree, numerical_aperture=0.3 * ureg.AU
     )
 
     amplifier = TransimpedanceAmplifier(
-        gain=100 * ureg.volt / ureg.ampere,
-        bandwidth=10 * ureg.megahertz
+        gain=100 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz
     )
 
 
@@ -184,25 +177,21 @@ Step 4: Define Detectors and Amplifier
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-96
+.. GENERATED FROM PYTHON SOURCE LINES 87-89
 
 Step 5: Configure Digitizer and Opto-Electronics
 ------------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 96-108
+.. GENERATED FROM PYTHON SOURCE LINES 89-97
 
 .. code-block:: Python
 
     digitizer = Digitizer(
-        bit_depth='14bit',
-        saturation_levels='auto',
-        sampling_rate=60 * ureg.megahertz
+        bit_depth="14bit", saturation_levels="auto", sampling_rate=60 * ureg.megahertz
     )
 
     opto_electronics = OptoElectronics(
-        detectors=[detector_forward, detector_side],
-        source=laser,
-        amplifier=amplifier
+        detectors=[detector_forward, detector_side], source=laser, amplifier=amplifier
     )
 
 
@@ -212,18 +201,17 @@ Step 5: Configure Digitizer and Opto-Electronics
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-111
+.. GENERATED FROM PYTHON SOURCE LINES 98-100
 
 Step 6: Model Scattering Signals
 --------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-116
+.. GENERATED FROM PYTHON SOURCE LINES 100-104
 
 .. code-block:: Python
 
     event_dataframe = opto_electronics.model_event(
-        event_dataframe=event_dataframe,
-        compute_cross_section=True
+        event_dataframe=event_dataframe, compute_cross_section=True
     )
 
 
@@ -235,52 +223,49 @@ Step 6: Model Scattering Signals
  .. code-block:: none
 
     Population  ScattererID
-    Exosome     0              3.0833666721549365e-07
-                1              1.1154636957141859e-06
-                2               3.813449675501583e-08
-                3              -7.116885682671695e-07
-                4               9.731954086870798e-07
-                                        ...          
-                3517            6.877780911712585e-07
-                3518           -1.436181201220531e-06
-                3519            1.938883035163824e-07
-                3520            9.001541388028773e-07
-                3521           -4.145346376873727e-07
-    Name: y, Length: 3522, dtype: pint[meter][Float64] 795.7747154594767 nanometer
-    /opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:212: UserWarning: Transverse distribution of particle flow exceed the waist of the source
-      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+    Exosome     0               1.5795017586881102e-07
+                1              -3.7054548306477813e-07
+                2               1.3726862882218792e-06
+                3               1.2881161137246904e-06
+                4              -2.0775551048896938e-07
+                                        ...           
+                3535            -5.950548036265585e-07
+                3536           -1.1251534683360597e-06
+                3537           -2.3877871043832875e-09
+                3538            1.3353450892354185e-06
+                3539           -1.2096358602645537e-06
+    Name: y, Length: 3540, dtype: pint[meter][Float64] 795.7747154594767 nanometer
+    /opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:255: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn(
     Population  ScattererID
-    Exosome     0              3.0833666721549365e-07
-                1              1.1154636957141859e-06
-                2               3.813449675501583e-08
-                3              -7.116885682671695e-07
-                4               9.731954086870798e-07
-                                        ...          
-                3517            6.877780911712585e-07
-                3518           -1.436181201220531e-06
-                3519            1.938883035163824e-07
-                3520            9.001541388028773e-07
-                3521           -4.145346376873727e-07
-    Name: y, Length: 3522, dtype: pint[meter][Float64] 795.7747154594767 nanometer
-    /opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:212: UserWarning: Transverse distribution of particle flow exceed the waist of the source
-      warnings.warn('Transverse distribution of particle flow exceed the waist of the source')
+    Exosome     0               1.5795017586881102e-07
+                1              -3.7054548306477813e-07
+                2               1.3726862882218792e-06
+                3               1.2881161137246904e-06
+                4              -2.0775551048896938e-07
+                                        ...           
+                3535            -5.950548036265585e-07
+                3536           -1.1251534683360597e-06
+                3537           -2.3877871043832875e-09
+                3538            1.3353450892354185e-06
+                3539           -1.2096358602645537e-06
+    Name: y, Length: 3540, dtype: pint[meter][Float64] 795.7747154594767 nanometer
+    /opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:255: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+      warnings.warn(
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 117-119
+.. GENERATED FROM PYTHON SOURCE LINES 105-107
 
 Step 7: Visualize Scattering Intensity
 --------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-123
+.. GENERATED FROM PYTHON SOURCE LINES 107-108
 
 .. code-block:: Python
 
-    event_dataframe.plot(
-        x='side',
-        y='Csca'  # Color-coded by scattering cross-section
-    )
+    event_dataframe.plot(x="side", y="Csca")  # Color-coded by scattering cross-section
 
 
 
@@ -295,14 +280,14 @@ Step 7: Visualize Scattering Intensity
  .. code-block:: none
 
 
-    <seaborn.axisgrid.JointGrid object at 0x7f11bc9faed0>
+    <seaborn.axisgrid.JointGrid object at 0x7f8a3e2bd790>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.871 seconds)
+   **Total running time of the script:** (0 minutes 3.829 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_coupling_model.py:

@@ -4,6 +4,7 @@ Examples: Validation
 ====================
 
 
+
 .. raw:: html
 
     <div class="sphx-glr-thumbnails">

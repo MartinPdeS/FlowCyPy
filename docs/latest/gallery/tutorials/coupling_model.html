@@ -566,11 +566,12 @@ to download the full example code.</p>
 <section id="step-0-imports-and-setup">
 <h2>Step 0: Imports and Setup<a class="headerlink" href="#step-0-imports-and-setup" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.opto_electronics</span><span class="w"> </span><span class="kn">import</span> <span class="n">source</span><span class="p">,</span> <span class="n">TransimpedanceAmplifier</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluidics</span><span class="p">,</span> <span class="n">FlowCell</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">population</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">PMT</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Digitizer</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptoElectronics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">PMT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCell</span><span class="p">,</span> <span class="n">Fluidics</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">population</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.opto_electronics</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransimpedanceAmplifier</span><span class="p">,</span> <span class="n">source</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Digitizer</span>
 </pre></div>
 </div>
 </section>
@@ -579,7 +580,7 @@ to download the full example code.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">laser</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">GaussianBeam</span><span class="p">(</span>
     <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>
     <span class="n">wavelength</span><span class="o">=</span><span class="mi">750</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
-    <span class="n">optical_power</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span>
+    <span class="n">optical_power</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -590,7 +591,7 @@ to download the full example code.</p>
     <span class="n">sample_volume_flow</span><span class="o">=</span><span class="mf">0.02</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
     <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microliter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">,</span>
     <span class="n">width</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
-    <span class="n">height</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
@@ -600,10 +601,7 @@ to download the full example code.</p>
     <span class="n">population</span><span class="o">.</span><span class="n">Exosome</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">5e10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">),</span>
 <span class="p">)</span>
 
-<span class="n">fluidics</span> <span class="o">=</span> <span class="n">Fluidics</span><span class="p">(</span>
-    <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
-    <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span>
-<span class="p">)</span>
+<span class="n">fluidics</span> <span class="o">=</span> <span class="n">Fluidics</span><span class="p">(</span><span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span> <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -612,7 +610,7 @@ to download the full example code.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">event_dataframe</span> <span class="o">=</span> <span class="n">fluidics</span><span class="o">.</span><span class="n">generate_event_dataframe</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">3.5</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 
 <span class="c1"># Plot the diameter distribution of the particles</span>
-<span class="n">event_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;Diameter&#39;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+<span class="n">event_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;Diameter&quot;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <img src="../../_images/sphx_glr_coupling_model_001.png" srcset="../../_images/sphx_glr_coupling_model_001.png" alt="Distribution of Diameter" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 1200x500 with 1 Axes&gt;
@@ -622,20 +620,15 @@ to download the full example code.</p>
 <section id="step-4-define-detectors-and-amplifier">
 <h2>Step 4: Define Detectors and Amplifier<a class="headerlink" href="#step-4-define-detectors-and-amplifier" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">detector_forward</span> <span class="o">=</span> <span class="n">PMT</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;forward&#39;</span><span class="p">,</span>
-    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
-    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span>
 <span class="p">)</span>
 
 <span class="n">detector_side</span> <span class="o">=</span> <span class="n">PMT</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>
-    <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
-    <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span> <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span>
 <span class="p">)</span>
 
 <span class="n">amplifier</span> <span class="o">=</span> <span class="n">TransimpedanceAmplifier</span><span class="p">(</span>
-    <span class="n">gain</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span>
-    <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span>
+    <span class="n">gain</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -643,15 +636,11 @@ to download the full example code.</p>
 <section id="step-5-configure-digitizer-and-opto-electronics">
 <h2>Step 5: Configure Digitizer and Opto-Electronics<a class="headerlink" href="#step-5-configure-digitizer-and-opto-electronics" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">digitizer</span> <span class="o">=</span> <span class="n">Digitizer</span><span class="p">(</span>
-    <span class="n">bit_depth</span><span class="o">=</span><span class="s1">&#39;14bit&#39;</span><span class="p">,</span>
-    <span class="n">saturation_levels</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
-    <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span>
+    <span class="n">bit_depth</span><span class="o">=</span><span class="s2">&quot;14bit&quot;</span><span class="p">,</span> <span class="n">saturation_levels</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span>
 <span class="p">)</span>
 
 <span class="n">opto_electronics</span> <span class="o">=</span> <span class="n">OptoElectronics</span><span class="p">(</span>
-    <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_forward</span><span class="p">,</span> <span class="n">detector_side</span><span class="p">],</span>
-    <span class="n">source</span><span class="o">=</span><span class="n">laser</span><span class="p">,</span>
-    <span class="n">amplifier</span><span class="o">=</span><span class="n">amplifier</span>
+    <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">detector_forward</span><span class="p">,</span> <span class="n">detector_side</span><span class="p">],</span> <span class="n">source</span><span class="o">=</span><span class="n">laser</span><span class="p">,</span> <span class="n">amplifier</span><span class="o">=</span><span class="n">amplifier</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -659,56 +648,52 @@ to download the full example code.</p>
 <section id="step-6-model-scattering-signals">
 <h2>Step 6: Model Scattering Signals<a class="headerlink" href="#step-6-model-scattering-signals" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">event_dataframe</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">model_event</span><span class="p">(</span>
-    <span class="n">event_dataframe</span><span class="o">=</span><span class="n">event_dataframe</span><span class="p">,</span>
-    <span class="n">compute_cross_section</span><span class="o">=</span><span class="kc">True</span>
+    <span class="n">event_dataframe</span><span class="o">=</span><span class="n">event_dataframe</span><span class="p">,</span> <span class="n">compute_cross_section</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Population  ScattererID
-Exosome     0              3.0833666721549365e-07
-            1              1.1154636957141859e-06
-            2               3.813449675501583e-08
-            3              -7.116885682671695e-07
-            4               9.731954086870798e-07
+Exosome     0               1.5795017586881102e-07
+            1              -3.7054548306477813e-07
+            2               1.3726862882218792e-06
+            3               1.2881161137246904e-06
+            4              -2.0775551048896938e-07
                                     ...
-            3517            6.877780911712585e-07
-            3518           -1.436181201220531e-06
-            3519            1.938883035163824e-07
-            3520            9.001541388028773e-07
-            3521           -4.145346376873727e-07
-Name: y, Length: 3522, dtype: pint[meter][Float64] 795.7747154594767 nanometer
-/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:212: UserWarning: Transverse distribution of particle flow exceed the waist of the source
-  warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
+            3535            -5.950548036265585e-07
+            3536           -1.1251534683360597e-06
+            3537           -2.3877871043832875e-09
+            3538            1.3353450892354185e-06
+            3539           -1.2096358602645537e-06
+Name: y, Length: 3540, dtype: pint[meter][Float64] 795.7747154594767 nanometer
+/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:255: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+  warnings.warn(
 Population  ScattererID
-Exosome     0              3.0833666721549365e-07
-            1              1.1154636957141859e-06
-            2               3.813449675501583e-08
-            3              -7.116885682671695e-07
-            4               9.731954086870798e-07
+Exosome     0               1.5795017586881102e-07
+            1              -3.7054548306477813e-07
+            2               1.3726862882218792e-06
+            3               1.2881161137246904e-06
+            4              -2.0775551048896938e-07
                                     ...
-            3517            6.877780911712585e-07
-            3518           -1.436181201220531e-06
-            3519            1.938883035163824e-07
-            3520            9.001541388028773e-07
-            3521           -4.145346376873727e-07
-Name: y, Length: 3522, dtype: pint[meter][Float64] 795.7747154594767 nanometer
-/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:212: UserWarning: Transverse distribution of particle flow exceed the waist of the source
-  warnings.warn(&#39;Transverse distribution of particle flow exceed the waist of the source&#39;)
+            3535            -5.950548036265585e-07
+            3536           -1.1251534683360597e-06
+            3537           -2.3877871043832875e-09
+            3538            1.3353450892354185e-06
+            3539           -1.2096358602645537e-06
+Name: y, Length: 3540, dtype: pint[meter][Float64] 795.7747154594767 nanometer
+/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:255: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+  warnings.warn(
 </pre></div>
 </div>
 </section>
 <section id="step-7-visualize-scattering-intensity">
 <h2>Step 7: Visualize Scattering Intensity<a class="headerlink" href="#step-7-visualize-scattering-intensity" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">event_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-    <span class="n">x</span><span class="o">=</span><span class="s1">&#39;side&#39;</span><span class="p">,</span>
-    <span class="n">y</span><span class="o">=</span><span class="s1">&#39;Csca&#39;</span>  <span class="c1"># Color-coded by scattering cross-section</span>
-<span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">event_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Csca&quot;</span><span class="p">)</span>  <span class="c1"># Color-coded by scattering cross-section</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_coupling_model_002.png" srcset="../../_images/sphx_glr_coupling_model_002.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7f11bc9faed0&gt;
+<img src="../../_images/sphx_glr_coupling_model_002.png" srcset="../../_images/sphx_glr_coupling_model_002.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7f8a3e2bd790&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.871 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.829 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-coupling-model-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/4c330faf84cd5e64e28ee463763b4944/coupling_model.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">coupling_model.ipynb</span></code></a></p>

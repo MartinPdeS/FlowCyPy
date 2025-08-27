@@ -35,5 +35,3 @@ Signal Processing
    ./triggering_systems.rst
    ./peak_locator.rst
    ./flow_cytometer.rst
-
-

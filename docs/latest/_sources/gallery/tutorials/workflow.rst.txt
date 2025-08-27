@@ -39,12 +39,13 @@ Steps Covered:
 Step 0: Global Settings and Imports
 -----------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 22-36
+.. GENERATED FROM PYTHON SOURCE LINES 22-37
 
 .. code-block:: Python
 
     import numpy as np
     from TypedUnit import ureg
+
     from FlowCyPy import SimulationSettings
 
     SimulationSettings.include_noises = True
@@ -64,49 +65,46 @@ Step 0: Global Settings and Imports
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-39
+.. GENERATED FROM PYTHON SOURCE LINES 38-40
 
 Step 1: Define Flow Cell and Fluidics
 -------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 39-75
+.. GENERATED FROM PYTHON SOURCE LINES 40-73
 
 .. code-block:: Python
 
     from FlowCyPy.flow_cell import FlowCell
-    from FlowCyPy.fluidics import Fluidics, ScattererCollection, population, distribution
+    from FlowCyPy.fluidics import Fluidics, ScattererCollection, distribution, population
 
     flow_cell = FlowCell(
         sample_volume_flow=80 * ureg.microliter / ureg.minute,
         sheath_volume_flow=1 * ureg.milliliter / ureg.minute,
         width=200 * ureg.micrometer,
-        height=100 * ureg.micrometer
+        height=100 * ureg.micrometer,
     )
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
 
     population_0 = population.Sphere(
-        name='Pop 0',
+        name="Pop 0",
         particle_count=5e9 * ureg.particle / ureg.milliliter,
         diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
-        refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU)
+        refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU),
     )
 
     population_1 = population.Sphere(
-        name='Pop 1',
+        name="Pop 1",
         particle_count=5e9 * ureg.particle / ureg.milliliter,
         diameter=distribution.RosinRammler(200 * ureg.nanometer, spread=30),
-        refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU)
+        refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU),
     )
 
     scatterer_collection.add_population(population_0, population_1)
 
     scatterer_collection.dilute(factor=80)
 
-    fluidics = Fluidics(
-        scatterer_collection=scatterer_collection,
-        flow_cell=flow_cell
-    )
+    fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
 
 
@@ -116,41 +114,59 @@ Step 1: Define Flow Cell and Fluidics
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 76-78
+.. GENERATED FROM PYTHON SOURCE LINES 74-76
 
 Step 2: Define Optical Subsystem
 --------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-107
+.. GENERATED FROM PYTHON SOURCE LINES 76-123
 
 .. code-block:: Python
 
-    from FlowCyPy.opto_electronics import source, Detector, TransimpedanceAmplifier, OptoElectronics
+    from FlowCyPy.opto_electronics import (
+        Detector,
+        OptoElectronics,
+        TransimpedanceAmplifier,
+        source,
+    )
 
     source = source.GaussianBeam(
         numerical_aperture=0.1 * ureg.AU,
         wavelength=450 * ureg.nanometer,
         optical_power=200 * ureg.milliwatt,
-        RIN=-140
+        RIN=-140,
     )
 
     detectors = [
-        Detector(name='forward', phi_angle=0 * ureg.degree,  numerical_aperture=0.3 * ureg.AU, responsivity=1 * ureg.ampere / ureg.watt),
-        Detector(name='side',    phi_angle=90 * ureg.degree, numerical_aperture=0.3 * ureg.AU, responsivity=1 * ureg.ampere / ureg.watt),
-        Detector(name='det 2',   phi_angle=30 * ureg.degree, numerical_aperture=0.3 * ureg.AU, responsivity=1 * ureg.ampere / ureg.watt),
+        Detector(
+            name="forward",
+            phi_angle=0 * ureg.degree,
+            numerical_aperture=0.3 * ureg.AU,
+            responsivity=1 * ureg.ampere / ureg.watt,
+        ),
+        Detector(
+            name="side",
+            phi_angle=90 * ureg.degree,
+            numerical_aperture=0.3 * ureg.AU,
+            responsivity=1 * ureg.ampere / ureg.watt,
+        ),
+        Detector(
+            name="det 2",
+            phi_angle=30 * ureg.degree,
+            numerical_aperture=0.3 * ureg.AU,
+            responsivity=1 * ureg.ampere / ureg.watt,
+        ),
     ]
 
     amplifier = TransimpedanceAmplifier(
         gain=10 * ureg.volt / ureg.ampere,
         bandwidth=10 * ureg.megahertz,
         voltage_noise_density=0.1 * ureg.nanovolt / ureg.sqrt_hertz,
-        current_noise_density=0.2 * ureg.femtoampere / ureg.sqrt_hertz
+        current_noise_density=0.2 * ureg.femtoampere / ureg.sqrt_hertz,
     )
 
     opto_electronics = OptoElectronics(
-        detectors=detectors,
-        source=source,
-        amplifier=amplifier
+        detectors=detectors, source=source, amplifier=amplifier
     )
 
 
@@ -161,34 +177,38 @@ Step 2: Define Optical Subsystem
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-110
+.. GENERATED FROM PYTHON SOURCE LINES 124-126
 
 Step 3: Signal Processing Configuration
 ---------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-140
+.. GENERATED FROM PYTHON SOURCE LINES 126-160
 
 .. code-block:: Python
 
-    from FlowCyPy.signal_processing import SignalProcessing, Digitizer, circuits, peak_locator, triggering_system
+    from FlowCyPy.signal_processing import (
+        Digitizer,
+        SignalProcessing,
+        circuits,
+        peak_locator,
+        triggering_system,
+    )
 
     digitizer = Digitizer(
-        bit_depth='14bit',
-        saturation_levels='auto',
-        sampling_rate=60 * ureg.megahertz
+        bit_depth="14bit", saturation_levels="auto", sampling_rate=60 * ureg.megahertz
     )
 
     analog_processing = [
         circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
-        circuits.BesselLowPass(cutoff=2 * ureg.megahertz, order=4, gain=2)
+        circuits.BesselLowPass(cutoff=2 * ureg.megahertz, order=4, gain=2),
     ]
 
     triggering = triggering_system.DynamicWindow(
-        trigger_detector_name='forward',
+        trigger_detector_name="forward",
         threshold=10 * ureg.microvolt,
         pre_buffer=20,
         post_buffer=20,
-        max_triggers=-1
+        max_triggers=-1,
     )
 
     peak_algo = peak_locator.GlobalPeakLocator(compute_width=False)
@@ -197,7 +217,7 @@ Step 3: Signal Processing Configuration
         digitizer=digitizer,
         analog_processing=analog_processing,
         triggering_system=triggering,
-        peak_algorithm=peak_algo
+        peak_algorithm=peak_algo,
     )
 
 
@@ -207,12 +227,12 @@ Step 3: Signal Processing Configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 141-143
+.. GENERATED FROM PYTHON SOURCE LINES 161-163
 
 Step 4: Run Simulation
 ----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 143-155
+.. GENERATED FROM PYTHON SOURCE LINES 163-175
 
 .. code-block:: Python
 
@@ -222,7 +242,7 @@ Step 4: Run Simulation
         opto_electronics=opto_electronics,
         fluidics=fluidics,
         signal_processing=signal_processing,
-        background_power=0.001 * ureg.milliwatt
+        background_power=0.001 * ureg.milliwatt,
     )
 
     results = cytometer.run(run_time=1.8 * ureg.millisecond)
@@ -237,58 +257,58 @@ Step 4: Run Simulation
  .. code-block:: none
 
     Population  ScattererID
-    Pop 0       0               0.0
+    Pop 0       0              -0.0
                 1              -0.0
-                2              -0.0
-                3              -0.0
-                4               0.0
+                2               0.0
+                3               0.0
+                4              -0.0
                                ... 
-    Pop 1       134             0.0
-                135            -0.0
-                136            -0.0
-                137             0.0
-                138             0.0
-    Name: y, Length: 282, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
+    Pop 1       129             0.0
+                130             0.0
+                131            -0.0
+                132            -0.0
+                133             0.0
+    Name: y, Length: 262, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
     Population  ScattererID
-    Pop 0       0               0.0
+    Pop 0       0              -0.0
                 1              -0.0
-                2              -0.0
-                3              -0.0
-                4               0.0
+                2               0.0
+                3               0.0
+                4              -0.0
                                ... 
-    Pop 1       134             0.0
-                135            -0.0
-                136            -0.0
-                137             0.0
-                138             0.0
-    Name: y, Length: 282, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
+    Pop 1       129             0.0
+                130             0.0
+                131            -0.0
+                132            -0.0
+                133             0.0
+    Name: y, Length: 262, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
     Population  ScattererID
-    Pop 0       0               0.0
+    Pop 0       0              -0.0
                 1              -0.0
-                2              -0.0
-                3              -0.0
-                4               0.0
+                2               0.0
+                3               0.0
+                4              -0.0
                                ... 
-    Pop 1       134             0.0
-                135            -0.0
-                136            -0.0
-                137             0.0
-                138             0.0
-    Name: y, Length: 282, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
+    Pop 1       129             0.0
+                130             0.0
+                131            -0.0
+                132            -0.0
+                133             0.0
+    Name: y, Length: 262, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 156-158
+.. GENERATED FROM PYTHON SOURCE LINES 176-178
 
 Step 5: Plot Events and Raw Analog Signals
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 158-161
+.. GENERATED FROM PYTHON SOURCE LINES 178-181
 
 .. code-block:: Python
 
-    _ = results.events.plot(x='side', y='forward', z='RefractiveIndex')
+    _ = results.events.plot(x="side", y="forward", z="RefractiveIndex")
 
 
 
@@ -303,16 +323,16 @@ Step 5: Plot Events and Raw Analog Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 162-164
+.. GENERATED FROM PYTHON SOURCE LINES 182-184
 
 Plot raw analog signals
 -----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 164-168
+.. GENERATED FROM PYTHON SOURCE LINES 184-188
 
 .. code-block:: Python
 
-    results.analog.normalize_units(signal_units='max')
+    results.analog.normalize_units(signal_units="max")
     _ = results.analog.plot()
 
 
@@ -340,12 +360,12 @@ Plot raw analog signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 169-171
+.. GENERATED FROM PYTHON SOURCE LINES 189-191
 
 Step 6: Plot Triggered Analog Segments
 --------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 171-174
+.. GENERATED FROM PYTHON SOURCE LINES 191-194
 
 .. code-block:: Python
 
@@ -376,12 +396,12 @@ Step 6: Plot Triggered Analog Segments
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 175-177
+.. GENERATED FROM PYTHON SOURCE LINES 195-197
 
 Step 7: Classify Events from Peak Features
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 177-191
+.. GENERATED FROM PYTHON SOURCE LINES 197-208
 
 .. code-block:: Python
 
@@ -390,15 +410,12 @@ Step 7: Classify Events from Peak Features
     classifier = KmeansClassifier(number_of_cluster=2)
 
     classified = classifier.run(
-        dataframe=results.peaks.unstack('Detector'),
-        features=['Height'],
-        detectors=['side', 'forward']
+        dataframe=results.peaks.unstack("Detector"),
+        features=["Height"],
+        detectors=["side", "forward"],
     )
 
-    _ = classified.plot(
-        x=('side', 'Height'),
-        y=('forward', 'Height')
-    )
+    _ = classified.plot(x=("side", "Height"), y=("forward", "Height"))
 
 
 
@@ -414,7 +431,7 @@ Step 7: Classify Events from Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 16.521 seconds)
+   **Total running time of the script:** (0 minutes 15.566 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

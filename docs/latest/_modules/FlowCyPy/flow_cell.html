@@ -506,16 +506,17 @@ document.write(`
                   
   <h1>Source code for FlowCyPy.flow_cell</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pint_pandas</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Length</span><span class="p">,</span> <span class="n">FlowRate</span><span class="p">,</span> <span class="n">Viscosity</span><span class="p">,</span> <span class="n">Volume</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">validate_units</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowRate</span><span class="p">,</span> <span class="n">Length</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">Viscosity</span><span class="p">,</span> <span class="n">Volume</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">validate_units</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePopulation</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.scatterer</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary.interface_flow_cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">FLOWCELL</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluid_region</span><span class="w"> </span><span class="kn">import</span> <span class="n">FluidRegion</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePopulation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.simulation_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.scatterer</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">config_dict</span>
 
 
@@ -598,6 +599,7 @@ document.write(`
 <span class="sd">    event_scheme : str</span>
 <span class="sd">        Scheme for event sampling, &#39;uniform-random&#39;, &#39;sorted&#39;, &#39;poisson&#39;, &#39;preserve&#39; (default: &#39;preserve&#39;).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">width</span><span class="p">:</span> <span class="n">Length</span>
     <span class="n">height</span><span class="p">:</span> <span class="n">Length</span>
     <span class="n">sample_volume_flow</span><span class="p">:</span> <span class="n">FlowRate</span>
@@ -606,21 +608,26 @@ document.write(`
     <span class="n">N_terms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">25</span>
     <span class="n">n_int</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">200</span>
 
-
     <span class="nd">@validate_units</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_sample_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Volume</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the volume passing through the flow cell over the given run time.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">area</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">average_flow_speed</span> <span class="o">*</span> <span class="n">run_time</span><span class="p">)</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">area</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">average_flow_speed</span> <span class="o">*</span> <span class="n">run_time</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;meter&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">sample_volume_flow</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_volume_flow</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;meter**3 / second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sheath_volume_flow</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;meter**3 / second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">viscosity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;pascal * second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;meter&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="n">height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;meter&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="n">sample_volume_flow</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_volume_flow</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                <span class="s2">&quot;meter**3 / second&quot;</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sheath_volume_flow</span><span class="o">.</span><span class="n">to</span><span class="p">(</span>
+                <span class="s2">&quot;meter**3 / second&quot;</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="n">viscosity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;pascal * second&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
             <span class="n">N_terms</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">N_terms</span><span class="p">,</span>
             <span class="n">n_int</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_int</span><span class="p">,</span>
         <span class="p">)</span>
@@ -672,13 +679,13 @@ document.write(`
 
 
     <span class="nd">@validate_units</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_event_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BasePopulation</span><span class="p">],</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScattererDataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_event_dataframe</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BasePopulation</span><span class="p">],</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScattererDataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates a DataFrame of event times and sampled velocities for each population based on the specified scheme.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sampling_dict</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">populations</span>
-        <span class="p">}</span>
+        <span class="n">sampling_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">}</span>
 
         <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
             <span class="n">sub_dict</span> <span class="o">=</span> <span class="n">sampling_dict</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
@@ -686,29 +693,31 @@ document.write(`
             <span class="n">particle_flux</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">compute_particle_flux</span><span class="p">(</span>
                 <span class="n">flow_speed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">average_flow_speed</span><span class="p">,</span>
                 <span class="n">flow_area</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">area</span><span class="p">,</span>
-                <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span>
+                <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="n">arrival_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_sample_arrival_times</span><span class="p">(</span>
-                <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-                <span class="n">particle_flux</span><span class="o">=</span><span class="n">particle_flux</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;particle / second&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="p">)</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span>
+            <span class="n">arrival_time</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_sample_arrival_times</span><span class="p">(</span>
+                    <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+                    <span class="n">particle_flux</span><span class="o">=</span><span class="n">particle_flux</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;particle / second&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span>
+            <span class="p">)</span>
 
             <span class="n">n_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrival_time</span><span class="p">)</span>
 
-            <span class="n">sub_dict</span><span class="p">[</span><span class="s1">&#39;n_elements&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrival_time</span><span class="p">)</span>
+            <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;n_elements&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrival_time</span><span class="p">)</span>
 
-            <span class="n">sub_dict</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arrival_time</span>
+            <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arrival_time</span>
 
-            <span class="n">sub_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                <span class="n">population</span><span class="o">.</span><span class="n">generate_property_sampling</span><span class="p">(</span><span class="n">n_events</span><span class="p">)</span>
+            <span class="n">sub_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">generate_property_sampling</span><span class="p">(</span><span class="n">n_events</span><span class="p">))</span>
+
+            <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;Velocity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sample_transverse_profile</span><span class="p">(</span><span class="n">n_events</span><span class="p">)</span>
             <span class="p">)</span>
 
-            <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;Velocity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_transverse_profile</span><span class="p">(</span><span class="n">n_events</span><span class="p">)</span>
-
         <span class="n">event_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dataframe_from_dict</span><span class="p">(</span>
-            <span class="n">dictionnary</span><span class="o">=</span><span class="n">sampling_dict</span><span class="p">,</span>
-            <span class="n">level_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Population&#39;</span><span class="p">,</span> <span class="s1">&#39;ScattererID&#39;</span><span class="p">]</span>
+            <span class="n">dictionnary</span><span class="o">=</span><span class="n">sampling_dict</span><span class="p">,</span> <span class="n">level_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Population&quot;</span><span class="p">,</span> <span class="s2">&quot;ScattererID&quot;</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">sorted_population</span><span class="p">:</span>
@@ -716,24 +725,20 @@ document.write(`
 
         <span class="k">if</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">evenly_spaced_events</span><span class="p">:</span>
             <span class="n">event_dataframe</span><span class="o">.</span><span class="n">uniformize_events_with_time</span><span class="p">(</span>
-                <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span>
-                <span class="n">lower_boundary</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
-                <span class="n">upper_boundary</span><span class="o">=</span><span class="mf">0.95</span>
+                <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span> <span class="n">lower_boundary</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">upper_boundary</span><span class="o">=</span><span class="mf">0.95</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">event_dataframe</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_dataframe_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionnary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">level_names</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScattererDataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_dataframe_from_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dictionnary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">level_names</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScattererDataFrame</span><span class="p">:</span>
         <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">pop_name</span><span class="p">,</span> <span class="n">inner_dict</span> <span class="ow">in</span> <span class="n">dictionnary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-
-            <span class="n">df_pop</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                <span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">inner_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;n_elements&#39;</span><span class="p">))</span>
-            <span class="p">)</span>
+            <span class="n">df_pop</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">inner_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;n_elements&quot;</span><span class="p">)))</span>
 
             <span class="n">df_pop</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span>
-                <span class="p">[[</span><span class="n">pop_name</span><span class="p">],</span> <span class="n">df_pop</span><span class="o">.</span><span class="n">index</span><span class="p">],</span>
-                <span class="n">names</span><span class="o">=</span><span class="n">level_names</span>
+                <span class="p">[[</span><span class="n">pop_name</span><span class="p">],</span> <span class="n">df_pop</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="n">level_names</span>
             <span class="p">)</span>
 
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">inner_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>

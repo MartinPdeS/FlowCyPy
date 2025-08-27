@@ -505,12 +505,13 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for FlowCyPy.digitizer</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">Frequency</span><span class="p">,</span> <span class="n">Voltage</span><span class="p">,</span> <span class="n">Time</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Frequency</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">Voltage</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.simulation_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">config_dict</span>
@@ -558,9 +559,10 @@ document.write(`
 <span class="sd">    dynamic range. This class provides the flexibility to configure both the sampling resolution</span>
 <span class="sd">    and saturation behavior for simulation purposes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">sampling_rate</span><span class="p">:</span> <span class="n">Frequency</span>
-    <span class="n">bit_depth</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;10bit&#39;</span>
-    <span class="n">saturation_levels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Voltage</span><span class="p">,</span> <span class="n">Voltage</span><span class="p">],</span> <span class="n">Voltage</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span>
+    <span class="n">bit_depth</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;10bit&quot;</span>
+    <span class="n">saturation_levels</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Voltage</span><span class="p">,</span> <span class="n">Voltage</span><span class="p">],</span> <span class="n">Voltage</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_bit_depth</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -594,8 +596,8 @@ document.write(`
 <span class="sd">            The number of bins corresponding to the bit-depth.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bit_depth</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">bit_depth</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bit_depth</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;bit&#39;</span><span class="p">))</span>
-            <span class="n">bit_depth</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="n">bit_depth</span>
+            <span class="n">bit_depth</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bit_depth</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;bit&quot;</span><span class="p">))</span>
+            <span class="n">bit_depth</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">bit_depth</span>
 
         <span class="k">return</span> <span class="n">bit_depth</span>
 
@@ -612,15 +614,19 @@ document.write(`
 <div class="viewcode-block" id="Digitizer.get_saturation_values">
 <a class="viewcode-back" href="../../code/digitizer.html#FlowCyPy.digitizer.Digitizer.get_saturation_values">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_saturation_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Quantity</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">]:</span>
-
         <span class="k">if</span> <span class="n">signal</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Quantity</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span><span class="p">),</span> <span class="n">Quantity</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_levels</span> <span class="o">==</span> <span class="s1">&#39;auto&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_levels</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">saturation_levels</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">saturation_levels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">saturation_levels</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">saturation_levels</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">saturation_levels</span>
 
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;saturation_levels must be &#39;auto&#39; or a tuple of two Quantities.&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;saturation_levels must be &#39;auto&#39; or a tuple of two Quantities.&quot;</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Digitizer.capture_signal">
@@ -635,27 +641,33 @@ document.write(`
             <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
                 <span class="n">a</span><span class="o">=</span><span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
                 <span class="n">a_min</span><span class="o">=</span><span class="n">min_level</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-                <span class="n">a_max</span><span class="o">=</span><span class="n">max_level</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+                <span class="n">a_max</span><span class="o">=</span><span class="n">max_level</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="c1"># If the digitizer is assumed to be perfect, return the signal without processing</span>
             <span class="k">return</span> <span class="n">signal</span><span class="p">,</span> <span class="p">(</span><span class="n">min_level</span><span class="p">,</span> <span class="n">max_level</span><span class="p">)</span>
 
-        <span class="k">assert</span> <span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">min_level</span><span class="o">.</span><span class="n">units</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Signal units: </span><span class="si">{</span><span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2"> do not match the saturation level units: </span><span class="si">{</span><span class="n">min_level</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">assert</span> <span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">check</span><span class="p">(</span>
+            <span class="n">min_level</span><span class="o">.</span><span class="n">units</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Signal units: </span><span class="si">{</span><span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2"> do not match the saturation level units: </span><span class="si">{</span><span class="n">min_level</span><span class="o">.</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_saturation_levels</span> <span class="o">=</span> <span class="n">min_level</span><span class="p">,</span> <span class="n">max_level</span>
         <span class="c1"># Generate bins for discretization</span>
         <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
             <span class="n">min_level</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
             <span class="n">max_level</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_bit_depth</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bit_depth</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="n">digitized_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">digitized_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
+            <span class="nb">float</span>
+        <span class="p">)</span>
 
         <span class="c1"># Throw a warning if saturated</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">((</span><span class="n">signal</span> <span class="o">&lt;</span> <span class="n">min_level</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">signal</span> <span class="o">&gt;</span> <span class="n">max_level</span><span class="p">)):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Signal values have been clipped to the saturation boundaries.&quot;</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;Signal values have been clipped to the saturation boundaries.&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">digitized_signal</span><span class="p">,</span> <span class="p">(</span><span class="n">min_level</span><span class="p">,</span> <span class="n">max_level</span><span class="p">)</span></div>
 </div>

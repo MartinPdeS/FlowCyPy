@@ -151,4 +151,3 @@ Simulating and Analyzing Flow Cytometry Data
 In the **FlowCyPy** library, the full flow cytometry experiment is simulated by configuring a `FlowCytometer` object that combines the laser source, particle distribution, and detectors. After running the simulation, the **PulseAnalyzer** can be used to extract pulse features such as peak height, width, and area, allowing for further analysis of the flow cytometry data.
 
 Refer to the "Examples" section for complete examples of how to configure a flow cytometry experiment and analyze the resulting data.
-

@@ -506,16 +506,28 @@ document.write(`
                   
   <h1>Source code for FlowCyPy.population</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">RefractiveIndex</span><span class="p">,</span> <span class="n">Length</span><span class="p">,</span> <span class="n">Particle</span><span class="p">,</span> <span class="n">Area</span><span class="p">,</span> <span class="n">Velocity</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">Dimensionless</span><span class="p">,</span> <span class="n">ParticleFlux</span><span class="p">,</span> <span class="n">Concentration</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Area</span><span class="p">,</span>
+    <span class="n">Concentration</span><span class="p">,</span>
+    <span class="n">Dimensionless</span><span class="p">,</span>
+    <span class="n">Length</span><span class="p">,</span>
+    <span class="n">Particle</span><span class="p">,</span>
+    <span class="n">ParticleFlux</span><span class="p">,</span>
+    <span class="n">RefractiveIndex</span><span class="p">,</span>
+    <span class="n">Time</span><span class="p">,</span>
+    <span class="n">Velocity</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">config_dict</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">BasePopulation</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_number_of_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flow_area</span><span class="p">:</span> <span class="n">Area</span><span class="p">,</span> <span class="n">flow_speed</span><span class="p">:</span> <span class="n">Velocity</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Particle</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_number_of_events</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">flow_area</span><span class="p">:</span> <span class="n">Area</span><span class="p">,</span> <span class="n">flow_speed</span><span class="p">:</span> <span class="n">Velocity</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Particle</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the total number of particles based on the flow volume and the defined concentration.</span>
 
@@ -543,11 +555,13 @@ document.write(`
 
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span><span class="p">,</span> <span class="n">Concentration</span><span class="p">):</span>
             <span class="n">flow_volume</span> <span class="o">=</span> <span class="n">flow_area</span> <span class="o">*</span> <span class="n">flow_speed</span> <span class="o">*</span> <span class="n">run_time</span>
-            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">concentration</span> <span class="o">*</span> <span class="n">flow_volume</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">concentration</span> <span class="o">*</span> <span class="n">flow_volume</span>
 
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid particle count representation.&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">compute_particle_flux</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flow_speed</span><span class="p">:</span> <span class="n">Velocity</span><span class="p">,</span> <span class="n">flow_area</span><span class="p">:</span> <span class="n">Area</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParticleFlux</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_particle_flux</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">flow_speed</span><span class="p">:</span> <span class="n">Velocity</span><span class="p">,</span> <span class="n">flow_area</span><span class="p">:</span> <span class="n">Area</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParticleFlux</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the particle flux in the flow system, accounting for flow speed,</span>
 <span class="sd">        flow area, and either the particle concentration or a predefined number of particles.</span>
@@ -570,13 +584,14 @@ document.write(`
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">/</span> <span class="n">run_time</span>
 
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span><span class="p">,</span> <span class="n">Concentration</span><span class="p">):</span>
-            <span class="n">flow_volume_per_second</span> <span class="o">=</span> <span class="p">(</span><span class="n">flow_speed</span> <span class="o">*</span> <span class="n">flow_area</span><span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">*</span> <span class="n">flow_volume_per_second</span><span class="p">)</span>
+            <span class="n">flow_volume_per_second</span> <span class="o">=</span> <span class="n">flow_speed</span> <span class="o">*</span> <span class="n">flow_area</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">*</span> <span class="n">flow_volume_per_second</span>
 
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid particle count representation.&quot;</span><span class="p">)</span>
 
-
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;refractive_index&#39;</span><span class="p">,</span> <span class="s1">&#39;core_refractive_index&#39;</span><span class="p">,</span> <span class="s1">&#39;shell_refractive_index&#39;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span>
+        <span class="s2">&quot;refractive_index&quot;</span><span class="p">,</span> <span class="s2">&quot;core_refractive_index&quot;</span><span class="p">,</span> <span class="s2">&quot;shell_refractive_index&quot;</span>
+    <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_refractive_index</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate the refractive index input.</span>
@@ -608,7 +623,7 @@ document.write(`
             <span class="sa">f</span><span class="s2">&quot;refractive_index must be of type Quantity (with RIU) or distribution.Base, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
-    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;core_diameter&#39;</span><span class="p">,</span> <span class="s1">&#39;shell_thickness&#39;</span><span class="p">)</span>
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;diameter&quot;</span><span class="p">,</span> <span class="s2">&quot;core_diameter&quot;</span><span class="p">,</span> <span class="s2">&quot;shell_thickness&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_diameter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate the diameter input.</span>
@@ -683,6 +698,7 @@ document.write(`
 <span class="sd">        The number density of particles (scatterers) per cubic meter.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">refractive_index</span><span class="p">:</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span> <span class="o">|</span> <span class="n">RefractiveIndex</span>
     <span class="n">diameter</span><span class="p">:</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span> <span class="o">|</span> <span class="n">Length</span>
@@ -713,8 +729,8 @@ document.write(`
 <span class="sd">            A tuple containing the generated diameter sample and refractive index sample.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s1">&#39;Diameter&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
-            <span class="s1">&#39;RefractiveIndex&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+            <span class="s2">&quot;Diameter&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
+            <span class="s2">&quot;RefractiveIndex&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
         <span class="p">}</span></div>
 </div>
 
@@ -791,12 +807,13 @@ document.write(`
 <span class="sd">            (core_diameter, shell_thickness, refractive_index_core, refractive_index_shell).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s1">&#39;CoreDiameter&#39;</span><span class="p">:</span>  <span class="bp">self</span><span class="o">.</span><span class="n">core_diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
-            <span class="s1">&#39;ShellThickness&#39;</span><span class="p">:</span>  <span class="bp">self</span><span class="o">.</span><span class="n">shell_thickness</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
-            <span class="s1">&#39;CoreRefractiveIndex&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
-            <span class="s1">&#39;ShellRefractiveIndex&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+            <span class="s2">&quot;CoreDiameter&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
+            <span class="s2">&quot;ShellThickness&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_thickness</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
+            <span class="s2">&quot;CoreRefractiveIndex&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
+            <span class="s2">&quot;ShellRefractiveIndex&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
         <span class="p">}</span></div>
 </div>
+
 
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy._population_instances</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>

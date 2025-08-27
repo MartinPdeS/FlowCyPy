@@ -550,8 +550,8 @@ to download the full example code.</p>
 <p>This example demonstrates the effect of different optical power levels on a flow cytometer detector.
 We initialize the detector, apply varying optical power levels, and visualize the resulting signals
 and their distributions.</p>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
@@ -575,13 +575,14 @@ and their distributions.</p>
 <span class="k">for</span> <span class="n">optical_power</span> <span class="ow">in</span> <span class="n">optical_powers</span><span class="p">:</span>
     <span class="n">detector_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">optical_power</span><span class="o">.</span><span class="n">magnitude</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2"> W&quot;</span>
 
-    <span class="n">signal_generator</span> <span class="o">=</span> <span class="n">SignalGenerator</span><span class="p">(</span><span class="n">n_elements</span><span class="o">=</span><span class="n">sequence_length</span><span class="p">,</span> <span class="n">time_units</span><span class="o">=</span><span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">signal_units</span><span class="o">=</span><span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">)</span>
+    <span class="n">signal_generator</span> <span class="o">=</span> <span class="n">SignalGenerator</span><span class="p">(</span>
+        <span class="n">n_elements</span><span class="o">=</span><span class="n">sequence_length</span><span class="p">,</span> <span class="n">time_units</span><span class="o">=</span><span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">signal_units</span><span class="o">=</span><span class="n">ureg</span><span class="o">.</span><span class="n">watt</span>
+    <span class="p">)</span>
 
     <span class="n">signal_generator</span><span class="o">.</span><span class="n">create_zero_signal</span><span class="p">(</span><span class="n">detector_name</span><span class="p">)</span>
 
     <span class="n">signal_generator</span><span class="o">.</span><span class="n">add_constant</span><span class="p">(</span>
-        <span class="n">signal_name</span><span class="o">=</span><span class="n">detector_name</span><span class="p">,</span>
-        <span class="n">constant</span><span class="o">=</span><span class="n">optical_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">&#39;watt&#39;</span><span class="p">)</span>
+        <span class="n">signal_name</span><span class="o">=</span><span class="n">detector_name</span><span class="p">,</span> <span class="n">constant</span><span class="o">=</span><span class="n">optical_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;watt&quot;</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="c1"># Initialize the detector</span>
@@ -589,13 +590,13 @@ and their distributions.</p>
         <span class="n">name</span><span class="o">=</span><span class="n">detector_name</span><span class="p">,</span>
         <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
         <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">AU</span><span class="p">,</span>
-        <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span>
+        <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">detector</span><span class="o">.</span><span class="n">apply_shot_noise</span><span class="p">(</span>
         <span class="n">signal_generator</span><span class="o">=</span><span class="n">signal_generator</span><span class="p">,</span>
         <span class="n">wavelength</span><span class="o">=</span><span class="mi">1550</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
-        <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span>
+        <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="n">noise_current</span> <span class="o">=</span> <span class="n">signal_generator</span><span class="o">.</span><span class="n">get_signal</span><span class="p">(</span><span class="n">detector_name</span><span class="p">)</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span>
@@ -622,7 +623,7 @@ and their distributions.</p>
 <span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_shot_noise_001.png" srcset="../../_images/sphx_glr_shot_noise_001.png" alt="Raw Signals at Different Optical Powers, Histogram of Raw Signals" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.549 seconds)</p>
+<img src="../../_images/sphx_glr_shot_noise_001.png" srcset="../../_images/sphx_glr_shot_noise_001.png" alt="Raw Signals at Different Optical Powers, Histogram of Raw Signals" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.552 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-noise-sources-shot-noise-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/0ed030493f46cf072d14cf8d5b0bb706/shot_noise.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">shot_noise.ipynb</span></code></a></p>

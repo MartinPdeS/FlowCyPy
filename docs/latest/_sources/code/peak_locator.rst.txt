@@ -23,4 +23,3 @@ Derivative based Class
 .. autoclass:: FlowCyPy.peak_locator.ScipyPeakLocator
    :members:
    :show-inheritance:
-

@@ -31,19 +31,24 @@ system with fixed bead diameter and varying illumination.
 Setup and configuration
 -----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 15-25
+.. GENERATED FROM PYTHON SOURCE LINES 15-30
 
 .. code-block:: Python
 
 
     import numpy as np
-    from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection
-    from FlowCyPy.opto_electronics import OptoElectronics, source, TransimpedanceAmplifier, Detector
-    from FlowCyPy.signal_processing import SignalProcessing, Digitizer
-    from FlowCyPy import FlowCytometer, SimulationSettings
     from TypedUnit import ureg
 
+    from FlowCyPy import FlowCytometer, SimulationSettings
     from FlowCyPy.calibration import JEstimator
+    from FlowCyPy.fluidics import FlowCell, Fluidics, ScattererCollection
+    from FlowCyPy.opto_electronics import (
+        Detector,
+        OptoElectronics,
+        TransimpedanceAmplifier,
+        source,
+    )
+    from FlowCyPy.signal_processing import Digitizer, SignalProcessing
 
 
 
@@ -52,11 +57,11 @@ Setup and configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 26-27
+.. GENERATED FROM PYTHON SOURCE LINES 31-32
 
 Configure simulation-level noise assumptions
 
-.. GENERATED FROM PYTHON SOURCE LINES 27-41
+.. GENERATED FROM PYTHON SOURCE LINES 32-46
 
 .. code-block:: Python
 
@@ -81,12 +86,12 @@ Configure simulation-level noise assumptions
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-44
+.. GENERATED FROM PYTHON SOURCE LINES 47-49
 
 Construct simulation components
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 44-103
+.. GENERATED FROM PYTHON SOURCE LINES 49-102
 
 .. code-block:: Python
 
@@ -96,24 +101,20 @@ Construct simulation components
         sheath_volume_flow=1 * ureg.milliliter / ureg.minute,
         width=400 * ureg.micrometer,
         height=400 * ureg.micrometer,
-
     )
 
     scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
 
-    fluidics = Fluidics(
-        scatterer_collection=scatterer_collection,
-        flow_cell=flow_cell
-    )
+    fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
     source = source.GaussianBeam(
         numerical_aperture=0.2 * ureg.AU,
         wavelength=450 * ureg.nanometer,
-        optical_power=0 * ureg.watt
+        optical_power=0 * ureg.watt,
     )
 
     digitizer = Digitizer(
-        bit_depth='16bit',
+        bit_depth="16bit",
         saturation_levels=(0 * ureg.volt, 2 * ureg.volt),
         sampling_rate=60 * ureg.megahertz,
     )
@@ -124,7 +125,7 @@ Construct simulation components
     )
 
     detector_0 = Detector(
-        name='default',
+        name="default",
         phi_angle=0 * ureg.degree,  # Forward scatter
         numerical_aperture=0.2 * ureg.AU,
         cache_numerical_aperture=0.0 * ureg.AU,
@@ -132,9 +133,7 @@ Construct simulation components
     )
 
     opto_electronics = OptoElectronics(
-        detectors=[detector_0],
-        source=source,
-        amplifier=amplifier
+        detectors=[detector_0], source=source, amplifier=amplifier
     )
 
     signal_processing = SignalProcessing(
@@ -146,7 +145,7 @@ Construct simulation components
         opto_electronics=opto_electronics,
         fluidics=fluidics,
         signal_processing=signal_processing,
-        background_power=source.optical_power * 0.001
+        background_power=source.optical_power * 0.001,
     )
 
 
@@ -156,12 +155,12 @@ Construct simulation components
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-106
+.. GENERATED FROM PYTHON SOURCE LINES 103-105
 
 Run J Estimation Simulation
 ---------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-116
+.. GENERATED FROM PYTHON SOURCE LINES 105-115
 
 .. code-block:: Python
 
@@ -172,7 +171,7 @@ Run J Estimation Simulation
         illumination_powers=np.linspace(10, 380, 25) * ureg.milliwatt,
         bead_diameter=400 * ureg.nanometer,
         flow_cytometer=flow_cytometer,
-        particle_count=50 * ureg.particle
+        particle_count=50 * ureg.particle,
     )
 
 
@@ -189,44 +188,51 @@ Run J Estimation Simulation
                 1               0.0
                 2              -0.0
                 3              -0.0
-                4              -0.0
-                5               0.0
-                6              -0.0
+                4               0.0
+                5              -0.0
+                6               0.0
                 7               0.0
-                8              -0.0
-                9               0.0
-                10              0.0
-                11             -0.0
+                8               0.0
+                9              -0.0
+                10             -0.0
+                11              0.0
                 12             -0.0
-                13              0.0
-                14             -0.0
-                15             -0.0
-                16              0.0
+                13             -0.0
+                14              0.0
+                15              0.0
+                16             -0.0
                 17              0.0
                 18              0.0
                 19              0.0
                 20              0.0
                 21              0.0
-                22             -0.0
+                22              0.0
                 23             -0.0
-                24              0.0
+                24             -0.0
                 25              0.0
-                26             -0.0
+                26              0.0
                 27              0.0
-                28              0.0
-                29             -0.0
-                30             -0.0
+                28             -0.0
+                29              0.0
+                30              0.0
                 31             -0.0
                 32              0.0
                 33              0.0
-                34             -0.0
-                35             -0.0
+                34              0.0
+                35              0.0
                 36             -0.0
-                37             -0.0
-                38             -0.0
-                39              0.0
+                37              0.0
+                38              0.0
+                39             -0.0
                 40              0.0
                 41              0.0
+                42              0.0
+                43              0.0
+                44             -0.0
+                45             -0.0
+                46             -0.0
+                47             -0.0
+                48             -0.0
     Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
     [INFO] Running simulation 2/25
     Population  ScattererID
@@ -237,432 +243,129 @@ Run J Estimation Simulation
                 4               0.0
                 5               0.0
                 6              -0.0
-                7              -0.0
+                7               0.0
                 8               0.0
                 9               0.0
-                10             -0.0
-                11             -0.0
+                10              0.0
+                11              0.0
                 12             -0.0
                 13              0.0
-                14             -0.0
+                14              0.0
                 15             -0.0
                 16             -0.0
-                17              0.0
-                18             -0.0
+                17             -0.0
+                18              0.0
                 19             -0.0
                 20              0.0
-                21             -0.0
-                22             -0.0
-                23              0.0
-                24              0.0
+                21              0.0
+                22              0.0
+                23             -0.0
+                24             -0.0
                 25             -0.0
                 26             -0.0
                 27             -0.0
                 28              0.0
                 29              0.0
-                30             -0.0
+                30              0.0
                 31              0.0
                 32              0.0
                 33              0.0
                 34              0.0
                 35             -0.0
-                36             -0.0
-                37              0.0
-                38              0.0
-                39              0.0
+                36              0.0
+                37             -0.0
+                38             -0.0
+                39             -0.0
+                40              0.0
+                41             -0.0
+                42             -0.0
     Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
     [INFO] Running simulation 3/25
     Population  ScattererID
     population  0               0.0
                 1               0.0
-                2              -0.0
-                3               0.0
+                2               0.0
+                3              -0.0
                 4               0.0
                 5               0.0
-                6               0.0
+                6              -0.0
                 7              -0.0
                 8              -0.0
                 9              -0.0
-                10              0.0
+                10             -0.0
                 11              0.0
                 12             -0.0
                 13             -0.0
-                14             -0.0
-                15              0.0
-                16             -0.0
-                17              0.0
+                14              0.0
+                15             -0.0
+                16              0.0
+                17             -0.0
                 18              0.0
-                19              0.0
-                20              0.0
+                19             -0.0
+                20             -0.0
                 21              0.0
                 22             -0.0
-                23              0.0
-                24              0.0
+                23             -0.0
+                24             -0.0
                 25              0.0
-                26              0.0
-                27             -0.0
-                28             -0.0
+                26             -0.0
+                27              0.0
+                28              0.0
                 29             -0.0
-                30              0.0
+                30             -0.0
                 31              0.0
                 32              0.0
                 33              0.0
                 34             -0.0
-                35             -0.0
+                35              0.0
                 36             -0.0
-                37             -0.0
+                37              0.0
                 38             -0.0
-                39              0.0
+                39             -0.0
                 40             -0.0
-                41             -0.0
-                42             -0.0
+                41              0.0
+                42              0.0
                 43              0.0
                 44             -0.0
                 45              0.0
                 46              0.0
-                47              0.0
+                47             -0.0
                 48             -0.0
-                49             -0.0
     Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
     [INFO] Running simulation 4/25
     Population  ScattererID
-    population  0               0.0
+    population  0              -0.0
                 1               0.0
                 2               0.0
                 3              -0.0
-                4               0.0
-                5              -0.0
-                6               0.0
-                7               0.0
-                8              -0.0
-                9               0.0
-                10              0.0
-                11             -0.0
-                12             -0.0
-                13             -0.0
-                14              0.0
-                15              0.0
-                16              0.0
-                17              0.0
-                18              0.0
-                19             -0.0
-                20              0.0
-                21              0.0
-                22              0.0
-                23              0.0
-                24              0.0
-                25             -0.0
-                26              0.0
-                27              0.0
-                28              0.0
-                29              0.0
-                30              0.0
-                31              0.0
-                32             -0.0
-                33              0.0
-                34             -0.0
-                35             -0.0
-                36             -0.0
-                37              0.0
-                38             -0.0
-                39             -0.0
-                40             -0.0
-                41             -0.0
-                42             -0.0
-                43              0.0
-                44             -0.0
-                45              0.0
-                46              0.0
-    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
+                4              -0.0
+                               ... 
+                57             -0.0
+                58              0.0
+                59             -0.0
+                60             -0.0
+                61             -0.0
+    Name: y, Length: 62, dtype: pint[meter][Float64] 716.1972439135291 nanometer
     [INFO] Running simulation 5/25
     Population  ScattererID
-    population  0               0.0
-                1               0.0
-                2              -0.0
-                3              -0.0
-                4              -0.0
-                5              -0.0
-                6              -0.0
-                7              -0.0
-                8               0.0
-                9               0.0
-                10              0.0
-                11              0.0
-                12              0.0
-                13             -0.0
-                14              0.0
-                15             -0.0
-                16             -0.0
-                17             -0.0
-                18              0.0
-                19              0.0
-                20              0.0
-                21             -0.0
-                22              0.0
-                23             -0.0
-                24              0.0
-                25              0.0
-                26              0.0
-                27              0.0
-                28              0.0
-                29              0.0
-                30             -0.0
-                31              0.0
-                32              0.0
-                33             -0.0
-                34              0.0
-                35              0.0
-                36             -0.0
-                37             -0.0
-                38             -0.0
-                39             -0.0
-                40             -0.0
-                41              0.0
-                42             -0.0
-                43             -0.0
-                44              0.0
-                45             -0.0
-                46              0.0
-                47             -0.0
-    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 6/25
-    Population  ScattererID
     population  0              -0.0
                 1               0.0
                 2               0.0
                 3              -0.0
-                4              -0.0
-                5               0.0
-                6               0.0
-                7               0.0
-                8               0.0
-                9              -0.0
-                10             -0.0
-                11              0.0
-                12             -0.0
-                13             -0.0
+                4               0.0
+                5              -0.0
+                6              -0.0
+                7              -0.0
+                8              -0.0
+                9               0.0
+                10              0.0
+                11             -0.0
+                12              0.0
+                13              0.0
                 14             -0.0
                 15              0.0
                 16              0.0
                 17             -0.0
-                18              0.0
-                19              0.0
-                20              0.0
-                21             -0.0
-                22              0.0
-                23              0.0
-                24              0.0
-                25              0.0
-                26              0.0
-                27              0.0
-                28             -0.0
-                29              0.0
-                30             -0.0
-                31              0.0
-                32             -0.0
-                33              0.0
-                34             -0.0
-                35              0.0
-                36             -0.0
-                37             -0.0
-                38             -0.0
-                39              0.0
-                40             -0.0
-                41             -0.0
-                42             -0.0
-                43             -0.0
-                44              0.0
-                45              0.0
-                46             -0.0
-                47              0.0
-    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 7/25
-    Population  ScattererID
-    population  0               0.0
-                1              -0.0
-                2              -0.0
-                3              -0.0
-                4              -0.0
-                5              -0.0
-                6               0.0
-                7               0.0
-                8              -0.0
-                9              -0.0
-                10             -0.0
-                11             -0.0
-                12             -0.0
-                13              0.0
-                14              0.0
-                15             -0.0
-                16             -0.0
-                17             -0.0
-                18             -0.0
-                19              0.0
-                20              0.0
-                21             -0.0
-                22              0.0
-                23             -0.0
-                24              0.0
-                25              0.0
-                26             -0.0
-                27             -0.0
-                28             -0.0
-                29              0.0
-                30             -0.0
-                31             -0.0
-                32              0.0
-                33             -0.0
-                34             -0.0
-                35             -0.0
-                36             -0.0
-                37              0.0
-                38             -0.0
-                39             -0.0
-                40             -0.0
-                41              0.0
-                42             -0.0
-                43              0.0
-                44              0.0
-                45              0.0
-                46              0.0
-                47              0.0
-                48             -0.0
-    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 8/25
-    Population  ScattererID
-    population  0              -0.0
-                1              -0.0
-                2              -0.0
-                3              -0.0
-                4               0.0
-                5              -0.0
-                6              -0.0
-                7              -0.0
-                8               0.0
-                9               0.0
-                10              0.0
-                11             -0.0
-                12              0.0
-                13             -0.0
-                14             -0.0
-                15             -0.0
-                16             -0.0
-                17              0.0
-                18              0.0
-                19              0.0
-                20              0.0
-                21             -0.0
-                22              0.0
-                23              0.0
-                24             -0.0
-                25             -0.0
-                26             -0.0
-                27              0.0
-                28             -0.0
-                29              0.0
-                30             -0.0
-                31             -0.0
-                32             -0.0
-                33             -0.0
-                34              0.0
-                35             -0.0
-                36             -0.0
-                37             -0.0
-                38             -0.0
-                39              0.0
-                40              0.0
-                41              0.0
-                42              0.0
-                43             -0.0
-                44             -0.0
-                45             -0.0
-                46             -0.0
-                47              0.0
-                48             -0.0
-    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 9/25
-    Population  ScattererID
-    population  0               0.0
-                1              -0.0
-                2              -0.0
-                3              -0.0
-                4              -0.0
-                5               0.0
-                6              -0.0
-                7              -0.0
-                8               0.0
-                9               0.0
-                10             -0.0
-                11              0.0
-                12             -0.0
-                13              0.0
-                14             -0.0
-                15              0.0
-                16             -0.0
-                17              0.0
-                18             -0.0
-                19              0.0
-                20              0.0
-                21             -0.0
-                22              0.0
-                23             -0.0
-                24              0.0
-                25              0.0
-                26             -0.0
-                27             -0.0
-                28              0.0
-                29              0.0
-                30             -0.0
-                31              0.0
-                32             -0.0
-                33              0.0
-                34             -0.0
-                35              0.0
-                36             -0.0
-                37             -0.0
-                38              0.0
-                39             -0.0
-                40              0.0
-                41             -0.0
-                42              0.0
-                43             -0.0
-                44              0.0
-                45             -0.0
-                46              0.0
-                47             -0.0
-                48              0.0
-                49             -0.0
-                50             -0.0
-                51              0.0
-                52              0.0
-                53              0.0
-                54             -0.0
-                55              0.0
-                56             -0.0
-                57              0.0
-                58             -0.0
-                59             -0.0
-    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 10/25
-    Population  ScattererID
-    population  0              -0.0
-                1               0.0
-                2               0.0
-                3               0.0
-                4               0.0
-                5               0.0
-                6              -0.0
-                7              -0.0
-                8               0.0
-                9               0.0
-                10             -0.0
-                11              0.0
-                12              0.0
-                13             -0.0
-                14              0.0
-                15             -0.0
-                16             -0.0
-                17              0.0
                 18              0.0
                 19              0.0
                 20             -0.0
@@ -670,13 +373,13 @@ Run J Estimation Simulation
                 22             -0.0
                 23             -0.0
                 24              0.0
-                25              0.0
+                25             -0.0
                 26              0.0
-                27             -0.0
-                28              0.0
+                27              0.0
+                28             -0.0
                 29              0.0
-                30             -0.0
-                31              0.0
+                30              0.0
+                31             -0.0
                 32             -0.0
                 33             -0.0
                 34              0.0
@@ -685,73 +388,132 @@ Run J Estimation Simulation
                 37             -0.0
                 38             -0.0
                 39              0.0
-                40              0.0
+                40             -0.0
                 41             -0.0
                 42              0.0
                 43              0.0
-                44             -0.0
+                44              0.0
                 45              0.0
-                46              0.0
+                46             -0.0
                 47             -0.0
                 48              0.0
-                49              0.0
+                49             -0.0
                 50             -0.0
-                51             -0.0
-                52              0.0
-                53             -0.0
-                54              0.0
+                51              0.0
+                52             -0.0
+                53              0.0
+                54             -0.0
+                55             -0.0
+                56             -0.0
     Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 11/25
+    [INFO] Running simulation 6/25
     Population  ScattererID
-    population  0               0.0
+    population  0              -0.0
                 1              -0.0
                 2              -0.0
-                3               0.0
-                4              -0.0
-                5              -0.0
-                6              -0.0
+                3              -0.0
+                4               0.0
+                5               0.0
+                6               0.0
                 7               0.0
-                8              -0.0
+                8               0.0
                 9               0.0
                 10             -0.0
-                11              0.0
-                12             -0.0
-                13              0.0
+                11             -0.0
+                12              0.0
+                13             -0.0
                 14             -0.0
-                15             -0.0
+                15              0.0
                 16             -0.0
-                17             -0.0
-                18             -0.0
-                19              0.0
-                20              0.0
+                17              0.0
+                18              0.0
+                19             -0.0
+                20             -0.0
                 21              0.0
-                22              0.0
+                22             -0.0
                 23             -0.0
                 24             -0.0
                 25             -0.0
                 26              0.0
                 27             -0.0
-                28              0.0
-                29             -0.0
+                28             -0.0
+                29              0.0
                 30              0.0
                 31             -0.0
-                32             -0.0
+                32              0.0
                 33              0.0
-                34              0.0
+                34             -0.0
                 35              0.0
-                36             -0.0
+                36              0.0
                 37              0.0
                 38             -0.0
-                39             -0.0
+                39              0.0
                 40              0.0
                 41              0.0
                 42              0.0
                 43              0.0
-                44             -0.0
+                44              0.0
                 45              0.0
-                46              0.0
+                46             -0.0
+                47             -0.0
+                48             -0.0
+                49              0.0
+                50             -0.0
+                51             -0.0
+                52              0.0
+                53             -0.0
     Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 12/25
+    [INFO] Running simulation 7/25
+    Population  ScattererID
+    population  0               0.0
+                1               0.0
+                2               0.0
+                3               0.0
+                4              -0.0
+                5              -0.0
+                6              -0.0
+                7              -0.0
+                8               0.0
+                9               0.0
+                10             -0.0
+                11              0.0
+                12             -0.0
+                13             -0.0
+                14              0.0
+                15              0.0
+                16             -0.0
+                17              0.0
+                18             -0.0
+                19              0.0
+                20             -0.0
+                21             -0.0
+                22             -0.0
+                23              0.0
+                24              0.0
+                25             -0.0
+                26              0.0
+                27             -0.0
+                28             -0.0
+                29              0.0
+                30              0.0
+                31             -0.0
+                32              0.0
+                33             -0.0
+                34             -0.0
+                35              0.0
+                36             -0.0
+                37              0.0
+                38             -0.0
+                39              0.0
+                40              0.0
+                41             -0.0
+                42             -0.0
+                43             -0.0
+                44              0.0
+                45             -0.0
+                46             -0.0
+    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
+    [INFO] Running simulation 8/25
     Population  ScattererID
     population  0               0.0
                 1               0.0
@@ -762,75 +524,329 @@ Run J Estimation Simulation
                 6               0.0
                 7              -0.0
                 8               0.0
-                9               0.0
+                9              -0.0
                 10              0.0
                 11             -0.0
-                12              0.0
+                12             -0.0
                 13              0.0
-                14             -0.0
-                15             -0.0
+                14              0.0
+                15              0.0
                 16             -0.0
-                17             -0.0
-                18             -0.0
+                17              0.0
+                18              0.0
                 19              0.0
-                20              0.0
+                20             -0.0
                 21              0.0
-                22             -0.0
+                22              0.0
                 23             -0.0
                 24             -0.0
-                25              0.0
-                26              0.0
+                25             -0.0
+                26             -0.0
                 27              0.0
-                28             -0.0
+                28              0.0
                 29              0.0
-                30              0.0
+                30             -0.0
                 31             -0.0
                 32              0.0
                 33              0.0
                 34              0.0
-                35             -0.0
-                36             -0.0
+                35              0.0
+                36              0.0
                 37             -0.0
-                38              0.0
+                38             -0.0
                 39              0.0
                 40             -0.0
+                41              0.0
+                42              0.0
+                43              0.0
+                44             -0.0
+                45             -0.0
+                46             -0.0
+                47             -0.0
+                48             -0.0
+                49             -0.0
+                50             -0.0
+    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
+    [INFO] Running simulation 9/25
+    Population  ScattererID
+    population  0              -0.0
+                1              -0.0
+                2              -0.0
+                3               0.0
+                4              -0.0
+                5              -0.0
+                6              -0.0
+                7               0.0
+                8               0.0
+                9               0.0
+                10             -0.0
+                11             -0.0
+                12             -0.0
+                13             -0.0
+                14              0.0
+                15              0.0
+                16             -0.0
+                17             -0.0
+                18              0.0
+                19              0.0
+                20             -0.0
+                21              0.0
+                22              0.0
+                23             -0.0
+                24              0.0
+                25              0.0
+                26              0.0
+                27             -0.0
+                28              0.0
+                29             -0.0
+                30             -0.0
+                31             -0.0
+                32             -0.0
+                33              0.0
+                34              0.0
+                35              0.0
+                36             -0.0
+                37             -0.0
+                38             -0.0
+                39             -0.0
+                40              0.0
                 41              0.0
                 42             -0.0
                 43              0.0
                 44              0.0
                 45              0.0
                 46              0.0
+                47             -0.0
+                48             -0.0
+    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
+    [INFO] Running simulation 10/25
+    Population  ScattererID
+    population  0               0.0
+                1              -0.0
+                2              -0.0
+                3              -0.0
+                4               0.0
+                5              -0.0
+                6              -0.0
+                7              -0.0
+                8              -0.0
+                9               0.0
+                10              0.0
+                11             -0.0
+                12             -0.0
+                13             -0.0
+                14              0.0
+                15              0.0
+                16             -0.0
+                17              0.0
+                18              0.0
+                19              0.0
+                20             -0.0
+                21              0.0
+                22             -0.0
+                23              0.0
+                24              0.0
+                25             -0.0
+                26              0.0
+                27              0.0
+                28              0.0
+                29              0.0
+                30             -0.0
+                31              0.0
+                32             -0.0
+                33              0.0
+                34             -0.0
+                35              0.0
+                36             -0.0
+                37             -0.0
+                38              0.0
+                39             -0.0
+                40              0.0
+                41             -0.0
+                42             -0.0
+                43             -0.0
+                44              0.0
+                45             -0.0
+                46              0.0
                 47              0.0
                 48              0.0
-                49             -0.0
+                49              0.0
+                50              0.0
+                51              0.0
+    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
+    [INFO] Running simulation 11/25
+    Population  ScattererID
+    population  0               0.0
+                1               0.0
+                2               0.0
+                3              -0.0
+                4               0.0
+                5              -0.0
+                6              -0.0
+                7              -0.0
+                8               0.0
+                9              -0.0
+                10              0.0
+                11              0.0
+                12             -0.0
+                13             -0.0
+                14              0.0
+                15             -0.0
+                16              0.0
+                17              0.0
+                18             -0.0
+                19             -0.0
+                20              0.0
+                21             -0.0
+                22              0.0
+                23             -0.0
+                24             -0.0
+                25             -0.0
+                26              0.0
+                27              0.0
+                28             -0.0
+                29             -0.0
+                30              0.0
+                31              0.0
+                32              0.0
+                33              0.0
+                34              0.0
+                35             -0.0
+                36             -0.0
+                37             -0.0
+                38             -0.0
+                39              0.0
+                40             -0.0
+                41             -0.0
+                42              0.0
+                43             -0.0
+                44             -0.0
+                45              0.0
+                46              0.0
+                47              0.0
+                48              0.0
+                49              0.0
                 50             -0.0
-                51             -0.0
+                51              0.0
                 52              0.0
                 53             -0.0
                 54              0.0
+                55             -0.0
+                56             -0.0
+                57              0.0
+    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
+    [INFO] Running simulation 12/25
+    Population  ScattererID
+    population  0              -0.0
+                1               0.0
+                2              -0.0
+                3              -0.0
+                4              -0.0
+                5              -0.0
+                6              -0.0
+                7               0.0
+                8              -0.0
+                9               0.0
+                10              0.0
+                11              0.0
+                12              0.0
+                13             -0.0
+                14             -0.0
+                15              0.0
+                16             -0.0
+                17             -0.0
+                18              0.0
+                19              0.0
+                20              0.0
+                21              0.0
+                22              0.0
+                23             -0.0
+                24             -0.0
+                25              0.0
+                26              0.0
+                27              0.0
+                28              0.0
+                29              0.0
+                30             -0.0
+                31              0.0
+                32              0.0
+                33              0.0
+                34              0.0
+                35              0.0
+                36             -0.0
+                37             -0.0
+                38             -0.0
     Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
     [INFO] Running simulation 13/25
     Population  ScattererID
     population  0              -0.0
                 1              -0.0
                 2               0.0
-                3               0.0
-                4               0.0
-                5              -0.0
-                6              -0.0
-                7               0.0
-                8               0.0
+                3              -0.0
+                4              -0.0
+                5               0.0
+                6               0.0
+                7              -0.0
+                8              -0.0
                 9              -0.0
-                10              0.0
+                10             -0.0
                 11              0.0
                 12             -0.0
-                13              0.0
-                14             -0.0
+                13             -0.0
+                14              0.0
                 15              0.0
-                16              0.0
-                17              0.0
+                16             -0.0
+                17             -0.0
                 18              0.0
                 19              0.0
+                20             -0.0
+                21              0.0
+                22             -0.0
+                23             -0.0
+                24              0.0
+                25              0.0
+                26             -0.0
+                27              0.0
+                28             -0.0
+                29             -0.0
+                30             -0.0
+                31              0.0
+                32              0.0
+                33              0.0
+                34              0.0
+                35              0.0
+                36              0.0
+                37             -0.0
+                38             -0.0
+                39             -0.0
+                40              0.0
+                41             -0.0
+                42             -0.0
+                43              0.0
+                44             -0.0
+    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
+    [INFO] Running simulation 14/25
+    Population  ScattererID
+    population  0               0.0
+                1              -0.0
+                2              -0.0
+                3               0.0
+                4              -0.0
+                5               0.0
+                6              -0.0
+                7              -0.0
+                8              -0.0
+                9               0.0
+                10              0.0
+                11             -0.0
+                12              0.0
+                13             -0.0
+                14             -0.0
+                15             -0.0
+                16              0.0
+                17             -0.0
+                18              0.0
+                19             -0.0
                 20              0.0
                 21             -0.0
                 22             -0.0
@@ -839,53 +855,54 @@ Run J Estimation Simulation
                 25              0.0
                 26             -0.0
                 27             -0.0
-                28              0.0
-                29              0.0
-                30              0.0
+                28             -0.0
+                29             -0.0
+                30             -0.0
                 31              0.0
                 32              0.0
-                33              0.0
+                33             -0.0
                 34              0.0
-                35              0.0
+                35             -0.0
                 36             -0.0
                 37             -0.0
                 38             -0.0
-                39              0.0
+                39             -0.0
                 40              0.0
-                41             -0.0
-                42             -0.0
+                41              0.0
+                42              0.0
                 43             -0.0
                 44              0.0
-                45             -0.0
-                46             -0.0
+                45              0.0
+                46              0.0
                 47              0.0
+                48              0.0
     Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 14/25
+    [INFO] Running simulation 15/25
     Population  ScattererID
-    population  0              -0.0
-                1               0.0
-                2               0.0
-                3              -0.0
+    population  0               0.0
+                1              -0.0
+                2              -0.0
+                3               0.0
                 4               0.0
-                5               0.0
+                5              -0.0
                 6               0.0
                 7              -0.0
-                8               0.0
+                8              -0.0
                 9               0.0
                 10              0.0
                 11              0.0
-                12              0.0
+                12             -0.0
                 13              0.0
                 14              0.0
                 15              0.0
-                16              0.0
+                16             -0.0
                 17             -0.0
-                18             -0.0
+                18              0.0
                 19              0.0
-                20             -0.0
-                21             -0.0
-                22             -0.0
-                23              0.0
+                20              0.0
+                21              0.0
+                22              0.0
+                23             -0.0
                 24             -0.0
                 25              0.0
                 26             -0.0
@@ -893,277 +910,198 @@ Run J Estimation Simulation
                 28             -0.0
                 29              0.0
                 30             -0.0
-                31              0.0
+                31             -0.0
                 32             -0.0
-                33             -0.0
+                33              0.0
+                34              0.0
+                35             -0.0
+                36              0.0
     Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 15/25
+    [INFO] Running simulation 16/25
     Population  ScattererID
-    population  0              -0.0
-                1               0.0
-                2               0.0
+    population  0               0.0
+                1              -0.0
+                2              -0.0
                 3               0.0
                 4               0.0
                 5              -0.0
                 6               0.0
                 7               0.0
-                8              -0.0
-                9              -0.0
-                10             -0.0
-                11             -0.0
-                12             -0.0
-                13             -0.0
-                14             -0.0
-                15             -0.0
-                16              0.0
-                17             -0.0
-                18              0.0
-                19             -0.0
-                20             -0.0
-                21              0.0
-                22             -0.0
-                23              0.0
-                24             -0.0
-                25              0.0
-                26             -0.0
-                27             -0.0
-                28              0.0
-                29             -0.0
-                30              0.0
-                31              0.0
-                32             -0.0
-                33              0.0
-                34             -0.0
-                35             -0.0
-                36             -0.0
-                37             -0.0
-                38              0.0
-                39             -0.0
-                40              0.0
-                41             -0.0
-                42             -0.0
-                43              0.0
-                44              0.0
-                45             -0.0
-                46              0.0
-                47             -0.0
-                48              0.0
-                49              0.0
-                50              0.0
-                51              0.0
-                52             -0.0
-                53              0.0
-                54             -0.0
-    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 16/25
-    Population  ScattererID
-    population  0               0.0
-                1               0.0
-                2              -0.0
-                3               0.0
-                4               0.0
-                5               0.0
-                6               0.0
-                7               0.0
                 8               0.0
-                9              -0.0
-                10             -0.0
+                9               0.0
+                10              0.0
                 11              0.0
-                12              0.0
+                12             -0.0
                 13              0.0
                 14              0.0
                 15             -0.0
-                16              0.0
+                16             -0.0
                 17              0.0
                 18              0.0
-                19             -0.0
+                19              0.0
                 20             -0.0
                 21              0.0
-                22             -0.0
+                22              0.0
                 23             -0.0
                 24              0.0
-                25             -0.0
-                26             -0.0
-                27             -0.0
-                28             -0.0
-                29              0.0
-                30              0.0
-                31              0.0
-                32             -0.0
-                33             -0.0
+                25              0.0
+                26              0.0
+                27              0.0
+                28              0.0
+                29             -0.0
+                30             -0.0
+                31             -0.0
+                32              0.0
+                33              0.0
                 34              0.0
                 35             -0.0
+                36             -0.0
+                37              0.0
+                38             -0.0
+                39             -0.0
+                40             -0.0
+                41             -0.0
+                42              0.0
+                43              0.0
+                44             -0.0
+                45             -0.0
+                46              0.0
+                47              0.0
+                48             -0.0
+                49              0.0
+                50             -0.0
+                51             -0.0
+                52             -0.0
+                53             -0.0
+                54             -0.0
     Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
     [INFO] Running simulation 17/25
     Population  ScattererID
-    population  0               0.0
+    population  0              -0.0
                 1              -0.0
                 2               0.0
                 3              -0.0
                 4              -0.0
                 5               0.0
                 6               0.0
-                7               0.0
+                7              -0.0
                 8              -0.0
-                9               0.0
+                9              -0.0
                 10             -0.0
-                11             -0.0
-                12              0.0
+                11              0.0
+                12             -0.0
                 13              0.0
-                14              0.0
-                15              0.0
+                14             -0.0
+                15             -0.0
                 16              0.0
-                17             -0.0
+                17              0.0
                 18             -0.0
                 19             -0.0
                 20              0.0
                 21             -0.0
                 22             -0.0
-                23             -0.0
-                24             -0.0
+                23              0.0
+                24              0.0
                 25             -0.0
-                26             -0.0
-                27             -0.0
+                26              0.0
+                27              0.0
                 28              0.0
-                29              0.0
+                29             -0.0
                 30             -0.0
                 31              0.0
-                32             -0.0
+                32              0.0
                 33              0.0
+                34              0.0
+                35             -0.0
+                36             -0.0
+                37             -0.0
+                38              0.0
+                39             -0.0
+                40              0.0
+                41              0.0
+                42             -0.0
+                43             -0.0
+                44             -0.0
+                45             -0.0
+                46             -0.0
+                47             -0.0
+                48             -0.0
+                49             -0.0
+                50              0.0
+                51             -0.0
+                52             -0.0
+                53             -0.0
+                54             -0.0
+                55             -0.0
+                56              0.0
+                57              0.0
+                58             -0.0
+    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
+    [INFO] Running simulation 18/25
+    Population  ScattererID
+    population  0               0.0
+                1               0.0
+                2              -0.0
+                3              -0.0
+                4               0.0
+                5               0.0
+                6              -0.0
+                7               0.0
+                8               0.0
+                9              -0.0
+                10              0.0
+                11             -0.0
+                12             -0.0
+                13              0.0
+                14             -0.0
+                15              0.0
+                16              0.0
+                17             -0.0
+                18             -0.0
+                19              0.0
+                20              0.0
+                21              0.0
+                22              0.0
+                23             -0.0
+                24              0.0
+                25             -0.0
+                26             -0.0
+                27              0.0
+                28             -0.0
+                29             -0.0
+                30              0.0
+                31              0.0
+                32              0.0
+                33             -0.0
                 34              0.0
                 35              0.0
                 36              0.0
                 37              0.0
-                38             -0.0
-                39             -0.0
+                38              0.0
+                39              0.0
                 40             -0.0
                 41              0.0
                 42             -0.0
                 43             -0.0
                 44             -0.0
-                45              0.0
-                46              0.0
-                47             -0.0
-                48              0.0
-                49              0.0
-                50             -0.0
-                51              0.0
-    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 18/25
-    Population  ScattererID
-    population  0              -0.0
-                1               0.0
-                2               0.0
-                3               0.0
-                4               0.0
-                5              -0.0
-                6               0.0
-                7               0.0
-                8              -0.0
-                9               0.0
-                10              0.0
-                11              0.0
-                12             -0.0
-                13             -0.0
-                14              0.0
-                15             -0.0
-                16              0.0
-                17              0.0
-                18             -0.0
-                19              0.0
-                20              0.0
-                21              0.0
-                22             -0.0
-                23              0.0
-                24              0.0
-                25              0.0
-                26             -0.0
-                27              0.0
-                28              0.0
-                29             -0.0
-                30              0.0
-                31             -0.0
-                32              0.0
-                33             -0.0
-                34              0.0
-                35             -0.0
-                36             -0.0
-                37              0.0
-                38             -0.0
-                39              0.0
-                40             -0.0
-                41              0.0
-                42              0.0
-                43              0.0
-                44              0.0
-                45              0.0
+                45             -0.0
                 46             -0.0
                 47             -0.0
-                48             -0.0
-                49              0.0
+                48              0.0
+                49             -0.0
+                50             -0.0
+                51              0.0
     Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
     [INFO] Running simulation 19/25
     Population  ScattererID
     population  0              -0.0
                 1              -0.0
-                2               0.0
-                3              -0.0
-                4              -0.0
-                5               0.0
-                6              -0.0
-                7              -0.0
-                8              -0.0
-                9              -0.0
-                10              0.0
-                11             -0.0
-                12             -0.0
-                13              0.0
-                14             -0.0
-                15             -0.0
-                16             -0.0
-                17             -0.0
-                18             -0.0
-                19              0.0
-                20             -0.0
-                21              0.0
-                22             -0.0
-                23              0.0
-                24              0.0
-                25             -0.0
-                26             -0.0
-                27              0.0
-                28             -0.0
-                29             -0.0
-                30              0.0
-                31             -0.0
-                32              0.0
-                33              0.0
-                34             -0.0
-                35             -0.0
-                36              0.0
-                37              0.0
-                38             -0.0
-                39              0.0
-                40             -0.0
-                41              0.0
-                42             -0.0
-                43              0.0
-                44             -0.0
-                45              0.0
-                46              0.0
-                47             -0.0
-                48              0.0
-    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 20/25
-    Population  ScattererID
-    population  0               0.0
-                1              -0.0
                 2              -0.0
                 3               0.0
-                4              -0.0
-                5               0.0
+                4               0.0
+                5              -0.0
                 6              -0.0
-                7               0.0
+                7              -0.0
                 8               0.0
                 9              -0.0
                 10             -0.0
@@ -1172,194 +1110,37 @@ Run J Estimation Simulation
                 13              0.0
                 14             -0.0
                 15              0.0
-                16             -0.0
+                16              0.0
                 17             -0.0
                 18              0.0
-                19             -0.0
-                20              0.0
-                21             -0.0
-                22             -0.0
-                23              0.0
-                24              0.0
-                25              0.0
-                26             -0.0
-                27             -0.0
-                28              0.0
-                29             -0.0
-                30             -0.0
-                31             -0.0
-                32              0.0
-                33              0.0
-                34             -0.0
-                35              0.0
-                36             -0.0
-                37              0.0
-                38              0.0
-                39             -0.0
-                40              0.0
-                41             -0.0
-                42              0.0
-                43              0.0
-                44             -0.0
-                45              0.0
-                46             -0.0
-                47              0.0
-                48              0.0
-    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 21/25
-    Population  ScattererID
-    population  0              -0.0
-                1               0.0
-                2               0.0
-                3               0.0
-                4              -0.0
-                5              -0.0
-                6              -0.0
-                7              -0.0
-                8              -0.0
-                9              -0.0
-                10              0.0
-                11              0.0
-                12             -0.0
-                13             -0.0
-                14              0.0
-                15             -0.0
-                16             -0.0
-                17              0.0
-                18             -0.0
-                19              0.0
-                20              0.0
-                21              0.0
-                22             -0.0
-                23              0.0
-                24              0.0
-                25              0.0
-                26              0.0
-                27             -0.0
-                28             -0.0
-                29              0.0
-                30              0.0
-                31             -0.0
-                32             -0.0
-                33             -0.0
-                34             -0.0
-                35             -0.0
-                36              0.0
-                37              0.0
-                38             -0.0
-                39             -0.0
-                40              0.0
-    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 22/25
-    Population  ScattererID
-    population  0               0.0
-                1              -0.0
-                2              -0.0
-                3              -0.0
-                4              -0.0
-                5              -0.0
-                6              -0.0
-                7               0.0
-                8               0.0
-                9               0.0
-                10              0.0
-                11             -0.0
-                12             -0.0
-                13              0.0
-                14             -0.0
-                15             -0.0
-                16             -0.0
-                17              0.0
-                18             -0.0
-                19             -0.0
-                20              0.0
-                21             -0.0
-                22             -0.0
-                23             -0.0
-                24             -0.0
-                25             -0.0
-                26              0.0
-                27              0.0
-                28              0.0
-                29             -0.0
-                30             -0.0
-                31              0.0
-                32             -0.0
-                33             -0.0
-                34             -0.0
-                35             -0.0
-                36              0.0
-                37              0.0
-                38              0.0
-                39             -0.0
-                40             -0.0
-                41             -0.0
-    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 23/25
-    Population  ScattererID
-    population  0               0.0
-                1               0.0
-                2               0.0
-                3              -0.0
-                4              -0.0
-                               ... 
-                57              0.0
-                58              0.0
-                59              0.0
-                60              0.0
-                61              0.0
-    Name: y, Length: 62, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 24/25
-    Population  ScattererID
-    population  0              -0.0
-                1              -0.0
-                2               0.0
-                3              -0.0
-                4              -0.0
-                5              -0.0
-                6              -0.0
-                7               0.0
-                8               0.0
-                9              -0.0
-                10              0.0
-                11             -0.0
-                12             -0.0
-                13              0.0
-                14             -0.0
-                15             -0.0
-                16             -0.0
-                17             -0.0
-                18             -0.0
                 19             -0.0
                 20             -0.0
                 21              0.0
                 22             -0.0
-                23              0.0
-                24             -0.0
+                23             -0.0
+                24              0.0
                 25             -0.0
                 26              0.0
                 27              0.0
                 28             -0.0
-                29             -0.0
+                29              0.0
                 30             -0.0
                 31             -0.0
                 32              0.0
-                33              0.0
-                34              0.0
-                35              0.0
+                33             -0.0
+                34             -0.0
+                35             -0.0
                 36              0.0
                 37             -0.0
-                38              0.0
-                39              0.0
+                38             -0.0
+                39             -0.0
                 40              0.0
-                41              0.0
+                41             -0.0
                 42             -0.0
                 43              0.0
                 44             -0.0
-                45              0.0
-                46             -0.0
     Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
-    [INFO] Running simulation 25/25
+    [INFO] Running simulation 20/25
     Population  ScattererID
     population  0              -0.0
                 1               0.0
@@ -1368,61 +1149,284 @@ Run J Estimation Simulation
                 4              -0.0
                 5              -0.0
                 6               0.0
-                7              -0.0
-                8               0.0
+                7               0.0
+                8              -0.0
                 9              -0.0
                 10              0.0
-                11              0.0
+                11             -0.0
                 12              0.0
                 13              0.0
-                14             -0.0
-                15              0.0
+                14              0.0
+                15             -0.0
                 16              0.0
-                17              0.0
-                18              0.0
-                19             -0.0
-                20             -0.0
-                21             -0.0
+                17             -0.0
+                18             -0.0
+                19              0.0
+                20              0.0
+                21              0.0
                 22              0.0
                 23              0.0
                 24              0.0
-                25             -0.0
+                25              0.0
                 26             -0.0
                 27              0.0
                 28              0.0
-                29              0.0
+                29             -0.0
                 30             -0.0
                 31             -0.0
                 32              0.0
                 33              0.0
+                34              0.0
+                35              0.0
+                36              0.0
+                37              0.0
+                38             -0.0
+                39             -0.0
+                40             -0.0
+                41             -0.0
+                42             -0.0
+                43             -0.0
+                44             -0.0
+                45             -0.0
+                46             -0.0
+                47              0.0
+    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
+    [INFO] Running simulation 21/25
+    Population  ScattererID
+    population  0               0.0
+                1               0.0
+                2               0.0
+                3               0.0
+                4              -0.0
+                               ... 
+                56              0.0
+                57              0.0
+                58              0.0
+                59             -0.0
+                60              0.0
+    Name: y, Length: 61, dtype: pint[meter][Float64] 716.1972439135291 nanometer
+    [INFO] Running simulation 22/25
+    Population  ScattererID
+    population  0              -0.0
+                1               0.0
+                2              -0.0
+                3              -0.0
+                4               0.0
+                5              -0.0
+                6              -0.0
+                7              -0.0
+                8              -0.0
+                9               0.0
+                10              0.0
+                11              0.0
+                12              0.0
+                13             -0.0
+                14              0.0
+                15              0.0
+                16              0.0
+                17             -0.0
+                18             -0.0
+                19              0.0
+                20              0.0
+                21              0.0
+                22              0.0
+                23             -0.0
+                24              0.0
+                25             -0.0
+                26              0.0
+                27              0.0
+                28             -0.0
+                29             -0.0
+                30             -0.0
+                31              0.0
+                32             -0.0
+                33             -0.0
                 34             -0.0
                 35              0.0
                 36              0.0
-                37             -0.0
+                37              0.0
                 38              0.0
-                39              0.0
+                39             -0.0
                 40              0.0
-                41             -0.0
+                41              0.0
                 42             -0.0
-                43              0.0
+                43             -0.0
                 44              0.0
                 45             -0.0
                 46             -0.0
                 47             -0.0
                 48             -0.0
                 49              0.0
-                50             -0.0
+                50              0.0
+                51             -0.0
+                52              0.0
+                53              0.0
+                54              0.0
+    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
+    [INFO] Running simulation 23/25
+    Population  ScattererID
+    population  0              -0.0
+                1               0.0
+                2               0.0
+                3              -0.0
+                4               0.0
+                5              -0.0
+                6               0.0
+                7               0.0
+                8               0.0
+                9               0.0
+                10             -0.0
+                11              0.0
+                12              0.0
+                13             -0.0
+                14              0.0
+                15              0.0
+                16             -0.0
+                17             -0.0
+                18             -0.0
+                19             -0.0
+                20             -0.0
+                21             -0.0
+                22             -0.0
+                23              0.0
+                24             -0.0
+                25              0.0
+                26             -0.0
+                27             -0.0
+                28              0.0
+                29             -0.0
+                30             -0.0
+                31              0.0
+                32              0.0
+                33             -0.0
+                34              0.0
+                35             -0.0
+                36             -0.0
+                37              0.0
+                38              0.0
+                39             -0.0
+                40              0.0
+                41             -0.0
+                42              0.0
+                43              0.0
+                44              0.0
+                45              0.0
+                46             -0.0
+                47             -0.0
+                48              0.0
+                49             -0.0
+                50              0.0
+                51              0.0
+                52              0.0
+    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
+    [INFO] Running simulation 24/25
+    Population  ScattererID
+    population  0              -0.0
+                1               0.0
+                2              -0.0
+                3              -0.0
+                4               0.0
+                5              -0.0
+                6               0.0
+                7              -0.0
+                8               0.0
+                9               0.0
+                10             -0.0
+                11              0.0
+                12              0.0
+                13             -0.0
+                14             -0.0
+                15             -0.0
+                16             -0.0
+                17             -0.0
+                18              0.0
+                19             -0.0
+                20              0.0
+                21              0.0
+                22              0.0
+                23              0.0
+                24              0.0
+                25              0.0
+                26              0.0
+                27              0.0
+                28              0.0
+                29              0.0
+                30              0.0
+                31              0.0
+                32              0.0
+                33             -0.0
+                34             -0.0
+                35              0.0
+                36              0.0
+                37              0.0
+                38             -0.0
+                39             -0.0
+    Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
+    [INFO] Running simulation 25/25
+    Population  ScattererID
+    population  0              -0.0
+                1              -0.0
+                2               0.0
+                3               0.0
+                4              -0.0
+                5              -0.0
+                6              -0.0
+                7              -0.0
+                8              -0.0
+                9              -0.0
+                10             -0.0
+                11              0.0
+                12             -0.0
+                13             -0.0
+                14             -0.0
+                15              0.0
+                16              0.0
+                17             -0.0
+                18             -0.0
+                19             -0.0
+                20             -0.0
+                21              0.0
+                22             -0.0
+                23              0.0
+                24              0.0
+                25             -0.0
+                26              0.0
+                27              0.0
+                28             -0.0
+                29              0.0
+                30              0.0
+                31             -0.0
+                32             -0.0
+                33              0.0
+                34              0.0
+                35              0.0
+                36              0.0
+                37              0.0
+                38              0.0
+                39             -0.0
+                40             -0.0
+                41             -0.0
+                42             -0.0
+                43              0.0
+                44              0.0
+                45              0.0
+                46             -0.0
+                47              0.0
+                48              0.0
+                49             -0.0
+                50              0.0
+                51             -0.0
     Name: y, dtype: pint[meter][Float64] 716.1972439135291 nanometer
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 117-119
+.. GENERATED FROM PYTHON SOURCE LINES 116-118
 
 Plot estimation and diagnostics
 -------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-123
+.. GENERATED FROM PYTHON SOURCE LINES 118-122
 
 .. code-block:: Python
 
@@ -1442,12 +1446,12 @@ Plot estimation and diagnostics
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 124-126
+.. GENERATED FROM PYTHON SOURCE LINES 123-125
 
 Plot relevant statistics
 ------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 126-127
+.. GENERATED FROM PYTHON SOURCE LINES 125-126
 
 .. code-block:: Python
 
@@ -1467,7 +1471,7 @@ Plot relevant statistics
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 48.941 seconds)
+   **Total running time of the script:** (0 minutes 48.850 seconds)
 
 
 .. _sphx_glr_download_gallery_validation_j_estimator.py:

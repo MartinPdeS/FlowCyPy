@@ -4,6 +4,7 @@ Examples: Noises
 ================
 
 
+
 .. raw:: html
 
     <div class="sphx-glr-thumbnails">
