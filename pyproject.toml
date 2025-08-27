@@ -1,0 +1,144 @@
+[build-system]
+requires = ["scikit-build-core>=0.3.3", "pybind11==3.0.0", "setuptools_scm[toml]>=8.0"]
+build-backend = "scikit_build_core.build"
+
+[tool.scikit-build]
+metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
+logging.level = "INFO"
+wheel.exclude = ["FlowCyPy/cpp"]
+install.strip = false
+sdist.include = ["FlowCyPy/binary/*"]
+sdist.exclude = [
+    "tests",
+    "docs",
+    ".git*",
+    "developments",
+]
+
+[tool.setuptools_scm]
+write_to = "FlowCyPy/_version.py"
+version_scheme = "only-version"
+local_scheme = "no-local-version"
+
+[project]
+name = "FlowCyPy"
+dynamic = ["version"]
+description = "A package for light scattering computation."
+license = {file = "LICENSE"}
+readme = "README.rst"
+requires-python = ">=3.11"
+authors = [{ name="Martin Poinsinet de Sivry-Houle", email="martin.poinsinet.de.sivry@gmail.com"}]
+classifiers = [
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: Implementation :: CPython',
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Science/Research',
+    'Intended Audience :: Developers',
+    'Topic :: Scientific/Engineering :: Physics',
+    'Topic :: Scientific/Engineering :: Mathematics',
+    'Topic :: Scientific/Engineering :: Visualization',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'License :: OSI Approved :: MIT License',
+    'Operating System :: OS Independent',
+    'Framework :: Jupyter',
+    'Framework :: Sphinx'
+]
+
+dependencies = [
+    "setuptools_scm[toml] >=8,<10",
+    'pandas ~=2.2',
+    'pint-pandas ~=0.6',
+    'seaborn ~=0.13',
+    "pydantic ~=2.9",
+    'tabulate ~=0.9',
+    "numpy >=2.0",
+    'pint ~=0.24',
+    "scipy >=1.15.3",
+    'PyMieSim',
+    'MPSPlots',
+    'scikit-learn',
+    "TypedUnit"
+]
+
+
+# Keywords for better discoverability
+keywords = [
+    "flow cytometry", "light scattering", "mie theory", "backscatter",
+    "rayleigh scattering", "biophotonics", "nanoparticle", "microfluidics",
+    "fluorescence", "biomedical imaging", "spectroscopy", "optical simulation",
+    "machine learning", "signal processing", "photonics", "cytometry",
+    "optical sensors", "laser scattering", "particle detection", "flow analysis"
+]
+
+
+
+[project.optional-dependencies]
+testing = [
+    "pytest>=0.6",
+    "pytest-cov>=2.0",
+    "pytest-json-report ==1.5.0",
+    "coverage==7.10.4"
+]
+
+documentation = [
+    "numpydoc ==1.9.0",
+    "sphinx >=5.1.1",
+    "sphinx-rtd-theme ==3.0.2",
+    "sphinx-gallery ==0.19.0",
+    "pydata-sphinx-theme ==0.15.4",
+]
+
+dev = [
+    "flake8 ==7.3.0",
+]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+xfail_strict = true
+log_cli_level = "INFO"
+addopts = [
+    "-v", "-rA", "-rw", "--cov=FlowCyPy", "--cov-report=html", "--cov-report=term"
+]
+testpaths = [
+    "tests/*",
+]
+
+[tool.cibuildwheel]
+build-frontend = "build"
+before-test = ""
+test-command = "python -m pytest -rA {project}/tests"
+test-extras = ["testing"]
+
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64"]
+before-build = "yum install -y fftw-devel"
+build = ["cp310-manylinux*", "cp311-manylinux*", "cp312-manylinux*"]
+manylinux-x86_64-image = "manylinux_2_28"
+repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
+
+[tool.cibuildwheel.macos]
+archs = ["arm64"]
+before-build = "brew install fftw"
+build = ["cp310-*", "cp311-*", "cp312-*"]
+repair-wheel-command = "delocate-wheel -w {dest_dir} -v {wheel}"
+
+[tool.cibuildwheel.windows]
+archs = ["AMD64"]
+build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
+
+
+[tool.coverage.run]
+source = ['FlowCyPy']
+
+omit = [
+    '*\__init__.py',
+    'FlowCyPy/_version.py',
+    'FlowCyPy/directories.py',
+]
+branch = true
+relative_files = true
