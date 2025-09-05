@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import matplotlib.pyplot as plt
+import MPSPlots
 import seaborn as sns
 
 from FlowCyPy import helper

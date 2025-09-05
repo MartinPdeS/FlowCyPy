@@ -2,12 +2,12 @@
 from typing import List, Optional, Union
 
 import matplotlib.pyplot as plt
+import MPSPlots
 import pandas as pd
 import pint_pandas
 import seaborn as sns
 from TypedUnit import Dimensionless, Time, Voltage, ureg
 
-from FlowCyPy import helper
 from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.sub_frames import utils
 from FlowCyPy.sub_frames.base import BaseSubFrame
@@ -175,11 +175,11 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
         """Return a list of unique detector names."""
         return [col for col in self.columns if col != "Time"]
 
-    @helper.mpl_plot
+    @MPSPlots.helper.pre_figure_plot()
     def plot(
         self,
-        filter_population: Union[str, List[str]] = None,
         figure_size: tuple = (12, 5),
+        filter_population: Union[str, List[str]] = None,
         **kwargs,
     ) -> None:
         """
@@ -193,10 +193,6 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
             Can be a single population name or a list of names.
         figure_size : tuple, optional
             Size of the figure in inches (default: (12, 5)).
-        show : bool, optional
-            Whether to display the plot (default: True).
-        save_as : str, optional
-            If provided, the figure is saved to this filename.
 
         Returns
         -------
@@ -240,7 +236,7 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         return figure
 
-    @helper.mpl_plot
+    @MPSPlots.helper.pre_figure_plot()
     def hist(
         self,
         figure_size: tuple = (10, 6),
