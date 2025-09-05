@@ -69,7 +69,7 @@ scatterer_collection.dilute(factor=80)
 
 fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
-
+fluidics.plot(run_time=100 * ureg.microsecond)
 # %%
 # Step 2: Define Optical Subsystem
 # --------------------------------
