@@ -293,6 +293,3 @@ class Detector:
         signal_generator.multiply(
             signal_name=self.name, factor=1 / optical_power_to_photo_count_conversion
         )
-
-
-from FlowCyPy._detector_instances import *

@@ -161,6 +161,12 @@ cytometer = FlowCytometer(
 
 results = cytometer.run(run_time=0.1 * ureg.millisecond)
 
+print(dir(results))
+results.events.plot(
+    x="RefractiveIndex", y="Diameter", figure_size=(2, 2), tight_layout=False
+)
 
-results.analog.normalize_units(signal_units="max")
-_ = results.analog.plot()
+# results.events.hist(x='RefractiveIndex')
+
+# results.analog.normalize_units(signal_units="max")
+# _ = results.analog.plot()

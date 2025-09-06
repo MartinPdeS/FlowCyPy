@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import MPSPlots
 import seaborn as sns
 
-from FlowCyPy import helper
 from FlowCyPy.sub_frames.base import BaseSubFrame
 
 
@@ -12,7 +11,7 @@ class ClassifierDataFrame(BaseSubFrame):
     A subclass of pandas DataFrame for classifying peaks.
     """
 
-    @helper.plot_sns
+    @MPSPlots.helper.post_mpl_plot
     def plot(self, x: str, y: str) -> plt.Figure:
         """
         Visualize the classification of peaks using a scatter plot.

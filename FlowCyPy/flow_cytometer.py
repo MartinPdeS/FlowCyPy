@@ -272,6 +272,3 @@ class FlowCytometer:
             self.compute_peaks()
 
         return self.results
-
-
-from FlowCyPy._flow_cytometer_instances import *

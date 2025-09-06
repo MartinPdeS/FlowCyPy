@@ -1,12 +1,12 @@
 from typing import Any, List, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
+import MPSPlots
 import numpy
 import pandas as pd
 import seaborn as sns
 from TypedUnit import ureg
 
-from FlowCyPy import helper
 from FlowCyPy.sub_frames import utils
 from FlowCyPy.sub_frames.base import BaseSubFrame
 
@@ -124,11 +124,10 @@ class PeakDataFrame(BaseSubFrame):
 
         return df, unit_list
 
-    @helper.mpl_plot
+    @MPSPlots.helper.post_mpl_plot
     def hist(
         self,
         x: tuple[str, str],
-        figure_size: tuple = (10, 6),
         kde: bool = False,
         bins: Optional[int] = "auto",
         color: Optional[Union[str, dict]] = None,
@@ -141,8 +140,6 @@ class PeakDataFrame(BaseSubFrame):
         ----------
         x : tuple[str, str]
             The column name to plot (eg. ('forward', 'Height')).
-        figure_size : tuple, optional
-            Size of the figure in inches (default: (10, 6)).
         kde : bool, optional
             Whether to overlay a KDE curve (default: False).
         bins : Optional[int], optional
@@ -153,22 +150,20 @@ class PeakDataFrame(BaseSubFrame):
             If provided, removes data above a threshold. If a string ending with '%' (e.g., "20%") is given,
             values above the corresponding quantile (e.g. the top 20% of values) are excluded.
             If a pint.Quantity is given, values above that absolute value are removed.
-        save_as : str, optional
-            If provided, the figure is saved to this filename.
-        show : bool, optional
-            If True, displays the plot immediately (default: True).
 
         Returns
         -------
         plt.Figure
             The histogram figure.
         """
+        figure, ax = plt.subplots(1, 1)
+
         if len(self) == 1:
             return
 
         detector_name, feature = x
 
-        figure, ax = plt.subplots(ncols=1, nrows=1, figsize=figure_size)
+        figure, ax = plt.subplots(ncols=1, nrows=1)
 
         ax.set_ylabel(f"{detector_name} : {feature}  [count]")
 
@@ -182,7 +177,7 @@ class PeakDataFrame(BaseSubFrame):
 
         return figure
 
-    @helper.plot_sns
+    @MPSPlots.helper.post_mpl_plot
     def plot_2d(
         self, x: tuple[str, str], y: tuple[str, str], bandwidth_adjust: float = 0.8
     ) -> plt.Figure:
@@ -226,10 +221,10 @@ class PeakDataFrame(BaseSubFrame):
             f"Detector: {x_detector} : feature: {x_feature}",
             f"Detector: {y_detector} : feature: {y_feature}",
         )
-        return grid
+        return grid.figure
 
-    @helper.plot_3d
-    def plot_3d(self, ax: plt.Axes, x: str, y: str, z: str) -> plt.Figure:
+    @MPSPlots.helper.post_mpl_plot
+    def plot_3d(self, x: str, y: str, z: str) -> plt.Figure:
         """
         Create a 3D scatter plot of a feature across three detectors.
 
@@ -251,6 +246,9 @@ class PeakDataFrame(BaseSubFrame):
         plt.Figure
             The 3D scatter plot figure.
         """
+        figure = plt.figure()
+        ax = figure.add_subplot(111, projection="3d")
+
         x_detector, x_feature = x
         y_detector, y_feature = y
         z_detector, z_feature = z
@@ -267,3 +265,5 @@ class PeakDataFrame(BaseSubFrame):
         ax.set_zlabel(f"{z_detector} : {z_feature}", labelpad=20)
 
         ax.set_title("Peaks Properties")
+
+        return figure

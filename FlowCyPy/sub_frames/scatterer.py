@@ -1,13 +1,13 @@
 from typing import Any, List, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
+import MPSPlots
 import numpy
 import pandas as pd
 import seaborn as sns
 from pint_pandas import PintArray
 from TypedUnit import AnyUnit, Time, ureg
 
-from FlowCyPy import helper
 from FlowCyPy.sub_frames import utils
 
 
@@ -63,7 +63,7 @@ class ScattererDataFrame(BaseSubFrame):
 
         return df, units_list
 
-    @helper.plot_sns
+    @MPSPlots.helper.post_mpl_plot
     def plot_2d(
         self,
         x: str,
@@ -71,7 +71,6 @@ class ScattererDataFrame(BaseSubFrame):
         alpha: float = 0.8,
         bandwidth_adjust: float = 1,
         color_palette: Optional[Union[str, dict]] = None,
-        figure_size: tuple = (6, 6),
     ) -> plt.Figure:
         """
         Plot the joint distribution of scatterer sizes and refractive indices.
@@ -108,18 +107,16 @@ class ScattererDataFrame(BaseSubFrame):
             kind="scatter",
             alpha=alpha,
             marginal_kws={"bw_adjust": bandwidth_adjust},
-            height=figure_size[0] if figure_size else None,
         )
 
         grid.figure.suptitle("Scatterer Sampling Distribution")
-        grid.ax_joint.set_xlabel(f"{x} [{x_unit._repr_latex_()}]")
-        grid.ax_joint.set_ylabel(f"{y} [{y_unit._repr_latex_()}]")
-        return grid
+        grid.ax_joint.set_xlabel(f"{x} [{x_unit:~P}]")
+        grid.ax_joint.set_ylabel(f"{y} [{y_unit:~P}]")
+        return grid.figure
 
-    @helper.plot_3d
+    @MPSPlots.helper.post_mpl_plot
     def plot_3d(
         self,
-        ax: plt.Axes,
         x: str,
         y: str,
         z: str = None,
@@ -152,22 +149,23 @@ class ScattererDataFrame(BaseSubFrame):
         if len(self) <= 1:
             return
 
+        figure = plt.figure()
+        ax = figure.add_subplot(111, projection="3d")
+
         df, (x_unit, y_unit, z_unit) = self.get_sub_dataframe(x, y, z)
 
         for population, group in df.pint.dequantify().astype(float).groupby(hue):
             ax.scatter(group[x], group[y], group[z], label=population, alpha=alpha)
 
-        ax.set_xlabel(f"{x} [{x_unit._repr_latex_()}]", labelpad=20)
-        ax.set_ylabel(f"{y} [{y_unit._repr_latex_()}]", labelpad=20)
-        ax.set_zlabel(f"{z} [{z_unit._repr_latex_()}]", labelpad=20)
+        ax.set_xlabel(f"{x} [{x_unit:~P}]", labelpad=20)
+        ax.set_ylabel(f"{y} [{y_unit:~P}]", labelpad=20)
+        ax.set_zlabel(f"{z} [{z_unit:~P}]", labelpad=20)
         ax.set_title("Scatterer Sampling Distribution")
-        return ax.figure
+        return figure
 
-    @helper.mpl_plot
+    @MPSPlots.helper.post_mpl_plot
     def hist(
         self,
-        figure: plt.Figure,
-        ax: plt.Axes,
         x: str = "Diameter",
         kde: bool = False,
         bins: Optional[int] = "auto",
@@ -181,8 +179,6 @@ class ScattererDataFrame(BaseSubFrame):
         ----------
         x : str, optional
             The column name to plot (default: 'Diameter').
-        figure_size : tuple, optional
-            Size of the figure in inches (default: (10, 6)).
         kde : bool, optional
             Whether to overlay a KDE curve (default: False).
         bins : Optional[int], optional
@@ -199,6 +195,8 @@ class ScattererDataFrame(BaseSubFrame):
         plt.Figure
             The histogram figure.
         """
+        figure, ax = plt.subplots(1, 1)
+
         if len(self) == 1:
             return
 
@@ -217,8 +215,9 @@ class ScattererDataFrame(BaseSubFrame):
             color=color,
             hue=df["Population"],
         )
-        ax.set_xlabel(f"{x} [{unit._repr_latex_()}]")
-        ax.set_title(f"Distribution of {x}")
+        ax.set(xlabel=f"{x} [{unit:~P}]", title=f"Distribution of {x}")
+
+        return figure
 
     def _add_event_to_ax(
         self,
@@ -268,7 +267,7 @@ class ScattererDataFrame(BaseSubFrame):
 
         ax.tick_params(axis="y", left=False, labelleft=False)
         ax.get_yaxis().set_visible(False)
-        ax.set_xlabel(f"Time [{time_units._repr_latex_()}]")
+        ax.set_xlabel(f"Time [{time_units:~P}]")
         ax.legend()
 
     def sort_population(self) -> None:

@@ -175,13 +175,8 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
         """Return a list of unique detector names."""
         return [col for col in self.columns if col != "Time"]
 
-    @MPSPlots.helper.pre_figure_plot()
-    def plot(
-        self,
-        figure_size: tuple = (12, 5),
-        filter_population: Union[str, List[str]] = None,
-        **kwargs,
-    ) -> None:
+    @MPSPlots.helper.post_mpl_plot
+    def plot(self, filter_population: Union[str, List[str]] = None) -> None:
         """
         Plot acquisition data for each detector and the scatterer events.
         This method creates a multi-panel plot with each detector's signal and a scatterer event plot.
@@ -191,8 +186,6 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
         filter_population : Union[str, List[str]], optional
             If provided, filters the scatterer events to only include those from the specified population(s).
             Can be a single population name or a list of names.
-        figure_size : tuple, optional
-            Size of the figure in inches (default: (12, 5)).
 
         Returns
         -------
@@ -204,7 +197,6 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         figure, axes_array = plt.subplots(
             nrows=n_plots,
-            figsize=figure_size,
             sharex=True,
             sharey=True,
             gridspec_kw={"height_ratios": [1] * (n_plots - 1) + [0.5]},
@@ -236,10 +228,9 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         return figure
 
-    @MPSPlots.helper.pre_figure_plot()
+    @MPSPlots.helper.post_mpl_plot
     def hist(
         self,
-        figure_size: tuple = (10, 6),
         kde: bool = False,
         bins: Optional[int] = "auto",
         color: Optional[Union[str, dict]] = None,
@@ -250,8 +241,6 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         Parameters
         ----------
-        figure_size : tuple, optional
-            Size of the figure in inches (default: (10, 6)).
         kde : bool, optional
             Whether to overlay a KDE curve (default: False).
         bins : Optional[int], optional
@@ -275,9 +264,7 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         n_plots = len(self.detector_names)
 
-        figure, axes = plt.subplots(
-            nrows=n_plots, figsize=figure_size, sharex=True, sharey=True
-        )
+        figure, axes = plt.subplots(nrows=n_plots, sharex=True, sharey=True)
 
         for ax, detector_name in zip(axes, self.detector_names):
             ax.set_ylabel(detector_name)

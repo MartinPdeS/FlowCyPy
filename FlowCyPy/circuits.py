@@ -1,4 +1,4 @@
-from TypedUnit import AnyUnit, Frequency, Time, validate_units
+from TypedUnit import AnyUnit, Frequency, Time
 
 from FlowCyPy.binary import interface_circuits
 
