@@ -51,4 +51,4 @@ class ClassifierDataFrame(BaseSubFrame):
         )
 
         grid.figure.suptitle("Event classification")
-        return grid
+        return grid.figure

@@ -250,7 +250,6 @@ class GaussianBeam(BaseBeam):
         Quantity
             The electric field amplitude at the focus in volts per meter.
         """
-        print(y, self.waist)
         if np.any(y > self.waist):
             warnings.warn(
                 "Transverse distribution of particle flow exceed the waist of the source"
