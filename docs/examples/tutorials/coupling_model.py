@@ -27,7 +27,7 @@ Workflow Steps:
 from TypedUnit import ureg
 
 from FlowCyPy import OptoElectronics
-from FlowCyPy.detector import PMT
+from FlowCyPy.instances.detector import PMT
 from FlowCyPy.fluidics import FlowCell, Fluidics, ScattererCollection, population
 from FlowCyPy.opto_electronics import TransimpedanceAmplifier, source
 from FlowCyPy.signal_processing import Digitizer
