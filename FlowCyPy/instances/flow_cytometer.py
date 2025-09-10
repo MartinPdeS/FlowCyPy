@@ -1,7 +1,7 @@
 from TypedUnit import FlowRate, Power, Voltage, ureg
 
 from FlowCyPy.amplifier import TransimpedanceAmplifier
-from FlowCyPy.detector import PMT
+from FlowCyPy.instances.detector import PMT
 from FlowCyPy.digitizer import Digitizer
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.flow_cytometer import FlowCytometer
