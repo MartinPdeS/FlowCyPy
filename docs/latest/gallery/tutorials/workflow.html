@@ -722,47 +722,6 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <span class="n">results</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">1.8</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Population  ScattererID
-Pop 0       0              -0.0
-            1               0.0
-            2               0.0
-            3              -0.0
-            4              -0.0
-                           ...
-Pop 1       126            -0.0
-            127             0.0
-            128             0.0
-            129             0.0
-            130             0.0
-Name: y, Length: 293, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
-Population  ScattererID
-Pop 0       0              -0.0
-            1               0.0
-            2               0.0
-            3              -0.0
-            4              -0.0
-                           ...
-Pop 1       126            -0.0
-            127             0.0
-            128             0.0
-            129             0.0
-            130             0.0
-Name: y, Length: 293, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
-Population  ScattererID
-Pop 0       0              -0.0
-            1               0.0
-            2               0.0
-            3              -0.0
-            4              -0.0
-                           ...
-Pop 1       126            -0.0
-            127             0.0
-            128             0.0
-            129             0.0
-            130             0.0
-Name: y, Length: 293, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
-</pre></div>
-</div>
 </section>
 <section id="step-5-plot-events-and-raw-analog-signals">
 <h2>Step 5: Plot Events and Raw Analog Signals<a class="headerlink" href="#step-5-plot-events-and-raw-analog-signals" title="Link to this heading">#</a></h2>
@@ -776,21 +735,13 @@ Name: y, Length: 293, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
 <span class="n">_</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<ul class="sphx-glr-horizontal">
-<li><img src="../../_images/sphx_glr_workflow_003.png" srcset="../../_images/sphx_glr_workflow_003.png" alt="workflow" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_workflow_004.png" srcset="../../_images/sphx_glr_workflow_004.png" alt="workflow" class = "sphx-glr-multi-img"/></li>
-</ul>
-</section>
+<img src="../../_images/sphx_glr_workflow_003.png" srcset="../../_images/sphx_glr_workflow_003.png" alt="workflow" class = "sphx-glr-single-img"/></section>
 <section id="step-6-plot-triggered-analog-segments">
 <h2>Step 6: Plot Triggered Analog Segments<a class="headerlink" href="#step-6-plot-triggered-analog-segments" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">triggered_analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<ul class="sphx-glr-horizontal">
-<li><img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="workflow" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_workflow_006.png" srcset="../../_images/sphx_glr_workflow_006.png" alt="workflow" class = "sphx-glr-multi-img"/></li>
-</ul>
-</section>
+<img src="../../_images/sphx_glr_workflow_004.png" srcset="../../_images/sphx_glr_workflow_004.png" alt="workflow" class = "sphx-glr-single-img"/></section>
 <section id="step-7-classify-events-from-peak-features">
 <h2>Step 7: Classify Events from Peak Features<a class="headerlink" href="#step-7-classify-events-from-peak-features" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.classifier</span><span class="w"> </span><span class="kn">import</span> <span class="n">KmeansClassifier</span>
@@ -806,7 +757,7 @@ Name: y, Length: 293, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
 <span class="n">_</span> <span class="o">=</span> <span class="n">classified</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_007.png" srcset="../../_images/sphx_glr_workflow_007.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 18.084 seconds)</p>
+<img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.195 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/67e0cd555ca79f8bdb69184b227f40a4/workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow.ipynb</span></code></a></p>

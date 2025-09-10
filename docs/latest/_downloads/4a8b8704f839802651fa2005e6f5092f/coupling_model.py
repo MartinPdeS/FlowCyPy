@@ -27,7 +27,8 @@ Workflow Steps:
 from TypedUnit import ureg
 
 from FlowCyPy import OptoElectronics
-from FlowCyPy.detector import PMT
+from FlowCyPy.instances.detector import PMT
+from FlowCyPy.instances.population import Exosome
 from FlowCyPy.fluidics import FlowCell, Fluidics, ScattererCollection, population
 from FlowCyPy.opto_electronics import TransimpedanceAmplifier, source
 from FlowCyPy.signal_processing import Digitizer
@@ -55,7 +56,7 @@ scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.R
 
 # Add Exosome and HDL populations
 scatterer_collection.add_population(
-    population.Exosome(particle_count=5e10 * ureg.particle / ureg.milliliter),
+    Exosome(particle_count=5e10 * ureg.particle / ureg.milliliter),
 )
 
 fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)

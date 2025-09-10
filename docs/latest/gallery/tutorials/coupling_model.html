@@ -568,7 +568,8 @@ to download the full example code.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptoElectronics</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">PMT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.instances.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">PMT</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.instances.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Exosome</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCell</span><span class="p">,</span> <span class="n">Fluidics</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">population</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.opto_electronics</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransimpedanceAmplifier</span><span class="p">,</span> <span class="n">source</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Digitizer</span>
@@ -598,7 +599,7 @@ to download the full example code.</p>
 
 <span class="c1"># Add Exosome and HDL populations</span>
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span>
-    <span class="n">population</span><span class="o">.</span><span class="n">Exosome</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">5e10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">),</span>
+    <span class="n">Exosome</span><span class="p">(</span><span class="n">particle_count</span><span class="o">=</span><span class="mf">5e10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">),</span>
 <span class="p">)</span>
 
 <span class="n">fluidics</span> <span class="o">=</span> <span class="n">Fluidics</span><span class="p">(</span><span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span> <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">)</span>
@@ -613,10 +614,7 @@ to download the full example code.</p>
 <span class="n">event_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;Diameter&quot;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_coupling_model_001.png" srcset="../../_images/sphx_glr_coupling_model_001.png" alt="Distribution of Diameter" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 1200x500 with 1 Axes&gt;
-</pre></div>
-</div>
-</section>
+<img src="../../_images/sphx_glr_coupling_model_001.png" srcset="../../_images/sphx_glr_coupling_model_001.png" alt="Distribution of Diameter" class = "sphx-glr-single-img"/></section>
 <section id="step-4-define-detectors-and-amplifier">
 <h2>Step 4: Define Detectors and Amplifier<a class="headerlink" href="#step-4-define-detectors-and-amplifier" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">detector_forward</span> <span class="o">=</span> <span class="n">PMT</span><span class="p">(</span>
@@ -652,35 +650,9 @@ to download the full example code.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Population  ScattererID
-Exosome     0               -7.057321753747151e-07
-            1              -2.6545330104582887e-07
-            2               1.2035347439395856e-06
-            3               -6.456875776371187e-07
-            4               1.9495125339208427e-07
-                                    ...
-            3439           -2.0818698225455137e-07
-            3440            1.0537300433764765e-06
-            3441            1.2612581368660584e-06
-            3442           -1.4258648763001025e-06
-            3443            -9.812987402506001e-08
-Name: y, Length: 3444, dtype: pint[meter][Float64] 795.7747154594767 nanometer
-/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:255: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:254: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(
-Population  ScattererID
-Exosome     0               -7.057321753747151e-07
-            1              -2.6545330104582887e-07
-            2               1.2035347439395856e-06
-            3               -6.456875776371187e-07
-            4               1.9495125339208427e-07
-                                    ...
-            3439           -2.0818698225455137e-07
-            3440            1.0537300433764765e-06
-            3441            1.2612581368660584e-06
-            3442           -1.4258648763001025e-06
-            3443            -9.812987402506001e-08
-Name: y, Length: 3444, dtype: pint[meter][Float64] 795.7747154594767 nanometer
-/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:255: UserWarning: Transverse distribution of particle flow exceed the waist of the source
+/opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages/FlowCyPy/source.py:254: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(
 </pre></div>
 </div>
@@ -690,10 +662,7 @@ Name: y, Length: 3444, dtype: pint[meter][Float64] 795.7747154594767 nanometer
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">event_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Csca&quot;</span><span class="p">)</span>  <span class="c1"># Color-coded by scattering cross-section</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_coupling_model_002.png" srcset="../../_images/sphx_glr_coupling_model_002.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7fea2e170d90&gt;
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.935 seconds)</p>
+<img src="../../_images/sphx_glr_coupling_model_002.png" srcset="../../_images/sphx_glr_coupling_model_002.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.888 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-coupling-model-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/4c330faf84cd5e64e28ee463763b4944/coupling_model.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">coupling_model.ipynb</span></code></a></p>

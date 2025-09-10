@@ -263,50 +263,6 @@ Step 4: Run Simulation
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    Population  ScattererID
-    Pop 0       0              -0.0
-                1               0.0
-                2               0.0
-                3              -0.0
-                4              -0.0
-                               ... 
-    Pop 1       126            -0.0
-                127             0.0
-                128             0.0
-                129             0.0
-                130             0.0
-    Name: y, Length: 293, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
-    Population  ScattererID
-    Pop 0       0              -0.0
-                1               0.0
-                2               0.0
-                3              -0.0
-                4              -0.0
-                               ... 
-    Pop 1       126            -0.0
-                127             0.0
-                128             0.0
-                129             0.0
-                130             0.0
-    Name: y, Length: 293, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
-    Population  ScattererID
-    Pop 0       0              -0.0
-                1               0.0
-                2               0.0
-                3              -0.0
-                4              -0.0
-                               ... 
-    Pop 1       126            -0.0
-                127             0.0
-                128             0.0
-                129             0.0
-                130             0.0
-    Name: y, Length: 293, dtype: pint[meter][Float64] 1432.3944878270581 nanometer
-
 
 
 
@@ -350,22 +306,10 @@ Plot raw analog signals
 
 
 
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_003.png
-         :alt: workflow
-         :srcset: /gallery/tutorials/images/sphx_glr_workflow_003.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_004.png
-         :alt: workflow
-         :srcset: /gallery/tutorials/images/sphx_glr_workflow_004.png
-         :class: sphx-glr-multi-img
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_003.png
+   :alt: workflow
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_003.png
+   :class: sphx-glr-single-img
 
 
 
@@ -386,22 +330,10 @@ Step 6: Plot Triggered Analog Segments
 
 
 
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
-         :alt: workflow
-         :srcset: /gallery/tutorials/images/sphx_glr_workflow_005.png
-         :class: sphx-glr-multi-img
-
-    *
-
-      .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_006.png
-         :alt: workflow
-         :srcset: /gallery/tutorials/images/sphx_glr_workflow_006.png
-         :class: sphx-glr-multi-img
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_004.png
+   :alt: workflow
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_004.png
+   :class: sphx-glr-single-img
 
 
 
@@ -430,9 +362,9 @@ Step 7: Classify Events from Peak Features
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_007.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
    :alt: Event classification
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_007.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_005.png
    :class: sphx-glr-single-img
 
 
@@ -442,7 +374,7 @@ Step 7: Classify Events from Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 18.084 seconds)
+   **Total running time of the script:** (0 minutes 16.195 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

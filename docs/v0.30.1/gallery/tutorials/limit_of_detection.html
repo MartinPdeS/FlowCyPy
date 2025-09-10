@@ -693,65 +693,20 @@ scatter signals in the presence of system noise and fluidic variability.</p>
 <span class="n">results</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Population  ScattererID
-150 nm      0              -0.0
-            1              -0.0
-            2              -0.0
-            3              -0.0
-            4               0.0
-                           ...
-90 nm       14              0.0
-            15              0.0
-            16             -0.0
-            17              0.0
-            18             -0.0
-Name: y, Length: 86, dtype: pint[meter][Float64] 1553.3522445768986 nanometer
-Population  ScattererID
-150 nm      0              -0.0
-            1              -0.0
-            2              -0.0
-            3              -0.0
-            4               0.0
-                           ...
-90 nm       14              0.0
-            15              0.0
-            16             -0.0
-            17              0.0
-            18             -0.0
-Name: y, Length: 86, dtype: pint[meter][Float64] 1553.3522445768986 nanometer
-</pre></div>
-</div>
 <p>Plot Raw Analog Signal</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">normalize_units</span><span class="p">(</span><span class="n">time_units</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">signal_units</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">)</span>
 <span class="n">results</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<ul class="sphx-glr-horizontal">
-<li><img src="../../_images/sphx_glr_limit_of_detection_001.png" srcset="../../_images/sphx_glr_limit_of_detection_001.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_limit_of_detection_002.png" srcset="../../_images/sphx_glr_limit_of_detection_002.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
-</ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 1200x500 with 1 Axes&gt;
-</pre></div>
-</div>
-<p>Plot Triggered Analog Signal Segments</p>
+<img src="../../_images/sphx_glr_limit_of_detection_001.png" srcset="../../_images/sphx_glr_limit_of_detection_001.png" alt="limit of detection" class = "sphx-glr-single-img"/><p>Plot Triggered Analog Signal Segments</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span><span class="o">.</span><span class="n">triggered_analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<ul class="sphx-glr-horizontal">
-<li><img src="../../_images/sphx_glr_limit_of_detection_003.png" srcset="../../_images/sphx_glr_limit_of_detection_003.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_limit_of_detection_004.png" srcset="../../_images/sphx_glr_limit_of_detection_004.png" alt="limit of detection" class = "sphx-glr-multi-img"/></li>
-</ul>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 1200x500 with 1 Axes&gt;
-</pre></div>
-</div>
-<p>Plot Peak Features (Side vs Forward Height)</p>
+<img src="../../_images/sphx_glr_limit_of_detection_002.png" srcset="../../_images/sphx_glr_limit_of_detection_002.png" alt="limit of detection" class = "sphx-glr-single-img"/><p>Plot Peak Features (Side vs Forward Height)</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span><span class="o">.</span><span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_limit_of_detection_005.png" srcset="../../_images/sphx_glr_limit_of_detection_005.png" alt="Peaks properties" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid object at 0x7fea2ae64bd0&gt;
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.046 seconds)</p>
+<img src="../../_images/sphx_glr_limit_of_detection_003.png" srcset="../../_images/sphx_glr_limit_of_detection_003.png" alt="Peaks properties" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.006 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-limit-of-detection-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/cc141053ca87c293e1689882fb19bce1/limit_of_detection.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">limit_of_detection.ipynb</span></code></a></p>
