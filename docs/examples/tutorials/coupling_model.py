@@ -55,7 +55,7 @@ scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.R
 
 # Add Exosome and HDL populations
 scatterer_collection.add_population(
-    population.Exosome(particle_count=5e10 * ureg.particle / ureg.milliliter),
+    population.instances.Exosome(particle_count=5e10 * ureg.particle / ureg.milliliter),
 )
 
 fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
