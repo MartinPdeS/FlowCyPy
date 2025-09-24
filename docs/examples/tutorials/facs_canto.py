@@ -1,21 +1,14 @@
 """
-Flow Cytometry Simulation: Full System Example
-==============================================
+Flow Cytometry Simulation: FacsCanto System
+============================================
 
-This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library.
-It models fluidics, optics, signal processing, and classification of multiple particle populations.
-
-Steps Covered:
---------------
-1. Configure simulation parameters and noise models
-2. Define laser source, flow cell geometry, and fluidics
-3. Add synthetic particle populations
-4. Set up detectors, amplifier, and digitizer
-5. Simulate analog and digital signal acquisition
-6. Apply triggering and peak detection
-7. Classify particle events based on peak features
+This tutorial demonstrates how to set up and run a flow cytometry simulation using the FacsCanto instance from the FlowCyPy library.
+It includes defining a particle population, configuring the flow cytometer, running the simulation, and visualizing the results.
 """
 
+# %%
+# Step 0: Global Settings and Imports
+# -----------------------------------
 from FlowCyPy.instances.flow_cytometer import FacsCanto, SampleFlowRate, SheathFlowRate
 from FlowCyPy.fluidics import distribution, population
 from TypedUnit import ureg
@@ -42,5 +35,3 @@ facs_canto.dilute_sample(factor=100)
 run_record = facs_canto.run(run_time=1.8 * ureg.millisecond)
 
 run_record.triggered_analog.plot()
-
-# _ = run_record.events.plot(x="side", y="forward", z="RefractiveIndex")

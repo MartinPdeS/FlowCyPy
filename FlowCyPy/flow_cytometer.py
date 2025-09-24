@@ -11,16 +11,7 @@ from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.signal_processing import SignalProcessing
 from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
-
-
-class Result:
-    analog: Optional[AcquisitionDataFrame] = None
-    triggered_analog: Optional[AcquisitionDataFrame] = None
-    events: Optional[pd.DataFrame] = None
-
-    def __init__(self, **kwargs):
-        for k, v in kwargs.items():
-            setattr(self, k, v)
+from FlowCyPy.run_record import RunRecord
 
 
 class FlowCytometer:
@@ -93,27 +84,9 @@ class FlowCytometer:
 
         return signal_generator
 
-    @validate_units
-    def initialize(self, run_time: Time) -> Result:
-        """
-        Initializes the flow cytometer simulation.
-
-        Parameters
-        ----------
-        run_time : Time
-            The duration of the acquisition in seconds.
-
-        Returns
-        -------
-        Result
-            An instance of the Result class containing initialization data.
-        """
-        self.results = Result()
-        self.results.run_time = run_time
-
-        return self.results
-
-    def compute_events(self, compute_cross_section: bool = False) -> pd.DataFrame:
+    def compute_events(
+        self, run_record: RunRecord, compute_cross_section: bool = False
+    ) -> pd.DataFrame:
         """
         Generates a DataFrame of events based on the scatterer collection and flow cell properties.
 
@@ -122,8 +95,10 @@ class FlowCytometer:
 
         Parameters
         ----------
-        run_time : Time
-            The duration of the acquisition in seconds.
+        run_record : RunRecord
+            The RunRecord instance containing the run time for the simulation.
+        compute_cross_section : bool, optional
+            Whether to compute the scattering cross-section for each event. Default is False.
 
         Returns
         -------
@@ -131,18 +106,16 @@ class FlowCytometer:
             A DataFrame containing event data for the scatterers.
         """
         event_dataframe = self.fluidics.generate_event_dataframe(
-            run_time=self.results.run_time
+            run_time=run_record.run_time
         )
 
         self.opto_electronics.model_event(
             event_dataframe=event_dataframe, compute_cross_section=compute_cross_section
         )
 
-        self.results.events = event_dataframe
-
         return event_dataframe
 
-    def compute_analog(self) -> AcquisitionDataFrame:
+    def compute_analog(self, run_record: RunRecord) -> AcquisitionDataFrame:
         """
         Simulates the analog optical signal response for all detected events.
 
@@ -163,18 +136,18 @@ class FlowCytometer:
         ValueError
             If the event DataFrame is missing required columns ('Widths', 'Time').
         """
-        signal_generator = self._create_signal_generator(run_time=self.results.run_time)
+        signal_generator = self._create_signal_generator(run_time=run_record.run_time)
         signal_generator.signal_units = ureg.watt  # Initial unit: optical power
 
         for detector in self.opto_electronics.detectors:
-            if self.results.events.empty:
+            if run_record.events.empty:
                 signal_generator.add_constant(constant=self.background_power)
             else:
                 signal_generator.generate_pulses(
                     signal_name=detector.name,
-                    widths=self.results.events["Widths"].values.quantity,
-                    centers=self.results.events["Time"].values.quantity,
-                    amplitudes=self.results.events[detector.name].values.quantity,
+                    widths=run_record.events["Widths"].values.quantity,
+                    centers=run_record.events["Time"].values.quantity,
+                    amplitudes=run_record.events[detector.name].values.quantity,
                     base_level=self.background_power,
                 )
 
@@ -209,41 +182,17 @@ class FlowCytometer:
         self.signal_processing.process_analog(signal_generator)
 
         # Create structured DataFrame output
-        self.results.analog = AcquisitionDataFrame._construct_from_signal_generator(
-            event_dataframe=self.results.events,
+        analog_aquisition = AcquisitionDataFrame._construct_from_signal_generator(
+            event_dataframe=run_record.events,
             signal_generator=signal_generator,
             is_digital=False,
             time_units="second",
             signal_units="volt",
         )
 
-        return self.results.analog
+        return analog_aquisition
 
-    def compute_peaks(self):
-        """
-        Runs the triggering system and extracts signal segments corresponding to detected events.
-
-        The method identifies regions in the analog voltage signals where the threshold condition is met
-        (based on `triggering_system`). It then digitizes the triggered signal segments and applies
-        peak detection, if configured.
-
-        Returns
-        -------
-        Result
-            The internal `results` object populated with:
-            - `triggered_analog_acquisition`
-            - `digital_acquisition`
-            - `peaks` (if `peak_algorithm` is provided)
-        """
-        self.results.triggered_analog = self.signal_processing.triggering_system.run(
-            dataframe=self.results.analog
-        )
-
-        self.signal_processing.process_digital(self.results)
-
-        return self.results.peaks
-
-    def run(self, run_time: Time, compute_cross_section: bool = False) -> Result:
+    def run(self, run_time: Time, compute_cross_section: bool = False) -> RunRecord:
         """
         Runs a complete flow cytometry simulation for the specified acquisition duration.
 
@@ -257,18 +206,33 @@ class FlowCytometer:
         ----------
         run_time : Time
             Duration of the simulated acquisition (e.g., `1.0 * ureg.millisecond`).
+        compute_cross_section : bool, optional
+            Whether to compute the scattering cross-section for each event. Default is False.
 
         Returns
         -------
-        Result
+        RunRecord
             Simulation output containing all analog, digital, and peak-level data.
         """
-        self.results = None
-        self.initialize(run_time=run_time)
-        self.compute_events(compute_cross_section=compute_cross_section)
-        self.compute_analog()
+        run_record = RunRecord(run_time=run_time)
+
+        run_record.events = self.fluidics.generate_event_dataframe(
+            run_time=run_record.run_time
+        )
+
+        self.opto_electronics.model_event(
+            event_dataframe=run_record.events,
+            compute_cross_section=compute_cross_section,
+        )
+
+        run_record.analog = self.compute_analog(run_record=run_record)
+
+        run_record.triggered_analog = self.signal_processing.triggering_system.run(
+            dataframe=run_record.analog
+        )
 
         if self.signal_processing.triggering_system is not None:
-            self.compute_peaks()
+            self.signal_processing.process_digital(run_record)
 
-        return self.results
+        run_record.compute_statistics()
+        return run_record

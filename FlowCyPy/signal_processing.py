@@ -3,6 +3,7 @@ from TypedUnit import ureg
 from FlowCyPy import circuits, peak_locator, triggering_system
 from FlowCyPy.digitizer import Digitizer
 from FlowCyPy.signal_generator import SignalGenerator
+from FlowCyPy.run_record import RunRecord
 
 
 class SignalProcessing:
@@ -41,7 +42,7 @@ class SignalProcessing:
         self.triggering_system = triggering_system
         self.peak_algorithm = peak_algorithm
 
-    def process_analog(self, signal_generator: SignalGenerator):
+    def process_analog(self, signal_generator: SignalGenerator) -> None:
         """
         Applies analog signal processing to the input voltage signal.
 
@@ -60,7 +61,7 @@ class SignalProcessing:
                 sampling_rate=self.digitizer.sampling_rate,
             )
 
-    def process_digital(self, results: object) -> None:
+    def process_digital(self, run_record: RunRecord) -> None:
         """
         Applies digitization and peak detection to the triggered analog signal.
 
@@ -69,22 +70,22 @@ class SignalProcessing:
         2. If a peak detection algorithm is provided, applies it to the digital trace
            to extract peak-level metrics such as amplitude or area.
 
-        The results are attached to the `results` object as:
-        - `results.digital_acquisition`: digitized signal trace
-        - `results.peaks`: dictionary or structured data representing peak features (optional)
+        The results are attached to the `run_record` RunRecord as:
+        - `run_record.digital_acquisition`: digitized signal trace
+        - `run_record.peaks`: dictionary or structured data representing peak features (optional)
 
         Parameters
         ----------
-        results : object
+        run_record : RunRecord
             An object with a `triggered_analog_acquisition` attribute, expected to hold the
             analog signal segment previously extracted by the triggering system. The method
-            attaches `digital_acquisition` and `peaks` attributes to this object.
+            attaches `digital_acquisition` and `peaks` attributes to this RunRecord.
         """
-        results.triggered_digital = results.triggered_analog.digitalize(
+        run_record.triggered_digital = run_record.triggered_analog.digitalize(
             digitizer=self.digitizer
         )
 
-        results.triggered_digital.normalize_units(signal_units=ureg.bit_bins)
+        run_record.triggered_digital.normalize_units(signal_units=ureg.bit_bins)
 
         if self.peak_algorithm is not None:
-            results.peaks = self.peak_algorithm.run(results.triggered_digital)
+            run_record.peaks = self.peak_algorithm.run(run_record.triggered_digital)
