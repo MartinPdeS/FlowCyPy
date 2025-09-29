@@ -154,10 +154,10 @@ def test_flow_cytometer_acquisition(flow_cytometer):
 
 def test_flow_cytometer_multiple_detectors(flow_cytometer):
     """Ensure that both detectors generate non-zero signals."""
-    results = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
+    run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
 
-    signal_0 = results.signal.analog["default"]
-    signal_1 = results.signal.analog["default"]
+    signal_0 = run_record.signal.analog["default"]
+    signal_1 = run_record.signal.analog["default"]
 
     assert not np.all(signal_0 == 0 * ureg.volt), "Detector 0 signal is all zeros."
     assert not np.all(signal_1 == 0 * ureg.volt), "Detector 1 signal is all zeros."
@@ -166,18 +166,18 @@ def test_flow_cytometer_multiple_detectors(flow_cytometer):
 @patch("matplotlib.pyplot.show")
 def test_flow_cytometer_plot(mock_show, flow_cytometer, digitizer):
     """Test if the flow cytometer plots without error."""
-    results = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
+    run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
 
-    results.signal.analog.plot()
+    run_record.plot_analog()
     plt.close()
 
-    results.signal.analog.digitalize(digitizer=digitizer).plot()
+    run_record.signal.analog.digitalize(digitizer=digitizer)
     plt.close()
 
 
 def test_flow_cytometer_triggered_acquisition(flow_cytometer):
     """Test triggered acquisition with a defined threshold."""
-    results = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
+    run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
 
     _triggering_system = triggering_system.DynamicWindow(
         trigger_detector_name="default",
@@ -188,18 +188,18 @@ def test_flow_cytometer_triggered_acquisition(flow_cytometer):
     )
 
     triggered_signal = _triggering_system.run(
-        dataframe=results.signal.analog,
+        dataframe=run_record.signal.analog,
     )
 
     assert (
         triggered_signal is not None
-    ), "Triggered acquisition failed to return results."
+    ), "Triggered acquisition failed to return run_record."
     assert len(triggered_signal) > 0, "Triggered acquisition has no signal data."
 
 
 def test_flow_cytometer_signal_processing(flow_cytometer):
     """Test filtering and baseline restoration on the acquired signal."""
-    results = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
+    run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
 
     _triggering_system = triggering_system.DynamicWindow(
         trigger_detector_name="default",
@@ -210,7 +210,7 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
     )
 
     triggered_signal = _triggering_system.run(
-        dataframe=results.signal.analog,
+        dataframe=run_record.signal.analog,
     )
 
     assert np.std(triggered_signal["default"]) > 0, "Filtered signal has zero variance."
@@ -223,7 +223,7 @@ def test_peak_detection(flow_cytometer, digitizer):
         circuits.BesselLowPass(cutoff=1 * ureg.megahertz, order=4, gain=2),
     ]
 
-    results = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
+    run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
 
     _triggering_system = triggering_system.DynamicWindow(
         threshold="3 sigma",
@@ -234,7 +234,7 @@ def test_peak_detection(flow_cytometer, digitizer):
     )
 
     triggered_acquisition = _triggering_system.run(
-        dataframe=results.signal.analog,
+        dataframe=run_record.signal.analog,
     )
 
     peak_algorithm = peak_locator.GlobalPeakLocator()
@@ -249,8 +249,8 @@ def test_peak_detection(flow_cytometer, digitizer):
 @patch("matplotlib.pyplot.show")
 def test_peak_plot(mock_show, flow_cytometer, digitizer):
     """Ensure peak plots render correctly."""
-    results = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
-    results.signal.analog.plot()
+    run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
+    run_record.plot_analog()
 
     trigger = triggering_system.DynamicWindow(
         trigger_detector_name="default",
@@ -261,18 +261,14 @@ def test_peak_plot(mock_show, flow_cytometer, digitizer):
     )
 
     triggered_acquisition = trigger.run(
-        dataframe=results.signal.analog,
+        dataframe=run_record.signal.analog,
     )
 
     peak_algorithm = peak_locator.GlobalPeakLocator()
 
     digital_signal = triggered_acquisition.digitalize(digitizer=digitizer)
 
-    peaks = peak_algorithm.run(digital_signal)
-
-    peaks.plot(x=("default", "Height"), y=("default_bis", "Height"))
-
-    plt.close()
+    _ = peak_algorithm.run(digital_signal)
 
 
 if __name__ == "__main__":

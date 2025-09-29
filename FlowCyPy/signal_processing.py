@@ -1,9 +1,8 @@
-from TypedUnit import ureg
-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from FlowCyPy import circuits, peak_locator, triggering_system
 from FlowCyPy.digitizer import Digitizer
 from FlowCyPy.signal_generator import SignalGenerator
-from FlowCyPy.run_record import RunRecord
 
 
 class SignalProcessing:
@@ -60,32 +59,3 @@ class SignalProcessing:
                 signal_generator=signal_generator,
                 sampling_rate=self.digitizer.sampling_rate,
             )
-
-    def process_digital(self, run_record: RunRecord) -> None:
-        """
-        Applies digitization and peak detection to the triggered analog signal.
-
-        This method performs two key steps:
-        1. Converts the triggered analog acquisition to a digital trace using the digitizer.
-        2. If a peak detection algorithm is provided, applies it to the digital trace
-           to extract peak-level metrics such as amplitude or area.
-
-        The results are attached to the `run_record` RunRecord as:
-        - `run_record.digital_acquisition`: digitized signal trace
-        - `run_record.peaks`: dictionary or structured data representing peak features (optional)
-
-        Parameters
-        ----------
-        run_record : RunRecord
-            An object with a `signal.triggered` attribute, expected to hold the
-            analog signal segment previously extracted by the triggering system. The method
-            attaches `digital_acquisition` and `peaks` attributes to this RunRecord.
-        """
-        run_record.triggered_digital = run_record.signal.triggered.digitalize(
-            digitizer=self.digitizer
-        )
-
-        run_record.triggered_digital.normalize_units(signal_units=ureg.bit_bins)
-
-        if self.peak_algorithm is not None:
-            run_record.peaks = self.peak_algorithm.run(run_record.triggered_digital)

@@ -6,6 +6,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import pint_pandas
+import matplotlib.pyplot as plt
 from TypedUnit import AnyUnit, Time, ureg
 
 from FlowCyPy.binary.interface_triggering_system import (
@@ -81,8 +82,6 @@ class BaseTrigger:
                 f"No signal met the trigger criteria. Try adjusting the threshold. Signal min/max: {dataframe[self.trigger_detector_name].min().to_compact()}, {dataframe[self.trigger_detector_name].max().to_compact()}",
                 UserWarning,
             )
-            # df = pd.DataFrame(columns=['SegmentID', 'Time'])
-            # return TriggerDataFrame(df, is_digital=False)
 
         detectors = dataframe.detector_names
 
@@ -99,16 +98,9 @@ class BaseTrigger:
 
         tidy = pd.DataFrame(data).set_index("SegmentID")
 
-        tidy = TriggerDataFrame(tidy, is_digital=False)
+        tidy = TriggerDataFrame(tidy)
 
         tidy.normalize_units(signal_units="max", time_units="max")
-
-        meta_data = dict(
-            threshold={"detector": self.trigger_detector_name, "value": self.threshold},
-        )
-
-        # metadata passthrough
-        tidy.attrs.update(meta_data)
 
         return tidy
 
@@ -167,17 +159,29 @@ class FixedWindow(FIXEDWINDOW, BaseTrigger):
         """
         self.init_data(dataframe)
 
-        _threshold = self._parse_threshold(self.threshold, dataframe)
+        self.threshold_absolute = self._parse_threshold(self.threshold, dataframe)
 
         self._cpp_run(
-            threshold=_threshold.to(dataframe.signal_units).magnitude,
+            threshold=self.threshold_absolute.to(dataframe.signal_units).magnitude,
         )
 
         out_df = self._assemble_dataframe(dataframe)
 
-        out_df.attrs["scatterer"] = dataframe.scatterer
-
         return out_df
+
+    def _add_to_ax(self, ax: plt.Axes, signal_units: ureg.Quantity) -> None:
+        """Add a horizontal line to the provided Axes representing the threshold."""
+        if not hasattr(self, "threshold_absolute"):
+            raise AttributeError("Threshold has not been set. Run the trigger first.")
+
+        ax.axhline(
+            self.threshold_absolute.to(signal_units).magnitude,
+            color="black",
+            linestyle="--",
+            linewidth=1,
+            label=f"Threshold: {self.threshold_absolute.to_compact():.2f}",
+        )
+        ax.legend()
 
 
 class DynamicWindow(DYNAMICWINDOW, BaseTrigger):
@@ -234,17 +238,29 @@ class DynamicWindow(DYNAMICWINDOW, BaseTrigger):
         """
         self.init_data(dataframe)
 
-        _threshold = self._parse_threshold(self.threshold, dataframe)
+        self.threshold_absolute = self._parse_threshold(self.threshold, dataframe)
 
         self._cpp_run(
-            threshold=_threshold.to(dataframe.signal_units).magnitude,
+            threshold=self.threshold_absolute.to(dataframe.signal_units).magnitude,
         )
 
         output = self._assemble_dataframe(dataframe)
 
-        output.attrs["scatterer"] = dataframe.scatterer
-
         return output
+
+    def _add_to_ax(self, ax: plt.Axes, signal_units: ureg.Quantity) -> None:
+        """Add a horizontal line to the provided Axes representing the threshold."""
+        if not hasattr(self, "threshold_absolute"):
+            raise AttributeError("Threshold has not been set. Run the trigger first.")
+
+        ax.axhline(
+            self.threshold_absolute.to(signal_units).magnitude,
+            color="black",
+            linestyle="--",
+            linewidth=1,
+            label=f"Threshold: {self.threshold_absolute.to_compact():.2f}",
+        )
+        ax.legend()
 
 
 class DoubleThreshold(DOUBLETHRESHOLD, BaseTrigger):
@@ -333,6 +349,26 @@ class DoubleThreshold(DOUBLETHRESHOLD, BaseTrigger):
 
         out_df = self._assemble_dataframe(dataframe)
 
-        out_df.attrs["scatterer"] = dataframe.scatterer
-
         return out_df
+
+    def _add_to_ax(self, ax: plt.Axes, signal_units: ureg.Quantity) -> None:
+        """Add horizontal lines to the provided Axes representing the thresholds."""
+        if not hasattr(self, "upper_threshold"):
+            raise AttributeError("Thresholds have not been set. Run the trigger first.")
+
+        ax.axhline(
+            self.upper_threshold.to(signal_units).magnitude,
+            color="C0",
+            linestyle="--",
+            linewidth=1,
+            label=f"Upper Threshold: {self.upper_threshold.to_compact():.2f}",
+        )
+        if not np.isnan(self.lower_threshold.magnitude):
+            ax.axhline(
+                self.lower_threshold.to(signal_units).magnitude,
+                color="C1",
+                linestyle="--",
+                linewidth=1,
+                label=f"Lower Threshold: {self.lower_threshold.to_compact():.2f}",
+            )
+        ax.legend()

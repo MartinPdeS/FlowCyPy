@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from typing import Optional
-
 import pandas as pd
 from TypedUnit import Power, Time, ureg, validate_units
 
@@ -115,7 +114,9 @@ class FlowCytometer:
 
         return event_dataframe
 
-    def compute_analog(self, run_record: RunRecord) -> AcquisitionDataFrame:
+    def compute_analog(
+        self, run_time: Time, events: pd.DataFrame
+    ) -> AcquisitionDataFrame:
         """
         Simulates the analog optical signal response for all detected events.
 
@@ -136,18 +137,18 @@ class FlowCytometer:
         ValueError
             If the event DataFrame is missing required columns ('Widths', 'Time').
         """
-        signal_generator = self._create_signal_generator(run_time=run_record.run_time)
+        signal_generator = self._create_signal_generator(run_time=run_time)
         signal_generator.signal_units = ureg.watt  # Initial unit: optical power
 
         for detector in self.opto_electronics.detectors:
-            if run_record.events.empty:
+            if events.empty:
                 signal_generator.add_constant(constant=self.background_power)
             else:
                 signal_generator.generate_pulses(
                     signal_name=detector.name,
-                    widths=run_record.events["Widths"].values.quantity,
-                    centers=run_record.events["Time"].values.quantity,
-                    amplitudes=run_record.events[detector.name].values.quantity,
+                    widths=events["Widths"].values.quantity,
+                    centers=events["Time"].values.quantity,
+                    amplitudes=events[detector.name].values.quantity,
                     base_level=self.background_power,
                 )
 
@@ -183,9 +184,7 @@ class FlowCytometer:
 
         # Create structured DataFrame output
         analog_aquisition = AcquisitionDataFrame._construct_from_signal_generator(
-            event_dataframe=run_record.events,
             signal_generator=signal_generator,
-            is_digital=False,
             time_units="second",
             signal_units="volt",
         )
@@ -214,24 +213,35 @@ class FlowCytometer:
         RunRecord
             Simulation output containing all analog, digital, and peak-level data.
         """
-        run_record = RunRecord(run_time=run_time)
-
-        run_record.events = self.fluidics.generate_event_dataframe(
-            run_time=run_record.run_time
-        )
+        events = self.fluidics.generate_event_dataframe(run_time=run_time)
 
         self.opto_electronics.model_event(
-            event_dataframe=run_record.events,
+            event_dataframe=events,
             compute_cross_section=compute_cross_section,
         )
 
-        run_record.signal.analog = self.compute_analog(run_record=run_record)
+        analog = self.compute_analog(events=events, run_time=run_time)
+
+        run_record = RunRecord(
+            run_time=run_time,
+            detector_names=[d.name for d in self.opto_electronics.detectors],
+            events=events,
+            analog=analog,
+        )
 
         if self.signal_processing.triggering_system is not None:
-            run_record.signal.triggered = self.signal_processing.triggering_system.run(
-                dataframe=run_record.signal.analog
-            )
-            self.signal_processing.process_digital(run_record)
+            triggered = self.signal_processing.triggering_system.run(dataframe=analog)
+
+            run_record.signal.digital = triggered.digitalize(
+                digitizer=self.signal_processing.digitizer
+            ).normalize_units(signal_units=ureg.bit_bins)
+
+            if self.signal_processing.peak_algorithm is not None:
+                run_record.peaks = self.signal_processing.peak_algorithm.run(
+                    run_record.signal.digital
+                )
+
+            run_record.triggering_system = self.signal_processing.triggering_system
 
         run_record.compute_statistics()
         return run_record

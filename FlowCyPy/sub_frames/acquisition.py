@@ -18,18 +18,13 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
     Base class for acquisition data frames with common plotting and logging functionalities.
     """
 
-    def __init__(self, dataframe: pd.DataFrame, scatterer=None, **attributes: dict):
+    def __init__(self, dataframe: pd.DataFrame):
         super().__init__(dataframe)
-
-        self.attrs["scatterer"] = scatterer
-        self.attrs.update(attributes)
 
     @classmethod
     def _construct_from_signal_generator(
         cls,
-        event_dataframe: pd.DataFrame,
         signal_generator: SignalGenerator,
-        is_digital: bool,
         time_units: Time | str,
         signal_units: Voltage | str,
     ) -> "AcquisitionDataFrame":
@@ -38,12 +33,8 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         Parameters
         ----------
-        event_dataframe : pd.DataFrame
-            A DataFrame containing event data, typically including time and scatterer properties.
         signal_generator : SignalGenerator
             The signal generator instance containing the generated signals.
-        is_digital : bool, optional
-            A flag indicating whether the signals are digital.
         time_units : Time | str
             The units for the time column in the resulting DataFrame.
         signal_units : Voltage | str
@@ -66,9 +57,7 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
                 dtype=f"pint[{signal_units}]",
             )
 
-        signal_dataframe = cls(
-            signal_dataframe, scatterer=event_dataframe, is_digital=is_digital
-        )
+        signal_dataframe = cls(signal_dataframe)
 
         signal_dataframe.normalize_units(signal_units="SI", time_units="SI")
 
@@ -100,9 +89,7 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
                 digitized_signal, ureg.bit_bins
             )
 
-        output = self.__class__(
-            dataframe=digital_df, is_digital=True, scatterer=self.attrs["scatterer"]
-        )
+        output = self.__class__(dataframe=digital_df)
 
         output.normalize_units(signal_units="max", time_units="max")
 
@@ -155,6 +142,8 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
                 self.signal_units = signal_units
                 self[columns] = self[columns].pint.to(signal_units)
 
+        return self
+
     def __finalize__(self, other, method=..., **kwargs):
         """
         Finalize the DataFrame after operations, preserving scatterer attributes.
@@ -162,21 +151,51 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
         """
         output = super().__finalize__(other, method, **kwargs)
 
-        output.attrs["scatterer"] = self.attrs["scatterer"]
-
         return output
-
-    @property
-    def scatterer(self) -> object:
-        return self.attrs["scatterer"]
 
     @property
     def detector_names(self) -> List[str]:
         """Return a list of unique detector names."""
         return [col for col in self.columns if col != "Time"]
 
+    def _get_axes_dict(self) -> dict[str, plt.Axes]:
+        """
+        Creates a dictionary of matplotlib Axes for each detector and scatterer.
+
+        This method generates a dictionary where each key is the name of a detector or "scatterer",
+        and the corresponding value is a matplotlib Axes object. This is useful for plotting
+        multiple signals in a structured manner.
+
+        Returns
+        -------
+        dict[str, plt.Axes]
+            A dictionary mapping detector names and "scatterer" to their respective Axes objects.
+        """
+        n_plots = len(self.detector_names)
+
+        figure, axes_array = plt.subplots(
+            nrows=n_plots,
+            sharex=True,
+            sharey=True,
+        )
+
+        axes = {name: ax for name, ax in zip(self.detector_names, axes_array)}
+
+        for _, ax in axes.items():
+            ax.yaxis.tick_right()
+
+        for detector_name in self.detector_names:
+            ax = axes[detector_name]
+            ax.set_ylabel(
+                rf"{detector_name} [{self.signal_units._repr_latex_()}]", labelpad=20
+            )
+
+        ax.set_xlabel(rf"Time [{self.time_units._repr_latex_()}]")
+
+        return figure, axes
+
     @MPSPlots.helper.post_mpl_plot
-    def plot(self, filter_population: Union[str, List[str]] = None) -> None:
+    def plot(self) -> None:
         """
         Plot acquisition data for each detector and the scatterer events.
         This method creates a multi-panel plot with each detector's signal and a scatterer event plot.
@@ -193,38 +212,11 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
             The figure containing the acquisition data plots.
 
         """
-        n_plots = len(self.detector_names) + 1  # One extra plot for events
+        self.normalize_units(signal_units="max", time_units="max")
 
-        figure, axes_array = plt.subplots(
-            nrows=n_plots,
-            sharex=True,
-            sharey=True,
-            gridspec_kw={"height_ratios": [1] * (n_plots - 1) + [0.5]},
-        )
-
-        for ax in axes_array:
-            ax.yaxis.tick_right()
-
-        axes = {
-            name: ax
-            for name, ax in zip(self.detector_names + ["scatterer"], axes_array)
-        }
-
-        for detector_name in self.detector_names:
-            ax = axes[detector_name]
-            ax.set_ylabel(
-                rf"{detector_name} [{self.signal_units._repr_latex_()}]", labelpad=20
-            )
+        figure, axes = self._get_axes_dict()
 
         self._add_to_axes(axes=axes)
-
-        self.scatterer._add_event_to_ax(
-            ax=axes["scatterer"],
-            time_units=self.time_units,
-            filter_population=filter_population,
-        )
-
-        axes["scatterer"].set_xlabel(f"Time [{self.time_units._repr_latex_()}]")
 
         return figure
 
@@ -293,14 +285,7 @@ class AcquisitionDataFrame(BaseAcquisitionDataFrame):
             time = self["Time"].pint.to(self.time_units).pint.quantity
             signal = self[detector_name].pint.to(self.signal_units).pint.quantity
 
-            if not self.attrs["is_digital"]:
-                ax.plot(
-                    time, signal, label="Analog Signal", linestyle="-", color="black"
-                )
-            else:
-                ax.step(
-                    time, signal, where="mid", color="black", label="Digital Signal"
-                )
+            ax.plot(time, signal, label="Analog Signal", linestyle="-", color="black")
 
 
 class TriggerDataFrame(BaseAcquisitionDataFrame):
@@ -335,24 +320,4 @@ class TriggerDataFrame(BaseAcquisitionDataFrame):
 
                 ax.axvspan(start_time, end_time, facecolor=color, alpha=0.3)
 
-                if not self.attrs["is_digital"]:
-                    ax.plot(time, signal, color="black", linestyle="-")
-                else:
-                    ax.step(time, signal, where="mid", color="black", linestyle="-")
-
-                # Add threshold line and legend for the detector, if applicable.
-                threshold = self.attrs.get("threshold", None)
-                if threshold is not None and detector_name == threshold["detector"]:
-                    _, labels = ax.get_legend_handles_labels()
-                    if "Threshold" not in labels:
-                        threshold = threshold["value"].to(self.signal_units)
-
-                        ax.axhline(
-                            y=threshold,
-                            label="Threshold",
-                            linestyle="--",
-                            color="black",
-                            linewidth=1,
-                        )
-
-                    ax.legend(loc="upper right")
+                ax.step(time, signal, where="mid", color="black", linestyle="-")

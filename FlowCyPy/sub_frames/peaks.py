@@ -156,8 +156,6 @@ class PeakDataFrame(BaseSubFrame):
         plt.Figure
             The histogram figure.
         """
-        figure, ax = plt.subplots(1, 1)
-
         if len(self) == 1:
             return
 
