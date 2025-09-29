@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from typing import Optional, Union, List, Any
+from typing import Optional, Union, List
 import pandas as pd
-from TypedUnit import ureg, Time, Voltage, Dimensionless
+from TypedUnit import ureg, Time
 from MPSPlots import helper
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
-from FlowCyPy.sub_frames import utils
 
 
 class NameSpace:
@@ -127,96 +125,6 @@ class RunRecord:
         )
 
         return figure, axes
-
-    @helper.post_mpl_plot
-    def plot_analog_histogram(
-        self,
-        kde: bool = False,
-        bins: Optional[int] = "auto",
-        color: Optional[Union[str, dict]] = None,
-        clip_data: Optional[Union[str, Voltage | Dimensionless]] = None,
-    ) -> plt.Figure:
-        """
-        Plot a histogram distribution for a given column using Seaborn, with an option to remove extreme values.
-
-        Parameters
-        ----------
-        kde : bool, optional
-            Whether to overlay a KDE curve (default: False).
-        bins : Optional[int], optional
-            Number of bins for the histogram (default: 'auto', letting Seaborn decide).
-        color : Optional[Union[str, dict]], optional
-            Color specification for the plot (default: None).
-        clip_data : Optional[Union[str, units.Quantity]], optional
-            If provided, removes data above a threshold. If a string ending with '%' (e.g., "20%") is given,
-            the function removes values above the corresponding quantile (e.g., the top 20% of values).
-            If a pint.Quantity is given, it removes values above that absolute value.
-        """
-        analog = self.signal.analog
-        analog.normalize_units(signal_units="max", time_units="max")
-
-        if len(analog) == 1:
-            return
-
-        n_plots = len(self.detector_names)
-
-        figure, axes = plt.subplots(nrows=n_plots, sharex=True, sharey=True)
-
-        for ax, detector_name in zip(axes, self.detector_names):
-            ax.set_ylabel(detector_name)
-
-            signal = analog[detector_name].pint.quantity.magnitude
-
-            signal = utils.clip_data(signal=signal, clip_value=clip_data)
-
-            sns.histplot(x=signal, ax=ax, kde=kde, bins=bins, color=color)
-
-        return figure
-
-    @helper.post_mpl_plot
-    def plot_digital_histogram(
-        self,
-        kde: bool = False,
-        bins: Optional[int] = "auto",
-        color: Optional[Union[str, dict]] = None,
-        clip_data: Optional[Union[str, Voltage | Dimensionless]] = None,
-    ) -> plt.Figure:
-        """
-        Plot a histogram distribution for a given column using Seaborn, with an option to remove extreme values.
-
-        Parameters
-        ----------
-        kde : bool, optional
-            Whether to overlay a KDE curve (default: False).
-        bins : Optional[int], optional
-            Number of bins for the histogram (default: 'auto', letting Seaborn decide).
-        color : Optional[Union[str, dict]], optional
-            Color specification for the plot (default: None).
-        clip_data : Optional[Union[str, units.Quantity]], optional
-            If provided, removes data above a threshold. If a string ending with '%' (e.g., "20%") is given,
-            the function removes values above the corresponding quantile (e.g., the top 20% of values).
-            If a pint.Quantity is given, it removes values above that absolute value.
-        """
-        triggered = self.signal.digital
-        triggered.normalize_units(time_units="max")
-
-        if len(triggered) == 1:
-            return
-
-        n_plots = len(self.detector_names)
-
-        figure, axes = plt.subplots(nrows=n_plots, sharex=True, sharey=True)
-
-        for ax, detector_name in zip(axes, self.detector_names):
-            ax.set_ylabel(detector_name)
-
-            signal = triggered[detector_name].pint.quantity.magnitude
-
-            signal = utils.clip_data(signal=signal, clip_value=clip_data)
-
-            sns.histplot(x=signal, ax=ax, kde=kde, bins=bins, color=color)
-
-        return figure
 
     @helper.post_mpl_plot
     def plot_analog(self, filter_population: Union[str, List[str]] = None) -> None:
