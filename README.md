@@ -19,11 +19,11 @@
 | FlowCyPy/distribution/uniform.py                      |       35 |        1 |        0 |        0 |     97% |       121 |
 | FlowCyPy/distribution/weibull.py                      |       37 |       16 |        2 |        0 |     54% |31, 35, 39, 62-67, 84, 106-123, 126 |
 | FlowCyPy/flow\_cell.py                                |       59 |        3 |       12 |        3 |     92% |212, 215, 238 |
-| FlowCyPy/flow\_cytometer.py                           |       70 |        6 |       16 |        4 |     88% |23, 171, 191->202, 238-244, 272 |
+| FlowCyPy/flow\_cytometer.py                           |       56 |        6 |       14 |        3 |     87% |108-116, 144, 164->175, 231-234 |
 | FlowCyPy/fluid\_region.py                             |       27 |        2 |        0 |        0 |     93% |    25, 33 |
 | FlowCyPy/fluidics.py                                  |       34 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/instances/detector.py                        |       11 |       11 |        0 |        0 |      0% |      1-62 |
-| FlowCyPy/instances/flow\_cytometer.py                 |       23 |       23 |        0 |        0 |      0% |      1-85 |
+| FlowCyPy/instances/flow\_cytometer.py                 |       50 |       50 |        0 |        0 |      0% |     1-215 |
 | FlowCyPy/instances/population.py                      |       24 |       24 |        2 |        0 |      0% |      2-66 |
 | FlowCyPy/opto\_electronics.py                         |       30 |        3 |        8 |        3 |     84% |82, 156, 163 |
 | FlowCyPy/peak\_locator/DeepPeak.py                    |       26 |       21 |        0 |        0 |     19% |79-83, 129-164 |
@@ -34,9 +34,10 @@
 | FlowCyPy/peak\_locator/scipy.py                       |       42 |        0 |       10 |        4 |     92% |95->103, 106->113, 122->129, 129->136 |
 | FlowCyPy/physical\_constant.py                        |        9 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/population.py                                |       54 |       14 |       16 |        3 |     64% |46-53, 83, 113-115, 145-147, 292 |
+| FlowCyPy/run\_record.py                               |       18 |        1 |        2 |        1 |     90% |        57 |
 | FlowCyPy/scatterer\_collection.py                     |       57 |        7 |       20 |        4 |     83% |72, 133, 153, 163-166, 221 |
 | FlowCyPy/signal\_generator.py                         |       62 |       16 |       16 |        5 |     68% |43-47, 105, 127, 175, 193-202, 239, 272-280, 318 |
-| FlowCyPy/signal\_processing.py                        |       18 |        4 |        4 |        0 |     73% |     83-90 |
+| FlowCyPy/signal\_processing.py                        |       19 |        4 |        4 |        0 |     74% |     84-91 |
 | FlowCyPy/simulation\_settings.py                      |       35 |       13 |        6 |        1 |     56% |8-13, 66-68, 83, 87-93 |
 | FlowCyPy/source.py                                    |       99 |       20 |       28 |       11 |     76% |42, 47-50, 54-71, 140, 148, 188, 190, 254, 263, 312, 314, 320, 322, 397, 419 |
 | FlowCyPy/sub\_frames/acquisition.py                   |      128 |       36 |       46 |        3 |     70% |127, 136, 142, 163-167, 262-278, 318, 325-358 |
@@ -48,7 +49,7 @@
 | FlowCyPy/triggering\_system.py                        |       80 |       28 |       12 |        3 |     64% |60-65, 80, 145-152, 168-180, 287-297, 313-338 |
 | FlowCyPy/utils.py                                     |       58 |       41 |       14 |        0 |     24% |21-26, 37-49, 52, 77-86, 110-159 |
 | FlowCyPy/workflow.py                                  |       57 |       57 |        4 |        0 |      0% |     1-149 |
-|                                             **TOTAL** | **1955** |  **735** |  **366** |   **68** | **59%** |           |
+|                                             **TOTAL** | **1987** |  **763** |  **366** |   **68** | **59%** |           |
 
 
 ## Setup coverage badge
