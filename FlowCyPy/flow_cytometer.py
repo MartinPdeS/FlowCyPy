@@ -225,13 +225,12 @@ class FlowCytometer:
             compute_cross_section=compute_cross_section,
         )
 
-        run_record.analog = self.compute_analog(run_record=run_record)
-
-        run_record.triggered_analog = self.signal_processing.triggering_system.run(
-            dataframe=run_record.analog
-        )
+        run_record.signal.analog = self.compute_analog(run_record=run_record)
 
         if self.signal_processing.triggering_system is not None:
+            run_record.signal.triggered = self.signal_processing.triggering_system.run(
+                dataframe=run_record.signal.analog
+            )
             self.signal_processing.process_digital(run_record)
 
         run_record.compute_statistics()

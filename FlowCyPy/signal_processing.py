@@ -77,11 +77,11 @@ class SignalProcessing:
         Parameters
         ----------
         run_record : RunRecord
-            An object with a `triggered_analog_acquisition` attribute, expected to hold the
+            An object with a `signal.triggered` attribute, expected to hold the
             analog signal segment previously extracted by the triggering system. The method
             attaches `digital_acquisition` and `peaks` attributes to this RunRecord.
         """
-        run_record.triggered_digital = run_record.triggered_analog.digitalize(
+        run_record.triggered_digital = run_record.signal.triggered.digitalize(
             digitizer=self.digitizer
         )
 

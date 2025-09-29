@@ -148,7 +148,7 @@ class FacsCanto:
         source = opto_electronics.source.AstigmaticGaussianBeam(
             waist_y=65 * ureg.micrometer,
             waist_z=10 * ureg.micrometer,
-            wavelength=450 * ureg.nanometer,
+            wavelength=488 * ureg.nanometer,
             optical_power=self.optical_power,
         )
 
@@ -202,7 +202,7 @@ class FacsCanto:
 
         triggering = triggering_system.DynamicWindow(
             trigger_detector_name="forward",
-            threshold=10 * ureg.microvolt,
+            threshold="auto",
             pre_buffer=20,
             post_buffer=20,
             max_triggers=-1,

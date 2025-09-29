@@ -181,14 +181,14 @@ _ = results.events.plot(x="side", y="forward", z="RefractiveIndex")
 # %%
 # Plot raw analog signals
 # -----------------------
-results.analog.normalize_units(signal_units="max")
-_ = results.analog.plot()
+results.signal.analog.normalize_units(signal_units="max")
+_ = results.signal.analog.plot()
 
 
 # %%
 # Step 6: Plot Triggered Analog Segments
 # --------------------------------------
-_ = results.triggered_analog.plot()
+_ = results.signal.triggered.plot()
 
 
 # %%

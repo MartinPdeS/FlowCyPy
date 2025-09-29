@@ -153,12 +153,12 @@ results = cytometer.run(run_time=1.0 * ureg.millisecond)
 
 # %%
 # Plot Raw Analog Signal
-results.analog.normalize_units(time_units="max", signal_units="max")
-results.analog.plot()
+results.signal.analog.normalize_units(time_units="max", signal_units="max")
+results.signal.analog.plot()
 
 # %%
 # Plot Triggered Analog Signal Segments
-results.triggered_analog.plot()
+results.signal.triggered.plot()
 
 # %%
 # Plot Peak Features (Side vs Forward Height)

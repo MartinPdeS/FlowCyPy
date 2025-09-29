@@ -143,12 +143,12 @@ def test_flow_cytometer_acquisition(flow_cytometer):
     """Test if the Flow Cytometer generates a non-zero acquisition signal."""
     result = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
 
-    assert result.analog["default"].pint.quantity.check(
+    assert result.signal.analog["default"].pint.quantity.check(
         ureg.volt
     ), "Acquisition signal is not in volts."
 
     assert (
-        np.std(result.analog["default"].pint.quantity.magnitude) > 0
+        np.std(result.signal.analog["default"].pint.quantity.magnitude) > 0
     ), "Acquisition signal variance is zero, indicating no noise added."
 
 
@@ -156,8 +156,8 @@ def test_flow_cytometer_multiple_detectors(flow_cytometer):
     """Ensure that both detectors generate non-zero signals."""
     results = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
 
-    signal_0 = results.analog["default"]
-    signal_1 = results.analog["default"]
+    signal_0 = results.signal.analog["default"]
+    signal_1 = results.signal.analog["default"]
 
     assert not np.all(signal_0 == 0 * ureg.volt), "Detector 0 signal is all zeros."
     assert not np.all(signal_1 == 0 * ureg.volt), "Detector 1 signal is all zeros."
@@ -168,10 +168,10 @@ def test_flow_cytometer_plot(mock_show, flow_cytometer, digitizer):
     """Test if the flow cytometer plots without error."""
     results = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
 
-    results.analog.plot()
+    results.signal.analog.plot()
     plt.close()
 
-    results.analog.digitalize(digitizer=digitizer).plot()
+    results.signal.analog.digitalize(digitizer=digitizer).plot()
     plt.close()
 
 
@@ -188,7 +188,7 @@ def test_flow_cytometer_triggered_acquisition(flow_cytometer):
     )
 
     triggered_signal = _triggering_system.run(
-        dataframe=results.analog,
+        dataframe=results.signal.analog,
     )
 
     assert (
@@ -210,7 +210,7 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
     )
 
     triggered_signal = _triggering_system.run(
-        dataframe=results.analog,
+        dataframe=results.signal.analog,
     )
 
     assert np.std(triggered_signal["default"]) > 0, "Filtered signal has zero variance."
@@ -234,7 +234,7 @@ def test_peak_detection(flow_cytometer, digitizer):
     )
 
     triggered_acquisition = _triggering_system.run(
-        dataframe=results.analog,
+        dataframe=results.signal.analog,
     )
 
     peak_algorithm = peak_locator.GlobalPeakLocator()
@@ -250,7 +250,7 @@ def test_peak_detection(flow_cytometer, digitizer):
 def test_peak_plot(mock_show, flow_cytometer, digitizer):
     """Ensure peak plots render correctly."""
     results = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
-    results.analog.plot()
+    results.signal.analog.plot()
 
     trigger = triggering_system.DynamicWindow(
         trigger_detector_name="default",
@@ -261,7 +261,7 @@ def test_peak_plot(mock_show, flow_cytometer, digitizer):
     )
 
     triggered_acquisition = trigger.run(
-        dataframe=results.analog,
+        dataframe=results.signal.analog,
     )
 
     peak_algorithm = peak_locator.GlobalPeakLocator()
