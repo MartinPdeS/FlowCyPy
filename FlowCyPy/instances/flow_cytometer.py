@@ -202,7 +202,7 @@ class FacsCanto:
 
         triggering = triggering_system.DynamicWindow(
             trigger_detector_name="forward",
-            threshold="auto",
+            threshold="4sigma",
             pre_buffer=20,
             post_buffer=20,
             max_triggers=-1,
