@@ -34,4 +34,4 @@ facs_canto.dilute_sample(factor=100)
 
 run_record = facs_canto.run(run_time=0.2 * ureg.millisecond)
 
-run_record.signal.triggered.plot()
+run_record.plot_digital()
