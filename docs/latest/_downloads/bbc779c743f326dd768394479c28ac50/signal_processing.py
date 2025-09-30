@@ -131,8 +131,8 @@ run_time = 0.1 * ureg.millisecond
 signal_processing.analog_processing = []
 results = flow_cytometer.run(run_time=run_time)
 ax.plot(
-    results.analog["Time"].pint.to("microsecond"),
-    results.analog["forward"].pint.to("millivolt"),
+    results.signal.analog["Time"].pint.to("microsecond"),
+    results.signal.analog["forward"].pint.to("millivolt"),
     linestyle="-",
     label="Raw Signal",
 )
@@ -143,8 +143,8 @@ signal_processing.analog_processing = [
 ]
 results = flow_cytometer.run(run_time=run_time)
 ax.plot(
-    results.analog["Time"].pint.to("microsecond"),
-    results.analog["forward"].pint.to("millivolt"),
+    results.signal.analog["Time"].pint.to("microsecond"),
+    results.signal.analog["forward"].pint.to("millivolt"),
     linestyle="--",
     label="Baseline Restored",
 )
@@ -155,8 +155,8 @@ signal_processing.analog_processing = [
 ]
 results = flow_cytometer.run(run_time=run_time)
 ax.plot(
-    results.analog["Time"].pint.to("microsecond"),
-    results.analog["forward"].pint.to("millivolt"),
+    results.signal.analog["Time"].pint.to("microsecond"),
+    results.signal.analog["forward"].pint.to("millivolt"),
     linestyle="-.",
     label="Bessel LowPass",
 )

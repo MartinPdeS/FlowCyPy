@@ -185,8 +185,8 @@ Signal Processing: Acquisition with Different Processing Steps
     signal_processing.analog_processing = []
     results = flow_cytometer.run(run_time=run_time)
     ax.plot(
-        results.analog["Time"].pint.to("microsecond"),
-        results.analog["forward"].pint.to("millivolt"),
+        results.signal.analog["Time"].pint.to("microsecond"),
+        results.signal.analog["forward"].pint.to("millivolt"),
         linestyle="-",
         label="Raw Signal",
     )
@@ -197,8 +197,8 @@ Signal Processing: Acquisition with Different Processing Steps
     ]
     results = flow_cytometer.run(run_time=run_time)
     ax.plot(
-        results.analog["Time"].pint.to("microsecond"),
-        results.analog["forward"].pint.to("millivolt"),
+        results.signal.analog["Time"].pint.to("microsecond"),
+        results.signal.analog["forward"].pint.to("millivolt"),
         linestyle="--",
         label="Baseline Restored",
     )
@@ -209,8 +209,8 @@ Signal Processing: Acquisition with Different Processing Steps
     ]
     results = flow_cytometer.run(run_time=run_time)
     ax.plot(
-        results.analog["Time"].pint.to("microsecond"),
-        results.analog["forward"].pint.to("millivolt"),
+        results.signal.analog["Time"].pint.to("microsecond"),
+        results.signal.analog["forward"].pint.to("millivolt"),
         linestyle="-.",
         label="Bessel LowPass",
     )
@@ -237,7 +237,7 @@ Signal Processing: Acquisition with Different Processing Steps
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.003 seconds)
+   **Total running time of the script:** (0 minutes 1.949 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_signal_processing.py:

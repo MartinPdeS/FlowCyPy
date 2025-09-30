@@ -310,7 +310,7 @@ Triggering and Peak Detection
         background_power=0.0001 * ureg.milliwatt,
     )
 
-    results = cytometer.run(run_time=1.0 * ureg.millisecond)
+    run_record = cytometer.run(run_time=1.0 * ureg.millisecond)
 
 
 
@@ -323,12 +323,11 @@ Triggering and Peak Detection
 
 Plot Raw Analog Signal
 
-.. GENERATED FROM PYTHON SOURCE LINES 156-159
+.. GENERATED FROM PYTHON SOURCE LINES 156-158
 
 .. code-block:: Python
 
-    results.analog.normalize_units(time_units="max", signal_units="max")
-    results.analog.plot()
+    run_record.plot_analog()
 
 
 
@@ -339,18 +338,24 @@ Plot Raw Analog Signal
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <Figure size 800x500 with 3 Axes>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 160-161
+.. GENERATED FROM PYTHON SOURCE LINES 159-160
 
 Plot Triggered Analog Signal Segments
 
-.. GENERATED FROM PYTHON SOURCE LINES 161-163
+.. GENERATED FROM PYTHON SOURCE LINES 160-162
 
 .. code-block:: Python
 
-    results.triggered_analog.plot()
+    run_record.plot_digital()
 
 
 
@@ -361,18 +366,24 @@ Plot Triggered Analog Signal Segments
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <Figure size 800x500 with 3 Axes>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 164-165
+.. GENERATED FROM PYTHON SOURCE LINES 163-164
 
 Plot Peak Features (Side vs Forward Height)
 
-.. GENERATED FROM PYTHON SOURCE LINES 165-166
+.. GENERATED FROM PYTHON SOURCE LINES 164-165
 
 .. code-block:: Python
 
-    results.peaks.plot(x=("side", "Height"), y=("forward", "Height"))
+    run_record.peaks.plot(x=("side", "Height"), y=("forward", "Height"))
 
 
 
@@ -382,13 +393,19 @@ Plot Peak Features (Side vs Forward Height)
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <Figure size 600x600 with 3 Axes>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.006 seconds)
+   **Total running time of the script:** (0 minutes 4.700 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:

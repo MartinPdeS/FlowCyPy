@@ -513,6 +513,7 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pint_pandas</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyUnit</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">ureg</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary.interface_triggering_system</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -588,8 +589,6 @@ document.write(`
                 <span class="sa">f</span><span class="s2">&quot;No signal met the trigger criteria. Try adjusting the threshold. Signal min/max: </span><span class="si">{</span><span class="n">dataframe</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger_detector_name</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">dataframe</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">trigger_detector_name</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="ne">UserWarning</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="c1"># df = pd.DataFrame(columns=[&#39;SegmentID&#39;, &#39;Time&#39;])</span>
-            <span class="c1"># return TriggerDataFrame(df, is_digital=False)</span>
 
         <span class="n">detectors</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">detector_names</span>
 
@@ -606,16 +605,9 @@ document.write(`
 
         <span class="n">tidy</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;SegmentID&quot;</span><span class="p">)</span>
 
-        <span class="n">tidy</span> <span class="o">=</span> <span class="n">TriggerDataFrame</span><span class="p">(</span><span class="n">tidy</span><span class="p">,</span> <span class="n">is_digital</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">tidy</span> <span class="o">=</span> <span class="n">TriggerDataFrame</span><span class="p">(</span><span class="n">tidy</span><span class="p">)</span>
 
         <span class="n">tidy</span><span class="o">.</span><span class="n">normalize_units</span><span class="p">(</span><span class="n">signal_units</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">time_units</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">)</span>
-
-        <span class="n">meta_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">threshold</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;detector&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">trigger_detector_name</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">},</span>
-        <span class="p">)</span>
-
-        <span class="c1"># metadata passthrough</span>
-        <span class="n">tidy</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">meta_data</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">tidy</span>
 
@@ -678,18 +670,30 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_data</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
 
-        <span class="n">_threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_threshold</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold_absolute</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_threshold</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_run</span><span class="p">(</span>
-            <span class="n">threshold</span><span class="o">=</span><span class="n">_threshold</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold_absolute</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">out_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assemble_dataframe</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
 
-        <span class="n">out_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;scatterer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">scatterer</span>
-
         <span class="k">return</span> <span class="n">out_df</span></div>
-</div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_to_ax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">signal_units</span><span class="p">:</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a horizontal line to the provided Axes representing the threshold.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;threshold_absolute&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Threshold has not been set. Run the trigger first.&quot;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">threshold_absolute</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Threshold: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold_absolute</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span></div>
 
 
 
@@ -751,18 +755,30 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_data</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
 
-        <span class="n">_threshold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_threshold</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold_absolute</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_threshold</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_run</span><span class="p">(</span>
-            <span class="n">threshold</span><span class="o">=</span><span class="n">_threshold</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold_absolute</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assemble_dataframe</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
 
-        <span class="n">output</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;scatterer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">scatterer</span>
-
         <span class="k">return</span> <span class="n">output</span></div>
-</div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_to_ax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">signal_units</span><span class="p">:</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a horizontal line to the provided Axes representing the threshold.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;threshold_absolute&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Threshold has not been set. Run the trigger first.&quot;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">threshold_absolute</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Threshold: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold_absolute</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span></div>
 
 
 
@@ -856,10 +872,30 @@ document.write(`
 
         <span class="n">out_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assemble_dataframe</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
 
-        <span class="n">out_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;scatterer&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">scatterer</span>
-
         <span class="k">return</span> <span class="n">out_df</span></div>
-</div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_to_ax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span> <span class="n">signal_units</span><span class="p">:</span> <span class="n">ureg</span><span class="o">.</span><span class="n">Quantity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add horizontal lines to the provided Axes representing the thresholds.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;upper_threshold&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Thresholds have not been set. Run the trigger first.&quot;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">upper_threshold</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Upper Threshold: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">upper_threshold</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lower_threshold</span><span class="o">.</span><span class="n">magnitude</span><span class="p">):</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lower_threshold</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C1&quot;</span><span class="p">,</span>
+                <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+                <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Lower Threshold: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lower_threshold</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span></div>
 
 </pre></div>
 

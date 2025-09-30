@@ -149,17 +149,16 @@ cytometer = FlowCytometer(
     background_power=0.0001 * ureg.milliwatt,
 )
 
-results = cytometer.run(run_time=1.0 * ureg.millisecond)
+run_record = cytometer.run(run_time=1.0 * ureg.millisecond)
 
 # %%
 # Plot Raw Analog Signal
-results.analog.normalize_units(time_units="max", signal_units="max")
-results.analog.plot()
+run_record.plot_analog()
 
 # %%
 # Plot Triggered Analog Signal Segments
-results.triggered_analog.plot()
+run_record.plot_digital()
 
 # %%
 # Plot Peak Features (Side vs Forward Height)
-results.peaks.plot(x=("side", "Height"), y=("forward", "Height"))
+run_record.peaks.plot(x=("side", "Height"), y=("forward", "Height"))

@@ -54,7 +54,7 @@
     <link rel="icon" href="../../_static/thumbnail.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Limit of Detection" href="limit_of_detection.html" />
+    <link rel="next" title="Flow Cytometry Simulation: FacsCanto System" href="facs_canto.html" />
     <link rel="prev" title="Examples: Tutorials" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -465,6 +465,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Flow Cytometry Workflow: Single Population Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="facs_canto.html">Flow Cytometry Simulation: FacsCanto System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of Detection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="workflow.html">Flow Cytometry Simulation: Full System Example</a></li>
@@ -614,7 +615,10 @@ to download the full example code.</p>
 <span class="n">event_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;Diameter&quot;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_coupling_model_001.png" srcset="../../_images/sphx_glr_coupling_model_001.png" alt="Distribution of Diameter" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_coupling_model_001.png" srcset="../../_images/sphx_glr_coupling_model_001.png" alt="Distribution of Diameter" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 800x500 with 1 Axes&gt;
+</pre></div>
+</div>
+</section>
 <section id="step-4-define-detectors-and-amplifier">
 <h2>Step 4: Define Detectors and Amplifier<a class="headerlink" href="#step-4-define-detectors-and-amplifier" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">detector_forward</span> <span class="o">=</span> <span class="n">PMT</span><span class="p">(</span>
@@ -662,7 +666,10 @@ to download the full example code.</p>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">event_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Csca&quot;</span><span class="p">)</span>  <span class="c1"># Color-coded by scattering cross-section</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_coupling_model_002.png" srcset="../../_images/sphx_glr_coupling_model_002.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.888 seconds)</p>
+<img src="../../_images/sphx_glr_coupling_model_002.png" srcset="../../_images/sphx_glr_coupling_model_002.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 600x600 with 3 Axes&gt;
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.527 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-coupling-model-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/4c330faf84cd5e64e28ee463763b4944/coupling_model.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">coupling_model.ipynb</span></code></a></p>

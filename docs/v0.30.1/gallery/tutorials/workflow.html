@@ -465,6 +465,7 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="coupling_model.html">Flow Cytometry Workflow: Single Population Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="facs_canto.html">Flow Cytometry Simulation: FacsCanto System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of Detection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Flow Cytometry Simulation: Full System Example</a></li>
@@ -612,11 +613,6 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">dilute</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
 
 <span class="n">fluidics</span> <span class="o">=</span> <span class="n">Fluidics</span><span class="p">(</span><span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span> <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">)</span>
-
-<span class="n">fluidics</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">)</span>
-</pre></div>
-</div>
-<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="Particle Spatial Distribution and Speed" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 800x500 with 2 Axes&gt;
 </pre></div>
 </div>
 </section>
@@ -719,37 +715,42 @@ It models fluidics, optics, signal processing, and classification of multiple pa
     <span class="n">background_power</span><span class="o">=</span><span class="mf">0.001</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">results</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">1.8</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
+<span class="n">run_record</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="step-5-plot-events-and-raw-analog-signals">
 <h2>Step 5: Plot Events and Raw Analog Signals<a class="headerlink" href="#step-5-plot-events-and-raw-analog-signals" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="s2">&quot;RefractiveIndex&quot;</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="s2">&quot;RefractiveIndex&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_002.png" srcset="../../_images/sphx_glr_workflow_002.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_workflow_001.png" srcset="../../_images/sphx_glr_workflow_001.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/></section>
 <section id="plot-raw-analog-signals">
 <h2>Plot raw analog signals<a class="headerlink" href="#plot-raw-analog-signals" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">normalize_units</span><span class="p">(</span><span class="n">signal_units</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">)</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_workflow_002.png" srcset="../../_images/sphx_glr_workflow_002.png" alt="workflow" class = "sphx-glr-single-img"/></section>
+<section id="step-6-plot-triggered-analog-segments">
+<h2>Step 6: Plot Triggered Analog Segments<a class="headerlink" href="#step-6-plot-triggered-analog-segments" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_digital</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 </pre></div>
 </div>
 <img src="../../_images/sphx_glr_workflow_003.png" srcset="../../_images/sphx_glr_workflow_003.png" alt="workflow" class = "sphx-glr-single-img"/></section>
-<section id="step-6-plot-triggered-analog-segments">
-<h2>Step 6: Plot Triggered Analog Segments<a class="headerlink" href="#step-6-plot-triggered-analog-segments" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">triggered_analog</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<section id="step-7-plot-peak-features">
+<h2>Step 7: Plot Peak Features<a class="headerlink" href="#step-7-plot-peak-features" title="Link to this heading">#</a></h2>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 <img src="../../_images/sphx_glr_workflow_004.png" srcset="../../_images/sphx_glr_workflow_004.png" alt="workflow" class = "sphx-glr-single-img"/></section>
-<section id="step-7-classify-events-from-peak-features">
-<h2>Step 7: Classify Events from Peak Features<a class="headerlink" href="#step-7-classify-events-from-peak-features" title="Link to this heading">#</a></h2>
+<section id="step-8-classify-events-from-peak-features">
+<h2>Step 8: Classify Events from Peak Features<a class="headerlink" href="#step-8-classify-events-from-peak-features" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.classifier</span><span class="w"> </span><span class="kn">import</span> <span class="n">KmeansClassifier</span>
 
 <span class="n">classifier</span> <span class="o">=</span> <span class="n">KmeansClassifier</span><span class="p">(</span><span class="n">number_of_cluster</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="n">classified</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-    <span class="n">dataframe</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">peaks</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="s2">&quot;Detector&quot;</span><span class="p">),</span>
+    <span class="n">dataframe</span><span class="o">=</span><span class="n">run_record</span><span class="o">.</span><span class="n">peaks</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="s2">&quot;Detector&quot;</span><span class="p">),</span>
     <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Height&quot;</span><span class="p">],</span>
     <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="s2">&quot;forward&quot;</span><span class="p">],</span>
 <span class="p">)</span>
@@ -757,7 +758,7 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <span class="n">_</span> <span class="o">=</span> <span class="n">classified</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 16.195 seconds)</p>
+<img src="../../_images/sphx_glr_workflow_005.png" srcset="../../_images/sphx_glr_workflow_005.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.223 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/67e0cd555ca79f8bdb69184b227f40a4/workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow.ipynb</span></code></a></p>
@@ -804,7 +805,8 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-5-plot-events-and-raw-analog-signals">Step 5: Plot Events and Raw Analog Signals</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plot-raw-analog-signals">Plot raw analog signals</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-6-plot-triggered-analog-segments">Step 6: Plot Triggered Analog Segments</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-classify-events-from-peak-features">Step 7: Classify Events from Peak Features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-7-plot-peak-features">Step 7: Plot Peak Features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-8-classify-events-from-peak-features">Step 8: Classify Events from Peak Features</a></li>
 </ul>
   </nav></div>
 

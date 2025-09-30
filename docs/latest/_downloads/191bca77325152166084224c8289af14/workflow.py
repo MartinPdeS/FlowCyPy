@@ -69,7 +69,6 @@ scatterer_collection.dilute(factor=80)
 
 fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
-fluidics.plot(run_time=100 * ureg.microsecond)
 # %%
 # Step 2: Define Optical Subsystem
 # --------------------------------
@@ -169,37 +168,41 @@ cytometer = FlowCytometer(
     background_power=0.001 * ureg.milliwatt,
 )
 
-results = cytometer.run(run_time=1.8 * ureg.millisecond)
-
+run_record = cytometer.run(run_time=0.4 * ureg.millisecond)
 
 # %%
 # Step 5: Plot Events and Raw Analog Signals
 # ------------------------------------------
-_ = results.events.plot(x="side", y="forward", z="RefractiveIndex")
+_ = run_record.events.plot(x="side", y="forward", z="RefractiveIndex")
 
 
 # %%
 # Plot raw analog signals
 # -----------------------
-results.analog.normalize_units(signal_units="max")
-_ = results.analog.plot()
+_ = run_record.plot_analog(figure_size=(12, 8))
 
 
 # %%
 # Step 6: Plot Triggered Analog Segments
 # --------------------------------------
-_ = results.triggered_analog.plot()
+_ = run_record.plot_digital(figure_size=(12, 8))
 
 
 # %%
-# Step 7: Classify Events from Peak Features
+# Step 7: Plot Peak Features
+# --------------------------
+_ = run_record.peaks.plot(x=("forward", "Height"))
+
+
+# %%
+# Step 8: Classify Events from Peak Features
 # ------------------------------------------
 from FlowCyPy.classifier import KmeansClassifier
 
 classifier = KmeansClassifier(number_of_cluster=2)
 
 classified = classifier.run(
-    dataframe=results.peaks.unstack("Detector"),
+    dataframe=run_record.peaks.unstack("Detector"),
     features=["Height"],
     detectors=["side", "forward"],
 )

@@ -30,6 +30,23 @@ Examples: Tutorials
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates how to set up and run a flow cytometry simulation using the FacsCanto instance from the FlowCyPy library. It includes defining a particle population, configuring the flow cytometer, running the simulation, and visualizing the results.">
+
+.. only:: html
+
+  .. image:: /gallery/tutorials/images/thumb/sphx_glr_facs_canto_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_gallery_tutorials_facs_canto.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Flow Cytometry Simulation: FacsCanto System</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This example simulates the detection of small nanoparticles (90–150 nm diameter) in a flow cytometry setup using a dual-detector configuration (side and forward scatter). The simulation includes noise models, realistic fluidics, analog signal conditioning, digitization, triggering, and peak detection.">
 
 .. only:: html
@@ -90,6 +107,7 @@ Examples: Tutorials
    :hidden:
 
    /gallery/tutorials/coupling_model
+   /gallery/tutorials/facs_canto
    /gallery/tutorials/limit_of_detection
    /gallery/tutorials/signal_processing
    /gallery/tutorials/workflow

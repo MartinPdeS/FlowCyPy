@@ -70,7 +70,7 @@ Step 0: Global Settings and Imports
 Step 1: Define Flow Cell and Fluidics
 -------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 40-73
+.. GENERATED FROM PYTHON SOURCE LINES 40-72
 
 .. code-block:: Python
 
@@ -106,31 +106,19 @@ Step 1: Define Flow Cell and Fluidics
 
     fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
-    fluidics.plot(run_time=100 * ureg.microsecond)
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
-   :alt: Particle Spatial Distribution and Speed
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
-   :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <Figure size 800x500 with 2 Axes>
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 74-76
+
+.. GENERATED FROM PYTHON SOURCE LINES 73-75
 
 Step 2: Define Optical Subsystem
 --------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 76-123
+.. GENERATED FROM PYTHON SOURCE LINES 75-122
 
 .. code-block:: Python
 
@@ -188,12 +176,12 @@ Step 2: Define Optical Subsystem
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 124-126
+.. GENERATED FROM PYTHON SOURCE LINES 123-125
 
 Step 3: Signal Processing Configuration
 ---------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 126-160
+.. GENERATED FROM PYTHON SOURCE LINES 125-159
 
 .. code-block:: Python
 
@@ -238,12 +226,12 @@ Step 3: Signal Processing Configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 161-163
+.. GENERATED FROM PYTHON SOURCE LINES 160-162
 
 Step 4: Run Simulation
 ----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 163-175
+.. GENERATED FROM PYTHON SOURCE LINES 162-173
 
 .. code-block:: Python
 
@@ -256,7 +244,7 @@ Step 4: Run Simulation
         background_power=0.001 * ureg.milliwatt,
     )
 
-    results = cytometer.run(run_time=1.8 * ureg.millisecond)
+    run_record = cytometer.run(run_time=0.4 * ureg.millisecond)
 
 
 
@@ -265,24 +253,47 @@ Step 4: Run Simulation
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 176-178
+.. GENERATED FROM PYTHON SOURCE LINES 174-176
 
 Step 5: Plot Events and Raw Analog Signals
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 178-181
+.. GENERATED FROM PYTHON SOURCE LINES 176-179
 
 .. code-block:: Python
 
-    _ = results.events.plot(x="side", y="forward", z="RefractiveIndex")
+    _ = run_record.events.plot(x="side", y="forward", z="RefractiveIndex")
+
+
+
+
+
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :alt: Scatterer Sampling Distribution
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 180-182
+
+Plot raw analog signals
+-----------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 182-185
+
+.. code-block:: Python
+
+    _ = run_record.plot_analog(figure_size=(12, 8))
 
 
 
 
 
 .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
-   :alt: Scatterer Sampling Distribution
+   :alt: workflow
    :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
    :class: sphx-glr-single-img
 
@@ -290,17 +301,16 @@ Step 5: Plot Events and Raw Analog Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 182-184
+.. GENERATED FROM PYTHON SOURCE LINES 186-188
 
-Plot raw analog signals
------------------------
+Step 6: Plot Triggered Analog Segments
+--------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 184-188
+.. GENERATED FROM PYTHON SOURCE LINES 188-191
 
 .. code-block:: Python
 
-    results.analog.normalize_units(signal_units="max")
-    _ = results.analog.plot()
+    _ = run_record.plot_digital(figure_size=(12, 8))
 
 
 
@@ -315,16 +325,16 @@ Plot raw analog signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 189-191
+.. GENERATED FROM PYTHON SOURCE LINES 192-194
 
-Step 6: Plot Triggered Analog Segments
---------------------------------------
+Step 7: Plot Peak Features
+--------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 191-194
+.. GENERATED FROM PYTHON SOURCE LINES 194-197
 
 .. code-block:: Python
 
-    _ = results.triggered_analog.plot()
+    _ = run_record.peaks.plot(x=("forward", "Height"))
 
 
 
@@ -339,12 +349,12 @@ Step 6: Plot Triggered Analog Segments
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 195-197
+.. GENERATED FROM PYTHON SOURCE LINES 198-200
 
-Step 7: Classify Events from Peak Features
+Step 8: Classify Events from Peak Features
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 197-208
+.. GENERATED FROM PYTHON SOURCE LINES 200-211
 
 .. code-block:: Python
 
@@ -353,7 +363,7 @@ Step 7: Classify Events from Peak Features
     classifier = KmeansClassifier(number_of_cluster=2)
 
     classified = classifier.run(
-        dataframe=results.peaks.unstack("Detector"),
+        dataframe=run_record.peaks.unstack("Detector"),
         features=["Height"],
         detectors=["side", "forward"],
     )
@@ -374,7 +384,7 @@ Step 7: Classify Events from Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 16.195 seconds)
+   **Total running time of the script:** (0 minutes 5.223 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:
