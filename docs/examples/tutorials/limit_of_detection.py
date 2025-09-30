@@ -153,8 +153,7 @@ run_record = cytometer.run(run_time=1.0 * ureg.millisecond)
 
 # %%
 # Plot Raw Analog Signal
-run_record.signal.analog.normalize_units(time_units="max", signal_units="max")
-run_record.signal.analog.plot()
+run_record.plot_analog()
 
 # %%
 # Plot Triggered Analog Signal Segments
