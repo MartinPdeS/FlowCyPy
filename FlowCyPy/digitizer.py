@@ -3,15 +3,14 @@ from typing import Tuple, Union
 
 import numpy as np
 import pandas as pd
-from pydantic.dataclasses import dataclass
 from TypedUnit import Frequency, Quantity, Time, Voltage
 
 from FlowCyPy.simulation_settings import SimulationSettings
-from FlowCyPy.utils import config_dict
+from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
 
 
 @dataclass(config=config_dict)
-class Digitizer:
+class Digitizer(StrictDataclassMixing):
     """
     Simulates the digitization and saturation process for detector signals.
 

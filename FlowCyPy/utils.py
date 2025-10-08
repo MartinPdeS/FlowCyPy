@@ -8,8 +8,19 @@ import pint_pandas
 from MPSPlots.styles import mps
 from pydantic import ConfigDict
 from TypedUnit import ureg
+from pydantic.dataclasses import dataclass  # noqa: F401
 
 from FlowCyPy.peak_locator import BasePeakLocator
+
+
+class StrictDataclassMixing:
+    def __setattr__(self, name: str, value):
+        if not name.startswith("_") and name not in self.__annotations__:
+            raise AttributeError(
+                f"Cannot add new attribute '{name}' to {self.__class__.__name__}"
+            )
+        super().__setattr__(name, value)
+
 
 config_dict = ConfigDict(
     arbitrary_types_allowed=True, kw_only=True, slots=True, extra="forbid"

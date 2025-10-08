@@ -1,7 +1,6 @@
 from typing import Optional
 
 import numpy as np
-from pydantic.dataclasses import dataclass
 from TypedUnit import (
     Angle,
     AnyUnit,
@@ -17,11 +16,11 @@ from TypedUnit import (
 from FlowCyPy.binary.interface_signal_generator import SignalGenerator
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy.simulation_settings import SimulationSettings
-from FlowCyPy.utils import config_dict
+from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
 
 
 @dataclass(config=config_dict, kw_only=True, unsafe_hash=True)
-class Detector:
+class Detector(StrictDataclassMixing):
     """
     Represents a photodetector for flow cytometry simulations.
 

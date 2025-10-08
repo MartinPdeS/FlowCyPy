@@ -2,7 +2,6 @@ from typing import List
 
 import pandas as pd
 import pint_pandas
-from pydantic.dataclasses import dataclass
 from TypedUnit import FlowRate, Length, Time, Viscosity, Volume, ureg, validate_units
 
 from FlowCyPy.binary.interface_flow_cell import FLOWCELL
@@ -10,11 +9,11 @@ from FlowCyPy.fluid_region import FluidRegion
 from FlowCyPy.population import BasePopulation
 from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
-from FlowCyPy.utils import config_dict
+from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
 
 
-@dataclass(config=config_dict, kw_only=True)
-class FlowCell(FLOWCELL):
+@dataclass(config=config_dict)
+class FlowCell(FLOWCELL, StrictDataclassMixing):
     r"""
     Represents a rectangular flow cell in which the velocity field is computed from an
     analytical Fourier series solution for pressure-driven flow. The focused sample region
@@ -98,6 +97,9 @@ class FlowCell(FLOWCELL):
     mu: Viscosity = 1e-3 * ureg.pascal * ureg.second
     N_terms: int = 25
     n_int: int = 200
+
+    sample: FluidRegion = None
+    sheath: FluidRegion = None
 
     @validate_units
     def get_sample_volume(self, run_time: Time) -> Volume:

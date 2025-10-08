@@ -55,21 +55,91 @@ class RunRecord:
             digital=digital,
         )
 
-    def compute_statistics(self) -> None:
+    @property
+    def number_of_scatterers(self) -> int:
         """
-        Computes and prints basic statistics about the run record.
+        Returns the number of scatterers sent through the flow cytometer.
 
-        This method calculates and prints the number of detected peaks, the number of events,
-        and the duration of the run time. It provides a quick overview of the run record's contents.
+        This property calculates the number of scatterers that were sent through the flow cytometer
+        during the run. It is determined by the length of the `events` DataFrame, which contains
+        information about each scatterer.
+
+        Returns
+        -------
+        int
+            The number of scatterers sent through the flow cytometer.
         """
-        self.number_of_scatterer_sent = (
-            len(self.events) if self.events is not None else 0
-        )
+        return len(self.events)
 
-        self.rate_of_scatterer = self.number_of_scatterer_sent / self.run_time
+    @property
+    def capture_ratio(self) -> Optional[float]:
+        """
+        Returns the capture ratio of scatterers to detected events.
 
-        if hasattr(self, "triggered") and self.triggered is not None:
-            self.number_of_events_detected = len(self.triggered.groupby("SegmentID"))
+        This property calculates the capture ratio, which is the ratio of the number of detected events
+        to the number of scatterers sent through the flow cytometer. It provides insight into the efficiency
+        of the detection process.
+
+        Returns
+        -------
+        Optional[float]
+            The capture ratio, or None if no events were detected.
+        """
+        if self.number_of_triggers is not None:
+            return self.number_of_triggers / self.number_of_scatterers
+        return None
+
+    @property
+    def number_of_triggers(self) -> Optional[int]:
+        """
+        Returns the number of window triggers detected during the run.
+
+        This property calculates the number of window triggers that were detected during the run.
+        It is determined by counting the unique segments in the `triggered` DataFrame,
+        which contains information about each detected event.
+
+        Returns
+        -------
+        Optional[int]
+            The number of events detected, or None if no events were detected.
+        """
+        if hasattr(self.signal, "digital"):
+            return len(self.signal.digital.groupby("SegmentID"))
+        return None
+
+    @property
+    def scatterer_rate(self) -> Optional[ureg.Quantity]:
+        """
+        Returns the rate of scatterers sent through the flow cytometer.
+
+        This property calculates the rate of scatterers that were sent through the flow cytometer
+        during the run. It is determined by dividing the number of scatterers by the run time.
+
+        Returns
+        -------
+        Optional[ureg.Quantity]
+            The rate of scatterers sent through the flow cytometer in particles per second,
+            or None if the run time is zero.
+        """
+        return self.number_of_scatterers / self.run_time.to("second")
+
+    @property
+    def trigger_rate(self) -> Optional[ureg.Quantity]:
+        """
+        Returns the rate of triggers during the run.
+
+        This property calculates the rate of triggers that occurred during the run.
+        It is determined by dividing the number of detected events by the run time.
+
+        Returns
+        -------
+        Optional[ureg.Quantity]
+            The rate of detections in events per second, or None if no events were detected
+            or if the run time is zero.
+        """
+        if self.number_of_triggers is not None:
+            return self.number_of_triggers / self.run_time.to("second")
+        return None
 
     def get_axes_dict(
         self,

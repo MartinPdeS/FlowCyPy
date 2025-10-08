@@ -50,16 +50,10 @@ class FacsCanto:
         self.sheath_volume_flow = sheath_volume_flow
         self.optical_power = optical_power
 
-        _fluidics = self.get_fluidics()
-
-        _opto_electronics = self.get_optoelectronics()
-
-        _signal_processing = self.get_signal_processing()
-
         self.instance = FlowCytometer(
-            opto_electronics=_opto_electronics,
-            fluidics=_fluidics,
-            signal_processing=_signal_processing,
+            opto_electronics=self.get_optoelectronics(),
+            fluidics=self.get_fluidics(),
+            signal_processing=self.get_signal_processing(),
             background_power=background_power,
         )
 

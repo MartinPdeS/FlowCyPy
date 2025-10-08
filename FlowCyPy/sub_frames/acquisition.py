@@ -177,9 +177,10 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
             nrows=n_plots,
             sharex=True,
             sharey=True,
+            squeeze=False,
         )
 
-        axes = {name: ax for name, ax in zip(self.detector_names, axes_array)}
+        axes = {name: ax for name, ax in zip(self.detector_names, axes_array.flatten())}
 
         for _, ax in axes.items():
             ax.yaxis.tick_right()

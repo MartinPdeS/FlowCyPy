@@ -2,8 +2,6 @@ import warnings
 from typing import Optional
 
 import numpy as np
-import pint_pandas
-from pydantic.dataclasses import dataclass
 from TypedUnit import (
     Angle,
     AnyUnit,
@@ -18,7 +16,7 @@ from TypedUnit import (
 
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy.simulation_settings import SimulationSettings
-from FlowCyPy.utils import config_dict
+from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
 
 
 class BaseBeam:
@@ -42,6 +40,28 @@ class BaseBeam:
         return NotImplementedError(
             "This method should be implemneted by the derived class!"
         )
+
+    def amplitude_at(
+        self, x: Length, y: Length, z: Length = 0 * ureg.meter
+    ) -> ElectricField:
+        r"""
+        Returns the electric field amplitude at a position (x,y) in the focal plane.
+
+        For a Gaussian beam, the spatial distribution is:
+            E(x,y) = E(0) * exp[-(x^2+y^2)/w_0^2]
+
+        Returns
+        -------
+        Quantity
+            The electric field amplitude at the focus in volts per meter.
+        """
+        if np.any(y > self.waist):
+            warnings.warn(
+                "Transverse distribution of particle flow exceed the waist of the source"
+            )
+
+        E0 = self.calculate_field_amplitude_at_focus()
+        return E0 * np.exp(-(y**2) / (self.waist**2) - (z**2) / (self.waist**2))
 
     def _validation(*args, **kwargs):
         def wrapper(function):
@@ -149,123 +169,26 @@ class BaseBeam:
 
         return amplitudes
 
-
-@dataclass(config=config_dict)
-class GaussianBeam(BaseBeam):
-    """
-    Represents a monochromatic Gaussian laser beam focused by a standard lens.
-
-    Parameters
-    ----------
-    optical_power : Power
-        The optical power of the laser (in watts).
-    wavelength : Length
-        The wavelength of the laser (in meters).
-    numerical_aperture : Optional[Dimensionless]
-        The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).
-    waist : Optional[Length]
-        The beam waist at the focus, calculated as `waist = wavelength / (pi * numerical_aperture)` if not provided.
-        Alternatively, if this is provided, the numerical aperture will be computed as `numerical_aperture = wavelength / (pi * waist)`.
-    polarization : Optional[Angle]
-        The polarization of the laser source in degrees (default is 0 degrees).
-    RIN : Optional[float]
-        The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a stable laser.
-    """
-
-    optical_power: Power
-    wavelength: Length
-    numerical_aperture: Optional[Dimensionless] = None
-    waist: Optional[Length] = None
-    polarization: Optional[Angle] = 0 * ureg.degree
-    RIN: Optional[float] = -120.0
-
-    def __post_init__(self):
-        """
-        Ensure that either numerical_aperture or waist is provided (but not both),
-        then compute the missing parameter before initializing other attributes.
-        """
-        if (self.numerical_aperture is None) and (self.waist is None):
-            raise ValueError("Either numerical_aperture or waist must be provided.")
-        if (self.numerical_aperture is not None) and (self.waist is not None):
-            raise ValueError(
-                "Provide only one: either numerical_aperture or waist, not both."
-            )
-
-        if self.numerical_aperture is not None:
-            self.waist = self.wavelength / (
-                PhysicalConstant.pi * self.numerical_aperture
-            )
-        else:
-            self.numerical_aperture = self.wavelength / (
-                PhysicalConstant.pi * self.waist
-            )
-
-        self.initialization()
-
-    def calculate_field_amplitude_at_focus(self) -> ElectricField:
-        r"""
-        Calculate the electric field amplitude (E0) at the focus for a Gaussian beam.
-
-        The electric field amplitude at the focus is given by:
-
-        .. math::
-            E_0 = \sqrt{\frac{4 P}{\pi \epsilon_0 c w_0^2}}
-
-        where:
-            - `P` is the optical power of the beam,
-            - `\epsilon_0` is the permittivity of free space,
-            - `c` is the speed of light,
-            - `w_0` is the beam waist at the focus.
-
-        Returns
-        -------
-        Quantity
-            The electric field amplitude at the focus in volts per meter.
-        """
-        # Ensure that waist has been computed
-        area = self.waist**2
-        E0 = np.sqrt(
-            4
-            * self.optical_power
-            / (
-                PhysicalConstant.pi
-                * PhysicalConstant.epsilon_0
-                * PhysicalConstant.c
-                * area
-            )
-        )
-        return E0.to(ureg.volt / ureg.meter)
-
-    def amplitude_at(
-        self, x: Length, y: Length, z: Length = 0 * ureg.meter
-    ) -> ElectricField:
-        r"""
-        Returns the electric field amplitude at a position (x,y) in the focal plane.
-
-        For a Gaussian beam, the spatial distribution is:
-            E(x,y) = E(0) * exp[-(x^2+y^2)/w_0^2]
-
-        Returns
-        -------
-        Quantity
-            The electric field amplitude at the focus in volts per meter.
-        """
-        if np.any(y > self.waist):
-            warnings.warn(
-                "Transverse distribution of particle flow exceed the waist of the source"
-            )
-
-        E0 = self.calculate_field_amplitude_at_focus()
-        return E0 * np.exp(-(y**2) / (self.waist**2) - (z**2) / (self.waist**2))
-
     def get_particle_width(self, velocity: Velocity) -> Length:
-        if len(velocity) == 0:
-            return pint_pandas.PintArray([], ureg.meter)
-        return self.waist / (2 * velocity)
+        """
+        Returns the width of the particle flow at the waist of the beam, scaled by the velocity
+        of the particles.
+
+        Parameters
+        ----------
+        velocity : Velocity
+            The velocity of the particles in the flow (in meters per second).
+
+        Returns
+        -------
+        Length
+            The width of the particle flow at the waist of the beam in meters.
+        """
+        return self.waist_z / (2 * velocity)
 
 
 @dataclass(config=config_dict)
-class AstigmaticGaussianBeam(BaseBeam):
+class AstigmaticGaussianBeam(BaseBeam, StrictDataclassMixing):
     """
     Represents an astigmatic Gaussian laser beam focused by a cylindrical lens system.
 
@@ -379,41 +302,56 @@ class AstigmaticGaussianBeam(BaseBeam):
         )
         return E0.to(ureg.volt / ureg.meter)
 
-    def amplitude_at(
-        self, x: Length, y: Length, z: Length = 0 * ureg.meter
-    ) -> ElectricField:
-        r"""
-        Returns the electric field amplitude at position (x,y) in the focal plane.
 
-        For an astigmatic Gaussian beam, the distribution is:
-            E(x,y) = E(0,0) * exp[-(x^2/w_{0x}^2) - (y^2/w_{0y}^2)]
+@dataclass(config=config_dict)
+class GaussianBeam(AstigmaticGaussianBeam):
+    """
+    Represents a monochromatic Gaussian laser beam focused by a standard lens.
 
-        Returns
-        -------
-        ElectricField
-            The electric field amplitude at the focus in volts per meter.
-        """
-        if np.any(y > self.waist_z):
-            warnings.warn(
-                "Transverse distribution of particle flow exceed the waist of the source"
+    Parameters
+    ----------
+    optical_power : Power
+        The optical power of the laser (in watts).
+    wavelength : Length
+        The wavelength of the laser (in meters).
+    numerical_aperture : Optional[Dimensionless]
+        The numerical aperture (NA) of the lens focusing the Gaussian beam (unitless).
+    waist : Optional[Length]
+        The beam waist at the focus, calculated as `waist = wavelength / (pi * numerical_aperture)` if not provided.
+        Alternatively, if this is provided, the numerical aperture will be computed as `numerical_aperture = wavelength / (pi * waist)`.
+    polarization : Optional[Angle]
+        The polarization of the laser source in degrees (default is 0 degrees).
+    RIN : Optional[float]
+        The Relative Intensity Noise (RIN) of the laser, specified as dB/Hz. Default is -120.0 dB/Hz, representing a stable laser.
+    """
+
+    optical_power: Power
+    wavelength: Length
+    numerical_aperture: Optional[Dimensionless] = None
+    waist: Optional[Length] = None
+    polarization: Optional[Angle] = 0 * ureg.degree
+    RIN: Optional[float] = -120.0
+
+    def __post_init__(self):
+        if (self.numerical_aperture is None) and (self.waist is None):
+            raise ValueError("Either numerical_aperture or waist must be provided.")
+        if (self.numerical_aperture is not None) and (self.waist is not None):
+            raise ValueError(
+                "Provide only one: either numerical_aperture or waist, not both."
             )
 
-        E0 = self.calculate_field_amplitude_at_focus()
-        return E0 * np.exp(-(y**2) / self.waist_y**2 - z**2 / self.waist_z**2)
+        if self.numerical_aperture is not None:
+            self.waist = self.wavelength / (
+                PhysicalConstant.pi * self.numerical_aperture
+            )
+        else:
+            self.numerical_aperture = self.wavelength / (
+                PhysicalConstant.pi * self.waist
+            )
 
-    def get_particle_width(self, velocity: Velocity) -> Length:
-        """
-        Returns the width of the particle flow at the waist of the beam, scaled by the velocity
-        of the particles.
+        # Use same waist for both axes
+        self.waist_y = self.waist
+        self.waist_z = self.waist
 
-        Parameters
-        ----------
-        velocity : Velocity
-            The velocity of the particles in the flow (in meters per second).
-
-        Returns
-        -------
-        Length
-            The width of the particle flow at the waist of the beam in meters.
-        """
-        return self.waist_z / (2 * velocity)
+        # Continue with AstigmaticGaussianBeam post init logic
+        super().__post_init__()

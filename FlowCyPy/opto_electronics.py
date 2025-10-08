@@ -6,38 +6,31 @@ from FlowCyPy import source
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 from FlowCyPy.coupling import ScatteringSimulator
 from FlowCyPy.detector import Detector
-from FlowCyPy.source import GaussianBeam
+from FlowCyPy.source import GaussianBeam  # noqa: F401
+from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
 
 
-class OptoElectronics:
+@dataclass(config=config_dict)
+class OptoElectronics(StrictDataclassMixing):
     """
     Base class for optoelectronic components in flow cytometry simulations.
 
     This class serves as a base for various optoelectronic components, such as detectors and
     signal generators, providing common functionality and attributes.
+
+    Parameters
+    ----------
+    detectors : List[Detector], optional
+        A list of Detector instances to be included in the optoelectronics setup.
+    source : source.BaseBeam
+        The light source instance used in the setup.
+    amplifier : TransimpedanceAmplifier
+        The amplifier instance used to amplify the detected signals.
     """
 
-    def __init__(
-        self,
-        detectors: List[Detector],
-        source: source.BaseBeam,
-        amplifier: TransimpedanceAmplifier,
-    ):
-        """
-        Initializes the OptoElectronics instance.
-
-        Parameters
-        ----------
-        detectors : List[Detector], optional
-            A list of Detector instances to be included in the optoelectronics setup.
-        source : source.BaseBeam
-            The light source instance used in the setup.
-        amplifier : TransimpedanceAmplifier
-            The amplifier instance used to amplify the detected signals.
-        """
-        self.detectors = detectors if detectors is not None else []
-        self.source = source
-        self.amplifier = amplifier
+    detectors: List[Detector]
+    source: source.BaseBeam
+    amplifier: TransimpedanceAmplifier
 
     def model_event(
         self, event_dataframe: pd.DataFrame, compute_cross_section: bool = False
