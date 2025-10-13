@@ -41,28 +41,6 @@ class BaseBeam:
             "This method should be implemneted by the derived class!"
         )
 
-    def amplitude_at(
-        self, x: Length, y: Length, z: Length = 0 * ureg.meter
-    ) -> ElectricField:
-        r"""
-        Returns the electric field amplitude at a position (x,y) in the focal plane.
-
-        For a Gaussian beam, the spatial distribution is:
-            E(x,y) = E(0) * exp[-(x^2+y^2)/w_0^2]
-
-        Returns
-        -------
-        Quantity
-            The electric field amplitude at the focus in volts per meter.
-        """
-        if np.any(y > self.waist):
-            warnings.warn(
-                "Transverse distribution of particle flow exceed the waist of the source"
-            )
-
-        E0 = self.calculate_field_amplitude_at_focus()
-        return E0 * np.exp(-(y**2) / (self.waist**2) - (z**2) / (self.waist**2))
-
     def _validation(*args, **kwargs):
         def wrapper(function):
             return function(*args, **kwargs)
@@ -219,11 +197,15 @@ class AstigmaticGaussianBeam(BaseBeam, StrictDataclassMixing):
     optical_power: Power
     wavelength: Length
     numerical_aperture_y: Optional[Dimensionless] = None
-    waist_y: Optional[Length] = None
     numerical_aperture_z: Optional[Dimensionless] = None
+    waist_y: Optional[Length] = None
     waist_z: Optional[Length] = None
     polarization: Optional[Angle] = 0 * ureg.degree
     RIN: Optional[float] = 0.0
+
+    frequency: Frequency = None
+    photon_energy: object = None
+    amplitude: ElectricField = None
 
     def __post_init__(self):
         """
@@ -267,6 +249,28 @@ class AstigmaticGaussianBeam(BaseBeam, StrictDataclassMixing):
             )
 
         self.initialization()
+
+    def amplitude_at(
+        self, x: Length, y: Length, z: Length = 0 * ureg.meter
+    ) -> ElectricField:
+        r"""
+        Returns the electric field amplitude at a position (x,y) in the focal plane.
+
+        For a Gaussian beam, the spatial distribution is:
+            E(x,y) = E(0) * exp[-(x^2+y^2)/w_0^2]
+
+        Returns
+        -------
+        Quantity
+            The electric field amplitude at the focus in volts per meter.
+        """
+        if np.any(y > self.waist_y):
+            warnings.warn(
+                "Transverse distribution of particle flow exceed the waist of the source"
+            )
+
+        E0 = self.calculate_field_amplitude_at_focus()
+        return E0 * np.exp(-(y**2) / (self.waist_y**2) - (z**2) / (self.waist_z**2))
 
     def calculate_field_amplitude_at_focus(self) -> ElectricField:
         r"""

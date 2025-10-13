@@ -15,10 +15,21 @@ from FlowCyPy.peak_locator import BasePeakLocator
 
 class StrictDataclassMixing:
     def __setattr__(self, name: str, value):
-        if not name.startswith("_") and name not in self.__annotations__:
+        if name.startswith("_"):
+            super().__setattr__(name, value)
+            return
+
+        # Merge annotations from all parent classes
+        annotations = {}
+        for cls in self.__class__.__mro__:
+            if "__annotations__" in cls.__dict__:
+                annotations.update(cls.__annotations__)
+
+        if name not in annotations:
             raise AttributeError(
                 f"Cannot add new attribute '{name}' to {self.__class__.__name__}"
             )
+
         super().__setattr__(name, value)
 
 
