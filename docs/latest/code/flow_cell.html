@@ -543,8 +543,8 @@ document.write(`
 <h1>FlowCell Class<a class="headerlink" href="#flowcell-class" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.flow_cell.FlowCell">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_volume_flow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheath_volume_flow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu=&lt;Quantity(0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'pascal</span> <span class="pre">*</span> <span class="pre">second')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_terms=25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_int=200</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FLOWCELL</span></code></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_volume_flow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheath_volume_flow</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu=&lt;Quantity(0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'pascal</span> <span class="pre">*</span> <span class="pre">second')&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_terms=25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_int=200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheath=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FLOWCELL</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StrictDataclassMixing</span></code></p>
 <p>Represents a rectangular flow cell in which the velocity field is computed from an
 analytical Fourier series solution for pressure-driven flow. The focused sample region
 is estimated from the volumetric flow rates of the sample and sheath fluids.</p>
@@ -593,6 +593,8 @@ The same theoretical framework for rectangular duct flow is applied to these mic
 <li><p><strong>sheath_volume_flow</strong> (<em>FlowRate</em>) – Volumetric flow rate of the sheath fluid (m³/s).</p></li>
 <li><p><strong>N_terms</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of odd terms to use in the Fourier series solution (default: 25).</p></li>
 <li><p><strong>n_int</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of grid points for numerical integration over the channel cross-section (default: 200).</p></li>
+<li><p><strong>sample</strong> (<em>FluidRegion</em>)</p></li>
+<li><p><strong>sheath</strong> (<em>FluidRegion</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -687,6 +689,11 @@ The same theoretical framework for rectangular duct flow is applied to these mic
 <span class="sig-name descname"><span class="pre">n_int</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">200</span></em><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell.n_int" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.flow_cell.FlowCell.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FluidRegion</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell.sample" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.flow_cell.FlowCell.sample_transverse_profile">
 <span class="sig-name descname"><span class="pre">sample_transverse_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cell.html#FlowCell.sample_transverse_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell.sample_transverse_profile" title="Link to this definition">#</a></dt>
@@ -722,6 +729,11 @@ z \in [-b_{\text{sample}}, b_{\text{sample}}]\]</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.flow_cell.FlowCell.sample_volume_flow">
 <span class="sig-name descname"><span class="pre">sample_volume_flow</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FlowRate</span></em><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell.sample_volume_flow" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.flow_cell.FlowCell.sheath">
+<span class="sig-name descname"><span class="pre">sheath</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">FluidRegion</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.flow_cell.FlowCell.sheath" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -772,8 +784,10 @@ z \in [-b_{\text{sample}}, b_{\text{sample}}]\]</div>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.height"><code class="docutils literal notranslate"><span class="pre">FlowCell.height</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.mu"><code class="docutils literal notranslate"><span class="pre">FlowCell.mu</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.n_int"><code class="docutils literal notranslate"><span class="pre">FlowCell.n_int</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.sample"><code class="docutils literal notranslate"><span class="pre">FlowCell.sample</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.sample_transverse_profile"><code class="docutils literal notranslate"><span class="pre">FlowCell.sample_transverse_profile()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.sample_volume_flow"><code class="docutils literal notranslate"><span class="pre">FlowCell.sample_volume_flow</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.sheath"><code class="docutils literal notranslate"><span class="pre">FlowCell.sheath</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.sheath_volume_flow"><code class="docutils literal notranslate"><span class="pre">FlowCell.sheath_volume_flow</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cell.FlowCell.width"><code class="docutils literal notranslate"><span class="pre">FlowCell.width</span></code></a></li>
 </ul>
