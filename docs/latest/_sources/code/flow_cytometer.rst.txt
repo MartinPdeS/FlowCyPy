@@ -4,6 +4,6 @@ FlowCytometer
 -------------
 Classes related to the overall configuration of a flow cytometry system.
 
-.. autoclass:: FlowCyPy.cytometer.FlowCytometer
+.. autoclass:: FlowCyPy.flow_cytometer.FlowCytometer
    :members:
    :show-inheritance:
