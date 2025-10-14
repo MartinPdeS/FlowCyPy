@@ -59,7 +59,7 @@ Quick Start
 Simulate a simple flow cytometer experiment:
 
 
-.. include:: docs/examples/tutorials/workflow.py
+.. include:: https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/master/docs/examples/tutorials/workflow.py
     :literal:
 
 Explore more examples in the `FlowCyPy Examples <https://martinpdes.github.io/FlowCyPy/gallery/index.html>`_.
