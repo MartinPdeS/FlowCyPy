@@ -357,11 +357,14 @@ For inquiries or collaboration, contact `Martin Poinsinet de Sivry-Houle <mailto
 .. |readme_events| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/readme_events.png
     :align: middle
     :alt: Readme Events
+    :width: 600px
 
 .. |readme_analog| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/readme_analog.png
     :align: middle
     :alt: Readme Analog
+    :width: 600px
 
 .. |readme_digital| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/readme_digital.png
     :align: middle
-    :alt: Readme Digital
+    :alt: Readme Digitalç
+    :width: 600px
