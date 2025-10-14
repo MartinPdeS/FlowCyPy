@@ -58,6 +58,13 @@ Quick Start
 
 Simulate a simple flow cytometer experiment:
 
+
+.. literalinclude:: docs/examples/tutorials/workflow.py
+    :language: python
+    :linenos:
+    :lines: 1-80
+
+
 ..  code-block:: python
 
     import numpy as np
@@ -147,7 +154,6 @@ Simulate a simple flow cytometer experiment:
     triggered_acquisition.analog.plot()
 
 Explore more examples in the `FlowCyPy Examples <https://martinpdes.github.io/FlowCyPy/gallery/index.html>`_.
-
 
 
 Code structure
