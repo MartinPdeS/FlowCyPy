@@ -355,16 +355,16 @@ For inquiries or collaboration, contact `Martin Poinsinet de Sivry-Houle <mailto
     :target: https://colab.research.google.com/github/MartinPdeS/FlowCyPy/blob/master/notebook.ipynb
 
 .. |readme_events| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/readme_events.png
+    :width: 600px
     :align: middle
     :alt: Readme Events
-    :width: 600px
 
 .. |readme_analog| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/readme_analog.png
+    :width: 600px
     :align: middle
     :alt: Readme Analog
-    :width: 600px
 
 .. |readme_digital| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/readme_digital.png
+    :width: 600px
     :align: middle
     :alt: Readme Digitalç
-    :width: 600px
