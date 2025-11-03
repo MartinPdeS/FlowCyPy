@@ -54,4 +54,4 @@ add_subdirectory(FlowCyPy/cpp/trigger)             # trigger
 add_subdirectory(FlowCyPy/cpp/triggering_system)   # triggering_system
 add_subdirectory(FlowCyPy/cpp/signal_generator)    # signal_generator
 add_subdirectory(FlowCyPy/cpp/peak_locator)        # peak_locator
-add_subdirectory("FlowCyPy/cpp/coupling")          # coupling
+# add_subdirectory("FlowCyPy/cpp/coupling")          # coupling
