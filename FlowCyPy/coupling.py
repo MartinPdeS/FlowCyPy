@@ -5,6 +5,7 @@ import PyMieSim.experiment as _PyMieSim
 from TypedUnit import Frequency, RefractiveIndex, ureg
 
 from FlowCyPy.source import BaseBeam
+from FlowCyPy.fluorescence_labels import FluorescenceLabel
 
 
 class ScatteringSimulator:
@@ -190,3 +191,60 @@ class ScatteringSimulator:
             event_df.loc[mask, "Csca"] = pint_pandas.PintArray(
                 experiment.get_sequential("Csca"), dtype=ureg.meter * ureg.meter
             )
+
+
+class FluorescenceSimulator:
+    """
+    Compute per-particle fluorescence emission power seen by a given fluorescence detector.
+
+    This does NOT call PyMieSim because fluorescence emission for subwavelength particles
+    is (to first order) isotropic + spectral. Instead, we model:
+
+        detected_power =  copies_per_particle
+                        . quantum_yield
+                        . excitation_intensity
+                        . detector_coupling
+                        . calibration_factor
+
+    and fill event_df[detector.name] with that power [watt].
+
+    Assumptions:
+    ------------
+    - Each row in event_df represents one particle event and has:
+        - x, y positions (for excitation intensity)
+        - columns describing which population / label(s) it carries
+    - Each population has one or more FluorescenceLabel objects you can look up.
+    """
+
+    def __init__(self, source: BaseBeam, detector: object, bandwidth: Frequency):
+        self.source = source
+        self.detector = detector
+        self.bandwidth = bandwidth
+
+    def run(self, event_df: pd.DataFrame) -> None:
+        """
+        Parameters
+        ----------
+        event_df : pd.DataFrame
+            DataFrame of events containing particle properties.
+
+        Side effect:
+        ------------
+        Adds/overwrites a PintArray column event_df[detector.name] with optical power [watt].
+        """
+        if event_df.empty:
+            return
+
+        detected_power = np.zeros(len(event_df), dtype=np.float64)
+
+        source_amplitude = self.source.get_amplitude_signal(
+            bandwidth=self.bandwidth,
+            x=event_df["x"],
+            y=event_df["y"],
+        )
+
+        coupling_power = event_df.loc[:, "Diameter"].pint.magnitude * 1e-6
+
+        event_df.loc[:, self.detector.name] = pint_pandas.PintArray(
+            coupling_power, dtype=ureg.watt
+        )

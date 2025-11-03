@@ -360,11 +360,11 @@ For inquiries or collaboration, contact `Martin Poinsinet de Sivry-Houle <mailto
     :alt: Readme Events
 
 .. |readme_analog| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/readme_analog.png
-    :width: 600px
+    :width: 800px
     :align: middle
     :alt: Readme Analog
 
 .. |readme_digital| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/readme_digital.png
-    :width: 600px
+    :width: 800px
     :align: middle
     :alt: Readme Digitalç

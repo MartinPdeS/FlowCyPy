@@ -1,89 +1,173 @@
-import matplotlib.pyplot as plt
+"""
+Flow Cytometry Simulation: Full System Example
+==============================================
+
+This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library.
+It models fluidics, optics, signal processing, and classification of multiple particle populations.
+
+Steps Covered:
+--------------
+1. Configure simulation parameters and noise models
+2. Define laser source, flow cell geometry, and fluidics
+3. Add synthetic particle populations
+4. Set up detectors, amplifier, and digitizer
+5. Simulate analog and digital signal acquisition
+6. Apply triggering and peak detection
+7. Classify particle events based on peak features
+"""
+
+# %%
+# Step 0: Global Settings and Imports
+# -----------------------------------
 import numpy as np
-from matplotlib.tri import CubicTriInterpolator, Triangulation, UniformTriRefiner
+from TypedUnit import ureg
+
+from FlowCyPy import SimulationSettings
+
+SimulationSettings.include_noises = True
+SimulationSettings.include_shot_noise = True
+SimulationSettings.include_dark_current_noise = True
+SimulationSettings.include_source_noise = True
+SimulationSettings.include_amplifier_noise = True
+SimulationSettings.assume_perfect_hydrodynamic_focusing = True
+
+np.random.seed(3)
 
 
-# ----------------------------------------------------------------------------
-# Electrical potential of a dipole
-# ----------------------------------------------------------------------------
-def dipole_potential(x, y):
-    """The electric dipole potential V, at position *x*, *y*."""
-    r_sq = x**2 + y**2
-    theta = np.arctan2(y, x)
-    z = np.cos(theta) / r_sq
-    return (np.max(z) - z) / (np.max(z) - np.min(z))
+# %%
+# Step 1: Define Flow Cell and Fluidics
+# -------------------------------------
+from FlowCyPy.flow_cell import FlowCell
+from FlowCyPy.fluidics import Fluidics, ScattererCollection, distribution, population
 
-
-# ----------------------------------------------------------------------------
-# Creating a Triangulation
-# ----------------------------------------------------------------------------
-# First create the x and y coordinates of the points.
-n_angles = 30
-n_radii = 10
-min_radius = 0.2
-radii = np.linspace(min_radius, 0.95, n_radii)
-
-angles = np.linspace(0, 2 * np.pi, n_angles, endpoint=False)
-angles = np.repeat(angles[..., np.newaxis], n_radii, axis=1)
-angles[:, 1::2] += np.pi / n_angles
-
-x = (radii * np.cos(angles)).flatten()
-y = (radii * np.sin(angles)).flatten()
-V = dipole_potential(x, y)
-
-# Create the Triangulation; no triangles specified so Delaunay triangulation
-# created.
-triang = Triangulation(x, y)
-
-# Mask off unwanted triangles.
-triang.set_mask(
-    np.hypot(x[triang.triangles].mean(axis=1), y[triang.triangles].mean(axis=1))
-    < min_radius
+flow_cell = FlowCell(
+    sample_volume_flow=80 * ureg.microliter / ureg.minute,
+    sheath_volume_flow=1 * ureg.milliliter / ureg.minute,
+    width=200 * ureg.micrometer,
+    height=100 * ureg.micrometer,
 )
 
-# ----------------------------------------------------------------------------
-# Refine data - interpolates the electrical potential V
-# ----------------------------------------------------------------------------
-refiner = UniformTriRefiner(triang)
-tri_refi, z_test_refi = refiner.refine_field(V, subdiv=3)
+scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
 
-# ----------------------------------------------------------------------------
-# Computes the electrical field (Ex, Ey) as gradient of electrical potential
-# ----------------------------------------------------------------------------
-tci = CubicTriInterpolator(triang, -V)
-# Gradient requested here at the mesh nodes but could be anywhere else:
-(Ex, Ey) = tci.gradient(triang.x, triang.y)
-E_norm = np.sqrt(Ex**2 + Ey**2)
-
-# ----------------------------------------------------------------------------
-# Plot the triangulation, the potential iso-contours and the vector field
-# ----------------------------------------------------------------------------
-fig, ax = plt.subplots()
-ax.set_aspect("equal")
-# Enforce the margins, and enlarge them to give room for the vectors.
-ax.use_sticky_edges = False
-ax.margins(0.07)
-
-ax.triplot(triang, color="0.8")
-
-levels = np.arange(0.0, 1.0, 0.01)
-ax.tricontour(
-    tri_refi, z_test_refi, levels=levels, cmap="hot", linewidths=[2.0, 1.0, 1.0, 1.0]
-)
-# Plots direction of the electrical vector field
-ax.quiver(
-    triang.x,
-    triang.y,
-    Ex / E_norm,
-    Ey / E_norm,
-    units="xy",
-    scale=10.0,
-    zorder=3,
-    color="blue",
-    width=0.007,
-    headwidth=3.0,
-    headlength=4.0,
+population_0 = population.Sphere(
+    name="Pop 0",
+    particle_count=5e9 * ureg.particle / ureg.milliliter,
+    diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
+    refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU),
 )
 
-ax.set_title("Gradient plot: an electrical dipole")
-plt.show()
+population_1 = population.Sphere(
+    name="Pop 1",
+    particle_count=5e9 * ureg.particle / ureg.milliliter,
+    diameter=distribution.RosinRammler(200 * ureg.nanometer, spread=30),
+    refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU),
+)
+
+scatterer_collection.add_population(population_0, population_1)
+
+scatterer_collection.dilute(factor=80)
+
+fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
+
+# %%
+# Step 2: Define Optical Subsystem
+# --------------------------------
+from FlowCyPy.opto_electronics import (
+    Detector,
+    OptoElectronics,
+    TransimpedanceAmplifier,
+    source,
+)
+
+from FlowCyPy.detector import DetectorType
+
+source = source.GaussianBeam(
+    numerical_aperture=0.1 * ureg.AU,
+    wavelength=450 * ureg.nanometer,
+    optical_power=200 * ureg.milliwatt,
+    RIN=-140,
+)
+
+detectors = [
+    Detector(
+        name="forward",
+        phi_angle=0 * ureg.degree,
+        numerical_aperture=0.3 * ureg.AU,
+        responsivity=1 * ureg.ampere / ureg.watt,
+        type=DetectorType.FLUORESCENCE,
+    ),
+]
+
+amplifier = TransimpedanceAmplifier(
+    gain=10 * ureg.volt / ureg.ampere,
+    bandwidth=10 * ureg.megahertz,
+    voltage_noise_density=0.1 * ureg.nanovolt / ureg.sqrt_hertz,
+    current_noise_density=0.2 * ureg.femtoampere / ureg.sqrt_hertz,
+)
+
+opto_electronics = OptoElectronics(
+    detectors=detectors, source=source, amplifier=amplifier
+)
+
+
+# %%
+# Step 3: Signal Processing Configuration
+# ---------------------------------------
+from FlowCyPy.signal_processing import (
+    Digitizer,
+    SignalProcessing,
+    circuits,
+    peak_locator,
+    triggering_system,
+)
+
+digitizer = Digitizer(
+    bit_depth="14bit", saturation_levels="auto", sampling_rate=60 * ureg.megahertz
+)
+
+analog_processing = [
+    circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
+    circuits.BesselLowPass(cutoff=2 * ureg.megahertz, order=4, gain=2),
+]
+
+triggering = triggering_system.DynamicWindow(
+    trigger_detector_name="forward",
+    threshold=10 * ureg.microvolt,
+    pre_buffer=20,
+    post_buffer=20,
+    max_triggers=-1,
+)
+
+peak_algo = peak_locator.GlobalPeakLocator(compute_width=False)
+
+signal_processing = SignalProcessing(
+    digitizer=digitizer,
+    analog_processing=analog_processing,
+    triggering_system=triggering,
+    peak_algorithm=peak_algo,
+)
+
+# %%
+# Step 4: Run Simulation
+# ----------------------
+from FlowCyPy import FlowCytometer
+
+cytometer = FlowCytometer(
+    opto_electronics=opto_electronics,
+    fluidics=fluidics,
+    signal_processing=signal_processing,
+    background_power=0.001 * ureg.milliwatt,
+)
+
+run_record = cytometer.run(run_time=0.4 * ureg.millisecond)
+
+# %%
+# Step 5: Plot Events and Raw Analog Signals
+# ------------------------------------------
+_ = run_record.events.plot(x="Diameter", y="forward", z="RefractiveIndex")
+
+
+# %%
+# Plot raw analog signals
+# -----------------------
+_ = run_record.plot_analog(figure_size=(12, 8))

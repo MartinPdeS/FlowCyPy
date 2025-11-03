@@ -14,8 +14,13 @@ set(LOCAL_CXX_DIR "${PROJECT_NAME}/cpp")
 set(LOCAL_BIN_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/binary")
 
 # Find dependencies
-if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    include_directories("/opt/homebrew/opt/libomp/include")   # for if compiler was installed through brew
+if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+  set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp" CACHE STRING "" FORCE)
+  set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "" FORCE)
+  find_library(OpenMP_omp_LIBRARY omp HINTS $ENV{LIBOMP_PREFIX}/lib /opt/homebrew/opt/libomp/lib /usr/local/opt/libomp/lib)
+  if(OpenMP_omp_LIBRARY)
+    set(OpenMP_CXX_LIBRARIES "${OpenMP_omp_LIBRARY}" CACHE STRING "" FORCE)
+  endif()
 endif()
 
 
@@ -49,3 +54,4 @@ add_subdirectory(FlowCyPy/cpp/trigger)             # trigger
 add_subdirectory(FlowCyPy/cpp/triggering_system)   # triggering_system
 add_subdirectory(FlowCyPy/cpp/signal_generator)    # signal_generator
 add_subdirectory(FlowCyPy/cpp/peak_locator)        # peak_locator
+add_subdirectory("FlowCyPy/cpp/coupling")          # coupling

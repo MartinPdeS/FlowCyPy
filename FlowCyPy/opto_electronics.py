@@ -1,11 +1,12 @@
 from typing import List
 
+from matplotlib.pylab import det
 import pandas as pd
 
 from FlowCyPy import source
 from FlowCyPy.amplifier import TransimpedanceAmplifier
-from FlowCyPy.coupling import ScatteringSimulator
-from FlowCyPy.detector import Detector
+from FlowCyPy.coupling import ScatteringSimulator, FluorescenceSimulator
+from FlowCyPy.detector import Detector, DetectorType
 from FlowCyPy.source import GaussianBeam  # noqa: F401
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
 
@@ -75,16 +76,26 @@ class OptoElectronics(StrictDataclassMixing):
             return
 
         for detector in self.detectors:
-            simulator = ScatteringSimulator(
-                source=self.source,
-                detector=detector,
-                bandwidth=self.amplifier.bandwidth,
-                medium_refractive_index=event_dataframe.medium_refractive_index,
-            )
+            if detector.type == DetectorType.SCATTERING:
+                simulator = ScatteringSimulator(
+                    source=self.source,
+                    detector=detector,
+                    bandwidth=self.amplifier.bandwidth,
+                    medium_refractive_index=event_dataframe.medium_refractive_index,
+                )
 
-            simulator.run(
-                event_df=event_dataframe, compute_cross_section=compute_cross_section
-            )
+                simulator.run(
+                    event_dataframe, compute_cross_section=compute_cross_section
+                )
+
+            elif detector.type == DetectorType.FLUORESCENCE:
+                simulator = FluorescenceSimulator(
+                    source=self.source,
+                    detector=detector,
+                    bandwidth=self.amplifier.bandwidth,
+                )
+
+                simulator.run(event_dataframe)
 
     def _add_pulse_width_to_dataframe(self, event_dataframe: pd.DataFrame):
         r"""
