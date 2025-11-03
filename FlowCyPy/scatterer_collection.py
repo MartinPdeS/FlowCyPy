@@ -194,16 +194,18 @@ class ScattererCollection:
         for population in self.populations:
             population.dilute(factor)
 
-    def fill_dataframe_with_sampling(self, scatterer_dataframe: pd.DataFrame) -> None:
+    def fill_dataframe_with_sampling(
+        self, scatterer_dataframes: List[pd.DataFrame]
+    ) -> None:
         """
         Fills a DataFrame with diameter and refractive index sampling data for each population.
 
         Parameters
         ----------
-        scatterer_dataframe : pd.DataFrame
-            A DataFrame indexed by population names (first level) and containing the
+        scatterer_dataframe : List[pd.DataFrame]
+            A list of DataFrames indexed by population names (first level) and containing the
             following columns: `'Diameter'`: To be filled with particle diameter data. `'RefractiveIndex'`:
-            To be filled with refractive index data. The DataFrame must already have the required structure.
+            To be filled with refractive index data. The DataFrames must already have the required structure.
 
         Returns
         -------
@@ -213,22 +215,17 @@ class ScattererCollection:
 
         After filling, the DataFrame will be populated with diameter and refractive index data.
         """
-        scatterer_dataframe.medium_refractive_index = self.medium_refractive_index
-        for population in self.populations:
-            # Create a boolean mask for rows where the first index level equals population.name
-            mask = scatterer_dataframe.index.get_level_values(0) == population.name
-            if not mask.any():
+
+        for df in scatterer_dataframes:
+            df.medium_refractive_index = self.medium_refractive_index
+
+            sampling = len(df)
+
+            if sampling == 0:
                 continue
 
-            # Access the sub-dataframe using the mask
-            sub_dataframe = scatterer_dataframe.loc[mask]
-            sampling = len(sub_dataframe)
-
             # Generate sampling data for this population
-            sampling_data = population.generate_property_sampling(sampling)
+            sampling_data = df.population.generate_property_sampling(sampling)
 
             for key, value in sampling_data.items():
-                scatterer_dataframe.loc[mask, key] = PintArray(value, dtype=value.units)
-                scatterer_dataframe.loc[mask, "type"] = str(
-                    population.__class__.__name__
-                )
+                df.loc[:, key] = PintArray(value, dtype=value.units)

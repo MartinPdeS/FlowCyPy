@@ -21,7 +21,6 @@ class ScatteringSimulator:
         source: BaseBeam,
         detector: object,
         bandwidth: Frequency,
-        medium_refractive_index: RefractiveIndex,
     ):
         """
         Initialize the scattering simulator with source, detector, digitizer, and medium refractive index.
@@ -34,15 +33,14 @@ class ScatteringSimulator:
             The detector configuration.
         bandwidth : Frequency
             Signal bandwidth.
-        medium_refractive_index : RefractiveIndex
-            Refractive index of the ambient medium.
         """
         self.source = source
         self.detector = detector
         self.bandwidth = bandwidth
-        self.medium_refractive_index = medium_refractive_index
 
-    def run(self, event_df: pd.DataFrame, compute_cross_section: bool = False) -> None:
+    def run(
+        self, event_dataframes: pd.DataFrame, compute_cross_section: bool = False
+    ) -> None:
         """
         Run the scattering simulation on the provided DataFrame.
 
@@ -53,18 +51,16 @@ class ScatteringSimulator:
         compute_cross_section : bool, optional
             Whether to compute and store the scattering cross section.
         """
-        if event_df.empty:
-            return
-
-        masks = {
-            "Sphere": event_df["type"] == "Sphere",
-            "CoreShell": event_df["type"] == "CoreShell",
-        }
-
-        for kind, mask in masks.items():
-            if mask.any():
-                getattr(self, f"_process_{kind.lower()}")(
-                    event_df, mask, compute_cross_section
+        for event_dataframe in event_dataframes:
+            if event_dataframe.population.__class__.__name__ == "Sphere":
+                self._process_sphere(
+                    event_dataframe=event_dataframe,
+                    compute_cross_section=compute_cross_section,
+                )
+            elif event_dataframe.population.__class__.__name__ == "CoreShell":
+                self._process_coreshell(
+                    event_dataframe=event_dataframe,
+                    compute_cross_section=compute_cross_section,
                 )
 
     def _build_source_and_detector(self, event_df: pd.DataFrame, num_particles: int):
@@ -109,30 +105,29 @@ class ScatteringSimulator:
         return pms_source, pms_detector
 
     def _process_sphere(
-        self, event_df: pd.DataFrame, mask: pd.Series, compute_cross_section: bool
+        self, event_dataframe: pd.DataFrame, compute_cross_section: bool
     ):
         """
         Process and simulate scattering from spherical particles.
 
         Parameters
         ----------
-        event_df : pd.DataFrame
+        event_dataframes : pd.DataFrame
             The full event DataFrame.
-        mask : pd.Series
-            Boolean mask selecting sphere-type particles.
         compute_cross_section : bool
             Whether to compute the scattering cross section.
         """
-        df = event_df[mask]
-        num_particles = len(df)
+        num_particles = len(event_dataframe)
 
-        pms_source, pms_detector = self._build_source_and_detector(df, num_particles)
+        pms_source, pms_detector = self._build_source_and_detector(
+            event_dataframe, num_particles
+        )
 
         scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
             total_size=num_particles,
-            diameter=df["Diameter"].values.quantity,
-            property=df["RefractiveIndex"].values.quantity,
-            medium_property=self.medium_refractive_index,
+            diameter=event_dataframe["Diameter"].values.quantity,
+            property=event_dataframe["RefractiveIndex"].values.quantity,
+            medium_property=event_dataframe.medium_refractive_index,
             source=pms_source,
         )
 
@@ -140,42 +135,42 @@ class ScatteringSimulator:
             source=pms_source, scatterer=scatterer, detector=pms_detector
         )
 
-        event_df.loc[mask, self.detector.name] = pint_pandas.PintArray(
+        event_dataframe.loc[:, self.detector.name] = pint_pandas.PintArray(
             experiment.get_sequential("coupling"), dtype=ureg.watt
         )
 
         if compute_cross_section:
-            event_df.loc[mask, "Csca"] = pint_pandas.PintArray(
+            event_dataframe.loc[:, "Csca"] = pint_pandas.PintArray(
                 experiment.get_sequential("Csca"), dtype=ureg.meter * ureg.meter
             )
 
     def _process_coreshell(
-        self, event_df: pd.DataFrame, mask: pd.Series, compute_cross_section: bool
+        self, event_dataframe: pd.DataFrame, compute_cross_section: bool
     ):
         """
         Process and simulate scattering from core-shell particles.
 
         Parameters
         ----------
-        event_df : pd.DataFrame
+        event_dataframe : pd.DataFrame
             The full event DataFrame.
-        mask : pd.Series
-            Boolean mask selecting core-shell-type particles.
         compute_cross_section : bool
             Whether to compute the scattering cross section.
         """
-        df = event_df[mask]
-        num_particles = len(df)
 
-        pms_source, pms_detector = self._build_source_and_detector(df, num_particles)
+        num_particles = len(event_dataframe)
+
+        pms_source, pms_detector = self._build_source_and_detector(
+            event_dataframe, num_particles
+        )
 
         scatterer = _PyMieSim.scatterer.CoreShell.build_sequential(
             total_size=num_particles,
-            core_diameter=df["CoreDiameter"].values.quantity,
-            core_property=df["CoreRefractiveIndex"].values.quantity,
-            shell_thickness=df["ShellThickness"].values.quantity,
-            shell_property=df["ShellRefractiveIndex"].values.quantity,
-            medium_property=self.medium_refractive_index,
+            core_diameter=event_dataframe["CoreDiameter"].values.quantity,
+            core_property=event_dataframe["CoreRefractiveIndex"].values.quantity,
+            shell_thickness=event_dataframe["ShellThickness"].values.quantity,
+            shell_property=event_dataframe["ShellRefractiveIndex"].values.quantity,
+            medium_property=event_dataframe.medium_refractive_index,
             source=pms_source,
         )
 
@@ -183,12 +178,12 @@ class ScatteringSimulator:
             source=pms_source, scatterer=scatterer, detector=pms_detector
         )
 
-        event_df.loc[mask, self.detector.name] = pint_pandas.PintArray(
+        event_dataframe.loc[:, self.detector.name] = pint_pandas.PintArray(
             experiment.get_sequential("coupling"), dtype=ureg.watt
         )
 
         if compute_cross_section:
-            event_df.loc[mask, "Csca"] = pint_pandas.PintArray(
+            event_dataframe.loc[:, "Csca"] = pint_pandas.PintArray(
                 experiment.get_sequential("Csca"), dtype=ureg.meter * ureg.meter
             )
 

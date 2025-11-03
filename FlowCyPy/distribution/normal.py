@@ -3,7 +3,7 @@ from typing import Tuple
 import numpy as np
 from pydantic.dataclasses import dataclass
 from scipy.stats import norm
-from TypedUnit import Length, RefractiveIndex
+from TypedUnit import AnyUnit
 
 from FlowCyPy.distribution.base_class import Base
 from FlowCyPy.utils import config_dict
@@ -26,26 +26,26 @@ class Normal(Base):
 
     Parameters
     ----------
-    mean : Length | RefractiveIndex
+    mean : AnyUnit
         The mean (average) particle property in meters.
-    std_dev : Length | RefractiveIndex
+    standard_deviation : AnyUnit
         The standard deviation of particle properties in meters.
     """
 
-    mean: Length | RefractiveIndex
-    std_dev: Length | RefractiveIndex
+    mean: AnyUnit
+    standard_deviation: AnyUnit
 
     @property
-    def _units(self) -> Length | RefractiveIndex:
+    def _units(self) -> AnyUnit:
         return self.mean.units
 
     @property
-    def _mean(self) -> Length | RefractiveIndex:
+    def _mean(self) -> AnyUnit:
         return self.mean.to(self._units)
 
     @property
-    def _std_dev(self) -> Length | RefractiveIndex:
-        return self.std_dev.to(self._units)
+    def _standard_deviation(self) -> AnyUnit:
+        return self.standard_deviation.to(self._units)
 
     @Base.pre_generate
     def generate(self, n_samples: int) -> np.ndarray:
@@ -65,7 +65,9 @@ class Normal(Base):
             An array of scatterer properties in meters.
         """
         return np.random.normal(
-            loc=self._mean.magnitude, scale=self._std_dev.magnitude, size=n_samples
+            loc=self._mean.magnitude,
+            scale=self._standard_deviation.magnitude,
+            size=n_samples,
         )
 
     def _generate_default_x(
@@ -92,7 +94,7 @@ class Normal(Base):
             raise ValueError("x_min must be less than x_max.")
 
         mu = self._mean.magnitude
-        sigma = self._std_dev.magnitude
+        sigma = self._standard_deviation.magnitude
         x_min_value = mu + x_min * sigma
         x_max_value = mu + x_max * sigma
         return np.linspace(x_min_value, x_max_value, n_samples) * self._units
@@ -126,10 +128,12 @@ class Normal(Base):
         x = self._generate_default_x(x_min=x_min, x_max=x_max, n_samples=n_samples)
 
         pdf = norm.pdf(
-            x.magnitude, loc=self.mean.magnitude, scale=self.std_dev.magnitude
+            x.magnitude,
+            loc=self.mean.magnitude,
+            scale=self.standard_deviation.magnitude,
         )
 
         return x, pdf
 
     def __repr__(self) -> str:
-        return f"Normal({self.mean:.3f~P}, {self.std_dev:.3f~P})"
+        return f"Normal({self.mean:.3f~P}, {self.standard_deviation:.3f~P})"

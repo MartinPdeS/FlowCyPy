@@ -7,9 +7,9 @@ from TypedUnit import FlowRate, Length, Time, Viscosity, Volume, ureg, validate_
 from FlowCyPy.binary.interface_flow_cell import FLOWCELL
 from FlowCyPy.fluid_region import FluidRegion
 from FlowCyPy.population import BasePopulation
-from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
+from FlowCyPy.population_events import PopulationEvents
 
 
 @dataclass(config=config_dict)
@@ -171,11 +171,16 @@ class FlowCell(FLOWCELL, StrictDataclassMixing):
     @validate_units
     def _generate_event_dataframe(
         self, populations: List[BasePopulation], run_time: Time
-    ) -> ScattererDataFrame:
+    ) -> PopulationEvents:
         """
         Generates a DataFrame of event times and sampled velocities for each population based on the specified scheme.
         """
+
+        population_event = PopulationEvents()
+
         sampling_dict = {p.name: {} for p in populations}
+
+        events_frame = []
 
         for population in populations:
             sub_dict = sampling_dict[population.name]
@@ -196,8 +201,6 @@ class FlowCell(FLOWCELL, StrictDataclassMixing):
 
             n_events = len(arrival_time)
 
-            sub_dict["n_elements"] = len(arrival_time)
-
             sub_dict["Time"] = arrival_time
 
             sub_dict.update(population.generate_property_sampling(n_events))
@@ -206,37 +209,17 @@ class FlowCell(FLOWCELL, StrictDataclassMixing):
                 self.sample_transverse_profile(n_events)
             )
 
-        event_dataframe = self._get_dataframe_from_dict(
-            dictionnary=sampling_dict, level_names=["Population", "ScattererID"]
-        )
+            df = pd.DataFrame(index=range(n_events), data=sub_dict)
 
-        if SimulationSettings.sorted_population:
-            event_dataframe.sort_population()
+            for k, v in sub_dict.items():
+                df[k] = pint_pandas.PintArray(v.magnitude, v.units)
 
-        if SimulationSettings.evenly_spaced_events:
-            event_dataframe.uniformize_events_with_time(
-                run_time=run_time, lower_boundary=0.05, upper_boundary=0.95
-            )
+            df = ScattererDataFrame(df)
 
-        return event_dataframe
+            df.population = population
 
-    def _get_dataframe_from_dict(
-        self, dictionnary: dict, level_names: list = None
-    ) -> ScattererDataFrame:
-        dfs = []
-        for pop_name, inner_dict in dictionnary.items():
-            df_pop = pd.DataFrame(index=range(inner_dict.pop("n_elements")))
+            events_frame.append(df)
 
-            df_pop.index = pd.MultiIndex.from_product(
-                [[pop_name], df_pop.index], names=level_names
-            )
+            population_event.events_list.append(df)
 
-            for k, v in inner_dict.items():
-                df_pop[k] = pint_pandas.PintArray(v.magnitude, v.units)
-
-            dfs.append(df_pop)
-
-        if len(dfs) == 0:
-            return pd.DataFrame(columns=level_names).set_index(level_names)
-
-        return ScattererDataFrame(pd.concat(dfs))
+        return population_event

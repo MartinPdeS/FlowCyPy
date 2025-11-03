@@ -38,13 +38,13 @@ class Fluidics:
         pd.DataFrame
             A DataFrame containing event data for the scatterers.
         """
-        event_dataframe = self.flow_cell._generate_event_dataframe(
+        event_frames = self.flow_cell._generate_event_dataframe(
             self.scatterer_collection.populations, run_time=run_time
         )
 
-        self.scatterer_collection.fill_dataframe_with_sampling(event_dataframe)
+        self.scatterer_collection.fill_dataframe_with_sampling(event_frames)
 
-        return event_dataframe
+        return event_frames
 
     @helper.pre_plot(nrows=1, ncols=1)
     @validate_units

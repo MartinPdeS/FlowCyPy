@@ -104,18 +104,19 @@ class FlowCytometer:
         pd.DataFrame
             A DataFrame containing event data for the scatterers.
         """
-        event_dataframe = self.fluidics.generate_event_dataframe(
+        event_dataframes = self.fluidics.generate_event_dataframe(
             run_time=run_record.run_time
         )
 
         self.opto_electronics.model_event(
-            event_dataframe=event_dataframe, compute_cross_section=compute_cross_section
+            event_dataframes=event_dataframes,
+            compute_cross_section=compute_cross_section,
         )
 
-        return event_dataframe
+        return event_dataframes
 
     def compute_analog(
-        self, run_time: Time, events: pd.DataFrame
+        self, run_time: Time, population_events: pd.DataFrame
     ) -> AcquisitionDataFrame:
         """
         Simulates the analog optical signal response for all detected events.
@@ -141,16 +142,17 @@ class FlowCytometer:
         signal_generator.signal_units = ureg.watt  # Initial unit: optical power
 
         for detector in self.opto_electronics.detectors:
-            if events.empty:
-                signal_generator.add_constant(constant=self.background_power)
-            else:
-                signal_generator.generate_pulses(
-                    signal_name=detector.name,
-                    widths=events["Widths"].values.quantity,
-                    centers=events["Time"].values.quantity,
-                    amplitudes=events[detector.name].values.quantity,
-                    base_level=self.background_power,
-                )
+            for events in population_events:
+                if events.empty:
+                    signal_generator.add_constant(constant=self.background_power)
+                else:
+                    signal_generator.generate_pulses(
+                        signal_name=detector.name,
+                        widths=events["Widths"].values.quantity,
+                        centers=events["Time"].values.quantity,
+                        amplitudes=events[detector.name].values.quantity,
+                        base_level=self.background_power,
+                    )
 
         # Optical power → photocurrent
         for detector in self.opto_electronics.detectors:
@@ -213,19 +215,21 @@ class FlowCytometer:
         RunRecord
             Simulation output containing all analog, digital, and peak-level data.
         """
-        events = self.fluidics.generate_event_dataframe(run_time=run_time)
+        population_events = self.fluidics.generate_event_dataframe(run_time=run_time)
 
         self.opto_electronics.model_event(
-            event_dataframe=events,
+            population_events=population_events,
             compute_cross_section=compute_cross_section,
         )
 
-        analog = self.compute_analog(events=events, run_time=run_time)
+        analog = self.compute_analog(
+            population_events=population_events, run_time=run_time
+        )
 
         run_record = RunRecord(
             run_time=run_time,
             detector_names=[d.name for d in self.opto_electronics.detectors],
-            events=events,
+            population_events=population_events,
             analog=analog,
         )
 

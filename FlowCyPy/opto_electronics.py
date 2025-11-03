@@ -34,7 +34,7 @@ class OptoElectronics(StrictDataclassMixing):
     amplifier: TransimpedanceAmplifier
 
     def model_event(
-        self, event_dataframe: pd.DataFrame, compute_cross_section: bool = False
+        self, population_events: pd.DataFrame, compute_cross_section: bool = False
     ):
         """
         Adds optoelectronic parameters to the provided DataFrame.
@@ -44,19 +44,20 @@ class OptoElectronics(StrictDataclassMixing):
 
         Parameters
         ----------
-        event_dataframe : pd.DataFrame
+        population_events : pd.DataFrame
             DataFrame to which the optoelectronic parameters will be added.
         """
         self._add_coupling_to_dataframe(
-            event_dataframe=event_dataframe, compute_cross_section=compute_cross_section
+            population_events=population_events,
+            compute_cross_section=compute_cross_section,
         )
 
-        self._add_pulse_width_to_dataframe(event_dataframe=event_dataframe)
+        self._add_pulse_width_to_dataframe(population_events=population_events)
 
-        return event_dataframe
+        return population_events
 
     def _add_coupling_to_dataframe(
-        self, event_dataframe: pd.DataFrame, compute_cross_section: bool = False
+        self, population_events: List[pd.DataFrame], compute_cross_section: bool = False
     ):
         """
         Computes the detected signal for each scatterer in the provided DataFrame and updates it in place.
@@ -72,7 +73,7 @@ class OptoElectronics(StrictDataclassMixing):
             If True, the scattering cross section (Csca) is computed and added to the DataFrame under the
             column 'Csca'. Default is False.
         """
-        if event_dataframe.empty:
+        if len(population_events) == 0:
             return
 
         for detector in self.detectors:
@@ -81,11 +82,10 @@ class OptoElectronics(StrictDataclassMixing):
                     source=self.source,
                     detector=detector,
                     bandwidth=self.amplifier.bandwidth,
-                    medium_refractive_index=event_dataframe.medium_refractive_index,
                 )
 
                 simulator.run(
-                    event_dataframe, compute_cross_section=compute_cross_section
+                    population_events, compute_cross_section=compute_cross_section
                 )
 
             elif detector.type == DetectorType.FLUORESCENCE:
@@ -95,9 +95,9 @@ class OptoElectronics(StrictDataclassMixing):
                     bandwidth=self.amplifier.bandwidth,
                 )
 
-                simulator.run(event_dataframe)
+                simulator.run(population_events)
 
-    def _add_pulse_width_to_dataframe(self, event_dataframe: pd.DataFrame):
+    def _add_pulse_width_to_dataframe(self, population_events: List[pd.DataFrame]):
         r"""
         Generates and assigns random Gaussian pulse parameters for each particle event.
 
@@ -156,16 +156,9 @@ class OptoElectronics(StrictDataclassMixing):
         - A `'Centers'` column with the pulse center times.
         - A `'Widths'` column with the computed pulse widths.
         """
-        if event_dataframe.empty:
+        if len(population_events) == 0:
             return
 
-        assert (
-            "Velocity" in event_dataframe.columns
-        ), "Event DataFrame must contain 'Velocity' column to compute the pulses width."
-        # Calculate the pulse width (standard deviation in time, σₜ) based on the beam waist and flow speed.
-        if event_dataframe.empty:
-            return
-
-        widths = self.source.get_particle_width(velocity=event_dataframe["Velocity"])
-
-        event_dataframe["Widths"] = widths
+        for events in population_events:
+            widths = self.source.get_particle_width(velocity=events["Velocity"])
+            events["Widths"] = widths

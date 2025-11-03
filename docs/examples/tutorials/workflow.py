@@ -53,14 +53,18 @@ population_0 = population.Sphere(
     name="Pop 0",
     particle_count=5e9 * ureg.particle / ureg.milliliter,
     diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
-    refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU),
+    refractive_index=distribution.Normal(
+        1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
+    ),
 )
 
 population_1 = population.Sphere(
     name="Pop 1",
     particle_count=5e9 * ureg.particle / ureg.milliliter,
     diameter=distribution.RosinRammler(200 * ureg.nanometer, spread=30),
-    refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU),
+    refractive_index=distribution.Normal(
+        1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
+    ),
 )
 
 scatterer_collection.add_population(population_0, population_1)
@@ -173,7 +177,7 @@ run_record = cytometer.run(run_time=0.4 * ureg.millisecond)
 # %%
 # Step 5: Plot Events and Raw Analog Signals
 # ------------------------------------------
-_ = run_record.events.plot(x="side", y="forward", z="RefractiveIndex")
+_ = run_record.population_events.plot(x="side")
 
 
 # %%

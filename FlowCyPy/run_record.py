@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from typing import Optional, Union, List
 import pandas as pd
-from TypedUnit import ureg, Time
+from TypedUnit import ureg, Time, Voltage, Frequency
 from MPSPlots import helper
 import matplotlib.pyplot as plt
 
@@ -30,25 +30,25 @@ class RunRecord:
         A structured DataFrame representing the multi-detector analog voltage signals.
     triggered_analog : Optional[AcquisitionDataFrame]
         A structured DataFrame representing the triggered segments of the analog voltage signals.
-    events : Optional[pd.DataFrame]
+    population_events : Optional[pd.DataFrame]
         A DataFrame containing event data for the scatterers.
     """
 
     signal: NameSpace = None
-    events: Optional[pd.DataFrame] = None
+    population_events: Optional[pd.DataFrame] = None
 
     def __init__(
         self,
         detector_names: list[str],
         run_time: Time,
-        events: pd.DataFrame,
+        population_events: pd.DataFrame,
         analog: AcquisitionDataFrame,
         digital: AcquisitionDataFrame = None,
     ):
 
         self.detector_names = detector_names
         self.run_time = run_time
-        self.events = events
+        self.population_events = population_events
 
         self.signal = NameSpace(
             analog=analog,
@@ -69,7 +69,7 @@ class RunRecord:
         int
             The number of scatterers sent through the flow cytometer.
         """
-        return len(self.events)
+        return np.sum(len(event) for event in self.population_events)
 
     @property
     def capture_ratio(self) -> Optional[float]:
@@ -124,7 +124,7 @@ class RunRecord:
         return self.number_of_scatterers / self.run_time.to("second")
 
     @property
-    def trigger_rate(self) -> Optional[ureg.Quantity]:
+    def trigger_rate(self) -> Optional[Frequency]:
         """
         Returns the rate of triggers during the run.
 
@@ -143,8 +143,8 @@ class RunRecord:
 
     def get_axes_dict(
         self,
-        signal_units: ureg.Quantity,
-        time_units: ureg.Quantity,
+        signal_units: Voltage,
+        time_units: Time,
         filter_population: Union[str, List[str]],
     ) -> dict[str, plt.Axes]:
         """
@@ -186,12 +186,8 @@ class RunRecord:
                 rf"{detector_name} [{signal_units._repr_latex_()}]", labelpad=20
             )
 
-        axes["scatterer"].set_xlabel(f"Time [{time_units._repr_latex_()}]")
-
-        self.events._add_event_to_ax(
-            ax=axes["scatterer"],
-            time_units=time_units,
-            filter_population=filter_population,
+        self.population_events._add_to_ax(
+            axes["scatterer"], filter_population, time_units
         )
 
         return figure, axes

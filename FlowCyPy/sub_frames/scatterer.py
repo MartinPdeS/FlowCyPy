@@ -102,11 +102,11 @@ class ScattererDataFrame(BaseSubFrame):
             data=df,
             x=x,
             y=y,
-            hue="Population",
+            # hue="Population",
             palette=color_palette,
             kind="scatter",
             alpha=alpha,
-            marginal_kws={"bw_adjust": bandwidth_adjust},
+            # marginal_kws={"bw_adjust": bandwidth_adjust},
         )
 
         grid.figure.suptitle("Scatterer Sampling Distribution")
@@ -219,56 +219,56 @@ class ScattererDataFrame(BaseSubFrame):
 
         return figure
 
-    def _add_event_to_ax(
-        self,
-        ax: plt.Axes,
-        time_units: Time,
-        palette: str = "tab10",
-        filter_population: str | List[str] = None,
-    ) -> None:
-        """
-        Adds vertical markers for event occurrences in the scatterer data.
+    # def _add_event_to_ax(
+    #     self,
+    #     ax: plt.Axes,
+    #     time_units: Time,
+    #     palette: str = "tab10",
+    #     filter_population: str | List[str] = None,
+    # ) -> None:
+    #     """
+    #     Adds vertical markers for event occurrences in the scatterer data.
 
-        Parameters
-        ----------
-        ax : plt.Axes
-            The matplotlib axis to modify.
-        time_units : Time
-            Time units to use for plotting.
-        palette : str, optional
-            Color palette for different populations (default: 'tab10').
-        filter_population : str or list of str, optional
-            Populations to display. If None, all populations are shown.
-        """
-        # Get unique population names
-        unique_populations = self.index.get_level_values("Population").unique()
-        color_mapping = dict(
-            zip(unique_populations, sns.color_palette(palette, len(unique_populations)))
-        )
+    #     Parameters
+    #     ----------
+    #     ax : plt.Axes
+    #         The matplotlib axis to modify.
+    #     time_units : Time
+    #         Time units to use for plotting.
+    #     palette : str, optional
+    #         Color palette for different populations (default: 'tab10').
+    #     filter_population : str or list of str, optional
+    #         Populations to display. If None, all populations are shown.
+    #     """
+    #     # Get unique population names
+    #     unique_populations = self.index.get_level_values("Population").unique()
+    #     color_mapping = dict(
+    #         zip(unique_populations, sns.color_palette(palette, len(unique_populations)))
+    #     )
 
-        for population_name, group in self.groupby("Population"):
-            if (
-                filter_population is not None
-                and population_name not in filter_population
-            ):
-                continue
+    #     for population_name, group in self.groupby("Population"):
+    #         if (
+    #             filter_population is not None
+    #             and population_name not in filter_population
+    #         ):
+    #             continue
 
-            x = group.Time.pint.to(time_units).pint.quantity
+    #         x = group.Time.pint.to(time_units).pint.quantity
 
-            color = color_mapping[population_name]
-            ax.vlines(
-                x,
-                ymin=0,
-                ymax=1,
-                transform=ax.get_xaxis_transform(),
-                label=population_name,
-                color=color,
-            )
+    #         color = color_mapping[population_name]
+    #         ax.vlines(
+    #             x,
+    #             ymin=0,
+    #             ymax=1,
+    #             transform=ax.get_xaxis_transform(),
+    #             label=population_name,
+    #             color=color,
+    #         )
 
-        ax.tick_params(axis="y", left=False, labelleft=False)
-        ax.get_yaxis().set_visible(False)
-        ax.set_xlabel(f"Time [{time_units:~P}]")
-        ax.legend()
+    #     ax.tick_params(axis="y", left=False, labelleft=False)
+    #     ax.get_yaxis().set_visible(False)
+    #     ax.set_xlabel(f"Time [{time_units:~P}]")
+    #     ax.legend()
 
     def sort_population(self) -> None:
         """
