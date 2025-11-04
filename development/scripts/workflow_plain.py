@@ -49,22 +49,31 @@ flow_cell = FlowCell(
 
 scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
 
+ri_distribution = distribution.Normal(
+    mean=1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
+)
 
-# dist_0 = distribution.Normal(150 * ureg.particle, standard_deviation=30 * ureg.particle)
+from FlowCyPy.fluidics import Dye, SurfaceDensityLabeling
 
-# dist_1 = distribution.Normal(200 * ureg.particle, standard_deviation=30 * ureg.particle)
-
-# fluoroforescence_labels = dict(
-#     'green': dist_0,
-#     'red': dist_1
-# )
+green = Dye(
+    name="Green",
+    absorption_cross_section=3e-16 * ureg.centimeter**2,
+    quantum_yield=0.8,
+    excitation_wavelength=488 * ureg.nanometer,
+    emission_wavelength=520 * ureg.nanometer,
+)
 
 population_0 = population.Sphere(
     name="Pop 0",
     particle_count=5e9 * ureg.particle / ureg.milliliter,
     diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
-    refractive_index=distribution.Normal(
-        1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
+    refractive_index=ri_distribution,
+)
+
+population_0.add_dye_label(
+    fluorophore=green,
+    labeling_model=SurfaceDensityLabeling(
+        density=1e14 * ureg.dimensionless / ureg.meter**2
     ),
 )
 
@@ -73,9 +82,7 @@ population_1 = population.Sphere(
     name="Pop 1",
     particle_count=5e9 * ureg.particle / ureg.milliliter,
     diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
-    refractive_index=distribution.Normal(
-        1.5 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
-    ),
+    refractive_index=ri_distribution,
 )
 
 # population_1 = population.CoreShell(
@@ -93,11 +100,15 @@ scatterer_collection.dilute(factor=80)
 
 fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
-df = fluidics.generate_event_dataframe(10 * ureg.millisecond)
+# df = fluidics.generate_event_dataframe(10 * ureg.millisecond)
 
-df.plot(x="RefractiveIndex", y="Diameter")
 
-dsad
+# print(df.events_list[0])
+# dsa
+
+# df.plot(x="Dye:Green", y="Diameter")
+
+# dsad
 
 # %%
 # Step 2: Define Optical Subsystem
@@ -119,7 +130,8 @@ source = source.GaussianBeam(
 from FlowCyPy.detector import DetectorType
 
 detector_0 = Detector(
-    type=DetectorType.SCATTERING,
+    # type=DetectorType.SCATTERING,
+    channel_type=DetectorType.SCATTERING,
     name="forward",
     phi_angle=0 * ureg.degree,
     numerical_aperture=0.3 * ureg.AU,
@@ -127,13 +139,13 @@ detector_0 = Detector(
 )
 
 
-# detector_1 = Detector(
-#     type=DetectorType.FLUORESCENCE,
-#     name="side",
-#     phi_angle=0 * ureg.degree,
-#     numerical_aperture=0.3 * ureg.AU,
-#     responsivity=1 * ureg.ampere / ureg.watt,
-# )
+detector_1 = Detector(
+    channel_type=DetectorType.SCATTERING,
+    name="side",
+    phi_angle=0 * ureg.degree,
+    numerical_aperture=0.3 * ureg.AU,
+    responsivity=1 * ureg.ampere / ureg.watt,
+)
 
 amplifier = TransimpedanceAmplifier(
     gain=10 * ureg.volt / ureg.ampere,
@@ -197,8 +209,10 @@ cytometer = FlowCytometer(
 )
 
 run_record = cytometer.run(run_time=0.4 * ureg.millisecond)
+print(run_record.population_events.events_list[0])
 
-print(run_record.population_frame["Pop 0"])
-run_record.population_frame["Pop 0"].plot(x="Diameter", y="forward")
+run_record.population_events.plot(x="Diameter", y="Detector:forward[SCATTERING]")
+# print(run_record.population_frame["Pop 0"])
+# run_record.population_frame["Pop 0"].plot(x="Diameter", y="forward")
 
 # _ = run_record.plot_analog(figure_size=(12, 8))

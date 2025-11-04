@@ -3,9 +3,10 @@ import pandas as pd
 from MPSPlots import helper
 from TypedUnit import Time, validate_units
 
-from FlowCyPy import distribution, population  # noqa: F401
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.scatterer_collection import ScattererCollection
+from FlowCyPy import distribution, population  # noqa: F401
+from FlowCyPy.fluorescence import Dye, SurfaceDensityLabeling  # noqa: F401
 
 
 class Fluidics:

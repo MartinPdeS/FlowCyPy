@@ -150,7 +150,9 @@ class FlowCytometer:
                         signal_name=detector.name,
                         widths=events["Widths"].values.quantity,
                         centers=events["Time"].values.quantity,
-                        amplitudes=events[detector.name].values.quantity,
+                        amplitudes=events[
+                            f"Detector:{detector.name}[SCATTERING]"
+                        ].values.quantity,
                         base_level=self.background_power,
                     )
 

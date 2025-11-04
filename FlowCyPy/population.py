@@ -18,6 +18,11 @@ from FlowCyPy.utils import config_dict
 
 
 class BasePopulation:
+    dye_label: list = []
+
+    def add_dye_label(self, fluorophore, labeling_model):
+        self.dye_label.append((fluorophore, labeling_model))
+
     def calculate_number_of_events(
         self, flow_area: Area, flow_speed: Velocity, run_time: Time
     ) -> Particle:
@@ -161,6 +166,28 @@ class BasePopulation:
         """
         self.particle_count /= factor
 
+    def add_dye_to_sampling(self, sampling_dict, diameter_sample) -> dict:
+        """
+        Adds dye labeling information to the sampling dictionary.
+        Parameters
+        ----------
+        sampling_dict : dict
+            The existing sampling dictionary to which dye information will be added.
+        diameter_sample : Quantity
+            The sampled diameters of the particles.
+
+        Returns
+        -------
+        dict
+            The updated sampling dictionary with dye labeling information added.
+        """
+
+        for dye, model in self.dye_label:
+            count_sample = model.sample_labels_given_diameter(diameter_sample)
+            sampling_dict[f"Dye:{dye.name}"] = count_sample
+
+        return sampling_dict
+
 
 @dataclass(config=config_dict)
 class Sphere(BasePopulation):
@@ -217,10 +244,17 @@ class Sphere(BasePopulation):
         tuple
             A tuple containing the generated diameter sample and refractive index sample.
         """
-        return {
-            "Diameter": self.diameter.generate(sampling),
-            "RefractiveIndex": self.refractive_index.generate(sampling),
+        diameter_sample = self.diameter.generate(sampling)
+        refractive_index_sample = self.refractive_index.generate(sampling)
+
+        output_dict = {
+            "Diameter": diameter_sample,
+            "RefractiveIndex": refractive_index_sample,
         }
+
+        output_dict = self.add_dye_to_sampling(output_dict, diameter_sample)
+
+        return output_dict
 
 
 @dataclass(config=config_dict)
@@ -289,9 +323,21 @@ class CoreShell(BasePopulation):
             A tuple containing the generated samples in the order:
             (core_diameter, shell_thickness, refractive_index_core, refractive_index_shell).
         """
-        return {
-            "CoreDiameter": self.core_diameter.generate(sampling),
-            "ShellThickness": self.shell_thickness.generate(sampling),
-            "CoreRefractiveIndex": self.core_refractive_index.generate(sampling),
-            "ShellRefractiveIndex": self.shell_refractive_index.generate(sampling),
+
+        core_diameter_sample = self.core_diameter.generate(sampling)
+        shell_thickness_sample = self.shell_thickness.generate(sampling)
+        core_refractive_index_sample = self.core_refractive_index.generate(sampling)
+        shell_refractive_index_sample = self.shell_refractive_index.generate(sampling)
+
+        output_dict = {
+            "CoreDiameter": core_diameter_sample,
+            "ShellThickness": shell_thickness_sample,
+            "CoreRefractiveIndex": core_refractive_index_sample,
+            "ShellRefractiveIndex": shell_refractive_index_sample,
         }
+
+        output_dict = self.add_dye_to_sampling(
+            output_dict, core_diameter_sample + shell_thickness_sample * 2
+        )
+
+        return output_dict

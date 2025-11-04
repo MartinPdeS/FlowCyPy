@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import MPSPlots
 import seaborn as sns
-
+import pint_pandas
 from FlowCyPy.sub_frames import utils
 
 
@@ -72,7 +72,10 @@ class PopulationEvents:
 
         for population in self:
             for key in population:
-                population[key] = population[key].pint.to_base_units()
+                values = population[key].pint.quantity.to_reduced_units()
+                population[key] = pint_pandas.PintArray(values.magnitude, values.units)
+
+                # population[key] = population[key].pint.to_unprefixed()
 
         population_event = pd.concat(
             self, keys=[event.population.name for event in self], names=["Population"]

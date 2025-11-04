@@ -1,11 +1,11 @@
+from typing import List
 import numpy as np
 import pandas as pd
 import pint_pandas
 import PyMieSim.experiment as _PyMieSim
-from TypedUnit import Frequency, RefractiveIndex, ureg
+from TypedUnit import Frequency, ureg
 
 from FlowCyPy.source import BaseBeam
-from FlowCyPy.fluorescence_labels import FluorescenceLabel
 
 
 class ScatteringSimulator:
@@ -39,39 +39,27 @@ class ScatteringSimulator:
         self.bandwidth = bandwidth
 
     def run(
-        self, event_dataframes: pd.DataFrame, compute_cross_section: bool = False
+        self, event_dataframes: List[pd.DataFrame], compute_cross_section: bool = False
     ) -> None:
         """
         Run the scattering simulation on the provided DataFrame.
 
         Parameters
         ----------
-        event_df : pd.DataFrame
-            DataFrame of events containing particle types and properties.
+        event_dataframes : List[pd.DataFrame]
+            List of DataFrame of events containing particle types and properties.
         compute_cross_section : bool, optional
             Whether to compute and store the scattering cross section.
         """
-        num_particles = len(event_dataframe)
-
-        source, detector = self._build_source_and_detector(
-            event_dataframe, num_particles
-        )
-
         for event_dataframe in event_dataframes:
+            _dict = dict(
+                event_dataframe=event_dataframe,
+                compute_cross_section=compute_cross_section,
+            )
             if event_dataframe.population.__class__.__name__ == "Sphere":
-                self._process_sphere(
-                    event_dataframe=event_dataframe,
-                    compute_cross_section=compute_cross_section,
-                    source=source,
-                    detector=detector,
-                )
+                self._process_sphere(**_dict)
             elif event_dataframe.population.__class__.__name__ == "CoreShell":
-                self._process_coreshell(
-                    event_dataframe=event_dataframe,
-                    compute_cross_section=compute_cross_section,
-                    source=source,
-                    detector=detector,
-                )
+                self._process_coreshell(**_dict)
 
     def _build_source_and_detector(self, event_df: pd.DataFrame, num_particles: int):
         """
@@ -116,8 +104,6 @@ class ScatteringSimulator:
 
     def _process_sphere(
         self,
-        source,
-        detector,
         event_dataframe: pd.DataFrame,
         compute_cross_section: bool,
     ):
@@ -133,6 +119,10 @@ class ScatteringSimulator:
         """
         num_particles = len(event_dataframe)
 
+        source, detector = self._build_source_and_detector(
+            event_dataframe, num_particles
+        )
+
         scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
             total_size=num_particles,
             diameter=event_dataframe["Diameter"].values.quantity,
@@ -145,8 +135,10 @@ class ScatteringSimulator:
             source=source, scatterer=scatterer, detector=detector
         )
 
-        event_dataframe.loc[:, self.detector.name] = pint_pandas.PintArray(
-            experiment.get_sequential("coupling"), dtype=ureg.watt
+        event_dataframe.loc[:, f"Detector:{self.detector.name}[SCATTERING]"] = (
+            pint_pandas.PintArray(
+                experiment.get_sequential("coupling"), dtype=ureg.watt
+            )
         )
 
         if compute_cross_section:
@@ -156,8 +148,6 @@ class ScatteringSimulator:
 
     def _process_coreshell(
         self,
-        source,
-        detector,
         event_dataframe: pd.DataFrame,
         compute_cross_section: bool,
     ):
@@ -174,6 +164,10 @@ class ScatteringSimulator:
 
         num_particles = len(event_dataframe)
 
+        source, detector = self._build_source_and_detector(
+            event_dataframe, num_particles
+        )
+
         scatterer = _PyMieSim.scatterer.CoreShell.build_sequential(
             total_size=num_particles,
             core_diameter=event_dataframe["CoreDiameter"].values.quantity,
@@ -188,8 +182,10 @@ class ScatteringSimulator:
             source=source, scatterer=scatterer, detector=detector
         )
 
-        event_dataframe.loc[:, self.detector.name] = pint_pandas.PintArray(
-            experiment.get_sequential("coupling"), dtype=ureg.watt
+        event_dataframe.loc[:, f"Detector:{self.detector.name}[SCATTERING]"] = (
+            pint_pandas.PintArray(
+                experiment.get_sequential("coupling"), dtype=ureg.watt
+            )
         )
 
         if compute_cross_section:
@@ -226,30 +222,41 @@ class FluorescenceSimulator:
         self.detector = detector
         self.bandwidth = bandwidth
 
-    def run(self, event_df: pd.DataFrame) -> None:
+    def run(self, event_dataframes: List[pd.DataFrame]) -> None:
         """
         Parameters
         ----------
-        event_df : pd.DataFrame
-            DataFrame of events containing particle properties.
+        event_dataframes : List[pd.DataFrame]
+            List of DataFrames of events containing particle properties.
 
         Side effect:
         ------------
         Adds/overwrites a PintArray column event_df[detector.name] with optical power [watt].
         """
-        if event_df.empty:
-            return
+        for event_dataframe in event_dataframes:
+            _dict = dict(event_dataframe=event_dataframe)
+            if event_dataframe.population.__class__.__name__ == "Sphere":
+                self._process_sphere(**_dict)
+            elif event_dataframe.population.__class__.__name__ == "CoreShell":
+                self._process_coreshell(**_dict)
 
-        detected_power = np.zeros(len(event_df), dtype=np.float64)
+    def _process_sphere(self, event_dataframe: pd.DataFrame):
+        """
+        Process and simulate scattering from spherical particles.
 
-        source_amplitude = self.source.get_amplitude_signal(
-            bandwidth=self.bandwidth,
-            x=event_df["x"],
-            y=event_df["y"],
+        Parameters
+        ----------
+        event_dataframes : pd.DataFrame
+            The full event DataFrame.
+        compute_cross_section : bool
+            Whether to compute the scattering cross section.
+        """
+        number_of_dye = event_dataframe.loc[:, f"Dye:Green"]
+
+        coupling = number_of_dye.pint.magnitude * 100
+
+        event_dataframe.loc[:, f"Detector:{self.detector.name}"] = (
+            pint_pandas.PintArray(coupling, dtype=ureg.watt)
         )
 
-        coupling_power = event_df.loc[:, "Diameter"].pint.magnitude * 1e-6
-
-        event_df.loc[:, self.detector.name] = pint_pandas.PintArray(
-            coupling_power, dtype=ureg.watt
-        )
+        print(event_dataframe.loc[:, f"Detector:{self.detector.name}"])
