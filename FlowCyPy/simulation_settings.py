@@ -75,8 +75,6 @@ class SimulationSettings(metaclass=RestrictiveMeta):
     assume_perfect_hydrodynamic_focusing = False
     assume_amplifier_bandwidth_is_infinite = False
     assume_perfect_digitizer = False
-    sorted_population = False
-    evenly_spaced_events = False
 
     @property
     def include_noises(self):

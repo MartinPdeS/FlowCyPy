@@ -2,7 +2,7 @@ from typing import Tuple
 
 import numpy as np
 from pydantic.dataclasses import dataclass
-from TypedUnit import Length, RefractiveIndex
+from TypedUnit import AnyUnit
 
 from FlowCyPy.distribution.base_class import Base
 from FlowCyPy.utils import config_dict
@@ -17,30 +17,30 @@ class Weibull(Base):
 
     Parameters
     ----------
-    shape : Length | RefractiveIndex
+    shape : AnyUnit
         The shape parameter (k), controls the skewness of the distribution.
-    scale : Length | RefractiveIndex
+    scale : AnyUnit
         The scale parameter (λ), controls the spread of the distribution.
     """
 
-    shape: Length | RefractiveIndex
-    scale: Length | RefractiveIndex
+    shape: AnyUnit
+    scale: AnyUnit
 
     @property
-    def _units(self) -> Length | RefractiveIndex:
+    def _units(self) -> AnyUnit:
         return self.shape.units
 
     @property
-    def _shape(self) -> Length | RefractiveIndex:
+    def _shape(self) -> AnyUnit:
         return self.shape.to(self._units)
 
     @property
-    def _scale(self) -> Length | RefractiveIndex:
+    def _scale(self) -> AnyUnit:
         return self.scale.to(self._units)
 
     def _generate_default_x(
         self, n_samples: int, x_min_factor: float, x_max_factor: float
-    ) -> Length | RefractiveIndex:
+    ) -> AnyUnit:
         """
         Generates a default range of x-values for the Weibull distribution.
 
@@ -55,7 +55,7 @@ class Weibull(Base):
 
         Returns
         -------
-        Length | RefractiveIndex
+        AnyUnit
             A range of x-values with appropriate units.
         """
 
@@ -67,7 +67,7 @@ class Weibull(Base):
         return np.linspace(x_min, x_max, n_samples) * self.scale.units
 
     @Base.pre_generate
-    def generate(self, n_samples: int) -> Length | RefractiveIndex:
+    def generate(self, n_samples: int) -> AnyUnit:
         """
         Generates a Weibull distribution of scatterer properties.
 
@@ -78,14 +78,12 @@ class Weibull(Base):
 
         Returns
         -------
-        Length | RefractiveIndex
+        AnyUnit
             An array of particle properties in meters.
         """
         return np.random.weibull(self.shape.magnitude, size=n_samples)
 
-    def get_pdf(
-        self, n_samples: int = 100
-    ) -> Tuple[Length | RefractiveIndex, np.ndarray]:
+    def get_pdf(self, n_samples: int = 100) -> Tuple[AnyUnit, np.ndarray]:
         """
         Returns the x-values and the PDF values for the Weibull distribution.
 
@@ -93,14 +91,14 @@ class Weibull(Base):
 
         Parameters
         ----------
-        x : Length | RefractiveIndex, optional
+        x : AnyUnit, optional
             The input x-values (particle properties) over which to compute the PDF. If not provided, a range is generated.
         n_points : int, optional
             Number of points in the generated range if `x` is not provided. Default is 100.
 
         Returns
         -------
-        Tuple[Length | RefractiveIndex, np.ndarray]
+        Tuple[AnyUnit, np.ndarray]
             The input x-values and the corresponding PDF values.
         """
         x = self._generate_default_x(n_samples=n_samples)

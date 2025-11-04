@@ -2,7 +2,7 @@ from typing import Tuple
 
 import numpy as np
 from pydantic.dataclasses import dataclass
-from TypedUnit import Length, RefractiveIndex
+from TypedUnit import AnyUnit
 
 from FlowCyPy.distribution.base_class import Base
 from FlowCyPy.utils import config_dict
@@ -23,21 +23,21 @@ class Delta(Base):
 
     Parameters
     ----------
-    position : Length | RefractiveIndex
+    position : AnyUnit
         The particle property for the delta distribution in meters.
     """
 
-    position: Length | RefractiveIndex
+    position: AnyUnit
 
     @property
-    def _units(self) -> Length | RefractiveIndex:
+    def _units(self) -> AnyUnit:
         return self.position.units
 
     def __post_init__(self):
         self._main_units = self.position.units
 
     @Base.pre_generate
-    def generate(self, n_samples: int) -> Length | RefractiveIndex:
+    def generate(self, n_samples: int) -> AnyUnit:
         r"""
         Generates a singular distribution of scatterer properties.
 
@@ -57,7 +57,7 @@ class Delta(Base):
 
     def _generate_default_x(
         self, x_min_factor: float = 0.9, x_max_factor: float = 1.1, n_samples: int = 100
-    ) -> Length | RefractiveIndex:
+    ) -> AnyUnit:
         """
         Generates a default range of x-values around the `position`.
 
@@ -72,7 +72,7 @@ class Delta(Base):
 
         Returns
         -------
-        Length | RefractiveIndex
+        AnyUnit
             A range of x-values with appropriate units.
         """
         if x_min_factor >= x_max_factor:
@@ -87,13 +87,13 @@ class Delta(Base):
         x_min_factor: float = 0.99,
         x_max_factor: float = 1.01,
         n_samples: int = 21,
-    ) -> Tuple[Length | RefractiveIndex, np.ndarray]:
+    ) -> Tuple[AnyUnit, np.ndarray]:
         r"""
         Returns the x-values and the scaled PDF values for the singular distribution.
 
         Returns
         -------
-        Tuple[Length | RefractiveIndex, np.ndarray]
+        Tuple[AnyUnit, np.ndarray]
             The input x-values and the corresponding scaled PDF values.
         """
         x = self._generate_default_x(

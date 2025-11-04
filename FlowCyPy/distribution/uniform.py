@@ -3,7 +3,7 @@ from typing import Tuple
 import numpy as np
 from pydantic.dataclasses import dataclass
 from scipy.stats import uniform
-from TypedUnit import Length, RefractiveIndex
+from TypedUnit import AnyUnit
 
 from FlowCyPy.distribution.base_class import Base
 from FlowCyPy.utils import config_dict
@@ -25,31 +25,31 @@ class Uniform(Base):
 
     Parameters
     ----------
-    lower_bound : Length | RefractiveIndex
+    lower_bound : AnyUnit
         The lower bound for particle properties in meters.
-    upper_bound : Length | RefractiveIndex
+    upper_bound : AnyUnit
         The upper bound for particle properties in meters.
     """
 
-    lower_bound: Length | RefractiveIndex
-    upper_bound: Length | RefractiveIndex
+    lower_bound: AnyUnit
+    upper_bound: AnyUnit
 
     @property
-    def _units(self) -> Length | RefractiveIndex:
+    def _units(self) -> AnyUnit:
         return self.lower_bound.units
 
     @property
-    def _lower_bound(self) -> Length | RefractiveIndex:
+    def _lower_bound(self) -> AnyUnit:
         return self.lower_bound.to(self._units)
 
     @property
-    def _upper_bound(self) -> Length | RefractiveIndex:
+    def _upper_bound(self) -> AnyUnit:
         return self.upper_bound.to(self._units)
 
     def __post_init__(self):
         self.lower_bound = self.lower_bound.to(self.upper_bound.units)
 
-    def _generate_default_x(self, n_samples: int = 100) -> Length | RefractiveIndex:
+    def _generate_default_x(self, n_samples: int = 100) -> AnyUnit:
         """
         Generates a default range of x-values for the uniform distribution.
 
@@ -60,7 +60,7 @@ class Uniform(Base):
 
         Returns
         -------
-        Length | RefractiveIndex
+        AnyUnit
             A range of x-values with appropriate units.
         """
         x_min = self._lower_bound.magnitude / 1.1
@@ -69,7 +69,7 @@ class Uniform(Base):
         return np.linspace(x_min, x_max, n_samples) * self._units
 
     @Base.pre_generate
-    def generate(self, n_samples: int) -> Length | RefractiveIndex:
+    def generate(self, n_samples: int) -> AnyUnit:
         """
         Generates a uniform distribution of scatterer properties.
 
@@ -82,16 +82,14 @@ class Uniform(Base):
 
         Returns
         -------
-        Length | RefractiveIndex
+        AnyUnit
             An array of scatterer properties in meters.
         """
         return np.random.uniform(
             self._lower_bound.magnitude, self._upper_bound.magnitude, n_samples
         )
 
-    def get_pdf(
-        self, n_samples: int = 100
-    ) -> Tuple[Length | RefractiveIndex, np.ndarray]:
+    def get_pdf(self, n_samples: int = 100) -> Tuple[AnyUnit, np.ndarray]:
         """
         Returns the x-values and the PDF values for the uniform distribution.
 
@@ -104,7 +102,7 @@ class Uniform(Base):
 
         Returns
         -------
-        Tuple[Length | RefractiveIndex, np.ndarray]
+        Tuple[AnyUnit, np.ndarray]
             The input x-values and the corresponding PDF values.
         """
         x = self._generate_default_x(n_samples=n_samples)
