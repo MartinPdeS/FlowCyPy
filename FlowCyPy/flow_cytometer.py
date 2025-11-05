@@ -161,7 +161,7 @@ class FlowCytometer:
                     signal_generator.add_constant(constant=self.background_power)
                 else:
                     coupling_power = (
-                        events[f"Detector:{detector.name}[SCATTERING]"]
+                        events[f"Detector:{detector.name}"]
                         .pint.to_base_units()
                         .values.quantity
                     )

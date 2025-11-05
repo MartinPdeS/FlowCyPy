@@ -135,7 +135,7 @@ class ScatteringSimulator:
             source=source, scatterer=scatterer, detector=detector
         )
 
-        event_dataframe.loc[:, f"Detector:{self.detector.name}[SCATTERING]"] = (
+        event_dataframe.loc[:, f"Detector:{self.detector.name}"] = (
             pint_pandas.PintArray(
                 experiment.get_sequential("coupling"), dtype=ureg.watt
             )
@@ -182,7 +182,7 @@ class ScatteringSimulator:
             source=source, scatterer=scatterer, detector=detector
         )
 
-        event_dataframe.loc[:, f"Detector:{self.detector.name}[SCATTERING]"] = (
+        event_dataframe.loc[:, f"Detector:{self.detector.name}"] = (
             pint_pandas.PintArray(
                 experiment.get_sequential("coupling"), dtype=ureg.watt
             )
