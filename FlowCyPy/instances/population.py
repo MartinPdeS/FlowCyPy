@@ -45,7 +45,7 @@ for name, diameter, diameter_spread, ri, ri_spread in _populations:
         characteristic_property=diameter, spread=diameter_spread
     )
 
-    ri_distribution = distribution.Normal(mean=ri, std_dev=ri_spread)
+    ri_distribution = distribution.Normal(mean=ri, standard_deviation=ri_spread)
 
     # Create a class dynamically for each population
     cls = type(name, (CallablePopulation,), {})
