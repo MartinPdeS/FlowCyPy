@@ -131,7 +131,7 @@ from FlowCyPy.detector import DetectorType
 
 detector_0 = Detector(
     # type=DetectorType.SCATTERING,
-    channel_type=DetectorType.SCATTERING,
+    channel="scattering",
     name="forward",
     phi_angle=0 * ureg.degree,
     numerical_aperture=0.3 * ureg.AU,
@@ -140,7 +140,7 @@ detector_0 = Detector(
 
 
 detector_1 = Detector(
-    channel_type=DetectorType.SCATTERING,
+    channel="Green",
     name="side",
     phi_angle=0 * ureg.degree,
     numerical_aperture=0.3 * ureg.AU,

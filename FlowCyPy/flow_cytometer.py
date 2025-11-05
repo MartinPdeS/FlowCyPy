@@ -123,10 +123,10 @@ class FlowCytometer:
         for detector in self.opto_electronics.detectors:
             detector.events = []
             for events in population_events:
-                if detector.channel_type == DetectorType.SCATTERING:
+                if detector.channel_type.lower() == "scattering":
                     detector.events.append(events)
 
-                if detector.channel_type == events.channel_type:
+                if detector.channel_type.lower() == events.channel_type.lower():
                     detector.events.append(events)
 
     def compute_analog(

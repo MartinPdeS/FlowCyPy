@@ -64,10 +64,10 @@ fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_ce
 # %%
 # Step 3: Generate Particle Event DataFrame
 # -----------------------------------------
-event_dataframe = fluidics.generate_event_dataframe(run_time=3.5 * ureg.millisecond)
+event_frame = fluidics.generate_event_frame(run_time=3.5 * ureg.millisecond)
 
 # Plot the diameter distribution of the particles
-event_dataframe.plot(x="Diameter", bins="auto")
+event_frame.plot(x="Diameter", bins="auto")
 
 # %%
 # Step 4: Define Detectors and Amplifier
@@ -98,11 +98,11 @@ opto_electronics = OptoElectronics(
 # %%
 # Step 6: Model Scattering Signals
 # --------------------------------
-event_dataframe = opto_electronics.model_event(
-    event_dataframe=event_dataframe, compute_cross_section=True
+opto_electronics.add_model_to_event_frame(
+    event_frame=event_frame, compute_cross_section=True
 )
 
 # %%
 # Step 7: Visualize Scattering Intensity
 # --------------------------------------
-event_dataframe.plot(x="side", y="Csca")  # Color-coded by scattering cross-section
+event_frame.plot(x="side", y="Csca")  # Color-coded by scattering cross-section
