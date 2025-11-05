@@ -7,9 +7,8 @@ from TypedUnit import FlowRate, Length, Time, Viscosity, Volume, ureg, validate_
 from FlowCyPy.binary.interface_flow_cell import FLOWCELL
 from FlowCyPy.fluid_region import FluidRegion
 from FlowCyPy.population import BasePopulation
-from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
-from FlowCyPy.population_events import PopulationEvents
+from FlowCyPy.event_frame import EventFrame
 
 
 @dataclass(config=config_dict)
@@ -128,7 +127,7 @@ class FlowCell(FLOWCELL, StrictDataclassMixing):
         self.sample = FluidRegion(self._cpp_sample)
         self.sheath = FluidRegion(self._cpp_sheath)
 
-    def sample_transverse_profile(self, n_samples: int) -> tuple:
+    def add_transverse_profile_to_frame(self, dataframe) -> tuple:
         r"""
         Sample particles from the focused sample stream.
 
@@ -154,8 +153,8 @@ class FlowCell(FLOWCELL, StrictDataclassMixing):
 
         Parameters
         ----------
-        n_samples : int
-            Number of particles to sample.
+        dataframe : pd.DataFrame
+            The DataFrame to which the sampled particle properties will be added.
 
         Returns
         -------
@@ -164,27 +163,26 @@ class FlowCell(FLOWCELL, StrictDataclassMixing):
         velocities : ndarray
             A NumPy array of shape (n_samples,) containing the local x-direction velocities (in m/s).
         """
+        n_samples = len(dataframe)
         x, y, velocities = self._cpp_sample_transverse_profile(n_samples)
 
-        return x * ureg.meter, y * ureg.meter, velocities * ureg.meter / ureg.second
+        dataframe["x"] = pint_pandas.PintArray(x, ureg.meter)
+        dataframe["y"] = pint_pandas.PintArray(y, ureg.meter)
+        dataframe["Velocity"] = pint_pandas.PintArray(
+            velocities, ureg.meter / ureg.second
+        )
 
     @validate_units
-    def _generate_event_dataframe(
+    def _generate_event_frame(
         self, populations: List[BasePopulation], run_time: Time
-    ) -> PopulationEvents:
+    ) -> EventFrame:
         """
         Generates a DataFrame of event times and sampled velocities for each population based on the specified scheme.
         """
 
-        population_event = PopulationEvents()
-
-        sampling_dict = {p.name: {} for p in populations}
-
-        events_frame = []
+        population_event = EventFrame()
 
         for population in populations:
-            sub_dict = sampling_dict[population.name]
-
             particle_flux = population.compute_particle_flux(
                 flow_speed=self.sample.average_flow_speed,
                 flow_area=self.sample.area,
@@ -201,25 +199,18 @@ class FlowCell(FLOWCELL, StrictDataclassMixing):
 
             n_events = len(arrival_time)
 
-            sub_dict["Time"] = arrival_time
+            _df = pd.DataFrame(index=range(n_events))
 
-            sub_dict.update(population.generate_property_sampling(n_events))
-
-            sub_dict["x"], sub_dict["y"], sub_dict["Velocity"] = (
-                self.sample_transverse_profile(n_events)
+            _df["Time"] = pint_pandas.PintArray(
+                arrival_time.magnitude, arrival_time.units
             )
 
-            df = pd.DataFrame(index=range(n_events), data=sub_dict)
+            self.add_transverse_profile_to_frame(_df)
 
-            for k, v in sub_dict.items():
-                df[k] = pint_pandas.PintArray(v.magnitude, v.units)
+            population.add_property_to_frame(dataframe=_df, sampling=n_events)
 
-            df = ScattererDataFrame(df)
+            _df.population = population
 
-            df.population = population
-
-            events_frame.append(df)
-
-            population_event.events_list.append(df)
+            population_event.events_list.append(_df)
 
         return population_event

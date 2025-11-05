@@ -7,25 +7,57 @@ import pint_pandas
 from FlowCyPy.sub_frames import utils
 
 
-class PopulationEvents:
+class EventFrame:
     def __init__(self):
         self.events_list = []
 
     def __iter__(self):
+        """
+        Iterate over population events.
+        """
         for events in self.events_list:
             yield events
 
-    def __getitem__(self, type: str):
-        for events in self.events_list:
-            if events.population.name == type:
-                return events
+    def __getitem__(self, type: int | str):
+        """
+        Get population events by index or name.
+
+        Parameters
+        ----------
+        type : int | str
+            Index of the population events or the name of the population.
+        """
+        if isinstance(type, int):
+            return self.events_list[type]
+
+        if isinstance(type, str):
+            for events in self.events_list:
+                if events.population.name == type:
+                    return events
+
+        raise KeyError(f"No population found with name '{type}'.")
 
     def __len__(self):
+        """
+        Get the number of population events.
+        """
         return len(self.events_list)
 
     def _add_to_ax(
         self, ax, filter_population: List[str] = None, time_units: str = "second"
     ) -> None:
+        """
+        Internal method to add population events to a matplotlib axis.
+
+        Parameters
+        ----------
+        ax : plt.Axes
+            The matplotlib axis to add the events to.
+        filter_population : List[str], optional
+            List of population names to include. If None, includes all populations.
+        time_units : str, optional
+            Units for the time axis (default is 'second').
+        """
         import seaborn as sns
 
         palette = "tab10"

@@ -20,8 +20,10 @@ X_VALUES = np.linspace(0.01, 1, N_SAMPLES) * ureg.micrometer
 # ----------------- DISTRIBUTIONS -----------------
 
 distributions = [
-    dist.Normal(mean=1.0 * ureg.micrometer, std_dev=1.0 * ureg.nanometer),
-    dist.LogNormal(mean=1.0 * ureg.micrometer, std_dev=0.01 * ureg.micrometer),
+    dist.Normal(mean=1.0 * ureg.micrometer, standard_deviation=1.0 * ureg.nanometer),
+    dist.LogNormal(
+        mean=1.0 * ureg.micrometer, standard_deviation=0.01 * ureg.micrometer
+    ),
     dist.Uniform(lower_bound=0.5 * ureg.micrometer, upper_bound=1.5 * ureg.micrometer),
     dist.Delta(position=1 * ureg.micrometer),
 ]
@@ -114,12 +116,12 @@ def test_lognormal_properties():
     diameters = distribution.generate(4000)
 
     # Test for LogNormalDistribution: Check that the standard deviation is approximately correct
-    std_dev_size = np.std(diameters)
-    expected_std = distribution.std_dev
+    standard_deviation_size = np.std(diameters)
+    expected_std = distribution.standard_deviation
 
     assert np.isclose(
-        std_dev_size, expected_std, rtol=2
-    ), f"LogNormalDistribution: Standard deviation {std_dev_size} deviates from expected {expected_std}"
+        standard_deviation_size, expected_std, rtol=2
+    ), f"LogNormalDistribution: Standard deviation {standard_deviation_size} deviates from expected {expected_std}"
 
 
 if __name__ == "__main__":

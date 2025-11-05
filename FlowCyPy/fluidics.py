@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 from MPSPlots import helper
 from TypedUnit import Time, validate_units
+import pint_pandas
 
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.scatterer_collection import ScattererCollection
@@ -25,7 +27,7 @@ class Fluidics:
         self.flow_cell = flow_cell
 
     @validate_units
-    def generate_event_dataframe(self, run_time: Time) -> pd.DataFrame:
+    def generate_event_frame(self, run_time: Time) -> pd.DataFrame:
         """
         Generates a DataFrame of events based on the scatterer collection and flow cell properties.
 
@@ -39,11 +41,19 @@ class Fluidics:
         pd.DataFrame
             A DataFrame containing event data for the scatterers.
         """
-        event_frames = self.flow_cell._generate_event_dataframe(
+        event_frames = self.flow_cell._generate_event_frame(
             self.scatterer_collection.populations, run_time=run_time
         )
 
-        self.scatterer_collection.fill_dataframe_with_sampling(event_frames)
+        for events in event_frames:
+            medium_refractive_index_array = (
+                self.scatterer_collection.medium_refractive_index.magnitude
+                * np.ones(len(events))
+            )
+            events["MediumRefractiveIndex"] = pint_pandas.PintArray(
+                medium_refractive_index_array,
+                dtype=self.scatterer_collection.medium_refractive_index.units,
+            )
 
         return event_frames
 
@@ -76,7 +86,9 @@ class Fluidics:
         - The colorbar is created with a dedicated axes to ensure it spans the full height of the plot.
 
         """
-        sampling = self.generate_event_dataframe(run_time=run_time)
+        sampling = self.generate_event_frame(
+            run_time=run_time
+        ).get_concatenated_dataframe()
 
         length_units = self.flow_cell.width.units
 

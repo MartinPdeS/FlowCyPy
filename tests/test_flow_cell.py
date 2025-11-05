@@ -109,14 +109,14 @@ def test_compute_channel_flow(valid_flowcell):
 
 def test_sample_particles(valid_flowcell):
     n_samples = 1000
-    x, y, velocity = valid_flowcell.sample_transverse_profile(n_samples)
+    x, y, velocity = valid_flowcell._cpp_sample_transverse_profile(n_samples)
 
     assert len(y) == n_samples
     assert len(x) == n_samples
     assert len(velocity) == n_samples
     # Check that velocities are finite.
 
-    assert np.all(np.isfinite(velocity.magnitude))
+    assert np.all(np.isfinite(velocity))
 
 
 @patch("matplotlib.pyplot.show")
@@ -137,9 +137,9 @@ def test_get_sample_volume(valid_flowcell):
 
 def test_generate_poisson_events(valid_flowcell, real_population):
     run_time = 10 * ureg.second
-    df = valid_flowcell._generate_event_dataframe(
+    df = valid_flowcell._generate_event_frame(
         run_time=run_time, populations=[real_population]
-    )
+    ).get_concatenated_dataframe()
     expected_columns = {"Time", "Velocity", "x", "y"}
     assert expected_columns.issubset(set(df.columns))
     if not df.empty:
@@ -148,20 +148,20 @@ def test_generate_poisson_events(valid_flowcell, real_population):
 
 def test_generate_event_dataframe(valid_flowcell, real_population):
     run_time = 10 * ureg.second
-    df_event = valid_flowcell._generate_event_dataframe(
+    df_event = valid_flowcell._generate_event_frame(
         populations=[real_population], run_time=run_time
-    )
+    ).get_concatenated_dataframe()
+
     # Check that the DataFrame has a MultiIndex with "Population" and "Index"
     assert "Population" in df_event.index.names
-    assert "ScattererID" in df_event.index.names
     assert len(df_event) > 0
 
 
 def test_event_dataframe_units(valid_flowcell, real_scatterer_collection):
     run_time = 10 * ureg.second
-    df_event = valid_flowcell._generate_event_dataframe(
+    df_event = valid_flowcell._generate_event_frame(
         populations=real_scatterer_collection.populations, run_time=run_time
-    )
+    ).get_concatenated_dataframe()
     # Check that each column has pint arrays with units (assume the column has .pint attribute)
     for col in df_event.columns:
         assert hasattr(df_event[col], "pint")

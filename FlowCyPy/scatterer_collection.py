@@ -2,11 +2,9 @@
 from typing import List, Union
 
 import pandas as pd
-from pint_pandas import PintArray
 from TypedUnit import Concentration, RefractiveIndex, ureg
 
 from FlowCyPy.population import BasePopulation
-from FlowCyPy.sub_frames.scatterer import ScattererDataFrame
 
 
 class ScattererCollection:
@@ -48,51 +46,6 @@ class ScattererCollection:
         return [
             (p.particle_count / total_concentration).magnitude for p in self.populations
         ]
-
-    def get_population_dataframe(
-        self, total_sampling: int = 200, use_ratio: bool = True
-    ) -> pd.DataFrame:
-        """
-        Generate a DataFrame by sampling particles from populations.
-
-        Parameters
-        ----------
-        total_sampling : int, optional
-            Total number of samples to draw, distributed across populations based on their ratios.
-
-        Returns
-        -------
-        pd.DataFrame
-            A MultiIndex DataFrame containing the sampled data from all populations. The first
-            index level indicates the population name, and the second level indexes the sampled data.
-        """
-        if use_ratio:
-            ratios = self.get_population_ratios()
-        else:
-            ratios = [1] * len(self.populations)
-
-        sampling_list = [int(ratio * total_sampling) for ratio in ratios]
-
-        population_names = [p.name for p in self.populations]
-
-        # Create tuples for the MultiIndex
-        multi_index_tuples = [
-            (pop_name, idx)
-            for pop_name, n in zip(population_names, sampling_list)
-            for idx in range(n)
-        ]
-
-        # Create the MultiIndex
-        multi_index = pd.MultiIndex.from_tuples(
-            multi_index_tuples, names=["Population", "Index"]
-        )
-
-        # Initialize an empty DataFrame with the MultiIndex
-        scatterer_dataframe = pd.DataFrame(index=multi_index)
-
-        self.fill_dataframe_with_sampling(scatterer_dataframe=scatterer_dataframe)
-
-        return ScattererDataFrame(scatterer_dataframe)
 
     def add_population(self, *population: BasePopulation) -> "ScattererCollection":
         """
@@ -193,39 +146,3 @@ class ScattererCollection:
         """
         for population in self.populations:
             population.dilute(factor)
-
-    def fill_dataframe_with_sampling(
-        self, scatterer_dataframes: List[pd.DataFrame]
-    ) -> None:
-        """
-        Fills a DataFrame with diameter and refractive index sampling data for each population.
-
-        Parameters
-        ----------
-        scatterer_dataframe : List[pd.DataFrame]
-            A list of DataFrames indexed by population names (first level) and containing the
-            following columns: `'Diameter'`: To be filled with particle diameter data. `'RefractiveIndex'`:
-            To be filled with refractive index data. The DataFrames must already have the required structure.
-
-        Returns
-        -------
-        None
-            The method modifies the `scatterer_dataframe` in place, adding diameter and
-            refractive index sampling data.
-
-        After filling, the DataFrame will be populated with diameter and refractive index data.
-        """
-
-        for df in scatterer_dataframes:
-            df.medium_refractive_index = self.medium_refractive_index
-
-            sampling = len(df)
-
-            if sampling == 0:
-                continue
-
-            # Generate sampling data for this population
-            sampling_data = df.population.generate_property_sampling(sampling)
-
-            for key, value in sampling_data.items():
-                df.loc[:, key] = PintArray(value, dtype=value.units)

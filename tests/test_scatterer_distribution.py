@@ -6,7 +6,13 @@ import pytest
 from TypedUnit import ureg
 
 import FlowCyPy
-from FlowCyPy.fluidics import FlowCell, ScattererCollection, distribution, population
+from FlowCyPy.fluidics import (
+    Fluidics,
+    FlowCell,
+    ScattererCollection,
+    distribution,
+    population,
+)
 
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
@@ -27,8 +33,12 @@ def default_flow_cell():
 
 # Parametrize different distributions
 distributions = [
-    distribution.Normal(mean=1.0 * ureg.micrometer, std_dev=100.0 * ureg.nanometer),
-    distribution.LogNormal(mean=1.0 * ureg.micrometer, std_dev=0.01 * ureg.micrometer),
+    distribution.Normal(
+        mean=1.0 * ureg.micrometer, standard_deviation=100.0 * ureg.nanometer
+    ),
+    distribution.LogNormal(
+        mean=1.0 * ureg.micrometer, standard_deviation=0.01 * ureg.micrometer
+    ),
     distribution.Uniform(
         lower_bound=0.5 * ureg.micrometer, upper_bound=1.5 * ureg.micrometer
     ),
@@ -43,7 +53,9 @@ def test_generate_distribution_size(dist, default_flow_cell):
     """Test if the ScattererCollection generates sizes correctly for each distribution type."""
     # Get the distribution from the fixtures
 
-    ri_distribution = distribution.Normal(mean=1.4 * ureg.RIU, std_dev=0.01 * ureg.RIU)
+    ri_distribution = distribution.Normal(
+        mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
+    )
 
     population_0 = population.Sphere(
         particle_count=CONCENTRATION,
@@ -57,14 +69,13 @@ def test_generate_distribution_size(dist, default_flow_cell):
 
     scatterer_collection.add_population(population_0)
 
-    dataframe = default_flow_cell._generate_event_dataframe(
-        scatterer_collection.populations, run_time=100e-4 * ureg.second
+    fluidics = Fluidics(
+        scatterer_collection=scatterer_collection, flow_cell=default_flow_cell
     )
 
-    # # Check that sizes were generated and are positive
-    assert len(dataframe) > 0, "Generated size array is empty."
-
-    scatterer_collection.fill_dataframe_with_sampling(dataframe)
+    dataframe = fluidics.generate_event_frame(
+        run_time=100e-4 * ureg.second
+    ).get_concatenated_dataframe()
 
     assert np.all(dataframe["Diameter"] > 0), "Some generated sizes are not positive."
 
@@ -103,7 +114,9 @@ def test_generate_distribution_size(dist, default_flow_cell):
 @pytest.mark.parametrize("dist", distributions, ids=lambda x: x.__class__)
 def test_generate_longitudinal_positions(default_flow_cell, dist):
     """Test the generation of longitudinal positions based on Poisson process."""
-    ri_distribution = distribution.Normal(mean=1.4 * ureg.RIU, std_dev=0.01 * ureg.RIU)
+    ri_distribution = distribution.Normal(
+        mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
+    )
 
     population_0 = population.Sphere(
         particle_count=CONCENTRATION,
@@ -116,9 +129,11 @@ def test_generate_longitudinal_positions(default_flow_cell, dist):
 
     scatterer_collection.add_population(population_0)
 
-    dataframe = default_flow_cell._generate_event_dataframe(
+    dataframes = default_flow_cell._generate_event_frame(
         scatterer_collection.populations, run_time=100e-4 * ureg.second
     )
+
+    dataframe = dataframes.get_concatenated_dataframe()
 
     # Assert correct shape of generated longitudinal positions
     for _, group in dataframe.groupby("Population"):
@@ -139,11 +154,12 @@ def test_generate_longitudinal_positions(default_flow_cell, dist):
         ), "Some longitudinal positions are negative."
 
 
-@patch("matplotlib.pyplot.show")
 @pytest.mark.parametrize("dist", distributions, ids=lambda x: x.__class__)
-def test_plot_positions(mock_show, dist):
+def test_add_population(dist):
     """Test the plotting of longitudinal positions."""
-    ri_distribution = distribution.Normal(mean=1.4 * ureg.RIU, std_dev=0.01 * ureg.RIU)
+    ri_distribution = distribution.Normal(
+        mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
+    )
 
     population_0 = population.Sphere(
         particle_count=CONCENTRATION,
@@ -156,15 +172,13 @@ def test_plot_positions(mock_show, dist):
 
     scatterer_collection.add_population(population_0)
 
-    scatterer_collection.get_population_dataframe()
-
-    plt.close()
-
 
 @pytest.mark.parametrize("dist", distributions, ids=lambda x: x.__class__)
 def test_extra(dist):
     """Test the generation of longitudinal positions based on Poisson process."""
-    ri_distribution = distribution.Normal(mean=1.4 * ureg.RIU, std_dev=0.01 * ureg.RIU)
+    ri_distribution = distribution.Normal(
+        mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
+    )
 
     population_0 = population.Sphere(
         particle_count=CONCENTRATION,

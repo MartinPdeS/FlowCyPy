@@ -90,10 +90,12 @@ def scatterer_collection():
     scatterer = ScattererCollection()
 
     diameter_distribution = distribution.Normal(
-        mean=1.0 * ureg.micrometer, std_dev=0.1 * ureg.micrometer
+        mean=1.0 * ureg.micrometer, standard_deviation=0.1 * ureg.micrometer
     )
 
-    ri_distribution = distribution.Normal(mean=1.5 * ureg.RIU, std_dev=0.1 * ureg.RIU)
+    ri_distribution = distribution.Normal(
+        mean=1.5 * ureg.RIU, standard_deviation=0.1 * ureg.RIU
+    )
 
     _population = population.Sphere(
         particle_count=110 * ureg.particle,

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from pydantic import field_validator
 from pydantic.dataclasses import dataclass
+from pint_pandas import PintArray
 from TypedUnit import (
     Area,
     Concentration,
@@ -222,7 +223,40 @@ class Sphere(BasePopulation):
     diameter: distribution.Base | Length
     particle_count: Particle | Concentration
 
-    def generate_property_sampling(self, sampling: int) -> tuple:
+    # def generate_property_sampling(self, sampling: int) -> tuple:
+    #     """
+    #     Generate a sampling of particle properties.
+
+    #     This method uses the underlying distributions (or fixed quantities) for diameter and refractive index
+    #     to generate a sample set for simulation or analysis.
+
+    #     This method creates a dictionnary with the following entries:
+    #         - 'Diameter': The generated diameters.
+    #         - 'RefractiveIndex': The generated refractive index values.
+
+    #     Parameters
+    #     ----------
+    #     sampling : int
+    #         The sampling parameter (e.g., number of samples or a resolution quantity) used by the distributions.
+
+    #     Returns
+    #     -------
+    #     tuple
+    #         A tuple containing the generated diameter sample and refractive index sample.
+    #     """
+    #     diameter_sample = self.diameter.generate(sampling)
+    #     refractive_index_sample = self.refractive_index.generate(sampling)
+
+    #     output_dict = {
+    #         "Diameter": diameter_sample,
+    #         "RefractiveIndex": refractive_index_sample,
+    #     }
+
+    #     output_dict = self.add_dye_to_sampling(output_dict, diameter_sample)
+
+    #     return output_dict
+
+    def add_property_to_frame(self, dataframe, sampling: int) -> tuple:
         """
         Generate a sampling of particle properties.
 
@@ -247,14 +281,15 @@ class Sphere(BasePopulation):
         diameter_sample = self.diameter.generate(sampling)
         refractive_index_sample = self.refractive_index.generate(sampling)
 
-        output_dict = {
+        sampled_data = {
             "Diameter": diameter_sample,
             "RefractiveIndex": refractive_index_sample,
         }
 
-        output_dict = self.add_dye_to_sampling(output_dict, diameter_sample)
+        sampled_data = self.add_dye_to_sampling(sampled_data, diameter_sample)
 
-        return output_dict
+        for key, value in sampled_data.items():
+            dataframe.loc[:, key] = PintArray(value, dtype=value.units)
 
 
 @dataclass(config=config_dict)
@@ -299,7 +334,50 @@ class CoreShell(BasePopulation):
     shell_refractive_index: distribution.Base | RefractiveIndex
     particle_count: Particle | Concentration
 
-    def generate_property_sampling(self, sampling: Dimensionless) -> tuple:
+    # def generate_property_sampling(self, sampling: Dimensionless) -> tuple:
+    #     r"""
+    #     Generate a sampling of core-shell particle properties.
+
+    #     This method generates a sample set for the core diameter, shell thickness, core refractive index,
+    #     and shell refractive index from their underlying distributions (or fixed values).
+
+    #     This method creates a dictionnary with the following entries:
+    #         - 'CoreDiameter': The generated core diameters.
+    #         - 'ShellThickness': The generated shell thickness values.
+    #         - 'CoreRefractiveIndex': The generated core refractive indices.
+    #         - 'ShellRefractiveIndex': The generated shell refractive indices.
+
+    #     Parameters
+    #     ----------
+    #     sampling : Quantity
+    #         The sampling parameter used by the distributions.
+
+    #     Returns
+    #     -------
+    #     tuple
+    #         A tuple containing the generated samples in the order:
+    #         (core_diameter, shell_thickness, refractive_index_core, refractive_index_shell).
+    #     """
+
+    #     core_diameter_sample = self.core_diameter.generate(sampling)
+    #     shell_thickness_sample = self.shell_thickness.generate(sampling)
+    #     core_refractive_index_sample = self.core_refractive_index.generate(sampling)
+    #     shell_refractive_index_sample = self.shell_refractive_index.generate(sampling)
+
+    #     output_dict = {
+    #         "CoreDiameter": core_diameter_sample,
+    #         "ShellThickness": shell_thickness_sample,
+    #         "CoreRefractiveIndex": core_refractive_index_sample,
+    #         "ShellRefractiveIndex": shell_refractive_index_sample,
+    #     }
+
+    #     output_dict = self.add_dye_to_sampling(
+    #         output_dict, core_diameter_sample + shell_thickness_sample * 2
+    #     )
+
+    #     return output_dict
+
+    def add_property_to_frame(self, dataframe, sampling: Dimensionless) -> tuple:
         r"""
         Generate a sampling of core-shell particle properties.
 
@@ -329,15 +407,16 @@ class CoreShell(BasePopulation):
         core_refractive_index_sample = self.core_refractive_index.generate(sampling)
         shell_refractive_index_sample = self.shell_refractive_index.generate(sampling)
 
-        output_dict = {
+        sampled_data = {
             "CoreDiameter": core_diameter_sample,
             "ShellThickness": shell_thickness_sample,
             "CoreRefractiveIndex": core_refractive_index_sample,
             "ShellRefractiveIndex": shell_refractive_index_sample,
         }
 
-        output_dict = self.add_dye_to_sampling(
-            output_dict, core_diameter_sample + shell_thickness_sample * 2
+        sampled_data = self.add_dye_to_sampling(
+            sampled_data, core_diameter_sample + shell_thickness_sample * 2
         )
 
-        return output_dict
+        for key, value in sampled_data.items():
+            dataframe.loc[:, key] = PintArray(value, dtype=value.units)

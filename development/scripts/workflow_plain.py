@@ -209,10 +209,9 @@ cytometer = FlowCytometer(
 )
 
 run_record = cytometer.run(run_time=0.4 * ureg.millisecond)
-print(run_record.population_events.events_list[0])
+print(run_record.event_frame.events_list[0])
 
-run_record.population_events.plot(x="Diameter", y="Detector:forward[SCATTERING]")
+run_record.event_frame.plot(x="Diameter", y="Detector:forward[SCATTERING]")
 # print(run_record.population_frame["Pop 0"])
-# run_record.population_frame["Pop 0"].plot(x="Diameter", y="forward")
 
 # _ = run_record.plot_analog(figure_size=(12, 8))

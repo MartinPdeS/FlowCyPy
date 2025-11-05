@@ -27,14 +27,14 @@ class LogNormal(Base):
     ----------
     mean : AnyUnit
         The mean particle properties.
-    std_dev : AnyUnit
+    standard_deviation : AnyUnit
         The standard deviation of the logarithm of particle properties.
     scale_factor : float, optional
         A scaling factor applied to the PDF (not the properties).
     """
 
     mean: AnyUnit
-    std_dev: AnyUnit
+    standard_deviation: AnyUnit
 
     @property
     def _units(self) -> AnyUnit:
@@ -45,8 +45,8 @@ class LogNormal(Base):
         return self.mean.to(self._units)
 
     @property
-    def _std_dev(self) -> AnyUnit:
-        return self.std_dev.to(self._units)
+    def _standard_deviation(self) -> AnyUnit:
+        return self.standard_deviation.to(self._units)
 
     @Base.pre_generate
     def generate(self, n_samples: int) -> AnyUnit:
@@ -66,7 +66,9 @@ class LogNormal(Base):
             An array of scatterer properties in meters.
         """
         return np.random.lognormal(
-            mean=self._mean.magnitude, sigma=self._std_dev.magnitude, size=n_samples
+            mean=self._mean.magnitude,
+            sigma=self._standard_deviation.magnitude,
+            size=n_samples,
         )
 
     def _generate_default_x(
@@ -121,9 +123,11 @@ class LogNormal(Base):
         """
         x = self._generate_default_x(x_min=x_min, x_max=x_max, n_samples=n_samples)
 
-        pdf = lognorm.pdf(x.magnitude, s=self._std_dev, scale=self._mean.magnitude)
+        pdf = lognorm.pdf(
+            x.magnitude, s=self._standard_deviation, scale=self._mean.magnitude
+        )
 
         return x, pdf
 
     def __repr__(self) -> str:
-        return f"Log-Normal({self.mean:.3f~P}, {self.std_dev:.3f~P})"
+        return f"Log-Normal({self.mean:.3f~P}, {self.standard_deviation:.3f~P})"

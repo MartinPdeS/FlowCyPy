@@ -127,7 +127,7 @@ class ScatteringSimulator:
             total_size=num_particles,
             diameter=event_dataframe["Diameter"].values.quantity,
             property=event_dataframe["RefractiveIndex"].values.quantity,
-            medium_property=event_dataframe.medium_refractive_index,
+            medium_property=event_dataframe["MediumRefractiveIndex"].values.quantity,
             source=source,
         )
 

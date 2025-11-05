@@ -11,6 +11,7 @@ from FlowCyPy.signal_processing import SignalProcessing
 from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.run_record import RunRecord
+from FlowCyPy.detector import DetectorType
 
 
 class FlowCytometer:
@@ -104,19 +105,32 @@ class FlowCytometer:
         pd.DataFrame
             A DataFrame containing event data for the scatterers.
         """
-        event_dataframes = self.fluidics.generate_event_dataframe(
-            run_time=run_record.run_time
-        )
+        event_frames = self.fluidics.generate_event_frame(run_time=run_record.run_time)
 
         self.opto_electronics.model_event(
-            event_dataframes=event_dataframes,
+            event_frames=event_frames,
             compute_cross_section=compute_cross_section,
         )
 
-        return event_dataframes
+        return event_frames
+
+    def _distribute_events(self, population_events) -> None:
+        """
+        Distributes events across detectors.
+
+        This method is a placeholder for distributing events to the appropriate detectors.
+        """
+        for detector in self.opto_electronics.detectors:
+            detector.events = []
+            for events in population_events:
+                if detector.channel_type == DetectorType.SCATTERING:
+                    detector.events.append(events)
+
+                if detector.channel_type == events.channel_type:
+                    detector.events.append(events)
 
     def compute_analog(
-        self, run_time: Time, population_events: pd.DataFrame
+        self, run_time: Time, event_frame: pd.DataFrame
     ) -> AcquisitionDataFrame:
         """
         Simulates the analog optical signal response for all detected events.
@@ -142,17 +156,21 @@ class FlowCytometer:
         signal_generator.signal_units = ureg.watt  # Initial unit: optical power
 
         for detector in self.opto_electronics.detectors:
-            for events in population_events:
+            for events in event_frame:
                 if events.empty:
                     signal_generator.add_constant(constant=self.background_power)
                 else:
+                    coupling_power = (
+                        events[f"Detector:{detector.name}[SCATTERING]"]
+                        .pint.to_base_units()
+                        .values.quantity
+                    )
+
                     signal_generator.generate_pulses(
                         signal_name=detector.name,
-                        widths=events["Widths"].values.quantity,
-                        centers=events["Time"].values.quantity,
-                        amplitudes=events[
-                            f"Detector:{detector.name}[SCATTERING]"
-                        ].values.quantity,
+                        widths=events["Widths"].pint.to_base_units().values.quantity,
+                        centers=events["Time"].pint.to_base_units().values.quantity,
+                        amplitudes=coupling_power,
                         base_level=self.background_power,
                     )
 
@@ -217,21 +235,19 @@ class FlowCytometer:
         RunRecord
             Simulation output containing all analog, digital, and peak-level data.
         """
-        population_events = self.fluidics.generate_event_dataframe(run_time=run_time)
+        event_frame = self.fluidics.generate_event_frame(run_time=run_time)
 
-        self.opto_electronics.model_event(
-            population_events=population_events,
+        self.opto_electronics.add_model_to_event_frame(
+            event_frame=event_frame,
             compute_cross_section=compute_cross_section,
         )
 
-        analog = self.compute_analog(
-            population_events=population_events, run_time=run_time
-        )
+        analog = self.compute_analog(event_frame=event_frame, run_time=run_time)
 
         run_record = RunRecord(
             run_time=run_time,
             detector_names=[d.name for d in self.opto_electronics.detectors],
-            population_events=population_events,
+            event_frame=event_frame,
             analog=analog,
         )
 

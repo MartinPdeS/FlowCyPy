@@ -3,7 +3,13 @@ import pytest
 from TypedUnit import ureg
 
 import FlowCyPy
-from FlowCyPy.fluidics import FlowCell, ScattererCollection, distribution, population
+from FlowCyPy.fluidics import (
+    Fluidics,
+    FlowCell,
+    ScattererCollection,
+    distribution,
+    population,
+)
 
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
@@ -26,10 +32,10 @@ def flow_cell():
 def populations():
     """Fixture to create a Population object for testing."""
     diameter_dist = distribution.Normal(
-        mean=500 * ureg.nanometer, std_dev=50 * ureg.nanometer
+        mean=500 * ureg.nanometer, standard_deviation=50 * ureg.nanometer
     )
     refractive_index_dist = distribution.Normal(
-        mean=1.4 * ureg.RIU, std_dev=0.01 * ureg.RIU
+        mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
     )
     population_0 = population.Sphere(
         particle_count=1.8e11 * ureg.particle / ureg.milliliter,
@@ -59,25 +65,28 @@ def scatterer_collection(populations):
 
 @pytest.fixture
 def population_dataframe(flow_cell, populations):
-    dataframe = flow_cell._generate_event_dataframe(populations, run_time=RUN_TIME)
+    dataframe = flow_cell._generate_event_frame(populations, run_time=RUN_TIME)
 
-    return dataframe
+    return dataframe.get_concatenated_dataframe()
 
 
 # Test 1: Check if the population is properly initialized
-def test_population_initialization(scatterer_collection, population_dataframe):
+def test_population_initialization(scatterer_collection, flow_cell):
     """Test if the Population object initializes correctly."""
-    scatterer_collection.fill_dataframe_with_sampling(population_dataframe)
+    fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
+
+    event_frame = fluidics.generate_event_frame(
+        run_time=RUN_TIME
+    ).get_concatenated_dataframe()
 
     assert (
-        len(population_dataframe) > 0
+        len(event_frame) > 0
     ), "Number of events should be greater than 0 after initialization"
 
 
 # Test 2: Check if particle arrival times are generated correctly
 def test_particle_arrival_times(flow_cell, population_dataframe):
     """Test if the particle arrival times are generated correctly."""
-
     assert (
         len(population_dataframe["Time"]) > 0
     ), "Particle arrival times should be generated"
@@ -98,9 +107,9 @@ def test_invalid_flow_cell():
         )
         population_0 = population.Sphere(
             size=distribution.Normal(
-                mean=500 * ureg.nanometer, std_dev=50 * ureg.nanometer
+                mean=500 * ureg.nanometer, standard_deviation=50 * ureg.nanometer
             ),
-            refractive_index=distribution.Normal(mean=1.4, std_dev=0.01),
+            refractive_index=distribution.Normal(mean=1.4, standard_deviation=0.01),
             name="Invalid Test",
         )
         population_0.initialize(invalid_flow_cell)
