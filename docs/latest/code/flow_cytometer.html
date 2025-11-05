@@ -564,7 +564,7 @@ particle event and noise modeling for accurate signal representation.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.flow_cytometer.FlowCytometer.compute_analog">
-<span class="sig-name descname"><span class="pre">compute_analog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">events</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cytometer.html#FlowCytometer.compute_analog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cytometer.FlowCytometer.compute_analog" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute_analog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_frame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cytometer.html#FlowCytometer.compute_analog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cytometer.FlowCytometer.compute_analog" title="Link to this definition">#</a></dt>
 <dd><p>Simulates the analog optical signal response for all detected events.</p>
 <p>This method generates Gaussian-shaped optical pulses based on particle event data
 (time, width, amplitude), adds background optical power, and propagates the resulting
@@ -585,7 +585,7 @@ signal through the detector chain:
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>run_time</strong> (<em>Time</em>)</p></li>
-<li><p><strong>events</strong> (<em>DataFrame</em>)</p></li>
+<li><p><strong>event_frame</strong> (<em>DataFrame</em>)</p></li>
 </ul>
 </dd>
 </dl>

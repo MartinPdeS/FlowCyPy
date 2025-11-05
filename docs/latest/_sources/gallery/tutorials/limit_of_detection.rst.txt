@@ -69,7 +69,7 @@ scatter signals in the presence of system noise and fluidic variability.
 
 Simulation Configuration
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-52
+.. GENERATED FROM PYTHON SOURCE LINES 42-50
 
 .. code-block:: Python
 
@@ -78,8 +78,6 @@ Simulation Configuration
     SimulationSettings.include_source_noise = True
     SimulationSettings.include_dark_current_noise = True
     SimulationSettings.assume_perfect_hydrodynamic_focusing = True
-    SimulationSettings.evenly_spaced_events = True
-    SimulationSettings.sorted_population = True
 
     np.random.seed(3)
 
@@ -90,11 +88,11 @@ Simulation Configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 53-54
+.. GENERATED FROM PYTHON SOURCE LINES 51-52
 
 Optical Source
 
-.. GENERATED FROM PYTHON SOURCE LINES 54-60
+.. GENERATED FROM PYTHON SOURCE LINES 52-58
 
 .. code-block:: Python
 
@@ -111,11 +109,11 @@ Optical Source
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 61-62
+.. GENERATED FROM PYTHON SOURCE LINES 59-60
 
 Flow Cell Configuration
 
-.. GENERATED FROM PYTHON SOURCE LINES 62-69
+.. GENERATED FROM PYTHON SOURCE LINES 60-67
 
 .. code-block:: Python
 
@@ -133,11 +131,11 @@ Flow Cell Configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 70-71
+.. GENERATED FROM PYTHON SOURCE LINES 68-69
 
 Define Scatterer Populations (90–150 nm spheres)
 
-.. GENERATED FROM PYTHON SOURCE LINES 71-82
+.. GENERATED FROM PYTHON SOURCE LINES 69-80
 
 .. code-block:: Python
 
@@ -159,11 +157,11 @@ Define Scatterer Populations (90–150 nm spheres)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 83-84
+.. GENERATED FROM PYTHON SOURCE LINES 81-82
 
 Fluidics Subsystem
 
-.. GENERATED FROM PYTHON SOURCE LINES 84-86
+.. GENERATED FROM PYTHON SOURCE LINES 82-84
 
 .. code-block:: Python
 
@@ -176,11 +174,11 @@ Fluidics Subsystem
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 87-88
+.. GENERATED FROM PYTHON SOURCE LINES 85-86
 
 Signal Digitizer
 
-.. GENERATED FROM PYTHON SOURCE LINES 88-92
+.. GENERATED FROM PYTHON SOURCE LINES 86-90
 
 .. code-block:: Python
 
@@ -195,11 +193,11 @@ Signal Digitizer
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 93-94
+.. GENERATED FROM PYTHON SOURCE LINES 91-92
 
 Detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 94-110
+.. GENERATED FROM PYTHON SOURCE LINES 92-108
 
 .. code-block:: Python
 
@@ -226,11 +224,11 @@ Detectors
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 111-112
+.. GENERATED FROM PYTHON SOURCE LINES 109-110
 
 Amplifier and Opto-Electronics
 
-.. GENERATED FROM PYTHON SOURCE LINES 112-120
+.. GENERATED FROM PYTHON SOURCE LINES 110-118
 
 .. code-block:: Python
 
@@ -249,11 +247,11 @@ Amplifier and Opto-Electronics
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 121-122
+.. GENERATED FROM PYTHON SOURCE LINES 119-120
 
 Analog Processing Pipeline
 
-.. GENERATED FROM PYTHON SOURCE LINES 122-127
+.. GENERATED FROM PYTHON SOURCE LINES 120-125
 
 .. code-block:: Python
 
@@ -269,17 +267,17 @@ Analog Processing Pipeline
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 128-129
+.. GENERATED FROM PYTHON SOURCE LINES 126-127
 
 Triggering and Peak Detection
 
-.. GENERATED FROM PYTHON SOURCE LINES 129-144
+.. GENERATED FROM PYTHON SOURCE LINES 127-142
 
 .. code-block:: Python
 
     triggering_system = triggering_system.DynamicWindow(
         trigger_detector_name="forward",
-        threshold=0.4 * ureg.millivolt,
+        threshold=0.2 * ureg.millivolt,
         max_triggers=-1,
         pre_buffer=64,
         post_buffer=64,
@@ -299,7 +297,7 @@ Triggering and Peak Detection
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 145-154
+.. GENERATED FROM PYTHON SOURCE LINES 143-152
 
 .. code-block:: Python
 
@@ -319,15 +317,20 @@ Triggering and Peak Detection
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 155-156
+.. GENERATED FROM PYTHON SOURCE LINES 153-155
 
 Plot Raw Analog Signal
+run_record.plot_analog()
 
-.. GENERATED FROM PYTHON SOURCE LINES 156-158
+.. GENERATED FROM PYTHON SOURCE LINES 157-158
+
+Plot Triggered Analog Signal Segments
+
+.. GENERATED FROM PYTHON SOURCE LINES 158-160
 
 .. code-block:: Python
 
-    run_record.plot_analog()
+    run_record.plot_digital()
 
 
 
@@ -347,39 +350,11 @@ Plot Raw Analog Signal
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 159-160
-
-Plot Triggered Analog Signal Segments
-
-.. GENERATED FROM PYTHON SOURCE LINES 160-162
-
-.. code-block:: Python
-
-    run_record.plot_digital()
-
-
-
-
-.. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
-   :alt: limit of detection
-   :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
-   :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-
-    <Figure size 800x500 with 3 Axes>
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 163-164
+.. GENERATED FROM PYTHON SOURCE LINES 161-162
 
 Plot Peak Features (Side vs Forward Height)
 
-.. GENERATED FROM PYTHON SOURCE LINES 164-165
+.. GENERATED FROM PYTHON SOURCE LINES 162-163
 
 .. code-block:: Python
 
@@ -387,9 +362,9 @@ Plot Peak Features (Side vs Forward Height)
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
    :alt: Peaks properties
-   :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
+   :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
    :class: sphx-glr-single-img
 
 
@@ -405,7 +380,7 @@ Plot Peak Features (Side vs Forward Height)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 4.396 seconds)
+   **Total running time of the script:** (0 minutes 3.530 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:

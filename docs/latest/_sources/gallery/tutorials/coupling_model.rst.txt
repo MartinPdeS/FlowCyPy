@@ -127,10 +127,10 @@ Step 3: Generate Particle Event DataFrame
 
 .. code-block:: Python
 
-    event_dataframe = fluidics.generate_event_dataframe(run_time=3.5 * ureg.millisecond)
+    event_frame = fluidics.generate_event_frame(run_time=3.5 * ureg.millisecond)
 
     # Plot the diameter distribution of the particles
-    event_dataframe.plot(x="Diameter", bins="auto")
+    event_frame.plot(x="Diameter", bins="auto")
 
 
 
@@ -211,8 +211,8 @@ Step 6: Model Scattering Signals
 
 .. code-block:: Python
 
-    event_dataframe = opto_electronics.model_event(
-        event_dataframe=event_dataframe, compute_cross_section=True
+    opto_electronics.add_model_to_event_frame(
+        event_frame=event_frame, compute_cross_section=True
     )
 
 
@@ -228,6 +228,7 @@ Step 6: Model Scattering Signals
     /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/FlowCyPy/source.py:268: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn(
 
+    <FlowCyPy.event_frame.EventFrame object at 0x7fdf5f3bc050>
 
 
 
@@ -240,7 +241,7 @@ Step 7: Visualize Scattering Intensity
 
 .. code-block:: Python
 
-    event_dataframe.plot(x="side", y="Csca")  # Color-coded by scattering cross-section
+    event_frame.plot(x="side", y="Csca")  # Color-coded by scattering cross-section
 
 
 
@@ -262,7 +263,7 @@ Step 7: Visualize Scattering Intensity
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.123 seconds)
+   **Total running time of the script:** (0 minutes 3.283 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_coupling_model.py:

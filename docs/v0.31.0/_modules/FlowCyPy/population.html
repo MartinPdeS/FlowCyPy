@@ -508,6 +508,7 @@ document.write(`
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pint_pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">PintArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Area</span><span class="p">,</span>
     <span class="n">Concentration</span><span class="p">,</span>
@@ -525,6 +526,11 @@ document.write(`
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">BasePopulation</span><span class="p">:</span>
+    <span class="n">dye_label</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_dye_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fluorophore</span><span class="p">,</span> <span class="n">labeling_model</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dye_label</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">fluorophore</span><span class="p">,</span> <span class="n">labeling_model</span><span class="p">))</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">calculate_number_of_events</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">flow_area</span><span class="p">:</span> <span class="n">Area</span><span class="p">,</span> <span class="n">flow_speed</span><span class="p">:</span> <span class="n">Velocity</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Particle</span><span class="p">:</span>
@@ -668,6 +674,28 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">/=</span> <span class="n">factor</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_dye_to_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling_dict</span><span class="p">,</span> <span class="n">diameter_sample</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds dye labeling information to the sampling dictionary.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sampling_dict : dict</span>
+<span class="sd">            The existing sampling dictionary to which dye information will be added.</span>
+<span class="sd">        diameter_sample : Quantity</span>
+<span class="sd">            The sampled diameters of the particles.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            The updated sampling dictionary with dye labeling information added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">dye</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dye_label</span><span class="p">:</span>
+            <span class="n">count_sample</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sample_labels_given_diameter</span><span class="p">(</span><span class="n">diameter_sample</span><span class="p">)</span>
+            <span class="n">sampling_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Dye:</span><span class="si">{</span><span class="n">dye</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">count_sample</span>
+
+        <span class="k">return</span> <span class="n">sampling_dict</span>
+
 
 <div class="viewcode-block" id="Sphere">
 <a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.Sphere">[docs]</a>
@@ -704,9 +732,42 @@ document.write(`
     <span class="n">diameter</span><span class="p">:</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span> <span class="o">|</span> <span class="n">Length</span>
     <span class="n">particle_count</span><span class="p">:</span> <span class="n">Particle</span> <span class="o">|</span> <span class="n">Concentration</span>
 
-<div class="viewcode-block" id="Sphere.generate_property_sampling">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.Sphere.generate_property_sampling">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">generate_property_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="c1"># def generate_property_sampling(self, sampling: int) -&gt; tuple:</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Generate a sampling of particle properties.</span>
+
+    <span class="c1">#     This method uses the underlying distributions (or fixed quantities) for diameter and refractive index</span>
+    <span class="c1">#     to generate a sample set for simulation or analysis.</span>
+
+    <span class="c1">#     This method creates a dictionnary with the following entries:</span>
+    <span class="c1">#         - &#39;Diameter&#39;: The generated diameters.</span>
+    <span class="c1">#         - &#39;RefractiveIndex&#39;: The generated refractive index values.</span>
+
+    <span class="c1">#     Parameters</span>
+    <span class="c1">#     ----------</span>
+    <span class="c1">#     sampling : int</span>
+    <span class="c1">#         The sampling parameter (e.g., number of samples or a resolution quantity) used by the distributions.</span>
+
+    <span class="c1">#     Returns</span>
+    <span class="c1">#     -------</span>
+    <span class="c1">#     tuple</span>
+    <span class="c1">#         A tuple containing the generated diameter sample and refractive index sample.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     diameter_sample = self.diameter.generate(sampling)</span>
+    <span class="c1">#     refractive_index_sample = self.refractive_index.generate(sampling)</span>
+
+    <span class="c1">#     output_dict = {</span>
+    <span class="c1">#         &quot;Diameter&quot;: diameter_sample,</span>
+    <span class="c1">#         &quot;RefractiveIndex&quot;: refractive_index_sample,</span>
+    <span class="c1">#     }</span>
+
+    <span class="c1">#     output_dict = self.add_dye_to_sampling(output_dict, diameter_sample)</span>
+
+    <span class="c1">#     return output_dict</span>
+
+<div class="viewcode-block" id="Sphere.add_property_to_frame">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.Sphere.add_property_to_frame">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_property_to_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a sampling of particle properties.</span>
 
@@ -728,10 +789,18 @@ document.write(`
 <span class="sd">        tuple</span>
 <span class="sd">            A tuple containing the generated diameter sample and refractive index sample.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;Diameter&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
-            <span class="s2">&quot;RefractiveIndex&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
-        <span class="p">}</span></div>
+        <span class="n">diameter_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+        <span class="n">refractive_index_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+
+        <span class="n">sampled_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Diameter&quot;</span><span class="p">:</span> <span class="n">diameter_sample</span><span class="p">,</span>
+            <span class="s2">&quot;RefractiveIndex&quot;</span><span class="p">:</span> <span class="n">refractive_index_sample</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">sampled_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_dye_to_sampling</span><span class="p">(</span><span class="n">sampled_data</span><span class="p">,</span> <span class="n">diameter_sample</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">sampled_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="p">)</span></div>
 </div>
 
 
@@ -780,9 +849,52 @@ document.write(`
     <span class="n">shell_refractive_index</span><span class="p">:</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Base</span> <span class="o">|</span> <span class="n">RefractiveIndex</span>
     <span class="n">particle_count</span><span class="p">:</span> <span class="n">Particle</span> <span class="o">|</span> <span class="n">Concentration</span>
 
-<div class="viewcode-block" id="CoreShell.generate_property_sampling">
-<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.CoreShell.generate_property_sampling">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">generate_property_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="n">Dimensionless</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="c1"># def generate_property_sampling(self, sampling: Dimensionless) -&gt; tuple:</span>
+    <span class="c1">#     r&quot;&quot;&quot;</span>
+    <span class="c1">#     Generate a sampling of core-shell particle properties.</span>
+
+    <span class="c1">#     This method generates a sample set for the core diameter, shell thickness, core refractive index,</span>
+    <span class="c1">#     and shell refractive index from their underlying distributions (or fixed values).</span>
+
+    <span class="c1">#     This method creates a dictionnary with the following entries:</span>
+    <span class="c1">#         - &#39;CoreDiameter&#39;: The generated core diameters.</span>
+    <span class="c1">#         - &#39;ShellThickness&#39;: The generated shell thickness values.</span>
+    <span class="c1">#         - &#39;CoreRefractiveIndex&#39;: The generated core refractive indices.</span>
+    <span class="c1">#         - &#39;ShellRefractiveIndex&#39;: The generated shell refractive indices.</span>
+
+    <span class="c1">#     Parameters</span>
+    <span class="c1">#     ----------</span>
+    <span class="c1">#     sampling : Quantity</span>
+    <span class="c1">#         The sampling parameter used by the distributions.</span>
+
+    <span class="c1">#     Returns</span>
+    <span class="c1">#     -------</span>
+    <span class="c1">#     tuple</span>
+    <span class="c1">#         A tuple containing the generated samples in the order:</span>
+    <span class="c1">#         (core_diameter, shell_thickness, refractive_index_core, refractive_index_shell).</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+
+    <span class="c1">#     core_diameter_sample = self.core_diameter.generate(sampling)</span>
+    <span class="c1">#     shell_thickness_sample = self.shell_thickness.generate(sampling)</span>
+    <span class="c1">#     core_refractive_index_sample = self.core_refractive_index.generate(sampling)</span>
+    <span class="c1">#     shell_refractive_index_sample = self.shell_refractive_index.generate(sampling)</span>
+
+    <span class="c1">#     output_dict = {</span>
+    <span class="c1">#         &quot;CoreDiameter&quot;: core_diameter_sample,</span>
+    <span class="c1">#         &quot;ShellThickness&quot;: shell_thickness_sample,</span>
+    <span class="c1">#         &quot;CoreRefractiveIndex&quot;: core_refractive_index_sample,</span>
+    <span class="c1">#         &quot;ShellRefractiveIndex&quot;: shell_refractive_index_sample,</span>
+    <span class="c1">#     }</span>
+
+    <span class="c1">#     output_dict = self.add_dye_to_sampling(</span>
+    <span class="c1">#         output_dict, core_diameter_sample + shell_thickness_sample * 2</span>
+    <span class="c1">#     )</span>
+
+    <span class="c1">#     return output_dict</span>
+
+<div class="viewcode-block" id="CoreShell.add_property_to_frame">
+<a class="viewcode-back" href="../../code/scatterer.html#FlowCyPy.population.CoreShell.add_property_to_frame">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_property_to_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">sampling</span><span class="p">:</span> <span class="n">Dimensionless</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a sampling of core-shell particle properties.</span>
 
@@ -806,12 +918,25 @@ document.write(`
 <span class="sd">            A tuple containing the generated samples in the order:</span>
 <span class="sd">            (core_diameter, shell_thickness, refractive_index_core, refractive_index_shell).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;CoreDiameter&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
-            <span class="s2">&quot;ShellThickness&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_thickness</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
-            <span class="s2">&quot;CoreRefractiveIndex&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
-            <span class="s2">&quot;ShellRefractiveIndex&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">),</span>
-        <span class="p">}</span></div>
+
+        <span class="n">core_diameter_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+        <span class="n">shell_thickness_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_thickness</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+        <span class="n">core_refractive_index_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+        <span class="n">shell_refractive_index_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+
+        <span class="n">sampled_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;CoreDiameter&quot;</span><span class="p">:</span> <span class="n">core_diameter_sample</span><span class="p">,</span>
+            <span class="s2">&quot;ShellThickness&quot;</span><span class="p">:</span> <span class="n">shell_thickness_sample</span><span class="p">,</span>
+            <span class="s2">&quot;CoreRefractiveIndex&quot;</span><span class="p">:</span> <span class="n">core_refractive_index_sample</span><span class="p">,</span>
+            <span class="s2">&quot;ShellRefractiveIndex&quot;</span><span class="p">:</span> <span class="n">shell_refractive_index_sample</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">sampled_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_dye_to_sampling</span><span class="p">(</span>
+            <span class="n">sampled_data</span><span class="p">,</span> <span class="n">core_diameter_sample</span> <span class="o">+</span> <span class="n">shell_thickness_sample</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">sampled_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

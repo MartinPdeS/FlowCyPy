@@ -550,7 +550,7 @@ document.write(`
 </a>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Normal">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std_dev</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/normal.html#Normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Normal" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard_deviation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/normal.html#Normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Normal" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
 <p>Represents a normal (Gaussian) distribution for particle properties.</p>
 <p>The normal distribution is described by its mean and standard deviation:</p>
@@ -563,8 +563,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mean</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The mean (average) particle property in meters.</p></li>
-<li><p><strong>std_dev</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The standard deviation of particle properties in meters.</p></li>
+<li><p><strong>mean</strong> (<em>AnyUnit</em>) – The mean (average) particle property in meters.</p></li>
+<li><p><strong>standard_deviation</strong> (<em>AnyUnit</em>) – The standard deviation of particle properties in meters.</p></li>
 </ul>
 </dd>
 </dl>
@@ -603,12 +603,12 @@ document.write(`
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Normal.mean">
-<span class="sig-name descname"><span class="pre">mean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.Normal.mean" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">mean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span></em><a class="headerlink" href="#FlowCyPy.distribution.Normal.mean" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.distribution.Normal.std_dev">
-<span class="sig-name descname"><span class="pre">std_dev</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.Normal.std_dev" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="FlowCyPy.distribution.Normal.standard_deviation">
+<span class="sig-name descname"><span class="pre">standard_deviation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span></em><a class="headerlink" href="#FlowCyPy.distribution.Normal.standard_deviation" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -621,7 +621,7 @@ document.write(`
 </a>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LogNormal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std_dev</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/lognormal.html#LogNormal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.LogNormal" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LogNormal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard_deviation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/lognormal.html#LogNormal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.LogNormal" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
 <p>Represents a log-normal distribution for particle properties.</p>
 <p>The log-normal distribution is described by its mean and standard deviation of the logarithm of the values:</p>
@@ -633,8 +633,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mean</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The mean particle properties.</p></li>
-<li><p><strong>std_dev</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The standard deviation of the logarithm of particle properties.</p></li>
+<li><p><strong>mean</strong> (<em>AnyUnit</em>) – The mean particle properties.</p></li>
+<li><p><strong>standard_deviation</strong> (<em>AnyUnit</em>) – The standard deviation of the logarithm of particle properties.</p></li>
 <li><p><strong>scale_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – A scaling factor applied to the PDF (not the properties).</p></li>
 </ul>
 </dd>
@@ -673,12 +673,12 @@ document.write(`
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal.mean">
-<span class="sig-name descname"><span class="pre">mean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.mean" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">mean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span></em><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.mean" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal.std_dev">
-<span class="sig-name descname"><span class="pre">std_dev</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.std_dev" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal.standard_deviation">
+<span class="sig-name descname"><span class="pre">standard_deviation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span></em><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.standard_deviation" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -718,7 +718,7 @@ powders or granular materials.</p>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.characteristic_property">
-<span class="sig-name descname"><span class="pre">characteristic_property</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.characteristic_property" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">characteristic_property</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span></em><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.characteristic_property" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -778,8 +778,8 @@ powders or granular materials.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The shape parameter (k), controls the skewness of the distribution.</p></li>
-<li><p><strong>scale</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The scale parameter (λ), controls the spread of the distribution.</p></li>
+<li><p><strong>shape</strong> (<em>AnyUnit</em>) – The shape parameter (k), controls the skewness of the distribution.</p></li>
+<li><p><strong>scale</strong> (<em>AnyUnit</em>) – The scale parameter (λ), controls the spread of the distribution.</p></li>
 </ul>
 </dd>
 </dl>
@@ -802,7 +802,7 @@ powders or granular materials.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em><em>, </em><em>optional</em>) – The input x-values (particle properties) over which to compute the PDF. If not provided, a range is generated.</p></li>
+<li><p><strong>x</strong> (<em>AnyUnit</em><em>, </em><em>optional</em>) – The input x-values (particle properties) over which to compute the PDF. If not provided, a range is generated.</p></li>
 <li><p><strong>n_points</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points in the generated range if <cite>x</cite> is not provided. Default is 100.</p></li>
 <li><p><strong>n_samples</strong> (<em>int</em>)</p></li>
 </ul>
@@ -811,19 +811,19 @@ powders or granular materials.</p>
 <dd class="field-even"><p>The input x-values and the corresponding PDF values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[Length | RefractiveIndex, np.ndarray]</p>
+<dd class="field-odd"><p>Tuple[AnyUnit, np.ndarray]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Weibull.scale">
-<span class="sig-name descname"><span class="pre">scale</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.Weibull.scale" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">scale</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span></em><a class="headerlink" href="#FlowCyPy.distribution.Weibull.scale" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Weibull.shape">
-<span class="sig-name descname"><span class="pre">shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.Weibull.shape" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span></em><a class="headerlink" href="#FlowCyPy.distribution.Weibull.shape" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -846,7 +846,7 @@ powders or granular materials.</p>
 - <span class="math notranslate nohighlight">\(x_0\)</span> is the singular particle property.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>position</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The particle property for the delta distribution in meters.</p>
+<dd class="field-odd"><p><strong>position</strong> (<em>AnyUnit</em>) – The particle property for the delta distribution in meters.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -869,7 +869,7 @@ powders or granular materials.</p>
 <dd class="field-odd"><p>The input x-values and the corresponding scaled PDF values.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>Tuple[Length | RefractiveIndex, np.ndarray]</p>
+<dd class="field-even"><p>Tuple[AnyUnit, np.ndarray]</p>
 </dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -883,7 +883,7 @@ powders or granular materials.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Delta.position">
-<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.Delta.position" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span></em><a class="headerlink" href="#FlowCyPy.distribution.Delta.position" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -908,8 +908,8 @@ powders or granular materials.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lower_bound</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The lower bound for particle properties in meters.</p></li>
-<li><p><strong>upper_bound</strong> (<em>Length</em><em> | </em><em>RefractiveIndex</em>) – The upper bound for particle properties in meters.</p></li>
+<li><p><strong>lower_bound</strong> (<em>AnyUnit</em>) – The lower bound for particle properties in meters.</p></li>
+<li><p><strong>upper_bound</strong> (<em>AnyUnit</em>) – The upper bound for particle properties in meters.</p></li>
 </ul>
 </dd>
 </dl>
@@ -937,19 +937,19 @@ powders or granular materials.</p>
 <dd class="field-even"><p>The input x-values and the corresponding PDF values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[Length | RefractiveIndex, np.ndarray]</p>
+<dd class="field-odd"><p>Tuple[AnyUnit, np.ndarray]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Uniform.lower_bound">
-<span class="sig-name descname"><span class="pre">lower_bound</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.Uniform.lower_bound" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">lower_bound</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span></em><a class="headerlink" href="#FlowCyPy.distribution.Uniform.lower_bound" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Uniform.upper_bound">
-<span class="sig-name descname"><span class="pre">upper_bound</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Length</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">RefractiveIndex</span></em><a class="headerlink" href="#FlowCyPy.distribution.Uniform.upper_bound" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">upper_bound</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span></em><a class="headerlink" href="#FlowCyPy.distribution.Uniform.upper_bound" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -986,7 +986,7 @@ powders or granular materials.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.Normal.generate"><code class="docutils literal notranslate"><span class="pre">Normal.generate()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.Normal.get_pdf"><code class="docutils literal notranslate"><span class="pre">Normal.get_pdf()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.Normal.mean"><code class="docutils literal notranslate"><span class="pre">Normal.mean</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.Normal.std_dev"><code class="docutils literal notranslate"><span class="pre">Normal.std_dev</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.Normal.standard_deviation"><code class="docutils literal notranslate"><span class="pre">Normal.standard_deviation</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -996,7 +996,7 @@ powders or granular materials.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.LogNormal.generate"><code class="docutils literal notranslate"><span class="pre">LogNormal.generate()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.LogNormal.get_pdf"><code class="docutils literal notranslate"><span class="pre">LogNormal.get_pdf()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.LogNormal.mean"><code class="docutils literal notranslate"><span class="pre">LogNormal.mean</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.LogNormal.std_dev"><code class="docutils literal notranslate"><span class="pre">LogNormal.std_dev</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.LogNormal.standard_deviation"><code class="docutils literal notranslate"><span class="pre">LogNormal.standard_deviation</span></code></a></li>
 </ul>
 </li>
 </ul>

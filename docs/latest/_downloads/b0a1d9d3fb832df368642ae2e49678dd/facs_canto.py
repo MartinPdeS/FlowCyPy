@@ -18,7 +18,9 @@ population_0 = population.Sphere(
     name="Pop 0",
     particle_count=5e9 * ureg.particle / ureg.milliliter,
     diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
-    refractive_index=distribution.Normal(1.44 * ureg.RIU, std_dev=0.002 * ureg.RIU),
+    refractive_index=distribution.Normal(
+        1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
+    ),
 )
 
 facs_canto = FacsCanto(

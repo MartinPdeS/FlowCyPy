@@ -514,9 +514,8 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary.interface_flow_cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">FLOWCELL</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluid_region</span><span class="w"> </span><span class="kn">import</span> <span class="n">FluidRegion</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">BasePopulation</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.simulation_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.scatterer</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScattererDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">config_dict</span><span class="p">,</span> <span class="n">StrictDataclassMixing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.event_frame</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventFrame</span>
 
 
 <div class="viewcode-block" id="FlowCell">
@@ -637,9 +636,9 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">sample</span> <span class="o">=</span> <span class="n">FluidRegion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cpp_sample</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sheath</span> <span class="o">=</span> <span class="n">FluidRegion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cpp_sheath</span><span class="p">)</span>
 
-<div class="viewcode-block" id="FlowCell.sample_transverse_profile">
-<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.flow_cell.FlowCell.sample_transverse_profile">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">sample_transverse_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<div class="viewcode-block" id="FlowCell.add_transverse_profile_to_frame">
+<a class="viewcode-back" href="../../code/flow_cell.html#FlowCyPy.flow_cell.FlowCell.add_transverse_profile_to_frame">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_transverse_profile_to_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sample particles from the focused sample stream.</span>
 
@@ -665,8 +664,8 @@ document.write(`
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        n_samples : int</span>
-<span class="sd">            Number of particles to sample.</span>
+<span class="sd">        dataframe : pd.DataFrame</span>
+<span class="sd">            The DataFrame to which the sampled particle properties will be added.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -675,23 +674,27 @@ document.write(`
 <span class="sd">        velocities : ndarray</span>
 <span class="sd">            A NumPy array of shape (n_samples,) containing the local x-direction velocities (in m/s).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">velocities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cpp_sample_transverse_profile</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span> <span class="n">y</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span> <span class="n">velocities</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span></div>
+        <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span>
+        <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span>
+        <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Velocity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span>
+            <span class="n">velocities</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span>
+        <span class="p">)</span></div>
 
 
     <span class="nd">@validate_units</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_event_dataframe</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_event_frame</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BasePopulation</span><span class="p">],</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScattererDataFrame</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EventFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates a DataFrame of event times and sampled velocities for each population based on the specified scheme.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sampling_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">}</span>
+
+        <span class="n">population_event</span> <span class="o">=</span> <span class="n">EventFrame</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
-            <span class="n">sub_dict</span> <span class="o">=</span> <span class="n">sampling_dict</span><span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-
             <span class="n">particle_flux</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">compute_particle_flux</span><span class="p">(</span>
                 <span class="n">flow_speed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">average_flow_speed</span><span class="p">,</span>
                 <span class="n">flow_area</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">area</span><span class="p">,</span>
@@ -708,50 +711,21 @@ document.write(`
 
             <span class="n">n_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrival_time</span><span class="p">)</span>
 
-            <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;n_elements&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrival_time</span><span class="p">)</span>
+            <span class="n">_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">n_events</span><span class="p">))</span>
 
-            <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arrival_time</span>
-
-            <span class="n">sub_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">generate_property_sampling</span><span class="p">(</span><span class="n">n_events</span><span class="p">))</span>
-
-            <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">],</span> <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">],</span> <span class="n">sub_dict</span><span class="p">[</span><span class="s2">&quot;Velocity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sample_transverse_profile</span><span class="p">(</span><span class="n">n_events</span><span class="p">)</span>
+            <span class="n">_df</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span>
+                <span class="n">arrival_time</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">arrival_time</span><span class="o">.</span><span class="n">units</span>
             <span class="p">)</span>
 
-        <span class="n">event_dataframe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dataframe_from_dict</span><span class="p">(</span>
-            <span class="n">dictionnary</span><span class="o">=</span><span class="n">sampling_dict</span><span class="p">,</span> <span class="n">level_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Population&quot;</span><span class="p">,</span> <span class="s2">&quot;ScattererID&quot;</span><span class="p">]</span>
-        <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_transverse_profile_to_frame</span><span class="p">(</span><span class="n">_df</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">sorted_population</span><span class="p">:</span>
-            <span class="n">event_dataframe</span><span class="o">.</span><span class="n">sort_population</span><span class="p">()</span>
+            <span class="n">population</span><span class="o">.</span><span class="n">add_property_to_frame</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="n">_df</span><span class="p">,</span> <span class="n">sampling</span><span class="o">=</span><span class="n">n_events</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">evenly_spaced_events</span><span class="p">:</span>
-            <span class="n">event_dataframe</span><span class="o">.</span><span class="n">uniformize_events_with_time</span><span class="p">(</span>
-                <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span> <span class="n">lower_boundary</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">upper_boundary</span><span class="o">=</span><span class="mf">0.95</span>
-            <span class="p">)</span>
+            <span class="n">_df</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="n">population</span>
 
-        <span class="k">return</span> <span class="n">event_dataframe</span>
+            <span class="n">population_event</span><span class="o">.</span><span class="n">events_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_df</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_dataframe_from_dict</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">dictionnary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">level_names</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScattererDataFrame</span><span class="p">:</span>
-        <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">pop_name</span><span class="p">,</span> <span class="n">inner_dict</span> <span class="ow">in</span> <span class="n">dictionnary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">df_pop</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">inner_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;n_elements&quot;</span><span class="p">)))</span>
-
-            <span class="n">df_pop</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">(</span>
-                <span class="p">[[</span><span class="n">pop_name</span><span class="p">],</span> <span class="n">df_pop</span><span class="o">.</span><span class="n">index</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="n">level_names</span>
-            <span class="p">)</span>
-
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">inner_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">df_pop</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
-
-            <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_pop</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">level_names</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">level_names</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">ScattererDataFrame</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">population_event</span></div>
 
 </pre></div>
 

@@ -609,10 +609,10 @@ to download the full example code.</p>
 </section>
 <section id="step-3-generate-particle-event-dataframe">
 <h2>Step 3: Generate Particle Event DataFrame<a class="headerlink" href="#step-3-generate-particle-event-dataframe" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">event_dataframe</span> <span class="o">=</span> <span class="n">fluidics</span><span class="o">.</span><span class="n">generate_event_dataframe</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">3.5</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">event_frame</span> <span class="o">=</span> <span class="n">fluidics</span><span class="o">.</span><span class="n">generate_event_frame</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="mf">3.5</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">)</span>
 
 <span class="c1"># Plot the diameter distribution of the particles</span>
-<span class="n">event_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;Diameter&quot;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+<span class="n">event_frame</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;Diameter&quot;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <img src="../../_images/sphx_glr_coupling_model_001.png" srcset="../../_images/sphx_glr_coupling_model_001.png" alt="Distribution of Diameter" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 800x500 with 1 Axes&gt;
@@ -649,8 +649,8 @@ to download the full example code.</p>
 </section>
 <section id="step-6-model-scattering-signals">
 <h2>Step 6: Model Scattering Signals<a class="headerlink" href="#step-6-model-scattering-signals" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">event_dataframe</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">model_event</span><span class="p">(</span>
-    <span class="n">event_dataframe</span><span class="o">=</span><span class="n">event_dataframe</span><span class="p">,</span> <span class="n">compute_cross_section</span><span class="o">=</span><span class="kc">True</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">add_model_to_event_frame</span><span class="p">(</span>
+    <span class="n">event_frame</span><span class="o">=</span><span class="n">event_frame</span><span class="p">,</span> <span class="n">compute_cross_section</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -658,18 +658,20 @@ to download the full example code.</p>
   warnings.warn(
 /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/FlowCyPy/source.py:268: UserWarning: Transverse distribution of particle flow exceed the waist of the source
   warnings.warn(
+
+&lt;FlowCyPy.event_frame.EventFrame object at 0x7fdf5f3bc050&gt;
 </pre></div>
 </div>
 </section>
 <section id="step-7-visualize-scattering-intensity">
 <h2>Step 7: Visualize Scattering Intensity<a class="headerlink" href="#step-7-visualize-scattering-intensity" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">event_dataframe</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Csca&quot;</span><span class="p">)</span>  <span class="c1"># Color-coded by scattering cross-section</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">event_frame</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Csca&quot;</span><span class="p">)</span>  <span class="c1"># Color-coded by scattering cross-section</span>
 </pre></div>
 </div>
 <img src="../../_images/sphx_glr_coupling_model_002.png" srcset="../../_images/sphx_glr_coupling_model_002.png" alt="Scatterer Sampling Distribution" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 600x600 with 3 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.123 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 3.283 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-coupling-model-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/4c330faf84cd5e64e28ee463763b4944/coupling_model.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">coupling_model.ipynb</span></code></a></p>

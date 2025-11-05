@@ -83,6 +83,13 @@ Configure simulation-level noise assumptions
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/FlowCyPy/simulation_settings.py:9: UserWarning: Attribute 'evenly_spaced_events' not recognized in SimulationSettings. Valid attributes are: ['assume_amplifier_bandwidth_is_infinite', 'assume_perfect_digitizer', 'assume_perfect_hydrodynamic_focusing', 'include_amplifier_noise', 'include_dark_current_noise', 'include_noises', 'include_shot_noise', 'include_source_noise']
+      warnings.warn(
+
 
 
 
@@ -273,7 +280,7 @@ Plot relevant statistics
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 46.700 seconds)
+   **Total running time of the script:** (0 minutes 49.181 seconds)
 
 
 .. _sphx_glr_download_gallery_validation_j_estimator.py:

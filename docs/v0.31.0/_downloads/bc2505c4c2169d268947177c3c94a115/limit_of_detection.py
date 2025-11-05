@@ -44,8 +44,6 @@ SimulationSettings.include_shot_noise = True
 SimulationSettings.include_source_noise = True
 SimulationSettings.include_dark_current_noise = True
 SimulationSettings.assume_perfect_hydrodynamic_focusing = True
-SimulationSettings.evenly_spaced_events = True
-SimulationSettings.sorted_population = True
 
 np.random.seed(3)
 
@@ -128,7 +126,7 @@ analog_processing = [
 # Triggering and Peak Detection
 triggering_system = triggering_system.DynamicWindow(
     trigger_detector_name="forward",
-    threshold=0.4 * ureg.millivolt,
+    threshold=0.2 * ureg.millivolt,
     max_triggers=-1,
     pre_buffer=64,
     post_buffer=64,
@@ -153,7 +151,7 @@ run_record = cytometer.run(run_time=1.0 * ureg.millisecond)
 
 # %%
 # Plot Raw Analog Signal
-run_record.plot_analog()
+# run_record.plot_analog()
 
 # %%
 # Plot Triggered Analog Signal Segments
