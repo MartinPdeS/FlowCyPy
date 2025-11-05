@@ -42,7 +42,7 @@
 | FlowCyPy/signal\_processing.py                        |       12 |        0 |        2 |        0 |    100% |           |
 | FlowCyPy/simulation\_settings.py                      |       33 |       13 |        6 |        1 |     54% |8-13, 66-68, 81, 85-91 |
 | FlowCyPy/source.py                                    |       85 |       17 |       24 |        9 |     76% |40, 45-48, 52-69, 138, 146, 217, 219, 225, 227, 268, 341, 343 |
-| FlowCyPy/sub\_frames/acquisition.py                   |      116 |       40 |       38 |        3 |     64% |115, 121, 127, 150-152, 172-194, 214-220, 253-269, 302, 309-322 |
+| FlowCyPy/sub\_frames/acquisition.py                   |      116 |       40 |       38 |        3 |     64% |115, 121, 127, 150-152, 172-194, 214-220, 253-269, 302, 309-323 |
 | FlowCyPy/sub\_frames/base.py                          |        5 |        0 |        0 |        0 |    100% |           |
 | FlowCyPy/sub\_frames/classifier.py                    |       15 |        8 |        2 |        0 |     41% |     38-54 |
 | FlowCyPy/sub\_frames/peaks.py                         |       78 |       57 |       12 |        0 |     23% |23-29, 49-51, 71-73, 89-90, 110-125, 159-176, 199-222, 247-267 |
