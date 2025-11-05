@@ -135,10 +135,8 @@ class ScatteringSimulator:
             source=source, scatterer=scatterer, detector=detector
         )
 
-        event_dataframe.loc[:, f"Detector:{self.detector.name}"] = (
-            pint_pandas.PintArray(
-                experiment.get_sequential("coupling"), dtype=ureg.watt
-            )
+        event_dataframe.loc[:, self.detector.name] = pint_pandas.PintArray(
+            experiment.get_sequential("coupling"), dtype=ureg.watt
         )
 
         if compute_cross_section:
@@ -182,10 +180,8 @@ class ScatteringSimulator:
             source=source, scatterer=scatterer, detector=detector
         )
 
-        event_dataframe.loc[:, f"Detector:{self.detector.name}"] = (
-            pint_pandas.PintArray(
-                experiment.get_sequential("coupling"), dtype=ureg.watt
-            )
+        event_dataframe.loc[:, self.detector.name] = pint_pandas.PintArray(
+            experiment.get_sequential("coupling"), dtype=ureg.watt
         )
 
         if compute_cross_section:
@@ -255,8 +251,8 @@ class FluorescenceSimulator:
 
         coupling = number_of_dye.pint.magnitude * 100
 
-        event_dataframe.loc[:, f"Detector:{self.detector.name}"] = (
-            pint_pandas.PintArray(coupling, dtype=ureg.watt)
+        event_dataframe.loc[:, self.detector.name] = pint_pandas.PintArray(
+            coupling, dtype=ureg.watt
         )
 
-        print(event_dataframe.loc[:, f"Detector:{self.detector.name}"])
+        print(event_dataframe.loc[:, self.detector.name])

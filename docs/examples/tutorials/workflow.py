@@ -177,7 +177,7 @@ run_record = cytometer.run(run_time=0.4 * ureg.millisecond)
 # %%
 # Step 5: Plot Events and Raw Analog Signals
 # ------------------------------------------
-_ = run_record.event_frame.plot(x="Detector:side")
+_ = run_record.event_frame.plot(x="side")
 
 
 # %%
@@ -195,7 +195,7 @@ _ = run_record.plot_digital(figure_size=(12, 8))
 # %%
 # Step 7: Plot Peak Features
 # --------------------------
-_ = run_record.peaks.plot(x=("Detector:forward", "Height"))
+_ = run_record.peaks.plot(x=("forward", "Height"))
 
 
 # %%
@@ -208,7 +208,7 @@ classifier = KmeansClassifier(number_of_cluster=2)
 classified = classifier.run(
     dataframe=run_record.peaks.unstack("Detector"),
     features=["Height"],
-    detectors=["Detector:side", "Detector:forward"],
+    detectors=["side", "forward"],
 )
 
-_ = classified.plot(x=("Detector:side", "Height"), y=("Detector:forward", "Height"))
+_ = classified.plot(x=("side", "Height"), y=("forward", "Height"))

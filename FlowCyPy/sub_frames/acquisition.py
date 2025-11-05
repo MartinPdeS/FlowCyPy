@@ -108,18 +108,16 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
         time_units : Time
             The units to which the time column should be normalized.
         """
+        name = f"{self.detector_names[0]}"
 
         if signal_units == "max":
-            if self[self.detector_names[0]].size == 0:
-                signal_units = 0 * self[self.detector_names[0]].pint.units
+            if self[name].size == 0:
+                signal_units = 0 * self[name].pint.units
             else:
-                signal_units = self[self.detector_names[0]].max().to_compact().units
+                signal_units = self[name].max().to_compact().units
 
         if signal_units == "SI":
-            if (
-                self[self.detector_names[0]].pint.units.dimensionality
-                == ureg.bit_bins.dimensionality
-            ):
+            if self[name].pint.units.dimensionality == ureg.bit_bins.dimensionality:
                 signal_units = ureg.bit_bins
             else:
                 signal_units = ureg.volt
