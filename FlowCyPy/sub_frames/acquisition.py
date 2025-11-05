@@ -312,6 +312,7 @@ class TriggerDataFrame(BaseAcquisitionDataFrame):
             for segment_id, group in self.groupby("SegmentID"):
                 time = group["Time"].pint.to(self.time_units)
                 signal = group[detector_name]
+
                 start_time = time.min()
                 end_time = time.max()
 
