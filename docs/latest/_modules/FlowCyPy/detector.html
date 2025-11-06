@@ -526,11 +526,6 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">config_dict</span><span class="p">,</span> <span class="n">StrictDataclassMixing</span>
 
 
-<span class="k">class</span><span class="w"> </span><span class="nc">DetectorType</span><span class="p">:</span>
-    <span class="n">SCATTERING</span> <span class="o">=</span> <span class="s2">&quot;scattering&quot;</span>
-    <span class="n">FLUORESCENCE</span> <span class="o">=</span> <span class="s2">&quot;fluorescence&quot;</span>
-
-
 <div class="viewcode-block" id="Detector">
 <a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config_dict</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unsafe_hash</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -577,7 +572,7 @@ document.write(`
     <span class="n">responsivity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Responsitivity</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span>
     <span class="n">dark_current</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Current</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">channel_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DetectorType</span><span class="o">.</span><span class="n">SCATTERING</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;scattering&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
