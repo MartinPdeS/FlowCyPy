@@ -105,8 +105,9 @@ addopts = [
     "-v", "-rA", "-rw", "--cov=FlowCyPy", "--cov-report=html", "--cov-report=term"
 ]
 testpaths = [
-    "tests/*",
-    "tests/cpp/*"
+    "tests/cpp_core/*",
+    "tests/python_api/*",
+    "tests/validation/*"
 ]
 
 [tool.cibuildwheel]
