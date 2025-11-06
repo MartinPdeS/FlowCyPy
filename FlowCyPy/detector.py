@@ -19,11 +19,6 @@ from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
 
 
-class DetectorType:
-    SCATTERING = "scattering"
-    FLUORESCENCE = "fluorescence"
-
-
 @dataclass(config=config_dict, kw_only=True, unsafe_hash=True)
 class Detector(StrictDataclassMixing):
     """
@@ -68,7 +63,7 @@ class Detector(StrictDataclassMixing):
     responsivity: Optional[Responsitivity] = 1 * ureg.ampere / ureg.watt
     dark_current: Optional[Current] = 0.0 * ureg.ampere
     name: Optional[str] = None
-    channel_type: str = DetectorType.SCATTERING
+    channel: str = "scattering"
 
     def __post_init__(self) -> None:
         """

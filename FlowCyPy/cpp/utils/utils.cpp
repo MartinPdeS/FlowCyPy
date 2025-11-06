@@ -122,15 +122,14 @@ std::vector<double> utils::generate_pulses_signal(
 
 
 
-void utils::add_gaussian_noise_to_signal(std::vector<double> &signal, const double mean, const double standard_deviation) {
-    if (signal.empty()) {
+void utils::add_gaussian_noise_to_signal(std::vector<double> &signal, const double mean, const double standard_deviation, std::mt19937 &random_generator) {
+    if (signal.empty())
         throw std::runtime_error("Signal vector is empty.");
-    }
-    std::default_random_engine rng(std::random_device{}());
+
     std::normal_distribution<double> dist(mean, standard_deviation);
 
     for (size_t i = 0; i < signal.size(); ++i)
-        signal[i] += dist(rng);
+        signal[i] += dist(random_generator);
 }
 
 

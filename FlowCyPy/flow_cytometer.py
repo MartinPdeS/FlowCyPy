@@ -11,7 +11,6 @@ from FlowCyPy.signal_processing import SignalProcessing
 from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.run_record import RunRecord
-from FlowCyPy.detector import DetectorType
 
 
 class FlowCytometer:

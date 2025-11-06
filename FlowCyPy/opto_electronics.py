@@ -4,7 +4,7 @@ import pandas as pd
 from FlowCyPy import source
 from FlowCyPy.amplifier import TransimpedanceAmplifier
 from FlowCyPy.coupling import ScatteringSimulator, FluorescenceSimulator
-from FlowCyPy.detector import Detector, DetectorType
+from FlowCyPy.detector import Detector
 from FlowCyPy.source import GaussianBeam  # noqa: F401
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
 
@@ -75,7 +75,7 @@ class OptoElectronics(StrictDataclassMixing):
             return
 
         for detector in self.detectors:
-            if detector.channel_type == DetectorType.SCATTERING:
+            if detector.channel.lower() == "scattering":
                 simulator = ScatteringSimulator(
                     source=self.source,
                     detector=detector,
@@ -84,7 +84,7 @@ class OptoElectronics(StrictDataclassMixing):
 
                 simulator.run(event_frame, compute_cross_section=compute_cross_section)
 
-            elif detector.channel_type == DetectorType.FLUORESCENCE:
+            elif detector.channel.lower() == "fluorescence":
                 simulator = FluorescenceSimulator(
                     source=self.source,
                     detector=detector,

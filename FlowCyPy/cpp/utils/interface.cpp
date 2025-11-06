@@ -93,25 +93,25 @@ PYBIND11_MODULE(interface_utils, module) {
     // ----------------------------
     // Noise Functions
     // ----------------------------
-    module.def(
-        "add_gaussian_noise",
-        &utils::add_gaussian_noise_to_signal,
-        py::arg("signal"),
-        py::arg("mean"),
-        py::arg("standard_deviation"),
-        R"pbdoc(
-        Add Gaussian noise in-place to a signal.
+    // module.def(
+    //     "add_gaussian_noise",
+    //     &utils::add_gaussian_noise_to_signal,
+    //     py::arg("signal"),
+    //     py::arg("mean"),
+    //     py::arg("standard_deviation"),
+    //     R"pbdoc(
+    //     Add Gaussian noise in-place to a signal.
 
-        Parameters
-        ----------
-        signal : List[float]
-            Signal buffer to modify.
-        mean : float
-            Mean of the noise distribution.
-        standard_deviation : float
-            Standard deviation of the noise.
-        )pbdoc"
-    );
+    //     Parameters
+    //     ----------
+    //     signal : List[float]
+    //         Signal buffer to modify.
+    //     mean : float
+    //         Mean of the noise distribution.
+    //     standard_deviation : float
+    //         Standard deviation of the noise.
+    //     )pbdoc"
+    // );
 
     module.def(
         "add_poisson_noise",
