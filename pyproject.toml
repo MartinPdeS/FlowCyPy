@@ -106,6 +106,7 @@ addopts = [
 ]
 testpaths = [
     "tests/*",
+    "tests/cpp/*"
 ]
 
 [tool.cibuildwheel]

@@ -172,21 +172,14 @@ public:
      * @param order Integer order that controls transition steepness.
      * @param gain Output gain applied after filtering.
      */
-    void apply_butterworth_lowpass_filter(double sampling_rate,
-                                          double cutoff_frequency,
-                                          int order,
-                                          double gain);
+    void apply_butterworth_lowpass_filter(double sampling_rate, double cutoff_frequency, int order, double gain);
 
     /**
      * @brief Apply a Butterworth low pass filter to one signal.
      * @see apply_butterworth_lowpass_filter for parameter meaning.
      * @throws std::runtime_error If the signal does not exist.
      */
-    void apply_butterworth_lowpass_filter_to_signal(const std::string &signal_name,
-                                                    double sampling_rate,
-                                                    double cutoff_frequency,
-                                                    int order,
-                                                    double gain);
+    void apply_butterworth_lowpass_filter_to_signal(const std::string &signal_name, double sampling_rate, double cutoff_frequency, int order, double gain);
 
     /**
      * @brief Synthesize a composite signal as a sum of Gaussian pulses on a constant background for all signals.
@@ -202,21 +195,14 @@ public:
      * @param background_power Constant background added before pulses.
      * @throws std::runtime_error If the time axis is missing or sizes do not match.
      */
-    void generate_pulses(const std::vector<double> &widths,
-                         const std::vector<double> &centers,
-                         const std::vector<double> &coupling_power,
-                         double background_power);
+    void generate_pulses(const std::vector<double> &widths, const std::vector<double> &centers, const std::vector<double> &coupling_power, double background_power);
 
     /**
      * @brief Synthesize pulses into a single target signal using the stored time axis.
      * @see generate_pulses for the mathematical form and preconditions.
      * @throws std::runtime_error If the signal or time axis is missing or sizes do not match.
      */
-    void generate_pulses_signal(const std::string &signal_name,
-                                const std::vector<double> &widths,
-                                const std::vector<double> &centers,
-                                const std::vector<double> &coupling_power,
-                                double background_power);
+    void generate_pulses_signal(const std::string &signal_name, const std::vector<double> &widths, const std::vector<double> &centers, const std::vector<double> &coupling_power, double background_power);
 
     /**
      * @brief Apply a Bessel low pass filter to all signals except the time axis.
@@ -230,21 +216,14 @@ public:
      * @param order Supported orders are 1, 2, 3, and 4.
      * @param gain Output gain applied after filtering.
      */
-    void apply_bessel_lowpass_filter(double sampling_rate,
-                                     double cutoff_frequency,
-                                     int order,
-                                     double gain);
+    void apply_bessel_lowpass_filter(double sampling_rate, double cutoff_frequency, int order, double gain);
 
     /**
      * @brief Apply a Bessel low pass filter to one signal.
      * @see apply_bessel_lowpass_filter for parameter meaning.
      * @throws std::runtime_error If the signal does not exist.
      */
-    void apply_bessel_lowpass_filter_to_signal(const std::string &signal_name,
-                                               double sampling_rate,
-                                               double cutoff_frequency,
-                                               int order,
-                                               double gain);
+    void apply_bessel_lowpass_filter_to_signal(const std::string &signal_name, double sampling_rate, double cutoff_frequency, int order, double gain);
 
     // ----------------------------- Noise Operations ------------------------------
 
@@ -264,9 +243,7 @@ public:
      * @throws std::runtime_error If the signal does not exist.
      * @note Uses the instance random generator for reproducibility.
      */
-    void add_gaussian_noise_to_signal(const std::string &signal_name,
-                                      double mean,
-                                      double standard_deviation);
+    void add_gaussian_noise_to_signal(const std::string &signal_name, double mean, double standard_deviation);
 
     /**
      * @brief Apply Poisson noise to a single signal.
