@@ -17,7 +17,8 @@
 !README.rst
 !notebook.ipynb
 !CMakeLists.txt
-!.pytest.ini
+!pytest.ini
+!.coveragerc
 
 # But ignore docs/build inside docs and code
 docs/build/

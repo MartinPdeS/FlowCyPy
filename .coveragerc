@@ -1,0 +1,22 @@
+# .coveragerc
+[run]
+source = FlowCyPy
+branch = True
+relative_files = True
+parallel = True
+omit =
+    */__init__.py
+    FlowCyPy/_version.py
+    FlowCyPy/directories.py
+    FlowCyPy/**/__main__.py
+
+[report]
+skip_covered = True
+show_missing = True
+precision = 2
+
+[html]
+directory = htmlcov
+
+[xml]
+output = coverage.xml
