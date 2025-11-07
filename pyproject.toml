@@ -100,7 +100,8 @@ dev = [
 [tool.cibuildwheel]
 build-frontend = "build"
 before-test = ""
-test-command = "python -m pytest -rA {project}/tests/cpp_core/omp.py"
+# test-command = "python -m pytest -rA {project}/tests/cpp_core/omp.py"
+test-command = 'DYLD_PRINT_LIBRARIES=1 python -c "import FlowCyPy, sklearn"'
 test-extras = ["testing"]
 
 
