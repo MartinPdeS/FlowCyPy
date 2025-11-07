@@ -228,7 +228,7 @@ Step 6: Model Scattering Signals
     /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/FlowCyPy/source.py:268: UserWarning: Transverse distribution of particle flow exceed the waist of the source
       warnings.warn(
 
-    <FlowCyPy.event_frame.EventFrame object at 0x7fb6181b0b10>
+    <FlowCyPy.event_frame.EventFrame object at 0x7f13a6daa150>
 
 
 
@@ -263,7 +263,7 @@ Step 7: Visualize Scattering Intensity
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.273 seconds)
+   **Total running time of the script:** (0 minutes 3.190 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_coupling_model.py:
