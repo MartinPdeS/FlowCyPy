@@ -107,7 +107,7 @@ echo "Module: $SO"
 otool -L "$SO" || { echo "[otool -L failed]"; ls -l "$(dirname "$SO")"; exit 1; }
 echo RPATHS
 otool -l "$SO" | awk '/LC_RPATH/{getline; print}'
-python -m pytest -q
+OMP_NUM_THREADS=1 python -m pytest -q
 """
 # test-command = "python -m pytest -rA {project}/tests"
 
