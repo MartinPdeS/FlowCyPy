@@ -101,7 +101,14 @@ dev = [
 build-frontend = "build"
 before-test = ""
 
-test-command = 'SO=$(python -c "from FlowCyPy.binary import interface_signal_generator as m; print(m.__file__)"); echo \"Module: $SO\"; otool -L \"$SO\"; echo RPATHS; otool -l \"$SO\" | sed -n \"/LC_RPATH/{n;p;}\"; python -m pytest -q'
+test-command = """
+SO=$({python} -c "import importlib,sys; m=importlib.import_module('FlowCyPy.binary.interface_signal_generator'); sys.stdout.write(m.__file__)")
+echo "Module: $SO"
+otool -L "$SO" || { echo "[otool -L failed]"; ls -l "$(dirname "$SO")"; exit 1; }
+echo RPATHS
+otool -l "$SO" | awk '/LC_RPATH/{getline; print}'
+{python} -m pytest -q
+"""
 # test-command = 'python -c "from FlowCyPy.binary import interface_signal_generator as m; print(m.__file__)"'
 # test-command = "otool -L /private/var/folders/6c/pzd640_546q6_yfn24r65c_40000gn/T/cibw-run-ivz45wj4/cp311-macosx_arm64/venv-test-arm64/lib/python3.11/site-packages/FlowCyPy/binary/interface_signal_generator.cpython-311-darwin.so"
 # test-command = "otool -L {project}/cpp/signal_generator/*.so; python -m pytest -rA {project}/tests"
