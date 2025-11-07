@@ -101,8 +101,11 @@ dev = [
 build-frontend = "build"
 before-test = ""
 
-test-command = 'python -c "from FlowCyPy.binary import interface_signal_generator as m; print(m.__file__)"'
+# test-command = 'python -c "from FlowCyPy.binary import interface_signal_generator as m; print(m.__file__)"'
+
+test-command = "otool -L /private/var/folders/6c/pzd640_546q6_yfn24r65c_40000gn/T/cibw-run-ivz45wj4/cp311-macosx_arm64/venv-test-arm64/lib/python3.11/site-packages/FlowCyPy/binary/interface_signal_generator.cpython-311-darwin.so"
 # test-command = "otool -L {project}/cpp/signal_generator/*.so; python -m pytest -rA {project}/tests"
+
 test-extras = ["testing"]
 
 
