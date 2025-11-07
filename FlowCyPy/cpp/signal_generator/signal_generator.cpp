@@ -116,9 +116,16 @@ void SignalGenerator::multiply(double factor) {
 
 
 void SignalGenerator::multiply_signal(const std::string& signal_name, double factor) {
+    auto it = data_dict.find(signal_name);
+    if (it == data_dict.end())
+        throw std::runtime_error("Signal '" + signal_name + "' does not exist.");
+
+    auto& vec = it->second;
+    const size_t n = vec.size();
+    double* __restrict data = vec.data();
 
     #pragma omp parallel for
-    for (size_t i = 0; i < 1000; ++i)
+    for (size_t i = 0; i < n; ++i)
         double a = 3;
 
 }
