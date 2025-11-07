@@ -35,6 +35,12 @@ find_package(OpenMP REQUIRED)
 find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
 find_package(pybind11 CONFIG REQUIRED)
 
+
+message(STATUS "OpenMP_CXX_FOUND         = ${OpenMP_CXX_FOUND}")
+message(STATUS "OpenMP_CXX_FLAGS         = '${OpenMP_CXX_FLAGS}'")
+message(STATUS "OpenMP_CXX_LIB_NAMES     = '${OpenMP_CXX_LIB_NAMES}'")
+message(STATUS "OpenMP_CXX_LIBRARIES     = '${OpenMP_CXX_LIBRARIES}'")
+
 # Platform-specific settings for static linking
 if (WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     message("MinGW detected on Windows")
