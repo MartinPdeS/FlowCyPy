@@ -105,10 +105,14 @@ addopts = [
     "-v", "-rA", "-rw", "--cov=FlowCyPy", "--cov-report=html", "--cov-report=term"
 ]
 testpaths = [
-    "tests/cpp_core/*",
-    "tests/python_api/*",
-    "tests/validation/*"
+    "tests/cpp_core",
+    "tests/python_api",
+    "tests/validation"
 ]
+
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
 
 [tool.cibuildwheel]
 build-frontend = "build"
