@@ -100,7 +100,7 @@ dev = [
 [tool.cibuildwheel]
 build-frontend = "build"
 before-test = ""
-test-command = "python -m pytest -rA {project}/tests"
+test-command = "otool -L {project}/FlowCyPy/cpp/signal_generator/interface_signal_generator.cpython-311-darwin.so; python -m pytest -rA {project}/tests"
 test-extras = ["testing"]
 
 
