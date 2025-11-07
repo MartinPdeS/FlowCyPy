@@ -52,10 +52,10 @@ const std::vector<double> &SignalGenerator::get_signal_const(const std::string &
 // ----------------------------- Basics Operations -----------------------------
 
 void SignalGenerator::add_constant(double constant) {
-    // for (auto &entry : data_dict) {
-    //     if (entry.first == TIME_KEY) continue;
-    //     this->add_constant_to_signal(entry.first, constant);
-    // }
+    for (auto &entry : data_dict) {
+        if (entry.first == TIME_KEY) continue;
+        this->add_constant_to_signal(entry.first, constant);
+    }
 }
 
 void SignalGenerator::add_constant_to_signal(const std::string &signal_name, double constant) {
@@ -66,7 +66,7 @@ void SignalGenerator::add_constant_to_signal(const std::string &signal_name, dou
     auto& vec = it->second;
     const size_t n = vec.size();
 
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(n); ++i)
         vec[static_cast<size_t>(i)] += constant;
 }
@@ -86,7 +86,7 @@ void SignalGenerator::multiply_signal(const std::string &signal_name, double fac
     auto& vec = it->second;
     const size_t n = vec.size();
 
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(n); ++i)
         vec[static_cast<size_t>(i)] *= factor;
 }
@@ -99,7 +99,7 @@ void SignalGenerator::round_signal(const std::string &signal_name) {
     auto& vec = it->second;
     const size_t n = vec.size();
 
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(n); ++i)
         vec[static_cast<size_t>(i)] = std::round(vec[static_cast<size_t>(i)]);
 }
