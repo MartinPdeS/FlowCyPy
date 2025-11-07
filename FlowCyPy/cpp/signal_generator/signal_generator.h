@@ -10,15 +10,6 @@
 #include "../utils/utils.h"
 
 
-#include <mutex>
-#include <unordered_map>
-
-
-
-
-
-
-
 /**
  * @brief Container and operations for synthetic signals on a shared time base.
  *
@@ -34,37 +25,6 @@
  */
 class SignalGenerator {
 public:
-
-
-
-
-
-
-    mutable std::mutex map_mutex;
-    // one mutex per signal vector
-    mutable std::unordered_map<std::string, std::mutex> per_signal_mutex;
-    // guards creation of entries in per_signal_mutex
-    mutable std::mutex per_signal_mutex_guard;
-
-    std::mutex& mutex_for(const std::string& name) const {
-        std::scoped_lock g(per_signal_mutex_guard);
-        return per_signal_mutex.try_emplace(name).first->second;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /// Dictionary of signal_name -> vector values. The key "Time" is reserved for the time axis.
     std::map<std::string, std::vector<double>> data_dict;

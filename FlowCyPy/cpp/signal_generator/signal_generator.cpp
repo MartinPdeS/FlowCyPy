@@ -29,20 +29,10 @@ void SignalGenerator::add_signal(const std::string &signal_name, const std::vect
     data_dict.emplace(signal_name, signal_data);
 }
 
-// void SignalGenerator::create_zero_signal(const std::string &signal_name) {
-//     if (has_signal(signal_name))
-//         throw std::runtime_error("Signal '" + signal_name + "' already exists.");
-//     data_dict.emplace(signal_name, std::vector<double>(n_elements, 0.0));
-// }
-
-
-
-void SignalGenerator::create_zero_signal(const std::string& signal_name) {
-    std::scoped_lock lock(map_mutex);
-    auto [it, inserted] = data_dict.emplace(signal_name, std::vector<double>(n_elements, 0.0));
-    if (!inserted)
+void SignalGenerator::create_zero_signal(const std::string &signal_name) {
+    if (has_signal(signal_name))
         throw std::runtime_error("Signal '" + signal_name + "' already exists.");
-    // the per-signal mutex is created lazily by mutex_for when first used
+    data_dict.emplace(signal_name, std::vector<double>(n_elements, 0.0));
 }
 
 std::vector<double> &SignalGenerator::get_signal(const std::string &signal_name) {
@@ -121,48 +111,33 @@ void SignalGenerator::multiply(double factor) {
 
 
 
-// void SignalGenerator::multiply_signal(const std::string& signal_name, double factor) {
-//     // find the vector pointer under the map lock then release it
-//     std::vector<double>* vec_ptr = nullptr;
-//     {
-//         std::scoped_lock map_lock(map_mutex);
-//         auto it = data_dict.find(signal_name);
-//         if (it == data_dict.end())
-//             throw std::runtime_error("Signal '" + signal_name + "' does not exist.");
-//         vec_ptr = &it->second;
-//     }
-
-//     // lock this signal so nobody resizes or swaps it during the loop
-//     std::mutex& m = mutex_for(signal_name);
-//     std::scoped_lock vec_lock(m);
-
-//     auto& vec = *vec_ptr;
-//     const size_t n = vec.size();
-//     double* __restrict data = vec.data();
 
 
-//     // parallel only when it is worth it
-//     #pragma omp parallel for default(none) shared(data, n, factor)
-//     for (long long i = 0; i < static_cast<long long>(n); ++i) {
-//         data[i] *= factor;
-//     }
-
-// }
 
 
 void SignalGenerator::multiply_signal(const std::string& signal_name, double factor) {
-    auto it = data_dict.find(signal_name);
-    if (it == data_dict.end())
-        throw std::runtime_error("Signal '" + signal_name + "' does not exist.");
-
-    auto& vec = it->second;
-    const size_t n = vec.size();
 
     #pragma omp parallel for
-    for (size_t i = 0; i < n; ++i)
-        double a = factor;
+    for (size_t i = 0; i < 1000; ++i)
+        double a = 3;
 
 }
+
+
+
+// void SignalGenerator::multiply_signal(const std::string& signal_name, double factor) {
+//     auto it = data_dict.find(signal_name);
+//     if (it == data_dict.end())
+//         throw std::runtime_error("Signal '" + signal_name + "' does not exist.");
+
+//     auto& vec = it->second;
+//     const size_t n = vec.size();
+
+//     #pragma omp parallel for
+//     for (size_t i = 0; i < n; ++i)
+//         double a = factor;
+
+// }
 
 
 void SignalGenerator::round_signal(const std::string &signal_name) {
