@@ -103,6 +103,7 @@ void SignalGenerator::multiply_signal(const std::string& signal_name, double fac
     double* __restrict data = vec.data();
 
     // #pragma omp parallel for schedule(static)
+    #pragma omp simd
     for (long long i = 0; i < static_cast<long long>(n); ++i) {
         data[i] *= factor;
     }

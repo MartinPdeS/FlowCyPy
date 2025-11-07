@@ -100,7 +100,7 @@ dev = [
 [tool.cibuildwheel]
 build-frontend = "build"
 before-test = ""
-test-command = "ls {project}/tests; python -m pytest -rA {project}/tests"
+test-command = "python -m pytest -rA {project}/tests"
 test-extras = ["testing"]
 
 
