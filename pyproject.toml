@@ -101,15 +101,15 @@ dev = [
 build-frontend = "build"
 before-test = ""
 
-test-command = """
-SO=$(python -c "import importlib,sys; m=importlib.import_module('FlowCyPy.binary.interface_signal_generator'); sys.stdout.write(m.__file__)")
-echo "Module: $SO"
-otool -L "$SO" || { echo "[otool -L failed]"; ls -l "$(dirname "$SO")"; exit 1; }
-echo RPATHS
-otool -l "$SO" | awk '/LC_RPATH/{getline; print}'
-OMP_NUM_THREADS=1 python -m pytest -q
-"""
-# test-command = "python -m pytest -rA {project}/tests"
+# test-command = """
+# SO=$(python -c "import importlib,sys; m=importlib.import_module('FlowCyPy.binary.interface_signal_generator'); sys.stdout.write(m.__file__)")
+# echo "Module: $SO"
+# otool -L "$SO" || { echo "[otool -L failed]"; ls -l "$(dirname "$SO")"; exit 1; }
+# echo RPATHS
+# otool -l "$SO" | awk '/LC_RPATH/{getline; print}'
+# OMP_NUM_THREADS=1 python -m pytest -q
+# """
+test-command = "OMP_NUM_THREADS=1 python -m pytest -rA {project}/tests"
 
 test-extras = ["testing"]
 
