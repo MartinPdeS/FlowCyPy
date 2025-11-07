@@ -121,31 +121,46 @@ void SignalGenerator::multiply(double factor) {
 
 
 
+// void SignalGenerator::multiply_signal(const std::string& signal_name, double factor) {
+//     // find the vector pointer under the map lock then release it
+//     std::vector<double>* vec_ptr = nullptr;
+//     {
+//         std::scoped_lock map_lock(map_mutex);
+//         auto it = data_dict.find(signal_name);
+//         if (it == data_dict.end())
+//             throw std::runtime_error("Signal '" + signal_name + "' does not exist.");
+//         vec_ptr = &it->second;
+//     }
+
+//     // lock this signal so nobody resizes or swaps it during the loop
+//     std::mutex& m = mutex_for(signal_name);
+//     std::scoped_lock vec_lock(m);
+
+//     auto& vec = *vec_ptr;
+//     const size_t n = vec.size();
+//     double* __restrict data = vec.data();
+
+
+//     // parallel only when it is worth it
+//     #pragma omp parallel for default(none) shared(data, n, factor)
+//     for (long long i = 0; i < static_cast<long long>(n); ++i) {
+//         data[i] *= factor;
+//     }
+
+// }
+
+
 void SignalGenerator::multiply_signal(const std::string& signal_name, double factor) {
-    // find the vector pointer under the map lock then release it
-    std::vector<double>* vec_ptr = nullptr;
-    {
-        std::scoped_lock map_lock(map_mutex);
-        auto it = data_dict.find(signal_name);
-        if (it == data_dict.end())
-            throw std::runtime_error("Signal '" + signal_name + "' does not exist.");
-        vec_ptr = &it->second;
-    }
+    auto it = data_dict.find(signal_name);
+    if (it == data_dict.end())
+        throw std::runtime_error("Signal '" + signal_name + "' does not exist.");
 
-    // lock this signal so nobody resizes or swaps it during the loop
-    std::mutex& m = mutex_for(signal_name);
-    std::scoped_lock vec_lock(m);
-
-    auto& vec = *vec_ptr;
+    auto& vec = it->second;
     const size_t n = vec.size();
-    double* __restrict data = vec.data();
 
-
-    // parallel only when it is worth it
-    #pragma omp parallel for default(none) shared(data, n, factor)
-    for (long long i = 0; i < static_cast<long long>(n); ++i) {
-        data[i] *= factor;
-    }
+    #pragma omp parallel for
+    for (size_t i = 0; i < n; ++i)
+        double a = factor;
 
 }
 
