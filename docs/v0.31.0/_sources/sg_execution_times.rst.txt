@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**01:32.187** total execution time for 9 files **from all galleries**:
+**01:32.326** total execution time for 9 files **from all galleries**:
 
 .. container::
 
@@ -33,29 +33,29 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_gallery_validation_j_estimator.py` (``../examples/validation/j_estimator.py``)
-     - 00:48.551
+     - 00:48.377
      - 0.0
    * - :ref:`sphx_glr_gallery_validation_k_estimator.py` (``../examples/validation/k_estimator.py``)
-     - 00:29.340
+     - 00:29.157
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_workflow.py` (``../examples/tutorials/workflow.py``)
-     - 00:04.224
+     - 00:04.165
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_limit_of_detection.py` (``../examples/tutorials/limit_of_detection.py``)
-     - 00:03.395
+     - 00:03.844
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_coupling_model.py` (``../examples/tutorials/coupling_model.py``)
-     - 00:03.190
+     - 00:03.227
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_signal_processing.py` (``../examples/tutorials/signal_processing.py``)
-     - 00:01.803
+     - 00:01.832
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_facs_canto.py` (``../examples/tutorials/facs_canto.py``)
-     - 00:00.695
+     - 00:00.664
      - 0.0
    * - :ref:`sphx_glr_gallery_noise_sources_shot_noise.py` (``../examples/noise_sources/shot_noise.py``)
-     - 00:00.510
+     - 00:00.552
      - 0.0
    * - :ref:`sphx_glr_gallery_noise_sources_dark_current.py` (``../examples/noise_sources/dark_current.py``)
-     - 00:00.479
+     - 00:00.508
      - 0.0
