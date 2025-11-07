@@ -52,10 +52,10 @@ const std::vector<double> &SignalGenerator::get_signal_const(const std::string &
 // ----------------------------- Basics Operations -----------------------------
 
 void SignalGenerator::add_constant(double constant) {
-    for (auto &entry : data_dict) {
-        if (entry.first == TIME_KEY) continue;
-        add_constant_to_signal(entry.first, constant);
-    }
+    // for (auto &entry : data_dict) {
+    //     if (entry.first == TIME_KEY) continue;
+    //     this->add_constant_to_signal(entry.first, constant);
+    // }
 }
 
 void SignalGenerator::add_constant_to_signal(const std::string &signal_name, double constant) {
