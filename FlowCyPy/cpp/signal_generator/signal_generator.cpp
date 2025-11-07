@@ -126,7 +126,7 @@ void SignalGenerator::multiply_signal(const std::string& signal_name, double fac
 
     #pragma omp parallel for
     for (size_t i = 0; i < n; ++i)
-        double a = 3;
+        double data[i] = 3;
 
 }
 
