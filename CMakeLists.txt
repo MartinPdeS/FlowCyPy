@@ -14,15 +14,6 @@ set(LOCAL_CXX_DIR "${PROJECT_NAME}/cpp")
 set(LOCAL_BIN_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/binary")
 
 
-
-
-
-
-
-
-
-
-
 # Find FFTW library
 find_package(PkgConfig REQUIRED)
 pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
@@ -53,6 +44,10 @@ endif()
 
 # Compiler and linker options
 add_compile_options(-Wall -Wextra -pedantic-errors)
+
+
+add_compile_options(-fsanitize=thread -fno-omit-frame-pointer -O1)
+add_link_options(-fsanitize=thread)
 
 # Print some messages
 message(STATUS "OPENMP flags: ${OpenMP_CXX_FLAGS}")
