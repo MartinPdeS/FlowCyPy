@@ -101,23 +101,23 @@ dev = [
 build-frontend = "build"
 before-test = ""
 # test-command = "OMP_NUM_THREADS=1 python -m pytest -rA {project}/tests"
-# test-command = "python -m pytest -rA {project}/tests"
+test-command = "KMP_DUPLICATE_LIB_OK=True python -m pytest -rA {project}/tests/cpp_core/omp.py"
 test-extras = ["testing"]
 
-test-command = """
-DYLD_PRINT_LIBRARIES=1 python - <<'PY'
-import FlowCyPy.binary.interface_signal_generator as m
-print("Loaded:", m.__file__)
-import numpy as _np
-print("numpy ok")
-try:
-    import sklearn as _sk
-    print("sklearn ok")
-except Exception as e:
-    print("sklearn import failed:", e)
-print("imports finished")
-PY
-"""
+# test-command = """
+# DYLD_PRINT_LIBRARIES=1 python - <<'PY'
+# import FlowCyPy.binary.interface_signal_generator as m
+# print("Loaded:", m.__file__)
+# import numpy as _np
+# print("numpy ok")
+# try:
+#     import sklearn as _sk
+#     print("sklearn ok")
+# except Exception as e:
+#     print("sklearn import failed:", e)
+# print("imports finished")
+# PY
+# """
 
 
 
