@@ -16,53 +16,27 @@ set(LOCAL_BIN_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/binary")
 
 
 
-# Tell CMake which lib name AppleClang uses, then find OpenMP once, top-level
+
+
+
+
+
+
+
+# Find FFTW library
+find_package(PkgConfig REQUIRED)
+pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
+
+
+# Find OpenMP library (on macOS with AppleClang, special handling is needed)
 if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-  set(OpenMP_C_LIB_NAMES  "omp" CACHE STRING "" FORCE)
-  set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "" FORCE)
-endif()
-
-find_package(OpenMP REQUIRED)
-
-# Make CMake carry rpaths from link libraries into targets
-set(CMAKE_MACOSX_RPATH ON)
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-# Default rpath to Homebrew's libomp (works for GitHub macOS-14/15 runners)
-if(APPLE)
-  if(DEFINED ENV{HOMEBREW_PREFIX})
-    set(_omp_root "$ENV{HOMEBREW_PREFIX}/opt/libomp")
-  else()
-    set(_omp_root "/opt/homebrew/opt/libomp")
+  set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp" CACHE STRING "")
+  set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "")
+  find_library(OpenMP_omp_LIBRARY omp HINTS $ENV{LIBOMP_PREFIX}/lib /opt/homebrew/opt/libomp/lib /usr/local/opt/libomp/lib)
+  if(OpenMP_omp_LIBRARY)
+    set(OpenMP_CXX_LIBRARIES "${OpenMP_omp_LIBRARY}" CACHE STRING "")
   endif()
-  # also helpful if you run from the build tree
-  list(APPEND CMAKE_BUILD_RPATH "${_omp_root}/lib")
-  list(APPEND CMAKE_INSTALL_RPATH "${_omp_root}/lib")
 endif()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# # Find dependencies
-# if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-#   set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp" CACHE STRING "")
-#   set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "")
-#   find_library(OpenMP_omp_LIBRARY omp HINTS $ENV{LIBOMP_PREFIX}/lib /opt/homebrew/opt/libomp/lib /usr/local/opt/libomp/lib)
-#   if(OpenMP_omp_LIBRARY)
-#     set(OpenMP_CXX_LIBRARIES "${OpenMP_omp_LIBRARY}" CACHE STRING "")
-#   endif()
-# endif()
 
 
 # Include directories
