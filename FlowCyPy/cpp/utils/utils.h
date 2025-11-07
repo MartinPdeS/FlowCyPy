@@ -138,7 +138,7 @@ std::vector<double> generate_pulses_signal(
  *
  * @throws std::runtime_error If the input array is not a 1D float64 NumPy array.
  */
-void add_gaussian_noise_to_signal(std::vector<double> &signal, const double mean, const double standard_deviation, std::mt19937 &random_generator);
+void add_gaussian_noise_to_signal(std::vector<double> &signal, const double mean, const double standard_deviation);
 
 
 /**
