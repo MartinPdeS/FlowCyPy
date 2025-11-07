@@ -108,7 +108,7 @@ test-extras = ["testing"]
 [tool.cibuildwheel.linux]
 archs = ["x86_64"]
 before-build = "yum install -y fftw-devel"
-build = ["cp310-manylinux*", "cp311-manylinux*", "cp312-manylinux*"]
+build = ["cp311-manylinux*", "cp312-manylinux*", "cp313-manylinux*", ]
 manylinux-x86_64-image = "manylinux_2_28"
 repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 
