@@ -120,15 +120,3 @@ repair-wheel-command = "delocate-wheel -w {dest_dir} -v {wheel}"
 [tool.cibuildwheel.windows]
 archs = ["AMD64"]
 build = ["cp311-*", "cp312-*", "cp313-*"]
-
-
-[tool.coverage.run]
-source = ['FlowCyPy']
-
-omit = [
-    '*\__init__.py',
-    'FlowCyPy/_version.py',
-    'FlowCyPy/directories.py',
-]
-branch = true
-relative_files = true
