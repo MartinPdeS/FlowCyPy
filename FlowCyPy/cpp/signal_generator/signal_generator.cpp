@@ -142,7 +142,7 @@ void SignalGenerator::multiply_signal(const std::string& signal_name, double fac
 
 
     // parallel only when it is worth it
-    #pragma omp parallel for default(none) shared(data, n, factor) if(n >= 4096)
+    // #pragma omp parallel for default(none) shared(data, n, factor) if(n >= 4096)
     for (long long i = 0; i < static_cast<long long>(n); ++i) {
         data[i] *= factor;
     }
