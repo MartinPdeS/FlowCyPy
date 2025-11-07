@@ -19,14 +19,30 @@ find_package(PkgConfig REQUIRED)
 pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
 
 
-# Find OpenMP library (on macOS with AppleClang, special handling is needed)
+# # Find OpenMP library (on macOS with AppleClang, special handling is needed)
+# if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+#   set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp" CACHE STRING "")
+#   set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "")
+#   find_library(OpenMP_omp_LIBRARY omp HINTS $ENV{LIBOMP_PREFIX}/lib /opt/homebrew/opt/libomp/lib /usr/local/opt/libomp/lib)
+#   if(OpenMP_omp_LIBRARY)
+#     set(OpenMP_CXX_LIBRARIES "${OpenMP_omp_LIBRARY}" CACHE STRING "")
+#   endif()
+# endif()
+
+find_package(OpenMP REQUIRED)
+target_link_libraries(interface_signal_generator PRIVATE OpenMP::OpenMP_CXX)
+
+
 if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-  set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp" CACHE STRING "")
-  set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "")
-  find_library(OpenMP_omp_LIBRARY omp HINTS $ENV{LIBOMP_PREFIX}/lib /opt/homebrew/opt/libomp/lib /usr/local/opt/libomp/lib)
-  if(OpenMP_omp_LIBRARY)
-    set(OpenMP_CXX_LIBRARIES "${OpenMP_omp_LIBRARY}" CACHE STRING "")
-  endif()
+  # make your .so look for Homebrew’s libomp
+  set(_omp_root "$ENV{HOMEBREW_PREFIX}/opt/libomp")
+  # if(NOT EXISTS "${_omp_root}")  # CI fallback
+  #   set(_omp_root "/opt/homebrew/opt/libomp")
+  # endif()
+  set_target_properties(interface_signal_generator PROPERTIES
+    BUILD_RPATH   "${_omp_root}/lib"
+    INSTALL_RPATH "${_omp_root}/lib"
+  )
 endif()
 
 
