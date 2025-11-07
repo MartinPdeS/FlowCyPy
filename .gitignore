@@ -17,6 +17,7 @@
 !README.rst
 !notebook.ipynb
 !CMakeLists.txt
+!.pytest.ini
 
 # But ignore docs/build inside docs and code
 docs/build/
