@@ -46,8 +46,8 @@ endif()
 add_compile_options(-Wall -Wextra -pedantic-errors)
 
 
-add_compile_options(-fsanitize=thread -fno-omit-frame-pointer -O1)
-add_link_options(-fsanitize=thread)
+# add_compile_options(-fsanitize=thread -fno-omit-frame-pointer -O1)
+# add_link_options(-fsanitize=thread)
 
 # Print some messages
 message(STATUS "OPENMP flags: ${OpenMP_CXX_FLAGS}")
