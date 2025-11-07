@@ -66,7 +66,7 @@ void SignalGenerator::add_constant_to_signal(const std::string &signal_name, dou
     auto& vec = it->second;
     const size_t n = vec.size();
 
-    // #pragma omp parallel for
+    #pragma omp parallel for
     for (size_t i = 0; i < n; ++i)
         vec[i] += constant;
 }
@@ -86,7 +86,7 @@ void SignalGenerator::multiply_signal(const std::string &signal_name, double fac
     auto& vec = it->second;
     const size_t n = vec.size();
 
-    // #pragma omp parallel for
+    #pragma omp parallel for
     for (size_t i = 0; i < n; ++i)
         vec[i] *= factor;
 }
@@ -99,7 +99,7 @@ void SignalGenerator::round_signal(const std::string &signal_name) {
     auto& vec = it->second;
     const size_t n = vec.size();
 
-    // #pragma omp parallel for
+    #pragma omp parallel for
     for (size_t i = 0; i < n; ++i)
         vec[i] = std::round(vec[i]);
 }
