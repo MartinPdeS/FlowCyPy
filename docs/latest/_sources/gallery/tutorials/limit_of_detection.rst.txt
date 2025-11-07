@@ -380,7 +380,7 @@ Plot Peak Features (Side vs Forward Height)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.844 seconds)
+   **Total running time of the script:** (0 minutes 3.694 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:
