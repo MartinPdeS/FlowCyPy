@@ -97,21 +97,6 @@ dev = [
     "flake8 ==7.3.0",
 ]
 
-[tool.pytest.ini_options]
-minversion = "6.0"
-xfail_strict = true
-log_cli_level = "INFO"
-addopts = [
-    "-v", "-rA", "-rw", "--cov=FlowCyPy", "--cov-report=html", "--cov-report=term"
-]
-testpaths = [
-    "tests/cpp_core",
-    "tests/python_api",
-    "tests/validation"
-]
-
-python_files = "*.py"
-
 [tool.cibuildwheel]
 build-frontend = "build"
 before-test = ""
