@@ -99,8 +99,8 @@ dev = [
 
 [tool.cibuildwheel]
 build-frontend = "build"
-before-test = "otool -L $(python3.13 -c 'from FlowCyPy.binary import interface_signal_generator as m; print(m.__file__)')"
-test-command = 'DYLD_PRINT_LIBRARIES=1 python -c "import FlowCyPy, sklearn"'
+# before-test = "otool -L $(python3.13 -c 'from FlowCyPy.binary import interface_signal_generator as m; print(m.__file__)')"
+test-command = 'otool -L $(python3.13 -c "from FlowCyPy.binary import interface_signal_generator as m; print(m.__file__)"); DYLD_PRINT_LIBRARIES=1 python -c "import FlowCyPy, sklearn"'
 test-extras = ["testing"]
 
 
