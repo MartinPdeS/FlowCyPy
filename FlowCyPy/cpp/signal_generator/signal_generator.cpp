@@ -3,6 +3,7 @@
 // Keep heavy headers out of the .h
 #include <fftw3.h>
 #include <complex>
+#include <iostream>
 
 // ----------------------------- Internal checks -----------------------------
 
@@ -130,6 +131,7 @@ void SignalGenerator::multiply_signal(const std::string& signal_name, double fac
     for (size_t i = 0; i < 1000; ++i)
         a += 3;
 
+    std::cout<<a<<std::endl;
 }
 
 
