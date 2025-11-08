@@ -125,15 +125,6 @@ void SignalGenerator::multiply_signal(const std::string& signal_name, double fac
     // const size_t n = vec.size();
     // double* __restrict data = vec.data();
 
-
-    #if defined(_OPENMP)
-        std::cout << "_OPENMP defined: " << _OPENMP << std::endl;
-    #else
-        std::cout << "_OPENMP not defined" << std::endl;
-    #endif
-
-
-
     double a;
 
     #pragma omp parallel for
@@ -168,7 +159,7 @@ void SignalGenerator::round_signal(const std::string &signal_name) {
     auto& vec = it->second;
     const size_t n = vec.size();
 
-    // #pragma omp parallel for
+    #pragma omp parallel for
     for (size_t i = 0; i < n; ++i)
         vec[i] = std::round(vec[i]);
 }
