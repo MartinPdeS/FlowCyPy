@@ -1,11 +1,5 @@
 set(NAME "utils")
 
-# Find FFTW library
-find_package(OpenMP REQUIRED)
-find_package(PkgConfig REQUIRED)
-pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
-
-
 
 add_library("cpp_${NAME}" STATIC "utils.cpp")
 target_include_directories("cpp_${NAME}" PUBLIC ${FFTW_INCLUDE_DIRS})
