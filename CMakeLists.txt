@@ -30,11 +30,59 @@ pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
 # endif()
 
 
-# top-level CMakeLists.txt
-if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    set(OpenMP_C_LIB_NAMES  "omp" CACHE STRING "" FORCE)
-    set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "" FORCE)
+
+
+
+
+# --- OpenMP setup -------------------------------------------------------
+if(APPLE)
+    # We’re using AppleClang + Homebrew libomp
+    # Make sure libomp is installed: `brew install libomp`
+    if(DEFINED ENV{HOMEBREW_PREFIX})
+        set(_omp_root "$ENV{HOMEBREW_PREFIX}/opt/libomp")
+    else()
+        set(_omp_root "/opt/homebrew/opt/libomp")
+    endif()
+
+    find_library(OPENMP_OMP_LIBRARY
+        NAMES omp
+        HINTS "${_omp_root}/lib"
+    )
+    if(NOT OPENMP_OMP_LIBRARY)
+        message(FATAL_ERROR "Could not find libomp.dylib. Install it with 'brew install libomp'.")
+    endif()
+
+    # Create a fake "OpenMP::OpenMP_CXX" imported target
+    add_library(OpenMP::OpenMP_CXX INTERFACE IMPORTED)
+    set_target_properties(OpenMP::OpenMP_CXX PROPERTIES
+        INTERFACE_COMPILE_OPTIONS "-Xpreprocessor;-fopenmp"
+        INTERFACE_LINK_LIBRARIES "${OPENMP_OMP_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${_omp_root}/include"
+    )
+
+    message(STATUS "Using Homebrew OpenMP at: ${OPENMP_OMP_LIBRARY}")
+else()
+    # Non-Apple platforms: use normal FindOpenMP
+    find_package(OpenMP REQUIRED)
 endif()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Include directories
