@@ -104,7 +104,7 @@ build-frontend = "build"
 # test-command = 'DYLD_PRINT_LIBRARIES=1 python -m pytest'
 
 # test-command = 'otool -L $(python -c "from FlowCyPy.binary import interface_signal_generator as m; print(m.__file__)"); DYLD_PRINT_LIBRARIES=1 python -m pytest -rA {project}/tests'
-test-command = 'otool -L $(python -c "from FlowCyPy.binary import interface_signal_generator as m; print(m.__file__)"); DYLD_PRINT_LIBRARIES=1 python {project}/tests/cpp_core/signal_generator.py'
+test-command = 'otool -L $(python -c "from FlowCyPy.binary import interface_signal_generator as m; print(m.__file__)"); DYLD_PRINT_LIBRARIES=1 python {project}/tests/python_api/workflow.py'
 test-extras = ["testing"]
 
 
