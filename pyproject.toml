@@ -116,7 +116,7 @@ repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 archs = ["arm64"]
 before-build = "brew install fftw"
 build = ["cp311-*", "cp312-*", "cp313-*"]
-repair-wheel-command = "delocate-wheel -w {dest_dir} -v {wheel}"
+repair-wheel-command = "delocate-wheel --exclude libomp.dylib -w {dest_dir} -v {wheel}"
 
 [tool.cibuildwheel.windows]
 archs = ["AMD64"]
