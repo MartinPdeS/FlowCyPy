@@ -106,9 +106,9 @@ endif()
 # Compiler and linker options
 add_compile_options(-Wall -Wextra -pedantic-errors)
 
-# if (APPLE)
-#     add_compile_options(-Xclang -fopenmp)
-# endif()
+if (APPLE)
+    add_compile_options(-Xpreprocessor -fopenmp)
+endif()
 
 # Print some messages
 message(STATUS "OPENMP flags: ${OpenMP_CXX_FLAGS}")
