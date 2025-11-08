@@ -29,20 +29,11 @@ pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
 #   endif()
 # endif()
 
-find_package(OpenMP REQUIRED)
-target_link_libraries(interface_signal_generator PRIVATE OpenMP::OpenMP_CXX)
 
-
+# top-level CMakeLists.txt
 if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-  # make your .so look for Homebrew’s libomp
-  set(_omp_root "$ENV{HOMEBREW_PREFIX}/opt/libomp")
-  # if(NOT EXISTS "${_omp_root}")  # CI fallback
-  #   set(_omp_root "/opt/homebrew/opt/libomp")
-  # endif()
-  set_target_properties(interface_signal_generator PROPERTIES
-    BUILD_RPATH   "${_omp_root}/lib"
-    INSTALL_RPATH "${_omp_root}/lib"
-  )
+    set(OpenMP_C_LIB_NAMES  "omp" CACHE STRING "" FORCE)
+    set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "" FORCE)
 endif()
 
 
