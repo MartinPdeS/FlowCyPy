@@ -172,7 +172,7 @@ cytometer = FlowCytometer(
     background_power=0.001 * ureg.milliwatt,
 )
 
-run_record = cytometer.run(run_time=0.4 * ureg.millisecond)
+run_record = cytometer.run(run_time=1 * ureg.millisecond)
 
 # %%
 # Step 5: Plot Events and Raw Analog Signals
@@ -203,7 +203,7 @@ _ = run_record.peaks.plot(x=("forward", "Height"))
 # ------------------------------------------
 from FlowCyPy.classifier import KmeansClassifier
 
-classifier = KmeansClassifier(number_of_cluster=2)
+classifier = KmeansClassifier(number_of_clusters=2)
 
 classified = classifier.run(
     dataframe=run_record.peaks.unstack("Detector"),

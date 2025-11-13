@@ -267,7 +267,7 @@ Plot relevant statistics
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 29.190 seconds)
+   **Total running time of the script:** (0 minutes 29.407 seconds)
 
 
 .. _sphx_glr_download_gallery_validation_k_estimator.py:
