@@ -61,12 +61,9 @@ dependencies = [
     "scipy >=1.15.3",
     'PyMieSim',
     'MPSPlots',
-    # 'scikit-learn',
     "TypedUnit"
 ]
 
-
-# Keywords for better discoverability
 keywords = [
     "flow cytometry", "light scattering", "mie theory", "backscatter",
     "rayleigh scattering", "biophotonics", "nanoparticle", "microfluidics",

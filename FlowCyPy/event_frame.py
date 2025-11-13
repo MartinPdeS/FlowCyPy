@@ -91,9 +91,16 @@ class EventFrame:
         ax.set_xlabel(f"Time [{time_units:~P}]")
         ax.legend()
 
-    def get_concatenated_dataframe(self) -> pd.DataFrame:
+    def get_concatenated_dataframe(
+        self, filter_population: Optional[List[str]] = None
+    ) -> pd.DataFrame:
         """
         Concatenates all population event DataFrames into a single DataFrame with a MultiIndex.
+
+        Parameters
+        ----------
+        filter_population : Optional[List[str]], optional
+            List of population names to include. If None, includes all populations.
 
         Returns
         -------
@@ -116,6 +123,9 @@ class EventFrame:
         for key in population_event:
             unit = population_event[key].max().to_compact().units
             population_event[key] = population_event[key].pint.to(unit)
+
+        if filter_population is not None:
+            population_event = population_event.loc[filter_population]
 
         return population_event
 
@@ -142,6 +152,7 @@ class EventFrame:
         bins: Optional[int] = "auto",
         color: Optional[Union[str, dict]] = None,
         clip_data: Optional[Union[str, Any]] = None,
+        filter_population: Optional[List[str]] = None,
     ) -> plt.Figure:
         """
         Plot a histogram distribution for a given column using Seaborn, with an option to remove extreme values.
@@ -160,13 +171,15 @@ class EventFrame:
             If provided, removes data above a threshold. If a string ending with '%' (e.g., "20%") is given,
             the function removes values above the corresponding quantile (e.g., the top 20% of values).
             If a Any is given, it removes values above that absolute value.
+        filter_population : Optional[List[str]], optional
+            List of population names to include. If None, includes all populations.
 
         Returns
         -------
         plt.Figure
             The histogram figure.
         """
-        population_event = self.get_concatenated_dataframe()
+        population_event = self.get_concatenated_dataframe(filter_population)
 
         figure, ax = plt.subplots(1, 1)
 
@@ -196,7 +209,12 @@ class EventFrame:
 
     @MPSPlots.helper.post_mpl_plot
     def plot_2d(
-        self, x: str, y: str, alpha: float = 0.8, bandwidth_adjust: float = 1.0
+        self,
+        x: str,
+        y: str,
+        alpha: float = 0.8,
+        bandwidth_adjust: float = 1.0,
+        filter_population: Optional[List[str]] = None,
     ) -> plt.Figure:
         """
         Plots the scatterer sampling distribution using seaborn's jointplot.
@@ -210,13 +228,15 @@ class EventFrame:
             The transparency level for the scatter points (default is 0.8).
         bandwidth_adjust : float, optional
             Adjustment factor for the bandwidth of the marginal distributions (default is 1.0).
+        filter_population : Optional[List[str]], optional
+            List of population names to include. If None, includes all populations.
 
         Returns
         -------
         plt.Figure
             The matplotlib Figure object containing the plot.
         """
-        population_event = self.get_concatenated_dataframe()
+        population_event = self.get_concatenated_dataframe(filter_population)
 
         grid = sns.jointplot(
             data=population_event,
@@ -241,6 +261,7 @@ class EventFrame:
         z: str = None,
         hue: str = "Population",
         alpha: float = 0.8,
+        filter_population: Optional[List[str]] = None,
     ) -> plt.Figure:
         """
         Visualize a 3D scatter plot of scatterer properties.
@@ -259,13 +280,15 @@ class EventFrame:
             Column used for grouping/coloring (default: 'Population').
         alpha : float, optional
             Transparency for scatter points (default: 0.8).
+        filter_population : Optional[List[str]], optional
+            List of population names to include. If None, includes all populations.
 
         Returns
         -------
         plt.Figure
             The figure containing the 3D scatter plot.
         """
-        population_event = self.get_concatenated_dataframe()
+        population_event = self.get_concatenated_dataframe(filter_population)
 
         figure = plt.figure()
         ax = figure.add_subplot(111, projection="3d")
