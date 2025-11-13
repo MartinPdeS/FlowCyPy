@@ -88,7 +88,7 @@ class KmeansClassifier(BaseClassifier, KMEANSCLASSIFIER):
         if hasattr(sub_dataframe, "pint"):
             sub_dataframe = sub_dataframe.pint.dequantify().droplevel("unit", axis=1)
 
-        dataframe["Label"] = self.cpp_run(
+        dataframe["Label"] = self._cpp_run(
             sub_dataframe.values, random_state=random_state
         )
 
