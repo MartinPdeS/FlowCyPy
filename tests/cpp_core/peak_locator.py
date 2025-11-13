@@ -1,10 +1,7 @@
 import numpy as np
 import pytest
 
-from FlowCyPy.binary.interface_peak_locator import (
-    GlobalPeakLocator,
-    SlidingWindowPeakLocator,
-)
+from FlowCyPy.binary.peak_locator import GLOBALPEAKLOCATOR, SLIDINGWINDOWPEAKLOCATOR
 
 # ----------------- HELPER FUNCTIONS -----------------
 
@@ -68,7 +65,7 @@ def test_sliding_window_basic_peak_detection():
             {"center": 80, "height": 7, "width": 8},
         ],
     )
-    locator = SlidingWindowPeakLocator(
+    locator = SLIDINGWINDOWPEAKLOCATOR(
         window_size=20, window_step=10, max_number_of_peaks=3
     )
     locator.compute(signal)
@@ -90,7 +87,7 @@ def test_sliding_window_with_width_and_area():
         ],
         mode="gaussian",
     )
-    locator = SlidingWindowPeakLocator(
+    locator = SLIDINGWINDOWPEAKLOCATOR(
         window_size=25,
         window_step=10,
         max_number_of_peaks=5,
@@ -108,7 +105,7 @@ def test_sliding_window_with_width_and_area():
 
 def test_sliding_window_empty_signal():
     signal = np.zeros(100)
-    locator = SlidingWindowPeakLocator(window_size=20)
+    locator = SLIDINGWINDOWPEAKLOCATOR(window_size=20)
     locator.compute(signal)
     heights = locator.get_metric("Height")
     heights = np.asarray(heights)
@@ -116,13 +113,13 @@ def test_sliding_window_empty_signal():
 
 
 def test_sliding_window_rejects_non_1d_input():
-    locator = SlidingWindowPeakLocator(window_size=10)
+    locator = SLIDINGWINDOWPEAKLOCATOR(window_size=10)
     bad_input = np.zeros((10, 10))
     with pytest.raises(TypeError):
         locator.compute(bad_input)
 
 
-# === GlobalPeakLocator tests ===
+# === GLOBALPEAKLOCATOR tests ===
 
 
 def test_global_peak_basic():
@@ -134,7 +131,7 @@ def test_global_peak_basic():
             {"center": 70, "height": 6, "width": 5},
         ],
     )
-    locator = GlobalPeakLocator()
+    locator = GLOBALPEAKLOCATOR()
     locator.compute(signal)
 
     indices = locator.get_metric("Index")
@@ -148,7 +145,7 @@ def test_global_peak_with_width_and_area():
     signal = generate_peak_signal(
         length=100, peaks=[{"center": 50, "height": 10, "width": 10}], mode="gaussian"
     )
-    locator = GlobalPeakLocator(compute_width=True, compute_area=True)
+    locator = GLOBALPEAKLOCATOR(compute_width=True, compute_area=True)
     locator.compute(signal)
 
     widths = locator.get_metric("Width")
@@ -160,7 +157,7 @@ def test_global_peak_with_width_and_area():
 
 def test_global_peak_handles_flat_signal():
     signal = np.ones(100)
-    locator = GlobalPeakLocator()
+    locator = GLOBALPEAKLOCATOR()
     locator.compute(signal)
 
     heights = locator.get_metric("Height")
@@ -171,7 +168,7 @@ def test_global_peak_handles_flat_signal():
 
 
 def test_global_peak_rejects_non_1d_input():
-    locator = GlobalPeakLocator()
+    locator = GLOBALPEAKLOCATOR()
     bad_input = np.ones((10, 10))
     with pytest.raises(TypeError):
         locator.compute(bad_input)

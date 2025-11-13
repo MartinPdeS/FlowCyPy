@@ -1,8 +1,10 @@
 import pandas as pd
-from sklearn.cluster import DBSCAN, KMeans
-from sklearn.mixture import GaussianMixture
+
+# from sklearn.cluster import DBSCAN, KMeans
+# from sklearn.mixture import GaussianMixture
 
 from FlowCyPy.sub_frames.classifier import ClassifierDataFrame
+from FlowCyPy.binary.classifier import KMEANSCLASSIFIER, DBSCANCLASSIFIER
 
 
 class BaseClassifier:
@@ -37,8 +39,8 @@ class BaseClassifier:
         return dataframe.loc[:, (features, detectors)]
 
 
-class KmeansClassifier(BaseClassifier):
-    def __init__(self, number_of_cluster: int) -> None:
+class KmeansClassifier(BaseClassifier, KMEANSCLASSIFIER):
+    def __init__(self, number_of_clusters: int) -> None:
         """
         Initialize the Classifier.
 
@@ -47,7 +49,9 @@ class KmeansClassifier(BaseClassifier):
         dataframe : DataFrame
             The input dataframe with multi-index columns.
         """
-        self.number_of_cluster = number_of_cluster
+        self.number_of_cluster = number_of_clusters
+
+        super().__init__(number_of_clusters=number_of_clusters)
 
     def run(
         self,
@@ -84,75 +88,14 @@ class KmeansClassifier(BaseClassifier):
         if hasattr(sub_dataframe, "pint"):
             sub_dataframe = sub_dataframe.pint.dequantify().droplevel("unit", axis=1)
 
-        # Run KMeans
-        kmeans = KMeans(n_clusters=self.number_of_cluster, random_state=random_state)
-        labels = kmeans.fit_predict(sub_dataframe)
-
-        dataframe["Label"] = labels
+        dataframe["Label"] = self.cpp_run(
+            sub_dataframe.values, random_state=random_state
+        )
 
         return ClassifierDataFrame(dataframe)
 
 
-class GaussianMixtureClassifier(BaseClassifier):
-    def __init__(self, number_of_components: int) -> None:
-        """
-        Initialize the Gaussian Mixture Classifier.
-
-        Parameters
-        ----------
-        number_of_components : int
-            Number of Gaussian components (clusters) to use for the model.
-        """
-        self.number_of_components = number_of_components
-
-    def run(
-        self,
-        dataframe: pd.DataFrame,
-        features: list = ["Height"],
-        detectors: list = None,
-        random_state: int = 42,
-    ) -> pd.DataFrame:
-        """
-        Run Gaussian Mixture Model (GMM) clustering on the selected features and detectors.
-
-        Parameters
-        ----------
-        dataframe : pd.DataFrame
-            The input DataFrame with multi-index (e.g., by 'Detector').
-        features : list
-            List of features to use for clustering. Options include 'Height', 'Width', 'Area'.
-        detectors : list, optional
-            List of detectors to use. If None, use all detectors.
-        random_state : int, optional
-            Random state for reproducibility, by default 42.
-
-        Returns
-        -------
-        pd.DataFrame
-            DataFrame with clustering labels added.
-        """
-        # Filter the DataFrame
-        sub_dataframe = self.filter_dataframe(
-            dataframe=dataframe, features=features, detectors=detectors
-        )
-
-        # Ensure data is dequantified if it uses Pint quantities
-        if hasattr(sub_dataframe, "pint"):
-            sub_dataframe = sub_dataframe.pint.dequantify().droplevel("unit", axis=1)
-
-        # Run Gaussian Mixture Model
-        gmm = GaussianMixture(
-            n_components=self.number_of_components, random_state=random_state
-        )
-        labels = gmm.fit_predict(sub_dataframe)
-
-        # Add labels to the original DataFrame
-        dataframe["Label"] = labels
-
-        return ClassifierDataFrame(dataframe)
-
-
-class DBSCANClassifier(BaseClassifier):
+class DBSCANClassifier(BaseClassifier, DBSCANCLASSIFIER):
     def __init__(self, epsilon: float = 0.5, min_samples: int = 5) -> None:
         """
         Initialize the DBSCAN Classifier.
@@ -168,6 +111,8 @@ class DBSCANClassifier(BaseClassifier):
         """
         self.epsilon = epsilon
         self.min_samples = min_samples
+
+        super().__init__(epsilon=epsilon, min_samples=min_samples)
 
     def run(
         self,
@@ -201,11 +146,7 @@ class DBSCANClassifier(BaseClassifier):
         if hasattr(sub_dataframe, "pint"):
             sub_dataframe = sub_dataframe.pint.dequantify().droplevel("unit", axis=1)
 
-        # Run DBSCAN
-        dbscan = DBSCAN(eps=self.epsilon, min_samples=self.min_samples)
-        labels = dbscan.fit_predict(sub_dataframe)
-
         # Add labels to the original DataFrame
-        dataframe["Label"] = labels
+        dataframe["Label"] = self._run(sub_dataframe.values)
 
         return ClassifierDataFrame(dataframe)

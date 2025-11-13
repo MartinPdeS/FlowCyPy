@@ -4,7 +4,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(interface_circuits, module) {
+PYBIND11_MODULE(circuits, module) {
     module.doc() = R"pbdoc(
         FlowCyPy C++ Circuit Interface
 
@@ -30,7 +30,7 @@ PYBIND11_MODULE(interface_circuits, module) {
         )
         ;
 
-    py::class_<BaseLineRestoration, BaseCircuit>(module, "BaseLineRestoration")
+    py::class_<BaseLineRestoration, BaseCircuit>(module, "BASELINERESTORATION")
         .def(
             py::init<>(),
             R"pbdoc(
@@ -62,7 +62,7 @@ PYBIND11_MODULE(interface_circuits, module) {
         )
         ;
 
-    py::class_<ButterworthLowPassFilter, BaseCircuit>(module, "ButterworthLowPassFilter")
+    py::class_<ButterworthLowPassFilter, BaseCircuit>(module, "BUTTERWORTHLOWPASSFILTER")
         .def(py::init<>())
         .def(py::init<double, double, int, double>(),
             py::arg("sampling_rate"),
@@ -129,7 +129,7 @@ PYBIND11_MODULE(interface_circuits, module) {
                    ", gain=" + std::to_string(self.gain) + ">";
         });
 
-    py::class_<BesselLowPassFilter, BaseCircuit>(module, "BesselLowPassFilter")
+    py::class_<BesselLowPassFilter, BaseCircuit>(module, "BESSELLOWPASSFILTER")
         .def(py::init<>())
         .def(py::init<double, double, int, double>(),
             py::arg("sampling_rate"),

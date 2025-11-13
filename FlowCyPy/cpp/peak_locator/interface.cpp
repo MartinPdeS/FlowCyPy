@@ -2,7 +2,7 @@
 #include <pybind11/stl.h>
 #include "peak_locator.h"
 
-PYBIND11_MODULE(interface_peak_locator, module) {
+PYBIND11_MODULE(peak_locator, module) {
     module.doc() = R"pbdoc(
         Peak locator module for identifying signal peaks.
 
@@ -27,7 +27,7 @@ PYBIND11_MODULE(interface_peak_locator, module) {
         )
     ;
 
-    pybind11::class_<SlidingWindowPeakLocator, BasePeakLocator>(module, "SlidingWindowPeakLocator", R"pbdoc(
+    pybind11::class_<SlidingWindowPeakLocator, BasePeakLocator>(module, "SLIDINGWINDOWPEAKLOCATOR", R"pbdoc(
         Detect peaks in a signal using an overlapping sliding window strategy.
 
         Each window is processed independently to find local peaks, which can be useful
@@ -48,7 +48,7 @@ PYBIND11_MODULE(interface_peak_locator, module) {
         compute_area : bool, optional
             Whether to compute area under each detected peak.
         threshold : float, optional
-            Minimum normalized peak value (0–1) to be considered valid.
+            Minimum normalized peak value (0-1) to be considered valid.
     )pbdoc")
         .def(
             pybind11::init<int, int, int, int, bool, bool, double>(),
@@ -76,7 +76,7 @@ PYBIND11_MODULE(interface_peak_locator, module) {
                 A dictionary containing per-window arrays for peak positions and optionally widths/areas.
         )pbdoc");
 
-    pybind11::class_<GlobalPeakLocator, BasePeakLocator>(module, "GlobalPeakLocator", R"pbdoc(
+    pybind11::class_<GlobalPeakLocator, BasePeakLocator>(module, "GLOBALPEAKLOCATOR", R"pbdoc(
         Detect peaks by analyzing the entire signal at once.
 
         This is best for stationary signals where global peak prominence is important.

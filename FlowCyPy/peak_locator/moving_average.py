@@ -1,14 +1,11 @@
 import numpy as np
 
-from FlowCyPy.binary import interface_peak_locator
+from FlowCyPy.binary.peak_locator import SLIDINGWINDOWPEAKLOCATOR
 from FlowCyPy.peak_locator.base_class import BasePeakLocator
 
 
 class SlidingWindowPeakLocator(BasePeakLocator):
     r"""
-    SlidingWindowPeakLocator(window_size, window_step=-1, max_number_of_peaks=5, padding_value=-1,
-                               compute_width=False, compute_area=False, threshold=0.5)
-
     A sliding-window-based peak detection utility for 1D signals. This class segments the input signal
     into fixed-size windows (which can be overlapping if window_step is less than window_size) and identifies
     the local maximum in each window. Optionally, it computes additional metrics for each peak:
@@ -81,7 +78,7 @@ class SlidingWindowPeakLocator(BasePeakLocator):
     ):
         self.max_number_of_peaks = max_number_of_peaks
 
-        self.binding = interface_peak_locator.SlidingWindowPeakLocator(
+        self.binding = SLIDINGWINDOWPEAKLOCATOR(
             window_size=window_size,
             window_step=window_step,
             max_number_of_peaks=max_number_of_peaks,

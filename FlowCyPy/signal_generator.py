@@ -1,9 +1,9 @@
 from TypedUnit import AnyUnit, Frequency, Time, ureg, validate_units
 
-from FlowCyPy.binary import interface_signal_generator
+from FlowCyPy.binary.signal_generator import SIGNALGENERATOR
 
 
-class SignalGenerator(interface_signal_generator.SignalGenerator):
+class SignalGenerator(SIGNALGENERATOR):
     """
     A class to generate signals for flow cytometry applications.
 

@@ -3,7 +3,7 @@
 #include "flow_cell.h"
 
 
-PYBIND11_MODULE(interface_flow_cell, module) {
+PYBIND11_MODULE(flow_cell, module) {
 
     pybind11::class_<FluidRegion>(module, "FLUIDREGION")
         .def_readwrite("_cpp_width", &FluidRegion::width)

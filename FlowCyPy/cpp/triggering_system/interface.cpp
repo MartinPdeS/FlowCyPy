@@ -6,7 +6,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(interface_triggering_system, module) {
+PYBIND11_MODULE(triggering_system, module) {
     module.doc() = R"pbdoc(
         Signal Triggering and Segmentation System.
 

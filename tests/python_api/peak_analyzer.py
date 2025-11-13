@@ -1,14 +1,8 @@
-import math
-
 import numpy as np
 import pytest
+import math
 
-import FlowCyPy
-
-# Replace 'your_module' with the actual module name where the classes are defined.
 from FlowCyPy.signal_processing import peak_locator
-
-FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
 PEAK_CENTERS = [30, 70]
 

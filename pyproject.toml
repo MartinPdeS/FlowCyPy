@@ -96,12 +96,6 @@ dev = [
 
 [tool.cibuildwheel]
 build-frontend = "build"
-# before-test = "otool -L $(python3.13 -c 'from FlowCyPy.binary import interface_signal_generator as m; print(m.__file__)')"
-# test-command = 'DYLD_PRINT_LIBRARIES=1 python -c "import FlowCyPy, sklearn"'
-test-command = 'DYLD_PRINT_LIBRARIES=1 python -m pytest {project}/tests/python_api/workflow.py'
-
-# test-command = 'otool -L $(python -c "from FlowCyPy.binary import interface_signal_generator as m; print(m.__file__)"); DYLD_PRINT_LIBRARIES=1 python -m pytest -rA {project}/tests'
-# test-command = 'otool -L $(python -c "from FlowCyPy.binary import interface_signal_generator as m; print(m.__file__)"); DYLD_PRINT_LIBRARIES=1 python {project}/tests/python_api/workflow.py'
 test-extras = ["testing"]
 
 
@@ -111,14 +105,16 @@ before-build = "yum install -y fftw-devel"
 build = ["cp311-manylinux*", "cp312-manylinux*", "cp313-manylinux*", ]
 manylinux-x86_64-image = "manylinux_2_28"
 repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
+test-command = "cd {project}; python -m pytest --config-file=pytest.ini"
 
 [tool.cibuildwheel.macos]
 archs = ["arm64"]
 before-build = "brew install fftw"
 build = ["cp311-*", "cp312-*", "cp313-*"]
-repair-wheel-command = "delocate-wheel -w {dest_dir} -v {wheel}"
-# repair-wheel-command = "delocate-wheel --exclude libomp.dylib -w {dest_dir} -v {wheel}"
+repair-wheel-command = "delocate-wheel -w {dest_dir} -v {wheel}"  # --exclude=libomp.dylib
+test-command = 'cd {project}; python -m pytest --config-file=pytest.ini'  # DYLD_PRINT_LIBRARIES=NO
 
 [tool.cibuildwheel.windows]
 archs = ["AMD64"]
 build = ["cp311-*", "cp312-*", "cp313-*"]
+test-command = 'cd /d {project} && python -m pytest --config-file=pytest.ini'

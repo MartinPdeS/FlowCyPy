@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 import FlowCyPy
-from FlowCyPy.binary import interface_signal_generator
+from FlowCyPy.binary.signal_generator import SIGNALGENERATOR
 
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
@@ -16,24 +16,21 @@ N_ELEMENTS = 5000
 TIME_ARRAY = np.linspace(0.0, 1.0, N_ELEMENTS)
 BACKGROUND_POWER = 1.0
 
+
 # ----------------- FIXTURES -----------------
-
-
 @pytest.fixture
 def signal_generator():
     """
     Returns a SignalGenerator instance with a predefined time array.
     This is used to avoid code duplication in tests.
     """
-    signal_generator = interface_signal_generator.SignalGenerator(N_ELEMENTS)
+    signal_generator = SIGNALGENERATOR(N_ELEMENTS)
     signal_generator._cpp_add_signal("Time", TIME_ARRAY)
     signal_generator.create_zero_signal(signal_name="Signal")
     return signal_generator
 
 
 # ----------------- TESTS -----------------
-
-
 def test_signal_after_pulse_generation(signal_generator):
     """
     Test that the signal is generated correctly after pulse generation.

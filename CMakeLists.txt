@@ -91,10 +91,7 @@ find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
 find_package(pybind11 CONFIG REQUIRED)
 
 
-message(STATUS "OpenMP_CXX_FOUND         = ${OpenMP_CXX_FOUND}")
-message(STATUS "OpenMP_CXX_FLAGS         = '${OpenMP_CXX_FLAGS}'")
-message(STATUS "OpenMP_CXX_LIB_NAMES     = '${OpenMP_CXX_LIB_NAMES}'")
-message(STATUS "OpenMP_CXX_LIBRARIES     = '${OpenMP_CXX_LIBRARIES}'")
+
 
 # Platform-specific settings for static linking
 if (WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -107,11 +104,18 @@ endif()
 add_compile_options(-Wall -Wextra -pedantic-errors)
 
 # Print some messages
-message(STATUS "OPENMP flags: ${OpenMP_CXX_FLAGS}")
 message(STATUS "FlowCyPy version is: ${FLOWCYPY_VERSION}")
 message(STATUS "FlowCyPy includes directory is: ${FLOWCYPY_CXX_DIR}")
 message(STATUS "Python version to be compiled against: ${PYBIND11_PYTHON_VERSION}")
 message(STATUS "Binary will be installed in location: ${LOCAL_BIN_DIR}")
+message(STATUS "OpenMP_CXX_FOUND         = ${OpenMP_CXX_FOUND}")
+message(STATUS "OpenMP_CXX_FLAGS         = '${OpenMP_CXX_FLAGS}'")
+message(STATUS "OpenMP_CXX_LIB_NAMES     = '${OpenMP_CXX_LIB_NAMES}'")
+message(STATUS "OpenMP_CXX_LIBRARIES     = '${OpenMP_CXX_LIBRARIES}'")
+message(STATUS "FFTW3_FOUND              = ${FFTW_FOUND}")
+message(STATUS "FFTW3_INCLUDE_DIRS       = ${FFTW_INCLUDE_DIRS}")
+message(STATUS "FFTW3_LIBRARIES          = ${FFTW_LIBRARIES}")
+
 
 add_subdirectory(FlowCyPy/cpp/utils)               # utils
 add_subdirectory(FlowCyPy/cpp/flow_cell)           # flow_cell
@@ -120,4 +124,5 @@ add_subdirectory(FlowCyPy/cpp/trigger)             # trigger
 add_subdirectory(FlowCyPy/cpp/triggering_system)   # triggering_system
 add_subdirectory(FlowCyPy/cpp/signal_generator)    # signal_generator
 add_subdirectory(FlowCyPy/cpp/peak_locator)        # peak_locator
+add_subdirectory(FlowCyPy/cpp/classifier)          # classifier
 # add_subdirectory("FlowCyPy/cpp/coupling")          # coupling

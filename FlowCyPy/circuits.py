@@ -1,6 +1,10 @@
 from TypedUnit import AnyUnit, Frequency, Time
 
-from FlowCyPy.binary import interface_circuits
+from FlowCyPy.binary.circuits import (
+    BESSELLOWPASSFILTER,
+    BUTTERWORTHLOWPASSFILTER,
+    BASELINERESTORATION,
+)
 
 
 class SignalProcessor:
@@ -9,7 +13,7 @@ class SignalProcessor:
     """
 
 
-class BaselineRestorator(interface_circuits.BaseLineRestoration, SignalProcessor):
+class BaselineRestorator(BASELINERESTORATION, SignalProcessor):
     """
     Applies a baseline restoration filter by subtracting the minimum value over a given window size.
 
@@ -47,7 +51,7 @@ class BaselineRestorator(interface_circuits.BaseLineRestoration, SignalProcessor
         self._cpp_process(signal_generator)
 
 
-class BesselLowPass(interface_circuits.BesselLowPassFilter, SignalProcessor):
+class BesselLowPass(BESSELLOWPASSFILTER, SignalProcessor):
     """
     Applies a Bessel low-pass filter to smooth the signal.
 
@@ -87,7 +91,7 @@ class BesselLowPass(interface_circuits.BesselLowPassFilter, SignalProcessor):
         self._cpp_process(signal_generator)
 
 
-class ButterworthlLowPass(interface_circuits.ButterworthLowPassFilter, SignalProcessor):
+class ButterworthlLowPass(BUTTERWORTHLOWPASSFILTER, SignalProcessor):
     """
     Applies a Butterworth low-pass filter to smooth the signal.
     Parameters

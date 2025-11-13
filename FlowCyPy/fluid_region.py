@@ -1,7 +1,7 @@
 from matplotlib.patches import Rectangle
 from TypedUnit import Area, FlowRate, Length, ureg
 
-from FlowCyPy.binary.interface_flow_cell import FLUIDREGION
+from FlowCyPy.binary.flow_cell import FLUIDREGION
 
 
 class FluidRegion:

@@ -5,10 +5,10 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(interface_signal_generator, module) {
+PYBIND11_MODULE(signal_generator, module) {
     module.doc() = "SignalGenerator bindings";
 
-    py::class_<SignalGenerator>(module, "SignalGenerator")
+    py::class_<SignalGenerator>(module, "SIGNALGENERATOR")
         .def(
             py::init<const size_t>(),
             py::arg("n_elements"),

@@ -9,7 +9,7 @@ import pint_pandas
 import matplotlib.pyplot as plt
 from TypedUnit import AnyUnit, Time, ureg
 
-from FlowCyPy.binary.interface_triggering_system import (
+from FlowCyPy.binary.triggering_system import (
     DOUBLETHRESHOLD,
     DYNAMICWINDOW,
     FIXEDWINDOW,

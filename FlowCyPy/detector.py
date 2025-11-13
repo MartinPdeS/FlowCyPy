@@ -13,7 +13,7 @@ from TypedUnit import (
     validate_units,
 )
 
-from FlowCyPy.binary.interface_signal_generator import SignalGenerator
+from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing

@@ -4,7 +4,7 @@ import pandas as pd
 import pint_pandas
 from TypedUnit import FlowRate, Length, Time, Viscosity, Volume, ureg, validate_units
 
-from FlowCyPy.binary.interface_flow_cell import FLOWCELL
+from FlowCyPy.binary.flow_cell import FLOWCELL
 from FlowCyPy.fluid_region import FluidRegion
 from FlowCyPy.population import BasePopulation
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing

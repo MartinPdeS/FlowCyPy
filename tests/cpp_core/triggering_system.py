@@ -1,18 +1,11 @@
 import numpy as np
 import pytest
-
-import FlowCyPy
-from FlowCyPy.binary.interface_triggering_system import DOUBLETHRESHOLD, FIXEDWINDOW
-
-FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
-
-# ----------------- CONSTANTS -----------------
+from FlowCyPy.binary.triggering_system import DOUBLETHRESHOLD, FIXEDWINDOW
 
 N_POINTS = 1000
 
-# ----------------- TEST -----------------
 
-
+# ----------------- TESTS -----------------
 def test_add_time_and_signal_accept_valid_inputs():
     triggering_system = FIXEDWINDOW(
         trigger_detector_name="det1",
@@ -46,9 +39,6 @@ def test_add_signal_rejects_bad_shape():
     )
     with pytest.raises(TypeError):
         triggering_system._cpp_add_signal("det1", np.zeros((5, 5)))
-
-
-# === Triggering algorithm tests ===
 
 
 def test_fixed_window_triggering_extracts_expected_segments():
