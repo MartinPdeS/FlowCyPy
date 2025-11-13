@@ -4,6 +4,7 @@
 #include <limits>
 #include <cmath>
 #include <cstddef>
+#include <stdexcept>
 
 class KmeansClassifier {
 public:
