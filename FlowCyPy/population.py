@@ -16,6 +16,7 @@ from TypedUnit import (
 
 from FlowCyPy import distribution
 from FlowCyPy.utils import config_dict
+from FlowCyPy.sampling_method import ExplicitModel, GammaModel
 
 
 class BasePopulation:
@@ -221,42 +222,14 @@ class Sphere(BasePopulation):
     name: str
     refractive_index: distribution.Base | RefractiveIndex
     diameter: distribution.Base | Length
+    medium_refractive_index: distribution.Base
     particle_count: Particle | Concentration
+    sampling_method: object = ExplicitModel()
 
-    # def generate_property_sampling(self, sampling: int) -> tuple:
-    #     """
-    #     Generate a sampling of particle properties.
+    def __post_init__(self):
+        self.sampling_method.population = self
 
-    #     This method uses the underlying distributions (or fixed quantities) for diameter and refractive index
-    #     to generate a sample set for simulation or analysis.
-
-    #     This method creates a dictionnary with the following entries:
-    #         - 'Diameter': The generated diameters.
-    #         - 'RefractiveIndex': The generated refractive index values.
-
-    #     Parameters
-    #     ----------
-    #     sampling : int
-    #         The sampling parameter (e.g., number of samples or a resolution quantity) used by the distributions.
-
-    #     Returns
-    #     -------
-    #     tuple
-    #         A tuple containing the generated diameter sample and refractive index sample.
-    #     """
-    #     diameter_sample = self.diameter.generate(sampling)
-    #     refractive_index_sample = self.refractive_index.generate(sampling)
-
-    #     output_dict = {
-    #         "Diameter": diameter_sample,
-    #         "RefractiveIndex": refractive_index_sample,
-    #     }
-
-    #     output_dict = self.add_dye_to_sampling(output_dict, diameter_sample)
-
-    #     return output_dict
-
-    def add_property_to_frame(self, dataframe, sampling: int) -> tuple:
+    def add_property_to_frame(self, dataframe) -> tuple:
         """
         Generate a sampling of particle properties.
 
@@ -270,20 +243,23 @@ class Sphere(BasePopulation):
 
         Parameters
         ----------
-        sampling : int
-            The sampling parameter (e.g., number of samples or a resolution quantity) used by the distributions.
+        dataframe : pd.DataFrame
+            The DataFrame to which the generated properties will be added.
 
         Returns
         -------
         tuple
             A tuple containing the generated diameter sample and refractive index sample.
         """
+        sampling = len(dataframe)
         diameter_sample = self.diameter.generate(sampling)
         refractive_index_sample = self.refractive_index.generate(sampling)
+        medium_refractive_index_sample = self.medium_refractive_index.generate(sampling)
 
         sampled_data = {
             "Diameter": diameter_sample,
             "RefractiveIndex": refractive_index_sample,
+            "MediumRefractiveIndex": medium_refractive_index_sample,
         }
 
         sampled_data = self.add_dye_to_sampling(sampled_data, diameter_sample)
@@ -332,50 +308,12 @@ class CoreShell(BasePopulation):
     shell_thickness: distribution.Base | Length
     core_refractive_index: distribution.Base | RefractiveIndex
     shell_refractive_index: distribution.Base | RefractiveIndex
+    medium_refractive_index: distribution.Base
     particle_count: Particle | Concentration
+    sampling_method: object = ExplicitModel()
 
-    # def generate_property_sampling(self, sampling: Dimensionless) -> tuple:
-    #     r"""
-    #     Generate a sampling of core-shell particle properties.
-
-    #     This method generates a sample set for the core diameter, shell thickness, core refractive index,
-    #     and shell refractive index from their underlying distributions (or fixed values).
-
-    #     This method creates a dictionnary with the following entries:
-    #         - 'CoreDiameter': The generated core diameters.
-    #         - 'ShellThickness': The generated shell thickness values.
-    #         - 'CoreRefractiveIndex': The generated core refractive indices.
-    #         - 'ShellRefractiveIndex': The generated shell refractive indices.
-
-    #     Parameters
-    #     ----------
-    #     sampling : Quantity
-    #         The sampling parameter used by the distributions.
-
-    #     Returns
-    #     -------
-    #     tuple
-    #         A tuple containing the generated samples in the order:
-    #         (core_diameter, shell_thickness, refractive_index_core, refractive_index_shell).
-    #     """
-
-    #     core_diameter_sample = self.core_diameter.generate(sampling)
-    #     shell_thickness_sample = self.shell_thickness.generate(sampling)
-    #     core_refractive_index_sample = self.core_refractive_index.generate(sampling)
-    #     shell_refractive_index_sample = self.shell_refractive_index.generate(sampling)
-
-    #     output_dict = {
-    #         "CoreDiameter": core_diameter_sample,
-    #         "ShellThickness": shell_thickness_sample,
-    #         "CoreRefractiveIndex": core_refractive_index_sample,
-    #         "ShellRefractiveIndex": shell_refractive_index_sample,
-    #     }
-
-    #     output_dict = self.add_dye_to_sampling(
-    #         output_dict, core_diameter_sample + shell_thickness_sample * 2
-    #     )
-
-    #     return output_dict
+    def __post_init__(self):
+        self.sampling_method.population = self
 
     def add_property_to_frame(self, dataframe, sampling: Dimensionless) -> tuple:
         r"""
@@ -406,12 +344,14 @@ class CoreShell(BasePopulation):
         shell_thickness_sample = self.shell_thickness.generate(sampling)
         core_refractive_index_sample = self.core_refractive_index.generate(sampling)
         shell_refractive_index_sample = self.shell_refractive_index.generate(sampling)
+        medium_refractive_index_sample = self.medium_refractive_index.generate(sampling)
 
         sampled_data = {
             "CoreDiameter": core_diameter_sample,
             "ShellThickness": shell_thickness_sample,
             "CoreRefractiveIndex": core_refractive_index_sample,
             "ShellRefractiveIndex": shell_refractive_index_sample,
+            "MediumRefractiveIndex": medium_refractive_index_sample,
         }
 
         sampled_data = self.add_dye_to_sampling(

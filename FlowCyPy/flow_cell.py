@@ -1,14 +1,9 @@
-from typing import List
-
-import pandas as pd
 import pint_pandas
 from TypedUnit import FlowRate, Length, Time, Viscosity, Volume, ureg, validate_units
 
 from FlowCyPy.binary.flow_cell import FLOWCELL
 from FlowCyPy.fluid_region import FluidRegion
-from FlowCyPy.population import BasePopulation
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
-from FlowCyPy.event_frame import EventFrame
 
 
 @dataclass(config=config_dict)
@@ -100,6 +95,13 @@ class FlowCell(FLOWCELL, StrictDataclassMixing):
     sample: FluidRegion = None
     sheath: FluidRegion = None
 
+    @property
+    def area(self) -> Volume:
+        """
+        Computes the cross-sectional area of the flow cell.
+        """
+        return self.width * self.height
+
     @validate_units
     def get_sample_volume(self, run_time: Time) -> Volume:
         """
@@ -171,46 +173,3 @@ class FlowCell(FLOWCELL, StrictDataclassMixing):
         dataframe["Velocity"] = pint_pandas.PintArray(
             velocities, ureg.meter / ureg.second
         )
-
-    @validate_units
-    def _generate_event_frame(
-        self, populations: List[BasePopulation], run_time: Time
-    ) -> EventFrame:
-        """
-        Generates a DataFrame of event times and sampled velocities for each population based on the specified scheme.
-        """
-
-        population_event = EventFrame()
-
-        for population in populations:
-            particle_flux = population.compute_particle_flux(
-                flow_speed=self.sample.average_flow_speed,
-                flow_area=self.sample.area,
-                run_time=run_time,
-            )
-
-            arrival_time = (
-                self._cpp_sample_arrival_times(
-                    run_time=run_time.to("second").magnitude,
-                    particle_flux=particle_flux.to("particle / second").magnitude,
-                )
-                * ureg.second
-            )
-
-            n_events = len(arrival_time)
-
-            _df = pd.DataFrame(index=range(n_events))
-
-            _df["Time"] = pint_pandas.PintArray(
-                arrival_time.magnitude, arrival_time.units
-            )
-
-            self.add_transverse_profile_to_frame(_df)
-
-            population.add_property_to_frame(dataframe=_df, sampling=n_events)
-
-            _df.population = population
-
-            population_event.events_list.append(_df)
-
-        return population_event

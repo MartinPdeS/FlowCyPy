@@ -9,6 +9,11 @@ PYBIND11_MODULE(signal_generator, module) {
     module.doc() = "SignalGenerator bindings";
 
     py::class_<SignalGenerator>(module, "SIGNALGENERATOR")
+        .def_readonly(
+            "n_elements",
+            &SignalGenerator::n_elements,
+            "Returns the number of elements in the signal."
+        )
         .def(
             py::init<const size_t>(),
             py::arg("n_elements"),
@@ -97,7 +102,7 @@ PYBIND11_MODULE(signal_generator, module) {
         .def(
             "_cpp_generate_pulses",
             &SignalGenerator::generate_pulses,
-            py::arg("widths"),
+            py::arg("sigmas"),
             py::arg("centers"),
             py::arg("amplitudes"),
             py::arg("base_level"),
@@ -107,7 +112,7 @@ PYBIND11_MODULE(signal_generator, module) {
             "_cpp_generate_pulses_to_signal",
             &SignalGenerator::generate_pulses_signal,
             py::arg("signal_name"),
-            py::arg("widths"),
+            py::arg("sigmas"),
             py::arg("centers"),
             py::arg("amplitudes"),
             py::arg("base_level"),
@@ -162,6 +167,23 @@ PYBIND11_MODULE(signal_generator, module) {
             "_cpp_get_signal_names",
             &SignalGenerator::get_signal_names,
             "Returns a list of all signal names in the data dictionary."
+        )
+        .def("_cpp_add_array_to_signal",
+            &SignalGenerator::add_array_to_signal,
+            py::arg("signal_name"),
+            py::arg("array"))
+
+        .def("_cpp_convolve_signal_with_gaussian",
+            &SignalGenerator::convolve_signal_with_gaussian,
+            py::arg("signal_name"),
+            py::arg("sigma")
+        )
+        .def("_cpp_add_gamma_trace",
+            &SignalGenerator::add_gamma_trace,
+            py::arg("signal_name"),
+            py::arg("shape"),
+            py::arg("scale"),
+            py::arg("gaussian_sigma") = 0.0
         )
         ;
 

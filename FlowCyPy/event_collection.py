@@ -4,10 +4,12 @@ import matplotlib.pyplot as plt
 import MPSPlots
 import seaborn as sns
 import pint_pandas
+
+
 from FlowCyPy.sub_frames import utils
 
 
-class EventFrame:
+class EventCollection:
     def __init__(self):
         self.events_list = []
 
@@ -58,7 +60,14 @@ class EventFrame:
         time_units : str, optional
             Units for the time axis (default is 'second').
         """
-        import seaborn as sns
+        filtered_events = filter(
+            lambda event: event.sampling_method == "ExplicitModel"
+            or (
+                filter_population is not None
+                and events.population.name not in filter_population
+            ),
+            self.events_list,
+        )
 
         palette = "tab10"
         color_mapping = dict(
@@ -68,13 +77,7 @@ class EventFrame:
             )
         )
 
-        for events in self:
-            if (
-                filter_population is not None
-                and events.population.name not in filter_population
-            ):
-                continue
-
+        for events in filtered_events:
             x = events.Time.pint.to(time_units).pint.quantity
 
             ax.vlines(
@@ -109,12 +112,19 @@ class EventFrame:
             indicates the population name.
         """
 
+        if len(self) == 0:
+            return pd.DataFrame(
+                index=pd.MultiIndex(
+                    levels=[[]],
+                    codes=[[]],
+                    names=["Population"],
+                )
+            )
+
         for population in self:
             for key in population:
                 values = population[key].pint.quantity.to_reduced_units()
                 population[key] = pint_pandas.PintArray(values.magnitude, values.units)
-
-                # population[key] = population[key].pint.to_unprefixed()
 
         population_event = pd.concat(
             self, keys=[event.population.name for event in self], names=["Population"]
@@ -183,6 +193,14 @@ class EventFrame:
 
         figure, ax = plt.subplots(1, 1)
 
+        if len(population_event) == 0:
+            ax.set(
+                xlabel=f"{x}",
+                title=f"Distribution of {x}",
+            )
+
+            return figure
+
         df = (
             population_event.reset_index("Population")
             .pint.dequantify()
@@ -200,6 +218,7 @@ class EventFrame:
             color=color,
             hue=df["Population"],
         )
+
         ax.set(
             xlabel=f"{x} [{population_event[x].pint.units:~P}]",
             title=f"Distribution of {x}",

@@ -3,10 +3,11 @@ import pandas as pd
 
 from FlowCyPy import source
 from FlowCyPy.amplifier import TransimpedanceAmplifier
-from FlowCyPy.coupling import ScatteringSimulator, FluorescenceSimulator
+from FlowCyPy.coupling_model import ScatteringModel, FluorescenceModel
 from FlowCyPy.detector import Detector
 from FlowCyPy.source import GaussianBeam  # noqa: F401
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
+from FlowCyPy.event_collection import EventCollection
 
 
 @dataclass(config=config_dict)
@@ -31,31 +32,8 @@ class OptoElectronics(StrictDataclassMixing):
     source: source.BaseBeam
     amplifier: TransimpedanceAmplifier
 
-    def add_model_to_event_frame(
-        self, event_frame: pd.DataFrame, compute_cross_section: bool = False
-    ):
-        """
-        Adds optoelectronic parameters to the provided DataFrame.
-
-        This method updates the DataFrame in place by adding columns for the detector names and their
-        corresponding responsivities. It also adds the amplifier gain and bandwidth.
-
-        Parameters
-        ----------
-        population_events : pd.DataFrame
-            DataFrame to which the optoelectronic parameters will be added.
-        """
-        self._add_coupling_to_dataframe(
-            event_frame=event_frame,
-            compute_cross_section=compute_cross_section,
-        )
-
-        self._add_pulse_width_to_dataframe(event_frame=event_frame)
-
-        return event_frame
-
     def _add_coupling_to_dataframe(
-        self, event_frame: pd.DataFrame, compute_cross_section: bool = False
+        self, event_collection: EventCollection, compute_cross_section: bool = False
     ):
         """
         Computes the detected signal for each scatterer in the provided DataFrame and updates it in place.
@@ -64,97 +42,33 @@ class OptoElectronics(StrictDataclassMixing):
 
         Parameters
         ----------
-        event_dataframe : pd.DataFrame
-            DataFrame containing scatterer properties. It must include a column named 'type' with values
+        event_collection : EventCollection
+            Collection of dataframe containing scatterer properties. It must include a column named 'type' with values
             'Sphere' or 'CoreShell', and additional columns required for each scatterer type.
         compute_cross_section : bool, optional
             If True, the scattering cross section (Csca) is computed and added to the DataFrame under the
             column 'Csca'. Default is False.
         """
-        if len(event_frame) == 0:
+        if len(event_collection) == 0:
             return
 
         for detector in self.detectors:
             if detector.channel.lower() == "scattering":
-                simulator = ScatteringSimulator(
+                simulator = ScatteringModel(
                     source=self.source,
                     detector=detector,
                     bandwidth=self.amplifier.bandwidth,
                 )
 
-                simulator.run(event_frame, compute_cross_section=compute_cross_section)
+                simulator.run(
+                    event_collection, compute_cross_section=compute_cross_section
+                )
 
             elif detector.channel.lower() == "fluorescence":
-                simulator = FluorescenceSimulator(
+                simulator = FluorescenceModel(
                     source=self.source,
                     detector=detector,
                     bandwidth=self.amplifier.bandwidth,
                 )
 
-                simulator.run(event_frame)
-
-    def _add_pulse_width_to_dataframe(self, event_frame: List[pd.DataFrame]):
-        r"""
-        Generates and assigns random Gaussian pulse parameters for each particle event.
-
-        The pulse shape follows the Gaussian beam"s spatial intensity profile:
-
-        .. math::
-
-            I(r) = I_0 \exp\left(-\frac{2r^2}{w_0^2}\right),
-
-        where :math:`w_0` is the beam waist (the :math:`1/e^2` radius of the intensity distribution).
-        This profile can be rewritten in standard Gaussian form:
-
-        .. math::
-
-            I(r) = I_0 \exp\left(-\frac{r^2}{2\sigma_x^2}\right),
-
-        which implies the spatial standard deviation:
-
-        .. math::
-
-            \sigma_x = \frac{w_0}{2}.
-
-        When a particle moves at a constant flow speed :math:`v`, the spatial coordinate :math:`r`
-        is related to time :math:`t` via :math:`r = v t`. Substituting this into the intensity profile
-        gives a temporal Gaussian:
-
-        .. math::
-
-            I(t) = I_0 \exp\left(-\frac{2 (v t)^2}{w_0^2}\right).
-
-        This is equivalent to a Gaussian in time:
-
-        .. math::
-
-            I(t) = I_0 \exp\left(-\frac{t^2}{2\sigma_t^2}\right),
-
-        so that the temporal standard deviation is:
-
-        .. math::
-
-            \sigma_t = \frac{\sigma_x}{v} = \frac{w_0}{2v}.
-
-        The full width at half maximum (FWHM) in time is then:
-
-        .. math::
-
-            \text{FWHM} = 2\sqrt{2 \ln2} \, \sigma_t = \frac{w_0}{v} \sqrt{2 \ln2}.
-
-        **Generated Parameters:**
-        - **Centers:** The time at which each pulse occurs (randomly determined).
-        - **Widths:** The pulse width (:math:`\sigma_t`) in seconds, computed as :math:`w_0 / (2 v)`.
-
-        **Effects**
-        -----------
-        Modifies `event_dataframe` in place by adding:
-        - A `'Centers'` column with the pulse center times.
-        - A `'Widths'` column with the computed pulse widths.
-        """
-        if len(event_frame) == 0:
-            return
-
-        for events in event_frame:
-            widths = self.source.get_particle_width(velocity=events["Velocity"])
-            events["Widths"] = widths
+                simulator.run(event_collection)

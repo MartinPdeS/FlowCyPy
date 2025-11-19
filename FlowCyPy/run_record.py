@@ -30,25 +30,25 @@ class RunRecord:
         A structured DataFrame representing the multi-detector analog voltage signals.
     triggered_analog : Optional[AcquisitionDataFrame]
         A structured DataFrame representing the triggered segments of the analog voltage signals.
-    event_frame : Optional[pd.DataFrame]
+    event_collection : Optional[pd.DataFrame]
         A DataFrame containing event data for the scatterers.
     """
 
     signal: NameSpace = None
-    event_frame: Optional[pd.DataFrame] = None
+    event_collection: Optional[pd.DataFrame] = None
 
     def __init__(
         self,
         detector_names: list[str],
         run_time: Time,
-        event_frame: pd.DataFrame,
+        event_collection: pd.DataFrame,
         analog: AcquisitionDataFrame,
         digital: AcquisitionDataFrame = None,
     ):
 
         self.detector_names = detector_names
         self.run_time = run_time
-        self.event_frame = event_frame
+        self.event_collection = event_collection
 
         self.signal = NameSpace(
             analog=analog,
@@ -69,7 +69,7 @@ class RunRecord:
         int
             The number of scatterers sent through the flow cytometer.
         """
-        return np.sum(len(event) for event in self.event_frame)
+        return np.sum(len(event) for event in self.event_collection)
 
     @property
     def capture_ratio(self) -> Optional[float]:
@@ -186,7 +186,9 @@ class RunRecord:
                 rf"{detector_name} [{signal_units._repr_latex_()}]", labelpad=20
             )
 
-        self.event_frame._add_to_ax(axes["scatterer"], filter_population, time_units)
+        self.event_collection._add_to_ax(
+            axes["scatterer"], filter_population, time_units
+        )
 
         return figure, axes
 

@@ -149,18 +149,62 @@ class BaseBeam:
 
     def get_particle_width(self, velocity: Velocity) -> Length:
         """
-        Returns the width of the particle flow at the waist of the beam, scaled by the velocity
-        of the particles.
+        Generates and return random Gaussian pulse parameters for each particle event.
 
-        Parameters
-        ----------
-        velocity : Velocity
-            The velocity of the particles in the flow (in meters per second).
+        The pulse shape follows the Gaussian beam"s spatial intensity profile:
 
-        Returns
-        -------
-        Length
-            The width of the particle flow at the waist of the beam in meters.
+        .. math::
+
+            I(r) = I_0 \exp\left(-\frac{2r^2}{w_0^2}\right),
+
+        where :math:`w_0` is the beam waist (the :math:`1/e^2` radius of the intensity distribution).
+        This profile can be rewritten in standard Gaussian form:
+
+        .. math::
+
+            I(r) = I_0 \exp\left(-\frac{r^2}{2\sigma_x^2}\right),
+
+        which implies the spatial standard deviation:
+
+        .. math::
+
+            \sigma_x = \frac{w_0}{2}.
+
+        When a particle moves at a constant flow speed :math:`v`, the spatial coordinate :math:`r`
+        is related to time :math:`t` via :math:`r = v t`. Substituting this into the intensity profile
+        gives a temporal Gaussian:
+
+        .. math::
+
+            I(t) = I_0 \exp\left(-\frac{2 (v t)^2}{w_0^2}\right).
+
+        This is equivalent to a Gaussian in time:
+
+        .. math::
+
+            I(t) = I_0 \exp\left(-\frac{t^2}{2\sigma_t^2}\right),
+
+        so that the temporal standard deviation is:
+
+        .. math::
+
+            \sigma_t = \frac{\sigma_x}{v} = \frac{w_0}{2v}.
+
+        The full width at half maximum (FWHM) in time is then:
+
+        .. math::
+
+            \text{FWHM} = 2\sqrt{2 \ln2} \, \sigma_t = \frac{w_0}{v} \sqrt{2 \ln2}.
+
+        **Generated Parameters:**
+        - **Centers:** The time at which each pulse occurs (randomly determined).
+        - **Widths:** The pulse width (:math:`\sigma_t`) in seconds, computed as :math:`w_0 / (2 v)`.
+
+        **Effects**
+        -----------
+        Modifies `event_dataframe` in place by adding:
+        - A `'Centers'` column with the pulse center times.
+        - A `'Widths'` column with the computed pulse widths.
         """
         return self.waist_z / (2 * velocity)
 

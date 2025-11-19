@@ -288,19 +288,19 @@ class SignalGenerator(SIGNALGENERATOR):
     @validate_units
     def generate_pulses(
         self,
-        widths: Time,
+        sigmas: Time,
         centers: Time,
         amplitudes: AnyUnit,
         base_level: AnyUnit,
         signal_name: str = None,
     ) -> None:
         """
-        Generates gaussian pulses with specified widths, centers, and amplitudes.
+        Generates gaussian pulses with specified sigmas, centers, and amplitudes.
 
         Parameters
         ----------
-        widths : Time
-            The widths of the pulses.
+        sigmas : Time
+            The sigmas of the pulses.
         centers : Time
             The centers of the pulses.
         amplitudes : Any
@@ -316,7 +316,7 @@ class SignalGenerator(SIGNALGENERATOR):
 
         if signal_name is None:
             self._cpp_generate_pulses(
-                widths=widths.to(self.time_units).magnitude,
+                sigmas=sigmas.to(self.time_units).magnitude,
                 centers=centers.to(self.time_units).magnitude,
                 amplitudes=amplitudes.to(self.signal_units).magnitude,
                 base_level=base_level.to(self.signal_units).magnitude,
@@ -324,8 +324,52 @@ class SignalGenerator(SIGNALGENERATOR):
         else:
             self._cpp_generate_pulses_to_signal(
                 signal_name=signal_name,
-                widths=widths.to(self.time_units).magnitude,
+                sigmas=sigmas.to(self.time_units).magnitude,
                 centers=centers.to(self.time_units).magnitude,
                 amplitudes=amplitudes.to(self.signal_units).magnitude,
                 base_level=base_level.to(self.signal_units).magnitude,
             )
+
+    def add_array_to_signal(self, signal_name: str, array: AnyUnit) -> None:
+        """
+        Adds an array element wise to an existing signal.
+
+        Parameters
+        ----------
+        signal_name : str
+            Name of the signal to modify.
+        array : AnyUnit
+            Array of values in the same units as the signal.
+        """
+        assert array.dimensionality == self.signal_units.dimensionality, (
+            f"Added array units {array.units} do not match "
+            f"signal units {self.signal_units}."
+        )
+
+        self._cpp_add_array_to_signal(
+            signal_name=signal_name,
+            array=array.to(self.signal_units).magnitude,
+        )
+
+    @validate_units
+    def convolve_signal_with_gaussian(
+        self,
+        signal_name: str,
+        sigma: Time,
+    ) -> None:
+        """
+        Convolves a signal with a Gaussian kernel.
+
+        Parameters
+        ----------
+        signal_name : str
+            Name of the signal to convolve.
+        sigma : Time
+            Standard deviation of the Gaussian kernel.
+        """
+        sigma_value = sigma.to(self.time_units).magnitude
+
+        self._cpp_convolve_signal_with_gaussian(
+            signal_name=signal_name,
+            sigma=sigma_value,
+        )

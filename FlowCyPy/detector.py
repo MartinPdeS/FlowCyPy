@@ -96,7 +96,7 @@ class Detector(StrictDataclassMixing):
             The resulting voltage signal (in volts).
         """
         # Step 1: Add shot noise to optical power if enabled
-        if SimulationSettings.include_shot_noise or SimulationSettings.include_noises:
+        if SimulationSettings.include_shot_noise and SimulationSettings.include_noises:
             self.apply_shot_noise(
                 signal_generator=signal_generator,
                 wavelength=wavelength,

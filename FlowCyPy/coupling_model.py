@@ -8,7 +8,7 @@ from TypedUnit import Frequency, ureg
 from FlowCyPy.source import BaseBeam
 
 
-class ScatteringSimulator:
+class ScatteringModel:
     """
     A simulation interface for computing light scattering signals using PyMieSim based on particle types.
 
@@ -39,7 +39,7 @@ class ScatteringSimulator:
         self.bandwidth = bandwidth
 
     def run(
-        self, event_dataframes: List[pd.DataFrame], compute_cross_section: bool = False
+        self, event_frames: List[pd.DataFrame], compute_cross_section: bool = False
     ) -> None:
         """
         Run the scattering simulation on the provided DataFrame.
@@ -51,14 +51,14 @@ class ScatteringSimulator:
         compute_cross_section : bool, optional
             Whether to compute and store the scattering cross section.
         """
-        for event_dataframe in event_dataframes:
+        for event_dataframe in event_frames:
             _dict = dict(
                 event_dataframe=event_dataframe,
                 compute_cross_section=compute_cross_section,
             )
-            if event_dataframe.population.__class__.__name__ == "Sphere":
+            if event_dataframe.scatterer_type == "Sphere":
                 self._process_sphere(**_dict)
-            elif event_dataframe.population.__class__.__name__ == "CoreShell":
+            elif event_dataframe.index.scatterer_type == "CoreShell":
                 self._process_coreshell(**_dict)
 
     def _build_source_and_detector(self, event_df: pd.DataFrame, num_particles: int):
@@ -119,6 +119,9 @@ class ScatteringSimulator:
         """
         num_particles = len(event_dataframe)
 
+        if num_particles == 0:
+            return
+
         source, detector = self._build_source_and_detector(
             event_dataframe, num_particles
         )
@@ -162,6 +165,9 @@ class ScatteringSimulator:
 
         num_particles = len(event_dataframe)
 
+        if num_particles == 0:
+            return
+
         source, detector = self._build_source_and_detector(
             event_dataframe, num_particles
         )
@@ -190,7 +196,7 @@ class ScatteringSimulator:
             )
 
 
-class FluorescenceSimulator:
+class FluorescenceModel:
     """
     Compute per-particle fluorescence emission power seen by a given fluorescence detector.
 

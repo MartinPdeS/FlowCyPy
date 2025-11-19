@@ -187,24 +187,24 @@ public:
      * @brief Synthesize a composite signal as a sum of Gaussian pulses on a constant background for all signals.
      *
      * For each non time signal, initialize with background_power, then for each pulse k add
-     * coupling_power[k] * exp( - (t - centers[k])^2 / (2 * widths[k]^2) ) evaluated at the stored time axis.
-     * The vectors widths, centers, and coupling_power must have equal length.
+     * coupling_power[k] * exp( - (t - centers[k])^2 / (2 * sigmas[k]^2) ) evaluated at the stored time axis.
+     * The vectors sigmas, centers, and coupling_power must have equal length.
      * The time axis must exist and have size n_elements.
      *
-     * @param widths Gaussian standard deviations for each pulse.
+     * @param sigmas Gaussian standard deviations for each pulse.
      * @param centers Pulse centers in the same units as the time axis.
      * @param coupling_power Amplitudes for each pulse.
      * @param background_power Constant background added before pulses.
      * @throws std::runtime_error If the time axis is missing or sizes do not match.
      */
-    void generate_pulses(const std::vector<double> &widths, const std::vector<double> &centers, const std::vector<double> &coupling_power, double background_power);
+    void generate_pulses(const std::vector<double> &sigmas, const std::vector<double> &centers, const std::vector<double> &coupling_power, double background_power);
 
     /**
      * @brief Synthesize pulses into a single target signal using the stored time axis.
      * @see generate_pulses for the mathematical form and preconditions.
      * @throws std::runtime_error If the signal or time axis is missing or sizes do not match.
      */
-    void generate_pulses_signal(const std::string &signal_name, const std::vector<double> &widths, const std::vector<double> &centers, const std::vector<double> &coupling_power, double background_power);
+    void generate_pulses_signal(const std::string &signal_name, const std::vector<double> &sigmas, const std::vector<double> &centers, const std::vector<double> &coupling_power, double background_power);
 
     /**
      * @brief Apply a Bessel low pass filter to all signals except the time axis.
@@ -263,6 +263,58 @@ public:
      * @throws std::runtime_error If any target signal contains negative values.
      */
     void apply_poisson_noise();
+
+    /**
+     * @brief Add an array element wise to a stored signal.
+     *
+     * The added_array must have size equal to n_elements.
+     * Uses in place update.
+     *
+     * @param signal_name Target signal name.
+     * @param added_array Array of values to add.
+     * @throws std::runtime_error If the signal does not exist or size mismatches.
+     */
+    void add_array_to_signal(const std::string& signal_name, const std::vector<double>& added_array);
+
+    /**
+     * @brief Convolve a signal with a Gaussian kernel using FFTW.
+     *
+     * A Gaussian kernel is generated as
+     *     g(t) = exp(-t^2 / (2 sigma^2))
+     * defined on the same time axis. The kernel is normalized so that its sum is one.
+     *
+     * Convolution is done through frequency domain multiplication for efficiency.
+     *
+     * @param signal_name Name of the signal to convolve.
+     * @param sigma Standard deviation of the Gaussian kernel.
+     * @throws std::runtime_error If the signal does not exist or the time axis is missing.
+     */
+    void convolve_signal_with_gaussian(const std::string& signal_name, double sigma);
+
+
+    /**
+     * @brief Add a gamma distributed trace to a signal, optionally convolved with a Gaussian kernel.
+     *
+     * This generates a gamma trace of length n_elements:
+     *     gamma_trace[i] = Gamma(shape, scale)
+     *
+     * If gaussian_sigma > 0, the trace is convolved with a Gaussian kernel
+     *     exp(-(t^2) / (2 gaussian_sigma^2))
+     * before being added.
+     *
+     * @param signal_name Name of the target signal.
+     * @param shape Shape parameter for the gamma distribution (k > 0).
+     * @param scale Scale parameter for the gamma distribution (theta > 0).
+     * @param gaussian_sigma Sigma of the Gaussian convolution kernel.
+     *                       If zero or negative, no convolution is applied.
+     * @throws std::runtime_error If signal is missing or parameters are invalid.
+     */
+    void add_gamma_trace(
+        const std::string& signal_name,
+        double shape,
+        double scale,
+        double gaussian_sigma = 0.0);
+
 
 private:
     // ----------------------------- Internal helpers ------------------------------

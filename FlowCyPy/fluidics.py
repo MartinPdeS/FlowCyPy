@@ -1,8 +1,9 @@
+from typing import List
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from MPSPlots import helper
-from TypedUnit import Time, validate_units
+from TypedUnit import ureg, Time, validate_units, ParticleFlux, Concentration, Particle
 import pint_pandas
 
 from FlowCyPy.flow_cell import FlowCell
@@ -26,36 +27,69 @@ class Fluidics:
         self.scatterer_collection = scatterer_collection
         self.flow_cell = flow_cell
 
-    @validate_units
-    def generate_event_frame(self, run_time: Time) -> pd.DataFrame:
+    def compute_particle_flux(
+        self, run_time: Time, population: population.BasePopulation
+    ) -> ParticleFlux:
         """
-        Generates a DataFrame of events based on the scatterer collection and flow cell properties.
+        Computes the particle flux in the flow system, accounting for flow speed,
+        flow area, and either the particle concentration or a predefined number of particles.
+
+        Parameters
+        ----------
+        flow_speed : Velocity
+            The speed of the flow (e.g., in meters per second).
+        flow_area : Area
+            The cross-sectional area of the flow tube (e.g., in square meters).
+        run_time : Time
+            The total duration of the flow (e.g., in seconds).
+
+        Returns
+        -------
+        ParticleFlux
+            The particle flux in particles per second (particle/second).
+        """
+        if isinstance(population.particle_count, Particle):
+            return population.particle_count / run_time
+
+        elif isinstance(population.particle_count, Concentration):
+            flow_volume_per_second = (
+                self.flow_cell.sample.average_flow_speed * self.flow_cell.sample.area
+            )
+            return population.particle_count * flow_volume_per_second
+
+        raise ValueError("Invalid particle count representation.")
+
+    def get_arrival_times(
+        self, run_time: Time, population: population.BasePopulation
+    ) -> pd.Series:
+        """
+        Computes the arrival times of particles for a given population over the specified run time.
 
         Parameters
         ----------
         run_time : Time
-            The duration of the acquisition in seconds.
+            The total duration of the flow (e.g., in seconds).
+        population : BasePopulation
+            The population of particles for which to compute arrival times.
 
         Returns
         -------
-        pd.DataFrame
-            A DataFrame containing event data for the scatterers.
+        pd.Series
+            A pandas Series containing the arrival times of particles.
         """
-        event_frames = self.flow_cell._generate_event_frame(
-            self.scatterer_collection.populations, run_time=run_time
+        particle_flux = self.compute_particle_flux(
+            run_time=run_time, population=population
         )
 
-        for events in event_frames:
-            medium_refractive_index_array = (
-                self.scatterer_collection.medium_refractive_index.magnitude
-                * np.ones(len(events))
+        arrival_times = (
+            self.flow_cell._cpp_sample_arrival_times(
+                run_time=run_time.to("second").magnitude,
+                particle_flux=particle_flux.to("particle / second").magnitude,
             )
-            events["MediumRefractiveIndex"] = pint_pandas.PintArray(
-                medium_refractive_index_array,
-                dtype=self.scatterer_collection.medium_refractive_index.units,
-            )
+            * ureg.second
+        )
 
-        return event_frames
+        return arrival_times
 
     @helper.pre_plot(nrows=1, ncols=1)
     @validate_units

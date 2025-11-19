@@ -15,21 +15,14 @@ class ScattererCollection:
 
     """
 
-    def __init__(
-        self,
-        medium_refractive_index: RefractiveIndex = 1.0 * ureg.RIU,
-        populations: List[BasePopulation] = None,
-    ):
+    def __init__(self, populations: List[BasePopulation] = None):
         """
         Parameters
         ----------
         populations : List[BasePopulation]
             A list of Population instances that define different scatterer populations.
-        medium_refractive_index : RefractiveIndex
-            The refractive index of the medium. Default is 1.0.
         """
         self.populations = populations or []
-        self.medium_refractive_index = medium_refractive_index
         self.dataframe: pd.DataFrame = None
 
     def get_population_ratios(self) -> list[float]:

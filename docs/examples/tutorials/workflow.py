@@ -24,7 +24,7 @@ from TypedUnit import ureg
 
 from FlowCyPy import SimulationSettings
 
-SimulationSettings.include_noises = True
+SimulationSettings.include_noises = False
 SimulationSettings.include_shot_noise = True
 SimulationSettings.include_dark_current_noise = True
 SimulationSettings.include_source_noise = True
@@ -39,6 +39,7 @@ np.random.seed(3)
 # -------------------------------------
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.fluidics import Fluidics, ScattererCollection, distribution, population
+from FlowCyPy.sampling_method import GammaModel, ExplicitModel
 
 flow_cell = FlowCell(
     sample_volume_flow=80 * ureg.microliter / ureg.minute,
@@ -47,27 +48,32 @@ flow_cell = FlowCell(
     height=100 * ureg.micrometer,
 )
 
-scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
+scatterer_collection = ScattererCollection()
+
+medium_refractive_index = distribution.Delta(1.33 * ureg.RIU)
 
 population_0 = population.Sphere(
     name="Pop 0",
-    particle_count=5e9 * ureg.particle / ureg.milliliter,
+    medium_refractive_index=medium_refractive_index,
+    particle_count=5e17 * ureg.particle / ureg.milliliter,
     diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
     refractive_index=distribution.Normal(
         1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
     ),
+    sampling_method=GammaModel(mc_samples=10_000),
 )
 
 population_1 = population.Sphere(
     name="Pop 1",
     particle_count=5e9 * ureg.particle / ureg.milliliter,
+    medium_refractive_index=medium_refractive_index,
     diameter=distribution.RosinRammler(200 * ureg.nanometer, spread=30),
     refractive_index=distribution.Normal(
         1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
     ),
 )
 
-scatterer_collection.add_population(population_0, population_1)
+scatterer_collection.add_population(population_0)
 
 scatterer_collection.dilute(factor=80)
 
@@ -139,7 +145,7 @@ digitizer = Digitizer(
 )
 
 analog_processing = [
-    circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
+    # circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
     circuits.BesselLowPass(cutoff=2 * ureg.megahertz, order=4, gain=2),
 ]
 
@@ -177,7 +183,7 @@ run_record = cytometer.run(run_time=1 * ureg.millisecond)
 # %%
 # Step 5: Plot Events and Raw Analog Signals
 # ------------------------------------------
-_ = run_record.event_frame.plot(x="side")
+_ = run_record.event_collection.plot(x="side")
 
 
 # %%
