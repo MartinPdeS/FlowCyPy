@@ -7,6 +7,7 @@ import pint_pandas
 
 
 from FlowCyPy.sub_frames import utils
+from FlowCyPy.sampling_method import ExplicitModel, GammaModel
 
 
 class EventCollection:
@@ -45,8 +46,52 @@ class EventCollection:
         """
         return len(self.events_list)
 
+    def _add_explicit_model_to_ax(
+        self, events, ax, color, time_units: str = "second"
+    ) -> None:
+        """
+        Internal method to add explicit model events to a matplotlib axis.
+
+        Parameters
+        ----------
+        ax : plt.Axes
+            The matplotlib axis to add the events to.
+        time_units : str, optional
+            Units for the time axis (default is 'second').
+        """
+        ax.vlines(
+            events.Time.pint.to(time_units).pint.quantity,
+            ymin=0,
+            ymax=1,
+            transform=ax.get_xaxis_transform(),
+            label=events.population.name,
+            color=color,
+        )
+
+    def _add_gamma_model_to_ax(
+        self, events, ax, color, time_units: str = "second"
+    ) -> None:
+        """
+        Internal method to add gamma model events to a matplotlib axis.
+
+        Parameters
+        ----------
+        ax : plt.Axes
+            The matplotlib axis to add the events to.
+        time_units : str, optional
+            Units for the time axis (default is 'second').
+        """
+        ax.fill_between(
+            x=events.time_trace,
+            y1=0,
+            y2=events.particles_trace,
+            label=events.population.name,
+            color=color,
+            alpha=0.5,
+        )
+
     def _add_to_ax(
-        self, ax, filter_population: List[str] = None, time_units: str = "second"
+        self, ax, time_units: str, filter_population: Optional[List[str]] = None
     ) -> None:
         """
         Internal method to add population events to a matplotlib axis.
@@ -60,15 +105,6 @@ class EventCollection:
         time_units : str, optional
             Units for the time axis (default is 'second').
         """
-        filtered_events = filter(
-            lambda event: event.sampling_method == "ExplicitModel"
-            or (
-                filter_population is not None
-                and events.population.name not in filter_population
-            ),
-            self.events_list,
-        )
-
         palette = "tab10"
         color_mapping = dict(
             zip(
@@ -77,21 +113,28 @@ class EventCollection:
             )
         )
 
-        for events in filtered_events:
-            x = events.Time.pint.to(time_units).pint.quantity
+        for events in self.events_list:
+            if (
+                filter_population is not None
+                and events.population.name not in filter_population
+            ):
+                continue
+            if isinstance(events.sampling_method, ExplicitModel):
+                self._add_explicit_model_to_ax(
+                    events,
+                    ax,
+                    color=color_mapping[events.population.name],
+                    time_units=time_units,
+                )
+            if isinstance(events.sampling_method, GammaModel):
+                self._add_gamma_model_to_ax(
+                    events,
+                    ax,
+                    color=color_mapping[events.population.name],
+                    time_units=time_units,
+                )
 
-            ax.vlines(
-                x,
-                ymin=0,
-                ymax=1,
-                transform=ax.get_xaxis_transform(),
-                label=events.population.name,
-                color=color_mapping[events.population.name],
-            )
-
-        ax.tick_params(axis="y", left=False, labelleft=False)
-        ax.get_yaxis().set_visible(False)
-        ax.set_xlabel(f"Time [{time_units:~P}]")
+        ax.set_xlabel(f"Time [{time_units}]")
         ax.legend()
 
     def get_concatenated_dataframe(

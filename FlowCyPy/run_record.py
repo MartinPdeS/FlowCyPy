@@ -169,7 +169,7 @@ class RunRecord:
         figure, axes_array = plt.subplots(
             nrows=n_plots,
             sharex=True,
-            sharey=True,
+            sharey=False,
             gridspec_kw={"height_ratios": [1] * (n_plots - 1) + [0.5]},
         )
 
@@ -187,7 +187,9 @@ class RunRecord:
             )
 
         self.event_collection._add_to_ax(
-            axes["scatterer"], filter_population, time_units
+            ax=axes["scatterer"],
+            filter_population=filter_population,
+            time_units=time_units,
         )
 
         return figure, axes

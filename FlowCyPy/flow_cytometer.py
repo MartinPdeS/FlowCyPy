@@ -161,7 +161,7 @@ class FlowCytometer:
 
         for detector in self.opto_electronics.detectors:
             for events in event_collection:
-                if events.sampling_method == "ExplicitModel":
+                if isinstance(events.sampling_method, ExplicitModel):
                     if not events.empty:
                         signal_generator.generate_pulses(
                             signal_name=detector.name,
@@ -174,7 +174,7 @@ class FlowCytometer:
                             .values.quantity,
                             base_level=0 * ureg.watt,
                         )
-                elif events.sampling_method == "GammaModel":
+                elif isinstance(events.sampling_method, GammaModel):
 
                     velocity = events["Velocity"].pint.quantity.mean()
 
@@ -184,7 +184,7 @@ class FlowCytometer:
                         * self.fluidics.flow_cell.sample.area
                     ).mean()
 
-                    expected_number_of_particles = (
+                    events.expected_number_of_particles = (
                         (
                             events.population.particle_count
                             * interrogation_volume_per_time_bin
@@ -199,8 +199,10 @@ class FlowCytometer:
                     mean_amplitudes = np.mean(amplitudes)
                     mean_squared_amplitudes = np.mean(amplitudes**2)
 
-                    mean_sum = expected_number_of_particles * mean_amplitudes
-                    var_sum = expected_number_of_particles * mean_squared_amplitudes
+                    mean_sum = events.expected_number_of_particles * mean_amplitudes
+                    var_sum = (
+                        events.expected_number_of_particles * mean_squared_amplitudes
+                    )
 
                     shape = mean_sum**2 / var_sum
                     scale = var_sum / mean_sum
@@ -211,6 +213,12 @@ class FlowCytometer:
                         scale=scale,
                         gaussian_sigma=events.sigmas.mean().to("second").magnitude,
                     )
+
+                    power_trace = signal_generator.get_signal(detector.name)
+                    time_trace = signal_generator.get_time()
+
+                    events.particles_trace = power_trace / (mean_amplitudes * ureg.watt)
+                    events.time_trace = time_trace
 
         # Optical power → photocurrent
         for detector in self.opto_electronics.detectors:
@@ -364,7 +372,7 @@ class FlowCytometer:
                     .magnitude
                 )
 
-            dataframe.sampling_method = population.sampling_method.__class__.__name__
+            dataframe.sampling_method = population.sampling_method
 
             dataframe.population = population
 
