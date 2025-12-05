@@ -1,24 +1,28 @@
 package:
   name: flowcypy
-  version: "{{ GIT_DESCRIBE_TAG | replace('v', '', 1) }}"
+  version: {{ GIT_DESCRIBE_TAG }}
 
 source:
   git_url: https://github.com/MartinPdeS/FlowCyPy.git
 
 build:
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
+  script:
+    - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
+    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:
-  host:
+  build:
     - {{ compiler('cxx') }}
+    - llvm-openmp  # [osx]
+  host:
     - python {{ PY_VER }}*
+    - python_abi 3.13.* *_cp313   # [py==313]
     - scikit-build-core ~=0.3
     - pybind11 ~=2.13
     - python-build ~=1.2
     - setuptools_scm[toml] ~=8.0
-    - fftw
-  build:
+    - numpy >=2.0,<3
     - fftw
   run:
     - fftw
@@ -59,16 +63,16 @@ test:
   imports:
     - FlowCyPy
   requires:
-    - python {{PY_VER}}*
+    - python {{ PY_VER }}*
+    - python_abi 3.13.* *_cp313   # [py==313]
     - pytest >=0.6
     - pytest-cov >=2.0
-    - pytest-json-report ~=1.5.0
-    - coverage ~=7.6.1
+    - pytest-json-report ==1.5
+    - coverage ==7.6
+  commands:
+    - python -m pytest
   source_files:
     - tests
-    - pytest.ini
-  commands:
-    - python -m pytest -c pytest.ini
 
 extra:
   recipe-maintainers:
