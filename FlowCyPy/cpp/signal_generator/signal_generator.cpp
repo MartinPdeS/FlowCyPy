@@ -175,7 +175,8 @@ void SignalGenerator::generate_pulses(
         throw std::runtime_error("sigmas, centers, and coupling_power must have the same size.");
 
     for (auto &entry : data_dict) {
-        if (entry.first == TIME_KEY) continue;
+        if (entry.first == TIME_KEY)
+            continue;
         utils::generate_pulses_signal(entry.second, sigmas, centers, coupling_power, time, background_power);
     }
 }
@@ -194,7 +195,14 @@ void SignalGenerator::generate_pulses_signal(
     if (!(sigmas.size() == centers.size() && centers.size() == coupling_power.size()))
         throw std::runtime_error("sigmas, centers, and coupling_power must have the same size.");
 
-    utils::generate_pulses_signal(data_dict[signal_name], sigmas, centers, coupling_power, time, background_power);
+    utils::generate_pulses_signal(
+        data_dict[signal_name],
+        sigmas,
+        centers,
+        coupling_power,
+        time,
+        background_power
+    );
 }
 
 void SignalGenerator::apply_bessel_lowpass_filter(

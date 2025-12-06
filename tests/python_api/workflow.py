@@ -101,6 +101,7 @@ def scatterer_collection():
         particle_count=110 * ureg.particle,
         diameter=diameter_distribution,
         refractive_index=ri_distribution,
+        medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
     )
 

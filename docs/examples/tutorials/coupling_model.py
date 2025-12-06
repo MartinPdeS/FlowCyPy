@@ -29,7 +29,7 @@ from TypedUnit import ureg
 from FlowCyPy import OptoElectronics
 from FlowCyPy.instances.detector import PMT
 from FlowCyPy.instances.population import Exosome
-from FlowCyPy.fluidics import FlowCell, Fluidics, ScattererCollection, population
+from FlowCyPy.fluidics import FlowCell, Fluidics, ScattererCollection
 from FlowCyPy.opto_electronics import TransimpedanceAmplifier, source
 from FlowCyPy.signal_processing import Digitizer
 

@@ -122,9 +122,7 @@ class FacsCanto:
             height=433 * ureg.micrometer,
         )
 
-        scatterer_collection = fluidics.ScattererCollection(
-            medium_refractive_index=1.33 * ureg.RIU
-        )
+        scatterer_collection = fluidics.ScattererCollection()
 
         return fluidics.Fluidics(
             scatterer_collection=scatterer_collection, flow_cell=flow_cell

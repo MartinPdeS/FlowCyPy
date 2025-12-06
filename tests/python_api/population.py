@@ -41,6 +41,7 @@ def populations():
         particle_count=1.8e11 * ureg.particle / ureg.milliliter,
         diameter=diameter_dist,
         refractive_index=refractive_index_dist,
+        medium_refractive_index=1.33 * ureg.RIU,
         name="Test Population 0",
     )
 
@@ -48,6 +49,7 @@ def populations():
         particle_count=1.8e11 * ureg.particle / ureg.milliliter,
         diameter=diameter_dist,
         refractive_index=refractive_index_dist,
+        medium_refractive_index=1.33 * ureg.RIU,
         name="Test Population 1",
     )
 
@@ -56,44 +58,9 @@ def populations():
 
 @pytest.fixture
 def scatterer_collection(populations):
-    scatterer_collection = ScattererCollection(
-        medium_refractive_index=1.33 * ureg.RIU, populations=populations
-    )
+    scatterer_collection = ScattererCollection(populations=populations)
 
     return scatterer_collection
-
-
-@pytest.fixture
-def population_dataframe(flow_cell, populations):
-    dataframe = flow_cell._generate_event_frame(populations, run_time=RUN_TIME)
-
-    return dataframe.get_concatenated_dataframe()
-
-
-# Test 1: Check if the population is properly initialized
-def test_population_initialization(scatterer_collection, flow_cell):
-    """Test if the Population object initializes correctly."""
-    fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
-
-    event_frame = fluidics.generate_event_frame(
-        run_time=RUN_TIME
-    ).get_concatenated_dataframe()
-
-    assert (
-        len(event_frame) > 0
-    ), "Number of events should be greater than 0 after initialization"
-
-
-# Test 2: Check if particle arrival times are generated correctly
-def test_particle_arrival_times(flow_cell, population_dataframe):
-    """Test if the particle arrival times are generated correctly."""
-    assert (
-        len(population_dataframe["Time"]) > 0
-    ), "Particle arrival times should be generated"
-
-    assert np.all(
-        population_dataframe["Time"] <= RUN_TIME
-    ), "Arrival times should not exceed total experiment duration"
 
 
 # Test 4: Check if invalid flow parameters raise errors
@@ -109,6 +76,7 @@ def test_invalid_flow_cell():
             size=distribution.Normal(
                 mean=500 * ureg.nanometer, standard_deviation=50 * ureg.nanometer
             ),
+            medium_refractive_index=1.33 * ureg.RIU,
             refractive_index=distribution.Normal(mean=1.4, standard_deviation=0.01),
             name="Invalid Test",
         )

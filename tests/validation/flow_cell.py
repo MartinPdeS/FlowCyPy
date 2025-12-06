@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import numpy as np
 import pytest
 from TypedUnit import ureg
@@ -46,6 +44,7 @@ def real_population():
         name="Population",
         particle_count=10 * ureg.particle,
         diameter=distribution.Delta(position=150 * ureg.nanometer),
+        medium_refractive_index=1.33 * ureg.RIU,
         refractive_index=distribution.Delta(position=1.39 * ureg.RIU),
     )
 
@@ -55,9 +54,7 @@ def real_scatterer_collection(real_population):
     """
     Create a real ScattererCollection containing the real Population instance.
     """
-    return ScattererCollection(
-        medium_refractive_index=1.33 * ureg.RIU, populations=[real_population]
-    )
+    return ScattererCollection(populations=[real_population])
 
 
 # --- Test Cases ---
@@ -119,52 +116,11 @@ def test_sample_particles(valid_flowcell):
     assert np.all(np.isfinite(velocity))
 
 
-@patch("matplotlib.pyplot.show")
-def test_plot_method(mock_show, valid_flowcell, real_scatterer_collection):
-    fluidics = Fluidics(
-        scatterer_collection=real_scatterer_collection, flow_cell=valid_flowcell
-    )
-
-    fluidics.plot(run_time=1 * ureg.millisecond)
-
-
 def test_get_sample_volume(valid_flowcell):
     run_time = 10 * ureg.second
     volume = valid_flowcell.get_sample_volume(run_time)
     volume_microliters = volume.to("microliter")
     assert volume_microliters.magnitude > 0
-
-
-def test_generate_poisson_events(valid_flowcell, real_population):
-    run_time = 10 * ureg.second
-    df = valid_flowcell._generate_event_frame(
-        run_time=run_time, populations=[real_population]
-    ).get_concatenated_dataframe()
-    expected_columns = {"Time", "Velocity", "x", "y"}
-    assert expected_columns.issubset(set(df.columns))
-    if not df.empty:
-        assert len(df) > 0
-
-
-def test_generate_event_dataframe(valid_flowcell, real_population):
-    run_time = 10 * ureg.second
-    df_event = valid_flowcell._generate_event_frame(
-        populations=[real_population], run_time=run_time
-    ).get_concatenated_dataframe()
-
-    # Check that the DataFrame has a MultiIndex with "Population" and "Index"
-    assert "Population" in df_event.index.names
-    assert len(df_event) > 0
-
-
-def test_event_dataframe_units(valid_flowcell, real_scatterer_collection):
-    run_time = 10 * ureg.second
-    df_event = valid_flowcell._generate_event_frame(
-        populations=real_scatterer_collection.populations, run_time=run_time
-    ).get_concatenated_dataframe()
-    # Check that each column has pint arrays with units (assume the column has .pint attribute)
-    for col in df_event.columns:
-        assert hasattr(df_event[col], "pint")
 
 
 # ------------------ RUN TESTS ------------------

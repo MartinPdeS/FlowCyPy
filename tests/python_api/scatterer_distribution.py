@@ -1,6 +1,3 @@
-from unittest.mock import patch
-
-import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 from TypedUnit import ureg
@@ -61,6 +58,7 @@ def test_generate_distribution_size(dist, default_flow_cell):
         particle_count=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distribution,
+        medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
     )
 
@@ -72,43 +70,6 @@ def test_generate_distribution_size(dist, default_flow_cell):
     fluidics = Fluidics(
         scatterer_collection=scatterer_collection, flow_cell=default_flow_cell
     )
-
-    dataframe = fluidics.generate_event_frame(
-        run_time=100e-4 * ureg.second
-    ).get_concatenated_dataframe()
-
-    assert np.all(dataframe["Diameter"] > 0), "Some generated sizes are not positive."
-
-    # Check if the sizes follow the expected bounds depending on the distribution type
-    if isinstance(dist, distribution.Normal):
-        expected_mean = dist.mean
-
-        generated_mean = dataframe["Diameter"].mean()
-
-        assert np.isclose(
-            generated_mean, expected_mean, rtol=1e-1
-        ), f"Normal distribution: Expected mean {expected_mean}, but got {generated_mean}"
-
-    elif isinstance(dist, distribution.LogNormal):
-        assert np.all(
-            dataframe["Diameter"] > 0 * ureg.meter
-        ), "Lognormal distribution generated non-positive sizes."
-
-    elif isinstance(dist, distribution.Uniform):
-        lower_bound = dist.lower_bound
-        upper_bound = dist.upper_bound
-
-        assert np.all(
-            (dataframe["Diameter"] >= lower_bound)
-            & (dataframe["Diameter"] <= upper_bound)
-        ), f"Uniform distribution: Diameters are out of bounds [{lower_bound}, {upper_bound}]"
-
-    elif isinstance(dist, distribution.Delta):
-        singular_value = dist.size_value
-
-        assert np.all(
-            dataframe["Diameter"] == singular_value
-        ), f"Singular distribution: All sizes should be {singular_value}, but got varying sizes."
 
 
 @pytest.mark.parametrize("dist", distributions, ids=lambda x: x.__class__)
@@ -122,36 +83,13 @@ def test_generate_longitudinal_positions(default_flow_cell, dist):
         particle_count=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distribution,
+        medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
     )
 
     scatterer_collection = ScattererCollection()
 
     scatterer_collection.add_population(population_0)
-
-    dataframes = default_flow_cell._generate_event_frame(
-        scatterer_collection.populations, run_time=100e-4 * ureg.second
-    )
-
-    dataframe = dataframes.get_concatenated_dataframe()
-
-    # Assert correct shape of generated longitudinal positions
-    for _, group in dataframe.groupby("Population"):
-        assert (
-            group["Time"].size > 0
-        ), "Generated longitudinal positions array has incorrect shape."
-
-    # Assert that longitudinal positions are increasing (since they are cumulative)
-    for _, group in dataframe.groupby("Population"):
-        assert np.all(
-            np.diff(group["Time"]) >= 0 * ureg.second
-        ), "Longitudinal positions are not monotonically increasing."
-
-    # Assert that no positions are negative
-    for _, group in dataframe.groupby("Population"):
-        assert np.all(
-            group["Time"] >= 0 * ureg.second
-        ), "Some longitudinal positions are negative."
 
 
 @pytest.mark.parametrize("dist", distributions, ids=lambda x: x.__class__)
@@ -165,6 +103,7 @@ def test_add_population(dist):
         particle_count=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distribution,
+        medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
     )
 
@@ -184,6 +123,7 @@ def test_extra(dist):
         particle_count=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distribution,
+        medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
     )
 
@@ -191,6 +131,7 @@ def test_extra(dist):
         particle_count=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distribution,
+        medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
     )
 

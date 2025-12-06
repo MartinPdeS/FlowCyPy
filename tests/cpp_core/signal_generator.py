@@ -36,7 +36,7 @@ def test_signal_after_pulse_generation(signal_generator):
     Test that the signal is generated correctly after pulse generation.
     """
     signal_generator._cpp_generate_pulses(
-        widths=WIDTHS,
+        sigmas=WIDTHS,
         centers=CENTERS,
         amplitudes=COUPLING_POWER,
         base_level=BACKGROUND_POWER,

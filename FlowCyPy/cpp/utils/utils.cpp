@@ -99,8 +99,9 @@ std::vector<double> utils::generate_pulses_signal(
         n_pulses = widths.size();
 
 
-    for (size_t i = 0; i < time_size; ++i)
-        signal[i] = background_power;
+    if (background_power != 0.0)
+        for (size_t i = 0; i < time_size; ++i)
+            signal[i] += background_power;
 
     // #pragma omp parallel for  // Parallelize the outer loop over particles.
     for (size_t i = 0; i < n_pulses; ++i) {

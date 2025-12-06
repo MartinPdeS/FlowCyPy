@@ -90,7 +90,10 @@ class BasePopulation:
         raise ValueError("Invalid particle count representation.")
 
     @field_validator(
-        "refractive_index", "core_refractive_index", "shell_refractive_index"
+        "refractive_index",
+        "core_refractive_index",
+        "shell_refractive_index",
+        "medium_refractive_index",
     )
     def _validate_refractive_index(cls, value):
         """
@@ -222,7 +225,7 @@ class Sphere(BasePopulation):
     name: str
     refractive_index: distribution.Base | RefractiveIndex
     diameter: distribution.Base | Length
-    medium_refractive_index: distribution.Base
+    medium_refractive_index: distribution.Base | RefractiveIndex
     particle_count: Particle | Concentration
     sampling_method: object = ExplicitModel()
 

@@ -13,14 +13,20 @@ from FlowCyPy.instances.flow_cytometer import FacsCanto, SampleFlowRate, SheathF
 from FlowCyPy.fluidics import distribution, population
 from TypedUnit import ureg
 
+diameter = distribution.RosinRammler(150 * ureg.nanometer, spread=30)
+
+medium_refractive_index = 1.33 * ureg.RIU
+
+refractive_index = distribution.Normal(
+    1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
+)
 
 population_0 = population.Sphere(
     name="Pop 0",
     particle_count=5e9 * ureg.particle / ureg.milliliter,
-    diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
-    refractive_index=distribution.Normal(
-        1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
-    ),
+    diameter=diameter,
+    medium_refractive_index=medium_refractive_index,
+    refractive_index=refractive_index,
 )
 
 facs_canto = FacsCanto(
