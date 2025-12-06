@@ -55,7 +55,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Limit of Detection" href="limit_of_detection.html" />
-    <link rel="prev" title="Flow Cytometry Workflow: Single Population Example" href="coupling_model.html" />
+    <link rel="prev" title="Examples: Tutorials" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -464,7 +464,6 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="coupling_model.html">Flow Cytometry Workflow: Single Population Example</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Flow Cytometry Simulation: FacsCanto System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of Detection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
@@ -556,14 +555,20 @@ It includes defining a particle population, configuring the flow cytometer, runn
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">distribution</span><span class="p">,</span> <span class="n">population</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span>
 
+<span class="n">diameter</span> <span class="o">=</span> <span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="mi">150</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+<span class="n">medium_refractive_index</span> <span class="o">=</span> <span class="mf">1.33</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span>
+
+<span class="n">refractive_index</span> <span class="o">=</span> <span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span>
+    <span class="mf">1.44</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="n">standard_deviation</span><span class="o">=</span><span class="mf">0.002</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span>
+<span class="p">)</span>
 
 <span class="n">population_0</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Pop 0&quot;</span><span class="p">,</span>
     <span class="n">particle_count</span><span class="o">=</span><span class="mf">5e9</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
-    <span class="n">diameter</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span><span class="mi">150</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
-    <span class="n">refractive_index</span><span class="o">=</span><span class="n">distribution</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span>
-        <span class="mf">1.44</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span> <span class="n">standard_deviation</span><span class="o">=</span><span class="mf">0.002</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span>
-    <span class="p">),</span>
+    <span class="n">diameter</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span>
+    <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">medium_refractive_index</span><span class="p">,</span>
+    <span class="n">refractive_index</span><span class="o">=</span><span class="n">refractive_index</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">facs_canto</span> <span class="o">=</span> <span class="n">FacsCanto</span><span class="p">(</span>
@@ -585,7 +590,7 @@ It includes defining a particle population, configuring the flow cytometer, runn
 <img src="../../_images/sphx_glr_facs_canto_001.png" srcset="../../_images/sphx_glr_facs_canto_001.png" alt="facs canto" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 800x500 with 3 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.725 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.862 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-facs-canto-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/c39dc6b82484770275ce3664df13fe37/facs_canto.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">facs_canto.ipynb</span></code></a></p>

@@ -50,9 +50,9 @@ np.random.seed(3)
 # %%
 # Optical Source
 source = source.GaussianBeam(
-    numerical_aperture=0.1 * ureg.AU,
-    wavelength=488 * ureg.nanometer,
-    optical_power=200 * ureg.milliwatt,
+    numerical_aperture=0.2 * ureg.AU,
+    wavelength=405 * ureg.nanometer,
+    optical_power=100 * ureg.milliwatt,
 )
 
 # %%
@@ -66,14 +66,15 @@ flow_cell = FlowCell(
 
 # %%
 # Define Scatterer Populations (90–150 nm spheres)
-scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
+scatterer_collection = ScattererCollection()
 
-for size in [150, 130, 110, 90]:
+for size in [150, 125, 100, 75, 50]:
     pop = population.Sphere(
         name=f"{size} nm",
-        particle_count=20 * ureg.particle,
+        particle_count=15 * ureg.particle,
         diameter=distribution.Delta(position=size * ureg.nanometer),
-        refractive_index=distribution.Delta(position=1.39 * ureg.RIU),
+        refractive_index=distribution.Delta(position=1.36 * ureg.RIU),
+        medium_refractive_index=1.33 * ureg.RIU,
     )
     scatterer_collection.add_population(pop)
 
@@ -94,7 +95,7 @@ detector_side = Detector(
     phi_angle=90 * ureg.degree,
     numerical_aperture=0.2 * ureg.AU,
     responsivity=1 * ureg.ampere / ureg.watt,
-    dark_current=0.001 * ureg.milliampere,
+    dark_current=0.01 * ureg.milliampere,
 )
 
 detector_forward = Detector(
@@ -102,13 +103,13 @@ detector_forward = Detector(
     phi_angle=0 * ureg.degree,
     numerical_aperture=0.2 * ureg.AU,
     responsivity=1 * ureg.ampere / ureg.watt,
-    dark_current=0.001 * ureg.milliampere,
+    dark_current=0.01 * ureg.milliampere,
 )
 
 # %%
 # Amplifier and Opto-Electronics
 amplifier = TransimpedanceAmplifier(
-    gain=10000 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz
+    gain=10_000 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz
 )
 
 opto_electronics = OptoElectronics(
@@ -119,17 +120,17 @@ opto_electronics = OptoElectronics(
 # Analog Processing Pipeline
 analog_processing = [
     circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
-    circuits.BesselLowPass(cutoff=1 * ureg.megahertz, order=4, gain=2),
+    circuits.BesselLowPass(cutoff=1.5 * ureg.megahertz, order=4, gain=2),
 ]
 
 # %%
 # Triggering and Peak Detection
 triggering_system = triggering_system.DynamicWindow(
     trigger_detector_name="forward",
-    threshold=0.2 * ureg.millivolt,
+    threshold="5sigma",
     max_triggers=-1,
-    pre_buffer=64,
-    post_buffer=64,
+    pre_buffer=128,
+    post_buffer=128,
 )
 
 signal_processing = SignalProcessing(
@@ -147,11 +148,11 @@ cytometer = FlowCytometer(
     background_power=0.0001 * ureg.milliwatt,
 )
 
-run_record = cytometer.run(run_time=1.0 * ureg.millisecond)
+run_record = cytometer.run(run_time=5.0 * ureg.millisecond)
 
 # %%
 # Plot Raw Analog Signal
-# run_record.plot_analog()
+run_record.plot_analog()
 
 # %%
 # Plot Triggered Analog Signal Segments

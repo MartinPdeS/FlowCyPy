@@ -48,7 +48,7 @@ Step 0: Global Settings and Imports
 
     from FlowCyPy import SimulationSettings
 
-    SimulationSettings.include_noises = True
+    SimulationSettings.include_noises = False
     SimulationSettings.include_shot_noise = True
     SimulationSettings.include_dark_current_noise = True
     SimulationSettings.include_source_noise = True
@@ -70,12 +70,13 @@ Step 0: Global Settings and Imports
 Step 1: Define Flow Cell and Fluidics
 -------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 40-76
+.. GENERATED FROM PYTHON SOURCE LINES 40-82
 
 .. code-block:: Python
 
     from FlowCyPy.flow_cell import FlowCell
     from FlowCyPy.fluidics import Fluidics, ScattererCollection, distribution, population
+    from FlowCyPy.sampling_method import GammaModel, ExplicitModel
 
     flow_cell = FlowCell(
         sample_volume_flow=80 * ureg.microliter / ureg.minute,
@@ -84,21 +85,26 @@ Step 1: Define Flow Cell and Fluidics
         height=100 * ureg.micrometer,
     )
 
-    scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
+    scatterer_collection = ScattererCollection()
+
+    medium_refractive_index = distribution.Delta(1.33 * ureg.RIU)
 
     population_0 = population.Sphere(
         name="Pop 0",
-        particle_count=5e9 * ureg.particle / ureg.milliliter,
-        diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
+        medium_refractive_index=medium_refractive_index,
+        particle_count=5e17 * ureg.particle / ureg.milliliter,
+        diameter=distribution.RosinRammler(50 * ureg.nanometer, spread=30),
         refractive_index=distribution.Normal(
             1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
         ),
+        sampling_method=GammaModel(mc_samples=10_000),
     )
 
     population_1 = population.Sphere(
         name="Pop 1",
         particle_count=5e9 * ureg.particle / ureg.milliliter,
-        diameter=distribution.RosinRammler(200 * ureg.nanometer, spread=30),
+        medium_refractive_index=medium_refractive_index,
+        diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
         refractive_index=distribution.Normal(
             1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
         ),
@@ -117,12 +123,12 @@ Step 1: Define Flow Cell and Fluidics
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 77-79
+.. GENERATED FROM PYTHON SOURCE LINES 83-85
 
 Step 2: Define Optical Subsystem
 --------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-126
+.. GENERATED FROM PYTHON SOURCE LINES 85-132
 
 .. code-block:: Python
 
@@ -135,9 +141,9 @@ Step 2: Define Optical Subsystem
 
     source = source.GaussianBeam(
         numerical_aperture=0.1 * ureg.AU,
-        wavelength=450 * ureg.nanometer,
+        wavelength=405 * ureg.nanometer,
         optical_power=200 * ureg.milliwatt,
-        RIN=-140,
+        RIN=-180,
     )
 
     detectors = [
@@ -180,12 +186,12 @@ Step 2: Define Optical Subsystem
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-129
+.. GENERATED FROM PYTHON SOURCE LINES 133-135
 
 Step 3: Signal Processing Configuration
 ---------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 129-163
+.. GENERATED FROM PYTHON SOURCE LINES 135-169
 
 .. code-block:: Python
 
@@ -230,12 +236,12 @@ Step 3: Signal Processing Configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 164-166
+.. GENERATED FROM PYTHON SOURCE LINES 170-172
 
 Step 4: Run Simulation
 ----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 166-177
+.. GENERATED FROM PYTHON SOURCE LINES 172-183
 
 .. code-block:: Python
 
@@ -254,19 +260,28 @@ Step 4: Run Simulation
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/FlowCyPy/flow_cytometer.py:222: UserWarning: Pandas doesn't allow columns to be created via a new attribute name - see https://pandas.pydata.org/pandas-docs/stable/indexing.html#attribute-access
+      events.particles_trace = power_trace / (mean_amplitudes * ureg.watt)
+    /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/FlowCyPy/flow_cytometer.py:223: UserWarning: Pandas doesn't allow columns to be created via a new attribute name - see https://pandas.pydata.org/pandas-docs/stable/indexing.html#attribute-access
+      events.time_trace = time_trace
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 178-180
+
+.. GENERATED FROM PYTHON SOURCE LINES 184-186
 
 Step 5: Plot Events and Raw Analog Signals
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 180-183
+.. GENERATED FROM PYTHON SOURCE LINES 186-189
 
 .. code-block:: Python
 
-    _ = run_record.event_frame.plot(x="side")
+    _ = run_record.event_collection.plot(x="side")
 
 
 
@@ -281,12 +296,12 @@ Step 5: Plot Events and Raw Analog Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 184-186
+.. GENERATED FROM PYTHON SOURCE LINES 190-192
 
 Plot raw analog signals
 -----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 186-189
+.. GENERATED FROM PYTHON SOURCE LINES 192-195
 
 .. code-block:: Python
 
@@ -305,12 +320,12 @@ Plot raw analog signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 190-192
+.. GENERATED FROM PYTHON SOURCE LINES 196-198
 
 Step 6: Plot Triggered Analog Segments
 --------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 192-195
+.. GENERATED FROM PYTHON SOURCE LINES 198-201
 
 .. code-block:: Python
 
@@ -329,12 +344,12 @@ Step 6: Plot Triggered Analog Segments
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 196-198
+.. GENERATED FROM PYTHON SOURCE LINES 202-204
 
 Step 7: Plot Peak Features
 --------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 198-201
+.. GENERATED FROM PYTHON SOURCE LINES 204-207
 
 .. code-block:: Python
 
@@ -353,12 +368,12 @@ Step 7: Plot Peak Features
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 202-204
+.. GENERATED FROM PYTHON SOURCE LINES 208-210
 
 Step 8: Classify Events from Peak Features
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 204-215
+.. GENERATED FROM PYTHON SOURCE LINES 210-221
 
 .. code-block:: Python
 
@@ -388,7 +403,7 @@ Step 8: Classify Events from Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.408 seconds)
+   **Total running time of the script:** (0 minutes 38.416 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

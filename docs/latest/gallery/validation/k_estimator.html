@@ -464,7 +464,6 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tutorials/coupling_model.html">Flow Cytometry Workflow: Single Population Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/facs_canto.html">Flow Cytometry Simulation: FacsCanto System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/limit_of_detection.html">Limit of Detection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorials/signal_processing.html">Signal Processing in Flow Cytometry</a></li>
@@ -582,10 +581,6 @@ when varying bead size under fixed illumination power.</p>
 <a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed" class="sphx-glr-backref-module-numpy-random sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># Reproducibility</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/FlowCyPy/simulation_settings.py:9: UserWarning: Attribute &#39;evenly_spaced_events&#39; not recognized in SimulationSettings. Valid attributes are: [&#39;assume_amplifier_bandwidth_is_infinite&#39;, &#39;assume_perfect_digitizer&#39;, &#39;assume_perfect_hydrodynamic_focusing&#39;, &#39;include_amplifier_noise&#39;, &#39;include_dark_current_noise&#39;, &#39;include_noises&#39;, &#39;include_shot_noise&#39;, &#39;include_source_noise&#39;]
-  warnings.warn(
-</pre></div>
-</div>
 </section>
 <section id="construct-simulation-components">
 <h2>Construct simulation components<a class="headerlink" href="#construct-simulation-components" title="Link to this heading">#</a></h2>
@@ -596,7 +591,7 @@ when varying bead size under fixed illumination power.</p>
     <span class="n">height</span><span class="o">=</span><span class="mi">400</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">(</span><span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
+<span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">()</span>
 
 <span class="n">fluidics</span> <span class="o">=</span> <span class="n">Fluidics</span><span class="p">(</span><span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span> <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">)</span>
 
@@ -690,7 +685,7 @@ when varying bead size under fixed illumination power.</p>
 <img src="../../_images/sphx_glr_k_estimator_002.png" srcset="../../_images/sphx_glr_k_estimator_002.png" alt="Median vs Bead Diameter, STD vs Bead Diameter" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 800x500 with 2 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 29.412 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 29.417 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-validation-k-estimator-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/f0de7a381f0317db9890cbd87489980f/k_estimator.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">k_estimator.ipynb</span></code></a></p>

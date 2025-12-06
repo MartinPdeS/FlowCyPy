@@ -97,9 +97,9 @@ Optical Source
 .. code-block:: Python
 
     source = source.GaussianBeam(
-        numerical_aperture=0.1 * ureg.AU,
-        wavelength=488 * ureg.nanometer,
-        optical_power=200 * ureg.milliwatt,
+        numerical_aperture=0.2 * ureg.AU,
+        wavelength=405 * ureg.nanometer,
+        optical_power=100 * ureg.milliwatt,
     )
 
 
@@ -135,18 +135,19 @@ Flow Cell Configuration
 
 Define Scatterer Populations (90–150 nm spheres)
 
-.. GENERATED FROM PYTHON SOURCE LINES 69-80
+.. GENERATED FROM PYTHON SOURCE LINES 69-81
 
 .. code-block:: Python
 
-    scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
+    scatterer_collection = ScattererCollection()
 
-    for size in [150, 130, 110, 90]:
+    for size in [150, 125, 100, 75, 50]:
         pop = population.Sphere(
             name=f"{size} nm",
-            particle_count=20 * ureg.particle,
+            particle_count=15 * ureg.particle,
             diameter=distribution.Delta(position=size * ureg.nanometer),
-            refractive_index=distribution.Delta(position=1.39 * ureg.RIU),
+            refractive_index=distribution.Delta(position=1.36 * ureg.RIU),
+            medium_refractive_index=1.33 * ureg.RIU,
         )
         scatterer_collection.add_population(pop)
 
@@ -157,11 +158,11 @@ Define Scatterer Populations (90–150 nm spheres)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 81-82
+.. GENERATED FROM PYTHON SOURCE LINES 82-83
 
 Fluidics Subsystem
 
-.. GENERATED FROM PYTHON SOURCE LINES 82-84
+.. GENERATED FROM PYTHON SOURCE LINES 83-85
 
 .. code-block:: Python
 
@@ -174,11 +175,11 @@ Fluidics Subsystem
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 85-86
+.. GENERATED FROM PYTHON SOURCE LINES 86-87
 
 Signal Digitizer
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-90
+.. GENERATED FROM PYTHON SOURCE LINES 87-91
 
 .. code-block:: Python
 
@@ -193,11 +194,11 @@ Signal Digitizer
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-92
+.. GENERATED FROM PYTHON SOURCE LINES 92-93
 
 Detectors
 
-.. GENERATED FROM PYTHON SOURCE LINES 92-108
+.. GENERATED FROM PYTHON SOURCE LINES 93-109
 
 .. code-block:: Python
 
@@ -206,7 +207,7 @@ Detectors
         phi_angle=90 * ureg.degree,
         numerical_aperture=0.2 * ureg.AU,
         responsivity=1 * ureg.ampere / ureg.watt,
-        dark_current=0.001 * ureg.milliampere,
+        dark_current=0.01 * ureg.milliampere,
     )
 
     detector_forward = Detector(
@@ -214,7 +215,7 @@ Detectors
         phi_angle=0 * ureg.degree,
         numerical_aperture=0.2 * ureg.AU,
         responsivity=1 * ureg.ampere / ureg.watt,
-        dark_current=0.001 * ureg.milliampere,
+        dark_current=0.01 * ureg.milliampere,
     )
 
 
@@ -224,16 +225,16 @@ Detectors
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 109-110
+.. GENERATED FROM PYTHON SOURCE LINES 110-111
 
 Amplifier and Opto-Electronics
 
-.. GENERATED FROM PYTHON SOURCE LINES 110-118
+.. GENERATED FROM PYTHON SOURCE LINES 111-119
 
 .. code-block:: Python
 
     amplifier = TransimpedanceAmplifier(
-        gain=10000 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz
+        gain=10_000 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz
     )
 
     opto_electronics = OptoElectronics(
@@ -247,17 +248,17 @@ Amplifier and Opto-Electronics
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 119-120
+.. GENERATED FROM PYTHON SOURCE LINES 120-121
 
 Analog Processing Pipeline
 
-.. GENERATED FROM PYTHON SOURCE LINES 120-125
+.. GENERATED FROM PYTHON SOURCE LINES 121-126
 
 .. code-block:: Python
 
     analog_processing = [
         circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
-        circuits.BesselLowPass(cutoff=1 * ureg.megahertz, order=4, gain=2),
+        circuits.BesselLowPass(cutoff=1.5 * ureg.megahertz, order=4, gain=2),
     ]
 
 
@@ -267,20 +268,20 @@ Analog Processing Pipeline
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 126-127
+.. GENERATED FROM PYTHON SOURCE LINES 127-128
 
 Triggering and Peak Detection
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-142
+.. GENERATED FROM PYTHON SOURCE LINES 128-143
 
 .. code-block:: Python
 
     triggering_system = triggering_system.DynamicWindow(
         trigger_detector_name="forward",
-        threshold=0.2 * ureg.millivolt,
+        threshold="5sigma",
         max_triggers=-1,
-        pre_buffer=64,
-        post_buffer=64,
+        pre_buffer=128,
+        post_buffer=128,
     )
 
     signal_processing = SignalProcessing(
@@ -297,7 +298,7 @@ Triggering and Peak Detection
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 143-152
+.. GENERATED FROM PYTHON SOURCE LINES 144-153
 
 .. code-block:: Python
 
@@ -308,7 +309,7 @@ Triggering and Peak Detection
         background_power=0.0001 * ureg.milliwatt,
     )
 
-    run_record = cytometer.run(run_time=1.0 * ureg.millisecond)
+    run_record = cytometer.run(run_time=5.0 * ureg.millisecond)
 
 
 
@@ -317,20 +318,15 @@ Triggering and Peak Detection
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 153-155
+.. GENERATED FROM PYTHON SOURCE LINES 154-155
 
 Plot Raw Analog Signal
-run_record.plot_analog()
 
-.. GENERATED FROM PYTHON SOURCE LINES 157-158
-
-Plot Triggered Analog Signal Segments
-
-.. GENERATED FROM PYTHON SOURCE LINES 158-160
+.. GENERATED FROM PYTHON SOURCE LINES 155-157
 
 .. code-block:: Python
 
-    run_record.plot_digital()
+    run_record.plot_analog()
 
 
 
@@ -350,11 +346,39 @@ Plot Triggered Analog Signal Segments
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 161-162
+.. GENERATED FROM PYTHON SOURCE LINES 158-159
+
+Plot Triggered Analog Signal Segments
+
+.. GENERATED FROM PYTHON SOURCE LINES 159-161
+
+.. code-block:: Python
+
+    run_record.plot_digital()
+
+
+
+
+.. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
+   :alt: limit of detection
+   :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
+   :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+
+    <Figure size 800x500 with 3 Axes>
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 162-163
 
 Plot Peak Features (Side vs Forward Height)
 
-.. GENERATED FROM PYTHON SOURCE LINES 162-163
+.. GENERATED FROM PYTHON SOURCE LINES 163-164
 
 .. code-block:: Python
 
@@ -362,9 +386,9 @@ Plot Peak Features (Side vs Forward Height)
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
    :alt: Peaks properties
-   :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_002.png
+   :srcset: /gallery/tutorials/images/sphx_glr_limit_of_detection_003.png
    :class: sphx-glr-single-img
 
 
@@ -380,7 +404,7 @@ Plot Peak Features (Side vs Forward Height)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 3.573 seconds)
+   **Total running time of the script:** (0 minutes 12.855 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_limit_of_detection.py:

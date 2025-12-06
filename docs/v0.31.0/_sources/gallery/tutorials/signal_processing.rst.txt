@@ -84,7 +84,7 @@ The resulting signals are plotted for comparison.
 
 Define and plot the flow cell.
 
-.. GENERATED FROM PYTHON SOURCE LINES 55-123
+.. GENERATED FROM PYTHON SOURCE LINES 55-120
 
 .. code-block:: Python
 
@@ -102,14 +102,11 @@ Define and plot the flow cell.
         particle_count=100 * ureg.particle,
         diameter=distribution.Delta(position=150 * ureg.nanometer),
         refractive_index=distribution.Delta(position=1.39 * ureg.RIU),
+        medium_refractive_index=1.33 * ureg.RIU,
     )
-    scatterer_collection = ScattererCollection(
-        medium_refractive_index=1.33 * ureg.RIU, populations=[population]
-    )
+    scatterer_collection = ScattererCollection(populations=[population])
 
     fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
-
-    fluidics.plot(run_time=1.5 * ureg.millisecond)
 
     # Define the signal digitizer.
     digitizer = Digitizer(
@@ -159,22 +156,17 @@ Define and plot the flow cell.
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_signal_processing_001.png
-   :alt: Particle Spatial Distribution and Speed
-   :srcset: /gallery/tutorials/images/sphx_glr_signal_processing_001.png
-   :class: sphx-glr-single-img
 
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 124-127
+.. GENERATED FROM PYTHON SOURCE LINES 121-124
 
 ---------------------------------------------------------------------------
 Signal Processing: Acquisition with Different Processing Steps
 ---------------------------------------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 127-171
+.. GENERATED FROM PYTHON SOURCE LINES 124-168
 
 .. code-block:: Python
 
@@ -225,9 +217,9 @@ Signal Processing: Acquisition with Different Processing Steps
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_signal_processing_002.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_signal_processing_001.png
    :alt: Flow Cytometry Signal Processing
-   :srcset: /gallery/tutorials/images/sphx_glr_signal_processing_002.png
+   :srcset: /gallery/tutorials/images/sphx_glr_signal_processing_001.png
    :class: sphx-glr-single-img
 
 
@@ -237,7 +229,7 @@ Signal Processing: Acquisition with Different Processing Steps
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.835 seconds)
+   **Total running time of the script:** (0 minutes 1.528 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_signal_processing.py:

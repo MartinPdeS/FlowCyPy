@@ -605,7 +605,7 @@ document.write(`
 <span class="sd">            The resulting voltage signal (in volts).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Step 1: Add shot noise to optical power if enabled</span>
-        <span class="k">if</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="ow">or</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="ow">and</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_noises</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">apply_shot_noise</span><span class="p">(</span>
                 <span class="n">signal_generator</span><span class="o">=</span><span class="n">signal_generator</span><span class="p">,</span>
                 <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span>

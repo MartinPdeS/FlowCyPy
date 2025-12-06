@@ -66,14 +66,11 @@ population = population.Sphere(
     particle_count=100 * ureg.particle,
     diameter=distribution.Delta(position=150 * ureg.nanometer),
     refractive_index=distribution.Delta(position=1.39 * ureg.RIU),
+    medium_refractive_index=1.33 * ureg.RIU,
 )
-scatterer_collection = ScattererCollection(
-    medium_refractive_index=1.33 * ureg.RIU, populations=[population]
-)
+scatterer_collection = ScattererCollection(populations=[population])
 
 fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
-
-fluidics.plot(run_time=1.5 * ureg.millisecond)
 
 # Define the signal digitizer.
 digitizer = Digitizer(

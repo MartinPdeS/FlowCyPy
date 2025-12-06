@@ -656,18 +656,62 @@ document.write(`
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_particle_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">velocity</span><span class="p">:</span> <span class="n">Velocity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Length</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the width of the particle flow at the waist of the beam, scaled by the velocity</span>
-<span class="sd">        of the particles.</span>
+<span class="sd">        Generates and return random Gaussian pulse parameters for each particle event.</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        velocity : Velocity</span>
-<span class="sd">            The velocity of the particles in the flow (in meters per second).</span>
+<span class="sd">        The pulse shape follows the Gaussian beam&quot;s spatial intensity profile:</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Length</span>
-<span class="sd">            The width of the particle flow at the waist of the beam in meters.</span>
+<span class="sd">        .. math::</span>
+
+<span class="sd">            I(r) = I_0 \exp\left(-\frac{2r^2}{w_0^2}\right),</span>
+
+<span class="sd">        where :math:`w_0` is the beam waist (the :math:`1/e^2` radius of the intensity distribution).</span>
+<span class="sd">        This profile can be rewritten in standard Gaussian form:</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            I(r) = I_0 \exp\left(-\frac{r^2}{2\sigma_x^2}\right),</span>
+
+<span class="sd">        which implies the spatial standard deviation:</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \sigma_x = \frac{w_0}{2}.</span>
+
+<span class="sd">        When a particle moves at a constant flow speed :math:`v`, the spatial coordinate :math:`r`</span>
+<span class="sd">        is related to time :math:`t` via :math:`r = v t`. Substituting this into the intensity profile</span>
+<span class="sd">        gives a temporal Gaussian:</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            I(t) = I_0 \exp\left(-\frac{2 (v t)^2}{w_0^2}\right).</span>
+
+<span class="sd">        This is equivalent to a Gaussian in time:</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            I(t) = I_0 \exp\left(-\frac{t^2}{2\sigma_t^2}\right),</span>
+
+<span class="sd">        so that the temporal standard deviation is:</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \sigma_t = \frac{\sigma_x}{v} = \frac{w_0}{2v}.</span>
+
+<span class="sd">        The full width at half maximum (FWHM) in time is then:</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \text{FWHM} = 2\sqrt{2 \ln2} \, \sigma_t = \frac{w_0}{v} \sqrt{2 \ln2}.</span>
+
+<span class="sd">        **Generated Parameters:**</span>
+<span class="sd">        - **Centers:** The time at which each pulse occurs (randomly determined).</span>
+<span class="sd">        - **Widths:** The pulse width (:math:`\sigma_t`) in seconds, computed as :math:`w_0 / (2 v)`.</span>
+
+<span class="sd">        **Effects**</span>
+<span class="sd">        -----------</span>
+<span class="sd">        Modifies `event_dataframe` in place by adding:</span>
+<span class="sd">        - A `&#39;Centers&#39;` column with the pulse center times.</span>
+<span class="sd">        - A `&#39;Widths&#39;` column with the computed pulse widths.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">waist_z</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">velocity</span><span class="p">)</span>
 

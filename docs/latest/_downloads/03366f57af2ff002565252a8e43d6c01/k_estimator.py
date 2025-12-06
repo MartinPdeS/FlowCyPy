@@ -52,7 +52,7 @@ flow_cell = FlowCell(
     height=400 * ureg.micrometer,
 )
 
-scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
+scatterer_collection = ScattererCollection()
 
 fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 

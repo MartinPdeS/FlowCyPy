@@ -509,6 +509,7 @@ document.write(`
 <span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Power</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">validate_units</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluidics</span>
@@ -518,6 +519,11 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.simulation_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.acquisition</span><span class="w"> </span><span class="kn">import</span> <span class="n">AcquisitionDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.run_record</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunRecord</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.event_collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventCollection</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pint_pandas</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sampling_method</span><span class="w"> </span><span class="kn">import</span> <span class="n">GammaModel</span><span class="p">,</span> <span class="n">ExplicitModel</span>
 
 
 <div class="viewcode-block" id="FlowCytometer">
@@ -537,6 +543,8 @@ document.write(`
 <span class="sd">        An instance of the OptoElectronics class, which contains the configuration of detectors, digitizer, source, and amplifier.</span>
 <span class="sd">    fluidics : Fluidics</span>
 <span class="sd">        An instance of the Fluidics class, which manages the flow cell and scatterer collection.</span>
+<span class="sd">    signal_processing : SignalProcessing</span>
+<span class="sd">        An instance of the SignalProcessing class, which handles the processing of analog and digital signals.</span>
 <span class="sd">    background_power : pint.Quantity, optional</span>
 <span class="sd">        The background power level in the system, defaulting to 0 mW. This represents the constant background signal that is present in the system, which can affect the detection of actual signals.</span>
 
@@ -592,39 +600,6 @@ document.write(`
 
         <span class="k">return</span> <span class="n">signal_generator</span>
 
-<div class="viewcode-block" id="FlowCytometer.compute_events">
-<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer.compute_events">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">compute_events</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">run_record</span><span class="p">:</span> <span class="n">RunRecord</span><span class="p">,</span> <span class="n">compute_cross_section</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generates a DataFrame of events based on the scatterer collection and flow cell properties.</span>
-
-<span class="sd">        This method samples particle events from the fluidics system and prepares a DataFrame</span>
-<span class="sd">        containing the event times, positions, and other relevant properties.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        run_record : RunRecord</span>
-<span class="sd">            The RunRecord instance containing the run time for the simulation.</span>
-<span class="sd">        compute_cross_section : bool, optional</span>
-<span class="sd">            Whether to compute the scattering cross-section for each event. Default is False.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        pd.DataFrame</span>
-<span class="sd">            A DataFrame containing event data for the scatterers.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">event_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">generate_event_frame</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_record</span><span class="o">.</span><span class="n">run_time</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">model_event</span><span class="p">(</span>
-            <span class="n">event_frames</span><span class="o">=</span><span class="n">event_frames</span><span class="p">,</span>
-            <span class="n">compute_cross_section</span><span class="o">=</span><span class="n">compute_cross_section</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">event_frames</span></div>
-
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_distribute_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population_events</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Distributes events across detectors.</span>
@@ -643,47 +618,120 @@ document.write(`
 <div class="viewcode-block" id="FlowCytometer.compute_analog">
 <a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer.compute_analog">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_analog</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">,</span> <span class="n">event_frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">,</span> <span class="n">event_collection</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AcquisitionDataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Simulates the analog optical signal response for all detected events.</span>
+<span class="sd">        Simulates the complete analog optical response generated by all detected particle events.</span>
 
-<span class="sd">        This method generates Gaussian-shaped optical pulses based on particle event data</span>
-<span class="sd">        (time, width, amplitude), adds background optical power, and propagates the resulting</span>
-<span class="sd">        signal through the detector chain:</span>
-<span class="sd">        - Optical power → photocurrent → amplified voltage</span>
-<span class="sd">        - Includes optional noise models (e.g., dark current)</span>
-<span class="sd">        - Final output is voltage signals stored in an `AcquisitionDataFrame`</span>
+<span class="sd">        This function builds the full analog waveform that emerges from the optical and</span>
+<span class="sd">        opto electronic chain of the cytometer. It proceeds in three major stages:</span>
+
+<span class="sd">        1. Optical domain</span>
+<span class="sd">        - Creates an optical power time series for each detector</span>
+<span class="sd">        - For explicit sampling models, generates Gaussian shaped pulses directly</span>
+<span class="sd">        - For gamma models, draws a gamma distributed power trace that matches the</span>
+<span class="sd">            expected total particle contribution and optionally smooths it with a</span>
+<span class="sd">            Gaussian convolution</span>
+<span class="sd">        - Adds the constant background optical power</span>
+
+<span class="sd">        2. Conversion to photocurrent</span>
+<span class="sd">        - Converts optical power to photocurrent using the detector responsivity</span>
+<span class="sd">            and the illumination wavelength</span>
+<span class="sd">        - Applies bandwidth dependent effects from the digitizer</span>
+
+<span class="sd">        3. Current domain to voltage domain</span>
+<span class="sd">        - Adds optional dark current noise when enabled in simulation settings</span>
+<span class="sd">        - Passes all photocurrents through the analog amplifier model</span>
+<span class="sd">        - Applies final analog conditioning and filtering steps</span>
+
+<span class="sd">        The output is returned as an AcquisitionDataFrame, which contains voltage</span>
+<span class="sd">        waveforms for all detectors on a shared time base, formatted with a clear</span>
+<span class="sd">        multi level index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        run_time : Time</span>
+<span class="sd">            Total simulated duration of the acquisition</span>
+<span class="sd">        event_collection : pandas.DataFrame</span>
+<span class="sd">            Collection of detected particle events, where each entry contains the</span>
+<span class="sd">            event time, width, amplitude, velocity, and sampling method</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        AcquisitionDataFrame</span>
-<span class="sd">            Structured DataFrame representing the multi-detector analog voltage signals.</span>
+<span class="sd">            Structured representation of the final analog voltage signals for all</span>
+<span class="sd">            detectors, including the time axis and processed analog waveforms</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
-<span class="sd">            If the event DataFrame is missing required columns (&#39;Widths&#39;, &#39;Time&#39;).</span>
+<span class="sd">            If required event fields are missing, including Sigmas or Time for</span>
+<span class="sd">            explicit pulse generation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">signal_generator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_signal_generator</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
         <span class="n">signal_generator</span><span class="o">.</span><span class="n">signal_units</span> <span class="o">=</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span>  <span class="c1"># Initial unit: optical power</span>
+        <span class="n">signal_generator</span><span class="o">.</span><span class="n">add_constant</span><span class="p">(</span><span class="n">constant</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">background_power</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">events</span> <span class="ow">in</span> <span class="n">event_frame</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
-                    <span class="n">signal_generator</span><span class="o">.</span><span class="n">add_constant</span><span class="p">(</span><span class="n">constant</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">background_power</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">coupling_power</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="n">events</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span>
+            <span class="k">for</span> <span class="n">events</span> <span class="ow">in</span> <span class="n">event_collection</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">ExplicitModel</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">events</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                        <span class="n">signal_generator</span><span class="o">.</span><span class="n">generate_pulses</span><span class="p">(</span>
+                            <span class="n">signal_name</span><span class="o">=</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">sigmas</span><span class="o">=</span><span class="n">events</span><span class="p">[</span><span class="s2">&quot;Sigmas&quot;</span><span class="p">]</span>
+                            <span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">()</span>
+                            <span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span><span class="p">,</span>
+                            <span class="n">centers</span><span class="o">=</span><span class="n">events</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span><span class="p">,</span>
+                            <span class="n">amplitudes</span><span class="o">=</span><span class="n">events</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                            <span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">()</span>
+                            <span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span><span class="p">,</span>
+                            <span class="n">base_level</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
+                        <span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">GammaModel</span><span class="p">):</span>
+
+                    <span class="n">velocity</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="s2">&quot;Velocity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+                    <span class="n">interrogation_volume_per_time_bin</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">velocity</span>
+                        <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_processing</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">sampling_rate</span>
+                        <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">area</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+                    <span class="n">events</span><span class="o">.</span><span class="n">expected_number_of_particles</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="p">(</span>
+                            <span class="n">events</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">particle_count</span>
+                            <span class="o">*</span> <span class="n">interrogation_volume_per_time_bin</span>
+                        <span class="p">)</span>
+                        <span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;particle&quot;</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">magnitude</span>
                     <span class="p">)</span>
 
-                    <span class="n">signal_generator</span><span class="o">.</span><span class="n">generate_pulses</span><span class="p">(</span>
-                        <span class="n">signal_name</span><span class="o">=</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="n">widths</span><span class="o">=</span><span class="n">events</span><span class="p">[</span><span class="s2">&quot;Widths&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span><span class="p">,</span>
-                        <span class="n">centers</span><span class="o">=</span><span class="n">events</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to_base_units</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span><span class="p">,</span>
-                        <span class="n">amplitudes</span><span class="o">=</span><span class="n">coupling_power</span><span class="p">,</span>
-                        <span class="n">base_level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">background_power</span><span class="p">,</span>
+                    <span class="n">amplitudes</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">events</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">pint</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;watt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">quantity</span><span class="o">.</span><span class="n">magnitude</span>
                     <span class="p">)</span>
+                    <span class="n">mean_amplitudes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">amplitudes</span><span class="p">)</span>
+                    <span class="n">mean_squared_amplitudes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">amplitudes</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+                    <span class="n">mean_sum</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">expected_number_of_particles</span> <span class="o">*</span> <span class="n">mean_amplitudes</span>
+                    <span class="n">var_sum</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">events</span><span class="o">.</span><span class="n">expected_number_of_particles</span> <span class="o">*</span> <span class="n">mean_squared_amplitudes</span>
+                    <span class="p">)</span>
+
+                    <span class="n">shape</span> <span class="o">=</span> <span class="n">mean_sum</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">var_sum</span>
+                    <span class="n">scale</span> <span class="o">=</span> <span class="n">var_sum</span> <span class="o">/</span> <span class="n">mean_sum</span>
+
+                    <span class="n">signal_generator</span><span class="o">.</span><span class="n">_cpp_add_gamma_trace</span><span class="p">(</span>
+                        <span class="n">signal_name</span><span class="o">=</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+                        <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
+                        <span class="n">gaussian_sigma</span><span class="o">=</span><span class="n">events</span><span class="o">.</span><span class="n">sigmas</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="n">power_trace</span> <span class="o">=</span> <span class="n">signal_generator</span><span class="o">.</span><span class="n">get_signal</span><span class="p">(</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="n">time_trace</span> <span class="o">=</span> <span class="n">signal_generator</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
+
+                    <span class="n">events</span><span class="o">.</span><span class="n">particles_trace</span> <span class="o">=</span> <span class="n">power_trace</span> <span class="o">/</span> <span class="p">(</span><span class="n">mean_amplitudes</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">)</span>
+                    <span class="n">events</span><span class="o">.</span><span class="n">time_trace</span> <span class="o">=</span> <span class="n">time_trace</span>
 
         <span class="c1"># Optical power → photocurrent</span>
         <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
@@ -727,7 +775,7 @@ document.write(`
 
 <div class="viewcode-block" id="FlowCytometer.run">
 <a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer.run">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">,</span> <span class="n">compute_cross_section</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunRecord</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunRecord</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs a complete flow cytometry simulation for the specified acquisition duration.</span>
 
@@ -749,19 +797,16 @@ document.write(`
 <span class="sd">        RunRecord</span>
 <span class="sd">            Simulation output containing all analog, digital, and peak-level data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">event_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">generate_event_frame</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
+        <span class="n">event_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_event_collection</span><span class="p">(</span><span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">add_model_to_event_frame</span><span class="p">(</span>
-            <span class="n">event_frame</span><span class="o">=</span><span class="n">event_frame</span><span class="p">,</span>
-            <span class="n">compute_cross_section</span><span class="o">=</span><span class="n">compute_cross_section</span><span class="p">,</span>
+        <span class="n">analog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_analog</span><span class="p">(</span>
+            <span class="n">event_collection</span><span class="o">=</span><span class="n">event_collection</span><span class="p">,</span> <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span>
         <span class="p">)</span>
-
-        <span class="n">analog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_analog</span><span class="p">(</span><span class="n">event_frame</span><span class="o">=</span><span class="n">event_frame</span><span class="p">,</span> <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">)</span>
 
         <span class="n">run_record</span> <span class="o">=</span> <span class="n">RunRecord</span><span class="p">(</span>
             <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span>
             <span class="n">detector_names</span><span class="o">=</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">detectors</span><span class="p">],</span>
-            <span class="n">event_frame</span><span class="o">=</span><span class="n">event_frame</span><span class="p">,</span>
+            <span class="n">event_collection</span><span class="o">=</span><span class="n">event_collection</span><span class="p">,</span>
             <span class="n">analog</span><span class="o">=</span><span class="n">analog</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -782,7 +827,82 @@ document.write(`
             <span class="n">run_record</span><span class="o">.</span><span class="n">triggering_system</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_processing</span><span class="o">.</span><span class="n">triggering_system</span>
 
         <span class="k">return</span> <span class="n">run_record</span></div>
-</div>
+
+
+    <span class="nd">@validate_units</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_event_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EventCollection</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a DataFrame of event times and sampled velocities for each population based on the specified scheme.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event_collection</span> <span class="o">=</span> <span class="n">EventCollection</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">ExplicitModel</span><span class="p">):</span>
+                <span class="n">arrival_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">get_arrival_times</span><span class="p">(</span>
+                    <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span>
+                <span class="p">)</span>
+
+                <span class="n">n_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrival_times</span><span class="p">)</span>
+
+                <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">n_events</span><span class="p">))</span>
+
+                <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span>
+                    <span class="n">arrival_times</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">arrival_times</span><span class="o">.</span><span class="n">units</span>
+                <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">add_transverse_profile_to_frame</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
+
+                <span class="n">population</span><span class="o">.</span><span class="n">add_property_to_frame</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="n">dataframe</span><span class="p">)</span>
+
+                <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Sigmas&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">get_particle_width</span><span class="p">(</span>
+                    <span class="n">velocity</span><span class="o">=</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Velocity&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">GammaModel</span><span class="p">):</span>
+                <span class="n">n_events</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">sampling_method</span><span class="o">.</span><span class="n">mc_samples</span>
+
+                <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">n_events</span><span class="p">))</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">add_transverse_profile_to_frame</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
+
+                <span class="n">population</span><span class="o">.</span><span class="n">add_property_to_frame</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="n">dataframe</span><span class="p">)</span>
+
+                <span class="n">dataframe</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Velocity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+                <span class="n">dataframe</span><span class="o">.</span><span class="n">sigmas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">get_particle_width</span><span class="p">(</span>
+                    <span class="n">velocity</span><span class="o">=</span><span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Velocity&quot;</span><span class="p">]</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+                <span class="n">dataframe</span><span class="o">.</span><span class="n">interrogation_volume_per_time_bin</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">dataframe</span><span class="o">.</span><span class="n">velocity</span>
+                    <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_processing</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">sampling_rate</span>
+                    <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">area</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+                <span class="n">dataframe</span><span class="o">.</span><span class="n">expected</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="n">population</span><span class="o">.</span><span class="n">particle_count</span>
+                        <span class="o">*</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">interrogation_volume_per_time_bin</span>
+                    <span class="p">)</span>
+                    <span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;particle&quot;</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">magnitude</span>
+                <span class="p">)</span>
+
+            <span class="n">dataframe</span><span class="o">.</span><span class="n">sampling_method</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">sampling_method</span>
+
+            <span class="n">dataframe</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="n">population</span>
+
+            <span class="n">dataframe</span><span class="o">.</span><span class="n">scatterer_type</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+
+            <span class="n">event_collection</span><span class="o">.</span><span class="n">events_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">_add_coupling_to_dataframe</span><span class="p">(</span>
+            <span class="n">event_collection</span><span class="o">=</span><span class="n">event_collection</span><span class="p">,</span>
+            <span class="n">compute_cross_section</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">event_collection</span></div>
 
 </pre></div>
 
