@@ -5,7 +5,7 @@
 | Name                                                  |    Stmts |     Miss |   Branch |   BrPart |      Cover |   Missing |
 |------------------------------------------------------ | -------: | -------: | -------: | -------: | ---------: | --------: |
 | FlowCyPy/amplifier.py                                 |       27 |        1 |        4 |        2 |     90.32% |113, 123->exit |
-| FlowCyPy/calibration.py                               |      158 |      158 |       22 |        0 |      0.00% |     1-444 |
+| FlowCyPy/calibration.py                               |      158 |      158 |       22 |        0 |      0.00% |     1-446 |
 | FlowCyPy/circuits.py                                  |       34 |        9 |        0 |        0 |     73.53% |108-112, 125-130 |
 | FlowCyPy/classifier.py                                |       29 |       29 |        6 |        0 |      0.00% |     1-152 |
 | FlowCyPy/coupling\_model.py                           |       61 |       26 |       20 |        3 |     49.38% |61-62, 123, 146, 166-194, 223-225, 238-243, 256-264 |
