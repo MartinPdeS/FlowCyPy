@@ -1,7 +1,7 @@
 from typing import Any, List, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
-import MPSPlots
+from MPSPlots import helper
 import numpy
 import pandas as pd
 import seaborn as sns
@@ -124,7 +124,7 @@ class PeakDataFrame(BaseSubFrame):
 
         return df, unit_list
 
-    @MPSPlots.helper.post_mpl_plot
+    @helper.post_mpl_plot
     def hist(
         self,
         x: tuple[str, str],
@@ -175,7 +175,7 @@ class PeakDataFrame(BaseSubFrame):
 
         return figure
 
-    @MPSPlots.helper.post_mpl_plot
+    @helper.post_mpl_plot
     def plot_2d(
         self, x: tuple[str, str], y: tuple[str, str], bandwidth_adjust: float = 0.8
     ) -> plt.Figure:
@@ -221,7 +221,7 @@ class PeakDataFrame(BaseSubFrame):
         )
         return grid.figure
 
-    @MPSPlots.helper.post_mpl_plot
+    @helper.post_mpl_plot
     def plot_3d(self, x: str, y: str, z: str) -> plt.Figure:
         """
         Create a 3D scatter plot of a feature across three detectors.

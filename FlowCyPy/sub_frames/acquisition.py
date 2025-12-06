@@ -2,7 +2,7 @@
 from typing import List, Optional, Union
 
 import matplotlib.pyplot as plt
-import MPSPlots
+from MPSPlots import helper
 import pandas as pd
 import pint_pandas
 import seaborn as sns
@@ -193,7 +193,7 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         return figure, axes
 
-    @MPSPlots.helper.post_mpl_plot
+    @helper.post_mpl_plot
     def plot(self) -> None:
         """
         Plot acquisition data for each detector and the scatterer events.
@@ -219,7 +219,7 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         return figure
 
-    @MPSPlots.helper.post_mpl_plot
+    @helper.post_mpl_plot
     def hist(
         self,
         kde: bool = False,

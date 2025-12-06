@@ -1,7 +1,7 @@
 from typing import Any, List, Optional, Union
 import pandas as pd
 import matplotlib.pyplot as plt
-import MPSPlots
+from MPSPlots import helper
 import seaborn as sns
 import pint_pandas
 
@@ -197,7 +197,7 @@ class EventCollection:
             "At least one of 'x', 'y', or 'z' must be provided for plotting."
         )
 
-    @MPSPlots.helper.post_mpl_plot
+    @helper.post_mpl_plot
     def plot_hist(
         self,
         x: str = "Diameter",
@@ -269,7 +269,7 @@ class EventCollection:
 
         return figure
 
-    @MPSPlots.helper.post_mpl_plot
+    @helper.post_mpl_plot
     def plot_2d(
         self,
         x: str,
@@ -315,7 +315,7 @@ class EventCollection:
         grid.ax_joint.set_ylabel(f"{y} [{population_event[y].pint.units:~P}]")
         return grid.figure
 
-    @MPSPlots.helper.post_mpl_plot
+    @helper.post_mpl_plot
     def plot_3d(
         self,
         x: str,

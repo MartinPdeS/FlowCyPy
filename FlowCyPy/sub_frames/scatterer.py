@@ -1,7 +1,7 @@
 from typing import Any, List, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
-import MPSPlots
+from MPSPlots import helper
 import numpy
 import pandas as pd
 import seaborn as sns
@@ -63,7 +63,7 @@ class ScattererDataFrame(BaseSubFrame):
 
         return df, units_list
 
-    @MPSPlots.helper.post_mpl_plot
+    @helper.post_mpl_plot
     def plot_2d(
         self,
         x: str,
@@ -114,7 +114,7 @@ class ScattererDataFrame(BaseSubFrame):
         grid.ax_joint.set_ylabel(f"{y} [{y_unit:~P}]")
         return grid.figure
 
-    @MPSPlots.helper.post_mpl_plot
+    @helper.post_mpl_plot
     def plot_3d(
         self,
         x: str,
@@ -163,7 +163,7 @@ class ScattererDataFrame(BaseSubFrame):
         ax.set_title("Scatterer Sampling Distribution")
         return figure
 
-    @MPSPlots.helper.post_mpl_plot
+    @helper.post_mpl_plot
     def hist(
         self,
         x: str = "Diameter",
