@@ -47,6 +47,8 @@ endif()
 find_package(OpenMP REQUIRED)
 find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
 find_package(pybind11 CONFIG REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
 # --------------------- Find dependencies and compile options --------------------
 
 # ----------------- logging build configuration --------------------
