@@ -60,7 +60,7 @@ dependencies = [
     'pint ~=0.24',
     "scipy >=1.15.3",
     'PyMieSim',
-    'MPSPlots',
+    'MPSPlots >=1.8.1',
     "TypedUnit"
 ]
 
