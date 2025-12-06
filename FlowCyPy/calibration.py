@@ -163,6 +163,7 @@ class JEstimator(BaseEstimator):
             name="population",
             particle_count=particle_count,
             diameter=bead_diameter,
+            medium_refractive_index=1.33 * ureg.RIU,
             refractive_index=1.47 * ureg.RIU,
         )
 
@@ -354,6 +355,7 @@ class KEstimator(BaseEstimator):
             name="population",
             particle_count=particle_count,
             diameter=bead_diameter,
+            medium_refractive_index=1.33 * ureg.RIU,
             refractive_index=1.47 * ureg.RIU,
         )
         flow_cytometer.fluidics.scatterer_collection.populations = [population]
