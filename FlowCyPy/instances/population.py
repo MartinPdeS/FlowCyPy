@@ -24,6 +24,7 @@ class CallablePopulation(metaclass=CallablePopulationMeta):
             name=self._name,
             diameter=self._diameter_distribution,
             refractive_index=self._ri_distribution,
+            medium_refractive_index=1.33 * ureg.RIU,
         )
 
 

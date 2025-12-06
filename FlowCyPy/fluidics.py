@@ -1,15 +1,12 @@
-from typing import List
-import matplotlib.pyplot as plt
 import pandas as pd
+from TypedUnit import ureg, Time, ParticleFlux, Concentration, Particle
 import numpy as np
-from MPSPlots import helper
-from TypedUnit import ureg, Time, validate_units, ParticleFlux, Concentration, Particle
-import pint_pandas
 
 from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy import distribution, population  # noqa: F401
 from FlowCyPy.fluorescence import Dye, SurfaceDensityLabeling  # noqa: F401
+from FlowCyPy.simulation_settings import SimulationSettings  # noqa: F401
 
 
 class Fluidics:
@@ -88,5 +85,11 @@ class Fluidics:
             )
             * ureg.second
         )
+
+        if SimulationSettings.evenly_spaced_events:
+            arrival_times = (
+                np.linspace(0, run_time.to("second").magnitude, len(arrival_times))
+                * ureg.second
+            )
 
         return arrival_times

@@ -52,7 +52,7 @@ flow_cell = FlowCell(
     height=10 * ureg.micrometer,
 )
 
-scatterer_collection = ScattererCollection(medium_refractive_index=1.33 * ureg.RIU)
+scatterer_collection = ScattererCollection()
 
 # Add Exosome and HDL populations
 scatterer_collection.add_population(

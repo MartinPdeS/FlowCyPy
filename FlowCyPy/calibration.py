@@ -57,9 +57,7 @@ class BaseEstimator:
             peak_locator.GlobalPeakLocator(compute_width=False)
         )
 
-        results = flow_cytometer.run(
-            run_time=1.5 * ureg.millisecond, compute_cross_section=True
-        )
+        results = flow_cytometer.run(run_time=1.5 * ureg.millisecond)
 
         if self.debug_mode:
             results.trigger.plot()
