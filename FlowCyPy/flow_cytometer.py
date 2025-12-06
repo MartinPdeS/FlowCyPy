@@ -34,6 +34,8 @@ class FlowCytometer:
         An instance of the OptoElectronics class, which contains the configuration of detectors, digitizer, source, and amplifier.
     fluidics : Fluidics
         An instance of the Fluidics class, which manages the flow cell and scatterer collection.
+    signal_processing : SignalProcessing
+        An instance of the SignalProcessing class, which handles the processing of analog and digital signals.
     background_power : pint.Quantity, optional
         The background power level in the system, defaulting to 0 mW. This represents the constant background signal that is present in the system, which can affect the detection of actual signals.
 

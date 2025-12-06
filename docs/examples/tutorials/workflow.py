@@ -56,7 +56,7 @@ population_0 = population.Sphere(
     name="Pop 0",
     medium_refractive_index=medium_refractive_index,
     particle_count=5e17 * ureg.particle / ureg.milliliter,
-    diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
+    diameter=distribution.RosinRammler(50 * ureg.nanometer, spread=30),
     refractive_index=distribution.Normal(
         1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
     ),
@@ -67,13 +67,13 @@ population_1 = population.Sphere(
     name="Pop 1",
     particle_count=5e9 * ureg.particle / ureg.milliliter,
     medium_refractive_index=medium_refractive_index,
-    diameter=distribution.RosinRammler(200 * ureg.nanometer, spread=30),
+    diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
     refractive_index=distribution.Normal(
         1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
     ),
 )
 
-scatterer_collection.add_population(population_0)
+scatterer_collection.add_population(population_0, population_1)
 
 scatterer_collection.dilute(factor=80)
 
@@ -91,9 +91,9 @@ from FlowCyPy.opto_electronics import (
 
 source = source.GaussianBeam(
     numerical_aperture=0.1 * ureg.AU,
-    wavelength=450 * ureg.nanometer,
+    wavelength=405 * ureg.nanometer,
     optical_power=200 * ureg.milliwatt,
-    RIN=-140,
+    RIN=-180,
 )
 
 detectors = [
@@ -145,7 +145,7 @@ digitizer = Digitizer(
 )
 
 analog_processing = [
-    # circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
+    circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
     circuits.BesselLowPass(cutoff=2 * ureg.megahertz, order=4, gain=2),
 ]
 
