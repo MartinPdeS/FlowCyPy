@@ -112,7 +112,7 @@ archs = ["arm64"]
 before-build = "brew install fftw"
 build = ["cp311-*", "cp312-*", "cp313-*"]
 repair-wheel-command = "delocate-wheel -w {dest_dir} -v {wheel}"  # --exclude=libomp.dylib
-test-command = 'cd {project}; DYLD_PRINT_LIBRARIES=True python -m pytest --config-file=pytest.ini'  # DYLD_PRINT_LIBRARIES=NO
+test-command = 'cd {project}; python -m pytest --config-file=pytest.ini'  # DYLD_PRINT_LIBRARIES=NO
 
 [tool.cibuildwheel.windows]
 archs = ["AMD64"]
