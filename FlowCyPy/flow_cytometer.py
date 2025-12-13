@@ -186,7 +186,7 @@ class FlowCytometer:
                         * self.fluidics.flow_cell.sample.area
                     ).mean()
 
-                    events.expected_number_of_particles = (
+                    events.attrs["expected_number_of_particles"] = (
                         (
                             events.population.particle_count
                             * interrogation_volume_per_time_bin
@@ -201,26 +201,31 @@ class FlowCytometer:
                     mean_amplitudes = np.mean(amplitudes)
                     mean_squared_amplitudes = np.mean(amplitudes**2)
 
-                    mean_sum = events.expected_number_of_particles * mean_amplitudes
+                    mean_sum = (
+                        events.attrs["expected_number_of_particles"] * mean_amplitudes
+                    )
                     var_sum = (
-                        events.expected_number_of_particles * mean_squared_amplitudes
+                        events.attrs["expected_number_of_particles"]
+                        * mean_squared_amplitudes
                     )
 
                     shape = mean_sum**2 / var_sum
                     scale = var_sum / mean_sum
 
-                    signal_generator._cpp_add_gamma_trace(
+                    power_trace = signal_generator._cpp_add_gamma_trace(
                         signal_name=detector.name,
                         shape=shape,
                         scale=scale,
                         gaussian_sigma=events.sigmas.mean().to("second").magnitude,
                     )
 
-                    power_trace = signal_generator.get_signal(detector.name)
                     time_trace = signal_generator.get_time()
 
-                    events.particles_trace = power_trace / (mean_amplitudes * ureg.watt)
-                    events.time_trace = time_trace
+                    events.attrs["particles_trace"] = power_trace / (
+                        mean_amplitudes * ureg.watt
+                    )
+
+                    events.attrs["time_trace"] = time_trace
 
         # Optical power → photocurrent
         for detector in self.opto_electronics.detectors:
@@ -373,6 +378,11 @@ class FlowCytometer:
                     .to("particle")
                     .magnitude
                 )
+
+            dataframe.attrs["Name"] = population.name
+            dataframe.attrs["PopulationType"] = population.__class__.__name__
+            dataframe.attrs["ParticleCount"] = population.particle_count
+            dataframe.attrs["SamplingMethod"] = population.sampling_method
 
             dataframe.sampling_method = population.sampling_method
 

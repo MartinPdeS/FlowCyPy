@@ -7,6 +7,7 @@ from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy import distribution, population  # noqa: F401
 from FlowCyPy.fluorescence import Dye, SurfaceDensityLabeling  # noqa: F401
 from FlowCyPy.simulation_settings import SimulationSettings  # noqa: F401
+from FlowCyPy.fraction_selection import FractionSelection  # noqa: F401
 
 
 class Fluidics:

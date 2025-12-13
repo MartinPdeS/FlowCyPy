@@ -404,7 +404,7 @@ void SignalGenerator::convolve_signal_with_gaussian(
 }
 
 
-void SignalGenerator::add_gamma_trace(
+std::vector<double> SignalGenerator::add_gamma_trace(
     const std::string& signal_name,
     double shape,
     double scale,
@@ -483,4 +483,6 @@ void SignalGenerator::add_gamma_trace(
 
     // Add result to the signal
     add_array_to_signal(signal_name, gamma_trace);
+
+    return gamma_trace;
 }

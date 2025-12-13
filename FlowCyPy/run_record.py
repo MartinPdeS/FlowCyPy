@@ -192,6 +192,8 @@ class RunRecord:
             time_units=time_units,
         )
 
+        axes["scatterer"].set_ylabel("Scatterer", labelpad=20)
+
         return figure, axes
 
     @helper.post_mpl_plot

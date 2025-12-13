@@ -1,12 +1,11 @@
-from typing import Any, List, Optional, Union
+from typing import List, Optional, Union
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from MPSPlots import helper
 import seaborn as sns
 import pint_pandas
 
-
-from FlowCyPy.sub_frames import utils
 from FlowCyPy.sampling_method import ExplicitModel, GammaModel
 
 
@@ -59,6 +58,8 @@ class EventCollection:
         time_units : str, optional
             Units for the time axis (default is 'second').
         """
+        if events.empty:
+            return
         ax.vlines(
             events.Time.pint.to(time_units).pint.quantity,
             ymin=0,
@@ -82,9 +83,9 @@ class EventCollection:
             Units for the time axis (default is 'second').
         """
         ax.fill_between(
-            x=events.time_trace,
+            x=events.attrs["time_trace"].to(time_units),
             y1=0,
-            y2=events.particles_trace,
+            y2=events.attrs["particles_trace"],
             label=events.population.name,
             color=color,
             alpha=0.5,
@@ -165,12 +166,17 @@ class EventCollection:
             )
 
         for population in self:
+            if population.empty:
+                continue
+
             for key in population:
                 values = population[key].pint.quantity.to_reduced_units()
                 population[key] = pint_pandas.PintArray(values.magnitude, values.units)
 
         population_event = pd.concat(
-            self, keys=[event.population.name for event in self], names=["Population"]
+            [event for event in self if not event.empty],
+            keys=[event.population.name for event in self if not event.empty],
+            names=["Population"],
         )
 
         for key in population_event:
@@ -202,68 +208,136 @@ class EventCollection:
         self,
         x: str = "Diameter",
         kde: bool = False,
-        bins: Optional[int] = "auto",
+        bins: Optional[int] = 50,
         color: Optional[Union[str, dict]] = None,
-        clip_data: Optional[Union[str, Any]] = None,
         filter_population: Optional[List[str]] = None,
+        binrange: Optional[tuple] = None,
+        common_norm: bool = False,
+        common_bins: bool = False,
+        scale_by_population: bool = True,
+        scale_by_bin: bool = False,
     ) -> plt.Figure:
         """
-        Plot a histogram distribution for a given column using Seaborn, with an option to remove extreme values.
+        Plot a population resolved histogram for a chosen variable.
+
+        The histogram can be optionally scaled to reflect physical concentration.
+        Two scaling modes are supported:
+
+            1. particle per milliliter (default)
+            2. particle per (milliliter * bin) if `scale_by_bin=True`
 
         Parameters
         ----------
-        x : str, optional
-            The column name to plot (default: 'Diameter').
-        kde : bool, optional
-            Whether to overlay a KDE curve (default: False).
-        bins : Optional[int], optional
-            Number of bins for the histogram (default: 'auto', letting Seaborn decide).
-        color : Optional[Union[str, dict]], optional
-            Color specification for the plot (default: None).
-        clip_data : Optional[Union[str, Any]], optional
-            If provided, removes data above a threshold. If a string ending with '%' (e.g., "20%") is given,
-            the function removes values above the corresponding quantile (e.g., the top 20% of values).
-            If a Any is given, it removes values above that absolute value.
-        filter_population : Optional[List[str]], optional
-            List of population names to include. If None, includes all populations.
+        x : str
+            Column name to plot.
+        kde : bool
+            Whether to overlay a kernel density estimate.
+        bins : int or sequence
+            Number of bins or explicit bin edges.
+        color : str or dict
+            Color specification.
+        filter_population : list or None
+            Which populations to include.
+        binrange : tuple or None
+            Range for the histogram.
+        common_norm : bool
+            Forwarded to seaborn.
+        common_bins : bool
+            Forwarded to seaborn.
+        scale_by_population : bool
+            Scale histogram by population level concentration.
+        scale_by_bin : bool
+            If True, divides weights by the bin width to display densities
+            in particle/(milliliter * bin).
 
         Returns
         -------
-        plt.Figure
-            The histogram figure.
+        matplotlib.figure.Figure
         """
-        population_event = self.get_concatenated_dataframe(filter_population)
 
+        population_event = self.get_concatenated_dataframe(filter_population)
         figure, ax = plt.subplots(1, 1)
 
         if len(population_event) == 0:
-            ax.set(
-                xlabel=f"{x}",
-                title=f"Distribution of {x}",
-            )
-
+            ax.set(xlabel=f"{x}", title=f"Distribution of {x}")
             return figure
 
+        # Convert to plain numeric columns
         df = (
             population_event.reset_index("Population")
             .pint.dequantify()
             .droplevel("unit", axis=1)
         )
 
-        df[x] = utils.clip_data(signal=df[[x]], clip_value=clip_data)
+        # ------------------------------------------------------------
+        # Construct per population weights
+        # ------------------------------------------------------------
+        if scale_by_population:
+            population_weight_map = {
+                event.attrs["Name"]: event.attrs["ParticleCount"]
+                .to("particle/milliliter")
+                .magnitude
+                for event in self
+            }
+            df["Weight"] = df["Population"].map(population_weight_map)
+        else:
+            df["Weight"] = 1.0
 
+        # ------------------------------------------------------------
+        # Compute bin width if user wants particle/(milliliter * bin)
+        # ------------------------------------------------------------
+        if scale_by_bin:
+            # Determine edges
+            if binrange is None:
+                xmin = df[x].min()
+                xmax = df[x].max()
+            else:
+                xmin, xmax = binrange
+
+            if isinstance(bins, int):
+                bin_edges = np.linspace(xmin, xmax, bins + 1)
+            else:
+                bin_edges = np.asarray(bins)
+
+            bin_width = np.diff(bin_edges)[0]
+
+            # Scaling population weights by bin width
+            # This changes units from particle/mL to particle/(mL * bin)
+            df["Weight"] = df["Weight"] / bin_width
+        else:
+            bin_width = None  # not used
+
+        # ------------------------------------------------------------
+        # Plot histogram
+        # ------------------------------------------------------------
         sns.histplot(
             data=df,
-            x=df[x],
+            x=x,
             ax=ax,
             kde=kde,
             bins=bins,
+            hue="Population",
             color=color,
-            hue=df["Population"],
+            binrange=binrange,
+            common_norm=common_norm,
+            common_bins=common_bins,
+            weights=df["Weight"],
         )
 
+        # ------------------------------------------------------------
+        # Axis labels
+        # ------------------------------------------------------------
+        x_units = population_event[x].pint.units
+        if scale_by_population and not scale_by_bin:
+            ylabel = "particle per milliliter"
+        elif scale_by_population and scale_by_bin:
+            ylabel = f"Particle (mL {x_units:~P})$^{{-1}}$"
+        else:
+            ylabel = "Counts"
+
         ax.set(
-            xlabel=f"{x} [{population_event[x].pint.units:~P}]",
+            xlabel=f"{x} [{x_units:~P}]",
+            ylabel=ylabel,
             title=f"Distribution of {x}",
         )
 

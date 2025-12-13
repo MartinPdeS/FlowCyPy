@@ -308,8 +308,9 @@ public:
      * @param gaussian_sigma Sigma of the Gaussian convolution kernel.
      *                       If zero or negative, no convolution is applied.
      * @throws std::runtime_error If signal is missing or parameters are invalid.
+     * @return The generated gamma trace (after convolution if applied).
      */
-    void add_gamma_trace(
+    std::vector<double> add_gamma_trace(
         const std::string& signal_name,
         double shape,
         double scale,
