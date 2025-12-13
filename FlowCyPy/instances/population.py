@@ -43,7 +43,7 @@ _populations = (
 # Dynamically create population classes
 for name, diameter, diameter_spread, ri, ri_spread in _populations:
     diameter_distribution = distribution.RosinRammler(
-        characteristic_property=diameter, spread=diameter_spread
+        characteristic_value=diameter, spread=diameter_spread
     )
 
     ri_distribution = distribution.Normal(mean=ri, standard_deviation=ri_spread)
