@@ -39,9 +39,7 @@ distributions = [
     distribution.Uniform(
         lower_bound=0.5 * ureg.micrometer, upper_bound=1.5 * ureg.micrometer
     ),
-    distribution.RosinRammler(
-        characteristic_property=0.5 * ureg.micrometer, spread=1.5
-    ),
+    distribution.RosinRammler(characteristic_value=0.5 * ureg.micrometer, spread=1.5),
 ]
 
 
