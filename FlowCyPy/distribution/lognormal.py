@@ -272,7 +272,7 @@ class LogNormal(Base):
 
         samples = np.maximum(samples, cutoff_value)
 
-        return samples * self._units
+        return samples
 
     def _generate_default_x(
         self, x_min: float = 0.01, x_max: float = 5.0, n_samples: int = 200
