@@ -260,15 +260,6 @@ Step 4: Run Simulation
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- .. code-block:: none
-
-    /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/FlowCyPy/flow_cytometer.py:222: UserWarning: Pandas doesn't allow columns to be created via a new attribute name - see https://pandas.pydata.org/pandas-docs/stable/indexing.html#attribute-access
-      events.particles_trace = power_trace / (mean_amplitudes * ureg.watt)
-    /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/FlowCyPy/flow_cytometer.py:223: UserWarning: Pandas doesn't allow columns to be created via a new attribute name - see https://pandas.pydata.org/pandas-docs/stable/indexing.html#attribute-access
-      events.time_trace = time_trace
-
 
 
 
@@ -403,7 +394,7 @@ Step 8: Classify Events from Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 38.557 seconds)
+   **Total running time of the script:** (0 minutes 10.757 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

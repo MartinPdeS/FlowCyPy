@@ -550,24 +550,115 @@ document.write(`
 </a>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Normal">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard_deviation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/normal.html#Normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Normal" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard_deviation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/normal.html#Normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Normal" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
-<p>Represents a normal (Gaussian) distribution for particle properties.</p>
-<p>The normal distribution is described by its mean and standard deviation:</p>
+<p>Normal (Gaussian) distribution with optional hard cutoff.</p>
+<p>This class represents a normal distribution for a particle property such as
+diameter or refractive index. It supports an optional hard lower cutoff that
+turns the sampler into a truncated normal distribution conditional on</p>
 <div class="math notranslate nohighlight">
-\[f(x) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp \left( - \frac{(x - \mu)^2}{2 \sigma^2} \right)\]</div>
-<p>where:
-- <span class="math notranslate nohighlight">\(\mu\)</span> is the mean of the distribution (average particle property).
-- <span class="math notranslate nohighlight">\(\sigma\)</span> is the standard deviation (width of the distribution).
-- <span class="math notranslate nohighlight">\(x\)</span> represents particle properties.</p>
+\[X \ge x_{\mathrm{cut}}.\]</div>
+<section id="without-cutoff">
+<h3>Without cutoff<a class="headerlink" href="#without-cutoff" title="Link to this heading">#</a></h3>
+<p>Samples are drawn from:</p>
+<div class="math notranslate nohighlight">
+\[X \sim \mathcal{N}(\mu, \sigma^2).\]</div>
+</section>
+<section id="with-cutoff">
+<h3>With cutoff<a class="headerlink" href="#with-cutoff" title="Link to this heading">#</a></h3>
+<p>Samples are drawn from the conditional distribution:</p>
+<div class="math notranslate nohighlight">
+\[X \mid X \ge x_{\mathrm{cut}}.\]</div>
+<p>This is implemented by inverse CDF sampling on the restricted probability
+interval <code class="docutils literal notranslate"><span class="pre">[F(x_cut),</span> <span class="pre">1)</span></code> where <code class="docutils literal notranslate"><span class="pre">F</span></code> is the Gaussian CDF. This avoids
+rejection sampling and provides predictable performance even when the cutoff
+is far into the tail.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param mean<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Mean value <span class="math notranslate nohighlight">\(\mu\)</span> of the distribution, with units.</p>
+</dd>
+<dt class="field-even">type mean<span class="colon">:</span></dt>
+<dd class="field-even"><p>TypedUnit.units.AnyUnit</p>
+</dd>
+<dt class="field-odd">param standard_deviation<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Standard deviation <span class="math notranslate nohighlight">\(\sigma\)</span> of the distribution, with the same
+units as <code class="docutils literal notranslate"><span class="pre">mean</span></code>.</p>
+</dd>
+<dt class="field-even">type standard_deviation<span class="colon">:</span></dt>
+<dd class="field-even"><p>TypedUnit.units.AnyUnit</p>
+</dd>
+<dt class="field-odd">param cutoff<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional hard minimum value. If provided, generated samples satisfy
+<code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">&gt;=</span> <span class="pre">cutoff</span></code> by construction.</p>
+</dd>
+<dt class="field-even">type cutoff<span class="colon">:</span></dt>
+<dd class="field-even"><p>TypedUnit.units.AnyUnit | None</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.distribution.Normal.apply_cutoff">
+<span class="sig-name descname"><span class="pre">apply_cutoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce_concentration_consistently</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/normal.html#Normal.apply_cutoff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Normal.apply_cutoff" title="Link to this definition">#</a></dt>
+<dd><p>Return a truncated Normal distribution and an optional concentration multiplier.</p>
+<section id="interpretation">
+<h4>Interpretation<a class="headerlink" href="#interpretation" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>The returned distribution samples from <code class="docutils literal notranslate"><span class="pre">X</span> <span class="pre">|</span> <span class="pre">X</span> <span class="pre">&gt;=</span> <span class="pre">cutoff</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">reduce_concentration_consistently</span></code> is True, the returned multiplier
+is <code class="docutils literal notranslate"><span class="pre">P(X</span> <span class="pre">&gt;=</span> <span class="pre">cutoff)</span></code> so that concentration can be scaled consistently
+with the same underlying distribution.</p></li>
+<li><p>If False, the multiplier is 1.0.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">param cutoff<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Hard minimum value for truncation.</p>
+</dd>
+<dt class="field-even">param reduce_concentration_consistently<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whether to return the survival fraction as a concentration multiplier.</p>
+</dd>
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">truncated_distribution</span></code> is a new instance with <code class="docutils literal notranslate"><span class="pre">cutoff</span></code> set.
+<code class="docutils literal notranslate"><span class="pre">concentration_multiplier</span></code> is either the survival fraction or 1.0.</p>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>truncated_distribution, concentration_multiplier</p>
+</dd>
+</dl>
+</section>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mean</strong> (<em>AnyUnit</em>) – The mean (average) particle property in meters.</p></li>
-<li><p><strong>standard_deviation</strong> (<em>AnyUnit</em>) – The standard deviation of particle properties in meters.</p></li>
+<li><p><strong>cutoff</strong> (<em>AnyUnit</em>)</p></li>
+<li><p><strong>reduce_concentration_consistently</strong> (<em>bool</em>)</p></li>
 </ul>
 </dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Tuple</em>[<a class="reference internal" href="#FlowCyPy.distribution.Normal" title="FlowCyPy.distribution.normal.Normal"><em>Normal</em></a>, float]</p>
+</dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.distribution.Normal.cdf">
+<span class="sig-name descname"><span class="pre">cdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/normal.html#Normal.cdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Normal.cdf" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the Gaussian CDF at <code class="docutils literal notranslate"><span class="pre">x</span></code> (ignoring any cutoff).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>AnyUnit</em>) – Quantity with the same units as <code class="docutils literal notranslate"><span class="pre">mean</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>CDF value in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.distribution.Normal.cutoff">
+<span class="sig-name descname"><span class="pre">cutoff</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.distribution.Normal.cutoff" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Normal.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.distribution.Normal.generate" title="Link to this definition">#</a></dt>
@@ -581,19 +672,27 @@ document.write(`
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.Normal.get_pdf">
-<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/normal.html#Normal.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Normal.get_pdf" title="Link to this definition">#</a></dt>
-<dd><p>Returns the x-values and the scaled PDF values for the normal distribution.</p>
+<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/normal.html#Normal.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Normal.get_pdf" title="Link to this definition">#</a></dt>
+<dd><p>Return x values and the PDF.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">cutoff</span></code> is None, this returns the standard normal PDF.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">cutoff</span></code> is set, this returns the truncated PDF:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>pdf_trunc(x) = pdf(x) / P(X &gt;= cutoff)   for x &gt;= cutoff</dt><dd><p>0                          otherwise</p>
+</dd>
+</dl>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – The input x-values (particle properties) over which to compute the PDF. If not provided, a range is generated.</p></li>
-<li><p><strong>x_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the minimum x-value as a multiple of the standard deviation from the mean. Default is -3.</p></li>
-<li><p><strong>x_max</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the maximum x-value as a multiple of the standard deviation from the mean. Default is 3.</p></li>
-<li><p><strong>n_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points in the generated range. Default is 500.</p></li>
+<li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5.dev0)"><em>ndarray</em></a>) – Optional x grid with units. If not provided, a default grid is generated.</p></li>
+<li><p><strong>x_min</strong> (<em>float</em>) – Lower bound in sigma units for the default grid.</p></li>
+<li><p><strong>x_max</strong> (<em>float</em>) – Upper bound in sigma units for the default grid.</p></li>
+<li><p><strong>n_samples</strong> (<em>int</em>) – Number of points used for the default grid.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The input x-values and the corresponding PDF values.</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">x</span></code> with units and <code class="docutils literal notranslate"><span class="pre">pdf</span></code> as a unitless NumPy array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray]</p>
@@ -611,6 +710,36 @@ document.write(`
 <span class="sig-name descname"><span class="pre">standard_deviation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span></em><a class="headerlink" href="#FlowCyPy.distribution.Normal.standard_deviation" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.distribution.Normal.survival_fraction_above">
+<span class="sig-name descname"><span class="pre">survival_fraction_above</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/normal.html#Normal.survival_fraction_above"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.Normal.survival_fraction_above" title="Link to this definition">#</a></dt>
+<dd><p>Compute the survival fraction above a cutoff, <code class="docutils literal notranslate"><span class="pre">P(X</span> <span class="pre">&gt;=</span> <span class="pre">cutoff)</span></code>.</p>
+<p>This quantity is the concentration multiplier you would apply if you
+interpret the cutoff as physically removing all values below <code class="docutils literal notranslate"><span class="pre">cutoff</span></code>
+from an otherwise unchanged population.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cutoff</strong> (<em>AnyUnit</em>) – Hard minimum value with the same units as <code class="docutils literal notranslate"><span class="pre">mean</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Survival fraction in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean</strong> (<em>AnyUnit</em>)</p></li>
+<li><p><strong>standard_deviation</strong> (<em>AnyUnit</em>)</p></li>
+<li><p><strong>cutoff</strong> (<em>AnyUnit</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -621,24 +750,144 @@ document.write(`
 </a>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LogNormal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard_deviation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/lognormal.html#LogNormal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.LogNormal" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LogNormal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard_deviation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/lognormal.html#LogNormal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.LogNormal" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
-<p>Represents a log-normal distribution for particle properties.</p>
-<p>The log-normal distribution is described by its mean and standard deviation of the logarithm of the values:</p>
+<p>Log normal distribution with optional hard cutoff.</p>
+<p>This class represents a log normal distribution for a positive particle
+property such as diameter or intensity. It supports an optional hard lower
+cutoff that turns the sampler into a truncated log normal distribution
+conditional on</p>
 <div class="math notranslate nohighlight">
-\[f(x) = \frac{1}{x \sigma \sqrt{2 \pi}} \exp \left( - \frac{(\ln(x) - \mu)^2}{2 \sigma^2} \right)\]</div>
-<p>where:
-- <span class="math notranslate nohighlight">\(\mu\)</span> is the mean of the natural logarithm of the particle properties.
-- <span class="math notranslate nohighlight">\(\sigma\)</span> is the standard deviation of the logarithm of particle properties.</p>
+\[X \ge x_{\mathrm{cut}}.\]</div>
+<section id="definition">
+<h3>Definition<a class="headerlink" href="#definition" title="Link to this heading">#</a></h3>
+<p>A log normal random variable is defined by</p>
+<div class="math notranslate nohighlight">
+\[\ln(X) \sim \mathcal{N}(\mu, \sigma^2),\]</div>
+<p>which implies the density</p>
+<div class="math notranslate nohighlight">
+\[f(x) = \frac{1}{x \sigma \sqrt{2\pi}}
+       \exp\!\left(-\frac{(\ln x - \mu)^2}{2\sigma^2}\right),
+\quad x &gt; 0.\]</div>
+</section>
+<section id="parameterization-used-here">
+<h3>Parameterization used here<a class="headerlink" href="#parameterization-used-here" title="Link to this heading">#</a></h3>
+<p>This implementation follows the NumPy and SciPy convention:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mean</span></code> corresponds to <span class="math notranslate nohighlight">\(\mu\)</span>, the mean of the underlying normal
+distribution of <code class="docutils literal notranslate"><span class="pre">ln(X)</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">standard_deviation</span></code> corresponds to <span class="math notranslate nohighlight">\(\sigma\)</span>, the standard deviation
+of the underlying normal distribution of <code class="docutils literal notranslate"><span class="pre">ln(X)</span></code>.</p></li>
+</ul>
+<p>In other words, <code class="docutils literal notranslate"><span class="pre">mean</span></code> and <code class="docutils literal notranslate"><span class="pre">standard_deviation</span></code> are parameters in log space.
+If you want to specify the arithmetic mean and standard deviation in linear
+space, you must convert them to <span class="math notranslate nohighlight">\(\mu\)</span> and <span class="math notranslate nohighlight">\(\sigma\)</span> before creating
+this distribution.</p>
+</section>
+<section id="hard-cutoff-and-truncation">
+<h3>Hard cutoff and truncation<a class="headerlink" href="#hard-cutoff-and-truncation" title="Link to this heading">#</a></h3>
+<p>When <code class="docutils literal notranslate"><span class="pre">cutoff</span></code> is provided, sampling is performed from the conditional law
+<code class="docutils literal notranslate"><span class="pre">X</span> <span class="pre">|</span> <span class="pre">X</span> <span class="pre">&gt;=</span> <span class="pre">cutoff</span></code> by inverse CDF sampling on the restricted probability
+interval <code class="docutils literal notranslate"><span class="pre">[F(cutoff),</span> <span class="pre">1)</span></code> where <code class="docutils literal notranslate"><span class="pre">F</span></code> is the log normal CDF.</p>
+<p>This provides an efficient way to emulate an idealized selection that removes
+all values below the cutoff. If you interpret the cutoff as a physical removal,
+you can compute the matching concentration multiplier via
+<a class="reference internal" href="#FlowCyPy.distribution.LogNormal.survival_fraction_above" title="FlowCyPy.distribution.LogNormal.survival_fraction_above"><code class="xref py py-meth docutils literal notranslate"><span class="pre">survival_fraction_above()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param mean<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Log space mean <span class="math notranslate nohighlight">\(\mu\)</span> with units carried for consistency with the
+rest of the framework. In practice, this should be dimensionless.</p>
+</dd>
+<dt class="field-even">type mean<span class="colon">:</span></dt>
+<dd class="field-even"><p>TypedUnit.units.AnyUnit</p>
+</dd>
+<dt class="field-odd">param standard_deviation<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Log space standard deviation <span class="math notranslate nohighlight">\(\sigma\)</span>. In practice, this should be
+dimensionless and strictly positive.</p>
+</dd>
+<dt class="field-even">type standard_deviation<span class="colon">:</span></dt>
+<dd class="field-even"><p>TypedUnit.units.AnyUnit</p>
+</dd>
+<dt class="field-odd">param cutoff<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional hard minimum value for <code class="docutils literal notranslate"><span class="pre">X</span></code> in linear space, with the same
+units as the sampled property.
+If provided, generated samples satisfy <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">&gt;=</span> <span class="pre">cutoff</span></code> by construction.</p>
+</dd>
+<dt class="field-even">type cutoff<span class="colon">:</span></dt>
+<dd class="field-even"><p>TypedUnit.units.AnyUnit | None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The sampled values are always positive by definition.</p></li>
+<li><p>If you use this distribution for diameter, the log space parameters should
+be calibrated carefully, because the tail behavior can dominate coincidence
+and swarm statistics.</p></li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal.apply_cutoff">
+<span class="sig-name descname"><span class="pre">apply_cutoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce_concentration_consistently</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/lognormal.html#LogNormal.apply_cutoff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.apply_cutoff" title="Link to this definition">#</a></dt>
+<dd><p>Return a truncated LogNormal distribution and an optional concentration multiplier.</p>
+<section id="id1">
+<h4>Interpretation<a class="headerlink" href="#id1" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p>The returned distribution samples from <code class="docutils literal notranslate"><span class="pre">X</span> <span class="pre">|</span> <span class="pre">X</span> <span class="pre">&gt;=</span> <span class="pre">cutoff</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">reduce_concentration_consistently</span></code> is True, the returned multiplier
+is <code class="docutils literal notranslate"><span class="pre">P(X</span> <span class="pre">&gt;=</span> <span class="pre">cutoff)</span></code> so that concentration can be scaled consistently
+with the same underlying distribution.</p></li>
+<li><p>If False, the multiplier is 1.0.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">param cutoff<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Hard minimum value for truncation (linear space).</p>
+</dd>
+<dt class="field-even">param reduce_concentration_consistently<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whether to return the survival fraction as a concentration multiplier.</p>
+</dd>
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">truncated_distribution</span></code> is a new instance with <code class="docutils literal notranslate"><span class="pre">cutoff</span></code> set.
+<code class="docutils literal notranslate"><span class="pre">concentration_multiplier</span></code> is either the survival fraction or 1.0.</p>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>truncated_distribution, concentration_multiplier</p>
+</dd>
+</dl>
+</section>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mean</strong> (<em>AnyUnit</em>) – The mean particle properties.</p></li>
-<li><p><strong>standard_deviation</strong> (<em>AnyUnit</em>) – The standard deviation of the logarithm of particle properties.</p></li>
-<li><p><strong>scale_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – A scaling factor applied to the PDF (not the properties).</p></li>
+<li><p><strong>cutoff</strong> (<em>AnyUnit</em>)</p></li>
+<li><p><strong>reduce_concentration_consistently</strong> (<em>bool</em>)</p></li>
 </ul>
 </dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Tuple</em>[<a class="reference internal" href="#FlowCyPy.distribution.LogNormal" title="FlowCyPy.distribution.lognormal.LogNormal"><em>LogNormal</em></a>, float]</p>
+</dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal.cdf">
+<span class="sig-name descname"><span class="pre">cdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/lognormal.html#LogNormal.cdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.cdf" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the log normal CDF at <code class="docutils literal notranslate"><span class="pre">x</span></code> (ignoring any cutoff).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>AnyUnit</em>) – Quantity with the same units as the sampled property.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>CDF value in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal.cutoff">
+<span class="sig-name descname"><span class="pre">cutoff</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.cutoff" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.generate" title="Link to this definition">#</a></dt>
@@ -652,18 +901,26 @@ document.write(`
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal.get_pdf">
-<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/lognormal.html#LogNormal.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.get_pdf" title="Link to this definition">#</a></dt>
-<dd><p>Returns the x-values and the PDF values for the log-normal distribution.</p>
+<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/lognormal.html#LogNormal.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.get_pdf" title="Link to this definition">#</a></dt>
+<dd><p>Return x values and the PDF in linear space.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">cutoff</span></code> is None, this returns the standard log normal PDF.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">cutoff</span></code> is set, this returns the truncated PDF:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>pdf_trunc(x) = pdf(x) / P(X &gt;= cutoff)   for x &gt;= cutoff</dt><dd><p>0                          otherwise</p>
+</dd>
+</dl>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the minimum x-value as a multiple of the mean. Default is 0.01.</p></li>
-<li><p><strong>x_max</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the maximum x-value as a multiple of the mean. Default is 5.</p></li>
-<li><p><strong>n_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points in the generated range. Default is 500.</p></li>
+<li><p><strong>x_min</strong> (<em>float</em>) – Lower bound factor relative to <code class="docutils literal notranslate"><span class="pre">exp(mu)</span></code> for the default grid.</p></li>
+<li><p><strong>x_max</strong> (<em>float</em>) – Upper bound factor relative to <code class="docutils literal notranslate"><span class="pre">exp(mu)</span></code> for the default grid.</p></li>
+<li><p><strong>n_samples</strong> (<em>int</em>) – Number of points used for the x grid.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The input x-values and the corresponding PDF values.</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">x</span></code> with units and <code class="docutils literal notranslate"><span class="pre">pdf</span></code> as a unitless NumPy array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray]</p>
@@ -681,6 +938,37 @@ document.write(`
 <span class="sig-name descname"><span class="pre">standard_deviation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span></em><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.standard_deviation" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.distribution.LogNormal.survival_fraction_above">
+<span class="sig-name descname"><span class="pre">survival_fraction_above</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/lognormal.html#LogNormal.survival_fraction_above"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.LogNormal.survival_fraction_above" title="Link to this definition">#</a></dt>
+<dd><p>Compute the survival fraction above a cutoff, <code class="docutils literal notranslate"><span class="pre">P(X</span> <span class="pre">&gt;=</span> <span class="pre">cutoff)</span></code>.</p>
+<p>This is the concentration multiplier that is consistent with interpreting
+the cutoff as removing all values below <code class="docutils literal notranslate"><span class="pre">cutoff</span></code> from an otherwise
+unchanged population.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cutoff</strong> (<em>AnyUnit</em>) – Hard minimum value in linear space, with the same units as the sampled
+property.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Survival fraction in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean</strong> (<em>AnyUnit</em>)</p></li>
+<li><p><strong>standard_deviation</strong> (<em>AnyUnit</em>)</p></li>
+<li><p><strong>cutoff</strong> (<em>AnyUnit</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -691,34 +979,141 @@ document.write(`
 </a>
 <dl class="py class">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RosinRammler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">characteristic_property</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spread</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/particle_size_distribution.html#RosinRammler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler" title="Link to this definition">#</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RosinRammler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">characteristic_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spread</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/rosin_ramler.html#RosinRammler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Base</span></code></p>
-<p>Represents a Particle Size Distribution using the Rosin-Rammler model.</p>
-<p>The Rosin-Rammler distribution is described by its characteristic property and
-spread parameter, and is used to model particle properties in systems such as
-powders or granular materials.</p>
-<p>The distribution function is given by:</p>
+<p>Rosin Rammler particle size distribution.</p>
+<p>This class implements the Rosin Rammler distribution, which is mathematically
+equivalent to a Weibull distribution parameterized by a scale parameter
+<code class="docutils literal notranslate"><span class="pre">d</span></code> (here <code class="docutils literal notranslate"><span class="pre">characteristic_value</span></code>) and a shape parameter <code class="docutils literal notranslate"><span class="pre">k</span></code>
+(here <code class="docutils literal notranslate"><span class="pre">spread</span></code>).</p>
+<p>The cumulative distribution function is</p>
 <div class="math notranslate nohighlight">
-\[F(x) = 1 - \exp \left( - \left( \frac{x}{d} \right)^k \right)\]</div>
-<dl class="simple">
-<dt>where:</dt><dd><ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(x\)</span> is the particle property.</p></li>
-<li><p><span class="math notranslate nohighlight">\(d\)</span> is the characteristic particle property.</p></li>
-<li><p><span class="math notranslate nohighlight">\(k\)</span> is the spread parameter.</p></li>
-</ul>
+\[F(x) = 1 - \exp\!\left(-\left(\frac{x}{d}\right)^k\right),\]</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">x</span></code> is the sampled property (typically a diameter), <code class="docutils literal notranslate"><span class="pre">d</span></code> is the
+characteristic property (scale) and <code class="docutils literal notranslate"><span class="pre">k</span></code> controls the distribution width.</p>
+<section id="id2">
+<h3>Hard cutoff and truncation<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<p>When <code class="docutils literal notranslate"><span class="pre">cutoff</span></code> is provided, sampling is performed from the truncated
+distribution conditional on</p>
+<div class="math notranslate nohighlight">
+\[X \ge x_{\mathrm{cut}}.\]</div>
+<p>Operationally, this is not rejection sampling.
+Instead, truncation is implemented by remapping uniform random numbers
+from <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1)</span></code> to the CDF interval <code class="docutils literal notranslate"><span class="pre">[F(cutoff),</span> <span class="pre">1)</span></code> and applying the
+standard inverse CDF transform.</p>
+<p>This provides an efficient way to emulate an idealized size selection step.
+If you interpret the cutoff as a physical removal of particles below the
+cutoff, you can use <a class="reference internal" href="#FlowCyPy.distribution.RosinRammler.survival_fraction_above" title="FlowCyPy.distribution.RosinRammler.survival_fraction_above"><code class="xref py py-meth docutils literal notranslate"><span class="pre">survival_fraction_above()</span></code></a> to compute the
+concentration multiplier consistent with the same distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param characteristic_value<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Scale parameter <code class="docutils literal notranslate"><span class="pre">d</span></code> with length units.
+In many applications this is a characteristic diameter.</p>
+</dd>
+<dt class="field-even">type characteristic_value<span class="colon">:</span></dt>
+<dd class="field-even"><p>TypedUnit.units.AnyUnit</p>
+</dd>
+<dt class="field-odd">param spread<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Shape parameter <code class="docutils literal notranslate"><span class="pre">k</span></code>.
+Must be strictly positive.</p>
+</dd>
+<dt class="field-even">type spread<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+<dt class="field-odd">param cutoff<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional hard minimum value with the same units as <code class="docutils literal notranslate"><span class="pre">characteristic_value</span></code>.
+If provided, generated samples satisfy <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">&gt;=</span> <span class="pre">cutoff</span></code> by construction.</p>
+</dd>
+<dt class="field-even">type cutoff<span class="colon">:</span></dt>
+<dd class="field-even"><p>TypedUnit.units.AnyUnit | None</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The Rosin Rammler model is often used for particulate materials.
+In biological nanoparticle contexts it can be a convenient phenomenological
+model, but you should verify that the tail behavior is realistic for the
+application, especially when applying strong cutoffs.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.apply_cutoff">
+<span class="sig-name descname"><span class="pre">apply_cutoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce_concentration_consistently</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/rosin_ramler.html#RosinRammler.apply_cutoff"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.apply_cutoff" title="Link to this definition">#</a></dt>
+<dd><p>Return a truncated Rosin Rammler distribution and an optional
+concentration multiplier.</p>
+<p>This is a convenience method that supports two distinct operations.</p>
+<ol class="arabic simple">
+<li><p>Truncating the distribution for sampling
+The returned distribution samples from the conditional law
+<code class="docutils literal notranslate"><span class="pre">X</span> <span class="pre">|</span> <span class="pre">X</span> <span class="pre">&gt;=</span> <span class="pre">cutoff</span></code>.</p></li>
+<li><p>Optionally updating population concentration consistently
+If you interpret the cutoff as a physical removal of particles,
+the appropriate concentration multiplier is the survival fraction
+<code class="docutils literal notranslate"><span class="pre">P(X</span> <span class="pre">&gt;=</span> <span class="pre">cutoff)</span></code> computed from the same distribution.</p></li>
+</ol>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>characteristic_property</strong> (<em>Quantity</em>) – The characteristic particle property.</p></li>
-<li><p><strong>spread</strong> (<em>float</em>) – The spread parameter (shape factor).</p></li>
+<li><p><strong>cutoff</strong> (<em>AnyUnit</em>) – Hard minimum value used to define the truncated sampling distribution.</p></li>
+<li><p><strong>reduce_concentration_consistently</strong> (<em>bool</em>) – If True, return the survival fraction <code class="docutils literal notranslate"><span class="pre">P(X</span> <span class="pre">&gt;=</span> <span class="pre">cutoff)</span></code> as the
+concentration multiplier.
+If False, return <code class="docutils literal notranslate"><span class="pre">1.0</span></code> as the multiplier.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><code class="docutils literal notranslate"><span class="pre">truncated_distribution</span></code> is a new <a class="reference internal" href="#FlowCyPy.distribution.RosinRammler" title="FlowCyPy.distribution.RosinRammler"><code class="xref py py-class docutils literal notranslate"><span class="pre">RosinRammler</span></code></a> instance
+with the same scale and shape but with <code class="docutils literal notranslate"><span class="pre">cutoff</span></code> set.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">concentration_multiplier</span></code> is:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">P(X</span> <span class="pre">&gt;=</span> <span class="pre">cutoff)</span></code> if <code class="docutils literal notranslate"><span class="pre">reduce_concentration_consistently</span></code> is True</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1.0</span></code> otherwise</p></li>
 </ul>
 </dd>
 </dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>truncated_distribution, concentration_multiplier</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Sample truncation only:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rr_truncated</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">rr</span><span class="o">.</span><span class="n">apply_cutoff</span><span class="p">(</span><span class="mi">30</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">reduce_concentration_consistently</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Truncation plus concentration update:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rr_truncated</span><span class="p">,</span> <span class="n">multiplier</span> <span class="o">=</span> <span class="n">rr</span><span class="o">.</span><span class="n">apply_cutoff</span><span class="p">(</span><span class="mi">30</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span> <span class="n">reduce_concentration_consistently</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">population</span><span class="o">.</span><span class="n">particle_count</span> <span class="o">*=</span> <span class="n">multiplier</span>
+<span class="n">population</span><span class="o">.</span><span class="n">diameter</span> <span class="o">=</span> <span class="n">rr_truncated</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.cdf">
+<span class="sig-name descname"><span class="pre">cdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/rosin_ramler.html#RosinRammler.cdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.cdf" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the cumulative distribution function at <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>AnyUnit</em>) – Quantity with the same dimensionality as <code class="docutils literal notranslate"><span class="pre">characteristic_value</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>CDF value in the interval <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">spread</span></code> is not strictly positive.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
-<dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.characteristic_property">
-<span class="sig-name descname"><span class="pre">characteristic_property</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span></em><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.characteristic_property" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.characteristic_value">
+<span class="sig-name descname"><span class="pre">characteristic_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span></em><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.characteristic_value" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.cutoff">
+<span class="sig-name descname"><span class="pre">cutoff</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnyUnit</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.cutoff" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -734,24 +1129,33 @@ powders or granular materials.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.get_pdf">
-<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/particle_size_distribution.html#RosinRammler.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.get_pdf" title="Link to this definition">#</a></dt>
-<dd><p>Returns the x-values and the scaled PDF values for the particle property distribution.</p>
-<p>The PDF for the Rosin-Rammler distribution is derived from the CDF:</p>
+<span class="sig-name descname"><span class="pre">get_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/rosin_ramler.html#RosinRammler.get_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.get_pdf" title="Link to this definition">#</a></dt>
+<dd><p>Return x values and the probability density function.</p>
+<p>Without cutoff, the Rosin Rammler PDF is</p>
 <div class="math notranslate nohighlight">
-\[f(x) = \frac{k}{d} \left( \frac{x}{d} \right)^{k-1} \exp \left( - \left( \frac{x}{d} \right)^k \right)\]</div>
+\[f(x) = \frac{k}{d}\left(\frac{x}{d}\right)^{k-1}
+       \exp\!\left(-\left(\frac{x}{d}\right)^k\right).\]</div>
+<p>With cutoff, this method returns the truncated PDF for <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">&gt;=</span> <span class="pre">cutoff</span></code>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}f_{\mathrm{trunc}}(x) =
+\begin{cases}
+    \frac{f(x)}{P(X \ge cutoff)} &amp; x \ge cutoff, \\
+    0 &amp; x &lt; cutoff.
+\end{cases}\end{split}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x_min</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the minimum x-value as a fraction of the characteristic property. Default is 0.01.</p></li>
-<li><p><strong>x_max</strong> (<em>float</em><em>, </em><em>optional</em>) – Factor for the maximum x-value as a multiple of the characteristic property. Default is 5.</p></li>
-<li><p><strong>n_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points in the generated range. Default is 500.</p></li>
+<li><p><strong>x_min</strong> (<em>float</em>) – Lower bound factor relative to <code class="docutils literal notranslate"><span class="pre">characteristic_value</span></code>.</p></li>
+<li><p><strong>x_max</strong> (<em>float</em>) – Upper bound factor relative to <code class="docutils literal notranslate"><span class="pre">characteristic_value</span></code>.</p></li>
+<li><p><strong>n_samples</strong> (<em>int</em>) – Number of points used for the x grid.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The input x-values and the corresponding scaled PDF values.</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">x</span></code> is a 1D array with length units.
+<code class="docutils literal notranslate"><span class="pre">pdf</span></code> is a 1D NumPy array of density values.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray]</p>
+<dd class="field-odd"><p>x, pdf</p>
 </dd>
 </dl>
 </dd></dl>
@@ -761,6 +1165,42 @@ powders or granular materials.</p>
 <span class="sig-name descname"><span class="pre">spread</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.spread" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.distribution.RosinRammler.survival_fraction_above">
+<span class="sig-name descname"><span class="pre">survival_fraction_above</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/distribution/rosin_ramler.html#RosinRammler.survival_fraction_above"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.distribution.RosinRammler.survival_fraction_above" title="Link to this definition">#</a></dt>
+<dd><p>Compute the survival fraction above a cutoff, <code class="docutils literal notranslate"><span class="pre">P(X</span> <span class="pre">&gt;=</span> <span class="pre">cutoff)</span></code>.</p>
+<p>This quantity is the natural concentration multiplier if you interpret
+the cutoff as physically removing all particles smaller than <code class="docutils literal notranslate"><span class="pre">cutoff</span></code>
+from an otherwise unchanged distribution.</p>
+<p>For the Rosin Rammler distribution,</p>
+<div class="math notranslate nohighlight">
+\[P(X \ge x_{\mathrm{cut}}) = \exp\!\left(-\left(\frac{x_{\mathrm{cut}}}{d}\right)^k\right).\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cutoff</strong> (<em>AnyUnit</em>) – Hard minimum value with length units.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Survival fraction in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">spread</span></code> is not strictly positive.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>characteristic_value</strong> (<em>AnyUnit</em>)</p></li>
+<li><p><strong>spread</strong> (<em>float</em>)</p></li>
+<li><p><strong>cutoff</strong> (<em>AnyUnit</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -983,30 +1423,42 @@ powders or granular materials.</p>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#available-distribution-classes">Available Distribution Classes</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normal-distribution">Normal Distribution</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.Normal"><code class="docutils literal notranslate"><span class="pre">Normal</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.Normal.apply_cutoff"><code class="docutils literal notranslate"><span class="pre">Normal.apply_cutoff()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.Normal.cdf"><code class="docutils literal notranslate"><span class="pre">Normal.cdf()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.Normal.cutoff"><code class="docutils literal notranslate"><span class="pre">Normal.cutoff</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.Normal.generate"><code class="docutils literal notranslate"><span class="pre">Normal.generate()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.Normal.get_pdf"><code class="docutils literal notranslate"><span class="pre">Normal.get_pdf()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.Normal.mean"><code class="docutils literal notranslate"><span class="pre">Normal.mean</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.Normal.standard_deviation"><code class="docutils literal notranslate"><span class="pre">Normal.standard_deviation</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.Normal.survival_fraction_above"><code class="docutils literal notranslate"><span class="pre">Normal.survival_fraction_above()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lognormal-distribution">LogNormal Distribution</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.LogNormal"><code class="docutils literal notranslate"><span class="pre">LogNormal</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.LogNormal.apply_cutoff"><code class="docutils literal notranslate"><span class="pre">LogNormal.apply_cutoff()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.LogNormal.cdf"><code class="docutils literal notranslate"><span class="pre">LogNormal.cdf()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.LogNormal.cutoff"><code class="docutils literal notranslate"><span class="pre">LogNormal.cutoff</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.LogNormal.generate"><code class="docutils literal notranslate"><span class="pre">LogNormal.generate()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.LogNormal.get_pdf"><code class="docutils literal notranslate"><span class="pre">LogNormal.get_pdf()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.LogNormal.mean"><code class="docutils literal notranslate"><span class="pre">LogNormal.mean</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.LogNormal.standard_deviation"><code class="docutils literal notranslate"><span class="pre">LogNormal.standard_deviation</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.LogNormal.survival_fraction_above"><code class="docutils literal notranslate"><span class="pre">LogNormal.survival_fraction_above()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rosin-rammler-distribution">Rosin-Rammler Distribution</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler"><code class="docutils literal notranslate"><span class="pre">RosinRammler</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler.characteristic_property"><code class="docutils literal notranslate"><span class="pre">RosinRammler.characteristic_property</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler.apply_cutoff"><code class="docutils literal notranslate"><span class="pre">RosinRammler.apply_cutoff()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler.cdf"><code class="docutils literal notranslate"><span class="pre">RosinRammler.cdf()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler.characteristic_value"><code class="docutils literal notranslate"><span class="pre">RosinRammler.characteristic_value</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler.cutoff"><code class="docutils literal notranslate"><span class="pre">RosinRammler.cutoff</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler.generate"><code class="docutils literal notranslate"><span class="pre">RosinRammler.generate()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler.get_pdf"><code class="docutils literal notranslate"><span class="pre">RosinRammler.get_pdf()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler.spread"><code class="docutils literal notranslate"><span class="pre">RosinRammler.spread</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.distribution.RosinRammler.survival_fraction_above"><code class="docutils literal notranslate"><span class="pre">RosinRammler.survival_fraction_above()</span></code></a></li>
 </ul>
 </li>
 </ul>

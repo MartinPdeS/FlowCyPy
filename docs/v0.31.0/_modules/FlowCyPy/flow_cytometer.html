@@ -697,7 +697,7 @@ document.write(`
                         <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">area</span>
                     <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
-                    <span class="n">events</span><span class="o">.</span><span class="n">expected_number_of_particles</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">events</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;expected_number_of_particles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="p">(</span>
                             <span class="n">events</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">particle_count</span>
                             <span class="o">*</span> <span class="n">interrogation_volume_per_time_bin</span>
@@ -712,26 +712,31 @@ document.write(`
                     <span class="n">mean_amplitudes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">amplitudes</span><span class="p">)</span>
                     <span class="n">mean_squared_amplitudes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">amplitudes</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
-                    <span class="n">mean_sum</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">expected_number_of_particles</span> <span class="o">*</span> <span class="n">mean_amplitudes</span>
+                    <span class="n">mean_sum</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">events</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;expected_number_of_particles&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">mean_amplitudes</span>
+                    <span class="p">)</span>
                     <span class="n">var_sum</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="n">events</span><span class="o">.</span><span class="n">expected_number_of_particles</span> <span class="o">*</span> <span class="n">mean_squared_amplitudes</span>
+                        <span class="n">events</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;expected_number_of_particles&quot;</span><span class="p">]</span>
+                        <span class="o">*</span> <span class="n">mean_squared_amplitudes</span>
                     <span class="p">)</span>
 
                     <span class="n">shape</span> <span class="o">=</span> <span class="n">mean_sum</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">var_sum</span>
                     <span class="n">scale</span> <span class="o">=</span> <span class="n">var_sum</span> <span class="o">/</span> <span class="n">mean_sum</span>
 
-                    <span class="n">signal_generator</span><span class="o">.</span><span class="n">_cpp_add_gamma_trace</span><span class="p">(</span>
+                    <span class="n">power_trace</span> <span class="o">=</span> <span class="n">signal_generator</span><span class="o">.</span><span class="n">_cpp_add_gamma_trace</span><span class="p">(</span>
                         <span class="n">signal_name</span><span class="o">=</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                         <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
                         <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
                         <span class="n">gaussian_sigma</span><span class="o">=</span><span class="n">events</span><span class="o">.</span><span class="n">sigmas</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
                     <span class="p">)</span>
 
-                    <span class="n">power_trace</span> <span class="o">=</span> <span class="n">signal_generator</span><span class="o">.</span><span class="n">get_signal</span><span class="p">(</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                     <span class="n">time_trace</span> <span class="o">=</span> <span class="n">signal_generator</span><span class="o">.</span><span class="n">get_time</span><span class="p">()</span>
 
-                    <span class="n">events</span><span class="o">.</span><span class="n">particles_trace</span> <span class="o">=</span> <span class="n">power_trace</span> <span class="o">/</span> <span class="p">(</span><span class="n">mean_amplitudes</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">)</span>
-                    <span class="n">events</span><span class="o">.</span><span class="n">time_trace</span> <span class="o">=</span> <span class="n">time_trace</span>
+                    <span class="n">events</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;particles_trace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">power_trace</span> <span class="o">/</span> <span class="p">(</span>
+                        <span class="n">mean_amplitudes</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span>
+                    <span class="p">)</span>
+
+                    <span class="n">events</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;time_trace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_trace</span>
 
         <span class="c1"># Optical power → photocurrent</span>
         <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
@@ -888,6 +893,11 @@ document.write(`
                     <span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;particle&quot;</span><span class="p">)</span>
                     <span class="o">.</span><span class="n">magnitude</span>
                 <span class="p">)</span>
+
+            <span class="n">dataframe</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">dataframe</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;PopulationType&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="n">dataframe</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;ParticleCount&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">particle_count</span>
+            <span class="n">dataframe</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;SamplingMethod&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">sampling_method</span>
 
             <span class="n">dataframe</span><span class="o">.</span><span class="n">sampling_method</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">sampling_method</span>
 
