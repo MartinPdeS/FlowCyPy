@@ -16,6 +16,7 @@ requirements:
     - {{ compiler('cxx') }}
     - llvm-openmp  # [osx]
     - m2-pkg-config      # [win]
+    - fftw
   host:
     - python {{ PY_VER }}*
     - python_abi 3.13.* *_cp313   # [py==313]
@@ -26,7 +27,7 @@ requirements:
     - numpy >=2.0,<3
     - fftw
   run:
-    - fftw
+
     - python {{PY_VER}}*
     - pandas ~=2.2
     - pint-pandas ~=0.6
