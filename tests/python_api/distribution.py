@@ -3,7 +3,7 @@ from unittest.mock import patch
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-from TypedUnit import ureg
+from TypedUnit import ureg, Length
 
 import FlowCyPy
 from FlowCyPy import distribution as dist
@@ -41,6 +41,10 @@ def test_number_of_samples(mock_show, distribution):
 
     # Generate particle sizes
     sizes = distribution.generate(N_SAMPLES)
+
+    assert np.all(
+        Length.check(sizes)
+    ), f"{distribution.__class__.__name__}: Generated sizes have incorrect units."
 
     # Assert the shape is correct
     assert sizes.shape == (

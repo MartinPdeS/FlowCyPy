@@ -5,7 +5,6 @@ import numpy as np
 import pytest
 from TypedUnit import ureg
 
-import FlowCyPy
 from FlowCyPy import FlowCytometer
 from FlowCyPy.fluidics import (
     FlowCell,
@@ -27,8 +26,6 @@ from FlowCyPy.signal_processing import (
     peak_locator,
     triggering_system,
 )
-
-FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
 
 # ----------------- FIXTURES -----------------
@@ -275,4 +272,4 @@ def test_peak_plot(mock_show, flow_cytometer, digitizer):
 
 
 if __name__ == "__main__":
-    pytest.main(["-W error", "-s", __file__])
+    pytest.main(["-W error", __file__])

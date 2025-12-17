@@ -254,13 +254,11 @@ class LogNormal(Base):
         uniform_samples = np.clip(uniform_samples, 1e-12, 1.0 - 1e-12)
 
         if self.cutoff is None:
-            samples = np.random.lognormal(mean=mu, sigma=sigma, size=int(n_samples))
-            return samples * self._units
+            return np.random.lognormal(mean=mu, sigma=sigma, size=int(n_samples))
 
         cutoff_value = self.cutoff.to(self._units).magnitude
         if cutoff_value <= 0.0:
-            samples = np.random.lognormal(mean=mu, sigma=sigma, size=int(n_samples))
-            return samples * self._units
+            return np.random.lognormal(mean=mu, sigma=sigma, size=int(n_samples))
 
         cdf_at_cutoff = lognorm.cdf(cutoff_value, s=sigma, scale=np.exp(mu))
         cdf_at_cutoff = float(np.clip(cdf_at_cutoff, 0.0, 1.0 - 1e-15))

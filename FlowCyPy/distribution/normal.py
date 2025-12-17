@@ -225,7 +225,7 @@ class Normal(Base):
 
         if self.cutoff is None:
             samples = np.random.normal(loc=mu, scale=sigma, size=int(n_samples))
-            return samples * self._units
+            return samples
 
         cutoff_value = self.cutoff.to(self._units).magnitude
 
