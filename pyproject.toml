@@ -108,13 +108,15 @@ repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 test-command = "cd {project}; python -m pytest --config-file=pytest.ini"
 
 [tool.cibuildwheel.macos]
-archs = ["arm64"]
+# archs = ["arm64"]
+archs = []
 before-build = "brew install fftw"
 build = ["cp311-*", "cp312-*", "cp313-*"]
 repair-wheel-command = "delocate-wheel -w {dest_dir} -v {wheel}"  # --exclude=libomp.dylib
 test-command = 'cd {project}; python -m pytest --config-file=pytest.ini'  # DYLD_PRINT_LIBRARIES=NO
 
 [tool.cibuildwheel.windows]
-archs = ["AMD64"]
+# archs = ["AMD64"]
+archs = []
 build = ["cp311-*", "cp312-*", "cp313-*"]
 test-command = 'cd /d {project} && python -m pytest --config-file=pytest.ini'
