@@ -79,7 +79,7 @@ testing = [
     "pytest>=7",
     "pytest-cov>=2.0",
     "pytest-json-report ==1.5.0",
-    "coverage==7.10.7"
+    "coverage==7.13.1"
 ]
 
 documentation = [
