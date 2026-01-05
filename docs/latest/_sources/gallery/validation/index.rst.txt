@@ -20,7 +20,7 @@ Examples: Validation
   .. image:: /gallery/validation/images/thumb/sphx_glr_j_estimator_thumb.png
     :alt:
 
-  :ref:`sphx_glr_gallery_validation_j_estimator.py`
+  :doc:`/gallery/validation/j_estimator`
 
 .. raw:: html
 
@@ -37,7 +37,7 @@ Examples: Validation
   .. image:: /gallery/validation/images/thumb/sphx_glr_k_estimator_thumb.png
     :alt:
 
-  :ref:`sphx_glr_gallery_validation_k_estimator.py`
+  :doc:`/gallery/validation/k_estimator`
 
 .. raw:: html
 

@@ -20,7 +20,7 @@ Examples: Noises
   .. image:: /gallery/noise_sources/images/thumb/sphx_glr_dark_current_thumb.png
     :alt:
 
-  :ref:`sphx_glr_gallery_noise_sources_dark_current.py`
+  :doc:`/gallery/noise_sources/dark_current`
 
 .. raw:: html
 
@@ -37,7 +37,7 @@ Examples: Noises
   .. image:: /gallery/noise_sources/images/thumb/sphx_glr_shot_noise_thumb.png
     :alt:
 
-  :ref:`sphx_glr_gallery_noise_sources_shot_noise.py`
+  :doc:`/gallery/noise_sources/shot_noise`
 
 .. raw:: html
 
