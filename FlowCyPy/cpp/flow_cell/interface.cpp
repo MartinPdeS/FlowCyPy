@@ -1,7 +1,9 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+
 #include "flow_cell.h"
 #include <pint/pint.h>
+#include <utils/numpy.h>
 
 
 PYBIND11_MODULE(flow_cell, module) {
@@ -281,8 +283,21 @@ PYBIND11_MODULE(flow_cell, module) {
                 This is the velocity at the center of the flow cell, calculated based on the flow rates and dimensions.
             )pbdoc"
         )
-        .def("_cpp_sample_transverse_profile",
-            &FlowCell::sample_transverse_profile,
+        .def("sample_transverse_profile",
+            [ureg](const FlowCell& self, const size_t n_samples)
+            {
+                    auto [y, z, velocities] = self.sample_transverse_profile(n_samples);
+
+                    size_t n_elements = y.size();
+                    std::vector<size_t> shape = {n_elements};
+
+
+                    py::object _y = vector_move_from_numpy(y, shape) * ureg.attr("meter");
+                    py::object _z = vector_move_from_numpy(z, shape) * ureg.attr("meter");
+                    py::object _velocities = vector_move_from_numpy(velocities, shape) * ureg.attr("meter/second");
+
+                    return py::make_tuple(_y, _z, _velocities);
+            },
             pybind11::arg("n_samples"),
             R"pbdoc(
                 Sample the transverse velocity profile of the flow cell.
@@ -385,10 +400,20 @@ PYBIND11_MODULE(flow_cell, module) {
                 Total volumetric flow rate (m³/s).
         )pbdoc"
     )
-    .def("_cpp_sample_arrival_times",
-        &FlowCell::sample_arrival_times,
+    .def("sample_arrival_times",
+        [ureg](const FlowCell& self, const size_t n_events, const py::object &run_time) {
+            double _run_time = run_time.attr("to")("second").attr("magnitude").cast<double>();
+
+            auto arrival_times = self.sample_arrival_times_(n_events, _run_time);
+
+            size_t n_elements = arrival_times.size();
+            std::vector<size_t> shape = {n_elements};
+
+            py::object output = vector_move_from_numpy(arrival_times, shape) * ureg.attr("second");
+            return output;
+        },
+        pybind11::arg("n_events"),
         pybind11::arg("run_time"),
-        pybind11::arg("particle_flux"),
         R"pbdoc(
             Sample the arrival times of particles in the flow cell based on the specified run time and particle flux.
 

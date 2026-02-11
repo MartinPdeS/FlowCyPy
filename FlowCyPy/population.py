@@ -14,6 +14,7 @@ from TypedUnit import (
     Velocity,
 )
 
+from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.binary.distributions import BaseDistribution
 from FlowCyPy.binary import distributions
 from FlowCyPy.utils import config_dict
@@ -21,74 +22,6 @@ from FlowCyPy.sampling_method import ExplicitModel, GammaModel
 
 
 class BasePopulation:
-    dye_label: list = []
-
-    def add_dye_label(self, fluorophore, labeling_model):
-        self.dye_label.append((fluorophore, labeling_model))
-
-    def calculate_number_of_events(
-        self, flow_area: Area, flow_speed: Velocity, run_time: Time
-    ) -> Particle:
-        """
-        Calculates the total number of particles based on the flow volume and the defined concentration.
-
-        Parameters
-        ----------
-        flow_area : Area
-            The cross-sectional area of the flow (e.g., in square meters).
-        flow_speed : Velocity
-            The speed of the flow (e.g., in meters per second).
-        run_time : Time
-            The total duration of the flow (e.g., in seconds).
-
-        Returns
-        -------
-        Particle
-            The total number of particles.
-
-        Raises
-        ------
-        ValueError
-            If no concentration is defined and the total number of particles cannot be calculated.
-        """
-        if isinstance(self.particle_count, Particle):
-            return self.particle_count
-
-        elif isinstance(self.particle_count, Concentration):
-            flow_volume = flow_area * flow_speed * run_time
-            return self.concentration * flow_volume
-
-        raise ValueError("Invalid particle count representation.")
-
-    def compute_particle_flux(
-        self, flow_speed: Velocity, flow_area: Area, run_time: Time
-    ) -> ParticleFlux:
-        """
-        Computes the particle flux in the flow system, accounting for flow speed,
-        flow area, and either the particle concentration or a predefined number of particles.
-
-        Parameters
-        ----------
-        flow_speed : Velocity
-            The speed of the flow (e.g., in meters per second).
-        flow_area : Area
-            The cross-sectional area of the flow tube (e.g., in square meters).
-        run_time : Time
-            The total duration of the flow (e.g., in seconds).
-
-        Returns
-        -------
-        ParticleFlux
-            The particle flux in particles per second (particle/second).
-        """
-        if isinstance(self.particle_count, Particle):
-            return self.particle_count / run_time
-
-        elif isinstance(self.particle_count, Concentration):
-            flow_volume_per_second = flow_speed * flow_area
-            return self.particle_count * flow_volume_per_second
-
-        raise ValueError("Invalid particle count representation.")
 
     @field_validator(
         "refractive_index",
@@ -172,28 +105,6 @@ class BasePopulation:
         """
         self.particle_count /= factor
 
-    def add_dye_to_sampling(self, sampling_dict, diameter_sample) -> dict:
-        """
-        Adds dye labeling information to the sampling dictionary.
-        Parameters
-        ----------
-        sampling_dict : dict
-            The existing sampling dictionary to which dye information will be added.
-        diameter_sample : Quantity
-            The sampled diameters of the particles.
-
-        Returns
-        -------
-        dict
-            The updated sampling dictionary with dye labeling information added.
-        """
-
-        for dye, model in self.dye_label:
-            count_sample = model.sample_labels_given_diameter(diameter_sample)
-            sampling_dict[f"Dye:{dye.name}"] = count_sample
-
-        return sampling_dict
-
 
 @dataclass(config=config_dict)
 class Sphere(BasePopulation):
@@ -257,19 +168,36 @@ class Sphere(BasePopulation):
         """
         sampling = len(dataframe)
         diameter_sample = self.diameter.sample(sampling)
-        refractive_index_sample = self.refractive_index.sample(sampling)
-        medium_refractive_index_sample = self.medium_refractive_index.sample(sampling)
+        ri_sample = self.refractive_index.sample(sampling)
+        medium_ri_sample = self.medium_refractive_index.sample(sampling)
 
         sampled_data = {
             "Diameter": diameter_sample,
-            "RefractiveIndex": refractive_index_sample,
-            "MediumRefractiveIndex": medium_refractive_index_sample,
+            "RefractiveIndex": ri_sample,
+            "MediumRefractiveIndex": medium_ri_sample,
         }
-
-        sampled_data = self.add_dye_to_sampling(sampled_data, diameter_sample)
 
         for key, value in sampled_data.items():
             dataframe.loc[:, key] = PintArray(value, dtype=value.units)
+
+    def get_effective_concentration(self):
+        """ "
+        Calculate the effective concentration of particles that fall within the specified cutoffs
+        for diameter and refractive index.
+
+        Returns
+        -------
+        Quantity
+            The effective concentration of particles.
+        """
+        if SimulationSettings.population_cutoff_bypass:
+            return self.particle_count
+
+        p_diameter = self.diameter.proportion_within_cutoffs()
+        p_RI = self.refractive_index.proportion_within_cutoffs()
+        p_joint = p_diameter * p_RI
+
+        return self.particle_count * p_joint
 
 
 @dataclass(config=config_dict)
@@ -364,3 +292,33 @@ class CoreShell(BasePopulation):
 
         for key, value in sampled_data.items():
             dataframe.loc[:, key] = PintArray(value, dtype=value.units)
+
+    def get_effective_concentration(self):
+        """ "
+        Calculate the effective concentration of particles that fall within the specified cutoffs
+        for core diameter, shell thickness, core refractive index, and shell refractive index.
+
+        Returns
+        -------
+        Quantity
+            The effective concentration of particles.
+        """
+        if SimulationSettings.population_cutoff_bypass:
+            return self.particle_count
+
+        core_diameter_sample = self.core_diameter.sample(10_000)
+        shell_thickness_sample = self.shell_thickness.sample(10_000)
+        overall_diameter_sample = core_diameter_sample + 2 * shell_thickness_sample
+
+        p_core_diameter = self.core_diameter.proportion_within_cutoffs(
+            core_diameter_sample
+        )
+        p_shell_thickness = self.shell_thickness.proportion_within_cutoffs(
+            shell_thickness_sample
+        )
+        p_core_RI = self.core_refractive_index.proportion_within_cutoffs()
+        p_shell_RI = self.shell_refractive_index.proportion_within_cutoffs()
+
+        p_joint = p_core_diameter * p_shell_thickness * p_core_RI * p_shell_RI
+
+        return self.particle_count * p_joint

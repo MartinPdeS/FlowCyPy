@@ -53,22 +53,11 @@ class OptoElectronics(StrictDataclassMixing):
             return
 
         for detector in self.detectors:
-            if detector.channel.lower() == "scattering":
-                simulator = ScatteringModel(
-                    source=self.source,
-                    detector=detector,
-                    bandwidth=self.amplifier.bandwidth,
-                )
 
-                simulator.run(
-                    event_collection, compute_cross_section=compute_cross_section
-                )
+            simulator = ScatteringModel(
+                source=self.source,
+                detector=detector,
+                bandwidth=self.amplifier.bandwidth,
+            )
 
-            elif detector.channel.lower() == "fluorescence":
-                simulator = FluorescenceModel(
-                    source=self.source,
-                    detector=detector,
-                    bandwidth=self.amplifier.bandwidth,
-                )
-
-                simulator.run(event_collection)
+            simulator.run(event_collection, compute_cross_section=compute_cross_section)

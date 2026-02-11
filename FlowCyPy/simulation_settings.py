@@ -76,6 +76,7 @@ class SimulationSettings(metaclass=RestrictiveMeta):
     assume_amplifier_bandwidth_is_infinite = False
     assume_perfect_digitizer = False
     evenly_spaced_events = False
+    population_cutoff_bypass = False
 
     @property
     def include_noises(self):

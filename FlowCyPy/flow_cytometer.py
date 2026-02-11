@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from typing import Optional
 import pandas as pd
+import numpy as np
 from TypedUnit import Power, Time, ureg, validate_units
 
 from FlowCyPy.fluidics import Fluidics
@@ -88,21 +89,6 @@ class FlowCytometer:
 
         return signal_generator
 
-    def _distribute_events(self, population_events) -> None:
-        """
-        Distributes events across detectors.
-
-        This method is a placeholder for distributing events to the appropriate detectors.
-        """
-        for detector in self.opto_electronics.detectors:
-            detector.events = []
-            for events in population_events:
-                if detector.channel_type.lower() == "scattering":
-                    detector.events.append(events)
-
-                if detector.channel_type.lower() == events.channel_type.lower():
-                    detector.events.append(events)
-
     def run_explicit_models(self, event_collection, signal_generator) -> None:
         """
         Run all ExplicitModel populations and add their optical power pulses to the signal generator.
@@ -177,11 +163,15 @@ class FlowCytometer:
                 * self.fluidics.flow_cell.sample.area
             )
 
+            effective_concentration = events.population.get_effective_concentration()
             expected_number_of_particles = (
-                (events.population.particle_count * interrogation_volume_per_time_bin)
+                (effective_concentration * interrogation_volume_per_time_bin)
                 .to("particle")
                 .magnitude
             )
+
+            if expected_number_of_particles == 0:
+                continue
 
             events.attrs["expected_number_of_particles"] = expected_number_of_particles
 
@@ -215,7 +205,7 @@ class FlowCytometer:
 
                 signal_generator.add_array_to_signal(
                     channel=detector.name,
-                    array=detector_power_trace,
+                    array=detector_power_trace.to("watt").magnitude,
                 )
 
     def compute_analog(
@@ -305,7 +295,6 @@ class FlowCytometer:
 
         # Photocurrent → voltage
         # Signal units are now volt
-
         self.opto_electronics.amplifier.amplify(
             signal_generator=signal_generator,
         )
@@ -373,51 +362,6 @@ class FlowCytometer:
 
         return run_record
 
-    def add_transverse_profile_to_frame(self, flowcell: object, dataframe) -> tuple:
-        r"""
-        Sample particles from the focused sample stream.
-
-        The sample stream is assumed to be uniformly distributed over a centered rectangular region
-        defined by:
-
-        .. math::
-
-           y \in [-a_{\text{sample}}, a_{\text{sample}}] \quad \text{and} \quad
-           z \in [-b_{\text{sample}}, b_{\text{sample}}]
-
-        The area of the sample region is given by:
-
-        .. math::
-
-           A_{\text{sample}} = 4\,a_{\text{sample}}\,b_{\text{sample}}
-
-        and is estimated as:
-
-        .. math::
-
-           A_{\text{sample}} = \frac{Q_{\text{sample}}}{u(0,0)}.
-
-        Parameters
-        ----------
-        dataframe : pd.DataFrame
-            The DataFrame to which the sampled particle properties will be added.
-
-        Returns
-        -------
-        positions : ndarray
-            A NumPy array of shape (n_samples, 2) containing the [y, z] coordinates (in m).
-        velocities : ndarray
-            A NumPy array of shape (n_samples,) containing the local x-direction velocities (in m/s).
-        """
-        n_samples = len(dataframe)
-        x, y, velocities = flowcell._cpp_sample_transverse_profile(n_samples)
-
-        dataframe["x"] = pint_pandas.PintArray(x, ureg.meter)
-        dataframe["y"] = pint_pandas.PintArray(y, ureg.meter)
-        dataframe["Velocity"] = pint_pandas.PintArray(
-            velocities, ureg.meter / ureg.second
-        )
-
     @validate_units
     def generate_event_collection(self, run_time: Time) -> EventCollection:
         """
@@ -426,51 +370,63 @@ class FlowCytometer:
         event_collection = EventCollection()
 
         for population in self.fluidics.scatterer_collection.populations:
+            effective_concentration = population.get_effective_concentration()
 
             if isinstance(population.sampling_method, ExplicitModel):
-                arrival_times = self.fluidics.get_arrival_times(
-                    population=population, run_time=run_time
-                )
 
-                n_events = len(arrival_times)
+                flow_volume_per_second = (
+                    self.fluidics.flow_cell.sample.average_flow_speed
+                    * self.fluidics.flow_cell.sample.area
+                )
+                particle_flux = effective_concentration * flow_volume_per_second
+
+                n_events = int(
+                    np.rint((particle_flux * run_time).to("particle").magnitude)
+                )
+                if n_events <= 0:
+                    continue
 
                 dataframe = pd.DataFrame(index=range(n_events))
 
-                dataframe["Time"] = pint_pandas.PintArray(
-                    arrival_times.magnitude, arrival_times.units
-                )
-
-                self.add_transverse_profile_to_frame(
-                    flowcell=self.fluidics.flow_cell, dataframe=dataframe
-                )
-
                 population.add_property_to_frame(dataframe=dataframe)
 
-                dataframe["Sigmas"] = self.opto_electronics.source.get_particle_width(
-                    velocity=dataframe["Velocity"]
+                arrival_time = self.fluidics.flow_cell.sample_arrival_times(
+                    n_events=n_events, run_time=run_time
                 )
+
+                x, y, velocities = self.fluidics.flow_cell.sample_transverse_profile(
+                    n_events
+                )
+                for key, value in {
+                    "Time": arrival_time,
+                    "x": x,
+                    "y": y,
+                    "Velocity": velocities,
+                }.items():
+                    dataframe[key] = pint_pandas.PintArray(value, value.units)
+
+                widths = self.opto_electronics.source.get_particle_width(
+                    velocity=velocities
+                )
+
+                dataframe["Sigmas"] = pint_pandas.PintArray(widths, widths.units)
 
             elif isinstance(population.sampling_method, GammaModel):
                 n_events = population.sampling_method.mc_samples
 
                 dataframe = pd.DataFrame(index=range(n_events))
 
-                self.add_transverse_profile_to_frame(
-                    flowcell=self.fluidics.flow_cell, dataframe=dataframe
+                x, y, velocities = self.fluidics.flow_cell.sample_transverse_profile(
+                    n_events
+                )
+
+                dataframe["x"] = pint_pandas.PintArray(x, ureg.meter)
+                dataframe["y"] = pint_pandas.PintArray(y, ureg.meter)
+                dataframe["Velocity"] = pint_pandas.PintArray(
+                    velocities, ureg.meter / ureg.second
                 )
 
                 population.add_property_to_frame(dataframe=dataframe)
-
-                if population.diameter.cutoff is not None:
-                    dataframe = dataframe[
-                        dataframe["Diameter"] >= population.diameter.cutoff
-                    ]
-
-                if population.refractive_index.cutoff is not None:
-                    dataframe = dataframe[
-                        dataframe["RefractiveIndex"]
-                        >= population.refractive_index.cutoff
-                    ]
 
                 dataframe.attrs["VelocityMean"] = dataframe["Velocity"].mean()
 
@@ -488,7 +444,7 @@ class FlowCytometer:
 
                 dataframe.expected = (
                     (
-                        population.particle_count
+                        effective_concentration
                         * dataframe.attrs["InterrogationVolumePerTimeBin"]
                     )
                     .to("particle")

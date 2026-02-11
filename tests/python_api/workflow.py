@@ -95,7 +95,7 @@ def scatterer_collection():
     )
 
     _population = population.Sphere(
-        particle_count=110 * ureg.particle,
+        particle_count=5e9 * ureg.particle / ureg.milliliter,
         diameter=diameter_distributions,
         refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,

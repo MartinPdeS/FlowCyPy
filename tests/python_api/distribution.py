@@ -22,7 +22,7 @@ X_VALUES = np.linspace(0.01, 1, N_SAMPLES) * ureg.micrometer
 distributions = [
     dist.Normal(mean=1.0 * ureg.micrometer, standard_deviation=1.0 * ureg.nanometer),
     dist.LogNormal(
-        mean=1.0 * ureg.micrometer, standard_deviation=0.01 * ureg.micrometer
+        mean=1.0 * ureg.micrometer, standard_deviation=0.1 * ureg.micrometer
     ),
     dist.Uniform(lower_bound=0.5 * ureg.micrometer, upper_bound=1.5 * ureg.micrometer),
     dist.Delta(value=1 * ureg.micrometer),

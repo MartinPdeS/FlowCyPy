@@ -30,6 +30,7 @@ SimulationSettings.include_dark_current_noise = True
 SimulationSettings.include_source_noise = True
 SimulationSettings.include_amplifier_noise = True
 SimulationSettings.assume_perfect_hydrodynamic_focusing = True
+SimulationSettings.population_cutoff_bypass = False
 
 np.random.seed(3)
 

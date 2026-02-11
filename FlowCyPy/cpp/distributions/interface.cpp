@@ -18,10 +18,14 @@ PYBIND11_MODULE(distributions, module) {
                 py::array_t<double> py_output = vector_move_from_numpy(output, {output.size(),});
 
                 return (py_output * ureg.attr(py::str(self.units)));
-
             },
             py::arg("n_samples")
-        );
+        )
+        .def(
+            "proportion_within_cutoffs",
+            &BaseDistribution::proportion_within_cutoffs
+        )
+        ;
 
     py::class_<Normal, BaseDistribution, std::shared_ptr<Normal>>(module, "Normal")
         .def(
@@ -30,8 +34,7 @@ PYBIND11_MODULE(distributions, module) {
                     const py::object& mean,
                     const py::object& standard_deviation,
                     const py::object& low_cutoff,
-                    const py::object& high_cutoff,
-                    const bool strict_sampling
+                    const py::object& high_cutoff
                 ) {
                     py::object units = mean.attr("units");
                     double _low_cutoff, _high_cutoff, _mean, _standard_deviation;
@@ -53,8 +56,7 @@ PYBIND11_MODULE(distributions, module) {
                         _mean,
                         _standard_deviation,
                         _low_cutoff,
-                        _high_cutoff,
-                        strict_sampling
+                        _high_cutoff
                     );
 
                     output->units = units.attr("__str__")().cast<std::string>();
@@ -65,7 +67,6 @@ PYBIND11_MODULE(distributions, module) {
             py::arg("standard_deviation"),
             py::arg("low_cutoff") = py::none(),
             py::arg("high_cutoff") = py::none(),
-            py::arg("strict_sampling") = true,
             "Constructor for Normal distribution. Mean and standard deviation must be of the same type (either Length or RefractiveIndex). Cutoff must be of the same type as mean or None."
         )
         .def_property(
@@ -88,7 +89,6 @@ PYBIND11_MODULE(distributions, module) {
             [ureg](const Normal& self){return py::float_(self.high_cutoff) * ureg.attr(py::str(self.units));},
             [ureg](Normal& self, const py::object& value){self.high_cutoff = value.attr("to")(py::str(self.units)).cast<double>();}
         )
-        .def_readwrite("strict_sampling", &Normal::strict_sampling)
         ;
 
     py::class_<Uniform, BaseDistribution, std::shared_ptr<Uniform>>(module, "Uniform")
@@ -135,8 +135,7 @@ PYBIND11_MODULE(distributions, module) {
                     const py::object& scale,
                     const py::object& shape,
                     const py::object& low_cutoff,
-                    const py::object& high_cutoff,
-                    const bool strict_sampling
+                    const py::object& high_cutoff
                 ) {
                     py::object units = scale.attr("units");
 
@@ -160,8 +159,7 @@ PYBIND11_MODULE(distributions, module) {
                         _scale,
                         _shape,
                         _low_cutoff,
-                        _high_cutoff,
-                        strict_sampling
+                        _high_cutoff
                     );
 
                     output->units = units.attr("__str__")().cast<std::string>();
@@ -174,7 +172,6 @@ PYBIND11_MODULE(distributions, module) {
             py::arg("shape"),
             py::arg("low_cutoff") = py::none(),
             py::arg("high_cutoff") = py::none(),
-            py::arg("strict_sampling") = true,
             "Constructor for RosinRammler distribution. Scale and shape parameters must be of type Length."
         )
         .def_property(
@@ -197,7 +194,6 @@ PYBIND11_MODULE(distributions, module) {
             [ureg](const RosinRammler& self){return py::float_(self.high_cutoff) * ureg.attr(py::str(self.units));},
             [ureg](RosinRammler& self, const py::object& value){self.high_cutoff = value.attr("to")(py::str(self.units)).cast<double>();}
         )
-        .def_readwrite("strict_sampling", &RosinRammler::strict_sampling)
         ;
 
     py::class_<LogNormal, BaseDistribution, std::shared_ptr<LogNormal>>(module, "LogNormal")
@@ -207,8 +203,7 @@ PYBIND11_MODULE(distributions, module) {
                     const py::object& mean,
                     const py::object& standard_deviation,
                     const py::object& low_cutoff,
-                    const py::object& high_cutoff,
-                    const bool strict_sampling
+                    const py::object& high_cutoff
                 ) {
                     py::object units = mean.attr("units");
 
@@ -218,7 +213,7 @@ PYBIND11_MODULE(distributions, module) {
                     double _low_cutoff, _high_cutoff;
 
                     if (low_cutoff.is(py::none()))
-                        _low_cutoff = std::numeric_limits<double>::lowest();
+                        _low_cutoff = 1e-10; // LogNormal distribution is not defined for non-positive values, so we set the low cutoff to a very small positive number instead of negative infinity.
                     else
                         _low_cutoff = low_cutoff.attr("to")(units).attr("magnitude").cast<double>();
 
@@ -231,8 +226,7 @@ PYBIND11_MODULE(distributions, module) {
                         _mean,
                         _standard_deviation,
                         _low_cutoff,
-                        _high_cutoff,
-                        strict_sampling
+                        _high_cutoff
                     );
 
                     output->units = units.attr("__str__")().cast<std::string>();
@@ -244,7 +238,6 @@ PYBIND11_MODULE(distributions, module) {
             py::arg("standard_deviation"),
             py::arg("low_cutoff") = py::none(),
             py::arg("high_cutoff") = py::none(),
-            py::arg("strict_sampling") = true,
             "Constructor for LogNormal distribution. Mean and standard deviation must be of type Length."
         )
         .def_property(
@@ -267,7 +260,6 @@ PYBIND11_MODULE(distributions, module) {
             [ureg](const LogNormal& self){return py::float_(self.high_cutoff) * ureg.attr(py::str(self.units));},
             [ureg](LogNormal& self, const py::object& value){self.high_cutoff = value.attr("to")(py::str(self.units)).cast<double>();}
         )
-        .def_readwrite("strict_sampling", &LogNormal::strict_sampling)
         ;
 
     py::class_<Delta, BaseDistribution, std::shared_ptr<Delta>>(module, "Delta")

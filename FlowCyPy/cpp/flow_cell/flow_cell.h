@@ -124,4 +124,6 @@ public:
      * @return The local axial velocity at the specified point in m/s.
      */
     std::vector<double> sample_arrival_times(double run_time, double particle_flux) const;
+
+    std::vector<double> sample_arrival_times_(const size_t n_events, const double run_time) const;
 };
