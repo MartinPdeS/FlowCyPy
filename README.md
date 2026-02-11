@@ -12,12 +12,11 @@
 | FlowCyPy/digitizer.py                 |       47 |        9 |       12 |        5 |     72.88% |89-90, 103, 106-112, 123-130, 150 |
 | FlowCyPy/event\_collection.py         |      118 |       79 |       54 |        4 |     27.33% |32-40, 62, 85, 122, 123->130, 131, 159-189, 195-202, 258-344, 375-390, 427-443 |
 | FlowCyPy/flow\_cytometer.py           |      127 |       40 |       42 |        8 |     65.68% |109, 112, 155-206, 286->298, 348-361, 387, 394, 420-451 |
-| FlowCyPy/fluorescence.py              |       34 |       18 |        0 |        0 |     47.06% |19-23, 28, 31, 48, 55-60, 70, 74-75, 85, 88-89 |
 | FlowCyPy/instances/detector.py        |       11 |       11 |        0 |        0 |      0.00% |      1-62 |
 | FlowCyPy/instances/flow\_cytometer.py |       47 |       47 |        0 |        0 |      0.00% |     1-207 |
 | FlowCyPy/instances/population.py      |       24 |       24 |        2 |        0 |      0.00% |      2-67 |
 | FlowCyPy/opto\_electronics.py         |       17 |        1 |        4 |        1 |     90.48% |        53 |
-| FlowCyPy/population.py                |       73 |       26 |       16 |        3 |     60.67% |59, 89-91, 194, 248, 275-294, 306-324 |
+| FlowCyPy/population.py                |       70 |       23 |       16 |        3 |     62.79% |59, 89-91, 194, 248, 275-294, 306-316 |
 | FlowCyPy/run\_record.py               |       68 |       18 |       16 |        2 |     66.67% |72, 88-90, 106-108, 124, 140-142, 223->229, 226-227, 245-256 |
 | FlowCyPy/sampling\_method.py          |        4 |        1 |        0 |        0 |     75.00% |        24 |
 | FlowCyPy/scatterer\_collection.py     |       31 |        7 |       12 |        2 |     74.42% |37-39, 79, 99, 109-112 |
@@ -32,7 +31,7 @@
 | FlowCyPy/triggering\_system.py        |       93 |       40 |       20 |        3 |     53.10% |61-66, 81, 137-144, 160-170, 174-184, 253-263, 303-313, 329-352, 356-374 |
 | FlowCyPy/utils.py                     |       70 |       42 |       22 |        1 |     38.04% |27, 41-46, 57-69, 72, 97-106, 130-179 |
 | FlowCyPy/workflow.py                  |       41 |       41 |        4 |        0 |      0.00% |     1-149 |
-| **TOTAL**                             | **1621** |  **866** |  **372** |   **49** | **44.46%** |           |
+| **TOTAL**                             | **1583** |  **845** |  **372** |   **49** | **44.45%** |           |
 
 5 files skipped due to complete coverage.
 
