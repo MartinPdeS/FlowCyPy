@@ -272,11 +272,11 @@ class CoreShell(BasePopulation):
             (core_diameter, shell_thickness, refractive_index_core, refractive_index_shell).
         """
 
-        core_diameter_sample = self.core_diameter.generate(sampling)
-        shell_thickness_sample = self.shell_thickness.generate(sampling)
-        core_refractive_index_sample = self.core_refractive_index.generate(sampling)
-        shell_refractive_index_sample = self.shell_refractive_index.generate(sampling)
-        medium_refractive_index_sample = self.medium_refractive_index.generate(sampling)
+        core_diameter_sample = self.core_diameter.sample(sampling)
+        shell_thickness_sample = self.shell_thickness.sample(sampling)
+        core_refractive_index_sample = self.core_refractive_index.sample(sampling)
+        shell_refractive_index_sample = self.shell_refractive_index.sample(sampling)
+        medium_refractive_index_sample = self.medium_refractive_index.sample(sampling)
 
         sampled_data = {
             "CoreDiameter": core_diameter_sample,
@@ -306,16 +306,8 @@ class CoreShell(BasePopulation):
         if SimulationSettings.population_cutoff_bypass:
             return self.concentration
 
-        core_diameter_sample = self.core_diameter.sample(10_000)
-        shell_thickness_sample = self.shell_thickness.sample(10_000)
-        overall_diameter_sample = core_diameter_sample + 2 * shell_thickness_sample
-
-        p_core_diameter = self.core_diameter.proportion_within_cutoffs(
-            core_diameter_sample
-        )
-        p_shell_thickness = self.shell_thickness.proportion_within_cutoffs(
-            shell_thickness_sample
-        )
+        p_core_diameter = self.core_diameter.proportion_within_cutoffs()
+        p_shell_thickness = self.shell_thickness.proportion_within_cutoffs()
         p_core_RI = self.core_refractive_index.proportion_within_cutoffs()
         p_shell_RI = self.shell_refractive_index.proportion_within_cutoffs()
 

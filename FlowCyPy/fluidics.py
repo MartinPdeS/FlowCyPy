@@ -4,7 +4,6 @@ import numpy as np
 
 from FlowCyPy.scatterer_collection import ScattererCollection
 from FlowCyPy import population  # noqa: F401
-from FlowCyPy.fluorescence import Dye, SurfaceDensityLabeling  # noqa: F401
 from FlowCyPy.simulation_settings import SimulationSettings  # noqa: F401
 from FlowCyPy.binary.flow_cell import FlowCell  # noqa: F401
 from FlowCyPy.binary import distributions  # noqa: F401
