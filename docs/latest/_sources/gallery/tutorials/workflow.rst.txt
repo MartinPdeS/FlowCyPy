@@ -39,7 +39,7 @@ Steps Covered:
 Step 0: Global Settings and Imports
 -----------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 22-39
+.. GENERATED FROM PYTHON SOURCE LINES 22-35
 
 .. code-block:: Python
 
@@ -56,9 +56,6 @@ Step 0: Global Settings and Imports
     SimulationSettings.assume_perfect_hydrodynamic_focusing = True
     SimulationSettings.population_cutoff_bypass = False
 
-    np.random.seed(3)
-
-    from TypedUnit import RefractiveIndex
 
 
 
@@ -66,13 +63,12 @@ Step 0: Global Settings and Imports
 
 
 
-
-.. GENERATED FROM PYTHON SOURCE LINES 40-42
+.. GENERATED FROM PYTHON SOURCE LINES 36-38
 
 Step 1: Define Flow Cell and Fluidics
 -------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-105
+.. GENERATED FROM PYTHON SOURCE LINES 38-101
 
 .. code-block:: Python
 
@@ -146,12 +142,12 @@ Step 1: Define Flow Cell and Fluidics
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 106-108
+.. GENERATED FROM PYTHON SOURCE LINES 102-104
 
 Step 2: Define Optical Subsystem
 --------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-149
+.. GENERATED FROM PYTHON SOURCE LINES 104-145
 
 .. code-block:: Python
 
@@ -203,12 +199,12 @@ Step 2: Define Optical Subsystem
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 150-152
+.. GENERATED FROM PYTHON SOURCE LINES 146-148
 
 Step 3: Signal Processing Configuration
 ---------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 152-186
+.. GENERATED FROM PYTHON SOURCE LINES 148-182
 
 .. code-block:: Python
 
@@ -253,12 +249,12 @@ Step 3: Signal Processing Configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 187-189
+.. GENERATED FROM PYTHON SOURCE LINES 183-185
 
 Step 4: Run Simulation
 ----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 189-202
+.. GENERATED FROM PYTHON SOURCE LINES 185-198
 
 .. code-block:: Python
 
@@ -287,12 +283,12 @@ Step 4: Run Simulation
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 203-205
+.. GENERATED FROM PYTHON SOURCE LINES 199-201
 
 Step 5: Plot Events and Raw Analog Signals
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 205-208
+.. GENERATED FROM PYTHON SOURCE LINES 201-204
 
 .. code-block:: Python
 
@@ -311,12 +307,12 @@ Step 5: Plot Events and Raw Analog Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 209-211
+.. GENERATED FROM PYTHON SOURCE LINES 205-207
 
 Plot raw analog signals
 -----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 211-214
+.. GENERATED FROM PYTHON SOURCE LINES 207-210
 
 .. code-block:: Python
 
@@ -335,12 +331,12 @@ Plot raw analog signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 215-217
+.. GENERATED FROM PYTHON SOURCE LINES 211-213
 
 Step 6: Plot Triggered Analog Segments
 --------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 217-220
+.. GENERATED FROM PYTHON SOURCE LINES 213-216
 
 .. code-block:: Python
 
@@ -359,12 +355,12 @@ Step 6: Plot Triggered Analog Segments
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 221-223
+.. GENERATED FROM PYTHON SOURCE LINES 217-219
 
 Step 7: Plot Peak Features
 --------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 223-226
+.. GENERATED FROM PYTHON SOURCE LINES 219-222
 
 .. code-block:: Python
 
@@ -383,12 +379,12 @@ Step 7: Plot Peak Features
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 227-229
+.. GENERATED FROM PYTHON SOURCE LINES 223-225
 
 Step 8: Classify Events from Peak Features
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 229-240
+.. GENERATED FROM PYTHON SOURCE LINES 225-236
 
 .. code-block:: Python
 
@@ -418,7 +414,7 @@ Step 8: Classify Events from Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 10.975 seconds)
+   **Total running time of the script:** (0 minutes 11.077 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

@@ -792,11 +792,11 @@ document.write(`
 <span class="sd">            (core_diameter, shell_thickness, refractive_index_core, refractive_index_shell).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">core_diameter_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_diameter</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
-        <span class="n">shell_thickness_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_thickness</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
-        <span class="n">core_refractive_index_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
-        <span class="n">shell_refractive_index_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
-        <span class="n">medium_refractive_index_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">medium_refractive_index</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+        <span class="n">core_diameter_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_diameter</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+        <span class="n">shell_thickness_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_thickness</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+        <span class="n">core_refractive_index_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_refractive_index</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+        <span class="n">shell_refractive_index_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_refractive_index</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
+        <span class="n">medium_refractive_index_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">medium_refractive_index</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">sampling</span><span class="p">)</span>
 
         <span class="n">sampled_data</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;CoreDiameter&quot;</span><span class="p">:</span> <span class="n">core_diameter_sample</span><span class="p">,</span>
@@ -829,16 +829,8 @@ document.write(`
         <span class="k">if</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">population_cutoff_bypass</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">concentration</span>
 
-        <span class="n">core_diameter_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_diameter</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">10_000</span><span class="p">)</span>
-        <span class="n">shell_thickness_sample</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_thickness</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">10_000</span><span class="p">)</span>
-        <span class="n">overall_diameter_sample</span> <span class="o">=</span> <span class="n">core_diameter_sample</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">shell_thickness_sample</span>
-
-        <span class="n">p_core_diameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_diameter</span><span class="o">.</span><span class="n">proportion_within_cutoffs</span><span class="p">(</span>
-            <span class="n">core_diameter_sample</span>
-        <span class="p">)</span>
-        <span class="n">p_shell_thickness</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_thickness</span><span class="o">.</span><span class="n">proportion_within_cutoffs</span><span class="p">(</span>
-            <span class="n">shell_thickness_sample</span>
-        <span class="p">)</span>
+        <span class="n">p_core_diameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_diameter</span><span class="o">.</span><span class="n">proportion_within_cutoffs</span><span class="p">()</span>
+        <span class="n">p_shell_thickness</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_thickness</span><span class="o">.</span><span class="n">proportion_within_cutoffs</span><span class="p">()</span>
         <span class="n">p_core_RI</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_refractive_index</span><span class="o">.</span><span class="n">proportion_within_cutoffs</span><span class="p">()</span>
         <span class="n">p_shell_RI</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_refractive_index</span><span class="o">.</span><span class="n">proportion_within_cutoffs</span><span class="p">()</span>
 
