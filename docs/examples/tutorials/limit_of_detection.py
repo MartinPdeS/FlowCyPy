@@ -16,11 +16,11 @@ import numpy as np
 from TypedUnit import ureg
 
 from FlowCyPy import FlowCytometer, SimulationSettings
+from FlowCyPy.fluidics import distributions
 from FlowCyPy.fluidics import (
     FlowCell,
     Fluidics,
     ScattererCollection,
-    distribution,
     population,
 )
 from FlowCyPy.opto_electronics import (
@@ -72,8 +72,8 @@ for size in [150, 125, 100, 75, 50]:
     pop = population.Sphere(
         name=f"{size} nm",
         concentration=5e9 * ureg.particle / ureg.milliliter,
-        diameter=distribution.Delta(position=size * ureg.nanometer),
-        refractive_index=distribution.Delta(position=1.36 * ureg.RIU),
+        diameter=distributions.Delta(value=size * ureg.nanometer),
+        refractive_index=distributions.Delta(value=1.36 * ureg.RIU),
         medium_refractive_index=1.33 * ureg.RIU,
     )
     scatterer_collection.add_population(pop)
