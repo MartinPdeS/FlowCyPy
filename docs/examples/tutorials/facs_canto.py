@@ -10,20 +10,23 @@ It includes defining a particle population, configuring the flow cytometer, runn
 # Step 0: Global Settings and Imports
 # -----------------------------------
 from FlowCyPy.instances.flow_cytometer import FacsCanto, SampleFlowRate, SheathFlowRate
-from FlowCyPy.fluidics import distribution, population
+from FlowCyPy.fluidics import population
 from TypedUnit import ureg
+from FlowCyPy.fluidics import distributions
 
-diameter = distribution.RosinRammler(150 * ureg.nanometer, spread=30)
+diameter = distributions.RosinRammler(
+    shape=150 * ureg.nanometer, scale=30 * ureg.nanometer
+)
 
 medium_refractive_index = 1.33 * ureg.RIU
 
-refractive_index = distribution.Normal(
-    1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
+refractive_index = distributions.Normal(
+    mean=1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
 )
 
 population_0 = population.Sphere(
     name="Pop 0",
-    particle_count=5e9 * ureg.particle / ureg.milliliter,
+    concentration=5e9 * ureg.particle / ureg.milliliter,
     diameter=diameter,
     medium_refractive_index=medium_refractive_index,
     refractive_index=refractive_index,

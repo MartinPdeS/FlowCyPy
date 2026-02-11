@@ -1,7 +1,7 @@
 # from FlowCyPy import units
 from TypedUnit import ureg
 
-from FlowCyPy import distribution
+from FlowCyPy.fluidics import distributions
 from FlowCyPy.population import Sphere
 
 
@@ -42,11 +42,11 @@ _populations = (
 
 # Dynamically create population classes
 for name, diameter, diameter_spread, ri, ri_spread in _populations:
-    diameter_distribution = distribution.RosinRammler(
-        characteristic_value=diameter, spread=diameter_spread
+    diameter_distribution = distributions.RosinRammler(
+        scale=diameter, shape=diameter_spread * diameter.units
     )
 
-    ri_distribution = distribution.Normal(mean=ri, standard_deviation=ri_spread)
+    ri_distribution = distributions.Normal(mean=ri, standard_deviation=ri_spread)
 
     # Create a class dynamically for each population
     cls = type(name, (CallablePopulation,), {})
@@ -57,8 +57,8 @@ for name, diameter, diameter_spread, ri, ri_spread in _populations:
 def get_microbeads(
     diameter: ureg.Quantity, refractive_index: ureg.Quantity, name: str
 ) -> Sphere:
-    diameter_distribution = distribution.Delta(position=diameter)
-    ri_distribution = distribution.Delta(position=refractive_index)
+    diameter_distribution = distributions.Delta(position=diameter)
+    ri_distribution = distributions.Delta(position=refractive_index)
 
     microbeads = Sphere(
         name=name, diameter=diameter_distribution, refractive_index=ri_distribution
