@@ -4,7 +4,7 @@ set(NAME "signal_generator")
 add_library("${NAME}" STATIC "signal_generator.cpp")
 set_target_properties("${NAME}" PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories("${NAME}" PUBLIC ${FFTW_INCLUDE_DIRS})
-target_link_libraries("${NAME}" PUBLIC  OpenMP::OpenMP_CXX PRIVATE pybind11::module PkgConfig::FFTW utils)
+target_link_libraries("${NAME}" PUBLIC  OpenMP::OpenMP_CXX PRIVATE pybind11::module PkgConfig::FFTW utils pint)
 set_target_properties("${NAME}" PROPERTIES OUTPUT_NAME "${NAME}")
 
 # --- Python extension module --------------------------------------------

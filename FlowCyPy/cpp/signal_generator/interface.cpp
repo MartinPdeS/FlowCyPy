@@ -7,13 +7,6 @@
 #include "signal_generator.h"
 
 
-
-
-
-
-
-
-
 namespace py = pybind11;
 
 PYBIND11_MODULE(signal_generator, module) {
