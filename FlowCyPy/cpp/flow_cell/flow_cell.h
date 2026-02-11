@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <random>
 #include <tuple>
-#include <algorithm>s
+#include <algorithm>
 
 class FluidRegion {
 public:
