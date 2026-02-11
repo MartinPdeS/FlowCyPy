@@ -14,7 +14,8 @@ from TypedUnit import (
     Velocity,
 )
 
-from FlowCyPy import distribution
+from FlowCyPy.binary.distributions import BaseDistribution
+from FlowCyPy.binary import distributions
 from FlowCyPy.utils import config_dict
 from FlowCyPy.sampling_method import ExplicitModel, GammaModel
 
@@ -100,30 +101,30 @@ class BasePopulation:
         Validate the refractive index input.
 
         This validator ensures that the refractive index is provided either as a Quantity with the correct
-        refractive index units (RIU) or as an instance of distribution.Base. If a Quantity is provided,
+        refractive index units (RIU) or as an instance of BaseDistribution. If a Quantity is provided,
         it is converted to a Delta distribution .
 
         Parameters
         ----------
-        value : Union[distribution.Base, Quantity]
+        value : Union[BaseDistribution, Quantity]
             The refractive index value to validate.
 
         Returns
         -------
-        distribution.Base
+        BaseDistribution
             A distribution representation of the refractive index.
 
         Raises
         ------
         TypeError
-            If the input is not a Quantity with RIU units or a valid distribution.Base instance.
+            If the input is not a Quantity with RIU units or a valid BaseDistribution instance.
         """
-        if isinstance(value, distribution.Base):
+        if isinstance(value, BaseDistribution):
             return value
         elif RefractiveIndex.check(value):
-            return distribution.Delta(position=value)
+            return distributions.Delta(value=value)
         raise TypeError(
-            f"refractive_index must be of type Quantity (with RIU) or distribution.Base, but got {type(value)}"
+            f"refractive_index must be of type Quantity (with RIU) or BaseDistribution, but got {type(value)}"
         )
 
     @field_validator("diameter", "core_diameter", "shell_thickness")
@@ -132,30 +133,30 @@ class BasePopulation:
         Validate the diameter input.
 
         This validator ensures that the particle diameter is provided either as a Quantity with length
-        units (e.g., meters) or as an instance of distribution.Base. If provided as a Quantity, it is converted
+        units (e.g., meters) or as an instance of BaseDistribution. If provided as a Quantity, it is converted
         to a Delta distribution.
 
         Parameters
         ----------
-        value : Union[distribution.Base, Quantity]
+        value : Union[BaseDistribution, Quantity]
             The particle diameter value to validate.
 
         Returns
         -------
-        distribution.Base
+        BaseDistribution
             A distribution representation of the particle diameter.
 
         Raises
         ------
         TypeError
-            If the input is not a Quantity with length units or a valid distribution.Base instance.
+            If the input is not a Quantity with length units or a valid BaseDistribution instance.
         """
-        if isinstance(value, distribution.Base):
+        if isinstance(value, BaseDistribution):
             return value
         elif Length.check(value):
-            return distribution.Delta(position=value)
+            return distributions.Delta(position=value)
         raise TypeError(
-            f"Diameter must be of type Quantity or distribution.Base, but got {type(value)}"
+            f"Diameter must be of type Quantity or BaseDistribution, but got {type(value)}"
         )
 
     def dilute(self, factor: float) -> None:
@@ -202,30 +203,30 @@ class Sphere(BasePopulation):
     This class encapsulates the properties of a particle population including its name,
     refractive index, particle diameter, and particle count (density). The refractive index
     and diameter can be provided as either fixed values (Quantity) or as statistical distributions
-    (instances of distribution.Base). The class automatically converts Quantity attributes to their
+    (instances of BaseDistribution). The class automatically converts Quantity attributes to their
     base SI units during initialization.
 
     Parameters
     ----------
     name : str
         The identifier or label for the population.
-    refractive_index : distribution.Base | RefractiveIndex
+    refractive_index : BaseDistribution | RefractiveIndex
         The refractive index (or its distribution) of the particles. If provided as a Quantity,
         it must have units of refractive index (RIU). If provided as a distribution, it should be an
-        instance of distribution.Base.
-    diameter : distribution.Base | Length
+        instance of BaseDistribution.
+    diameter : BaseDistribution | Length
         The particle diameter (or its distribution). If provided as a Quantity, it must have units
         of length (e.g., meters). If provided as a distribution, it should be an instance of
-        distribution.Base.
+        BaseDistribution.
     particle_count : Particle | Concentration
         The number density of particles (scatterers) per cubic meter.
 
     """
 
     name: str
-    refractive_index: distribution.Base | RefractiveIndex
-    diameter: distribution.Base | Length
-    medium_refractive_index: distribution.Base | RefractiveIndex
+    refractive_index: BaseDistribution | RefractiveIndex
+    diameter: BaseDistribution | Length
+    medium_refractive_index: BaseDistribution | RefractiveIndex
     particle_count: Particle | Concentration
     sampling_method: object = ExplicitModel()
 
@@ -255,9 +256,9 @@ class Sphere(BasePopulation):
             A tuple containing the generated diameter sample and refractive index sample.
         """
         sampling = len(dataframe)
-        diameter_sample = self.diameter.generate(sampling)
-        refractive_index_sample = self.refractive_index.generate(sampling)
-        medium_refractive_index_sample = self.medium_refractive_index.generate(sampling)
+        diameter_sample = self.diameter.sample(sampling)
+        refractive_index_sample = self.refractive_index.sample(sampling)
+        medium_refractive_index_sample = self.medium_refractive_index.sample(sampling)
 
         sampled_data = {
             "Diameter": diameter_sample,
@@ -282,23 +283,23 @@ class CoreShell(BasePopulation):
         overall_diameter = core_diameter + 2 * shell_thickness
 
     The refractive indices for the core and shell can be provided either as fixed values (Quantity)
-    or as statistical distributions (instances of distribution.Base). The particle_count defines the
+    or as statistical distributions (instances of BaseDistribution). The particle_count defines the
     scatterer density in particles per cubic meter.
 
     Parameters
     ----------
     name : str
         The identifier or label for the population.
-    core_diameter : distribution.Base | Length
+    core_diameter : BaseDistribution | Length
         The diameter of the particle core. If provided as a Quantity, it must have length units
-        (e.g., meter). If provided as a distribution, it must be an instance of distribution.Base.
-    shell_thickness : distribution.Base | Length
+        (e.g., meter). If provided as a distribution, it must be an instance of BaseDistribution.
+    shell_thickness : BaseDistribution | Length
         The thickness of the particle shell. If provided as a Quantity, it must have length units.
-        If provided as a distribution, it must be an instance of distribution.Base.
-    refractive_index_core : distribution.Base | RefractiveIndex
+        If provided as a distribution, it must be an instance of BaseDistribution.
+    refractive_index_core : BaseDistribution | RefractiveIndex
         The refractive index (or its distribution) of the core. If provided as a Quantity, it must have
         refractive index units (RIU).
-    refractive_index_shell : distribution.Base | RefractiveIndex
+    refractive_index_shell : BaseDistribution | RefractiveIndex
         The refractive index (or its distribution) of the shell. If provided as a Quantity, it must have
         refractive index units (RIU).
     particle_count : Particle | Concentration
@@ -307,11 +308,11 @@ class CoreShell(BasePopulation):
     """
 
     name: str
-    core_diameter: distribution.Base | Length
-    shell_thickness: distribution.Base | Length
-    core_refractive_index: distribution.Base | RefractiveIndex
-    shell_refractive_index: distribution.Base | RefractiveIndex
-    medium_refractive_index: distribution.Base
+    core_diameter: BaseDistribution | Length
+    shell_thickness: BaseDistribution | Length
+    core_refractive_index: BaseDistribution | RefractiveIndex
+    shell_refractive_index: BaseDistribution | RefractiveIndex
+    medium_refractive_index: BaseDistribution
     particle_count: Particle | Concentration
     sampling_method: object = ExplicitModel()
 

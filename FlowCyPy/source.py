@@ -148,7 +148,7 @@ class BaseBeam:
         return amplitudes
 
     def get_particle_width(self, velocity: Velocity) -> Length:
-        """
+        r"""
         Generates and return random Gaussian pulse parameters for each particle event.
 
         The pulse shape follows the Gaussian beam"s spatial intensity profile:

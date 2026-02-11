@@ -15,9 +15,11 @@ public:
 
 class BaseLineRestoration: public BaseCircuit {
 public:
-    int window_size; // Size of the window for baseline restoration
+    double window_size;
 
     BaseLineRestoration() = default;
+    BaseLineRestoration(const double _window_size) : window_size(_window_size) {}
+
 
     /**
      * @brief Constructs a BaseLineRestoration object with a specified window size.
@@ -29,14 +31,14 @@ public:
 
 class ButterworthLowPassFilter: public BaseCircuit {
 public:
-    double sampling_rate;
     double cutoff_frequency;
     int order;
     double gain;
 
     ButterworthLowPassFilter() = default;
 
-    ButterworthLowPassFilter(double sampling_rate, double cutoff_frequency, int order, double gain);
+    ButterworthLowPassFilter(double cutoff_frequency, int order, double gain)
+    : cutoff_frequency(cutoff_frequency), order(order), gain(gain) {}
 
     /**
      * @brief Processes the signal generator by applying a Butterworth low-pass filter.
@@ -57,15 +59,14 @@ public:
 
 class BesselLowPassFilter: public BaseCircuit {
 public:
-    double sampling_rate;
     double cutoff_frequency;
     int order;
     double gain;
 
     BesselLowPassFilter() = default;
 
-    BesselLowPassFilter(double sampling_rate, double cutoff_frequency, int order, double gain);
-
+    BesselLowPassFilter(double cutoff_frequency, int order, double gain)
+    : cutoff_frequency(cutoff_frequency), order(order), gain(gain) {}
     /**
      * @brief Processes the signal generator by applying a Bessel low-pass filter.
      * This function applies a Bessel low-pass filter to all signals in the signal generator,

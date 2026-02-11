@@ -8,7 +8,7 @@ import pint_pandas
 import seaborn as sns
 from TypedUnit import Dimensionless, Time, Voltage, ureg
 
-from FlowCyPy.signal_generator import SignalGenerator
+from FlowCyPy.binary.signal_generator import SignalGenerator
 from FlowCyPy.sub_frames import utils
 from FlowCyPy.sub_frames.base import BaseSubFrame
 
@@ -25,8 +25,6 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
     def _construct_from_signal_generator(
         cls,
         signal_generator: SignalGenerator,
-        time_units: Time | str,
-        signal_units: Voltage | str,
     ) -> "AcquisitionDataFrame":
         """
         Converts a signal generator's output into a pandas DataFrame.
@@ -49,12 +47,13 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         time = signal_generator.get_time()
 
-        signal_dataframe["Time"] = pd.Series(time, dtype=f"pint[{time_units}]")
+        signal_dataframe["Time"] = pd.Series(time, dtype=f"pint[second]")
 
-        for detector_name in signal_generator._cpp_get_signal_names():
+        for detector_name in signal_generator.get_channels():
+            channel_signal = signal_generator.get_signal(detector_name)
             signal_dataframe[detector_name] = pd.Series(
-                signal_generator.get_signal(detector_name),
-                dtype=f"pint[{signal_units}]",
+                channel_signal,
+                dtype=f"pint[volt]",
             )
 
         signal_dataframe = cls(signal_dataframe)

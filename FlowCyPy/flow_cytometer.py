@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 from typing import Optional
 import pandas as pd
-import numpy as np
 from TypedUnit import Power, Time, ureg, validate_units
 
 from FlowCyPy.fluidics import Fluidics
 from FlowCyPy.opto_electronics import OptoElectronics
-from FlowCyPy.signal_generator import SignalGenerator
+from FlowCyPy.binary.signal_generator import SignalGenerator
 from FlowCyPy.signal_processing import SignalProcessing
 from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
@@ -80,14 +79,12 @@ class FlowCytometer:
             run_time=run_time
         )
 
-        signal_generator = SignalGenerator(
-            n_elements=len(time_series), time_units=ureg.second, signal_units=ureg.watt
-        )
+        signal_generator = SignalGenerator(n_elements=len(time_series))
 
         signal_generator.add_time(time_series)
 
         for detector in self.opto_electronics.detectors:
-            signal_generator.create_zero_signal(signal_name=detector.name)
+            signal_generator.create_zero_signal(channel=detector.name)
 
         return signal_generator
 
@@ -105,6 +102,121 @@ class FlowCytometer:
 
                 if detector.channel_type.lower() == events.channel_type.lower():
                     detector.events.append(events)
+
+    def run_explicit_models(self, event_collection, signal_generator) -> None:
+        """
+        Run all ExplicitModel populations and add their optical power pulses to the signal generator.
+
+        For each population event frame using ExplicitModel, this method generates Gaussian shaped
+        pulses directly in the optical power domain for every detector, using:
+        - events["Time"] as pulse centers
+        - events["Sigmas"] as pulse widths
+        - events[detector.name] as pulse amplitudes
+
+        Notes
+        -----
+        Assumes all required columns exist and carry Pint units.
+        Skips populations whose event frame is empty.
+        """
+        for events in event_collection:
+            if not isinstance(events.sampling_method, ExplicitModel):
+                continue
+
+            if events.empty:
+                continue
+
+            for detector in self.opto_electronics.detectors:
+                signal_generator.generate_pulses_to_signal(
+                    channel=detector.name,
+                    sigmas=events["Sigmas"].pint.to("second").values.quantity.magnitude,
+                    centers=events["Time"].pint.to("second").values.quantity.magnitude,
+                    amplitudes=events[detector.name]
+                    .pint.to("watt")
+                    .values.quantity.magnitude,
+                    base_level=0,
+                )
+
+    def run_gamma_models(self, event_collection, signal_generator) -> None:
+        """
+        Run all GammaModel populations and add correlated optical power traces to the signal generator.
+
+        For each GammaModel population, this method produces a single shared stochastic latent trace
+        and applies detector specific scaling so that all detector signals are perfectly correlated
+        in time and differ only by amplitude.
+
+        Implementation
+        --------------
+        - Use the first detector as a reference to draw one gamma distributed power trace via the
+        C++ backend (this sets the temporal stochasticity).
+        - Convert that reference trace into a dimensionless latent particle trace by dividing by
+        the reference mean amplitude.
+        - For each other detector, scale the latent trace by its mean amplitude and add it to the
+        corresponding detector signal.
+
+        Notes
+        -----
+        Skips populations whose event frame is empty.
+        Assumes:
+        - events.population.particle_count exists
+        - events.attrs["VelocitySigmas"] exists (Pint Quantity)
+        - signal_generator._cpp_add_gamma_trace writes into the named signal and returns the trace
+        - signal_generator.add_array_to_signal exists (as in your SignalGenerator wrapper)
+        """
+        for events in event_collection:
+            if not isinstance(events.sampling_method, GammaModel):
+                continue
+
+            if events.empty:
+                continue
+
+            velocity = events["Velocity"].pint.quantity.mean()
+
+            interrogation_volume_per_time_bin = (
+                velocity
+                / self.signal_processing.digitizer.sampling_rate
+                * self.fluidics.flow_cell.sample.area
+            )
+
+            expected_number_of_particles = (
+                (events.population.particle_count * interrogation_volume_per_time_bin)
+                .to("particle")
+                .magnitude
+            )
+
+            events.attrs["expected_number_of_particles"] = expected_number_of_particles
+
+            reference_detector = self.opto_electronics.detectors[0]
+
+            reference_mean_amplitude = events[
+                reference_detector.name
+            ].values.quantity.mean()
+
+            reference_power_trace = (
+                signal_generator.add_gamma_trace_to_signal(
+                    channel=reference_detector.name,
+                    shape=expected_number_of_particles,
+                    scale=reference_mean_amplitude.to("watt").magnitude,
+                    gaussian_sigma=events.attrs["VelocitySigmas"]
+                    .to("second")
+                    .magnitude,
+                )
+                * ureg.watt
+            )
+
+            particles_trace = reference_power_trace / (reference_mean_amplitude)
+
+            events.attrs["particles_trace"] = particles_trace
+            events.attrs["time_trace"] = signal_generator.get_time()
+
+            for detector in self.opto_electronics.detectors[1:]:
+                mean_amplitude = events[detector.name].values.quantity.mean().to("watt")
+
+                detector_power_trace = particles_trace * mean_amplitude
+
+                signal_generator.add_array_to_signal(
+                    channel=detector.name,
+                    array=detector_power_trace,
+                )
 
     def compute_analog(
         self, run_time: Time, event_collection: pd.DataFrame
@@ -158,74 +270,18 @@ class FlowCytometer:
             explicit pulse generation
         """
         signal_generator = self._create_signal_generator(run_time=run_time)
-        signal_generator.signal_units = ureg.watt  # Initial unit: optical power
-        signal_generator.add_constant(constant=self.background_power)
 
-        for detector in self.opto_electronics.detectors:
-            for events in event_collection:
-                if isinstance(events.sampling_method, ExplicitModel):
-                    if not events.empty:
-                        signal_generator.generate_pulses(
-                            signal_name=detector.name,
-                            sigmas=events["Sigmas"]
-                            .pint.to_base_units()
-                            .values.quantity,
-                            centers=events["Time"].pint.to_base_units().values.quantity,
-                            amplitudes=events[detector.name]
-                            .pint.to_base_units()
-                            .values.quantity,
-                            base_level=0 * ureg.watt,
-                        )
-                elif isinstance(events.sampling_method, GammaModel):
+        signal_generator.add_constant(
+            constant=self.background_power.to("watt").magnitude
+        )  # Initial unit: optical power
 
-                    velocity = events["Velocity"].pint.quantity.mean()
+        self.run_explicit_models(
+            event_collection=event_collection, signal_generator=signal_generator
+        )
 
-                    interrogation_volume_per_time_bin = (
-                        velocity
-                        / self.signal_processing.digitizer.sampling_rate
-                        * self.fluidics.flow_cell.sample.area
-                    ).mean()
-
-                    events.attrs["expected_number_of_particles"] = (
-                        (
-                            events.population.particle_count
-                            * interrogation_volume_per_time_bin
-                        )
-                        .to("particle")
-                        .magnitude
-                    )
-
-                    amplitudes = (
-                        events[detector.name].pint.to("watt").values.quantity.magnitude
-                    )
-                    mean_amplitudes = np.mean(amplitudes)
-                    mean_squared_amplitudes = np.mean(amplitudes**2)
-
-                    mean_sum = (
-                        events.attrs["expected_number_of_particles"] * mean_amplitudes
-                    )
-                    var_sum = (
-                        events.attrs["expected_number_of_particles"]
-                        * mean_squared_amplitudes
-                    )
-
-                    shape = mean_sum**2 / var_sum
-                    scale = var_sum / mean_sum
-
-                    power_trace = signal_generator._cpp_add_gamma_trace(
-                        signal_name=detector.name,
-                        shape=shape,
-                        scale=scale,
-                        gaussian_sigma=events.sigmas.mean().to("second").magnitude,
-                    )
-
-                    time_trace = signal_generator.get_time()
-
-                    events.attrs["particles_trace"] = power_trace / (
-                        mean_amplitudes * ureg.watt
-                    )
-
-                    events.attrs["time_trace"] = time_trace
+        self.run_gamma_models(
+            event_collection=event_collection, signal_generator=signal_generator
+        )
 
         # Optical power → photocurrent
         for detector in self.opto_electronics.detectors:
@@ -236,7 +292,7 @@ class FlowCytometer:
             )
 
         # Add dark current noise if enabled
-        signal_generator.signal_units = ureg.ampere
+        # Signal units are now ampere
         if (
             SimulationSettings.include_noises
             and SimulationSettings.include_dark_current_noise
@@ -248,10 +304,10 @@ class FlowCytometer:
                 )
 
         # Photocurrent → voltage
-        signal_generator.signal_units = ureg.volt
+        # Signal units are now volt
+
         self.opto_electronics.amplifier.amplify(
             signal_generator=signal_generator,
-            sampling_rate=self.signal_processing.digitizer.sampling_rate,
         )
 
         # Final analog signal conditioning
@@ -260,8 +316,6 @@ class FlowCytometer:
         # Create structured DataFrame output
         analog_aquisition = AcquisitionDataFrame._construct_from_signal_generator(
             signal_generator=signal_generator,
-            time_units="second",
-            signal_units="volt",
         )
 
         return analog_aquisition
@@ -319,6 +373,51 @@ class FlowCytometer:
 
         return run_record
 
+    def add_transverse_profile_to_frame(self, flowcell: object, dataframe) -> tuple:
+        r"""
+        Sample particles from the focused sample stream.
+
+        The sample stream is assumed to be uniformly distributed over a centered rectangular region
+        defined by:
+
+        .. math::
+
+           y \in [-a_{\text{sample}}, a_{\text{sample}}] \quad \text{and} \quad
+           z \in [-b_{\text{sample}}, b_{\text{sample}}]
+
+        The area of the sample region is given by:
+
+        .. math::
+
+           A_{\text{sample}} = 4\,a_{\text{sample}}\,b_{\text{sample}}
+
+        and is estimated as:
+
+        .. math::
+
+           A_{\text{sample}} = \frac{Q_{\text{sample}}}{u(0,0)}.
+
+        Parameters
+        ----------
+        dataframe : pd.DataFrame
+            The DataFrame to which the sampled particle properties will be added.
+
+        Returns
+        -------
+        positions : ndarray
+            A NumPy array of shape (n_samples, 2) containing the [y, z] coordinates (in m).
+        velocities : ndarray
+            A NumPy array of shape (n_samples,) containing the local x-direction velocities (in m/s).
+        """
+        n_samples = len(dataframe)
+        x, y, velocities = flowcell._cpp_sample_transverse_profile(n_samples)
+
+        dataframe["x"] = pint_pandas.PintArray(x, ureg.meter)
+        dataframe["y"] = pint_pandas.PintArray(y, ureg.meter)
+        dataframe["Velocity"] = pint_pandas.PintArray(
+            velocities, ureg.meter / ureg.second
+        )
+
     @validate_units
     def generate_event_collection(self, run_time: Time) -> EventCollection:
         """
@@ -341,7 +440,9 @@ class FlowCytometer:
                     arrival_times.magnitude, arrival_times.units
                 )
 
-                self.fluidics.flow_cell.add_transverse_profile_to_frame(dataframe)
+                self.add_transverse_profile_to_frame(
+                    flowcell=self.fluidics.flow_cell, dataframe=dataframe
+                )
 
                 population.add_property_to_frame(dataframe=dataframe)
 
@@ -354,18 +455,33 @@ class FlowCytometer:
 
                 dataframe = pd.DataFrame(index=range(n_events))
 
-                self.fluidics.flow_cell.add_transverse_profile_to_frame(dataframe)
+                self.add_transverse_profile_to_frame(
+                    flowcell=self.fluidics.flow_cell, dataframe=dataframe
+                )
 
                 population.add_property_to_frame(dataframe=dataframe)
 
-                dataframe.velocity = dataframe["Velocity"].mean()
+                if population.diameter.cutoff is not None:
+                    dataframe = dataframe[
+                        dataframe["Diameter"] >= population.diameter.cutoff
+                    ]
 
-                dataframe.sigmas = self.opto_electronics.source.get_particle_width(
-                    velocity=dataframe["Velocity"]
-                ).mean()
+                if population.refractive_index.cutoff is not None:
+                    dataframe = dataframe[
+                        dataframe["RefractiveIndex"]
+                        >= population.refractive_index.cutoff
+                    ]
 
-                dataframe.interrogation_volume_per_time_bin = (
-                    dataframe.velocity
+                dataframe.attrs["VelocityMean"] = dataframe["Velocity"].mean()
+
+                dataframe.attrs["VelocitySigmas"] = (
+                    self.opto_electronics.source.get_particle_width(
+                        velocity=dataframe["Velocity"]
+                    ).mean()
+                )
+
+                dataframe.attrs["InterrogationVolumePerTimeBin"] = (
+                    dataframe.attrs["VelocityMean"]
                     / self.signal_processing.digitizer.sampling_rate
                     * self.fluidics.flow_cell.sample.area
                 ).mean()
@@ -373,7 +489,7 @@ class FlowCytometer:
                 dataframe.expected = (
                     (
                         population.particle_count
-                        * dataframe.interrogation_volume_per_time_bin
+                        * dataframe.attrs["InterrogationVolumePerTimeBin"]
                     )
                     .to("particle")
                     .magnitude
@@ -382,7 +498,9 @@ class FlowCytometer:
             dataframe.attrs["Name"] = population.name
             dataframe.attrs["PopulationType"] = population.__class__.__name__
             dataframe.attrs["ParticleCount"] = population.particle_count
-            dataframe.attrs["SamplingMethod"] = population.sampling_method
+            dataframe.attrs["SamplingMethod"] = (
+                population.sampling_method.__class__.__name__
+            )
 
             dataframe.sampling_method = population.sampling_method
 

@@ -6,7 +6,7 @@ import pytest
 from TypedUnit import ureg, Length
 
 import FlowCyPy
-from FlowCyPy import distribution as dist
+from FlowCyPy.fluidics import distributions as dist
 
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
@@ -25,7 +25,7 @@ distributions = [
         mean=1.0 * ureg.micrometer, standard_deviation=0.01 * ureg.micrometer
     ),
     dist.Uniform(lower_bound=0.5 * ureg.micrometer, upper_bound=1.5 * ureg.micrometer),
-    dist.Delta(position=1 * ureg.micrometer),
+    dist.Delta(value=1 * ureg.micrometer),
 ]
 
 
@@ -40,7 +40,7 @@ def test_number_of_samples(mock_show, distribution):
     """Test the generate method of the Distribution class."""
 
     # Generate particle sizes
-    sizes = distribution.generate(N_SAMPLES)
+    sizes = distribution.sample(N_SAMPLES)
 
     assert np.all(
         Length.check(sizes)
@@ -56,27 +56,6 @@ def test_number_of_samples(mock_show, distribution):
         sizes > 0
     ), f"{distribution.__class__.__name__}: Generated sizes should all be positive."
 
-    # Get the PDF and assert it returns values
-    x, pdf = distribution.get_pdf()
-
-    # Assert PDF has the same shape as input x_values
-    assert (
-        pdf.shape == x.shape
-    ), f"{distribution.__class__.__name__}: PDF output shape mismatch."
-
-    # Assert PDF values are non-negative
-    assert np.all(
-        pdf >= 0
-    ), f"{distribution.__class__.__name__}: PDF should return non-negative values."
-
-    # Additional check for DeltaDistribution (which should be a single peak)
-    if isinstance(distribution, dist.Delta):
-        assert (
-            np.sum(pdf > 0) == 1
-        ), "DeltaDistribution: PDF should have only one non-zero value."
-
-    distribution.plot()
-
     plt.close()
 
 
@@ -84,27 +63,11 @@ def test_uniform_properties():
     """Test boundary conditions in the PDF generation."""
     distribution = distributions[2]
 
-    x, pdf = distribution.get_pdf()
-
-    # Check if the PDF at the lower boundary is reasonable
-    assert (
-        pdf[0] >= 0
-    ), f"{distribution.__class__.__name__}: PDF at the lower boundary (x_min) should be non-negative."
-    assert (
-        pdf[-1] >= 0
-    ), f"{distribution.__class__.__name__}: PDF at the upper boundary (x_max) should be non-negative."
-
-    # For UniformDistribution, check if the PDF is zero outside bounds
-    if isinstance(distribution, dist.Uniform):
-        assert (
-            pdf[0] == 0 or pdf[-1] == 0
-        ), "UniformDistribution: PDF should be zero at boundaries outside of distribution range."
-
 
 def test_normal_properties():
     """Test specific properties of certain distributions."""
     distribution = distributions[0]
-    sizes = distribution.generate(100)
+    sizes = distribution.sample(100)
 
     # Test for NormalDistribution: Check that the mean is approximately correct
     mean_size = np.mean(sizes)
@@ -117,7 +80,7 @@ def test_normal_properties():
 def test_lognormal_properties():
     """Test specific properties of certain distributions."""
     distribution = distributions[1]
-    diameters = distribution.generate(4000)
+    diameters = distribution.sample(4000)
 
     # Test for LogNormalDistribution: Check that the standard deviation is approximately correct
     standard_deviation_size = np.std(diameters)

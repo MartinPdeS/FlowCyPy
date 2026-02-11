@@ -176,7 +176,7 @@ class FixedWindow(FIXEDWINDOW, BaseTrigger):
 
         ax.axhline(
             self.threshold_absolute.to(signal_units).magnitude,
-            color="black",
+            color="red",
             linestyle="--",
             linewidth=1,
             label=f"Threshold: {self.threshold_absolute.to_compact():.2f}",
@@ -255,7 +255,7 @@ class DynamicWindow(DYNAMICWINDOW, BaseTrigger):
 
         ax.axhline(
             self.threshold_absolute.to(signal_units).magnitude,
-            color="black",
+            color="red",
             linestyle="--",
             linewidth=1,
             label=f"Threshold: {self.threshold_absolute.to_compact():.2f}",
@@ -358,7 +358,7 @@ class DoubleThreshold(DOUBLETHRESHOLD, BaseTrigger):
 
         ax.axhline(
             self.upper_threshold.to(signal_units).magnitude,
-            color="C0",
+            color="blue",
             linestyle="--",
             linewidth=1,
             label=f"Upper Threshold: {self.upper_threshold.to_compact():.2f}",
@@ -366,7 +366,7 @@ class DoubleThreshold(DOUBLETHRESHOLD, BaseTrigger):
         if not np.isnan(self.lower_threshold.magnitude):
             ax.axhline(
                 self.lower_threshold.to(signal_units).magnitude,
-                color="C1",
+                color="red",
                 linestyle="--",
                 linewidth=1,
                 label=f"Lower Threshold: {self.lower_threshold.to_compact():.2f}",

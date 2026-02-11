@@ -17,14 +17,6 @@ peak_algorithms = [
         compute_area=True,
         max_number_of_peaks=2,
     ),
-    peak_locator.ScipyPeakLocator(
-        height=500,
-        distance=5,
-        padding_value=-1,
-        compute_width=True,
-        compute_area=True,
-        max_number_of_peaks=2,
-    ),
 ]
 
 
@@ -98,7 +90,7 @@ def test_peak_locator_with_metrics(peak_algorithm, sample_data):
     """
     Test that the locator (with width/area enabled) computes additional metrics.
     """
-    result = peak_algorithm(sample_data)
+    result = peak_algorithm.get_metrics(sample_data)
 
     assert_set_included_close(result["Index"], PEAK_CENTERS, abs_tol=3)
 

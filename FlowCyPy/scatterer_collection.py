@@ -2,7 +2,7 @@
 from typing import List, Union
 
 import pandas as pd
-from TypedUnit import Concentration, RefractiveIndex, ureg
+from TypedUnit import Concentration
 
 from FlowCyPy.population import BasePopulation
 

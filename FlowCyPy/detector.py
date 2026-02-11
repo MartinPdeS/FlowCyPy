@@ -13,7 +13,7 @@ from TypedUnit import (
     validate_units,
 )
 
-from FlowCyPy.signal_generator import SignalGenerator
+from FlowCyPy.binary.signal_generator import SignalGenerator
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
@@ -104,7 +104,9 @@ class Detector(StrictDataclassMixing):
             )
 
         # Step 2: Convert optical power to current using the responsivity
-        signal_generator.multiply(signal_name=self.name, factor=self.responsivity)
+        signal_generator.multiply_signal(
+            channel=self.name, factor=self.responsivity.to("ampere/watt").magnitude
+        )
 
     def apply_dark_current_noise(
         self, signal_generator: SignalGenerator, bandwidth: Frequency
@@ -133,8 +135,10 @@ class Detector(StrictDataclassMixing):
             2 * 1.602176634e-19 * ureg.coulomb * self.dark_current * bandwidth
         )
 
-        signal_generator.apply_gaussian_noise(
-            signal_name=self.name, mean=self.dark_current, standard_deviation=std_noise
+        signal_generator.apply_gaussian_noise_to_signal(
+            channel=self.name,
+            mean=self.dark_current.to("ampere").magnitude,
+            standard_deviation=std_noise.to("ampere").magnitude,
         )
 
     def _get_optical_power_to_photon_factor(
@@ -226,7 +230,7 @@ class Detector(StrictDataclassMixing):
         )
 
         signal_generator.multiply(
-            signal_name=self.name, factor=optical_power_to_photo_count_conversion
+            channel=self.name, factor=optical_power_to_photo_count_conversion
         )
 
     @validate_units
@@ -278,18 +282,10 @@ class Detector(StrictDataclassMixing):
             The wavelength of the incident light (in meters).
 
         """
-        optical_power_to_photo_count_conversion = (
-            self._get_optical_power_to_photon_factor(
-                wavelength=wavelength, bandwidth=bandwidth
-            )
+        watt_to_photon = self._get_optical_power_to_photon_factor(
+            wavelength=wavelength, bandwidth=bandwidth
         )
 
-        signal_generator.multiply(
-            signal_name=self.name, factor=optical_power_to_photo_count_conversion
-        )
-
-        signal_generator.apply_poisson_noise(signal_name=self.name)
-
-        signal_generator.multiply(
-            signal_name=self.name, factor=1 / optical_power_to_photo_count_conversion
+        signal_generator.apply_poisson_noise_through_conversion(
+            channel=self.name, watt_to_photon=watt_to_photon.to("1/watt").magnitude
         )

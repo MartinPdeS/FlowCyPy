@@ -7,7 +7,7 @@ from FlowCyPy.fluidics import (
     Fluidics,
     FlowCell,
     ScattererCollection,
-    distribution,
+    distributions,
     population,
 )
 
@@ -28,39 +28,41 @@ def default_flow_cell():
     )
 
 
-# Parametrize different distributions
-distributions = [
-    distribution.Normal(
+# Parametrize different distributions_list
+distributions_list = [
+    distributions.Normal(
         mean=1.0 * ureg.micrometer, standard_deviation=100.0 * ureg.nanometer
     ),
-    distribution.LogNormal(
+    distributions.LogNormal(
         mean=1.0 * ureg.micrometer, standard_deviation=0.01 * ureg.micrometer
     ),
-    distribution.Uniform(
+    distributions.Uniform(
         lower_bound=0.5 * ureg.micrometer, upper_bound=1.5 * ureg.micrometer
     ),
-    distribution.RosinRammler(characteristic_value=0.5 * ureg.micrometer, spread=1.5),
+    distributions.RosinRammler(
+        shape=0.5 * ureg.micrometer, scale=1.5 * ureg.micrometer
+    ),
 ]
 
 
-@pytest.mark.parametrize("dist", distributions, ids=lambda x: x.__class__)
-def test_generate_distribution_size(dist, default_flow_cell):
-    """Test if the ScattererCollection generates sizes correctly for each distribution type."""
-    # Get the distribution from the fixtures
+@pytest.mark.parametrize("dist", distributions_list, ids=lambda x: x.__class__)
+def test_generate_distributions_size(dist, default_flow_cell):
+    """Test if the ScattererCollection generates sizes correctly for each distributions type."""
+    # Get the distributions from the fixtures
 
-    ri_distribution = distribution.Normal(
+    ri_distributions = distributions.Normal(
         mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
     )
 
     population_0 = population.Sphere(
         particle_count=CONCENTRATION,
         diameter=dist,
-        refractive_index=ri_distribution,
+        refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
     )
 
-    # Create the ScattererCollection Distribution object with the chosen distribution
+    # Create the ScattererCollection Distribution object with the chosen distributions
     scatterer_collection = ScattererCollection()
 
     scatterer_collection.add_population(population_0)
@@ -70,17 +72,17 @@ def test_generate_distribution_size(dist, default_flow_cell):
     )
 
 
-@pytest.mark.parametrize("dist", distributions, ids=lambda x: x.__class__)
+@pytest.mark.parametrize("dist", distributions_list, ids=lambda x: x.__class__)
 def test_generate_longitudinal_positions(default_flow_cell, dist):
     """Test the generation of longitudinal positions based on Poisson process."""
-    ri_distribution = distribution.Normal(
+    ri_distributions = distributions.Normal(
         mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
     )
 
     population_0 = population.Sphere(
         particle_count=CONCENTRATION,
         diameter=dist,
-        refractive_index=ri_distribution,
+        refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
     )
@@ -90,17 +92,17 @@ def test_generate_longitudinal_positions(default_flow_cell, dist):
     scatterer_collection.add_population(population_0)
 
 
-@pytest.mark.parametrize("dist", distributions, ids=lambda x: x.__class__)
+@pytest.mark.parametrize("dist", distributions_list, ids=lambda x: x.__class__)
 def test_add_population(dist):
     """Test the plotting of longitudinal positions."""
-    ri_distribution = distribution.Normal(
+    ri_distributions = distributions.Normal(
         mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
     )
 
     population_0 = population.Sphere(
         particle_count=CONCENTRATION,
         diameter=dist,
-        refractive_index=ri_distribution,
+        refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
     )
@@ -110,17 +112,17 @@ def test_add_population(dist):
     scatterer_collection.add_population(population_0)
 
 
-@pytest.mark.parametrize("dist", distributions, ids=lambda x: x.__class__)
+@pytest.mark.parametrize("dist", distributions_list, ids=lambda x: x.__class__)
 def test_extra(dist):
     """Test the generation of longitudinal positions based on Poisson process."""
-    ri_distribution = distribution.Normal(
+    ri_distributions = distributions.Normal(
         mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
     )
 
     population_0 = population.Sphere(
         particle_count=CONCENTRATION,
         diameter=dist,
-        refractive_index=ri_distribution,
+        refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
     )
@@ -128,7 +130,7 @@ def test_extra(dist):
     population_1 = population.Sphere(
         particle_count=CONCENTRATION,
         diameter=dist,
-        refractive_index=ri_distribution,
+        refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
     )

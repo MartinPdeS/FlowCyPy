@@ -2,12 +2,13 @@ import pandas as pd
 from TypedUnit import ureg, Time, ParticleFlux, Concentration, Particle
 import numpy as np
 
-from FlowCyPy.flow_cell import FlowCell
 from FlowCyPy.scatterer_collection import ScattererCollection
-from FlowCyPy import distribution, population  # noqa: F401
+from FlowCyPy import population  # noqa: F401
 from FlowCyPy.fluorescence import Dye, SurfaceDensityLabeling  # noqa: F401
 from FlowCyPy.simulation_settings import SimulationSettings  # noqa: F401
 from FlowCyPy.fraction_selection import FractionSelection  # noqa: F401
+from FlowCyPy.binary.flow_cell import FlowCell  # noqa: F401
+from FlowCyPy.binary import distributions  # noqa: F401
 
 
 class Fluidics:

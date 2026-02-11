@@ -1,51 +1,250 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include "flow_cell.h"
+#include <pint/pint.h>
 
 
 PYBIND11_MODULE(flow_cell, module) {
 
-    pybind11::class_<FluidRegion>(module, "FLUIDREGION")
-        .def_readwrite("_cpp_width", &FluidRegion::width)
-        .def_readwrite("_cpp_height", &FluidRegion::height)
-        .def_readwrite("_cpp_volume_flow", &FluidRegion::volume_flow)
-        .def_readwrite("_cpp_area", &FluidRegion::area)
-        .def_readwrite("_cpp_max_flow_speed", &FluidRegion::max_flow_speed)
-        .def_readwrite("_cpp_average_flow_speed", &FluidRegion::average_flow_speed)
+    py::object ureg = get_shared_ureg();
+
+    pybind11::class_<FluidRegion, std::shared_ptr<FluidRegion>>(module, "FluidRegion")
+        .def_property_readonly(
+            "width",
+            [ureg](const FluidRegion& self){
+
+                py::object output = py::float_(self.width) * ureg.attr("meter");
+                return output.attr("to_compact")();
+            },
+            R"pbdoc(
+                Return the width of the flow.
+            )pbdoc"
+        )
+        .def_property_readonly(
+            "height",
+            [ureg](const FluidRegion& self){
+
+                py::object output = py::float_(self.height) * ureg.attr("meter");
+                return output.attr("to_compact")();
+            },
+            R"pbdoc(
+                Return the height of the flow.
+            )pbdoc"
+        )
+        .def_property_readonly(
+            "volume_flow",
+            [ureg](const FluidRegion& self){
+
+                py::object output = py::float_(self.volume_flow) * ureg.attr("meter**3/second");
+                return output.attr("to_compact")();
+            },
+            R"pbdoc(
+                Return the volume flow.
+            )pbdoc"
+        )
+        .def_property_readonly(
+            "area",
+            [ureg](const FluidRegion& self){
+
+                py::object output = py::float_(self.height * self.width) * ureg.attr("meter**2");
+                return output.attr("to_compact")();
+            },
+            R"pbdoc(
+                Return the area of the flow.
+            )pbdoc"
+        )
+        .def_property_readonly(
+            "average_flow_speed",
+            [ureg](const FluidRegion& self){
+
+                py::object output = py::float_(self.average_flow_speed) * ureg.attr("meter/second");
+                return output.attr("to_compact")();
+            },
+            R"pbdoc(
+                Return the area of the flow.
+            )pbdoc"
+        )
+        .def_property_readonly(
+            "max_flow_speed",
+            [ureg](const FluidRegion& self){
+
+                py::object output = py::float_(self.max_flow_speed) * ureg.attr("meter/second");
+                return output.attr("to_compact")();
+            },
+            R"pbdoc(
+                Return the area of the flow.
+            )pbdoc"
+        )
         ;
 
-    pybind11::class_<FlowCell>(module, "FLOWCELL")
+    pybind11::class_<FlowCell, std::shared_ptr<FlowCell>>(module, "FlowCell")
         .def(
-            pybind11::init<double, double, double, double, double, int, int>(),
+            py::init(
+                    [ureg](
+                    const py::object &width,
+                    const py::object &height,
+                    const py::object &sample_volume_flow,
+                    const py::object &sheath_volume_flow,
+                    const py::object &viscosity,
+                    const size_t &N_terms,
+                    const size_t &n_int
+                ) {
+                    py::object Length = py::module_::import("FlowCyPy.units").attr("Length");
+                    py::object FlowRate = py::module_::import("FlowCyPy.units").attr("FlowRate");
+                    py::object Viscosity = py::module_::import("FlowCyPy.units").attr("Viscosity");
+
+                    Length.attr("check")(width);
+                    Length.attr("check")(height);
+
+                    FlowRate.attr("check")(sample_volume_flow);
+                    FlowRate.attr("check")(sheath_volume_flow);
+
+                    Viscosity.attr("check")(viscosity);
+
+                    double _width = width.attr("to")(ureg.attr("meter")).attr("magnitude").cast<double>();
+                    double _height = height.attr("to")(ureg.attr("meter")).attr("magnitude").cast<double>();
+
+                    double _sample_volume_flow = sample_volume_flow.attr("to")(ureg.attr("meter**3/second")).attr("magnitude").cast<double>();
+                    double _sheath_volume_flow = sheath_volume_flow.attr("to")(ureg.attr("meter**3/second")).attr("magnitude").cast<double>();
+
+                    double _viscosity = viscosity.attr("to")(ureg.attr("pascal*second")).attr("magnitude").cast<double>();
+
+                    return std::make_shared<FlowCell>(
+                        _height,
+                        _width,
+                        _sample_volume_flow,
+                        _sheath_volume_flow,
+                        _viscosity,
+                        N_terms,
+                        n_int
+                    );
+                }
+            ),
             pybind11::arg("width"),
             pybind11::arg("height"),
             pybind11::arg("sample_volume_flow"),
             pybind11::arg("sheath_volume_flow"),
-            pybind11::arg("viscosity"),
+            pybind11::arg("viscosity") = py::float_(1e-3) * ureg.attr("pascal*second"),
             pybind11::arg("N_terms") = 25,
             pybind11::arg("n_int") = 200,
             R"pbdoc(
-                Initialize a FlowCell with specified parameters.
+                Represents a rectangular flow cell in which the velocity field is computed from an
+                analytical Fourier series solution for pressure-driven flow. The focused sample region
+                is estimated from the volumetric flow rates of the sample and sheath fluids.
+
+                The analytical solution for the x-direction velocity in a rectangular channel is given by:
+
+                .. math::
+
+                u(y,z) = \frac{16b^2}{\pi^3 \mu}\left(-\frac{dp}{dx}\right)
+                        \sum_{\substack{n=1,3,5,\ldots}}^{\infty} \frac{1}{n^3}
+                        \left[
+                            1 - \frac{
+                                    \cosh\left(\frac{n\pi y}{2b}\right)
+                                }{
+                                    \cosh\left(\frac{n\pi a}{2b}\right)
+                                }
+                        \right]
+                \sin\left(\frac{n\pi (z+b)}{2b}\right)
+
+                where:
+
+                - :math:`a` is the half-width of the channel (in the y-direction),
+                - :math:`b` is the half-height of the channel (in the z-direction),
+                - :math:`mu` is the dynamic viscosity,
+                - :math:`dp/dx` is the pressure gradient driving the flow,
+                - the summation is over odd integers (i.e. :math:`n = 1, 3, 5, ...`).
+
+                The derivation of this solution is based on the method of separation of variables and
+                eigenfunction expansion applied to the Poisson equation for fully developed laminar flow.
+                The validity of this approach and the resulting solution for rectangular ducts is well documented
+                in classical fluid mechanics texts.
+
+                **References**
+
+                - Shah, R.K. & London, A.L. (1978). *Laminar Flow in Ducts*. Academic Press.
+                - White, F.M. (2006). *Viscous Fluid Flow* (3rd ed.). McGraw-Hill.
+                - Happel, J. & Brenner, H. (1983). *Low Reynolds Number Hydrodynamics*. Martinus Nijhoff.
+                - Di Carlo, D. (2009). "Inertial Microfluidics," *Lab on a Chip*, 9, 3038-3046.
+
+                In flow cytometry, hydrodynamic focusing is used to narrow the sample stream for optimal optical interrogation.
+                The same theoretical framework for rectangular duct flow is applied to these microfluidic devices.
 
                 Parameters
                 ----------
-                width : float
-                    Width of the flow cell in meters.
-                height : float
-                    Height of the flow cell in meters.
-                sample_volume_flow : float
-                    Volume flow rate of the sample in m^3/s.
-                sheath_volume_flow : float
-                    Volume flow rate of the sheath fluid in m^3/s.
-                viscosity : float
-                    Viscosity of the fluid in Pa.s.
+                width : Length
+                    Width of the channel in the y-direction (m).
+                height : Length
+                    Height of the channel in the z-direction (m).
+                mu : Quantity
+                    Dynamic viscosity of the fluid (Pa·s).
+                sample_volume_flow : FlowRate
+                    Volumetric flow rate of the sample fluid (m³/s).
+                sheath_volume_flow : FlowRate
+                    Volumetric flow rate of the sheath fluid (m³/s).
                 N_terms : int, optional
-                    Number of terms for series expansion (default is 25).
+                    Number of odd terms to use in the Fourier series solution (default: 25).
                 n_int : int, optional
-                    Number of integration points (default is 200).
+                    Number of grid points for numerical integration over the channel cross-section (default: 200).
+
+                Attributes
+                ----------
+                Q_total : Quantity
+                    Total volumetric flow rate (m³/s).
+                dpdx : float
+                    Computed pressure gradient (Pa/m) driving the flow.
+                u_center : float
+                    Centerline velocity, i.e. u(0,0) (m/s).
+                width_sample : Quantity
+                    Width of the focused sample region (m).
+                height_sample : Quantity
+                    Height of the focused sample region (m).
+                event_scheme : str
+                    Scheme for event sampling, 'uniform-random', 'sorted', 'poisson', 'preserve' (default: 'preserve').
             )pbdoc"
         )
-        .def_readonly("_cpp_sample",
+        .def_property_readonly("width",
+            [ureg](const FlowCell& self){
+
+                py::object output = py::float_(self.width) * ureg.attr("meter");
+                return output.attr("to_compact")();
+            },
+            R"pbdoc(
+                Return the width of the flowcell.
+            )pbdoc"
+        )
+        .def_property_readonly("height",
+            [ureg](const FlowCell& self){
+
+                py::object output = py::float_(self.height) * ureg.attr("meter");
+                return output.attr("to_compact")();
+            },
+            R"pbdoc(
+                Return the height of the flowcell.
+            )pbdoc"
+        )
+        .def_property_readonly("area",
+            [ureg](const FlowCell& self){
+
+                py::object output = py::float_(self.area) * ureg.attr("meter**2");
+                return output.attr("to_compact")();
+            },
+            R"pbdoc(
+                Return the area of the flowcell.
+            )pbdoc"
+        )
+        .def("get_sample_volume",
+            [ureg](const FlowCell& self, const py::object &run_time){
+                py::object output = py::float_(self.area * self.sample.average_flow_speed) * ureg.attr("meter**3 / second");
+
+                output = output * run_time;
+                return output.attr("to_compact")();
+            },
+            R"pbdoc(
+                Computes the volume passing through the flow cell over the given run time.
+            )pbdoc"
+        )
+        .def_readonly("sample",
             &FlowCell::sample,
             R"pbdoc(
                 Sample fluid region of the flow cell.
@@ -53,7 +252,7 @@ PYBIND11_MODULE(flow_cell, module) {
                 maximum flow speed, and average flow speed.
             )pbdoc"
         )
-        .def_readonly("_cpp_sheath",
+        .def_readonly("sheath",
             &FlowCell::sheath,
             R"pbdoc(
                 Sheath fluid region of the flow cell.

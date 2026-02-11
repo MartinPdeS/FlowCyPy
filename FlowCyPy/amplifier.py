@@ -3,6 +3,7 @@ from pydantic.dataclasses import dataclass
 from TypedUnit import AnyUnit, Frequency, Ohm, ureg, validate_units
 
 from FlowCyPy.simulation_settings import SimulationSettings
+from FlowCyPy.binary.circuits import ButterworthLowPass
 
 config_dict = dict(
     arbitrary_types_allowed=True, kw_only=True, slots=True, extra="forbid"
@@ -83,7 +84,7 @@ class TransimpedanceAmplifier:
         return np.sqrt(v_rms**2 + i_rms**2)
 
     @validate_units
-    def amplify(self, signal_generator: object, sampling_rate: Frequency):
+    def amplify(self, signal_generator: object):
         """
         Amplifies the input signal from a detector using the transimpedance amplifier's gain.
         The noise is added after the amplification.
@@ -112,12 +113,13 @@ class TransimpedanceAmplifier:
         ):
             signal_generator.multiply(factor=self.gain)
         else:
-            signal_generator.apply_butterworth_lowpass_filter(
-                gain=self.gain,
-                sampling_rate=sampling_rate,
-                cutoff_frequency=self.bandwidth,
+            butter_worth_filter = ButterworthLowPass(
+                gain=self.gain.to("volt/ampere").magnitude,
+                cutoff=self.bandwidth,
                 order=1,
             )
+
+            butter_worth_filter.process(signal_generator)
 
         # Add voltage related noise if enabled
         if (
@@ -125,6 +127,6 @@ class TransimpedanceAmplifier:
             and SimulationSettings.include_noises
         ):
             signal_generator.apply_gaussian_noise(
-                mean=0.0 * self.total_output_noise.units,
-                standard_deviation=self.total_output_noise,
+                mean=0.0,
+                standard_deviation=self.total_output_noise.to("volt").magnitude,
             )

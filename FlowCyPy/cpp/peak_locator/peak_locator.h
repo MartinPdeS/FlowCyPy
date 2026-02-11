@@ -1,7 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <vector>
 #include <limits>
-
+#include <unordered_map>
 
 
 struct PeakMetrics {
@@ -56,6 +56,8 @@ class BasePeakLocator {
          * \details Ensures proper cleanup of derived classes.
          */
         virtual ~BasePeakLocator(){};
+
+        virtual void compute(const std::vector<double> &array) = 0;
 
         /**
          * \brief Sorts the peaks in descending order based on their values.
@@ -116,6 +118,9 @@ class BasePeakLocator {
          */
         void pad_peaks(const std::vector<std::pair<int, double>>& peaks, size_t max_number_of_peaks, int padding_value, std::vector<int>& pad_index, std::vector<double>& pad_height);
 
+
+        std::unordered_map<std::string, std::vector<double>> get_metrics(const std::vector<double> &array);
+
 };
 
 class SlidingWindowPeakLocator : public BasePeakLocator {
@@ -146,7 +151,7 @@ class SlidingWindowPeakLocator : public BasePeakLocator {
          * \details This function processes the signal in sliding windows, finds local peaks,
          *          and computes their metrics based on the specified parameters.
          */
-        void compute(const std::vector<double> &array);
+        void compute(const std::vector<double> &array) override;
     };
 
 
@@ -174,5 +179,5 @@ class GlobalPeakLocator : public BasePeakLocator {
          * \details This function processes the signal in sliding windows, finds local peaks,
          *          and computes their metrics based on the specified parameters.
          */
-        void compute(const std::vector<double> &array);
+        void compute(const std::vector<double> &array) override;
     };

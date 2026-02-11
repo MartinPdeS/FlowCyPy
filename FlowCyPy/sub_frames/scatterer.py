@@ -56,7 +56,6 @@ class ScattererDataFrame(BaseSubFrame):
         units_list = []
 
         for col_name, col_data in df.items():
-            # Convert to compact unit
             unit = col_data.max().to_compact().units
             df[col_name] = col_data.pint.to(unit)
             units_list.append(unit)
@@ -106,7 +105,7 @@ class ScattererDataFrame(BaseSubFrame):
             palette=color_palette,
             kind="scatter",
             alpha=alpha,
-            # marginal_kws={"bw_adjust": bandwidth_adjust},
+            marginal_kws={"bw_adjust": bandwidth_adjust},
         )
 
         grid.figure.suptitle("Scatterer Sampling Distribution")

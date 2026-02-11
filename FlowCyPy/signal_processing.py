@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from FlowCyPy import circuits, peak_locator, triggering_system
+from FlowCyPy import circuits, triggering_system
 from FlowCyPy.digitizer import Digitizer
-from FlowCyPy.signal_generator import SignalGenerator
+from FlowCyPy.binary.signal_generator import SignalGenerator
+from FlowCyPy import peak_locator
 
 
 class SignalProcessing:
@@ -32,7 +33,7 @@ class SignalProcessing:
     def __init__(
         self,
         digitizer: Digitizer,
-        analog_processing: list[circuits.SignalProcessor] = (),
+        analog_processing: list[circuits.BaseCircuit] = (),
         triggering_system: triggering_system.BaseTrigger = None,
         peak_algorithm: peak_locator.BasePeakLocator = None,
     ):
@@ -57,5 +58,4 @@ class SignalProcessing:
         for circuit in self.analog_processing:
             circuit.process(
                 signal_generator=signal_generator,
-                sampling_rate=self.digitizer.sampling_rate,
             )

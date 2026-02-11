@@ -90,6 +90,25 @@ std::vector<double> BasePeakLocator::get_metric_py(const std::string &metric_nam
 }
 
 
+std::unordered_map<std::string, std::vector<double>>
+BasePeakLocator::get_metrics(const std::vector<double> &array){
+    this->compute(array);
+    std::unordered_map<std::string, std::vector<double>> output;
+
+    output["Index"] = std::vector<double>(this->peak_indices.begin(), this->peak_indices.end());
+
+    output["Height"] = this->peak_heights;
+
+    if (this->compute_area)
+        output["Area"] = this->peak_areas;
+
+    if (this->compute_width)
+        output["Width"] = this->peak_widths;
+
+    return output;
+}
+
+
 // ----------- Implementation of the SlidingWindowPeakLocator -----------------
 SlidingWindowPeakLocator::SlidingWindowPeakLocator(int window_size, int window_step, int max_number_of_peaks, int padding_value, bool compute_width, bool compute_area, double threshold)
 :   BasePeakLocator(compute_width, compute_area, padding_value, max_number_of_peaks), window_size(window_size), threshold(threshold)

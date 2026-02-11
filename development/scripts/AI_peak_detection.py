@@ -1,29 +1,29 @@
+from FlowCyPy.binary.distributions import Normal, RosinRammler, LogNormal
+from FlowCyPy.units import ureg
 import matplotlib.pyplot as plt
-import numpy as np
-import seaborn as sns
-from matplotlib.gridspec import GridSpec
-from MPSPlots.styles import mps
 
-from FlowCyPy import units
-from FlowCyPy.flow_cell import CircularFlowCell
-
-cell = CircularFlowCell(
-    volume_flow=0.3 * units.microliter / units.second,
-    radius=10 * units.micrometer,
-    focusing_factor=0.4,
+dist = Normal(
+    mean=10 * ureg.meter,
+    standard_deviation=1000 * ureg.meter,
+    # low_cutoff = 8 * ureg.meter,
+    # high_cutoff = 12 * ureg.meter,
+    strict_sampling=True,
 )
 
-cell.plot_3d(500)
+
+# dist = RosinRammler(
+#     scale=10 * ureg.meter,
+#     shape=2 * ureg.meter,
+#     low_cutoff = 8 * ureg.meter,
+#     # high_cutoff = 12 * ureg.meter,
+#     strict_sampling=True
+# )
 
 
-from FlowCyPy import units
-from FlowCyPy.flow_cell import RectangularFlowCell
+res = dist.sample(3000)
 
-cell = RectangularFlowCell(
-    volume_flow=0.3 * units.microliter / units.second,
-    width=20 * units.micrometer,
-    height=10 * units.micrometer,
-    focusing_factor=0.7,
-)
-
-cell.plot_3d(500)
+print(res)
+# print(len(res))
+plt.figure()
+plt.hist(res, bins=100)
+plt.show()

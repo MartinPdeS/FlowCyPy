@@ -5,7 +5,7 @@ from TypedUnit import ureg
 import FlowCyPy
 from FlowCyPy import SimulationSettings
 from FlowCyPy.opto_electronics import Detector
-from FlowCyPy.signal_generator import SignalGenerator
+from FlowCyPy.binary.signal_generator import SignalGenerator
 from FlowCyPy.signal_processing import Digitizer
 
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
@@ -27,11 +27,9 @@ def signal_generator():
     Returns a SignalGenerator instance with a predefined time array.
     This is used to avoid code duplication in tests.
     """
-    signal_generator = SignalGenerator(
-        N_ELEMENTS, time_units=ureg.second, signal_units=ureg.volt
-    )
+    signal_generator = SignalGenerator(N_ELEMENTS)
     signal_generator.add_time(TIME_ARRAY)
-    signal_generator.create_zero_signal(signal_name="TestDetector")
+    signal_generator.create_zero_signal(channel="TestDetector")
     return signal_generator
 
 
@@ -77,11 +75,8 @@ def test_shot_noise_generation(detector_shot_noise, signal_generator):
     SimulationSettings.include_dark_current_noise = False
     SimulationSettings.include_source_noise = False
 
-    signal_generator.signal_units = (
-        ureg.watt
-    )  # Set signal units to watts for shot noise calculation
     signal_generator.add_constant(
-        1e-3 * ureg.watt
+        1e-3
     )  # Add constant optical power to the signal units in ureg.watt
 
     detector_shot_noise.apply_shot_noise(
@@ -94,7 +89,7 @@ def test_shot_noise_generation(detector_shot_noise, signal_generator):
 
     # # Assert that the shot noise is generated and is not zero
     assert (
-        np.std(shot_noise) > 0 * ureg.watt
+        np.std(shot_noise) > 0
     ), "Shot noise variance is zero, indicating no noise generated."
 
 
@@ -104,10 +99,6 @@ def test_dark_current_noise_generation(detector_dark_current, signal_generator):
     SimulationSettings.include_dark_current_noise = True
     SimulationSettings.include_source_noise = False
 
-    signal_generator.signal_units = (
-        ureg.ampere
-    )  # Set signal units to amperes for dark current noise calculation
-
     detector_dark_current.apply_dark_current_noise(
         signal_generator=signal_generator, bandwidth=digitizer.bandwidth
     )
@@ -116,7 +107,7 @@ def test_dark_current_noise_generation(detector_dark_current, signal_generator):
 
     # Assert that dark current noise is added to the signal
     assert (
-        np.std(dark_current_noise) > 0 * ureg.ampere
+        np.std(dark_current_noise) > 0
     ), "Dark current noise variance is zero, indicating no noise generated."
 
 

@@ -1,27 +1,26 @@
 #include "circuits.h"
 
 void BaseLineRestoration::process(SignalGenerator &signal_generator) {
-    // #pragma omp parallel for
+    double sampling_rate = signal_generator.get_sampling_rate();
+
+    size_t window_size_units = round(this->window_size  / sampling_rate);
+
     for (auto &entry : signal_generator.data_dict)
         if (entry.first != "Time")
-            signal_generator.apply_baseline_restoration(window_size);
+            signal_generator.apply_baseline_restoration(window_size_units);
 }
 
-ButterworthLowPassFilter::ButterworthLowPassFilter(double sampling_rate, double cutoff_frequency, int order, double gain)
-: sampling_rate(sampling_rate), cutoff_frequency(cutoff_frequency), order(order), gain(gain) {}
-
 void ButterworthLowPassFilter::process(SignalGenerator &signal_generator) {
-    // #pragma omp parallel for
+    double sampling_rate = signal_generator.get_sampling_rate();
+
     for (auto &entry : signal_generator.data_dict)
         if (entry.first != "Time")
             utils::apply_butterworth_lowpass_filter_to_signal(entry.second, sampling_rate, cutoff_frequency, order, gain);
 }
 
-BesselLowPassFilter::BesselLowPassFilter(double sampling_rate, double cutoff_frequency, int order, double gain)
-: sampling_rate(sampling_rate), cutoff_frequency(cutoff_frequency), order(order), gain(gain) {}
-
 void BesselLowPassFilter::process(SignalGenerator &signal_generator) {
-    // #pragma omp parallel for
+    double sampling_rate = signal_generator.get_sampling_rate();
+
     for (auto &entry : signal_generator.data_dict)
         if (entry.first != "Time")
             utils::apply_bessel_lowpass_filter_to_signal(entry.second, sampling_rate, cutoff_frequency, order, gain);

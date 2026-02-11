@@ -1,16 +1,12 @@
-from abc import ABC
-
 import pandas as pd
 
+from FlowCyPy.binary.peak_locator import SlidingWindowPeakLocator
+from FlowCyPy.binary.peak_locator import GlobalPeakLocator as Binding
 from FlowCyPy.sub_frames.peaks import PeakDataFrame
+from FlowCyPy.binary.peak_locator import BasePeakLocator
 
 
-class BasePeakLocator(ABC):
-    """
-    A base class to handle common functionality for peak detection,
-    including area calculation under peaks.
-    """
-
+class _Base:
     def run(self, signal_dataframe: pd.DataFrame) -> PeakDataFrame:
         """
         Detects peaks for each segment using a custom peak detection function and stores results
@@ -56,9 +52,17 @@ class BasePeakLocator(ABC):
             ):
                 signal = group.values.quantity.magnitude
 
-                peak_dict = self(signal)
+                peak_dict = self.get_metrics(signal)
 
                 for key, value in peak_dict.items():
                     df.loc[(detector_name, segment_id), key] = value
 
         return PeakDataFrame(df)
+
+
+class GlobalPeakLocator(Binding, _Base):
+    pass
+
+
+class SlidingWindowPeakLocator(SlidingWindowPeakLocator, _Base):
+    pass

@@ -34,6 +34,7 @@ class FlowCell {
 public:
     double width;  // [m]
     double height; // [m]
+    double area; //[m^2]
     double viscosity;     // [Pa.s]
     double sample_volume_flow; // [m^3/s]
     double sheath_volume_flow; // [m^3/s]

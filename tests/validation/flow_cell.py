@@ -7,9 +7,8 @@ import FlowCyPy
 # Import necessary components from FlowCyPy.
 from FlowCyPy.fluidics import (
     FlowCell,
-    Fluidics,
     ScattererCollection,
-    distribution,
+    distributions,
     population,
 )
 
@@ -29,7 +28,7 @@ def valid_flowcell():
         height=10 * ureg.micrometer,
         sample_volume_flow=0.3 * ureg.microliter / ureg.second,
         sheath_volume_flow=3 * ureg.microliter / ureg.second,
-        mu=1e-3 * ureg.pascal * ureg.second,
+        viscosity=1e-3 * ureg.pascal * ureg.second,
         N_terms=25,
         n_int=200,
     )
@@ -38,14 +37,14 @@ def valid_flowcell():
 @pytest.fixture
 def real_population():
     """
-    Create a real Population instance using FlowCyPy's Sphere population with delta distributions.
+    Create a real Population instance using FlowCyPy's Sphere population with delta distributionss.
     """
     return population.Sphere(
         name="Population",
         particle_count=10 * ureg.particle,
-        diameter=distribution.Delta(position=150 * ureg.nanometer),
+        diameter=distributions.Delta(position=150 * ureg.nanometer),
         medium_refractive_index=1.33 * ureg.RIU,
-        refractive_index=distribution.Delta(position=1.39 * ureg.RIU),
+        refractive_index=distributions.Delta(position=1.39 * ureg.RIU),
     )
 
 
@@ -70,24 +69,24 @@ def test_flowcell_creation(valid_flowcell):
 
 
 def test_invalid_width_type():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, AssertionError):
         FlowCell(
             width=10e-6,  # Not a Quantity
             height=10e-6 * ureg.meter,
             sample_volume_flow=0.3 * ureg.microliter / ureg.second,
             sheath_volume_flow=3 * ureg.microliter / ureg.second,
-            mu=1e-3 * ureg.pascal * ureg.second,
+            viscosity=1e-3 * ureg.pascal * ureg.second,
         )
 
 
 def test_invalid_flow_units():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, AssertionError):
         FlowCell(
             width=10 * ureg.micrometer,
             height=10 * ureg.micrometer,
             sample_volume_flow=0.3 * ureg.meter,  # Wrong unit
             sheath_volume_flow=3 * ureg.microliter / ureg.second,
-            mu=1e-3 * ureg.pascal * ureg.second,
+            viscosity=1e-3 * ureg.pascal * ureg.second,
         )
 
 

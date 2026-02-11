@@ -26,7 +26,7 @@
 class SignalGenerator {
 public:
 
-    /// Dictionary of signal_name -> vector values. The key "Time" is reserved for the time axis.
+    /// Dictionary of channel -> vector values. The key "Time" is reserved for the time axis.
     std::map<std::string, std::vector<double>> data_dict;
 
     /// Common number of samples for every stored signal.
@@ -54,55 +54,55 @@ public:
 
     /**
      * @brief Check if a signal exists in the dictionary.
-     * @param signal_name Name to query.
+     * @param channel Name to query.
      * @return True if present, false otherwise.
      */
-    bool has_signal(const std::string& signal_name) const {
-        return data_dict.find(signal_name) != data_dict.end();
+    bool has_signal(const std::string& channel) const {
+        return data_dict.find(channel) != data_dict.end();
     }
 
     // ----------------------------- Setters and Getters -----------------------------
 
     /**
      * @brief Create a new signal initialized with zeros.
-     * @param signal_name Name of the signal to create.
+     * @param channel Name of the signal to create.
      * @throws std::runtime_error If the name already exists.
      */
-    void create_zero_signal(const std::string &signal_name);
+    void create_zero_signal(const std::string &channel);
 
     /**
      * @brief Insert a signal with explicit data.
-     * @param signal_name Name of the signal to add.
+     * @param channel Name of the signal to add.
      * @param signal_data Vector of values. Size must equal n_elements.
      * @throws std::runtime_error If the name exists or size mismatches n_elements.
      */
-    void add_signal(const std::string &signal_name, const std::vector<double> &signal_data);
+    void add_channel(const std::string &channel, const std::vector<double> &signal_data);
 
     /**
      * @brief Mutable access to a stored signal.
-     * @param signal_name Name of the signal to retrieve.
+     * @param channel Name of the signal to retrieve.
      * @return Reference to the signal vector.
      * @throws std::runtime_error If the signal does not exist.
      */
-    std::vector<double> &get_signal(const std::string &signal_name);
+    std::vector<double> &get_signal(const std::string &channel);
 
     /**
      * @brief Const access to a stored signal.
-     * @param signal_name Name of the signal to retrieve.
+     * @param channel Name of the signal to retrieve.
      * @return Const reference to the signal vector.
      * @throws std::runtime_error If the signal does not exist.
      */
-    const std::vector<double> &get_signal_const(const std::string &signal_name) const;
+    const std::vector<double> &get_signal_const(const std::string &channel) const;
 
     // ----------------------------- Basics Operations ------------------------------
 
     /**
      * @brief Add a constant to every sample of a given signal.
-     * @param signal_name Target signal name.
+     * @param channel Target signal name.
      * @param constant Value to add.
      * @throws std::runtime_error If the signal does not exist.
      */
-    void add_constant_to_signal(const std::string &signal_name, double constant);
+    void add_constant_to_signal(const std::string &channel, double constant);
 
     /**
      * @brief Add a constant to every sample of all signals except the time axis.
@@ -112,11 +112,11 @@ public:
 
     /**
      * @brief Multiply a given signal by a constant factor.
-     * @param signal_name Target signal name.
+     * @param channel Target signal name.
      * @param factor Multiplicative factor.
      * @throws std::runtime_error If the signal does not exist.
      */
-    void multiply_signal(const std::string &signal_name, double factor);
+    void multiply_signal(const std::string &channel, double factor);
 
     /**
      * @brief Multiply all signals by a constant factor, skipping the time axis.
@@ -126,10 +126,10 @@ public:
 
     /**
      * @brief Round each sample of a given signal to the nearest integer.
-     * @param signal_name Target signal name.
+     * @param channel Target signal name.
      * @throws std::runtime_error If the signal does not exist.
      */
-    void round_signal(const std::string &signal_name);
+    void round_signal(const std::string &channel);
 
     /**
      * @brief Round each sample of all signals to the nearest integer, skipping the time axis.
@@ -140,14 +140,14 @@ public:
      * @brief List names of all stored signals except the time axis.
      * @return Vector of names.
      */
-    std::vector<std::string> get_signal_names() const {
-        std::vector<std::string> signal_names;
-        signal_names.reserve(data_dict.size());
+    std::vector<std::string> get_channels() const {
+        std::vector<std::string> channels;
+        channels.reserve(data_dict.size());
         for (const auto &pair : data_dict) {
             if (pair.first == TIME_KEY) continue;
-            signal_names.push_back(pair.first);
+            channels.push_back(pair.first);
         }
-        return signal_names;
+        return channels;
     }
 
     // ----------------------------- Complex Operations -----------------------------
@@ -181,7 +181,7 @@ public:
      * @see apply_butterworth_lowpass_filter for parameter meaning.
      * @throws std::runtime_error If the signal does not exist.
      */
-    void apply_butterworth_lowpass_filter_to_signal(const std::string &signal_name, double sampling_rate, double cutoff_frequency, int order, double gain);
+    void apply_butterworth_lowpass_filter_to_signal(const std::string &channel, double sampling_rate, double cutoff_frequency, int order, double gain);
 
     /**
      * @brief Synthesize a composite signal as a sum of Gaussian pulses on a constant background for all signals.
@@ -204,7 +204,7 @@ public:
      * @see generate_pulses for the mathematical form and preconditions.
      * @throws std::runtime_error If the signal or time axis is missing or sizes do not match.
      */
-    void generate_pulses_signal(const std::string &signal_name, const std::vector<double> &sigmas, const std::vector<double> &centers, const std::vector<double> &coupling_power, double background_power);
+    void generate_pulses_signal(const std::string &channel, const std::vector<double> &sigmas, const std::vector<double> &centers, const std::vector<double> &coupling_power, double background_power);
 
     /**
      * @brief Apply a Bessel low pass filter to all signals except the time axis.
@@ -225,7 +225,7 @@ public:
      * @see apply_bessel_lowpass_filter for parameter meaning.
      * @throws std::runtime_error If the signal does not exist.
      */
-    void apply_bessel_lowpass_filter_to_signal(const std::string &signal_name, double sampling_rate, double cutoff_frequency, int order, double gain);
+    void apply_bessel_lowpass_filter_to_signal(const std::string &channel, double sampling_rate, double cutoff_frequency, int order, double gain);
 
     // ----------------------------- Noise Operations ------------------------------
 
@@ -239,13 +239,13 @@ public:
 
     /**
      * @brief Add independent Gaussian noise to one signal.
-     * @param signal_name Target signal name.
+     * @param channel Target signal name.
      * @param mean Mean of the Gaussian distribution.
      * @param standard_deviation Standard deviation of the Gaussian distribution.
      * @throws std::runtime_error If the signal does not exist.
      * @note Uses the instance random generator for reproducibility.
      */
-    void add_gaussian_noise_to_signal(const std::string &signal_name, double mean, double standard_deviation);
+    void add_gaussian_noise_to_signal(const std::string &channel, double mean, double standard_deviation);
 
     /**
      * @brief Apply Poisson noise to a single signal.
@@ -253,10 +253,10 @@ public:
      * Values must be non negative. For large means an internal Gaussian
      * approximation may be used. The operation is in place.
      *
-     * @param signal_name Target signal name.
+     * @param channel Target signal name.
      * @throws std::runtime_error If the signal does not exist or contains negative values.
      */
-    void apply_poisson_noise_to_signal(const std::string &signal_name);
+    void apply_poisson_noise_to_signal(const std::string &channel);
 
     /**
      * @brief Apply Poisson noise to all signals except the time axis.
@@ -270,11 +270,11 @@ public:
      * The added_array must have size equal to n_elements.
      * Uses in place update.
      *
-     * @param signal_name Target signal name.
+     * @param channel Target signal name.
      * @param added_array Array of values to add.
      * @throws std::runtime_error If the signal does not exist or size mismatches.
      */
-    void add_array_to_signal(const std::string& signal_name, const std::vector<double>& added_array);
+    void add_array_to_signal(const std::string& channel, const std::vector<double>& added_array);
 
     /**
      * @brief Convolve a signal with a Gaussian kernel using FFTW.
@@ -285,11 +285,11 @@ public:
      *
      * Convolution is done through frequency domain multiplication for efficiency.
      *
-     * @param signal_name Name of the signal to convolve.
+     * @param channel Name of the signal to convolve.
      * @param sigma Standard deviation of the Gaussian kernel.
      * @throws std::runtime_error If the signal does not exist or the time axis is missing.
      */
-    void convolve_signal_with_gaussian(const std::string& signal_name, double sigma);
+    void convolve_signal_with_gaussian(const std::string& channel, double sigma);
 
 
     /**
@@ -302,7 +302,7 @@ public:
      *     exp(-(t^2) / (2 gaussian_sigma^2))
      * before being added.
      *
-     * @param signal_name Name of the target signal.
+     * @param channel Name of the target signal.
      * @param shape Shape parameter for the gamma distribution (k > 0).
      * @param scale Scale parameter for the gamma distribution (theta > 0).
      * @param gaussian_sigma Sigma of the Gaussian convolution kernel.
@@ -311,10 +311,28 @@ public:
      * @return The generated gamma trace (after convolution if applied).
      */
     std::vector<double> add_gamma_trace(
-        const std::string& signal_name,
+        const std::string& channel,
         double shape,
         double scale,
-        double gaussian_sigma = 0.0);
+        double gaussian_sigma = 0.0
+    );
+
+
+    void add_poisson_noise_through_conversion(
+        const std::string& channel,
+        const double watt_to_photon
+    ) {
+        this->multiply_signal(channel, watt_to_photon);
+
+        this->apply_poisson_noise_to_signal(channel);
+
+        this->multiply_signal(channel, 1. / watt_to_photon);
+    }
+
+    double get_sampling_rate() {
+        auto it = data_dict.find("Time");
+        return (it->second[1] - it->second[0]);
+    }
 
 
 private:
@@ -322,30 +340,30 @@ private:
 
     /**
      * @brief Strict Poisson sampling for each sample of a signal.
-     * @param signal_name Target signal name.
+     * @param channel Target signal name.
      * @throws std::runtime_error If the signal is missing, empty, or contains negative values.
      */
-    void _apply_poisson_noise_to_signal(const std::string &signal_name);
+    void _apply_poisson_noise_to_signal(const std::string &channel);
 
     /**
      * @brief Gaussian approximation to Poisson noise for each sample of a signal.
-     * @param signal_name Target signal name.
+     * @param channel Target signal name.
      * @throws std::runtime_error If the signal is missing, empty, or contains negative values.
      */
-    void _apply_poisson_noise_as_gaussian_to_signal(const std::string &signal_name);
+    void _apply_poisson_noise_as_gaussian_to_signal(const std::string &channel);
 
     /**
      * @brief Mixed strategy for Poisson noise, using Poisson for small means and Gaussian for large means.
-     * @param signal_name Target signal name.
+     * @param channel Target signal name.
      * @throws std::runtime_error If the signal is missing, empty, or contains negative values.
      */
-    void _apply_mixed_poisson_noise_to_signal(const std::string &signal_name);
+    void _apply_mixed_poisson_noise_to_signal(const std::string &channel);
 
     /**
      * @brief Throw if a signal is not present.
-     * @param signal_name Name to check.
+     * @param channel Name to check.
      */
-    void assert_signal_exists(const std::string& signal_name) const;
+    void assert_signal_exists(const std::string& channel) const;
 
     /**
      * @brief Throw if the time axis is missing or has an unexpected size.

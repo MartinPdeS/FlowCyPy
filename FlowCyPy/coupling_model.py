@@ -90,14 +90,13 @@ class ScatteringModel:
 
         detector = _PyMieSim.detector.Photodiode.build_sequential(
             total_size=num_particles,
-            mode_number="NC00",
             NA=self.detector.numerical_aperture,
             cache_NA=self.detector.cache_numerical_aperture,
             gamma_offset=self.detector.gamma_angle,
             phi_offset=self.detector.phi_angle,
             polarization_filter=np.nan * ureg.degree,
             sampling=self.detector.sampling,
-            rotation=0 * ureg.degree,
+            medium_refractive_index=1.0 * ureg.dimensionless,  # TODO: make configurable
         )
 
         return source, detector
@@ -129,8 +128,10 @@ class ScatteringModel:
         scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
             total_size=num_particles,
             diameter=event_dataframe["Diameter"].values.quantity,
-            property=event_dataframe["RefractiveIndex"].values.quantity,
-            medium_property=event_dataframe["MediumRefractiveIndex"].values.quantity,
+            refractive_index=event_dataframe["RefractiveIndex"].values.quantity,
+            medium_refractive_index=event_dataframe[
+                "MediumRefractiveIndex"
+            ].values.quantity,
             source=source,
         )
 
@@ -175,10 +176,14 @@ class ScatteringModel:
         scatterer = _PyMieSim.scatterer.CoreShell.build_sequential(
             total_size=num_particles,
             core_diameter=event_dataframe["CoreDiameter"].values.quantity,
-            core_property=event_dataframe["CoreRefractiveIndex"].values.quantity,
+            core_refractive_index=event_dataframe[
+                "CoreRefractiveIndex"
+            ].values.quantity,
             shell_thickness=event_dataframe["ShellThickness"].values.quantity,
-            shell_property=event_dataframe["ShellRefractiveIndex"].values.quantity,
-            medium_property=event_dataframe.medium_refractive_index,
+            shell_refractive_index=event_dataframe[
+                "ShellRefractiveIndex"
+            ].values.quantity,
+            medium_refractive_index=event_dataframe.medium_refractive_index,
             source=source,
         )
 

@@ -6,6 +6,7 @@
 FlowCell::FlowCell(double width, double height, double sample_volume_flow, double sheath_volume_flow, double viscosity, int N_terms, int n_int)
     : width(width), height(height), viscosity(viscosity), sample_volume_flow(sample_volume_flow), sheath_volume_flow(sheath_volume_flow), N_terms(N_terms), n_int(n_int)
 {
+    this->area = this->height * this->width;
     this->initialize();
 }
 

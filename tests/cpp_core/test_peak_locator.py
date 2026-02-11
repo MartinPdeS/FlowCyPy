@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from FlowCyPy.binary.peak_locator import GLOBALPEAKLOCATOR, SLIDINGWINDOWPEAKLOCATOR
+from FlowCyPy.binary.peak_locator import GlobalPeakLocator, SlidingWindowPeakLocator
 
 # ----------------- HELPER FUNCTIONS -----------------
 
@@ -65,17 +65,15 @@ def test_sliding_window_basic_peak_detection():
             {"center": 80, "height": 7, "width": 8},
         ],
     )
-    locator = SLIDINGWINDOWPEAKLOCATOR(
+    locator = SlidingWindowPeakLocator(
         window_size=20, window_step=10, max_number_of_peaks=3
     )
-    locator.compute(signal)
 
-    indices = locator.get_metric("Index")
-    heights = locator.get_metric("Height")
+    result = locator.get_metrics(signal)
 
-    assert isinstance(indices, list)
-    assert isinstance(heights, list)
-    assert len(heights) == 3
+    assert isinstance(result["Index"], list)
+    assert isinstance(result["Height"], list)
+    assert len(result["Height"]) == 3
 
 
 def test_sliding_window_with_width_and_area():
@@ -87,7 +85,7 @@ def test_sliding_window_with_width_and_area():
         ],
         mode="gaussian",
     )
-    locator = SLIDINGWINDOWPEAKLOCATOR(
+    locator = SlidingWindowPeakLocator(
         window_size=25,
         window_step=10,
         max_number_of_peaks=5,
@@ -95,31 +93,30 @@ def test_sliding_window_with_width_and_area():
         compute_area=True,
         threshold=0.5,
     )
-    locator.compute(signal)
 
-    widths = locator.get_metric("Width")
-    indices = locator.get_metric("Index")
+    result = locator.get_metrics(signal)
 
-    assert len(widths) == len(indices)
+    assert len(result["Width"]) == len(result["Index"])
 
 
 def test_sliding_window_empty_signal():
     signal = np.zeros(100)
-    locator = SLIDINGWINDOWPEAKLOCATOR(window_size=20)
-    locator.compute(signal)
-    heights = locator.get_metric("Height")
-    heights = np.asarray(heights)
+    locator = SlidingWindowPeakLocator(window_size=20)
+
+    result = locator.get_metrics(signal)
+
+    heights = np.asarray(result["Height"])
     assert np.all(heights == 0.0) or np.all(np.isnan(heights))
 
 
 def test_sliding_window_rejects_non_1d_input():
-    locator = SLIDINGWINDOWPEAKLOCATOR(window_size=10)
+    locator = SlidingWindowPeakLocator(window_size=10)
     bad_input = np.zeros((10, 10))
     with pytest.raises(TypeError):
         locator.compute(bad_input)
 
 
-# === GLOBALPEAKLOCATOR tests ===
+# === GlobalPeakLocator tests ===
 
 
 def test_global_peak_basic():
@@ -131,44 +128,39 @@ def test_global_peak_basic():
             {"center": 70, "height": 6, "width": 5},
         ],
     )
-    locator = GLOBALPEAKLOCATOR()
+    locator = GlobalPeakLocator()
     locator.compute(signal)
 
-    indices = locator.get_metric("Index")
+    result = locator.get_metrics(signal)
 
-    assert isinstance(indices, list)
-    assert len(indices) == 1
-    assert indices[0] == 38
+    assert isinstance(result["Index"], list)
+    assert len(result["Index"]) == 1
+    assert result["Index"][0] == 38
 
 
 def test_global_peak_with_width_and_area():
     signal = generate_peak_signal(
         length=100, peaks=[{"center": 50, "height": 10, "width": 10}], mode="gaussian"
     )
-    locator = GLOBALPEAKLOCATOR(compute_width=True, compute_area=True)
-    locator.compute(signal)
+    locator = GlobalPeakLocator(compute_width=True, compute_area=True)
 
-    widths = locator.get_metric("Width")
-    areas = locator.get_metric("Area")
+    result = locator.get_metrics(signal)
 
-    assert not np.isnan(widths[0])
-    assert not np.isnan(areas[0])
+    assert not np.isnan(result["Width"][0])
+    assert not np.isnan(result["Area"][0])
 
 
 def test_global_peak_handles_flat_signal():
     signal = np.ones(100)
-    locator = GLOBALPEAKLOCATOR()
-    locator.compute(signal)
+    locator = GlobalPeakLocator()
+    result = locator.get_metrics(signal)
 
-    heights = locator.get_metric("Height")
-    indices = locator.get_metric("Index")
-
-    assert len(indices) == 1
-    assert heights[0] == 1.0
+    assert len(result["Index"]) == 1
+    assert result["Height"][0] == 1.0
 
 
 def test_global_peak_rejects_non_1d_input():
-    locator = GLOBALPEAKLOCATOR()
+    locator = GlobalPeakLocator()
     bad_input = np.ones((10, 10))
     with pytest.raises(TypeError):
         locator.compute(bad_input)

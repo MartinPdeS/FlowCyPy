@@ -7,9 +7,9 @@
 
 // ----------------------------- Internal checks -----------------------------
 
-void SignalGenerator::assert_signal_exists(const std::string& signal_name) const {
-    if (!has_signal(signal_name))
-        throw std::runtime_error("Signal '" + signal_name + "' does not exist.");
+void SignalGenerator::assert_signal_exists(const std::string& channel) const {
+    if (!has_signal(channel))
+        throw std::runtime_error("Signal '" + channel + "' does not exist.");
 }
 
 void SignalGenerator::assert_time_signal_ready() const {
@@ -22,31 +22,31 @@ void SignalGenerator::assert_time_signal_ready() const {
 
 // ----------------------------- Setters and Getters -----------------------------
 
-void SignalGenerator::add_signal(const std::string &signal_name, const std::vector<double> &signal_data) {
-    if (has_signal(signal_name))
-        throw std::runtime_error("Signal '" + signal_name + "' already exists.");
+void SignalGenerator::add_channel(const std::string &channel, const std::vector<double> &signal_data) {
+    if (has_signal(channel))
+        throw std::runtime_error("Signal '" + channel + "' already exists.");
     if (signal_data.size() != n_elements)
-        throw std::runtime_error("Signal '" + signal_name + "' size does not match n_elements.");
-    data_dict.emplace(signal_name, signal_data);
+        throw std::runtime_error("Signal '" + channel + "' size does not match n_elements.");
+    data_dict.emplace(channel, signal_data);
 }
 
-void SignalGenerator::create_zero_signal(const std::string &signal_name) {
-    if (has_signal(signal_name))
-        throw std::runtime_error("Signal '" + signal_name + "' already exists.");
-    data_dict.emplace(signal_name, std::vector<double>(n_elements, 0.0));
+void SignalGenerator::create_zero_signal(const std::string &channel) {
+    if (has_signal(channel))
+        throw std::runtime_error("Signal '" + channel + "' already exists.");
+    data_dict.emplace(channel, std::vector<double>(n_elements, 0.0));
 }
 
-std::vector<double> &SignalGenerator::get_signal(const std::string &signal_name) {
-    auto it = data_dict.find(signal_name);
+std::vector<double> &SignalGenerator::get_signal(const std::string &channel) {
+    auto it = data_dict.find(channel);
     if (it == data_dict.end())
-        throw std::runtime_error("Signal '" + signal_name + "' does not exist.");
+        throw std::runtime_error("Signal '" + channel + "' does not exist.");
     return it->second;
 }
 
-const std::vector<double> &SignalGenerator::get_signal_const(const std::string &signal_name) const {
-    auto it = data_dict.find(signal_name);
+const std::vector<double> &SignalGenerator::get_signal_const(const std::string &channel) const {
+    auto it = data_dict.find(channel);
     if (it == data_dict.end())
-        throw std::runtime_error("Signal '" + signal_name + "' does not exist.");
+        throw std::runtime_error("Signal '" + channel + "' does not exist.");
     return it->second;
 }
 
@@ -59,10 +59,10 @@ void SignalGenerator::add_constant(double constant) {
     }
 }
 
-void SignalGenerator::add_constant_to_signal(const std::string &signal_name, double constant) {
-    auto it = data_dict.find(signal_name);
+void SignalGenerator::add_constant_to_signal(const std::string &channel, double constant) {
+    auto it = data_dict.find(channel);
     if (it == data_dict.end())
-        throw std::runtime_error("Signal '" + signal_name + "' does not exist.");
+        throw std::runtime_error("Signal '" + channel + "' does not exist.");
 
     auto& vec = it->second;
     const size_t n = vec.size();
@@ -81,10 +81,10 @@ void SignalGenerator::multiply(double factor) {
     }
 }
 
-// void SignalGenerator::multiply_signal(const std::string &signal_name, double factor) {
-//     auto it = data_dict.find(signal_name);
+// void SignalGenerator::multiply_signal(const std::string &channel, double factor) {
+//     auto it = data_dict.find(channel);
 //     if (it == data_dict.end())
-//         throw std::runtime_error("Signal '" + signal_name + "' does not exist.");
+//         throw std::runtime_error("Signal '" + channel + "' does not exist.");
 
 //     auto& vec = it->second;
 //     const size_t n = vec.size();
@@ -94,10 +94,10 @@ void SignalGenerator::multiply(double factor) {
 //         vec[i] *= factor;
 // }
 
-void SignalGenerator::multiply_signal(const std::string& signal_name, double factor) {
-    auto it = data_dict.find(signal_name);
+void SignalGenerator::multiply_signal(const std::string& channel, double factor) {
+    auto it = data_dict.find(channel);
     if (it == data_dict.end())
-        throw std::runtime_error("Signal '" + signal_name + "' does not exist.");
+        throw std::runtime_error("Signal '" + channel + "' does not exist.");
 
     auto& vec = it->second;
     const size_t n = vec.size();
@@ -110,10 +110,10 @@ void SignalGenerator::multiply_signal(const std::string& signal_name, double fac
 }
 
 
-void SignalGenerator::round_signal(const std::string &signal_name) {
-    auto it = data_dict.find(signal_name);
+void SignalGenerator::round_signal(const std::string &channel) {
+    auto it = data_dict.find(channel);
     if (it == data_dict.end())
-        throw std::runtime_error("Signal '" + signal_name + "' does not exist.");
+        throw std::runtime_error("Signal '" + channel + "' does not exist.");
 
     auto& vec = it->second;
     const size_t n = vec.size();
@@ -152,14 +152,14 @@ void SignalGenerator::apply_butterworth_lowpass_filter(
 }
 
 void SignalGenerator::apply_butterworth_lowpass_filter_to_signal(
-    const std::string &signal_name,
+    const std::string &channel,
     double sampling_rate,
     double cutoff_frequency,
     int order,
     double gain)
 {
-    assert_signal_exists(signal_name);
-    utils::apply_butterworth_lowpass_filter_to_signal(data_dict[signal_name], sampling_rate, cutoff_frequency, order, gain);
+    assert_signal_exists(channel);
+    utils::apply_butterworth_lowpass_filter_to_signal(data_dict[channel], sampling_rate, cutoff_frequency, order, gain);
 }
 
 void SignalGenerator::generate_pulses(
@@ -182,13 +182,13 @@ void SignalGenerator::generate_pulses(
 }
 
 void SignalGenerator::generate_pulses_signal(
-    const std::string& signal_name,
+    const std::string& channel,
     const std::vector<double> &sigmas,
     const std::vector<double> &centers,
     const std::vector<double> &coupling_power,
     double background_power)
 {
-    assert_signal_exists(signal_name);
+    assert_signal_exists(channel);
     assert_time_signal_ready();
     const auto& time = data_dict.at(TIME_KEY);
 
@@ -196,7 +196,7 @@ void SignalGenerator::generate_pulses_signal(
         throw std::runtime_error("sigmas, centers, and coupling_power must have the same size.");
 
     utils::generate_pulses_signal(
-        data_dict[signal_name],
+        data_dict[channel],
         sigmas,
         centers,
         coupling_power,
@@ -218,14 +218,14 @@ void SignalGenerator::apply_bessel_lowpass_filter(
 }
 
 void SignalGenerator::apply_bessel_lowpass_filter_to_signal(
-    const std::string &signal_name,
+    const std::string &channel,
     double sampling_rate,
     double cutoff_frequency,
     int order,
     double gain)
 {
-    assert_signal_exists(signal_name);
-    utils::apply_bessel_lowpass_filter_to_signal(data_dict[signal_name], sampling_rate, cutoff_frequency, order, gain);
+    assert_signal_exists(channel);
+    utils::apply_bessel_lowpass_filter_to_signal(data_dict[channel], sampling_rate, cutoff_frequency, order, gain);
 }
 
 // ----------------------------- Noise Operations ------------------------------
@@ -238,23 +238,23 @@ void SignalGenerator::add_gaussian_noise(double mean, double standard_deviation)
 }
 
 void SignalGenerator::add_gaussian_noise_to_signal(
-    const std::string &signal_name,
+    const std::string &channel,
     double mean,
     double standard_deviation)
 {
-    assert_signal_exists(signal_name);
-    utils::add_gaussian_noise_to_signal(data_dict[signal_name], mean, standard_deviation, random_generator);
+    assert_signal_exists(channel);
+    utils::add_gaussian_noise_to_signal(data_dict[channel], mean, standard_deviation, random_generator);
 }
 
-void SignalGenerator::apply_poisson_noise_to_signal(const std::string &signal_name) {
-    assert_signal_exists(signal_name);
-    _apply_mixed_poisson_noise_to_signal(signal_name);
+void SignalGenerator::apply_poisson_noise_to_signal(const std::string &channel) {
+    assert_signal_exists(channel);
+    _apply_mixed_poisson_noise_to_signal(channel);
 }
 
-void SignalGenerator::_apply_mixed_poisson_noise_to_signal(const std::string &signal_name) {
-    auto& signal = data_dict[signal_name];
+void SignalGenerator::_apply_mixed_poisson_noise_to_signal(const std::string &channel) {
+    auto& signal = data_dict[channel];
     if (signal.empty())
-        throw std::runtime_error("Signal '" + signal_name + "' is empty.");
+        throw std::runtime_error("Signal '" + channel + "' is empty.");
 
     constexpr double threshold = 1e6;
 
@@ -273,10 +273,10 @@ void SignalGenerator::_apply_mixed_poisson_noise_to_signal(const std::string &si
     }
 }
 
-void SignalGenerator::_apply_poisson_noise_to_signal(const std::string &signal_name) {
-    auto& signal = data_dict[signal_name];
+void SignalGenerator::_apply_poisson_noise_to_signal(const std::string &channel) {
+    auto& signal = data_dict[channel];
     if (signal.empty())
-        throw std::runtime_error("Signal '" + signal_name + "' is empty.");
+        throw std::runtime_error("Signal '" + channel + "' is empty.");
 
     for (size_t i = 0; i < signal.size(); ++i) {
         if (signal[i] < 0.0)
@@ -286,10 +286,10 @@ void SignalGenerator::_apply_poisson_noise_to_signal(const std::string &signal_n
     }
 }
 
-void SignalGenerator::_apply_poisson_noise_as_gaussian_to_signal(const std::string &signal_name) {
-    auto& signal = data_dict[signal_name];
+void SignalGenerator::_apply_poisson_noise_as_gaussian_to_signal(const std::string &channel) {
+    auto& signal = data_dict[channel];
     if (signal.empty())
-        throw std::runtime_error("Signal '" + signal_name + "' is empty.");
+        throw std::runtime_error("Signal '" + channel + "' is empty.");
 
     for (size_t i = 0; i < signal.size(); ++i) {
         if (signal[i] < 0.0)
@@ -309,14 +309,14 @@ void SignalGenerator::apply_poisson_noise() {
 }
 
 void SignalGenerator::add_array_to_signal(
-    const std::string& signal_name,
+    const std::string& channel,
     const std::vector<double>& added_array)
 {
-    assert_signal_exists(signal_name);
+    assert_signal_exists(channel);
 
-    auto& signal = data_dict[signal_name];
+    auto& signal = data_dict[channel];
     if (added_array.size() != signal.size())
-        throw std::runtime_error("Size mismatch in add_array_to_signal for '" + signal_name + "'.");
+        throw std::runtime_error("Size mismatch in add_array_to_signal for '" + channel + "'.");
 
     const size_t n = signal.size();
     const double* __restrict a = added_array.data();
@@ -329,18 +329,18 @@ void SignalGenerator::add_array_to_signal(
 }
 
 void SignalGenerator::convolve_signal_with_gaussian(
-    const std::string& signal_name,
+    const std::string& channel,
     double sigma)
 {
-    assert_signal_exists(signal_name);
+    assert_signal_exists(channel);
     assert_time_signal_ready();
 
-    auto& signal = data_dict[signal_name];
+    auto& signal = data_dict[channel];
     const auto& time = data_dict.at(TIME_KEY);
     const size_t n = signal.size();
 
     if (n < 2)
-        throw std::runtime_error("Signal '" + signal_name + "' too short for convolution.");
+        throw std::runtime_error("Signal '" + channel + "' too short for convolution.");
 
     // Estimate time step from first two samples
     const double dt = time[1] - time[0];
@@ -405,12 +405,12 @@ void SignalGenerator::convolve_signal_with_gaussian(
 
 
 std::vector<double> SignalGenerator::add_gamma_trace(
-    const std::string& signal_name,
+    const std::string& channel,
     double shape,
     double scale,
     double gaussian_sigma)
 {
-    assert_signal_exists(signal_name);
+    assert_signal_exists(channel);
 
     if (shape <= 0.0 || scale <= 0.0)
         throw std::runtime_error("add_gamma_trace requires positive shape and scale.");
@@ -482,7 +482,7 @@ std::vector<double> SignalGenerator::add_gamma_trace(
     }
 
     // Add result to the signal
-    add_array_to_signal(signal_name, gamma_trace);
+    add_array_to_signal(channel, gamma_trace);
 
     return gamma_trace;
 }

@@ -10,8 +10,6 @@ from pydantic import ConfigDict
 from TypedUnit import ureg
 from pydantic.dataclasses import dataclass  # noqa: F401
 
-from FlowCyPy.peak_locator import BasePeakLocator
-
 
 class StrictDataclassMixing:
     def __setattr__(self, name: str, value):
@@ -53,11 +51,11 @@ class ProxyDetector:
         )
 
     def set_peak_locator(
-        self, algorithm: BasePeakLocator, compute_peak_area: bool = True
+        self, algorithm: object, compute_peak_area: bool = True
     ) -> None:
-        # Ensure the algorithm is an instance of BasePeakLocator
-        if not isinstance(algorithm, BasePeakLocator):
-            raise TypeError("The algorithm must be an instance of BasePeakLocator.")
+        # Ensure the algorithm is an instance of object
+        if not isinstance(algorithm, object):
+            raise TypeError("The algorithm must be an instance of object.")
 
         # Ensure the detector has signal data available for analysis
         if not hasattr(self, "dataframe") or self.dataframe is None:

@@ -10,7 +10,7 @@ from FlowCyPy.fluidics import (
     FlowCell,
     Fluidics,
     ScattererCollection,
-    distribution,
+    distributions,
     population,
 )
 from FlowCyPy.opto_electronics import (
@@ -86,18 +86,18 @@ def scatterer_collection():
     """Fixture for creating a scatterer collection with a default population."""
     scatterer = ScattererCollection()
 
-    diameter_distribution = distribution.Normal(
+    diameter_distributions = distributions.Normal(
         mean=1.0 * ureg.micrometer, standard_deviation=0.1 * ureg.micrometer
     )
 
-    ri_distribution = distribution.Normal(
+    ri_distributions = distributions.Normal(
         mean=1.5 * ureg.RIU, standard_deviation=0.1 * ureg.RIU
     )
 
     _population = population.Sphere(
         particle_count=110 * ureg.particle,
-        diameter=diameter_distribution,
-        refractive_index=ri_distribution,
+        diameter=diameter_distributions,
+        refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
     )

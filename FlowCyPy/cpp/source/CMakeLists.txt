@@ -1,16 +1,15 @@
-# cpp/flow_cell/CMakeLists.txt
-set(NAME "flow_cell")
+set(NAME "source")
 
 # --- C++ static library -------------------------------------------------
-add_library("${NAME}" STATIC "${NAME}.cpp")
-target_link_libraries("${NAME}" PRIVATE pybind11::module )
+add_library("${NAME}" STATIC "source.cpp")
+set_target_properties("${NAME}" PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_include_directories("${NAME}" PUBLIC ${FFTW_INCLUDE_DIRS})
+target_link_libraries("${NAME}" PUBLIC  PRIVATE)
 set_target_properties("${NAME}" PROPERTIES OUTPUT_NAME "${NAME}")
 
 # --- Python extension module --------------------------------------------
 pybind11_add_module("interface_${NAME}" MODULE interface.cpp)
 set_target_properties("interface_${NAME}" PROPERTIES OUTPUT_NAME "interface_${NAME}")
-target_link_libraries("interface_${NAME}" PUBLIC "${NAME}" pint)
+target_include_directories("interface_${NAME}" PRIVATE ${FFTW_INCLUDE_DIRS})
+target_link_libraries("interface_${NAME}" PRIVATE pybind11::module "${NAME}")
 set_target_properties("interface_${NAME}" PROPERTIES OUTPUT_NAME "${NAME}")
-
-# --- Install -------------------------------------------------------------
-set_property(GLOBAL APPEND PROPERTY FLOWCYPY_TARGETS "${NAME}" "interface_${NAME}")

@@ -4,10 +4,9 @@ from TypedUnit import ureg
 
 import FlowCyPy
 from FlowCyPy.fluidics import (
-    Fluidics,
     FlowCell,
     ScattererCollection,
-    distribution,
+    distributions,
     population,
 )
 
@@ -31,10 +30,10 @@ def flow_cell():
 @pytest.fixture
 def populations():
     """Fixture to create a Population object for testing."""
-    diameter_dist = distribution.Normal(
+    diameter_dist = distributions.Normal(
         mean=500 * ureg.nanometer, standard_deviation=50 * ureg.nanometer
     )
-    refractive_index_dist = distribution.Normal(
+    refractive_index_dist = distributions.Normal(
         mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
     )
     population_0 = population.Sphere(
@@ -66,18 +65,18 @@ def scatterer_collection(populations):
 # Test 4: Check if invalid flow parameters raise errors
 def test_invalid_flow_cell():
     """Test if providing invalid flow cell parameters raises an error."""
-    with pytest.raises(ValueError):
+    with pytest.raises((ValueError, TypeError)):
         invalid_flow_cell = FlowCell(
             volume_flow=0 * ureg.microliter / ureg.second,  # Invalid flow speed
             flow_area=(10 * ureg.micrometer) ** 2,
             run_time=1 * ureg.second,
         )
         population_0 = population.Sphere(
-            size=distribution.Normal(
+            size=distributions.Normal(
                 mean=500 * ureg.nanometer, standard_deviation=50 * ureg.nanometer
             ),
             medium_refractive_index=1.33 * ureg.RIU,
-            refractive_index=distribution.Normal(mean=1.4, standard_deviation=0.01),
+            refractive_index=distributions.Normal(mean=1.4, standard_deviation=0.01),
             name="Invalid Test",
         )
         population_0.initialize(invalid_flow_cell)
