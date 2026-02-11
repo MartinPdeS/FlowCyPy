@@ -37,7 +37,7 @@ def populations():
         mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
     )
     population_0 = population.Sphere(
-        particle_count=1.8e11 * ureg.particle / ureg.milliliter,
+        concentration=1.8e11 * ureg.particle / ureg.milliliter,
         diameter=diameter_dist,
         refractive_index=refractive_index_dist,
         medium_refractive_index=1.33 * ureg.RIU,
@@ -45,7 +45,7 @@ def populations():
     )
 
     population_1 = population.Sphere(
-        particle_count=1.8e11 * ureg.particle / ureg.milliliter,
+        concentration=1.8e11 * ureg.particle / ureg.milliliter,
         diameter=diameter_dist,
         refractive_index=refractive_index_dist,
         medium_refractive_index=1.33 * ureg.RIU,

@@ -87,7 +87,7 @@ class BasePopulation:
         if isinstance(value, BaseDistribution):
             return value
         elif Length.check(value):
-            return distributions.Delta(position=value)
+            return distributions.Delta(value=value)
         raise TypeError(
             f"Diameter must be of type Quantity or BaseDistribution, but got {type(value)}"
         )
@@ -96,14 +96,14 @@ class BasePopulation:
         """
         Dilute the particle population.
 
-        This method reduces the particle_count by a given factor, effectively diluting the population.
+        This method reduces the concentration by a given factor, effectively diluting the population.
 
         Parameters
         ----------
         factor : float
             The dilution factor by which the particle count is divided.
         """
-        self.particle_count /= factor
+        self.concentration /= factor
 
 
 @dataclass(config=config_dict)
@@ -129,7 +129,7 @@ class Sphere(BasePopulation):
         The particle diameter (or its distribution). If provided as a Quantity, it must have units
         of length (e.g., meters). If provided as a distribution, it should be an instance of
         BaseDistribution.
-    particle_count : Particle | Concentration
+    concentration : Particle | Concentration
         The number density of particles (scatterers) per cubic meter.
 
     """
@@ -138,7 +138,7 @@ class Sphere(BasePopulation):
     refractive_index: BaseDistribution | RefractiveIndex
     diameter: BaseDistribution | Length
     medium_refractive_index: BaseDistribution | RefractiveIndex
-    particle_count: Particle | Concentration
+    concentration: Particle | Concentration
     sampling_method: object = ExplicitModel()
 
     def __post_init__(self):
@@ -191,13 +191,13 @@ class Sphere(BasePopulation):
             The effective concentration of particles.
         """
         if SimulationSettings.population_cutoff_bypass:
-            return self.particle_count
+            return self.concentration
 
         p_diameter = self.diameter.proportion_within_cutoffs()
         p_RI = self.refractive_index.proportion_within_cutoffs()
         p_joint = p_diameter * p_RI
 
-        return self.particle_count * p_joint
+        return self.concentration * p_joint
 
 
 @dataclass(config=config_dict)
@@ -211,7 +211,7 @@ class CoreShell(BasePopulation):
         overall_diameter = core_diameter + 2 * shell_thickness
 
     The refractive indices for the core and shell can be provided either as fixed values (Quantity)
-    or as statistical distributions (instances of BaseDistribution). The particle_count defines the
+    or as statistical distributions (instances of BaseDistribution). The concentration defines the
     scatterer density in particles per cubic meter.
 
     Parameters
@@ -230,7 +230,7 @@ class CoreShell(BasePopulation):
     refractive_index_shell : BaseDistribution | RefractiveIndex
         The refractive index (or its distribution) of the shell. If provided as a Quantity, it must have
         refractive index units (RIU).
-    particle_count : Particle | Concentration
+    concentration : Particle | Concentration
         The particle density in particles per cubic meter.
 
     """
@@ -241,7 +241,7 @@ class CoreShell(BasePopulation):
     core_refractive_index: BaseDistribution | RefractiveIndex
     shell_refractive_index: BaseDistribution | RefractiveIndex
     medium_refractive_index: BaseDistribution
-    particle_count: Particle | Concentration
+    concentration: Particle | Concentration
     sampling_method: object = ExplicitModel()
 
     def __post_init__(self):
@@ -304,7 +304,7 @@ class CoreShell(BasePopulation):
             The effective concentration of particles.
         """
         if SimulationSettings.population_cutoff_bypass:
-            return self.particle_count
+            return self.concentration
 
         core_diameter_sample = self.core_diameter.sample(10_000)
         shell_thickness_sample = self.shell_thickness.sample(10_000)
@@ -321,4 +321,4 @@ class CoreShell(BasePopulation):
 
         p_joint = p_core_diameter * p_shell_thickness * p_core_RI * p_shell_RI
 
-        return self.particle_count * p_joint
+        return self.concentration * p_joint

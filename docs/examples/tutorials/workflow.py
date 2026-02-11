@@ -70,7 +70,7 @@ ri_dist = distributions.Normal(
 population_0 = population.Sphere(
     name="Pop 0",
     medium_refractive_index=medium_refractive_index,
-    particle_count=5e10 * ureg.particle / ureg.milliliter,
+    concentration=5e10 * ureg.particle / ureg.milliliter,
     diameter=diameter_dist,
     refractive_index=ri_dist,
 )
@@ -90,7 +90,7 @@ ri_dist = distributions.Normal(
 population_1 = population.Sphere(
     name="Pop 1",
     medium_refractive_index=medium_refractive_index,
-    particle_count=5e17 * ureg.particle / ureg.milliliter,
+    concentration=5e17 * ureg.particle / ureg.milliliter,
     diameter=diameter_dist,
     refractive_index=ri_dist,
     sampling_method=GammaModel(mc_samples=10_000),

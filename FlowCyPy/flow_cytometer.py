@@ -143,7 +143,7 @@ class FlowCytometer:
         -----
         Skips populations whose event frame is empty.
         Assumes:
-        - events.population.particle_count exists
+        - events.population.concentration exists
         - events.attrs["VelocitySigmas"] exists (Pint Quantity)
         - signal_generator._cpp_add_gamma_trace writes into the named signal and returns the trace
         - signal_generator.add_array_to_signal exists (as in your SignalGenerator wrapper)
@@ -390,9 +390,15 @@ class FlowCytometer:
 
                 population.add_property_to_frame(dataframe=dataframe)
 
-                arrival_time = self.fluidics.flow_cell.sample_arrival_times(
-                    n_events=n_events, run_time=run_time
-                )
+                if SimulationSettings.evenly_spaced_events:
+                    arrival_time = (
+                        np.linspace(0, run_time.to("second").magnitude, n_events)
+                        * ureg.second
+                    )
+                else:
+                    arrival_time = self.fluidics.flow_cell.sample_arrival_times(
+                        n_events=n_events, run_time=run_time
+                    )
 
                 x, y, velocities = self.fluidics.flow_cell.sample_transverse_profile(
                     n_events
@@ -453,7 +459,7 @@ class FlowCytometer:
 
             dataframe.attrs["Name"] = population.name
             dataframe.attrs["PopulationType"] = population.__class__.__name__
-            dataframe.attrs["ParticleCount"] = population.particle_count
+            dataframe.attrs["ParticleCount"] = population.concentration
             dataframe.attrs["SamplingMethod"] = (
                 population.sampling_method.__class__.__name__
             )

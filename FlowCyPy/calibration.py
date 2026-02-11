@@ -120,7 +120,7 @@ class JEstimator(BaseEstimator):
 
     def add_batch(
         self,
-        particle_count,
+        concentration,
         bead_diameter: ureg.Quantity,
         illumination_powers: ureg.Quantity,
         flow_cytometer: FlowCytometer,
@@ -144,7 +144,7 @@ class JEstimator(BaseEstimator):
                 flow_cytometer=flow_cytometer,
                 bead_diameter=bead_diameter,
                 illumination_power=power,
-                particle_count=particle_count,
+                concentration=concentration,
             )
 
             signal_array = result_df["Height"].values.astype(float)
@@ -155,11 +155,11 @@ class JEstimator(BaseEstimator):
         flow_cytometer: FlowCytometer,
         bead_diameter,
         illumination_power,
-        particle_count,
+        concentration,
     ):
         population_0 = Sphere(
             name="population",
-            particle_count=particle_count,
+            concentration=concentration,
             diameter=bead_diameter,
             medium_refractive_index=1.33 * ureg.RIU,
             refractive_index=1.47 * ureg.RIU,
@@ -319,7 +319,7 @@ class KEstimator(BaseEstimator):
 
     def add_batch(
         self,
-        particle_count: int,
+        concentration: int,
         bead_diameters: list[ureg.Quantity],
         illumination_power: ureg.Quantity,
         flow_cytometer: FlowCytometer,
@@ -329,7 +329,7 @@ class KEstimator(BaseEstimator):
 
         Parameters
         ----------
-        particle_count : int
+        concentration : int
             Number of particles per bead population.
         bead_diameters : list of ureg.Quantity
             List of bead sizes to simulate.
@@ -341,17 +341,17 @@ class KEstimator(BaseEstimator):
         for idx, diameter in enumerate(bead_diameters):
             print(f"[INFO] Simulating bead {idx+1}/{len(bead_diameters)}: {diameter}")
             peaks = self._run_experiment(
-                flow_cytometer, diameter, illumination_power, particle_count
+                flow_cytometer, diameter, illumination_power, concentration
             )
             signal_array = peaks["Height"].values.astype(float)
             self.add_measurement(signal_array, diameter)
 
     def _run_experiment(
-        self, flow_cytometer, bead_diameter, illumination_power, particle_count
+        self, flow_cytometer, bead_diameter, illumination_power, concentration
     ):
         population = Sphere(
             name="population",
-            particle_count=particle_count,
+            concentration=concentration,
             diameter=bead_diameter,
             medium_refractive_index=1.33 * ureg.RIU,
             refractive_index=1.47 * ureg.RIU,

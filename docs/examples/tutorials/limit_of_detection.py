@@ -71,7 +71,7 @@ scatterer_collection = ScattererCollection()
 for size in [150, 125, 100, 75, 50]:
     pop = population.Sphere(
         name=f"{size} nm",
-        particle_count=15 * ureg.particle,
+        concentration=5e9 * ureg.particle / ureg.milliliter,
         diameter=distribution.Delta(position=size * ureg.nanometer),
         refractive_index=distribution.Delta(position=1.36 * ureg.RIU),
         medium_refractive_index=1.33 * ureg.RIU,

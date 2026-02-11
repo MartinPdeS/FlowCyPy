@@ -55,7 +55,7 @@ def test_generate_distributions_size(dist, default_flow_cell):
     )
 
     population_0 = population.Sphere(
-        particle_count=CONCENTRATION,
+        concentration=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
@@ -80,7 +80,7 @@ def test_generate_longitudinal_positions(default_flow_cell, dist):
     )
 
     population_0 = population.Sphere(
-        particle_count=CONCENTRATION,
+        concentration=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
@@ -100,7 +100,7 @@ def test_add_population(dist):
     )
 
     population_0 = population.Sphere(
-        particle_count=CONCENTRATION,
+        concentration=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
@@ -120,7 +120,7 @@ def test_extra(dist):
     )
 
     population_0 = population.Sphere(
-        particle_count=CONCENTRATION,
+        concentration=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
@@ -128,7 +128,7 @@ def test_extra(dist):
     )
 
     population_1 = population.Sphere(
-        particle_count=CONCENTRATION,
+        concentration=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
@@ -142,7 +142,7 @@ def test_extra(dist):
     scatterer_collection.dilute(factor=2)
 
     assert np.isclose(
-        population_0.particle_count, CONCENTRATION / 2
+        population_0.concentration, CONCENTRATION / 2
     ), "Dilution mechanism does not return expected results"
 
     scatterer_collection.set_concentrations([CONCENTRATION, CONCENTRATION])

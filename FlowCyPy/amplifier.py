@@ -111,7 +111,7 @@ class TransimpedanceAmplifier:
             self.bandwidth is None
             or SimulationSettings.assume_amplifier_bandwidth_is_infinite
         ):
-            signal_generator.multiply(factor=self.gain)
+            signal_generator.multiply(factor=self.gain.to("volt/ampere").magnitude)
         else:
             butter_worth_filter = ButterworthLowPass(
                 gain=self.gain.to("volt/ampere").magnitude,

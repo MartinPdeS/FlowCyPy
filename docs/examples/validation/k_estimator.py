@@ -108,7 +108,7 @@ k_estimator.add_batch(
     bead_diameters=np.linspace(300, 900, 15) * ureg.nanometer,
     illumination_power=_source.optical_power,
     flow_cytometer=flow_cytometer,
-    particle_count=50 * ureg.particle,
+    concentration=2.5e7 * ureg.particle / ureg.milliliter,
 )
 
 # %%

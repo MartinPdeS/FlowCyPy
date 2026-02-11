@@ -14,7 +14,7 @@ from TypedUnit import ureg
 
 from FlowCyPy import SimulationSettings
 from FlowCyPy.detector import Detector
-from FlowCyPy.signal_generator import SignalGenerator
+from FlowCyPy.binary.signal_generator import SignalGenerator
 
 SimulationSettings.include_noises = True
 SimulationSettings.include_shot_noise = True
@@ -33,14 +33,12 @@ fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
 for optical_power in optical_powers:
     detector_name = f"{optical_power.magnitude:.1e} W"
 
-    signal_generator = SignalGenerator(
-        n_elements=sequence_length, time_units=ureg.second, signal_units=ureg.watt
-    )
+    signal_generator = SignalGenerator(n_elements=sequence_length)
 
     signal_generator.create_zero_signal(detector_name)
 
-    signal_generator.add_constant(
-        signal_name=detector_name, constant=optical_power.to("watt")
+    signal_generator.add_constant_to_signal(
+        channel=detector_name, constant=optical_power.to("watt").magnitude
     )
 
     # Initialize the detector
