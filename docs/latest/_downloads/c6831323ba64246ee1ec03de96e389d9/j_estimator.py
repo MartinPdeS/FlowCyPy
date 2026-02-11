@@ -109,7 +109,7 @@ j_estimator.add_batch(
     illumination_powers=np.linspace(10, 380, 25) * ureg.milliwatt,
     bead_diameter=400 * ureg.nanometer,
     flow_cytometer=flow_cytometer,
-    particle_count=50 * ureg.particle,
+    concentration=2.5e7 * ureg.particle / ureg.milliliter,
 )
 
 # %%

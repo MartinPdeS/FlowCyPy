@@ -43,13 +43,13 @@ The resulting signals are plotted for comparison.
     from TypedUnit import ureg
 
     from FlowCyPy import FlowCytometer, SimulationSettings
+    from FlowCyPy.fluidics import distributions
 
     # Import necessary components from FlowCyPy
     from FlowCyPy.fluidics import (
         FlowCell,
         Fluidics,
         ScattererCollection,
-        distribution,
         population,
     )
     from FlowCyPy.opto_electronics import (
@@ -99,9 +99,9 @@ Define and plot the flow cell.
     # For signal processing, we use delta distributions (i.e., no variability).
     population = population.Sphere(
         name="Population",
-        particle_count=100 * ureg.particle,
-        diameter=distribution.Delta(position=150 * ureg.nanometer),
-        refractive_index=distribution.Delta(position=1.39 * ureg.RIU),
+        concentration=5e9 * ureg.particle / ureg.milliliter,
+        diameter=distributions.Delta(value=150 * ureg.nanometer),
+        refractive_index=distributions.Delta(value=1.39 * ureg.RIU),
         medium_refractive_index=1.33 * ureg.RIU,
     )
     scatterer_collection = ScattererCollection(populations=[population])
@@ -229,7 +229,7 @@ Signal Processing: Acquisition with Different Processing Steps
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 1.566 seconds)
+   **Total running time of the script:** (0 minutes 1.108 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_signal_processing.py:

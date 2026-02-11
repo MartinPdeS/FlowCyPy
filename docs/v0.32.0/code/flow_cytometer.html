@@ -647,6 +647,57 @@ detectors, including the time axis and processed analog waveforms</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.flow_cytometer.FlowCytometer.run_explicit_models">
+<span class="sig-name descname"><span class="pre">run_explicit_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_generator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cytometer.html#FlowCytometer.run_explicit_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cytometer.FlowCytometer.run_explicit_models" title="Link to this definition">#</a></dt>
+<dd><p>Run all ExplicitModel populations and add their optical power pulses to the signal generator.</p>
+<p>For each population event frame using ExplicitModel, this method generates Gaussian shaped
+pulses directly in the optical power domain for every detector, using:
+- events[“Time”] as pulse centers
+- events[“Sigmas”] as pulse widths
+- events[detector.name] as pulse amplitudes</p>
+<p class="rubric">Notes</p>
+<p>Assumes all required columns exist and carry Pint units.
+Skips populations whose event frame is empty.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.flow_cytometer.FlowCytometer.run_gamma_models">
+<span class="sig-name descname"><span class="pre">run_gamma_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_generator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/flow_cytometer.html#FlowCytometer.run_gamma_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.flow_cytometer.FlowCytometer.run_gamma_models" title="Link to this definition">#</a></dt>
+<dd><p>Run all GammaModel populations and add correlated optical power traces to the signal generator.</p>
+<p>For each GammaModel population, this method produces a single shared stochastic latent trace
+and applies detector specific scaling so that all detector signals are perfectly correlated
+in time and differ only by amplitude.</p>
+<section id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Use the first detector as a reference to draw one gamma distributed power trace via the</p></li>
+</ul>
+<p>C++ backend (this sets the temporal stochasticity).
+- Convert that reference trace into a dimensionless latent particle trace by dividing by
+the reference mean amplitude.
+- For each other detector, scale the latent trace by its mean amplitude and add it to the
+corresponding detector signal.</p>
+<p class="rubric">Notes</p>
+<p>Skips populations whose event frame is empty.
+Assumes:
+- events.population.concentration exists
+- events.attrs[“VelocitySigmas”] exists (Pint Quantity)
+- signal_generator._cpp_add_gamma_trace writes into the named signal and returns the trace
+- signal_generator.add_array_to_signal exists (as in your SignalGenerator wrapper)</p>
+</section>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -677,6 +728,8 @@ detectors, including the time axis and processed analog waveforms</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cytometer.FlowCytometer.compute_analog"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.compute_analog()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cytometer.FlowCytometer.generate_event_collection"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.generate_event_collection()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cytometer.FlowCytometer.run"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.run()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cytometer.FlowCytometer.run_explicit_models"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.run_explicit_models()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.flow_cytometer.FlowCytometer.run_gamma_models"><code class="docutils literal notranslate"><span class="pre">FlowCytometer.run_gamma_models()</span></code></a></li>
 </ul>
 </li>
 </ul>

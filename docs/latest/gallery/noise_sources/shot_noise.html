@@ -556,7 +556,7 @@ and their distributions.</p>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.detector</span><span class="w"> </span><span class="kn">import</span> <span class="n">Detector</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary.signal_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalGenerator</span>
 
 <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_noises</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_shot_noise</span> <span class="o">=</span> <span class="kc">True</span>
@@ -575,14 +575,12 @@ and their distributions.</p>
 <span class="k">for</span> <span class="n">optical_power</span> <span class="ow">in</span> <span class="n">optical_powers</span><span class="p">:</span>
     <span class="n">detector_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">optical_power</span><span class="o">.</span><span class="n">magnitude</span><span class="si">:</span><span class="s2">.1e</span><span class="si">}</span><span class="s2"> W&quot;</span>
 
-    <span class="n">signal_generator</span> <span class="o">=</span> <span class="n">SignalGenerator</span><span class="p">(</span>
-        <span class="n">n_elements</span><span class="o">=</span><span class="n">sequence_length</span><span class="p">,</span> <span class="n">time_units</span><span class="o">=</span><span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="n">signal_units</span><span class="o">=</span><span class="n">ureg</span><span class="o">.</span><span class="n">watt</span>
-    <span class="p">)</span>
+    <span class="n">signal_generator</span> <span class="o">=</span> <span class="n">SignalGenerator</span><span class="p">(</span><span class="n">n_elements</span><span class="o">=</span><span class="n">sequence_length</span><span class="p">)</span>
 
     <span class="n">signal_generator</span><span class="o">.</span><span class="n">create_zero_signal</span><span class="p">(</span><span class="n">detector_name</span><span class="p">)</span>
 
-    <span class="n">signal_generator</span><span class="o">.</span><span class="n">add_constant</span><span class="p">(</span>
-        <span class="n">signal_name</span><span class="o">=</span><span class="n">detector_name</span><span class="p">,</span> <span class="n">constant</span><span class="o">=</span><span class="n">optical_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;watt&quot;</span><span class="p">)</span>
+    <span class="n">signal_generator</span><span class="o">.</span><span class="n">add_constant_to_signal</span><span class="p">(</span>
+        <span class="n">channel</span><span class="o">=</span><span class="n">detector_name</span><span class="p">,</span> <span class="n">constant</span><span class="o">=</span><span class="n">optical_power</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;watt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
     <span class="p">)</span>
 
     <span class="c1"># Initialize the detector</span>
@@ -623,7 +621,7 @@ and their distributions.</p>
 <span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_shot_noise_001.png" srcset="../../_images/sphx_glr_shot_noise_001.png" alt="Raw Signals at Different Optical Powers, Histogram of Raw Signals" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.558 seconds)</p>
+<img src="../../_images/sphx_glr_shot_noise_001.png" srcset="../../_images/sphx_glr_shot_noise_001.png" alt="Raw Signals at Different Optical Powers, Histogram of Raw Signals" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 0.531 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-noise-sources-shot-noise-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/0ed030493f46cf072d14cf8d5b0bb706/shot_noise.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">shot_noise.ipynb</span></code></a></p>

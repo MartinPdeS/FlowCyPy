@@ -520,7 +520,7 @@ document.write(`
     <span class="n">validate_units</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.signal_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary.signal_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">SignalGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.physical_constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhysicalConstant</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.simulation_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">config_dict</span><span class="p">,</span> <span class="n">StrictDataclassMixing</span>
@@ -613,7 +613,9 @@ document.write(`
             <span class="p">)</span>
 
         <span class="c1"># Step 2: Convert optical power to current using the responsivity</span>
-        <span class="n">signal_generator</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">signal_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">responsivity</span><span class="p">)</span>
+        <span class="n">signal_generator</span><span class="o">.</span><span class="n">multiply_signal</span><span class="p">(</span>
+            <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">responsivity</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;ampere/watt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="Detector.apply_dark_current_noise">
 <a class="viewcode-back" href="../../code/detector.html#FlowCyPy.detector.Detector.apply_dark_current_noise">[docs]</a>
@@ -644,8 +646,10 @@ document.write(`
             <span class="mi">2</span> <span class="o">*</span> <span class="mf">1.602176634e-19</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">coulomb</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span> <span class="o">*</span> <span class="n">bandwidth</span>
         <span class="p">)</span>
 
-        <span class="n">signal_generator</span><span class="o">.</span><span class="n">apply_gaussian_noise</span><span class="p">(</span>
-            <span class="n">signal_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span><span class="p">,</span> <span class="n">standard_deviation</span><span class="o">=</span><span class="n">std_noise</span>
+        <span class="n">signal_generator</span><span class="o">.</span><span class="n">apply_gaussian_noise_to_signal</span><span class="p">(</span>
+            <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">mean</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dark_current</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;ampere&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+            <span class="n">standard_deviation</span><span class="o">=</span><span class="n">std_noise</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;ampere&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -738,7 +742,7 @@ document.write(`
         <span class="p">)</span>
 
         <span class="n">signal_generator</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span>
-            <span class="n">signal_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">optical_power_to_photo_count_conversion</span>
+            <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">optical_power_to_photo_count_conversion</span>
         <span class="p">)</span>
 
     <span class="nd">@validate_units</span>
@@ -790,20 +794,12 @@ document.write(`
 <span class="sd">            The wavelength of the incident light (in meters).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">optical_power_to_photo_count_conversion</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_optical_power_to_photon_factor</span><span class="p">(</span>
-                <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="n">bandwidth</span>
-            <span class="p">)</span>
+        <span class="n">watt_to_photon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_optical_power_to_photon_factor</span><span class="p">(</span>
+            <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="n">bandwidth</span>
         <span class="p">)</span>
 
-        <span class="n">signal_generator</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span>
-            <span class="n">signal_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">optical_power_to_photo_count_conversion</span>
-        <span class="p">)</span>
-
-        <span class="n">signal_generator</span><span class="o">.</span><span class="n">apply_poisson_noise</span><span class="p">(</span><span class="n">signal_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-
-        <span class="n">signal_generator</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span>
-            <span class="n">signal_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mi">1</span> <span class="o">/</span> <span class="n">optical_power_to_photo_count_conversion</span>
+        <span class="n">signal_generator</span><span class="o">.</span><span class="n">apply_poisson_noise_through_conversion</span><span class="p">(</span>
+            <span class="n">channel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">watt_to_photon</span><span class="o">=</span><span class="n">watt_to_photon</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;1/watt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span>
         <span class="p">)</span></div>
 
 </pre></div>

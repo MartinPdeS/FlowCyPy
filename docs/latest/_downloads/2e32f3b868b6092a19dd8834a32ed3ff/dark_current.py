@@ -14,7 +14,7 @@ from TypedUnit import ureg
 
 from FlowCyPy import SimulationSettings
 from FlowCyPy.detector import Detector
-from FlowCyPy.signal_generator import SignalGenerator
+from FlowCyPy.binary.signal_generator import SignalGenerator
 
 SimulationSettings.include_noises = True
 SimulationSettings.include_shot_noise = False
@@ -33,7 +33,7 @@ for dark_current in dark_currents:
     detector_name = f"{dark_current.magnitude:.1e} A"
 
     signal_generator = SignalGenerator(
-        n_elements=200, time_units=ureg.second, signal_units=ureg.ampere
+        n_elements=500,
     )
 
     signal_generator.create_zero_signal(detector_name)
@@ -55,7 +55,7 @@ for dark_current in dark_currents:
     noise_current = signal_generator.get_signal(detector_name)
 
     # Plot the raw signal on the first axis
-    ax_signal.step(x=numpy.arange(200), y=noise_current)
+    ax_signal.step(x=numpy.arange(500), y=noise_current)
 
     # Plot the histogram of the raw signal
     ax_hist.hist(noise_current, bins=50, alpha=0.6, label=detector.name)

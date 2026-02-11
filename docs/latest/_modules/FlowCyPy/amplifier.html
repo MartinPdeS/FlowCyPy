@@ -510,6 +510,7 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">AnyUnit</span><span class="p">,</span> <span class="n">Frequency</span><span class="p">,</span> <span class="n">Ohm</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">validate_units</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.simulation_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary.circuits</span><span class="w"> </span><span class="kn">import</span> <span class="n">ButterworthLowPass</span>
 
 <span class="n">config_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
     <span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span>
@@ -592,7 +593,7 @@ document.write(`
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">v_rms</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">i_rms</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="nd">@validate_units</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">amplify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_generator</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">:</span> <span class="n">Frequency</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">amplify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal_generator</span><span class="p">:</span> <span class="nb">object</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Amplifies the input signal from a detector using the transimpedance amplifier&#39;s gain.</span>
 <span class="sd">        The noise is added after the amplification.</span>
@@ -619,14 +620,15 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span> <span class="ow">is</span> <span class="kc">None</span>
             <span class="ow">or</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">assume_amplifier_bandwidth_is_infinite</span>
         <span class="p">):</span>
-            <span class="n">signal_generator</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gain</span><span class="p">)</span>
+            <span class="n">signal_generator</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gain</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;volt/ampere&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">signal_generator</span><span class="o">.</span><span class="n">apply_butterworth_lowpass_filter</span><span class="p">(</span>
-                <span class="n">gain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gain</span><span class="p">,</span>
-                <span class="n">sampling_rate</span><span class="o">=</span><span class="n">sampling_rate</span><span class="p">,</span>
-                <span class="n">cutoff_frequency</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">,</span>
+            <span class="n">butter_worth_filter</span> <span class="o">=</span> <span class="n">ButterworthLowPass</span><span class="p">(</span>
+                <span class="n">gain</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">gain</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;volt/ampere&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
+                <span class="n">cutoff</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bandwidth</span><span class="p">,</span>
                 <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="p">)</span>
+
+            <span class="n">butter_worth_filter</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">signal_generator</span><span class="p">)</span>
 
         <span class="c1"># Add voltage related noise if enabled</span>
         <span class="k">if</span> <span class="p">(</span>
@@ -634,8 +636,8 @@ document.write(`
             <span class="ow">and</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">include_noises</span>
         <span class="p">):</span>
             <span class="n">signal_generator</span><span class="o">.</span><span class="n">apply_gaussian_noise</span><span class="p">(</span>
-                <span class="n">mean</span><span class="o">=</span><span class="mf">0.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_output_noise</span><span class="o">.</span><span class="n">units</span><span class="p">,</span>
-                <span class="n">standard_deviation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">total_output_noise</span><span class="p">,</span>
+                <span class="n">mean</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                <span class="n">standard_deviation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">total_output_noise</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;volt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
             <span class="p">)</span></div>
 
 </pre></div>

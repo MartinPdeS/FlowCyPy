@@ -646,7 +646,7 @@ when varying bead size under fixed illumination power.</p>
     <span class="n">bead_diameters</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">900</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
     <span class="n">illumination_power</span><span class="o">=</span><span class="n">_source</span><span class="o">.</span><span class="n">optical_power</span><span class="p">,</span>
     <span class="n">flow_cytometer</span><span class="o">=</span><span class="n">flow_cytometer</span><span class="p">,</span>
-    <span class="n">particle_count</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span><span class="p">,</span>
+    <span class="n">concentration</span><span class="o">=</span><span class="mf">2.5e7</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -685,7 +685,7 @@ when varying bead size under fixed illumination power.</p>
 <img src="../../_images/sphx_glr_k_estimator_002.png" srcset="../../_images/sphx_glr_k_estimator_002.png" alt="Median vs Bead Diameter, STD vs Bead Diameter" class = "sphx-glr-single-img"/><div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Figure size 800x500 with 2 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 30.043 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 17.179 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-validation-k-estimator-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/f0de7a381f0317db9890cbd87489980f/k_estimator.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">k_estimator.ipynb</span></code></a></p>

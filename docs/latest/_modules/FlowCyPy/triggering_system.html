@@ -688,7 +688,7 @@ document.write(`
 
         <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">threshold_absolute</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
             <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
             <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Threshold: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold_absolute</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -773,7 +773,7 @@ document.write(`
 
         <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">threshold_absolute</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
             <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
             <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Threshold: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">threshold_absolute</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -882,7 +882,7 @@ document.write(`
 
         <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">upper_threshold</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C0&quot;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
             <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
             <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
             <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Upper Threshold: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">upper_threshold</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -890,7 +890,7 @@ document.write(`
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lower_threshold</span><span class="o">.</span><span class="n">magnitude</span><span class="p">):</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">lower_threshold</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">signal_units</span><span class="p">)</span><span class="o">.</span><span class="n">magnitude</span><span class="p">,</span>
-                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;C1&quot;</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
                 <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
                 <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                 <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Lower Threshold: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">lower_threshold</span><span class="o">.</span><span class="n">to_compact</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>

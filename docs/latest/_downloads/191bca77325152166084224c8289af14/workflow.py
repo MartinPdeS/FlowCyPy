@@ -30,16 +30,19 @@ SimulationSettings.include_dark_current_noise = True
 SimulationSettings.include_source_noise = True
 SimulationSettings.include_amplifier_noise = True
 SimulationSettings.assume_perfect_hydrodynamic_focusing = True
+SimulationSettings.population_cutoff_bypass = False
 
 np.random.seed(3)
 
+from TypedUnit import RefractiveIndex
 
 # %%
 # Step 1: Define Flow Cell and Fluidics
 # -------------------------------------
-from FlowCyPy.flow_cell import FlowCell
-from FlowCyPy.fluidics import Fluidics, ScattererCollection, distribution, population
+from FlowCyPy.fluidics import FlowCell
+from FlowCyPy.fluidics import Fluidics, ScattererCollection, population
 from FlowCyPy.sampling_method import GammaModel, ExplicitModel
+from FlowCyPy.fluidics import distributions
 
 flow_cell = FlowCell(
     sample_volume_flow=80 * ureg.microliter / ureg.minute,
@@ -50,32 +53,52 @@ flow_cell = FlowCell(
 
 scatterer_collection = ScattererCollection()
 
-medium_refractive_index = distribution.Delta(1.33 * ureg.RIU)
+medium_refractive_index = distributions.Delta(1.33 * ureg.RIU)
+
+diameter_dist = distributions.RosinRammler(
+    shape=150 * ureg.nanometer,
+    scale=50 * ureg.nanometer,
+    low_cutoff=50.0 * ureg.nanometer,
+)
+
+ri_dist = distributions.Normal(
+    mean=1.44 * ureg.RIU,
+    standard_deviation=0.002 * ureg.RIU,
+    low_cutoff=1.33 * ureg.RIU,
+)
 
 population_0 = population.Sphere(
     name="Pop 0",
     medium_refractive_index=medium_refractive_index,
-    particle_count=5e17 * ureg.particle / ureg.milliliter,
-    diameter=distribution.RosinRammler(50 * ureg.nanometer, spread=30),
-    refractive_index=distribution.Normal(
-        1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
-    ),
-    sampling_method=GammaModel(mc_samples=10_000),
+    concentration=5e10 * ureg.particle / ureg.milliliter,
+    diameter=diameter_dist,
+    refractive_index=ri_dist,
+)
+
+
+diameter_dist = distributions.RosinRammler(
+    shape=50 * ureg.nanometer,
+    scale=50 * ureg.nanometer,
+)
+
+ri_dist = distributions.Normal(
+    mean=1.44 * ureg.RIU,
+    standard_deviation=0.002 * ureg.RIU,
+    low_cutoff=1.33 * ureg.RIU,
 )
 
 population_1 = population.Sphere(
     name="Pop 1",
-    particle_count=5e9 * ureg.particle / ureg.milliliter,
     medium_refractive_index=medium_refractive_index,
-    diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
-    refractive_index=distribution.Normal(
-        1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
-    ),
+    concentration=5e17 * ureg.particle / ureg.milliliter,
+    diameter=diameter_dist,
+    refractive_index=ri_dist,
+    sampling_method=GammaModel(mc_samples=10_000),
 )
 
-scatterer_collection.add_population(population_0, population_1)
+scatterer_collection.add_population(population_0)
 
-scatterer_collection.dilute(factor=80)
+scatterer_collection.dilute(factor=280)
 
 fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
@@ -98,20 +121,14 @@ source = source.GaussianBeam(
 
 detectors = [
     Detector(
-        name="forward",
-        phi_angle=0 * ureg.degree,
-        numerical_aperture=0.3 * ureg.AU,
-        responsivity=1 * ureg.ampere / ureg.watt,
-    ),
-    Detector(
         name="side",
         phi_angle=90 * ureg.degree,
         numerical_aperture=0.3 * ureg.AU,
         responsivity=1 * ureg.ampere / ureg.watt,
     ),
     Detector(
-        name="det 2",
-        phi_angle=30 * ureg.degree,
+        name="forward",
+        phi_angle=0 * ureg.degree,
         numerical_aperture=0.3 * ureg.AU,
         responsivity=1 * ureg.ampere / ureg.watt,
     ),
@@ -151,7 +168,7 @@ analog_processing = [
 
 triggering = triggering_system.DynamicWindow(
     trigger_detector_name="forward",
-    threshold=10 * ureg.microvolt,
+    threshold="4sigma",
     pre_buffer=20,
     post_buffer=20,
     max_triggers=-1,
@@ -178,12 +195,14 @@ cytometer = FlowCytometer(
     background_power=0.001 * ureg.milliwatt,
 )
 
-run_record = cytometer.run(run_time=1 * ureg.millisecond)
+run_record = cytometer.run(run_time=3 * ureg.millisecond)
+
+_ = run_record.event_collection.plot(x="Diameter")
 
 # %%
 # Step 5: Plot Events and Raw Analog Signals
 # ------------------------------------------
-_ = run_record.event_collection.plot(x="side")
+_ = run_record.event_collection.plot(x="forward")
 
 
 # %%

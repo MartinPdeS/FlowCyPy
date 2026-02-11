@@ -39,7 +39,7 @@ Steps Covered:
 Step 0: Global Settings and Imports
 -----------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 22-37
+.. GENERATED FROM PYTHON SOURCE LINES 22-39
 
 .. code-block:: Python
 
@@ -54,9 +54,11 @@ Step 0: Global Settings and Imports
     SimulationSettings.include_source_noise = True
     SimulationSettings.include_amplifier_noise = True
     SimulationSettings.assume_perfect_hydrodynamic_focusing = True
+    SimulationSettings.population_cutoff_bypass = False
 
     np.random.seed(3)
 
+    from TypedUnit import RefractiveIndex
 
 
 
@@ -65,18 +67,19 @@ Step 0: Global Settings and Imports
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 38-40
+.. GENERATED FROM PYTHON SOURCE LINES 40-42
 
 Step 1: Define Flow Cell and Fluidics
 -------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 40-82
+.. GENERATED FROM PYTHON SOURCE LINES 42-105
 
 .. code-block:: Python
 
-    from FlowCyPy.flow_cell import FlowCell
-    from FlowCyPy.fluidics import Fluidics, ScattererCollection, distribution, population
+    from FlowCyPy.fluidics import FlowCell
+    from FlowCyPy.fluidics import Fluidics, ScattererCollection, population
     from FlowCyPy.sampling_method import GammaModel, ExplicitModel
+    from FlowCyPy.fluidics import distributions
 
     flow_cell = FlowCell(
         sample_volume_flow=80 * ureg.microliter / ureg.minute,
@@ -87,32 +90,52 @@ Step 1: Define Flow Cell and Fluidics
 
     scatterer_collection = ScattererCollection()
 
-    medium_refractive_index = distribution.Delta(1.33 * ureg.RIU)
+    medium_refractive_index = distributions.Delta(1.33 * ureg.RIU)
+
+    diameter_dist = distributions.RosinRammler(
+        shape=150 * ureg.nanometer,
+        scale=50 * ureg.nanometer,
+        low_cutoff=50.0 * ureg.nanometer,
+    )
+
+    ri_dist = distributions.Normal(
+        mean=1.44 * ureg.RIU,
+        standard_deviation=0.002 * ureg.RIU,
+        low_cutoff=1.33 * ureg.RIU,
+    )
 
     population_0 = population.Sphere(
         name="Pop 0",
         medium_refractive_index=medium_refractive_index,
-        particle_count=5e17 * ureg.particle / ureg.milliliter,
-        diameter=distribution.RosinRammler(50 * ureg.nanometer, spread=30),
-        refractive_index=distribution.Normal(
-            1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
-        ),
-        sampling_method=GammaModel(mc_samples=10_000),
+        concentration=5e10 * ureg.particle / ureg.milliliter,
+        diameter=diameter_dist,
+        refractive_index=ri_dist,
+    )
+
+
+    diameter_dist = distributions.RosinRammler(
+        shape=50 * ureg.nanometer,
+        scale=50 * ureg.nanometer,
+    )
+
+    ri_dist = distributions.Normal(
+        mean=1.44 * ureg.RIU,
+        standard_deviation=0.002 * ureg.RIU,
+        low_cutoff=1.33 * ureg.RIU,
     )
 
     population_1 = population.Sphere(
         name="Pop 1",
-        particle_count=5e9 * ureg.particle / ureg.milliliter,
         medium_refractive_index=medium_refractive_index,
-        diameter=distribution.RosinRammler(150 * ureg.nanometer, spread=30),
-        refractive_index=distribution.Normal(
-            1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
-        ),
+        concentration=5e17 * ureg.particle / ureg.milliliter,
+        diameter=diameter_dist,
+        refractive_index=ri_dist,
+        sampling_method=GammaModel(mc_samples=10_000),
     )
 
-    scatterer_collection.add_population(population_0, population_1)
+    scatterer_collection.add_population(population_0)
 
-    scatterer_collection.dilute(factor=80)
+    scatterer_collection.dilute(factor=280)
 
     fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
@@ -123,12 +146,12 @@ Step 1: Define Flow Cell and Fluidics
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 83-85
+.. GENERATED FROM PYTHON SOURCE LINES 106-108
 
 Step 2: Define Optical Subsystem
 --------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 85-132
+.. GENERATED FROM PYTHON SOURCE LINES 108-149
 
 .. code-block:: Python
 
@@ -148,20 +171,14 @@ Step 2: Define Optical Subsystem
 
     detectors = [
         Detector(
-            name="forward",
-            phi_angle=0 * ureg.degree,
-            numerical_aperture=0.3 * ureg.AU,
-            responsivity=1 * ureg.ampere / ureg.watt,
-        ),
-        Detector(
             name="side",
             phi_angle=90 * ureg.degree,
             numerical_aperture=0.3 * ureg.AU,
             responsivity=1 * ureg.ampere / ureg.watt,
         ),
         Detector(
-            name="det 2",
-            phi_angle=30 * ureg.degree,
+            name="forward",
+            phi_angle=0 * ureg.degree,
             numerical_aperture=0.3 * ureg.AU,
             responsivity=1 * ureg.ampere / ureg.watt,
         ),
@@ -186,12 +203,12 @@ Step 2: Define Optical Subsystem
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 133-135
+.. GENERATED FROM PYTHON SOURCE LINES 150-152
 
 Step 3: Signal Processing Configuration
 ---------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 135-169
+.. GENERATED FROM PYTHON SOURCE LINES 152-186
 
 .. code-block:: Python
 
@@ -214,7 +231,7 @@ Step 3: Signal Processing Configuration
 
     triggering = triggering_system.DynamicWindow(
         trigger_detector_name="forward",
-        threshold=10 * ureg.microvolt,
+        threshold="4sigma",
         pre_buffer=20,
         post_buffer=20,
         max_triggers=-1,
@@ -236,12 +253,12 @@ Step 3: Signal Processing Configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 170-172
+.. GENERATED FROM PYTHON SOURCE LINES 187-189
 
 Step 4: Run Simulation
 ----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 172-183
+.. GENERATED FROM PYTHON SOURCE LINES 189-202
 
 .. code-block:: Python
 
@@ -254,32 +271,15 @@ Step 4: Run Simulation
         background_power=0.001 * ureg.milliwatt,
     )
 
-    run_record = cytometer.run(run_time=1 * ureg.millisecond)
+    run_record = cytometer.run(run_time=3 * ureg.millisecond)
 
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 184-186
-
-Step 5: Plot Events and Raw Analog Signals
-------------------------------------------
-
-.. GENERATED FROM PYTHON SOURCE LINES 186-189
-
-.. code-block:: Python
-
-    _ = run_record.event_collection.plot(x="side")
-
+    _ = run_record.event_collection.plot(x="Diameter")
 
 
 
 
 .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_001.png
-   :alt: Distribution of side
+   :alt: Distribution of Diameter
    :srcset: /gallery/tutorials/images/sphx_glr_workflow_001.png
    :class: sphx-glr-single-img
 
@@ -287,23 +287,23 @@ Step 5: Plot Events and Raw Analog Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 190-192
+.. GENERATED FROM PYTHON SOURCE LINES 203-205
 
-Plot raw analog signals
------------------------
+Step 5: Plot Events and Raw Analog Signals
+------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 192-195
+.. GENERATED FROM PYTHON SOURCE LINES 205-208
 
 .. code-block:: Python
 
-    _ = run_record.plot_analog(figure_size=(12, 8))
+    _ = run_record.event_collection.plot(x="forward")
 
 
 
 
 
 .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_002.png
-   :alt: workflow
+   :alt: Distribution of forward
    :srcset: /gallery/tutorials/images/sphx_glr_workflow_002.png
    :class: sphx-glr-single-img
 
@@ -311,16 +311,16 @@ Plot raw analog signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 196-198
+.. GENERATED FROM PYTHON SOURCE LINES 209-211
 
-Step 6: Plot Triggered Analog Segments
---------------------------------------
+Plot raw analog signals
+-----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 198-201
+.. GENERATED FROM PYTHON SOURCE LINES 211-214
 
 .. code-block:: Python
 
-    _ = run_record.plot_digital(figure_size=(12, 8))
+    _ = run_record.plot_analog(figure_size=(12, 8))
 
 
 
@@ -335,16 +335,16 @@ Step 6: Plot Triggered Analog Segments
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 202-204
+.. GENERATED FROM PYTHON SOURCE LINES 215-217
 
-Step 7: Plot Peak Features
---------------------------
+Step 6: Plot Triggered Analog Segments
+--------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 204-207
+.. GENERATED FROM PYTHON SOURCE LINES 217-220
 
 .. code-block:: Python
 
-    _ = run_record.peaks.plot(x=("forward", "Height"))
+    _ = run_record.plot_digital(figure_size=(12, 8))
 
 
 
@@ -359,12 +359,36 @@ Step 7: Plot Peak Features
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 208-210
+.. GENERATED FROM PYTHON SOURCE LINES 221-223
+
+Step 7: Plot Peak Features
+--------------------------
+
+.. GENERATED FROM PYTHON SOURCE LINES 223-226
+
+.. code-block:: Python
+
+    _ = run_record.peaks.plot(x=("forward", "Height"))
+
+
+
+
+
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
+   :alt: workflow
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_005.png
+   :class: sphx-glr-single-img
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 227-229
 
 Step 8: Classify Events from Peak Features
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 210-221
+.. GENERATED FROM PYTHON SOURCE LINES 229-240
 
 .. code-block:: Python
 
@@ -382,9 +406,9 @@ Step 8: Classify Events from Peak Features
 
 
 
-.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
+.. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_006.png
    :alt: Event classification
-   :srcset: /gallery/tutorials/images/sphx_glr_workflow_005.png
+   :srcset: /gallery/tutorials/images/sphx_glr_workflow_006.png
    :class: sphx-glr-single-img
 
 
@@ -394,7 +418,7 @@ Step 8: Classify Events from Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 11.016 seconds)
+   **Total running time of the script:** (0 minutes 11.002 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:
