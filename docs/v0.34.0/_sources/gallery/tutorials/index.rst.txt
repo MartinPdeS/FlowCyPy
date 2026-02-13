@@ -79,6 +79,23 @@ Examples: Tutorials
     </div>
 
 
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library. It models fluidics, optics, signal processing, and classification of multiple particle populations.">
+
+.. only:: html
+
+  .. image:: /gallery/tutorials/images/thumb/sphx_glr_workflow_1_thumb.png
+    :alt:
+
+  :doc:`/gallery/tutorials/workflow_1`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Flow Cytometry Simulation: Full System Example with Workflow</div>
+    </div>
+
+
 .. thumbnail-parent-div-close
 
 .. raw:: html
@@ -93,6 +110,7 @@ Examples: Tutorials
    /gallery/tutorials/limit_of_detection
    /gallery/tutorials/signal_processing
    /gallery/tutorials/workflow
+   /gallery/tutorials/workflow_1
 
 
 
