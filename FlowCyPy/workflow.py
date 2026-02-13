@@ -1,20 +1,36 @@
 from typing import List
+from TypedUnit import (
+    Length,
+    Power,
+    FlowRate,
+    Dimensionless,
+    Frequency,
+    Resistance,
+    Time,
+)
+from FlowCyPy import SimulationSettings
 
 from pydantic import ConfigDict
 from pydantic.dataclasses import dataclass
 
-from FlowCyPy import distribution, units
-from FlowCyPy.circuits import SignalProcessor
-from FlowCyPy.flow_cytometer import FlowCytometer
+from FlowCyPy.units import ureg
+from FlowCyPy.fluidics import distributions  # noqa: F401
+from FlowCyPy.fluidics import population  # noqa: F401
+from FlowCyPy.sampling_method import GammaModel, ExplicitModel  # noqa: F401
 from FlowCyPy.fluidics import FlowCell, Fluidics, ScattererCollection
+
+
+from FlowCyPy.flow_cytometer import FlowCytometer
 from FlowCyPy.opto_electronics import (
     Detector,
     GaussianBeam,
     OptoElectronics,
     TransimpedanceAmplifier,
 )
-from FlowCyPy.peak_locator.base_class import BasePeakLocator
+from FlowCyPy.binary.peak_locator import BasePeakLocator
+
 from FlowCyPy.population import Sphere
+from FlowCyPy import classifier as classifiers
 from FlowCyPy.signal_processing import (
     Digitizer,
     SignalProcessing,
@@ -30,31 +46,30 @@ config_dict = ConfigDict(arbitrary_types_allowed=True, extra="forbid", kw_only=T
 @dataclass(config=config_dict, kw_only=True)
 class Workflow:
     # Source parameters
-    wavelength: units.Quantity
-    source_numerical_aperture: units.Quantity
-    optical_power: units.Quantity
+    wavelength: Length
+    source_numerical_aperture: Dimensionless
+    optical_power: Power
 
     # Flowcell parameters
-    sample_volume_flow: units.Quantity
-    sheath_volume_flow: units.Quantity
-    width: units.Quantity
-    height: units.Quantity
+    sample_volume_flow: FlowRate
+    sheath_volume_flow: FlowRate
+    width: Length
+    height: Length
 
     # Opto-electronic parameters
     detectors: List[Detector] = None
     bit_depth: str
     saturation_levels: str
-    sampling_rate: units.Quantity
-    background_power: units.Quantity = 0 * units.watt
+    sampling_rate: Frequency
+    background_power: Power = 0 * ureg.watt
 
     # Population parameters
     populations: List[Sphere]
-    medium_refractive_index: units.Quantity
 
     # signal processing parameters
-    gain: units.Quantity
-    bandwidth: units.Quantity
-    analog_processing: List[SignalProcessor] = None
+    gain: Resistance
+    bandwidth: Frequency
+    analog_processing: List[object] = None
     peak_locator: BasePeakLocator
     trigger: BaseTrigger
 
@@ -73,7 +88,6 @@ class Workflow:
         Fluidics
         """
         scatterer_collection = ScattererCollection(
-            medium_refractive_index=self.medium_refractive_index,
             populations=self.populations,
         )
 
@@ -145,5 +159,5 @@ class Workflow:
             background_power=self.background_power,
         )
 
-    def run(self, run_time: units.Quantity):
-        self.results = self.cytometer.run(run_time=run_time)
+    def run(self, run_time: Time):
+        return self.cytometer.run(run_time=run_time)
