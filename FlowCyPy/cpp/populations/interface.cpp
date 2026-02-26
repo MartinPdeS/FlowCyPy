@@ -67,7 +67,7 @@ PYBIND11_MODULE(populations, module) {
             py::init<size_t>(),
             py::arg("number_of_samples")
         )
-        .def_property_readonly(
+        .def_readwrite(
             "number_of_samples",
             &GammaModel::number_of_samples,
             R"pdoc(
