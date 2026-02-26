@@ -458,7 +458,9 @@ class FlowCytometer:
                 dataframe["y"] = PintArray(y, ureg.meter)
                 dataframe["Velocity"] = PintArray(velocities, ureg.meter / ureg.second)
 
-                population.add_property_to_frame(dataframe=dataframe)
+                self.add_population_property_to_frame(
+                    dataframe=dataframe, population=population
+                )
 
                 dataframe.attrs["VelocityMean"] = dataframe["Velocity"].mean()
 
