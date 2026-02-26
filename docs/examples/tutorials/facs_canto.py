@@ -15,7 +15,8 @@ from TypedUnit import ureg
 from FlowCyPy.fluidics import distributions
 
 diameter = distributions.RosinRammler(
-    shape=150 * ureg.nanometer, scale=30 * ureg.nanometer
+    scale=30 * ureg.nanometer,
+    shape=150,
 )
 
 medium_refractive_index = 1.33 * ureg.RIU

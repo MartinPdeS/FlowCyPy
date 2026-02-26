@@ -43,8 +43,8 @@ population_0 = population.SpherePopulation(
     medium_refractive_index=distributions.Delta(1.33 * ureg.RIU),
     concentration=5e10 * ureg.particle / ureg.milliliter,
     diameter=distributions.RosinRammler(
-        shape=150 * ureg.nanometer,
         scale=50 * ureg.nanometer,
+        shape=150,
         low_cutoff=50.0 * ureg.nanometer,
     ),
     refractive_index=distributions.Normal(
@@ -59,8 +59,8 @@ population_1 = population.SpherePopulation(
     medium_refractive_index=distributions.Delta(1.33 * ureg.RIU),
     concentration=5e17 * ureg.particle / ureg.milliliter,
     diameter=distributions.RosinRammler(
-        shape=50 * ureg.nanometer,
         scale=50 * ureg.nanometer,
+        shape=50,
     ),
     refractive_index=distributions.Normal(
         mean=1.44 * ureg.RIU,
