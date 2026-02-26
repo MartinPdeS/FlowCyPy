@@ -8,28 +8,29 @@ from TypedUnit import (
     Resistance,
     Time,
 )
-from FlowCyPy import SimulationSettings
+from FlowCyPy import SimulationSettings  # noqa: F401
 
 from pydantic import ConfigDict
 from pydantic.dataclasses import dataclass
 
 from FlowCyPy.units import ureg
-from FlowCyPy.fluidics import distributions  # noqa: F401
-from FlowCyPy.fluidics import population  # noqa: F401
-from FlowCyPy.sampling_method import GammaModel, ExplicitModel  # noqa: F401
-from FlowCyPy.fluidics import FlowCell, Fluidics, ScattererCollection
-
+from FlowCyPy.fluidics import (
+    FlowCell,
+    Fluidics,
+    ScattererCollection,
+    distributions,
+    populations,
+)  # noqa: F401
+from FlowCyPy.binary.populations import GammaModel, ExplicitModel  # noqa: F401
 
 from FlowCyPy.flow_cytometer import FlowCytometer
+from FlowCyPy.source import GaussianBeam, AstigmaticGaussianBeam
 from FlowCyPy.opto_electronics import (
     Detector,
-    GaussianBeam,
     OptoElectronics,
     TransimpedanceAmplifier,
 )
 from FlowCyPy.binary.peak_locator import BasePeakLocator
-
-from FlowCyPy.population import Sphere
 from FlowCyPy import classifier as classifiers
 from FlowCyPy.signal_processing import (
     Digitizer,
@@ -64,7 +65,7 @@ class Workflow:
     background_power: Power = 0 * ureg.watt
 
     # Population parameters
-    populations: List[Sphere]
+    population_list: List[populations.SpherePopulation] = None
 
     # signal processing parameters
     gain: Resistance
@@ -88,7 +89,7 @@ class Workflow:
         Fluidics
         """
         scatterer_collection = ScattererCollection(
-            populations=self.populations,
+            populations=self.population_list,
         )
 
         flow_cell = FlowCell(
