@@ -14,7 +14,7 @@
 | FlowCyPy/flow\_cytometer.py           |      131 |       40 |       44 |        8 |     66.86% |107, 110, 153-204, 284->296, 346-359, 412, 421, 448-477 |
 | FlowCyPy/instances/detector.py        |       11 |       11 |        0 |        0 |      0.00% |      1-62 |
 | FlowCyPy/instances/flow\_cytometer.py |       47 |       47 |        0 |        0 |      0.00% |     1-207 |
-| FlowCyPy/instances/population.py      |       24 |       24 |        2 |        0 |      0.00% |      2-67 |
+| FlowCyPy/instances/population.py      |       24 |       24 |        2 |        0 |      0.00% |      1-66 |
 | FlowCyPy/opto\_electronics.py         |       15 |        1 |        4 |        1 |     89.47% |        51 |
 | FlowCyPy/run\_record.py               |       69 |       18 |       16 |        2 |     67.06% |74, 90-92, 108-110, 126, 142-144, 225->231, 228-229, 247-258 |
 | FlowCyPy/scatterer\_collection.py     |       31 |        7 |       12 |        2 |     74.42% |37-39, 79, 99, 109-112 |
