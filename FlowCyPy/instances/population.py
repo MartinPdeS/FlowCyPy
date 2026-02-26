@@ -1,8 +1,7 @@
-# from FlowCyPy import units
 from TypedUnit import ureg
 
 from FlowCyPy.fluidics import distributions
-from FlowCyPy.population import Sphere
+from FlowCyPy.binary.populations import SpherePopulation
 
 
 class CallablePopulationMeta(type):
@@ -19,7 +18,7 @@ class CallablePopulation(metaclass=CallablePopulationMeta):
         self._ri_distribution = ri_dist
 
     def __call__(self, particle_count: ureg.Quantity = 1 * ureg.particle):
-        return Sphere(
+        return SpherePopulation(
             particle_count=particle_count,
             name=self._name,
             diameter=self._diameter_distribution,
@@ -43,7 +42,7 @@ _populations = (
 # Dynamically create population classes
 for name, diameter, diameter_spread, ri, ri_spread in _populations:
     diameter_distribution = distributions.RosinRammler(
-        scale=diameter, shape=diameter_spread * diameter.units
+        scale=diameter, shape=diameter_spread
     )
 
     ri_distribution = distributions.Normal(mean=ri, standard_deviation=ri_spread)
@@ -56,11 +55,11 @@ for name, diameter, diameter_spread, ri, ri_spread in _populations:
 # Helper function for microbeads
 def get_microbeads(
     diameter: ureg.Quantity, refractive_index: ureg.Quantity, name: str
-) -> Sphere:
+) -> SpherePopulation:
     diameter_distribution = distributions.Delta(position=diameter)
     ri_distribution = distributions.Delta(position=refractive_index)
 
-    microbeads = Sphere(
+    microbeads = SpherePopulation(
         name=name, diameter=diameter_distribution, refractive_index=ri_distribution
     )
 
