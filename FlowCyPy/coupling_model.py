@@ -129,8 +129,6 @@ class ScatteringModel:
             event_dataframe, num_particles
         )
 
-        print(event_dataframe["Diameter"].values.quantity)
-
         scatterer = _PyMieSim.scatterer.Sphere.build_sequential(
             total_size=num_particles,
             diameter=event_dataframe["Diameter"].values.quantity,

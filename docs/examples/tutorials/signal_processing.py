@@ -61,7 +61,7 @@ flow_cell = FlowCell(
 
 # Create a scatterer collection with a single populations.
 # For signal processing, we use delta distributions (i.e., no variability).
-population = populations.Sphere(
+population = populations.SpherePopulation(
     name="Population",
     concentration=5e9 * ureg.particle / ureg.milliliter,
     diameter=distributions.Delta(value=150 * ureg.nanometer),

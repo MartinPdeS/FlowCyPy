@@ -7,8 +7,6 @@
 #include "distributions.h"
 
 
-#include <iostream>
-
 namespace py = pybind11;
 
 PYBIND11_MODULE(distributions, module) {
