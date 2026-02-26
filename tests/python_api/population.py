@@ -7,7 +7,7 @@ from FlowCyPy.fluidics import (
     FlowCell,
     ScattererCollection,
     distributions,
-    population,
+    populations,
 )
 
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
@@ -36,7 +36,7 @@ def populations():
     refractive_index_dist = distributions.Normal(
         mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
     )
-    population_0 = population.Sphere(
+    population_0 = populations.SpherePopulation(
         concentration=1.8e11 * ureg.particle / ureg.milliliter,
         diameter=diameter_dist,
         refractive_index=refractive_index_dist,
@@ -44,7 +44,7 @@ def populations():
         name="Test Population 0",
     )
 
-    population_1 = population.Sphere(
+    population_1 = populations.SpherePopulation(
         concentration=1.8e11 * ureg.particle / ureg.milliliter,
         diameter=diameter_dist,
         refractive_index=refractive_index_dist,
@@ -71,7 +71,7 @@ def test_invalid_flow_cell():
             flow_area=(10 * ureg.micrometer) ** 2,
             run_time=1 * ureg.second,
         )
-        population_0 = population.Sphere(
+        population_0 = populations.SpherePopulation(
             size=distributions.Normal(
                 mean=500 * ureg.nanometer, standard_deviation=50 * ureg.nanometer
             ),

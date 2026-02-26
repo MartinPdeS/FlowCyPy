@@ -4,7 +4,7 @@ from MPSPlots import helper
 from TypedUnit import ureg
 
 from FlowCyPy import FlowCytometer, circuits, peak_locator
-from FlowCyPy.population import Sphere
+from FlowCyPy.populations import SpherePopulation
 from FlowCyPy.triggering_system import DynamicWindow
 
 
@@ -33,9 +33,9 @@ class SignalStatistics:
             "mean": self.mean,
             "median": self.median,
             "std": self.std,
-            "cv": self.cv,
+            "cv": self.coefficient_of_variation,
             "robust_std": self.robust_std,
-            "robust_cv": self.robust_cv,
+            "robust_cv": self.robust_coefficient_of_variation,
         }
 
 
@@ -157,7 +157,7 @@ class JEstimator(BaseEstimator):
         illumination_power,
         concentration,
     ):
-        population_0 = Sphere(
+        population_0 = SpherePopulation(
             name="population",
             concentration=concentration,
             diameter=bead_diameter,
@@ -349,7 +349,7 @@ class KEstimator(BaseEstimator):
     def _run_experiment(
         self, flow_cytometer, bead_diameter, illumination_power, concentration
     ):
-        population = Sphere(
+        population = SpherePopulation(
             name="population",
             concentration=concentration,
             diameter=bead_diameter,

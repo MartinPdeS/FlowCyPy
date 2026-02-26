@@ -8,7 +8,7 @@ from FlowCyPy.fluidics import (
     FlowCell,
     ScattererCollection,
     distributions,
-    population,
+    populations,
 )
 
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
@@ -39,9 +39,7 @@ distributions_list = [
     distributions.Uniform(
         lower_bound=0.5 * ureg.micrometer, upper_bound=1.5 * ureg.micrometer
     ),
-    distributions.RosinRammler(
-        shape=0.5 * ureg.micrometer, scale=1.5 * ureg.micrometer
-    ),
+    distributions.RosinRammler(shape=10, scale=1.5 * ureg.micrometer),
 ]
 
 
@@ -54,12 +52,15 @@ def test_generate_distributions_size(dist, default_flow_cell):
         mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
     )
 
-    population_0 = population.Sphere(
+    sampling_method = populations.ExplicitModel()
+
+    population_0 = populations.SpherePopulation(
         concentration=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
+        sampling_method=sampling_method,
     )
 
     # Create the ScattererCollection Distribution object with the chosen distributions
@@ -79,12 +80,15 @@ def test_generate_longitudinal_positions(default_flow_cell, dist):
         mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
     )
 
-    population_0 = population.Sphere(
+    sampling_method = populations.ExplicitModel()
+
+    population_0 = populations.SpherePopulation(
         concentration=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
+        sampling_method=sampling_method,
     )
 
     scatterer_collection = ScattererCollection()
@@ -99,12 +103,15 @@ def test_add_population(dist):
         mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
     )
 
-    population_0 = population.Sphere(
+    sampling_method = populations.ExplicitModel()
+
+    population_0 = populations.SpherePopulation(
         concentration=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
+        sampling_method=sampling_method,
     )
 
     scatterer_collection = ScattererCollection()
@@ -119,20 +126,24 @@ def test_extra(dist):
         mean=1.4 * ureg.RIU, standard_deviation=0.01 * ureg.RIU
     )
 
-    population_0 = population.Sphere(
+    sampling_method = populations.ExplicitModel()
+
+    population_0 = populations.SpherePopulation(
         concentration=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
+        sampling_method=sampling_method,
     )
 
-    population_1 = population.Sphere(
+    population_1 = populations.SpherePopulation(
         concentration=CONCENTRATION,
         diameter=dist,
         refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
+        sampling_method=sampling_method,
     )
 
     scatterer_collection = ScattererCollection()

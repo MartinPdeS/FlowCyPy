@@ -42,7 +42,7 @@ PYBIND11_MODULE(distributions, module) {
                     py::object units = mean.attr("to_base_units")().attr("units");
                     double _low_cutoff, _high_cutoff, _mean, _standard_deviation;
 
-                    _mean = mean.attr("magnitude").cast<double>();
+                    _mean = mean.attr("to")(units).attr("magnitude").cast<double>();
                     _standard_deviation = standard_deviation.attr("to")(units).attr("magnitude").cast<double>();
 
                     if (low_cutoff.is(py::none()))
@@ -54,6 +54,7 @@ PYBIND11_MODULE(distributions, module) {
                         _high_cutoff = std::numeric_limits<double>::infinity();
                     else
                         _high_cutoff = high_cutoff.attr("to")(units).attr("magnitude").cast<double>();
+
 
                     std::shared_ptr<Normal> output = std::make_shared<Normal>(
                         _mean,
@@ -103,7 +104,7 @@ PYBIND11_MODULE(distributions, module) {
                 ) {
                     py::object units = lower_bound.attr("to_base_units")().attr("units");
 
-                    double _lower_bound = lower_bound.attr("magnitude").cast<double>();
+                    double _lower_bound = lower_bound.attr("to")(units).attr("magnitude").cast<double>();
                     double _upper_bound = upper_bound.attr("to")(units).attr("magnitude").cast<double>();
 
                     std::shared_ptr output = std::make_shared<Uniform>(

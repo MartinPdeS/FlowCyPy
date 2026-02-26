@@ -11,7 +11,7 @@ from FlowCyPy.fluidics import (
     Fluidics,
     ScattererCollection,
     distributions,
-    population,
+    populations,
 )
 from FlowCyPy.opto_electronics import (
     Detector,
@@ -94,12 +94,15 @@ def scatterer_collection():
         mean=1.5 * ureg.RIU, standard_deviation=0.1 * ureg.RIU
     )
 
-    _population = population.Sphere(
+    sampling_method = populations.ExplicitModel()
+
+    _population = populations.SpherePopulation(
         concentration=5e9 * ureg.particle / ureg.milliliter,
         diameter=diameter_distributions,
         refractive_index=ri_distributions,
         medium_refractive_index=1.33 * ureg.RIU,
         name="Default population",
+        sampling_method=sampling_method,
     )
 
     scatterer.add_population(_population)

@@ -430,6 +430,7 @@ class FlowCytometer:
                 x, y, velocities = self.fluidics.flow_cell.sample_transverse_profile(
                     n_events
                 )
+
                 for key, value in {
                     "Time": arrival_time,
                     "x": x,

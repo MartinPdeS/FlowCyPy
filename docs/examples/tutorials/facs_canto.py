@@ -24,7 +24,7 @@ refractive_index = distributions.Normal(
     mean=1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
 )
 
-population_0 = population.Sphere(
+population_0 = population.SpherePopulation(
     name="Pop 0",
     concentration=5e9 * ureg.particle / ureg.milliliter,
     diameter=diameter,

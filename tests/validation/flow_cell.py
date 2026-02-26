@@ -9,7 +9,7 @@ from FlowCyPy.fluidics import (
     FlowCell,
     ScattererCollection,
     distributions,
-    population,
+    populations,
 )
 
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
@@ -37,9 +37,9 @@ def valid_flowcell():
 @pytest.fixture
 def real_population():
     """
-    Create a real Population instance using FlowCyPy's Sphere population with delta distributionss.
+    Create a real Population instance using FlowCyPy's SpherePopulation population with delta distributionss.
     """
-    return population.Sphere(
+    return populations.SpherePopulation(
         name="Population",
         particle_count=10 * ureg.particle,
         diameter=distributions.Delta(position=150 * ureg.nanometer),

@@ -69,7 +69,7 @@ flow_cell = FlowCell(
 scatterer_collection = ScattererCollection()
 
 for size in [150, 125, 100, 75, 50]:
-    pop = population.Sphere(
+    pop = population.SpherePopulation(
         name=f"{size} nm",
         concentration=5e9 * ureg.particle / ureg.milliliter,
         diameter=distributions.Delta(value=size * ureg.nanometer),
