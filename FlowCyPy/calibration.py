@@ -4,7 +4,7 @@ from MPSPlots import helper
 from TypedUnit import ureg
 
 from FlowCyPy import FlowCytometer, circuits, peak_locator
-from FlowCyPy.populations import SpherePopulation
+from FlowCyPy.binary.populations import SpherePopulation
 from FlowCyPy.triggering_system import DynamicWindow
 
 
