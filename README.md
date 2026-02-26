@@ -11,7 +11,7 @@
 | FlowCyPy/detector.py                  |       43 |        8 |        4 |        2 |     78.72% |73, 100, 198-206, 226-232 |
 | FlowCyPy/digitizer.py                 |       47 |        9 |       12 |        5 |     72.88% |89-90, 103, 106-112, 123-130, 150 |
 | FlowCyPy/event\_collection.py         |      118 |       79 |       54 |        4 |     27.33% |32-40, 62, 85, 122, 123->130, 131, 159-189, 195-202, 258-344, 375-390, 427-443 |
-| FlowCyPy/flow\_cytometer.py           |      131 |       40 |       44 |        8 |     66.86% |107, 110, 153-204, 284->296, 346-359, 412, 421, 448-477 |
+| FlowCyPy/flow\_cytometer.py           |      131 |       40 |       44 |        8 |     66.86% |107, 110, 153-204, 284->296, 346-359, 412, 421, 448-479 |
 | FlowCyPy/instances/detector.py        |       11 |       11 |        0 |        0 |      0.00% |      1-62 |
 | FlowCyPy/instances/flow\_cytometer.py |       47 |       47 |        0 |        0 |      0.00% |     1-207 |
 | FlowCyPy/instances/population.py      |       24 |       24 |        2 |        0 |      0.00% |      1-66 |
