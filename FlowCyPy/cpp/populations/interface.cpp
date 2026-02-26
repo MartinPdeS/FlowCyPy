@@ -67,6 +67,17 @@ PYBIND11_MODULE(populations, module) {
             py::init<size_t>(),
             py::arg("number_of_samples")
         )
+        .def_property_readonly(
+            "number_of_samples",
+            &GammaModel::number_of_samples,
+            R"pdoc(
+                Number of random variates produced per sampling call.
+
+                This controls the number of samples drawn from the underlying Gamma distribution
+                per simulated time bin. Increasing this can improve approximation accuracy at the
+                cost of increased runtime.
+            )pdoc"
+        )
         .doc() = R"pdoc(
             Gamma distribution sampling strategy.
 
