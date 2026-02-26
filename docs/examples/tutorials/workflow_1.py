@@ -67,7 +67,7 @@ population_1 = populations.SpherePopulation(
         standard_deviation=0.002 * ureg.RIU,
         low_cutoff=1.33 * ureg.RIU,
     ),
-    sampling_method=GammaModel(mc_samples=10_000),
+    sampling_method=GammaModel(number_of_samples=10_000),
 )
 
 
@@ -107,7 +107,7 @@ workflow = Workflow(
     sheath_volume_flow=1 * ureg.milliliter / ureg.minute,
     width=200 * ureg.micrometer,
     height=100 * ureg.micrometer,
-    populations=[population_0, population_1],
+    population_list=[population_0, population_1],
     gain=10 * ureg.volt / ureg.ampere,
     bandwidth=10 * ureg.megahertz,
     bit_depth="14bit",

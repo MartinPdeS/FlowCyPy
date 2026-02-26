@@ -446,7 +446,7 @@ class FlowCytometer:
                 dataframe["Sigmas"] = PintArray(widths, widths.units)
 
             elif isinstance(population.sampling_method, populations.GammaModel):
-                n_events = population.sampling_method.mc_samples
+                n_events = population.sampling_method.number_of_samples
 
                 dataframe = pd.DataFrame(index=range(n_events))
 
