@@ -6,6 +6,9 @@
 #include <pint/pint.h>
 #include "distributions.h"
 
+
+#include <iostream>
+
 namespace py = pybind11;
 
 PYBIND11_MODULE(distributions, module) {
@@ -36,7 +39,7 @@ PYBIND11_MODULE(distributions, module) {
                     const py::object& low_cutoff,
                     const py::object& high_cutoff
                 ) {
-                    py::object units = mean.attr("units");
+                    py::object units = mean.attr("to_base_units")().attr("units");
                     double _low_cutoff, _high_cutoff, _mean, _standard_deviation;
 
                     _mean = mean.attr("magnitude").cast<double>();
@@ -98,7 +101,7 @@ PYBIND11_MODULE(distributions, module) {
                     const py::object& lower_bound,
                     const py::object& upper_bound
                 ) {
-                    py::object units = lower_bound.attr("units");
+                    py::object units = lower_bound.attr("to_base_units")().attr("units");
 
                     double _lower_bound = lower_bound.attr("magnitude").cast<double>();
                     double _upper_bound = upper_bound.attr("to")(units).attr("magnitude").cast<double>();
@@ -133,14 +136,13 @@ PYBIND11_MODULE(distributions, module) {
             py::init(
                 [](
                     const py::object& scale,
-                    const py::object& shape,
+                    const double& shape,
                     const py::object& low_cutoff,
                     const py::object& high_cutoff
                 ) {
-                    py::object units = scale.attr("units");
+                    py::object units = scale.attr("to_base_units")().attr("units");
 
                     double _scale = scale.attr("to")(units).attr("magnitude").cast<double>();
-                    double _shape = shape.attr("to")(units).attr("magnitude").cast<double>();
 
                     double _low_cutoff, _high_cutoff;
 
@@ -154,10 +156,9 @@ PYBIND11_MODULE(distributions, module) {
                     else
                         _high_cutoff = high_cutoff.attr("to")(units).attr("magnitude").cast<double>();
 
-
                     std::shared_ptr<RosinRammler> output = std::make_shared<RosinRammler>(
                         _scale,
-                        _shape,
+                        shape,
                         _low_cutoff,
                         _high_cutoff
                     );
@@ -205,7 +206,8 @@ PYBIND11_MODULE(distributions, module) {
                     const py::object& low_cutoff,
                     const py::object& high_cutoff
                 ) {
-                    py::object units = mean.attr("units");
+
+                    py::object units = mean.attr("to_base_units")().attr("units");
 
                     double _mean = mean.attr("to")(units).attr("magnitude").cast<double>();
                     double _standard_deviation = standard_deviation.attr("to")(units).attr("magnitude").cast<double>();
@@ -268,7 +270,7 @@ PYBIND11_MODULE(distributions, module) {
                 [](
                     const py::object& value
                 ) {
-                    py::object units = value.attr("units");
+                    py::object units = value.attr("to_base_units")().attr("units");
 
                     double _value = value.attr("to")(units).attr("magnitude").cast<double>();
 

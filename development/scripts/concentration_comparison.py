@@ -1,140 +1,89 @@
+"""
+Flow Cytometry Simulation: Full System Example
+==============================================
+
+This tutorial demonstrates a complete flow cytometry simulation using the FlowCyPy library.
+It models fluidics, optics, signal processing, and classification of multiple particle populations.
+
+Steps Covered:
+--------------
+1. Configure simulation parameters and noise models
+2. Define laser source, flow cell geometry, and fluidics
+3. Add synthetic particle populations
+4. Set up detectors, amplifier, and digitizer
+5. Simulate analog and digital signal acquisition
+6. Apply triggering and peak detection
+7. Classify particle events based on peak features
+"""
+
+# %%
+# Step 0: Global Settings and Imports
+# -----------------------------------
 import numpy as np
+from TypedUnit import ureg
 
-from FlowCyPy import (
-    Detector,
-    EventCorrelator,
-    FlowCell,
-    FlowCytometer,
-    GaussianBeam,
-    NoiseSetting,
-    Population,
-    ScattererCollection,
-    distribution,
-    peak_locator,
-)
-from FlowCyPy.population import HDL, Exosome
-from FlowCyPy.units import (
-    AU,
-    RIU,
-    ampere,
-    degree,
-    kelvin,
-    megahertz,
-    meter,
-    micrometer,
-    microsecond,
-    microvolt,
-    milliampere,
-    milliliter,
-    millisecond,
-    millivolt,
-    milliwatt,
-    nanometer,
-    ohm,
-    particle,
-    second,
-    watt,
+from FlowCyPy import SimulationSettings
+
+SimulationSettings.include_noises = False
+SimulationSettings.include_shot_noise = True
+SimulationSettings.include_dark_current_noise = True
+SimulationSettings.include_source_noise = True
+SimulationSettings.include_amplifier_noise = True
+SimulationSettings.assume_perfect_hydrodynamic_focusing = True
+SimulationSettings.population_cutoff_bypass = False
+
+# %%
+# Step 1: Define Flow Cell and Fluidics
+# -------------------------------------
+# from FlowCyPy.fluidics import FlowCell
+# from FlowCyPy.fluidics import Fluidics, ScattererCollection, populations
+
+
+from FlowCyPy.binary import distributions, populations
+
+
+medium_refractive_index = distributions.Delta(1.33 * ureg.RIU)
+
+diameter_dist = distributions.RosinRammler(
+    shape=150 * ureg.nanometer,
+    scale=50 * ureg.nanometer,
+    low_cutoff=50.0 * ureg.nanometer,
 )
 
-NoiseSetting.include_noises = True
-
-np.random.seed(3)
-
-source = GaussianBeam(
-    numerical_aperture=0.3 * AU,  # Numerical aperture of the laser: 0.3
-    wavelength=488 * nanometer,  # Laser wavelength: 800 nanometers
-    optical_power=100 * milliwatt,  # Laser optical power: 10 milliwatts
+ri_dist = distributions.Normal(
+    mean=1.44 * ureg.RIU,
+    standard_deviation=0.002 * ureg.RIU,
+    low_cutoff=1.33 * ureg.RIU,
 )
 
-flow_cell = FlowCell(
-    source=source,
-    flow_speed=7.56 * meter / second,  # Flow speed: 7.56 meters per second
-    flow_area=(10 * micrometer) ** 2,  # Flow area: 10 x 10 micrometers
-    run_time=0.2 * millisecond,  # Total simulation time: 0.3 milliseconds
-)
+sampling_method = populations.GammaModel(number_of_samples=10_000)
 
-scatterer = ScattererCollection(
-    medium_refractive_index=1.33 * RIU
-)  # Medium refractive index: 1.33
-
-population_0 = Population(
+population_0 = populations.SpherePopulation(
     name="Pop 0",
-    particle_count=100 * particle,
-    size=distribution.RosinRammler(characteristic_size=100 * nanometer, spread=4.5),
-    refractive_index=distribution.Normal(mean=1.39 * RIU, std_dev=0.02 * RIU),
-)
-
-scatterer.add_population(population_0)
-# scatterer.add_population(hdl)
-
-
-flow_cell.initialize(scatterer_collection=scatterer)
-
-scatterer._log_properties()
-
-source.print_properties()  # Print the laser source properties
-
-detector_0 = Detector(
-    name="side",  # Detector name: Side scatter detector
-    phi_angle=90 * degree,  # Angle: 90 degrees (Side Scatter)
-    numerical_aperture=0.2 * AU,  # Numerical aperture: 1.2
-    responsitivity=1 * ampere / watt,  # Responsitivity: 1 ampere per watt
-    sampling_freq=60 * megahertz,  # Sampling frequency: 60 MHz
-    saturation_level=0.04 * millivolt,  # Saturation level: 2 millivolts
-    # n_bins='16bit',                          # Number of bins: 14-bit resolution
-    resistance=50 * ohm,  # Detector resistance: 50 ohms
-    dark_current=0.1 * milliampere,  # Dark current: 0.1 milliamps
-    temperature=300 * kelvin,  # Operating temperature: 300 Kelvin
-)
-
-detector_1 = Detector(
-    name="forward",  # Detector name: Forward scatter detector
-    phi_angle=0 * degree,  # Angle: 0 degrees (Forward Scatter)
-    numerical_aperture=0.2 * AU,  # Numerical aperture: 1.2
-    responsitivity=1 * ampere / watt,  # Responsitivity: 1 ampere per watt
-    sampling_freq=60 * megahertz,  # Sampling frequency: 60 MHz
-    saturation_level=0.04 * millivolt,  # Saturation level: 2 millivolts
-    # n_bins='16bit',                          # Number of bins: 14-bit resolution
-    resistance=50 * ohm,  # Detector resistance: 50 ohms
-    dark_current=0.1 * milliampere,  # Dark current: 0.1 milliamps
-    temperature=300 * kelvin,  # Operating temperature: 300 Kelvin
+    medium_refractive_index=medium_refractive_index,
+    concentration=5e10 * ureg.particle / ureg.milliliter,
+    diameter=diameter_dist,
+    refractive_index=ri_dist,
+    sampling_method=sampling_method,
 )
 
 
-detector_1.print_properties()  # Print the properties of the forward scatter detector
+# diameter_dist = distributions.RosinRammler(
+#     shape=50 * ureg.nanometer,
+#     scale=50 * ureg.nanometer,
+# )
 
-cytometer = FlowCytometer(  # Laser source used in the experiment
-    flow_cell=flow_cell,  # Populations used in the experiment
-    background_power=0.0 * milliwatt,
-    detectors=[
-        detector_0,
-        detector_1,
-    ],  # List of detectors: Side scatter and Forward scatter
-)
+# ri_dist = distributions.Normal(
+#     mean=1.44 * ureg.RIU,
+#     standard_deviation=0.002 * ureg.RIU,
+#     low_cutoff=1.33 * ureg.RIU,
+# )
 
-cytometer.run_coupling_analysis()
-
-cytometer.initialize_signal()
-
-cytometer.simulate_pulse()
-
-cytometer.plot.signals()
-
-algorithm = peak_locator.MovingAverage(
-    threshold=10 * microvolt,  # Signal threshold: 0.1 mV
-    window_size=1 * microsecond,  # Moving average window size: 1 µs
-    min_peak_distance=0.1 * microsecond,  # Minimum distance between peaks: 0.3 µs
-)
-
-detector_0.set_peak_locator(algorithm)
-detector_1.set_peak_locator(algorithm)
-
-cytometer.plot.signals(add_peak_locator=True)
-
-analyzer = EventCorrelator(cytometer=cytometer)
-
-analyzer.run_analysis(compute_peak_area=False)
-
-analyzer.get_coincidence(margin=0.1 * microsecond)
-
-analyzer.plot(log_plot=False)
+# population_1 = population.Sphere(
+#     name="Pop 1",
+#     medium_refractive_index=medium_refractive_index,
+#     concentration=5e17 * ureg.particle / ureg.milliliter,
+#     diameter=diameter_dist,
+#     refractive_index=ri_dist,
+#     sampling_method=GammaModel(mc_samples=10_000),
+# )

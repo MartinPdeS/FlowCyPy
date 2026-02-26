@@ -3,9 +3,8 @@ import pandas as pd
 
 from FlowCyPy import source
 from FlowCyPy.amplifier import TransimpedanceAmplifier
-from FlowCyPy.coupling_model import ScatteringModel, FluorescenceModel
+from FlowCyPy.coupling_model import ScatteringModel
 from FlowCyPy.detector import Detector
-from FlowCyPy.source import GaussianBeam  # noqa: F401
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
 from FlowCyPy.event_collection import EventCollection
 

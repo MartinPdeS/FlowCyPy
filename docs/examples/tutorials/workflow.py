@@ -19,7 +19,6 @@ Steps Covered:
 # %%
 # Step 0: Global Settings and Imports
 # -----------------------------------
-import numpy as np
 from TypedUnit import ureg
 
 from FlowCyPy import SimulationSettings
@@ -36,8 +35,9 @@ SimulationSettings.population_cutoff_bypass = False
 # Step 1: Define Flow Cell and Fluidics
 # -------------------------------------
 from FlowCyPy.fluidics import FlowCell
-from FlowCyPy.fluidics import Fluidics, ScattererCollection, population
-from FlowCyPy.sampling_method import GammaModel, ExplicitModel
+from FlowCyPy.fluidics import Fluidics, ScattererCollection, populations
+
+# from FlowCyPy.sampling_method import GammaModel, ExplicitModel
 from FlowCyPy.fluidics import distributions
 
 flow_cell = FlowCell(
@@ -52,10 +52,11 @@ scatterer_collection = ScattererCollection()
 medium_refractive_index = distributions.Delta(1.33 * ureg.RIU)
 
 diameter_dist = distributions.RosinRammler(
-    shape=150 * ureg.nanometer,
     scale=50 * ureg.nanometer,
+    shape=150,
     low_cutoff=50.0 * ureg.nanometer,
 )
+
 
 ri_dist = distributions.Normal(
     mean=1.44 * ureg.RIU,
@@ -63,18 +64,21 @@ ri_dist = distributions.Normal(
     low_cutoff=1.33 * ureg.RIU,
 )
 
-population_0 = population.Sphere(
+sampling_method = populations.ExplicitModel()
+
+population_0 = populations.SpherePopulation(
     name="Pop 0",
     medium_refractive_index=medium_refractive_index,
     concentration=5e10 * ureg.particle / ureg.milliliter,
     diameter=diameter_dist,
     refractive_index=ri_dist,
+    sampling_method=sampling_method,
 )
 
 
 diameter_dist = distributions.RosinRammler(
-    shape=50 * ureg.nanometer,
     scale=50 * ureg.nanometer,
+    shape=50,
 )
 
 ri_dist = distributions.Normal(
@@ -83,13 +87,15 @@ ri_dist = distributions.Normal(
     low_cutoff=1.33 * ureg.RIU,
 )
 
-population_1 = population.Sphere(
+sampling_method = populations.GammaModel(number_of_samples=10_000)
+
+population_1 = populations.SpherePopulation(
     name="Pop 1",
     medium_refractive_index=medium_refractive_index,
     concentration=5e17 * ureg.particle / ureg.milliliter,
     diameter=diameter_dist,
     refractive_index=ri_dist,
-    sampling_method=GammaModel(mc_samples=10_000),
+    sampling_method=sampling_method,
 )
 
 scatterer_collection.add_population(population_0)

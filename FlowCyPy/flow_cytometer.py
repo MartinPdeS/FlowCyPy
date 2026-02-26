@@ -4,6 +4,7 @@ from typing import Optional
 import pandas as pd
 import numpy as np
 from TypedUnit import Power, Time, ureg, validate_units
+from pint_pandas import PintArray
 
 from FlowCyPy.fluidics import Fluidics
 from FlowCyPy.opto_electronics import OptoElectronics
@@ -12,11 +13,8 @@ from FlowCyPy.signal_processing import SignalProcessing
 from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.run_record import RunRecord
-
-
+from FlowCyPy.binary import populations
 from FlowCyPy.event_collection import EventCollection
-import pint_pandas
-from FlowCyPy.sampling_method import GammaModel, ExplicitModel
 
 
 class FlowCytometer:
@@ -105,7 +103,7 @@ class FlowCytometer:
         Skips populations whose event frame is empty.
         """
         for events in event_collection:
-            if not isinstance(events.sampling_method, ExplicitModel):
+            if not isinstance(events.sampling_method, populations.ExplicitModel):
                 continue
 
             if events.empty:
@@ -149,7 +147,7 @@ class FlowCytometer:
         - signal_generator.add_array_to_signal exists (as in your SignalGenerator wrapper)
         """
         for events in event_collection:
-            if not isinstance(events.sampling_method, GammaModel):
+            if not isinstance(events.sampling_method, populations.GammaModel):
                 continue
 
             if events.empty:
@@ -362,6 +360,33 @@ class FlowCytometer:
 
         return run_record
 
+    def add_population_property_to_frame(
+        self, dataframe: pd.DataFrame, population: populations.BasePopulation
+    ) -> None:
+        """
+        Adds properties of a given population to the provided DataFrame.
+
+        This method extracts relevant properties from the population and adds them as columns
+        to the DataFrame. The specific properties added depend on the type of population and
+        its attributes.
+
+        Parameters
+        ----------
+        dataframe : pandas.DataFrame
+            The DataFrame to which the population properties will be added.
+        population : populations.BasePopulation
+            The population whose properties are to be added to the DataFrame.
+
+        Returns
+        -------
+        None
+            The method modifies the DataFrame in place and does not return anything.
+        """
+        properties = population.sample(number_of_samples=len(dataframe))
+
+        for key, value in properties.items():
+            dataframe[key] = PintArray(value, dtype=value.units)
+
     @validate_units
     def generate_event_collection(self, run_time: Time) -> EventCollection:
         """
@@ -372,7 +397,7 @@ class FlowCytometer:
         for population in self.fluidics.scatterer_collection.populations:
             effective_concentration = population.get_effective_concentration()
 
-            if isinstance(population.sampling_method, ExplicitModel):
+            if isinstance(population.sampling_method, populations.ExplicitModel):
 
                 flow_volume_per_second = (
                     self.fluidics.flow_cell.sample.average_flow_speed
@@ -388,7 +413,9 @@ class FlowCytometer:
 
                 dataframe = pd.DataFrame(index=range(n_events))
 
-                population.add_property_to_frame(dataframe=dataframe)
+                self.add_population_property_to_frame(
+                    dataframe=dataframe, population=population
+                )
 
                 if SimulationSettings.evenly_spaced_events:
                     arrival_time = (
@@ -409,15 +436,15 @@ class FlowCytometer:
                     "y": y,
                     "Velocity": velocities,
                 }.items():
-                    dataframe[key] = pint_pandas.PintArray(value, value.units)
+                    dataframe[key] = PintArray(value, value.units)
 
                 widths = self.opto_electronics.source.get_particle_width(
                     velocity=velocities
                 )
 
-                dataframe["Sigmas"] = pint_pandas.PintArray(widths, widths.units)
+                dataframe["Sigmas"] = PintArray(widths, widths.units)
 
-            elif isinstance(population.sampling_method, GammaModel):
+            elif isinstance(population.sampling_method, populations.GammaModel):
                 n_events = population.sampling_method.mc_samples
 
                 dataframe = pd.DataFrame(index=range(n_events))
@@ -426,11 +453,9 @@ class FlowCytometer:
                     n_events
                 )
 
-                dataframe["x"] = pint_pandas.PintArray(x, ureg.meter)
-                dataframe["y"] = pint_pandas.PintArray(y, ureg.meter)
-                dataframe["Velocity"] = pint_pandas.PintArray(
-                    velocities, ureg.meter / ureg.second
-                )
+                dataframe["x"] = PintArray(x, ureg.meter)
+                dataframe["y"] = PintArray(y, ureg.meter)
+                dataframe["Velocity"] = PintArray(velocities, ureg.meter / ureg.second)
 
                 population.add_property_to_frame(dataframe=dataframe)
 

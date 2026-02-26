@@ -102,6 +102,7 @@ message(STATUS "")
 # ----------------- collect subdirectories --------------------
 add_subdirectory(FlowCyPy/cpp/utils)               # utils
 add_subdirectory(FlowCyPy/cpp/distributions)       # distributions
+add_subdirectory(FlowCyPy/cpp/populations)         # populations
 add_subdirectory(FlowCyPy/cpp/flow_cell)           # flow_cell
 add_subdirectory(FlowCyPy/cpp/circuits)            # circuits
 add_subdirectory(FlowCyPy/cpp/trigger)             # trigger

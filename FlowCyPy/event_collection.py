@@ -6,7 +6,7 @@ from MPSPlots import helper
 import seaborn as sns
 import pint_pandas
 
-from FlowCyPy.sampling_method import ExplicitModel, GammaModel
+from FlowCyPy.binary.populations import ExplicitModel, GammaModel
 
 
 class EventCollection:

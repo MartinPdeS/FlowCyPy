@@ -56,10 +56,14 @@ class ScatteringModel:
                 event_dataframe=event_dataframe,
                 compute_cross_section=compute_cross_section,
             )
-            if event_dataframe.scatterer_type == "Sphere":
+            if event_dataframe.scatterer_type == "SpherePopulation":
                 self._process_sphere(**_dict)
-            elif event_dataframe.index.scatterer_type == "CoreShell":
+            elif event_dataframe.scatterer_type == "CoreShellPopulation":
                 self._process_coreshell(**_dict)
+            else:
+                raise ValueError(
+                    f"Unknown scatterer type: {event_dataframe.scatterer_type.iloc[0]}"
+                )
 
     def _build_source_and_detector(self, event_df: pd.DataFrame, num_particles: int):
         """
@@ -199,71 +203,3 @@ class ScatteringModel:
             event_dataframe.loc[:, "Csca"] = pint_pandas.PintArray(
                 experiment.get_sequential("Csca"), dtype=ureg.meter * ureg.meter
             )
-
-
-class FluorescenceModel:
-    """
-    Compute per-particle fluorescence emission power seen by a given fluorescence detector.
-
-    This does NOT call PyMieSim because fluorescence emission for subwavelength particles
-    is (to first order) isotropic + spectral. Instead, we model:
-
-        detected_power =  copies_per_particle
-                        . quantum_yield
-                        . excitation_intensity
-                        . detector_coupling
-                        . calibration_factor
-
-    and fill event_df[detector.name] with that power [watt].
-
-    Assumptions:
-    ------------
-    - Each row in event_df represents one particle event and has:
-        - x, y positions (for excitation intensity)
-        - columns describing which population / label(s) it carries
-    - Each population has one or more FluorescenceLabel objects you can look up.
-    """
-
-    def __init__(self, source: BaseBeam, detector: object, bandwidth: Frequency):
-        self.source = source
-        self.detector = detector
-        self.bandwidth = bandwidth
-
-    def run(self, event_dataframes: List[pd.DataFrame]) -> None:
-        """
-        Parameters
-        ----------
-        event_dataframes : List[pd.DataFrame]
-            List of DataFrames of events containing particle properties.
-
-        Side effect:
-        ------------
-        Adds/overwrites a PintArray column event_df[detector.name] with optical power [watt].
-        """
-        for event_dataframe in event_dataframes:
-            _dict = dict(event_dataframe=event_dataframe)
-            if event_dataframe.population.__class__.__name__ == "Sphere":
-                self._process_sphere(**_dict)
-            elif event_dataframe.population.__class__.__name__ == "CoreShell":
-                self._process_coreshell(**_dict)
-
-    def _process_sphere(self, event_dataframe: pd.DataFrame):
-        """
-        Process and simulate scattering from spherical particles.
-
-        Parameters
-        ----------
-        event_dataframes : pd.DataFrame
-            The full event DataFrame.
-        compute_cross_section : bool
-            Whether to compute the scattering cross section.
-        """
-        number_of_dye = event_dataframe.loc[:, f"Dye:Green"]
-
-        coupling = number_of_dye.pint.magnitude * 100
-
-        event_dataframe.loc[:, self.detector.name] = pint_pandas.PintArray(
-            coupling, dtype=ureg.watt
-        )
-
-        print(event_dataframe.loc[:, self.detector.name])

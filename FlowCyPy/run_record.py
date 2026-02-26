@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from typing import Optional, Union, List
+
+import numpy as np
 import pandas as pd
 from TypedUnit import ureg, Time, Voltage, Frequency
 from MPSPlots import helper
