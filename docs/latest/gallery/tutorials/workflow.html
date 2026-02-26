@@ -564,8 +564,7 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 </section>
 <section id="step-0-global-settings-and-imports">
 <h2>Step 0: Global Settings and Imports<a class="headerlink" href="#step-0-global-settings-and-imports" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
 
@@ -582,8 +581,9 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <section id="step-1-define-flow-cell-and-fluidics">
 <h2>Step 1: Define Flow Cell and Fluidics<a class="headerlink" href="#step-1-define-flow-cell-and-fluidics" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCell</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluidics</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">population</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sampling_method</span><span class="w"> </span><span class="kn">import</span> <span class="n">GammaModel</span><span class="p">,</span> <span class="n">ExplicitModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluidics</span><span class="p">,</span> <span class="n">ScattererCollection</span><span class="p">,</span> <span class="n">populations</span>
+
+<span class="c1"># from FlowCyPy.sampling_method import GammaModel, ExplicitModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">distributions</span>
 
 <span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
@@ -598,10 +598,11 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <span class="n">medium_refractive_index</span> <span class="o">=</span> <span class="n">distributions</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">)</span>
 
 <span class="n">diameter_dist</span> <span class="o">=</span> <span class="n">distributions</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span>
-    <span class="n">shape</span><span class="o">=</span><span class="mi">150</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
     <span class="n">scale</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+    <span class="n">shape</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
     <span class="n">low_cutoff</span><span class="o">=</span><span class="mf">50.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
 <span class="p">)</span>
+
 
 <span class="n">ri_dist</span> <span class="o">=</span> <span class="n">distributions</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span>
     <span class="n">mean</span><span class="o">=</span><span class="mf">1.44</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span>
@@ -609,18 +610,21 @@ It models fluidics, optics, signal processing, and classification of multiple pa
     <span class="n">low_cutoff</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">population_0</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
+<span class="n">sampling_method</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">ExplicitModel</span><span class="p">()</span>
+
+<span class="n">population_0</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Pop 0&quot;</span><span class="p">,</span>
     <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">medium_refractive_index</span><span class="p">,</span>
     <span class="n">concentration</span><span class="o">=</span><span class="mf">5e10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
     <span class="n">diameter</span><span class="o">=</span><span class="n">diameter_dist</span><span class="p">,</span>
     <span class="n">refractive_index</span><span class="o">=</span><span class="n">ri_dist</span><span class="p">,</span>
+    <span class="n">sampling_method</span><span class="o">=</span><span class="n">sampling_method</span><span class="p">,</span>
 <span class="p">)</span>
 
 
 <span class="n">diameter_dist</span> <span class="o">=</span> <span class="n">distributions</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span>
-    <span class="n">shape</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
     <span class="n">scale</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+    <span class="n">shape</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">ri_dist</span> <span class="o">=</span> <span class="n">distributions</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span>
@@ -629,13 +633,15 @@ It models fluidics, optics, signal processing, and classification of multiple pa
     <span class="n">low_cutoff</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">population_1</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
+<span class="n">sampling_method</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">GammaModel</span><span class="p">(</span><span class="n">number_of_samples</span><span class="o">=</span><span class="mi">10_000</span><span class="p">)</span>
+
+<span class="n">population_1</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Pop 1&quot;</span><span class="p">,</span>
     <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">medium_refractive_index</span><span class="p">,</span>
     <span class="n">concentration</span><span class="o">=</span><span class="mf">5e17</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
     <span class="n">diameter</span><span class="o">=</span><span class="n">diameter_dist</span><span class="p">,</span>
     <span class="n">refractive_index</span><span class="o">=</span><span class="n">ri_dist</span><span class="p">,</span>
-    <span class="n">sampling_method</span><span class="o">=</span><span class="n">GammaModel</span><span class="p">(</span><span class="n">mc_samples</span><span class="o">=</span><span class="mi">10_000</span><span class="p">),</span>
+    <span class="n">sampling_method</span><span class="o">=</span><span class="n">sampling_method</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">population_0</span><span class="p">)</span>
@@ -784,7 +790,7 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <span class="n">_</span> <span class="o">=</span> <span class="n">classified</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_006.png" srcset="../../_images/sphx_glr_workflow_006.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 11.124 seconds)</p>
+<img src="../../_images/sphx_glr_workflow_006.png" srcset="../../_images/sphx_glr_workflow_006.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 9.762 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/67e0cd555ca79f8bdb69184b227f40a4/workflow.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow.ipynb</span></code></a></p>

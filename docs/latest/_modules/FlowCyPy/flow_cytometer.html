@@ -511,6 +511,7 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Power</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">validate_units</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pint_pandas</span><span class="w"> </span><span class="kn">import</span> <span class="n">PintArray</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluidics</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.opto_electronics</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptoElectronics</span>
@@ -519,11 +520,8 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.simulation_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSettings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.acquisition</span><span class="w"> </span><span class="kn">import</span> <span class="n">AcquisitionDataFrame</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.run_record</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunRecord</span>
-
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.binary</span><span class="w"> </span><span class="kn">import</span> <span class="n">populations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.event_collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventCollection</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pint_pandas</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sampling_method</span><span class="w"> </span><span class="kn">import</span> <span class="n">GammaModel</span><span class="p">,</span> <span class="n">ExplicitModel</span>
 
 
 <div class="viewcode-block" id="FlowCytometer">
@@ -616,7 +614,7 @@ document.write(`
 <span class="sd">        Skips populations whose event frame is empty.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">events</span> <span class="ow">in</span> <span class="n">event_collection</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">ExplicitModel</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">populations</span><span class="o">.</span><span class="n">ExplicitModel</span><span class="p">):</span>
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
@@ -663,7 +661,7 @@ document.write(`
 <span class="sd">        - signal_generator.add_array_to_signal exists (as in your SignalGenerator wrapper)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">events</span> <span class="ow">in</span> <span class="n">event_collection</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">GammaModel</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">populations</span><span class="o">.</span><span class="n">GammaModel</span><span class="p">):</span>
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
@@ -883,6 +881,36 @@ document.write(`
         <span class="k">return</span> <span class="n">run_record</span></div>
 
 
+<div class="viewcode-block" id="FlowCytometer.add_population_property_to_frame">
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer.add_population_property_to_frame">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_population_property_to_frame</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="n">populations</span><span class="o">.</span><span class="n">BasePopulation</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds properties of a given population to the provided DataFrame.</span>
+
+<span class="sd">        This method extracts relevant properties from the population and adds them as columns</span>
+<span class="sd">        to the DataFrame. The specific properties added depend on the type of population and</span>
+<span class="sd">        its attributes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataframe : pandas.DataFrame</span>
+<span class="sd">            The DataFrame to which the population properties will be added.</span>
+<span class="sd">        population : populations.BasePopulation</span>
+<span class="sd">            The population whose properties are to be added to the DataFrame.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">            The method modifies the DataFrame in place and does not return anything.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">number_of_samples</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">dataframe</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">dataframe</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="p">)</span></div>
+
+
     <span class="nd">@validate_units</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_event_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EventCollection</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -893,7 +921,7 @@ document.write(`
         <span class="k">for</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">scatterer_collection</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
             <span class="n">effective_concentration</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">get_effective_concentration</span><span class="p">()</span>
 
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">ExplicitModel</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">populations</span><span class="o">.</span><span class="n">ExplicitModel</span><span class="p">):</span>
 
                 <span class="n">flow_volume_per_second</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">average_flow_speed</span>
@@ -909,7 +937,9 @@ document.write(`
 
                 <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">n_events</span><span class="p">))</span>
 
-                <span class="n">population</span><span class="o">.</span><span class="n">add_property_to_frame</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="n">dataframe</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_population_property_to_frame</span><span class="p">(</span>
+                    <span class="n">dataframe</span><span class="o">=</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span>
+                <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">evenly_spaced_events</span><span class="p">:</span>
                     <span class="n">arrival_time</span> <span class="o">=</span> <span class="p">(</span>
@@ -924,22 +954,23 @@ document.write(`
                 <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">velocities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">flow_cell</span><span class="o">.</span><span class="n">sample_transverse_profile</span><span class="p">(</span>
                     <span class="n">n_events</span>
                 <span class="p">)</span>
+
                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">{</span>
                     <span class="s2">&quot;Time&quot;</span><span class="p">:</span> <span class="n">arrival_time</span><span class="p">,</span>
                     <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span>
                     <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span>
                     <span class="s2">&quot;Velocity&quot;</span><span class="p">:</span> <span class="n">velocities</span><span class="p">,</span>
                 <span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">dataframe</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+                    <span class="n">dataframe</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
 
                 <span class="n">widths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">get_particle_width</span><span class="p">(</span>
                     <span class="n">velocity</span><span class="o">=</span><span class="n">velocities</span>
                 <span class="p">)</span>
 
-                <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Sigmas&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">widths</span><span class="p">,</span> <span class="n">widths</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+                <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Sigmas&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">widths</span><span class="p">,</span> <span class="n">widths</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
 
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">GammaModel</span><span class="p">):</span>
-                <span class="n">n_events</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">sampling_method</span><span class="o">.</span><span class="n">mc_samples</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">populations</span><span class="o">.</span><span class="n">GammaModel</span><span class="p">):</span>
+                <span class="n">n_events</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">sampling_method</span><span class="o">.</span><span class="n">number_of_samples</span>
 
                 <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">n_events</span><span class="p">))</span>
 
@@ -947,13 +978,13 @@ document.write(`
                     <span class="n">n_events</span>
                 <span class="p">)</span>
 
-                <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span>
-                <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span>
-                <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Velocity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint_pandas</span><span class="o">.</span><span class="n">PintArray</span><span class="p">(</span>
-                    <span class="n">velocities</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span>
-                <span class="p">)</span>
+                <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span>
+                <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">)</span>
+                <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Velocity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PintArray</span><span class="p">(</span><span class="n">velocities</span><span class="p">,</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">second</span><span class="p">)</span>
 
-                <span class="n">population</span><span class="o">.</span><span class="n">add_property_to_frame</span><span class="p">(</span><span class="n">dataframe</span><span class="o">=</span><span class="n">dataframe</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_population_property_to_frame</span><span class="p">(</span>
+                    <span class="n">dataframe</span><span class="o">=</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span>
+                <span class="p">)</span>
 
                 <span class="n">dataframe</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;VelocityMean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;Velocity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 

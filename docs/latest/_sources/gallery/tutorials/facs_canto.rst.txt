@@ -29,17 +29,18 @@ It includes defining a particle population, configuring the flow cytometer, runn
 Step 0: Global Settings and Imports
 -----------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 12-49
+.. GENERATED FROM PYTHON SOURCE LINES 12-50
 
 .. code-block:: Python
 
     from FlowCyPy.instances.flow_cytometer import FacsCanto, SampleFlowRate, SheathFlowRate
-    from FlowCyPy.fluidics import population
+    from FlowCyPy.fluidics import populations
     from TypedUnit import ureg
     from FlowCyPy.fluidics import distributions
 
     diameter = distributions.RosinRammler(
-        shape=150 * ureg.nanometer, scale=30 * ureg.nanometer
+        scale=30 * ureg.nanometer,
+        shape=150,
     )
 
     medium_refractive_index = 1.33 * ureg.RIU
@@ -48,7 +49,7 @@ Step 0: Global Settings and Imports
         mean=1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
     )
 
-    population_0 = population.Sphere(
+    population_0 = populations.SpherePopulation(
         name="Pop 0",
         concentration=5e9 * ureg.particle / ureg.milliliter,
         diameter=diameter,
@@ -91,7 +92,7 @@ Step 0: Global Settings and Imports
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.779 seconds)
+   **Total running time of the script:** (0 minutes 0.758 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_facs_canto.py:

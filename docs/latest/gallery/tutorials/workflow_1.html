@@ -570,7 +570,7 @@ It models fluidics, optics, signal processing, and classification of multiple pa
     <span class="n">peak_locator</span><span class="p">,</span>
     <span class="n">triggering_system</span><span class="p">,</span>
     <span class="n">distributions</span><span class="p">,</span>
-    <span class="n">population</span><span class="p">,</span>
+    <span class="n">populations</span><span class="p">,</span>
     <span class="n">GammaModel</span><span class="p">,</span>
     <span class="n">classifiers</span><span class="p">,</span>
 <span class="p">)</span>
@@ -583,13 +583,13 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">assume_perfect_hydrodynamic_focusing</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">SimulationSettings</span><span class="o">.</span><span class="n">population_cutoff_bypass</span> <span class="o">=</span> <span class="kc">False</span>
 
-<span class="n">population_0</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
+<span class="n">population_0</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Pop 0&quot;</span><span class="p">,</span>
     <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">distributions</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">),</span>
     <span class="n">concentration</span><span class="o">=</span><span class="mf">5e10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
     <span class="n">diameter</span><span class="o">=</span><span class="n">distributions</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span>
-        <span class="n">shape</span><span class="o">=</span><span class="mi">150</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
         <span class="n">scale</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+        <span class="n">shape</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
         <span class="n">low_cutoff</span><span class="o">=</span><span class="mf">50.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="n">refractive_index</span><span class="o">=</span><span class="n">distributions</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span>
@@ -599,20 +599,20 @@ It models fluidics, optics, signal processing, and classification of multiple pa
     <span class="p">),</span>
 <span class="p">)</span>
 
-<span class="n">population_1</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">Sphere</span><span class="p">(</span>
+<span class="n">population_1</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Pop 1&quot;</span><span class="p">,</span>
     <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">distributions</span><span class="o">.</span><span class="n">Delta</span><span class="p">(</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">),</span>
     <span class="n">concentration</span><span class="o">=</span><span class="mf">5e17</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span><span class="p">,</span>
     <span class="n">diameter</span><span class="o">=</span><span class="n">distributions</span><span class="o">.</span><span class="n">RosinRammler</span><span class="p">(</span>
-        <span class="n">shape</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
         <span class="n">scale</span><span class="o">=</span><span class="mi">50</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+        <span class="n">shape</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
     <span class="p">),</span>
     <span class="n">refractive_index</span><span class="o">=</span><span class="n">distributions</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span>
         <span class="n">mean</span><span class="o">=</span><span class="mf">1.44</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span>
         <span class="n">standard_deviation</span><span class="o">=</span><span class="mf">0.002</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span>
         <span class="n">low_cutoff</span><span class="o">=</span><span class="mf">1.33</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">RIU</span><span class="p">,</span>
     <span class="p">),</span>
-    <span class="n">sampling_method</span><span class="o">=</span><span class="n">GammaModel</span><span class="p">(</span><span class="n">mc_samples</span><span class="o">=</span><span class="mi">10_000</span><span class="p">),</span>
+    <span class="n">sampling_method</span><span class="o">=</span><span class="n">GammaModel</span><span class="p">(</span><span class="n">number_of_samples</span><span class="o">=</span><span class="mi">10_000</span><span class="p">),</span>
 <span class="p">)</span>
 
 
@@ -652,7 +652,7 @@ It models fluidics, optics, signal processing, and classification of multiple pa
     <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">minute</span><span class="p">,</span>
     <span class="n">width</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
     <span class="n">height</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
-    <span class="n">populations</span><span class="o">=</span><span class="p">[</span><span class="n">population_0</span><span class="p">,</span> <span class="n">population_1</span><span class="p">],</span>
+    <span class="n">population_list</span><span class="o">=</span><span class="p">[</span><span class="n">population_0</span><span class="p">,</span> <span class="n">population_1</span><span class="p">],</span>
     <span class="n">gain</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span>
     <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
     <span class="n">bit_depth</span><span class="o">=</span><span class="s2">&quot;14bit&quot;</span><span class="p">,</span>
@@ -710,7 +710,7 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <span class="n">_</span> <span class="o">=</span> <span class="n">classified</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_1_006.png" srcset="../../_images/sphx_glr_workflow_1_006.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 48.117 seconds)</p>
+<img src="../../_images/sphx_glr_workflow_1_006.png" srcset="../../_images/sphx_glr_workflow_1_006.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 31.429 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-1-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/87801e70764fb935e43438dc2a72d3d8/workflow_1.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow_1.ipynb</span></code></a></p>

@@ -27,7 +27,7 @@ from FlowCyPy.fluidics import (
     FlowCell,
     Fluidics,
     ScattererCollection,
-    population,
+    populations,
 )
 from FlowCyPy.opto_electronics import (
     Detector,
@@ -59,9 +59,9 @@ flow_cell = FlowCell(
     height=10 * ureg.micrometer,
 )
 
-# Create a scatterer collection with a single population.
+# Create a scatterer collection with a single populations.
 # For signal processing, we use delta distributions (i.e., no variability).
-population = population.Sphere(
+population = populations.SpherePopulation(
     name="Population",
     concentration=5e9 * ureg.particle / ureg.milliliter,
     diameter=distributions.Delta(value=150 * ureg.nanometer),

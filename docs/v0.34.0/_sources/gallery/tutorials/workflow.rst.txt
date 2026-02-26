@@ -39,11 +39,10 @@ Steps Covered:
 Step 0: Global Settings and Imports
 -----------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 22-35
+.. GENERATED FROM PYTHON SOURCE LINES 22-34
 
 .. code-block:: Python
 
-    import numpy as np
     from TypedUnit import ureg
 
     from FlowCyPy import SimulationSettings
@@ -63,18 +62,19 @@ Step 0: Global Settings and Imports
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-38
+.. GENERATED FROM PYTHON SOURCE LINES 35-37
 
 Step 1: Define Flow Cell and Fluidics
 -------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 38-101
+.. GENERATED FROM PYTHON SOURCE LINES 37-107
 
 .. code-block:: Python
 
     from FlowCyPy.fluidics import FlowCell
-    from FlowCyPy.fluidics import Fluidics, ScattererCollection, population
-    from FlowCyPy.sampling_method import GammaModel, ExplicitModel
+    from FlowCyPy.fluidics import Fluidics, ScattererCollection, populations
+
+    # from FlowCyPy.sampling_method import GammaModel, ExplicitModel
     from FlowCyPy.fluidics import distributions
 
     flow_cell = FlowCell(
@@ -89,10 +89,11 @@ Step 1: Define Flow Cell and Fluidics
     medium_refractive_index = distributions.Delta(1.33 * ureg.RIU)
 
     diameter_dist = distributions.RosinRammler(
-        shape=150 * ureg.nanometer,
         scale=50 * ureg.nanometer,
+        shape=150,
         low_cutoff=50.0 * ureg.nanometer,
     )
+
 
     ri_dist = distributions.Normal(
         mean=1.44 * ureg.RIU,
@@ -100,18 +101,21 @@ Step 1: Define Flow Cell and Fluidics
         low_cutoff=1.33 * ureg.RIU,
     )
 
-    population_0 = population.Sphere(
+    sampling_method = populations.ExplicitModel()
+
+    population_0 = populations.SpherePopulation(
         name="Pop 0",
         medium_refractive_index=medium_refractive_index,
         concentration=5e10 * ureg.particle / ureg.milliliter,
         diameter=diameter_dist,
         refractive_index=ri_dist,
+        sampling_method=sampling_method,
     )
 
 
     diameter_dist = distributions.RosinRammler(
-        shape=50 * ureg.nanometer,
         scale=50 * ureg.nanometer,
+        shape=50,
     )
 
     ri_dist = distributions.Normal(
@@ -120,13 +124,15 @@ Step 1: Define Flow Cell and Fluidics
         low_cutoff=1.33 * ureg.RIU,
     )
 
-    population_1 = population.Sphere(
+    sampling_method = populations.GammaModel(number_of_samples=10_000)
+
+    population_1 = populations.SpherePopulation(
         name="Pop 1",
         medium_refractive_index=medium_refractive_index,
         concentration=5e17 * ureg.particle / ureg.milliliter,
         diameter=diameter_dist,
         refractive_index=ri_dist,
-        sampling_method=GammaModel(mc_samples=10_000),
+        sampling_method=sampling_method,
     )
 
     scatterer_collection.add_population(population_0)
@@ -142,12 +148,12 @@ Step 1: Define Flow Cell and Fluidics
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 102-104
+.. GENERATED FROM PYTHON SOURCE LINES 108-110
 
 Step 2: Define Optical Subsystem
 --------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-145
+.. GENERATED FROM PYTHON SOURCE LINES 110-151
 
 .. code-block:: Python
 
@@ -199,12 +205,12 @@ Step 2: Define Optical Subsystem
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 146-148
+.. GENERATED FROM PYTHON SOURCE LINES 152-154
 
 Step 3: Signal Processing Configuration
 ---------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 148-182
+.. GENERATED FROM PYTHON SOURCE LINES 154-188
 
 .. code-block:: Python
 
@@ -249,12 +255,12 @@ Step 3: Signal Processing Configuration
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 183-185
+.. GENERATED FROM PYTHON SOURCE LINES 189-191
 
 Step 4: Run Simulation
 ----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 185-198
+.. GENERATED FROM PYTHON SOURCE LINES 191-204
 
 .. code-block:: Python
 
@@ -283,12 +289,12 @@ Step 4: Run Simulation
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 199-201
+.. GENERATED FROM PYTHON SOURCE LINES 205-207
 
 Step 5: Plot Events and Raw Analog Signals
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 201-204
+.. GENERATED FROM PYTHON SOURCE LINES 207-210
 
 .. code-block:: Python
 
@@ -307,12 +313,12 @@ Step 5: Plot Events and Raw Analog Signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 205-207
+.. GENERATED FROM PYTHON SOURCE LINES 211-213
 
 Plot raw analog signals
 -----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 207-210
+.. GENERATED FROM PYTHON SOURCE LINES 213-216
 
 .. code-block:: Python
 
@@ -331,12 +337,12 @@ Plot raw analog signals
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 211-213
+.. GENERATED FROM PYTHON SOURCE LINES 217-219
 
 Step 6: Plot Triggered Analog Segments
 --------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 213-216
+.. GENERATED FROM PYTHON SOURCE LINES 219-222
 
 .. code-block:: Python
 
@@ -355,12 +361,12 @@ Step 6: Plot Triggered Analog Segments
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 217-219
+.. GENERATED FROM PYTHON SOURCE LINES 223-225
 
 Step 7: Plot Peak Features
 --------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 219-222
+.. GENERATED FROM PYTHON SOURCE LINES 225-228
 
 .. code-block:: Python
 
@@ -379,12 +385,12 @@ Step 7: Plot Peak Features
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 223-225
+.. GENERATED FROM PYTHON SOURCE LINES 229-231
 
 Step 8: Classify Events from Peak Features
 ------------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 225-236
+.. GENERATED FROM PYTHON SOURCE LINES 231-242
 
 .. code-block:: Python
 
@@ -414,7 +420,7 @@ Step 8: Classify Events from Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 11.124 seconds)
+   **Total running time of the script:** (0 minutes 9.762 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

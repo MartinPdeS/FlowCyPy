@@ -48,7 +48,7 @@ Steps Covered:
         peak_locator,
         triggering_system,
         distributions,
-        population,
+        populations,
         GammaModel,
         classifiers,
     )
@@ -61,13 +61,13 @@ Steps Covered:
     SimulationSettings.assume_perfect_hydrodynamic_focusing = True
     SimulationSettings.population_cutoff_bypass = False
 
-    population_0 = population.Sphere(
+    population_0 = populations.SpherePopulation(
         name="Pop 0",
         medium_refractive_index=distributions.Delta(1.33 * ureg.RIU),
         concentration=5e10 * ureg.particle / ureg.milliliter,
         diameter=distributions.RosinRammler(
-            shape=150 * ureg.nanometer,
             scale=50 * ureg.nanometer,
+            shape=150,
             low_cutoff=50.0 * ureg.nanometer,
         ),
         refractive_index=distributions.Normal(
@@ -77,20 +77,20 @@ Steps Covered:
         ),
     )
 
-    population_1 = population.Sphere(
+    population_1 = populations.SpherePopulation(
         name="Pop 1",
         medium_refractive_index=distributions.Delta(1.33 * ureg.RIU),
         concentration=5e17 * ureg.particle / ureg.milliliter,
         diameter=distributions.RosinRammler(
-            shape=50 * ureg.nanometer,
             scale=50 * ureg.nanometer,
+            shape=50,
         ),
         refractive_index=distributions.Normal(
             mean=1.44 * ureg.RIU,
             standard_deviation=0.002 * ureg.RIU,
             low_cutoff=1.33 * ureg.RIU,
         ),
-        sampling_method=GammaModel(mc_samples=10_000),
+        sampling_method=GammaModel(number_of_samples=10_000),
     )
 
 
@@ -130,7 +130,7 @@ Steps Covered:
         sheath_volume_flow=1 * ureg.milliliter / ureg.minute,
         width=200 * ureg.micrometer,
         height=100 * ureg.micrometer,
-        populations=[population_0, population_1],
+        population_list=[population_0, population_1],
         gain=10 * ureg.volt / ureg.ampere,
         bandwidth=10 * ureg.megahertz,
         bit_depth="14bit",
@@ -290,7 +290,7 @@ Step 8: Classify Events from Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 48.117 seconds)
+   **Total running time of the script:** (0 minutes 31.429 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow_1.py:
