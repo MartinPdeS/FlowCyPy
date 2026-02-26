@@ -25,7 +25,7 @@ from FlowCyPy.workflow import (
     peak_locator,
     triggering_system,
     distributions,
-    population,
+    populations,
     GammaModel,
     classifiers,
 )
@@ -38,7 +38,7 @@ SimulationSettings.include_amplifier_noise = True
 SimulationSettings.assume_perfect_hydrodynamic_focusing = True
 SimulationSettings.population_cutoff_bypass = False
 
-population_0 = population.SpherePopulation(
+population_0 = populations.SpherePopulation(
     name="Pop 0",
     medium_refractive_index=distributions.Delta(1.33 * ureg.RIU),
     concentration=5e10 * ureg.particle / ureg.milliliter,
@@ -54,7 +54,7 @@ population_0 = population.SpherePopulation(
     ),
 )
 
-population_1 = population.SpherePopulation(
+population_1 = populations.SpherePopulation(
     name="Pop 1",
     medium_refractive_index=distributions.Delta(1.33 * ureg.RIU),
     concentration=5e17 * ureg.particle / ureg.milliliter,
