@@ -4,6 +4,7 @@
 #include <complex>
 #include <string>
 #include <unordered_map>
+#include <memory>
 
 #include <distributions/distributions.h>
 #include "sampling_methods.h"

@@ -1,5 +1,4 @@
 from typing import List
-import pandas as pd
 
 from FlowCyPy import source
 from FlowCyPy.amplifier import TransimpedanceAmplifier
