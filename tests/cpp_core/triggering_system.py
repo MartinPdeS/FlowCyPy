@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from FlowCyPy.binary.triggering_system import DOUBLETHRESHOLD, FIXEDWINDOW
+from FlowCyPy.signal_processing.triggering_system import DOUBLETHRESHOLD, FIXEDWINDOW
 
 N_POINTS = 1000
 

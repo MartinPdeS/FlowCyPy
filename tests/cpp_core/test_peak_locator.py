@@ -1,7 +1,10 @@
 import numpy as np
 import pytest
 
-from FlowCyPy.binary.peak_locator import GlobalPeakLocator, SlidingWindowPeakLocator
+from FlowCyPy.signal_processing.peak_locator import (
+    GlobalPeakLocator,
+    SlidingWindowPeakLocator,
+)
 
 # ----------------- HELPER FUNCTIONS -----------------
 

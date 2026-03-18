@@ -1,8 +1,8 @@
-# Install script for directory: /Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/pint
+# Install script for directory: /Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/PyMieSim/PyMieSim/cpp/pint
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/var/folders/nx/6l9ysx0j7yb5szphhl8jskyh0000gn/T/tmpnkzl4zj9/wheel/platlib")
+  set(CMAKE_INSTALL_PREFIX "/var/folders/nx/6l9ysx0j7yb5szphhl8jskyh0000gn/T/tmprrhggkee/wheel/platlib")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -34,12 +34,30 @@ endif()
 
 # Set path to fallback-tool for dependency-resolution.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "/Library/Developer/CommandLineTools/usr/bin/objdump")
+  set(CMAKE_OBJDUMP "/usr/bin/objdump")
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/PyMieSim/binary" TYPE STATIC_LIBRARY FILES "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/PyMieSim/PyMieSim/cpp/pint/libpint.a")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/PyMieSim/binary/libpint.a" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/PyMieSim/binary/libpint.a")
+    execute_process(COMMAND "/usr/bin/ranlib" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/PyMieSim/binary/libpint.a")
+  endif()
+endif()
+
+if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/PyMieSim/binary" TYPE MODULE FILES "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/PyMieSim/PyMieSim/cpp/pint/interface_pint.cpython-313-darwin.so")
+  if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/PyMieSim/binary/interface_pint.cpython-313-darwin.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/PyMieSim/binary/interface_pint.cpython-313-darwin.so")
+    if(CMAKE_INSTALL_DO_STRIP)
+      execute_process(COMMAND "/usr/bin/strip" -x "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/PyMieSim/binary/interface_pint.cpython-313-darwin.so")
+    endif()
+  endif()
 endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
 if(CMAKE_INSTALL_LOCAL_ONLY)
-  file(WRITE "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/FlowCyPy/FlowCyPy/cpp/pint/install_local_manifest.txt"
+  file(WRITE "/Users/m.poinsinetdesivry-houle/Desktop/GitRepositories/PyMieSim/PyMieSim/cpp/pint/install_local_manifest.txt"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

@@ -1,4 +1,3 @@
-#include <pybind11/pybind11.h>
 #include <vector>
 #include <string>
 #include <cmath>      // for std::isnan
@@ -12,8 +11,8 @@ public:
     double min_voltage;
     double max_voltage;
 
-    Digitizer(double sampling_rate, double threshold)
-        : sampling_rate_(sampling_rate), threshold_(threshold) {}
+    Digitizer(double sampling_rate)
+        : sampling_rate(sampling_rate) {}
 
 
     void clip_signal(std::vector<double>& signal) {
@@ -36,7 +35,22 @@ public:
         return {min_val, max_val};
     }
 
-    void capture_signal(const std::vector<double>& signal) {
+    void set_auto_range(const std::vector<double>& signal) {
+        auto [min_val, max_val] = this->get_min_max(signal);
+        min_voltage = min_val;
+        max_voltage = max_val;
+    }
+
+    void capture_signal(const std::vector<double>& signal, bool use_saturation = true) {
+        auto [min_val, max_val] = this->get_min_max(signal);
+        if (use_saturation) {
+            min_voltage = min_val;
+            max_voltage = max_val;
+        } else {
+            // Set to some default values or based on expected signal range
+            min_voltage = -1.0; // Example default
+            max_voltage = 1.0;  // Example default
+        }
 
     }
 };
