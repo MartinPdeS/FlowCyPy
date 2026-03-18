@@ -1,11 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from MPSPlots import helper
 from TypedUnit import ureg
 
-from FlowCyPy import FlowCytometer, circuits, peak_locator
+from FlowCyPy import FlowCytometer, circuits
 from FlowCyPy.binary.populations import SpherePopulation
-from FlowCyPy.triggering_system import DynamicWindow
 
 
 class SignalStatistics:
@@ -40,24 +38,12 @@ class SignalStatistics:
 
 
 class BaseEstimator:
-    def _get_peaks(self, flow_cytometer):
+    def _get_peaks(self, flow_cytometer, run_time=1.5 * ureg.millisecond):
         flow_cytometer.signal_processing.analog_processing = [
             circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
         ]
 
-        flow_cytometer.signal_processing.triggering_system = DynamicWindow(
-            trigger_detector_name="default",
-            threshold=0.5 * ureg.millivolt,
-            max_triggers=-1,
-            pre_buffer=20,
-            post_buffer=20,
-        )
-
-        flow_cytometer.signal_processing.peak_algorithm = (
-            peak_locator.GlobalPeakLocator(compute_width=False)
-        )
-
-        results = flow_cytometer.run(run_time=1.5 * ureg.millisecond)
+        results = flow_cytometer.run(run_time=run_time)
 
         if self.debug_mode:
             results.trigger.plot()
@@ -124,6 +110,7 @@ class JEstimator(BaseEstimator):
         bead_diameter: ureg.Quantity,
         illumination_powers: ureg.Quantity,
         flow_cytometer: FlowCytometer,
+        run_time: ureg.Quantity = 1.5 * ureg.millisecond,
     ) -> None:
         """
         Add multiple signal measurements across a range of illumination powers using a provided generator.
@@ -136,11 +123,16 @@ class JEstimator(BaseEstimator):
             Sequence of illumination powers to test.
         run_function : callable
             Function that accepts bead_diameter and illumination_power, and returns a signal peak dataframe.
+        flow_cytometer : FlowCytometer
+            Simulation engine to run the experiments.
+        run_time : ureg.Quantity, optional
+            Duration of each simulation run. Default is 1.5 milliseconds.
         """
         for idx, power in enumerate(illumination_powers):
             print(f"[INFO] Running simulation {idx+1}/{len(illumination_powers)}")
 
             result_df = self._run_experiment(
+                run_time=run_time,
                 flow_cytometer=flow_cytometer,
                 bead_diameter=bead_diameter,
                 illumination_power=power,
@@ -152,10 +144,11 @@ class JEstimator(BaseEstimator):
 
     def _run_experiment(
         self,
+        run_time: ureg.Quantity,
         flow_cytometer: FlowCytometer,
-        bead_diameter,
-        illumination_power,
-        concentration,
+        bead_diameter: ureg.Quantity,
+        illumination_power: ureg.Quantity,
+        concentration: ureg.Quantity,
     ):
         population_0 = SpherePopulation(
             name="population",
@@ -169,7 +162,7 @@ class JEstimator(BaseEstimator):
 
         flow_cytometer.opto_electronics.source.optical_power = illumination_power
 
-        return self._get_peaks(flow_cytometer)
+        return self._get_peaks(flow_cytometer=flow_cytometer, run_time=run_time)
 
     def estimate_j(self) -> ureg.Quantity:
         """
@@ -196,14 +189,20 @@ class JEstimator(BaseEstimator):
 
         return slope * ureg.AU**0.5
 
-    @helper.pre_plot(nrows=1, ncols=1)
-    def plot(self, axes: plt.Axes) -> None:
+    def plot(self) -> plt.Figure:
         """
         Plot RCV vs 1/sqrt(Median) with linear fit (J estimation).
         This is the main plot representing the J-scaling behavior.
+
+        Returns
+        -------
+        figure : plt.Figure
+
         """
         if len(self._medians) < 2:
             raise ValueError("At least two measurements are required to plot.")
+
+        figure, axes = plt.subplots(figsize=(6, 4))
 
         x = 1 / np.sqrt(np.array(self._medians))
         y = np.array(self._robust_cvs)
@@ -226,16 +225,24 @@ class JEstimator(BaseEstimator):
         )
         axes.legend()
 
-    @helper.pre_plot(nrows=2, ncols=1)
-    def plot_statistics(self, axes: plt.Axes) -> None:
+        return figure
+
+    def plot_statistics(self) -> plt.Figure:
         """
         Plot:
         1. Median vs Illumination Power
         2. Robust STD vs Illumination Power with √(Median) fit
+
+        Returns
+        -------
+        figure : plt.Figure
+             The figure containing the two subplots.
         """
         assert (
             len(self._medians) >= 2
         ), "At least two measurements are required to plot statistics."
+
+        figure, axes = plt.subplots(nrows=2, ncols=1, figsize=(9, 4))
 
         powers = np.array(
             [float(p.to("mW").magnitude) for p in self._illumination_powers]
@@ -271,6 +278,8 @@ class JEstimator(BaseEstimator):
             title="STD vs Illumination Power",
         )
         axes[1].legend()
+
+        return figure
 
 
 class KEstimator(BaseEstimator):
@@ -323,6 +332,7 @@ class KEstimator(BaseEstimator):
         bead_diameters: list[ureg.Quantity],
         illumination_power: ureg.Quantity,
         flow_cytometer: FlowCytometer,
+        run_time: ureg.Quantity = 1.5 * ureg.millisecond,
     ) -> None:
         """
         Add multiple measurements for different bead sizes at a fixed illumination power.
@@ -337,17 +347,28 @@ class KEstimator(BaseEstimator):
             Constant power for all simulations.
         flow_cytometer : FlowCytometer
             Simulation engine.
+        run_time : ureg.Quantity, optional
+            Duration of the simulation run. Default is 1.5 milliseconds.
         """
         for idx, diameter in enumerate(bead_diameters):
             print(f"[INFO] Simulating bead {idx+1}/{len(bead_diameters)}: {diameter}")
             peaks = self._run_experiment(
-                flow_cytometer, diameter, illumination_power, concentration
+                run_time=run_time,
+                flow_cytometer=flow_cytometer,
+                bead_diameter=diameter,
+                illumination_power=illumination_power,
+                concentration=concentration,
             )
             signal_array = peaks["Height"].values.astype(float)
             self.add_measurement(signal_array, diameter)
 
     def _run_experiment(
-        self, flow_cytometer, bead_diameter, illumination_power, concentration
+        self,
+        run_time: ureg.Quantity,
+        flow_cytometer: FlowCytometer,
+        bead_diameter: ureg.Quantity,
+        illumination_power: ureg.Quantity,
+        concentration: ureg.Quantity,
     ):
         population = SpherePopulation(
             name="population",
@@ -359,7 +380,7 @@ class KEstimator(BaseEstimator):
         flow_cytometer.fluidics.scatterer_collection.populations = [population]
         flow_cytometer.opto_electronics.source.optical_power = illumination_power
 
-        return self._get_peaks(flow_cytometer)
+        return self._get_peaks(flow_cytometer=flow_cytometer, run_time=run_time)
 
     def estimate_k(self) -> ureg.Quantity:
         """
@@ -384,14 +405,21 @@ class KEstimator(BaseEstimator):
 
         return slope * ureg.AU**0.5
 
-    @helper.pre_plot(nrows=1, ncols=1)
-    def plot(self, axes: plt.Axes) -> None:
+    def plot(self) -> plt.Figure:
         """
         Plot STD vs sqrt(Median) with linear fit (K estimation).
+
+
+        Returns
+        -------
+        figure : plt.Figure
+            The figure containing the plot.
         """
         assert (
             len(self._medians) >= 2
         ), "At least two measurements are required to plot."
+
+        figure, axes = plt.subplots(figsize=(6, 4))
 
         x = np.sqrt(np.array(self._medians))
         y = np.array(self._robust_stds)
@@ -414,14 +442,17 @@ class KEstimator(BaseEstimator):
         )
         axes.legend()
 
-    @helper.pre_plot(nrows=2, ncols=1)
-    def plot_statistics(self, axes: plt.Axes) -> None:
+        return figure
+
+    def plot_statistics(self) -> plt.Figure:
         """
         Plot Median and STD vs Bead Diameter.
         """
         assert (
             len(self._medians) >= 2
         ), "At least two measurements are required to plot statistics."
+
+        figure, axes = plt.subplots(nrows=2, ncols=1, figsize=(9, 4))
 
         diameters = [float(d.to("micrometer").magnitude) for d in self._bead_diameters]
         medians = np.array(self._medians)
@@ -442,3 +473,5 @@ class KEstimator(BaseEstimator):
             title="STD vs Bead Diameter",
         )
         axes[1].legend()
+
+        return figure

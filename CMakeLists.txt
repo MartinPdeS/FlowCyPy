@@ -100,18 +100,21 @@ message(STATUS "")
 # ----------------- logging build configuration --------------------
 
 # ----------------- collect subdirectories --------------------
-add_subdirectory(FlowCyPy/cpp/utils)               # utils
-add_subdirectory(FlowCyPy/cpp/distributions)       # distributions
-add_subdirectory(FlowCyPy/cpp/populations)         # populations
-add_subdirectory(FlowCyPy/cpp/flow_cell)           # flow_cell
-add_subdirectory(FlowCyPy/cpp/circuits)            # circuits
-add_subdirectory(FlowCyPy/cpp/trigger)             # trigger
-add_subdirectory(FlowCyPy/cpp/triggering_system)   # triggering_system
-add_subdirectory(FlowCyPy/cpp/signal_generator)    # signal_generator
-add_subdirectory(FlowCyPy/cpp/peak_locator)        # peak_locator
-add_subdirectory(FlowCyPy/cpp/classifier)          # classifier
-add_subdirectory(FlowCyPy/cpp/source)              # source
-add_subdirectory(FlowCyPy/cpp/pint)                # pint
+add_subdirectory(FlowCyPy/cpp/utils)                                 # utils
+add_subdirectory(FlowCyPy/cpp/pint)                                  # pint
+add_subdirectory(FlowCyPy/cpp/signal_generator)                      # signal_generator
+
+add_subdirectory(FlowCyPy/cpp/fluidics/distributions)                # distributions
+add_subdirectory(FlowCyPy/cpp/fluidics/populations)                  # populations
+add_subdirectory(FlowCyPy/cpp/fluidics/flow_cell)                    # flow_cell
+
+add_subdirectory(FlowCyPy/cpp/opto_electronics/source)               # source
+
+add_subdirectory(FlowCyPy/cpp/signal_processing/circuits)            # circuits
+add_subdirectory(FlowCyPy/cpp/signal_processing/trigger)             # trigger
+add_subdirectory(FlowCyPy/cpp/signal_processing/triggering_system)   # triggering_system
+add_subdirectory(FlowCyPy/cpp/signal_processing/peak_locator)        # peak_locator
+add_subdirectory(FlowCyPy/cpp/signal_processing/classifier)          # classifier
 # ----------------- collect subdirectories --------------------
 
 get_property(FLOWCYPY_TARGETS GLOBAL PROPERTY FLOWCYPY_TARGETS)

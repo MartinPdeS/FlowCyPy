@@ -13,8 +13,8 @@ from FlowCyPy.signal_processing import SignalProcessing
 from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.run_record import RunRecord
-from FlowCyPy.binary import populations
-from FlowCyPy.event_collection import EventCollection
+from FlowCyPy.fluidics import populations
+from FlowCyPy.fluidics.event_collection import EventCollection
 
 
 class FlowCytometer:

@@ -113,6 +113,7 @@ class Workflow:
             numerical_aperture=self.source_numerical_aperture,
             wavelength=self.wavelength,
             optical_power=self.optical_power,
+            polarization=0 * ureg.degree,
         )
 
         amplifier = TransimpedanceAmplifier(gain=self.gain, bandwidth=self.bandwidth)

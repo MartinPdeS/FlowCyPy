@@ -31,11 +31,11 @@ SimulationSettings.include_amplifier_noise = True
 SimulationSettings.assume_perfect_hydrodynamic_focusing = True
 SimulationSettings.population_cutoff_bypass = False
 
+
 # %%
 # Step 1: Define Flow Cell and Fluidics
 # -------------------------------------
-from FlowCyPy.fluidics import FlowCell
-from FlowCyPy.fluidics import Fluidics, ScattererCollection, populations
+from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection, populations
 
 # from FlowCyPy.sampling_method import GammaModel, ExplicitModel
 from FlowCyPy.fluidics import distributions
@@ -115,7 +115,7 @@ from FlowCyPy.opto_electronics import (
 )
 
 source = source.GaussianBeam(
-    numerical_aperture=0.1 * ureg.AU,
+    numerical_aperture=0.1,
     wavelength=405 * ureg.nanometer,
     optical_power=200 * ureg.milliwatt,
     RIN=-180,
@@ -125,13 +125,13 @@ detectors = [
     Detector(
         name="side",
         phi_angle=90 * ureg.degree,
-        numerical_aperture=0.3 * ureg.AU,
+        numerical_aperture=0.3,
         responsivity=1 * ureg.ampere / ureg.watt,
     ),
     Detector(
         name="forward",
         phi_angle=0 * ureg.degree,
-        numerical_aperture=0.3 * ureg.AU,
+        numerical_aperture=0.3,
         responsivity=1 * ureg.ampere / ureg.watt,
     ),
 ]
@@ -197,38 +197,38 @@ cytometer = FlowCytometer(
     background_power=0.001 * ureg.milliwatt,
 )
 
-run_record = cytometer.run(run_time=3 * ureg.millisecond)
+run_record = cytometer.run(run_time=1 * ureg.millisecond)
 
-_ = run_record.event_collection.plot(x="Diameter")
+# _ = run_record.event_collection.plot(x="Diameter")
 
 # %%
 # Step 5: Plot Events and Raw Analog Signals
 # ------------------------------------------
-_ = run_record.event_collection.plot(x="forward")
+# _ = run_record.event_collection.plot(x="forward")
 
 
-# %%
-# Plot raw analog signals
-# -----------------------
-_ = run_record.plot_analog(figure_size=(12, 8))
+# # %%
+# # Plot raw analog signals
+# # -----------------------
+# _ = run_record.plot_analog(figure_size=(12, 8))
 
 
-# %%
-# Step 6: Plot Triggered Analog Segments
-# --------------------------------------
-_ = run_record.plot_digital(figure_size=(12, 8))
+# # %%
+# # Step 6: Plot Triggered Analog Segments
+# # --------------------------------------
+# _ = run_record.plot_digital(figure_size=(12, 8))
 
 
 # %%
 # Step 7: Plot Peak Features
 # --------------------------
-_ = run_record.peaks.plot(x=("forward", "Height"))
+# _ = run_record.peaks.plot(x=("forward", "Height"))
 
 
 # %%
 # Step 8: Classify Events from Peak Features
 # ------------------------------------------
-from FlowCyPy.classifier import KmeansClassifier
+from FlowCyPy.signal_processing.classifier import KmeansClassifier
 
 classifier = KmeansClassifier(number_of_clusters=2)
 
@@ -237,5 +237,6 @@ classified = classifier.run(
     features=["Height"],
     detectors=["side", "forward"],
 )
+
 
 _ = classified.plot(x=("side", "Height"), y=("forward", "Height"))

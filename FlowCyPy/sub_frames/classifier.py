@@ -42,12 +42,16 @@ class ClassifierDataFrame(BaseSubFrame):
                 "Missing 'Label' column. Run `classify_dataset` before plotting."
             )
 
-        temp = self.pint.dequantify().sort_index(axis=1)
+        temp = self.unstack(level=2)
+
+        x = temp[(x_feature, x_detector)]
+        y = temp[(y_feature, y_detector)]
+        label = temp[("Label", y_detector)]
 
         grid = sns.jointplot(
-            x=temp[(x_feature, x_detector)].values.squeeze(),
-            y=temp[(y_feature, y_detector)].values.squeeze(),
-            hue=temp["Label"].values.squeeze(),
+            x=x,
+            y=y,
+            hue=label,
         )
 
         grid.figure.suptitle("Event classification")
