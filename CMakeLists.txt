@@ -111,6 +111,7 @@ add_subdirectory(FlowCyPy/cpp/fluidics/flow_cell)                    # flow_cell
 add_subdirectory(FlowCyPy/cpp/opto_electronics/source)               # source
 
 add_subdirectory(FlowCyPy/cpp/signal_processing/circuits)            # circuits
+# add_subdirectory(FlowCyPy/cpp/signal_processing/digitizer)           # digitizer
 add_subdirectory(FlowCyPy/cpp/signal_processing/trigger)             # trigger
 add_subdirectory(FlowCyPy/cpp/signal_processing/triggering_system)   # triggering_system
 add_subdirectory(FlowCyPy/cpp/signal_processing/peak_locator)        # peak_locator
