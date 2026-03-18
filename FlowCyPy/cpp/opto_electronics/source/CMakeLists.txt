@@ -4,7 +4,6 @@ set(NAME "source")
 add_library("${NAME}" STATIC "source.cpp")
 set_target_properties("${NAME}" PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories("${NAME}" PUBLIC ${FFTW_INCLUDE_DIRS})
-target_link_libraries("${NAME}" PUBLIC  PRIVATE)
 set_target_properties("${NAME}" PROPERTIES OUTPUT_NAME "${NAME}")
 
 # --- Python extension module --------------------------------------------

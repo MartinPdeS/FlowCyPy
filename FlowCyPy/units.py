@@ -12,6 +12,6 @@ from TypedUnit import (
 )  # noqa: E501
 
 
-from PyMieSim.binary import interface_pint
+from FlowCyPy.binary import interface_pint
 
 interface_pint.set_ureg(ureg)
