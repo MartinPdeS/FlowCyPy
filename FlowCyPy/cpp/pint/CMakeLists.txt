@@ -1,15 +1,17 @@
 # cpp/pint/CMakeLists.txt
-
 set(NAME "pint")
+set(LIB_NAME "${NAME}_lib")
 
-# Create a shared library for functionality.
-add_library("${NAME}" STATIC "${NAME}.cpp")
+add_library("${LIB_NAME}" STATIC "${NAME}.cpp")
+target_link_libraries("${LIB_NAME}" PUBLIC pybind11::module)
 
-target_link_libraries("${NAME}" PUBLIC pybind11::module)
-
-# Create a Python module, if needed.
 pybind11_add_module("interface_${NAME}" MODULE interface.cpp)
-set_target_properties("interface_${NAME}" PROPERTIES OUTPUT_NAME "interface_${NAME}")
-target_link_libraries("interface_${NAME}" PRIVATE "${NAME}")
+set_target_properties("interface_${NAME}" PROPERTIES OUTPUT_NAME "${NAME}")
+target_link_libraries("interface_${NAME}" PUBLIC pybind11::module "${LIB_NAME}")
 
-set_property(GLOBAL APPEND PROPERTY PYMIESIM_TARGETS "${NAME}" "interface_${NAME}")
+install(
+    TARGETS "${LIB_NAME}" "interface_${NAME}"
+    LIBRARY DESTINATION "FlowCyPy/fluidics"
+    RUNTIME DESTINATION "FlowCyPy/fluidics"
+    ARCHIVE DESTINATION "FlowCyPy/fluidics"
+)

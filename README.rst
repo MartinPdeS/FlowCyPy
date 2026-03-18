@@ -10,7 +10,7 @@ FlowCyPy: Flow Cytometer Simulation Tool
    * - Meta
      - |python|
      - |docs|
-     -
+     - |zenodo|
    * - Testing
      - |ci/cd|
      - |coverage|
@@ -432,4 +432,8 @@ For inquiries or collaboration, contact `Martin Poinsinet de Sivry-Houle <mailto
 .. |readme_digital| image:: https://github.com/MartinPdeS/FlowCyPy/raw/master/docs/images/readme_digital.png
     :width: 800px
     :align: middle
-    :alt: Readme Digitalç
+    :alt: Readme Digital
+
+.. |zenodo| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.19097313.svg
+    :alt: Release
+    :target: https://doi.org/10.5281/zenodo.19097313
