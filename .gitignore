@@ -30,4 +30,5 @@ docs/source/gallery/
 *.DS_Store*
 *.so*
 *.a*
+*.dir*
 *CmakeFiles*
