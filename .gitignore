@@ -20,6 +20,7 @@
 !pytest.ini
 !.coveragerc
 !external
+!makefile
 
 # But ignore docs/build inside docs and code
 docs/build/
