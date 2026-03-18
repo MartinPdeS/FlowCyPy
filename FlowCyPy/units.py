@@ -1,5 +1,3 @@
-# from PyMieSim.binary import interface_pint
-
 from TypedUnit import ureg
 from TypedUnit import (
     Dimensionless,
@@ -14,4 +12,6 @@ from TypedUnit import (
 )  # noqa: E501
 
 
-# interface_pint.set_ureg(ureg)
+from PyMieSim.binary import interface_pint
+
+interface_pint.set_ureg(ureg)
