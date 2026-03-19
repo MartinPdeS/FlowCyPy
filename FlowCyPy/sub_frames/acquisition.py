@@ -81,16 +81,11 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
         )
 
         for detector_name in self.detector_names:
-            analog_signal = self[detector_name]
-            digitized_signal, _ = digitizer.capture_signal(signal=analog_signal)
-
-            digital_df[detector_name] = pint_pandas.PintArray(
-                digitized_signal, ureg.bit_bins
+            digital_df[detector_name] = digitizer.process_signal(
+                signal=self[detector_name].pint.quantity
             )
 
         output = self.__class__(dataframe=digital_df)
-
-        output.normalize_units(signal_units="max", time_units="max")
 
         return output
 

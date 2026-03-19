@@ -50,9 +50,7 @@ class _Base:
             for segment_id, group in signal_dataframe[detector_name].groupby(
                 "SegmentID"
             ):
-                signal = group.values.quantity.magnitude
-
-                peak_dict = self.get_metrics(signal)
+                peak_dict = self.get_metrics(group.values)
 
                 for key, value in peak_dict.items():
                     df.loc[(detector_name, segment_id), key] = value

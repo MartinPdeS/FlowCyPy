@@ -160,7 +160,9 @@ from FlowCyPy.signal_processing import (
 )
 
 digitizer = Digitizer(
-    bit_depth="14bit", saturation_levels="auto", sampling_rate=60 * ureg.megahertz
+    sampling_rate=60 * ureg.megahertz,
+    bit_depth=14,
+    use_auto_range=True,
 )
 
 analog_processing = [

@@ -349,7 +349,7 @@ class FlowCytometer:
 
             run_record.signal.digital = run_record.signal.analog_triggered.digitalize(
                 digitizer=self.signal_processing.digitizer
-            ).normalize_units(signal_units=ureg.bit_bins)
+            )
 
             if self.signal_processing.peak_algorithm is not None:
                 run_record.peaks = self.signal_processing.peak_algorithm.run(
