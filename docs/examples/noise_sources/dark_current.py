@@ -13,7 +13,7 @@ import numpy
 from TypedUnit import ureg
 
 from FlowCyPy import SimulationSettings
-from FlowCyPy.detector import Detector
+from FlowCyPy.opto_electronics.detector import Detector
 from FlowCyPy.binary.signal_generator import SignalGenerator
 
 SimulationSettings.include_noises = True

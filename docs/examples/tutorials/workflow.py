@@ -156,7 +156,7 @@ from FlowCyPy.signal_processing import (
     SignalProcessing,
     circuits,
     peak_locator,
-    triggering_system,
+    discriminator,
 )
 
 digitizer = Digitizer(
@@ -170,7 +170,7 @@ analog_processing = [
     circuits.BesselLowPass(cutoff=2 * ureg.megahertz, order=4, gain=2),
 ]
 
-triggering = triggering_system.DynamicWindow(
+triggering = discriminator.DynamicWindow(
     trigger_channel="forward",
     threshold="4sigma",
     pre_buffer=20,
@@ -183,7 +183,7 @@ peak_algo = peak_locator.GlobalPeakLocator(compute_width=False)
 signal_processing = SignalProcessing(
     digitizer=digitizer,
     analog_processing=analog_processing,
-    triggering_system=triggering,
+    discriminator=triggering,
     peak_algorithm=peak_algo,
 )
 
@@ -201,30 +201,30 @@ cytometer = FlowCytometer(
 
 run_record = cytometer.run(run_time=1 * ureg.millisecond)
 
-# _ = run_record.event_collection.plot(x="Diameter")
+_ = run_record.event_collection.plot(x="Diameter")
 
 # %%
 # Step 5: Plot Events and Raw Analog Signals
 # ------------------------------------------
-# _ = run_record.event_collection.plot(x="forward")
+_ = run_record.event_collection.plot(x="forward")
 
 
 # # %%
 # # Plot raw analog signals
 # # -----------------------
-# _ = run_record.plot_analog(figure_size=(12, 8))
+_ = run_record.plot_analog(figure_size=(12, 8))
 
 
 # # %%
 # # Step 6: Plot Triggered Analog Segments
 # # --------------------------------------
-# _ = run_record.plot_digital(figure_size=(12, 8))
+_ = run_record.plot_digital(figure_size=(12, 8))
 
 
 # %%
 # Step 7: Plot Peak Features
 # --------------------------
-# _ = run_record.peaks.plot(x=("forward", "Height"))
+_ = run_record.peaks.plot(x=("forward", "Height"))
 
 
 # %%

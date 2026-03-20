@@ -8,7 +8,7 @@ from pint_pandas import PintArray
 
 from FlowCyPy.fluidics import Fluidics
 from FlowCyPy.opto_electronics import OptoElectronics
-from FlowCyPy.binary.signal_generator import SignalGenerator
+from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.signal_processing import SignalProcessing
 from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame

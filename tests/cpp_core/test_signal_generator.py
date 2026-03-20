@@ -3,7 +3,7 @@ import pytest
 
 import FlowCyPy
 from FlowCyPy.units import ureg
-from FlowCyPy.binary.signal_generator import SignalGenerator
+from FlowCyPy.signal_generator import SignalGenerator
 
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 

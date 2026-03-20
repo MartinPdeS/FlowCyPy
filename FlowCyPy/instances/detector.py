@@ -1,6 +1,6 @@
-from TypedUnit import ureg
+from FlowCyPy.units import ureg
 
-from FlowCyPy.detector import Detector
+from FlowCyPy.opto_electronics.detector import Detector
 
 
 class PMT:

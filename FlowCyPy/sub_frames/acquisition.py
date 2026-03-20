@@ -4,11 +4,10 @@ from typing import List, Optional, Union
 import matplotlib.pyplot as plt
 from MPSPlots import helper
 import pandas as pd
-import pint_pandas
 import seaborn as sns
 from TypedUnit import Dimensionless, Time, Voltage, ureg
 
-from FlowCyPy.binary.signal_generator import SignalGenerator
+from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.sub_frames import utils
 from FlowCyPy.sub_frames.base import BaseSubFrame
 

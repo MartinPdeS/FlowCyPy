@@ -12,9 +12,6 @@ from FlowCyPy.fluidics import (
     populations,
 )
 
-FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
-
-
 # ----------------- FIXTURES -----------------
 
 

@@ -13,7 +13,7 @@ epsilon_0 = PhysicalConstant.epsilon_0
 c = PhysicalConstant.c
 
 # These imports assume your classes are defined in a module called "laser_beams"
-from FlowCyPy.source import AstigmaticGaussianBeam, GaussianBeam
+from FlowCyPy.opto_electronics.source import AstigmaticGaussianBeam, GaussianBeam
 
 
 # GaussianBeam Tests

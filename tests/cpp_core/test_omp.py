@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from FlowCyPy.binary.signal_generator import SignalGenerator
+from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.units import ureg
 
 N_ELEMENTS = 5000

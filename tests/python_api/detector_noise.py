@@ -5,7 +5,7 @@ from TypedUnit import ureg
 import FlowCyPy
 from FlowCyPy import SimulationSettings
 from FlowCyPy.opto_electronics import Detector
-from FlowCyPy.binary.signal_generator import SignalGenerator
+from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.signal_processing import Digitizer
 
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging

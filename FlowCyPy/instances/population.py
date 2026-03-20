@@ -1,7 +1,7 @@
 from TypedUnit import ureg
 
 from FlowCyPy.fluidics import distributions
-from FlowCyPy.binary.populations import SpherePopulation
+from FlowCyPy.fluidics.populations import SpherePopulation
 
 
 class CallablePopulationMeta(type):

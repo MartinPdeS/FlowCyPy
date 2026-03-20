@@ -5,7 +5,7 @@ from TypedUnit import ureg
 import FlowCyPy
 from FlowCyPy.opto_electronics import Detector
 from FlowCyPy.physical_constant import PhysicalConstant
-from FlowCyPy.binary.signal_generator import SignalGenerator
+from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.signal_processing import Digitizer
 
 FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
@@ -14,9 +14,7 @@ FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
 
 TOLERANCE = 0.05  # Allowable error margin (5%)
 N_ELEMENTS = 5000  # Number of elements in the signal
-TIME_ARRAY = (
-    np.linspace(0.0, 1.0, N_ELEMENTS) * ureg.microsecond
-)  # Time array for the signal generator
+TIME_ARRAY = np.linspace(0.0, 1.0, N_ELEMENTS) * ureg.microsecond
 
 # ----------------- FIXTURES -----------------
 
@@ -40,8 +38,8 @@ def signal_digitizer():
     This is used to avoid code duplication in tests.
     """
     return Digitizer(
-        bit_depth=1024,
-        saturation_levels="auto",
+        bit_depth=10,
+        use_auto_range=True,
         sampling_rate=1e6 * ureg.hertz,  # Default sampling rate
     )
 

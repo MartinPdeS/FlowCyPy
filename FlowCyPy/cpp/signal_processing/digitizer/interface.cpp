@@ -418,7 +418,7 @@ PYBIND11_MODULE(digitizer, module) {
 
                 self.clip_signal(signal_vector);
 
-                return py::array_t<double>(signal_vector.size(), signal_vector.data()) * ureg.attr("volt");
+                return py::array_t<double>(signal_vector.size(), signal_vector.data());
             },
             py::arg("signal"),
             R"pbdoc(
@@ -526,7 +526,7 @@ PYBIND11_MODULE(digitizer, module) {
 
                 self.process_signal(signal_vector, use_auto_range);
 
-                return py::array_t<double>(signal_vector.size(), signal_vector.data()) * ureg.attr("volt");
+                return py::array_t<double>(signal_vector.size(), signal_vector.data());
             },
             py::arg("signal"),
             py::arg("use_auto_range"),

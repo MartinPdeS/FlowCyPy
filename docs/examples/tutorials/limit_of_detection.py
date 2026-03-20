@@ -34,7 +34,7 @@ from FlowCyPy.signal_processing import (
     SignalProcessing,
     circuits,
     peak_locator,
-    triggering_system,
+    discriminator,
 )
 
 # %%
@@ -78,14 +78,12 @@ for size in [150, 125, 100, 75, 50]:
     )
     scatterer_collection.add_population(pop)
 
-# %%
-# Fluidics Subsystem
+scatterer_collection.dilute(factor=100)
+
 fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
-# %%
-# Signal Digitizer
 digitizer = Digitizer(
-    bit_depth="14bit", saturation_levels="auto", sampling_rate=60 * ureg.megahertz
+    bit_depth=14, use_auto_range=True, sampling_rate=60 * ureg.megahertz
 )
 
 # %%
@@ -125,8 +123,8 @@ analog_processing = [
 
 # %%
 # Triggering and Peak Detection
-triggering_system = triggering_system.DynamicWindow(
-    trigger_detector_name="forward",
+discriminator = discriminator.DynamicWindow(
+    trigger_channel="forward",
     threshold="5sigma",
     max_triggers=-1,
     pre_buffer=128,
@@ -136,7 +134,7 @@ triggering_system = triggering_system.DynamicWindow(
 signal_processing = SignalProcessing(
     digitizer=digitizer,
     analog_processing=analog_processing,
-    triggering_system=triggering_system,
+    discriminator=discriminator,
     peak_algorithm=peak_locator.GlobalPeakLocator(),
 )
 

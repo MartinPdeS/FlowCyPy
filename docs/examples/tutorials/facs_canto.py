@@ -9,10 +9,10 @@ It includes defining a particle population, configuring the flow cytometer, runn
 # %%
 # Step 0: Global Settings and Imports
 # -----------------------------------
+from FlowCyPy.units import ureg
 from FlowCyPy.instances.flow_cytometer import FacsCanto, SampleFlowRate, SheathFlowRate
-from FlowCyPy.fluidics import populations
-from TypedUnit import ureg
-from FlowCyPy.fluidics import distributions
+from FlowCyPy.fluidics import populations, distributions
+
 
 diameter = distributions.RosinRammler(
     scale=30 * ureg.nanometer,

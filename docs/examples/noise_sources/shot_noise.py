@@ -13,20 +13,17 @@ import numpy
 from TypedUnit import ureg
 
 from FlowCyPy import SimulationSettings
-from FlowCyPy.detector import Detector
-from FlowCyPy.binary.signal_generator import SignalGenerator
+from FlowCyPy.opto_electronics.detector import Detector
+from FlowCyPy.signal_generator import SignalGenerator
 
 SimulationSettings.include_noises = True
 SimulationSettings.include_shot_noise = True
 SimulationSettings.include_dark_current_noise = False
 SimulationSettings.include_source_noise = False
 
-# Define optical power levels
 optical_powers = [1, 2, 4] * ureg.nanowatt  # Powers in watts
 sequence_length = 300
 
-# %%
-# Create a figure for signal visualization
 fig, (ax_signal, ax_hist) = plt.subplots(2, 1, figsize=(10, 6), sharex=False)
 
 # Loop over the optical power levels

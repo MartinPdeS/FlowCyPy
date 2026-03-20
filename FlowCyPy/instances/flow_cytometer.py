@@ -2,7 +2,7 @@ from TypedUnit import FlowRate, Power, ureg
 
 from FlowCyPy.instances.detector import PMT
 from FlowCyPy.flow_cytometer import FlowCytometer
-from FlowCyPy import fluidics, triggering_system, triggering_system
+from FlowCyPy import fluidics
 from FlowCyPy import opto_electronics
 from FlowCyPy import signal_processing
 from FlowCyPy.run_record import RunRecord
@@ -178,8 +178,8 @@ class FacsCanto:
             Configured signal processing system
         """
         digitizer = signal_processing.Digitizer(
-            bit_depth="14bit",
-            saturation_levels="auto",
+            bit_depth=14,
+            use_auto_range=True,
             sampling_rate=10 * ureg.megahertz,
         )
 
@@ -192,8 +192,8 @@ class FacsCanto:
             ),
         ]
 
-        triggering = triggering_system.DynamicWindow(
-            trigger_detector_name="forward",
+        triggering = signal_processing.discriminator.DynamicWindow(
+            trigger_channel="forward",
             threshold="4sigma",
             pre_buffer=20,
             post_buffer=20,
@@ -207,6 +207,6 @@ class FacsCanto:
         return signal_processing.SignalProcessing(
             digitizer=digitizer,
             analog_processing=analog_processing,
-            triggering_system=triggering,
+            discriminator=triggering,
             peak_algorithm=peak_algo,
         )

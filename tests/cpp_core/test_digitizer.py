@@ -146,7 +146,7 @@ def test_clip_signal():
 
     result = digitizer.clip_signal(np.array([-1.0, -0.25, 0.25, 1.0]) * ureg.volt)
 
-    assert result.to("volt").magnitude == pytest.approx([-0.5, -0.25, 0.25, 0.5])
+    assert result == pytest.approx([-0.5, -0.25, 0.25, 0.5])
 
 
 def test_clip_signal_without_voltage_range_returns_unchanged_signal():
@@ -161,7 +161,7 @@ def test_clip_signal_without_voltage_range_returns_unchanged_signal():
     signal = np.array([-1.0, 0.0, 1.0]) * ureg.volt
     result = digitizer.clip_signal(signal)
 
-    assert result.to("volt").magnitude == pytest.approx(signal.to("volt").magnitude)
+    assert np.allclose(result, signal.to("volt").magnitude)
 
 
 def test_digitize_signal_disabled_when_bit_depth_is_zero():
@@ -176,7 +176,7 @@ def test_digitize_signal_disabled_when_bit_depth_is_zero():
     signal = np.array([-1.0, -0.1, 0.2, 1.0]) * ureg.volt
     result = digitizer.digitize_signal(signal)
 
-    assert result.to("volt").magnitude == pytest.approx(signal.to("volt").magnitude)
+    assert np.allclose(result, signal.to("volt").magnitude)
 
 
 def test_digitize_signal_requires_voltage_range():
@@ -216,7 +216,7 @@ def test_digitize_signal_quantizes_values():
         ]
     )
 
-    assert np.allclose(result.to("volt").magnitude, expected)
+    assert np.allclose(result, expected)
 
 
 def test_process_signal_only_clips_when_bit_depth_is_zero():
@@ -231,7 +231,7 @@ def test_process_signal_only_clips_when_bit_depth_is_zero():
 
     result = digitizer.process_signal(np.array([-1.0, -0.25, 0.25, 1.0]) * ureg.volt)
 
-    assert result.to("volt").magnitude == pytest.approx([-0.5, -0.25, 0.25, 0.5])
+    assert result == pytest.approx([-0.5, -0.25, 0.25, 0.5])
 
 
 def test_process_signal_with_explicit_auto_range_override():
@@ -257,8 +257,8 @@ def test_process_signal_with_explicit_auto_range_override():
             1.0,
         ]
     )
-
-    assert np.allclose(result.to("volt").magnitude, expected)
+    print(result, expected)
+    assert np.allclose(result, expected)
     assert digitizer.min_voltage.to("volt").magnitude == pytest.approx(0.0)
     assert digitizer.max_voltage.to("volt").magnitude == pytest.approx(1.0)
 
@@ -284,7 +284,7 @@ def test_process_signal_uses_persistent_auto_range_setting():
         ]
     )
 
-    assert np.allclose(result.to("volt").magnitude, expected)
+    assert np.allclose(result, expected)
     assert digitizer.min_voltage.to("volt").magnitude == pytest.approx(0.0)
     assert digitizer.max_voltage.to("volt").magnitude == pytest.approx(1.0)
 
@@ -336,7 +336,7 @@ def test_nan_values_are_preserved_during_processing():
 
     result = digitizer.process_signal(np.array([0.0, np.nan, 0.6, 1.0]) * ureg.volt)
 
-    result_magnitude = result.to("volt").magnitude
+    result_magnitude = result
 
     assert result_magnitude[0] == pytest.approx(0.0)
     assert math.isnan(result_magnitude[1])

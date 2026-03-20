@@ -116,12 +116,3 @@ add_subdirectory(FlowCyPy/cpp/signal_processing/discriminator)       # discrimin
 add_subdirectory(FlowCyPy/cpp/signal_processing/peak_locator)        # peak_locator
 add_subdirectory(FlowCyPy/cpp/signal_processing/classifier)          # classifier
 # ----------------- collect subdirectories --------------------
-
-get_property(FLOWCYPY_TARGETS GLOBAL PROPERTY FLOWCYPY_TARGETS)
-
-install(
-    TARGETS ${FLOWCYPY_TARGETS}
-    LIBRARY DESTINATION ${LOCAL_BIN_DIR}
-    ARCHIVE DESTINATION ${LOCAL_BIN_DIR}
-    RUNTIME DESTINATION ${LOCAL_BIN_DIR}
-)

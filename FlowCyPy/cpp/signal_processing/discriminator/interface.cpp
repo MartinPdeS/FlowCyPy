@@ -571,7 +571,7 @@ PYBIND11_MODULE(discriminator, module) {
             )pbdoc"
         )
         .def(
-            "rum",
+            "run",
             &DoubleThreshold::run,
             R"pbdoc(
                 Execute double threshold trigger detection using the stored parameters.
