@@ -171,7 +171,7 @@ analog_processing = [
 ]
 
 triggering = triggering_system.DynamicWindow(
-    trigger_detector_name="forward",
+    trigger_channel="forward",
     threshold="4sigma",
     pre_buffer=20,
     post_buffer=20,

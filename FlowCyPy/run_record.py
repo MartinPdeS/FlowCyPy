@@ -225,7 +225,7 @@ class RunRecord:
         for (_, ax), detector_name in zip(axes.items(), self.detector_names):
             if not hasattr(self, "triggering_system"):
                 break
-            if detector_name == self.triggering_system.trigger_detector_name:
+            if detector_name == self.triggering_system.trigger_channel:
                 self.triggering_system._add_to_ax(ax, signal_units=analog.signal_units)
 
         return figure

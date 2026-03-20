@@ -2,7 +2,9 @@
 #include <pybind11/stl.h>
 #include "peak_locator.h"
 
-PYBIND11_MODULE(_peak_locator, module) {
+namespace py = pybind11;
+
+PYBIND11_MODULE(peak_locator, module) {
     module.doc() = R"pbdoc(
         Peak locator module for identifying signal peaks.
 
@@ -13,7 +15,7 @@ PYBIND11_MODULE(_peak_locator, module) {
         it defaults to `window_size`, resulting in non-overlapping windows.
     )pbdoc";
 
-    pybind11::class_<BasePeakLocator, std::shared_ptr<BasePeakLocator>>(module, "BasePeakLocator")
+    py::class_<BasePeakLocator, std::shared_ptr<BasePeakLocator>>(module, "BasePeakLocator")
         .def_readonly(
             "max_number_of_peaks",
             &BasePeakLocator::max_number_of_peaks
@@ -46,10 +48,89 @@ PYBIND11_MODULE(_peak_locator, module) {
                 dict of numpy.ndarray
                     A dictionary containing arrays for global peak positions and optionally widths/areas.
             )pbdoc"
-    )
-    ;
+        )
+        .def(
+            "run",
+            [](BasePeakLocator& self, py::object signal_dataframe) -> py::object {
+                py::module_ pandas_module = py::module_::import("pandas");
+                py::object peak_dataframe_class =
+                    py::module_::import("FlowCyPy.sub_frames.peaks").attr("PeakDataFrame");
 
-    pybind11::class_<SlidingWindowPeakLocator, BasePeakLocator, std::shared_ptr<SlidingWindowPeakLocator>>(module, "SlidingWindowPeakLocator",
+                py::object detector_names = signal_dataframe.attr("detector_names");
+                py::object segment_ids = signal_dataframe
+                    .attr("index")
+                    .attr("get_level_values")("SegmentID")
+                    .attr("unique")();
+
+                py::object multi_index = pandas_module
+                    .attr("MultiIndex")
+                    .attr("from_product")(
+                        py::make_tuple(
+                            detector_names,
+                            segment_ids,
+                            py::module_::import("builtins").attr("range")(self.max_number_of_peaks)
+                        ),
+                        py::arg("names") = py::make_tuple("Detector", "SegmentID", "PeakID")
+                    );
+
+                py::object output_dataframe = pandas_module.attr("DataFrame")(
+                    py::arg("index") = multi_index,
+                    py::arg("columns") = py::make_tuple("Index", "Height", "Width", "Area")
+                );
+
+                output_dataframe.attr("sort_index")(py::arg("inplace") = true);
+
+                for (py::handle detector_name_handle : detector_names) {
+                    py::object detector_name = py::reinterpret_borrow<py::object>(detector_name_handle);
+
+                    py::object detector_series = signal_dataframe.attr("__getitem__")(detector_name);
+                    py::object grouped_detector_series = detector_series.attr("groupby")("SegmentID");
+
+                    for (py::handle grouped_item_handle : grouped_detector_series) {
+                        py::tuple grouped_item = py::reinterpret_borrow<py::tuple>(grouped_item_handle);
+
+                        py::object segment_id = grouped_item[0];
+                        py::object group = grouped_item[1];
+
+                        std::vector<double> signal_vector =
+                            group.attr("to_numpy")().cast<std::vector<double>>();
+
+                        std::unordered_map<std::string, std::vector<double>> peak_metrics =
+                            self.get_metrics(signal_vector);
+
+                        for (const auto& [metric_name, metric_values] : peak_metrics) {
+                            output_dataframe.attr("loc").attr("__setitem__")(
+                                py::make_tuple(
+                                    py::make_tuple(detector_name, segment_id),
+                                    py::str(metric_name)
+                                ),
+                                py::cast(metric_values)
+                            );
+                        }
+                    }
+                }
+
+                return peak_dataframe_class(output_dataframe);
+            },
+            py::arg("signal_dataframe"),
+            R"pbdoc(
+                Detect peaks for each detector and segment and return a PeakDataFrame.
+
+                Parameters
+                ----------
+                signal_dataframe : pandas.DataFrame
+                    Input segmented detector signal dataframe.
+
+                Returns
+                -------
+                PeakDataFrame
+                    MultiIndex dataframe containing peak metrics for each detector,
+                    segment, and peak identifier.
+            )pbdoc"
+        )
+        ;
+
+    py::class_<SlidingWindowPeakLocator, BasePeakLocator, std::shared_ptr<SlidingWindowPeakLocator>>(module, "SlidingWindowPeakLocator",
         R"pbdoc(
             A sliding-window-based peak detection utility for 1D signals. This class segments the input signal
             into fixed-size windows (which can be overlapping if window_step is less than window_size) and identifies
@@ -91,18 +172,18 @@ PYBIND11_MODULE(_peak_locator, module) {
         )pbdoc"
         )
         .def(
-            pybind11::init<int, int, int, int, bool, bool, double>(),
-            pybind11::arg("window_size"),
-            pybind11::arg("window_step") = -1,
-            pybind11::arg("max_number_of_peaks") = 5,
-            pybind11::arg("padding_value") = -1,
-            pybind11::arg("compute_width") = false,
-            pybind11::arg("compute_area") = false,
-            pybind11::arg("threshold") = 0.5
+            py::init<int, int, int, int, bool, bool, double>(),
+            py::arg("window_size"),
+            py::arg("window_step") = -1,
+            py::arg("max_number_of_peaks") = 5,
+            py::arg("padding_value") = -1,
+            py::arg("compute_width") = false,
+            py::arg("compute_area") = false,
+            py::arg("threshold") = 0.5
         )
         ;
 
-    pybind11::class_<GlobalPeakLocator, BasePeakLocator, std::shared_ptr<GlobalPeakLocator>>(module, "GlobalPeakLocator",
+    py::class_<GlobalPeakLocator, BasePeakLocator, std::shared_ptr<GlobalPeakLocator>>(module, "GlobalPeakLocator",
         R"pbdoc(
             A peak detection utility that identifies the maximum value in each row of a 2D array.
 
@@ -126,12 +207,12 @@ PYBIND11_MODULE(_peak_locator, module) {
                 Default is 0.5.
         )pbdoc"
         )
-        .def(pybind11::init<int, int, bool, bool, double>(),
-            pybind11::arg("max_number_of_peaks") = 1,
-            pybind11::arg("padding_value") = -1,
-            pybind11::arg("compute_width") = false,
-            pybind11::arg("compute_area") = false,
-            pybind11::arg("threshold") = 0.5
+        .def(py::init<int, int, bool, bool, double>(),
+            py::arg("max_number_of_peaks") = 1,
+            py::arg("padding_value") = -1,
+            py::arg("compute_width") = false,
+            py::arg("compute_area") = false,
+            py::arg("threshold") = 0.5
         )
     ;
 }

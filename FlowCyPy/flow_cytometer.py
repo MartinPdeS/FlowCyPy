@@ -344,7 +344,9 @@ class FlowCytometer:
 
         if self.signal_processing.triggering_system is not None:
             run_record.signal.analog_triggered = (
-                self.signal_processing.triggering_system.run(dataframe=analog)
+                self.signal_processing.triggering_system.run_with_dataframe(
+                    dataframe=analog
+                )
             )
 
             run_record.signal.digital = run_record.signal.analog_triggered.digitalize(
