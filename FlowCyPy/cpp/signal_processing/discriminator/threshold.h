@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 #include <algorithm> // std::minmax_element
+#include <stdexcept> // std::runtime_error
 
 /**
  * @brief Threshold representation used by trigger detectors.
