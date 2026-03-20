@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
-from TypedUnit import ureg
 
+from FlowCyPy.units import ureg
 import FlowCyPy
 from FlowCyPy.fluidics import (
     Fluidics,

@@ -34,8 +34,9 @@ def signal_generator():
 
 
 digitizer = Digitizer(
-    bit_depth=1024,
-    saturation_levels=[0 * ureg.volt, 1e30 * ureg.volt],
+    bit_depth=12,
+    min_voltage=0.0 * ureg.volt,
+    max_voltage=1e30 * ureg.volt,
     sampling_rate=1e6 * ureg.hertz,  # High sampling frequency
 )
 

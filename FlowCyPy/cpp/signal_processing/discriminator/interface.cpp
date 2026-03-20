@@ -6,8 +6,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "triggering_system.h"
-#include <signal_processing/trigger/interface.cpp>
+#include "discriminator.h"
 
 namespace py = pybind11;
 
@@ -71,21 +70,67 @@ void assign_lower_threshold_from_python(
 
 } // namespace
 
-PYBIND11_MODULE(triggering_system, module) {
+PYBIND11_MODULE(discriminator, module) {
     module.doc() = R"pbdoc(
-        Signal Triggering and Segmentation System.
+        Signal Discrimination System.
 
         Provides an efficient framework for threshold-based and dynamic
-        window triggering of signals, with support for debouncing,
+        window discrimination of signals, with support for debouncing,
         pre/post buffering, and segment extraction.
     )pbdoc";
 
-    register_trigger(module);
+    pybind11::class_<Trigger>(module, "Trigger")
+        .def(pybind11::init<>())
+        .def_readonly("global_time",
+             &Trigger::global_time,
+             pybind11::return_value_policy::reference_internal,
+             R"pbdoc(
+                 Global time vector used for all signal operations.
 
-    py::class_<BaseTrigger>(module, "BaseTrigger")
+                 This aligns one-to-one with samples in added signals.
+             )pbdoc"
+        )
+        .def("get_segmented_signal",
+             &Trigger::get_segmented_signal,
+             pybind11::arg("detector_name"),
+             R"pbdoc(
+                 Retrieve the signal data for a specific detector.
+
+                 Parameters
+                 ----------
+                 detector_name : str
+                     Name of the signal detector to retrieve.
+
+                 Returns
+                 -------
+                 numpy.ndarray
+                     1D array of signal values for the specified detector.
+             )pbdoc"
+        )
+        .def_readonly("segmented_time",
+             &Trigger::time_out,
+             R"pbdoc(
+                 Time segments corresponding to each detected trigger.
+
+                 This is a 1D array where each entry corresponds to the
+                 time stamps of a trigger segment.
+             )pbdoc"
+        )
+        .def_readonly("segment_ids",
+             &Trigger::segment_ids_out,
+             R"pbdoc(
+                 Mapping of sample indices to segment IDs.
+
+                 This is a 1D array where each entry indicates the segment
+                 ID for that sample, or -1 if it does not belong to any segment.
+             )pbdoc"
+        )
+        ;
+
+    py::class_<BaseDiscriminator>(module, "BaseDiscriminator")
         .def_readonly(
             "trigger",
-            &BaseTrigger::trigger,
+            &BaseDiscriminator::trigger,
             py::return_value_policy::reference_internal,
             R"pbdoc(
                 The underlying trigger system used for detection and segmentation.
@@ -95,7 +140,7 @@ PYBIND11_MODULE(triggering_system, module) {
         )
         .def_readwrite(
             "trigger_channel",
-            &BaseTrigger::trigger_channel,
+            &BaseDiscriminator::trigger_channel,
             R"pbdoc(
                 Name of the trigger detection channel used.
 
@@ -105,21 +150,21 @@ PYBIND11_MODULE(triggering_system, module) {
         )
         .def_readwrite(
             "pre_buffer",
-            &BaseTrigger::pre_buffer,
+            &BaseDiscriminator::pre_buffer,
             R"pbdoc(
                 Number of samples to include before each detected trigger.
             )pbdoc"
         )
         .def_readwrite(
             "post_buffer",
-            &BaseTrigger::post_buffer,
+            &BaseDiscriminator::post_buffer,
             R"pbdoc(
                 Number of samples to include after each detected trigger.
             )pbdoc"
         )
         .def_readwrite(
             "max_triggers",
-            &BaseTrigger::max_triggers,
+            &BaseDiscriminator::max_triggers,
             R"pbdoc(
                 Maximum number of triggers to record.
 
@@ -128,7 +173,7 @@ PYBIND11_MODULE(triggering_system, module) {
         )
         .def(
             "add_time",
-            [](BaseTrigger &self, const py::object &time_array) {
+            [](BaseDiscriminator &self, const py::object &time_array) {
                 const std::vector<double> time_vector = time_array.attr("to")("second").attr("magnitude").cast<std::vector<double>>();
 
                 self.add_time(time_vector);
@@ -145,7 +190,7 @@ PYBIND11_MODULE(triggering_system, module) {
         )
         .def(
             "add_channel",
-            [](BaseTrigger &self, const std::string &channel, const py::object &signal_array) {
+            [](BaseDiscriminator &self, const std::string &channel, const py::object &signal_array) {
                 const std::vector<double> signal_vector = signal_array
                     .attr("to")("volt")
                     .attr("magnitude")
@@ -168,7 +213,7 @@ PYBIND11_MODULE(triggering_system, module) {
         )
         .def(
             "run_with_dataframe",
-            [](BaseTrigger &self, const py::object &dataframe) {
+            [](BaseDiscriminator &self, const py::object &dataframe) {
                 const std::vector<double> time_vector = dataframe["Time"]
                     .attr("pint")
                     .attr("quantity")
@@ -215,7 +260,7 @@ PYBIND11_MODULE(triggering_system, module) {
         )
         .def(
             "_assemble_dataframe",
-            [](BaseTrigger &self, const py::object &dataframe) {
+            [](BaseDiscriminator &self, const py::object &dataframe) {
                 py::module_ pandas = py::module_::import("pandas");
                 py::module_ pint_pandas = py::module_::import("pint_pandas");
 
@@ -244,7 +289,7 @@ PYBIND11_MODULE(triggering_system, module) {
 
                 py::object tidy = pandas.attr("DataFrame")(data).attr("set_index")("SegmentID");
 
-                py::object trigger_dataframe_class = dataframe.attr("__class__");
+                py::object trigger_dataframe_class = py::module_::import("FlowCyPy.sub_frames.acquisition").attr("TriggerDataFrame");
                 tidy = trigger_dataframe_class(tidy);
 
                 tidy.attr("normalize_units")(
@@ -276,7 +321,7 @@ PYBIND11_MODULE(triggering_system, module) {
         )
         ;
 
-    py::class_<FixedWindow, BaseTrigger>(module, "FixedWindow")
+    py::class_<FixedWindow, BaseDiscriminator>(module, "FixedWindow")
         .def(
             py::init(
                 [](
@@ -370,7 +415,7 @@ PYBIND11_MODULE(triggering_system, module) {
         )
         ;
 
-    py::class_<DynamicWindow, BaseTrigger>(module, "DynamicWindow")
+    py::class_<DynamicWindow, BaseDiscriminator>(module, "DynamicWindow")
         .def(
             py::init(
                 [](
@@ -415,7 +460,7 @@ PYBIND11_MODULE(triggering_system, module) {
             )pbdoc"
         )
         .def(
-            "rum",
+            "run",
             &DynamicWindow::run,
             R"pbdoc(
                 Execute dynamic window trigger detection using the stored threshold.
@@ -464,7 +509,7 @@ PYBIND11_MODULE(triggering_system, module) {
         )
         ;
 
-    py::class_<DoubleThreshold, BaseTrigger>(module, "DoubleThreshold")
+    py::class_<DoubleThreshold, BaseDiscriminator>(module, "DoubleThreshold")
         .def(
             py::init(
                 [](

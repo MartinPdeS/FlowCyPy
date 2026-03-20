@@ -23,7 +23,7 @@ from FlowCyPy.workflow import (
     Detector,
     circuits,
     peak_locator,
-    triggering_system,
+    discriminator,
     distributions,
     populations,
     GammaModel,
@@ -85,11 +85,11 @@ detector_1 = Detector(
     responsivity=1 * ureg.ampere / ureg.watt,
 )
 
-discriminator = triggering_system.DynamicWindow(
-    trigger_detector_name="forward",
+discriminator = discriminator.DynamicWindow(
+    trigger_channel="forward",
     threshold="2sigma",
-    pre_buffer=20,
-    post_buffer=20,
+    pre_buffer=40,
+    post_buffer=40,
 )
 
 peak_locator = peak_locator.GlobalPeakLocator(compute_width=False)
@@ -110,13 +110,14 @@ workflow = Workflow(
     population_list=[population_0, population_1],
     gain=10 * ureg.volt / ureg.ampere,
     bandwidth=10 * ureg.megahertz,
-    bit_depth="14bit",
+    bit_depth=14,
+    dilution_factor=100,
     sampling_rate=60 * ureg.megahertz,
-    saturation_levels="auto",
+    use_auto_range=True,
     background_power=0.001 * ureg.milliwatt,
     detectors=[detector_0, detector_1],
     analog_processing=analog_processing,
-    trigger=discriminator,
+    discriminator=discriminator,
     peak_locator=peak_locator,
 )
 

@@ -6,9 +6,9 @@
 #include <utility>
 #include <vector>
 #include <cstdio> // for printf
-#include "threshold.h"
 
-#include <signal_processing/trigger/trigger.h>
+#include "threshold.h"
+#include "trigger.h"
 
 
 
@@ -26,7 +26,7 @@
  *
  * Derived classes implement the actual trigger detection policy in `run()`.
  */
-class BaseTrigger {
+class BaseDiscriminator {
 public:
     /// Name of the signal channel used to detect trigger events.
     std::string trigger_channel;
@@ -44,10 +44,10 @@ public:
     Trigger trigger;
 
     /// Default constructor.
-    BaseTrigger() = default;
+    BaseDiscriminator() = default;
 
     /// Virtual destructor for polymorphic use.
-    virtual ~BaseTrigger() = default;
+    virtual ~BaseDiscriminator() = default;
 
     /**
      * @brief Construct a trigger detector with common trigger configuration.
@@ -61,7 +61,7 @@ public:
      * @param max_triggers
      *     Maximum number of accepted triggers. Use -1 for no limit.
      */
-    BaseTrigger(
+    BaseDiscriminator(
         const std::string &trigger_channel,
         size_t pre_buffer,
         size_t post_buffer,
@@ -268,7 +268,7 @@ protected:
  * channel and extracts a fixed width window around each accepted event using
  * `pre_buffer` and `post_buffer`.
  */
-class FixedWindow : public BaseTrigger {
+class FixedWindow : public BaseDiscriminator {
 public:
     /// Threshold used to detect trigger events.
     Threshold threshold;
@@ -294,7 +294,7 @@ public:
         size_t post_buffer,
         int max_triggers = -1
     )
-        : BaseTrigger(trigger_channel, pre_buffer, post_buffer, max_triggers) {}
+        : BaseDiscriminator(trigger_channel, pre_buffer, post_buffer, max_triggers) {}
 
     /**
      * @brief Set the trigger threshold from a numeric value.
@@ -348,7 +348,7 @@ public:
  * channel and extends each event window dynamically while the signal remains
  * above threshold, then applies the configured pre and post buffers.
  */
-class DynamicWindow : public BaseTrigger {
+class DynamicWindow : public BaseDiscriminator {
 public:
     /// Threshold used to detect trigger events.
     Threshold threshold;
@@ -373,7 +373,7 @@ public:
         size_t post_buffer,
         int max_triggers = -1
     )
-        : BaseTrigger(trigger_channel, pre_buffer, post_buffer, max_triggers) {}
+        : BaseDiscriminator(trigger_channel, pre_buffer, post_buffer, max_triggers) {}
 
     /**
      * @brief Set the trigger threshold from a numeric value.
@@ -432,7 +432,7 @@ public:
  * This is useful when a simple single threshold would be too sensitive to
  * noise or oscillations around the threshold level.
  */
-class DoubleThreshold : public BaseTrigger {
+class DoubleThreshold : public BaseDiscriminator {
 public:
     /// Primary threshold used to start an event.
     Threshold threshold;
@@ -471,7 +471,7 @@ public:
         size_t post_buffer,
         int max_triggers = -1
     )
-        : BaseTrigger(trigger_channel, pre_buffer, post_buffer, max_triggers) {}
+        : BaseDiscriminator(trigger_channel, pre_buffer, post_buffer, max_triggers) {}
 
     /**
      * @brief Set the primary threshold from a numeric value.

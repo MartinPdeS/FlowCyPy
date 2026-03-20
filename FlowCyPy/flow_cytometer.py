@@ -342,9 +342,9 @@ class FlowCytometer:
             analog=analog,
         )
 
-        if self.signal_processing.triggering_system is not None:
+        if self.signal_processing.discriminator is not None:
             run_record.signal.analog_triggered = (
-                self.signal_processing.triggering_system.run_with_dataframe(
+                self.signal_processing.discriminator.run_with_dataframe(
                     dataframe=analog
                 )
             )
@@ -358,7 +358,7 @@ class FlowCytometer:
                     run_record.signal.digital
                 )
 
-            run_record.triggering_system = self.signal_processing.triggering_system
+            run_record.discriminator = self.signal_processing.discriminator
 
         return run_record
 

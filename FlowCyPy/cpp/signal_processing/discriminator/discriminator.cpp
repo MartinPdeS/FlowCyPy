@@ -1,4 +1,4 @@
-#include "triggering_system.h"
+#include "discriminator.h"
 
 #include <algorithm>
 #include <cctype>
@@ -7,10 +7,10 @@
 
 
 // =============================
-// BaseTrigger implementation
+// BaseDiscriminator implementation
 // =============================
 
-void BaseTrigger::add_time(const std::vector<double> &time) {
+void BaseDiscriminator::add_time(const std::vector<double> &time) {
     if (time.empty()) {
         throw std::runtime_error("Time vector must not be empty.");
     }
@@ -19,7 +19,7 @@ void BaseTrigger::add_time(const std::vector<double> &time) {
 }
 
 
-void BaseTrigger::add_signal(
+void BaseDiscriminator::add_signal(
     const std::string &detector_name,
     const std::vector<double> &signal
 ) {
@@ -31,7 +31,7 @@ void BaseTrigger::add_signal(
 }
 
 
-void BaseTrigger::validate_detector_existence(
+void BaseDiscriminator::validate_detector_existence(
     const std::string &detector_name
 ) const {
     if (this->trigger.signal_map.find(detector_name) == this->trigger.signal_map.end()) {
@@ -42,7 +42,7 @@ void BaseTrigger::validate_detector_existence(
 }
 
 
-double BaseTrigger::parse_threshold(const Threshold &threshold) const {
+double BaseDiscriminator::parse_threshold(const Threshold &threshold) const {
     if (!threshold.is_defined()) {
         throw std::runtime_error("Threshold is undefined.");
     }
@@ -55,7 +55,7 @@ double BaseTrigger::parse_threshold(const Threshold &threshold) const {
 }
 
 
-double BaseTrigger::parse_sigma_threshold_string(
+double BaseDiscriminator::parse_sigma_threshold_string(
     const std::string &threshold_string
 ) const {
     std::string compact_threshold_string = threshold_string;
@@ -112,7 +112,7 @@ double BaseTrigger::parse_sigma_threshold_string(
 }
 
 
-double BaseTrigger::compute_median(std::vector<double> values) const {
+double BaseDiscriminator::compute_median(std::vector<double> values) const {
     if (values.empty()) {
         throw std::runtime_error("Cannot compute median of an empty signal.");
     }
@@ -144,7 +144,7 @@ double BaseTrigger::compute_median(std::vector<double> values) const {
 }
 
 
-double BaseTrigger::compute_mad_based_sigma(
+double BaseDiscriminator::compute_mad_based_sigma(
     const std::vector<double> &signal
 ) const {
     if (signal.empty()) {

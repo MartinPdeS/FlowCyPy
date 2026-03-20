@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from typing import Optional, Union, List
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -145,9 +145,8 @@ class RunRecord:
 
     def get_axes_dict(
         self,
-        signal_units: Voltage,
-        time_units: Time,
-        filter_population: Union[str, List[str]],
+        signal_units: Voltage = None,
+        time_units: Time = None,
     ) -> dict[str, plt.Axes]:
         """
         Creates a dictionary of matplotlib Axes for each detector and scatterer.
@@ -156,10 +155,6 @@ class RunRecord:
         and the corresponding value is a matplotlib Axes object. This is useful for plotting
         multiple signals in a structured manner.
 
-        Parameters
-        ----------
-        filter_population : Union[str, List[str]], optional
-            Population(s) to filter and highlight in the scatterer plot. Default is None.
 
         Returns
         -------
@@ -185,12 +180,16 @@ class RunRecord:
 
         for (_, ax), detector_name in zip(axes.items(), self.detector_names):
             ax.set_ylabel(
-                rf"{detector_name} [{signal_units._repr_latex_()}]", labelpad=20
+                (
+                    rf"{detector_name} [{signal_units._repr_latex_()}]"
+                    if signal_units is not None
+                    else detector_name
+                ),
+                labelpad=20,
             )
 
         self.event_collection._add_to_ax(
             ax=axes["scatterer"],
-            filter_population=filter_population,
             time_units=time_units,
         )
 
@@ -199,17 +198,13 @@ class RunRecord:
         return figure, axes
 
     @helper.post_mpl_plot
-    def plot_analog(self, filter_population: Union[str, List[str]] = None) -> None:
+    def plot_analog(self) -> None:
         """
         Plots the analog signals.
 
         This method generates a plot of the analog signals stored in the `analog` attribute.
         It provides a visual representation of the voltage signals over time for each detector.
 
-        Parameters
-        ----------
-        filter_population : Union[str, List[str]], optional
-            Population(s) to filter and highlight in the scatterer plot. Default is None.
         """
         analog = self.signal.analog
         analog.normalize_units(signal_units="max", time_units="max")
@@ -217,7 +212,6 @@ class RunRecord:
         figure, axes = self.get_axes_dict(
             signal_units=analog.signal_units,
             time_units=analog.time_units,
-            filter_population=filter_population,
         )
 
         analog._add_to_axes(axes=axes)
@@ -231,7 +225,7 @@ class RunRecord:
         return figure
 
     @helper.post_mpl_plot
-    def plot_digital(self, filter_population: Union[str, List[str]] = None) -> None:
+    def plot_digital(self) -> None:
         """
         Plots the triggered digital signals.
 
@@ -239,18 +233,12 @@ class RunRecord:
         It provides a visual representation of the segments of the digital voltage signals that were captured
         during the run.
 
-        Parameters
-        ----------
-        filter_population : Union[str, List[str]], optional
-            Population(s) to filter and highlight in the scatterer plot. Default is None.
         """
         digital = self.signal.digital
         digital.normalize_units(time_units="max")
 
         figure, axes = self.get_axes_dict(
-            signal_units=digital.signal_units,
             time_units=digital.time_units,
-            filter_population=filter_population,
         )
 
         digital._add_to_axes(axes=axes)

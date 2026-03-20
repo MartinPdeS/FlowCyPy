@@ -1,8 +1,7 @@
-import numpy as np
 import pytest
-from TypedUnit import ureg
 
 import FlowCyPy
+from FlowCyPy.units import ureg
 from FlowCyPy.fluidics import (
     FlowCell,
     ScattererCollection,

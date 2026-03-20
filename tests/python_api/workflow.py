@@ -1,10 +1,9 @@
 from unittest.mock import patch
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pytest
-from TypedUnit import ureg
 
+from FlowCyPy.units import ureg
 from FlowCyPy import FlowCytometer
 from FlowCyPy.fluidics import (
     FlowCell,
@@ -24,7 +23,7 @@ from FlowCyPy.signal_processing import (
     SignalProcessing,
     circuits,
     peak_locator,
-    triggering_system,
+    discriminator,
 )
 
 
@@ -41,11 +40,7 @@ def amplifier():
 @pytest.fixture
 def digitizer():
     """Fixture for creating a default signal digitizer."""
-    return Digitizer(
-        bit_depth=1024,
-        saturation_levels="auto",
-        sampling_rate=5e6 * ureg.hertz,
-    )
+    return Digitizer(bit_depth=12, sampling_rate=5e6 * ureg.hertz, use_auto_range=True)
 
 
 @pytest.fixture
@@ -182,16 +177,16 @@ def test_flow_cytometer_triggered_acquisition(flow_cytometer):
     """Test triggered acquisition with a defined threshold."""
     run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
 
-    _triggering_system = triggering_system.DynamicWindow(
-        trigger_detector_name="default",
+    _discriminator = discriminator.DynamicWindow(
+        trigger_channel="default",
         threshold="3 sigma",
         max_triggers=-1,
         pre_buffer=20,
         post_buffer=20,
     )
 
-    triggered_signal = _triggering_system.run(
-        dataframe=run_record.signal.analog,
+    triggered_signal = _discriminator.run_with_dataframe(
+        dataframe=run_record.signal.analog
     )
 
     assert (
@@ -204,16 +199,16 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
     """Test filtering and baseline restoration on the acquired signal."""
     run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
 
-    _triggering_system = triggering_system.DynamicWindow(
-        trigger_detector_name="default",
+    _discriminator = discriminator.DynamicWindow(
+        trigger_channel="default",
         max_triggers=-1,
         pre_buffer=20,
         post_buffer=20,
         threshold="3 sigma",
     )
 
-    triggered_signal = _triggering_system.run(
-        dataframe=run_record.signal.analog,
+    triggered_signal = _discriminator.run_with_dataframe(
+        dataframe=run_record.signal.analog
     )
 
     assert np.std(triggered_signal["default"]) > 0, "Filtered signal has zero variance."
@@ -228,16 +223,16 @@ def test_peak_detection(flow_cytometer, digitizer):
 
     run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
 
-    _triggering_system = triggering_system.DynamicWindow(
+    _discriminator = discriminator.DynamicWindow(
         threshold="3 sigma",
-        trigger_detector_name="default",
+        trigger_channel="default",
         max_triggers=-1,
         pre_buffer=20,
         post_buffer=20,
     )
 
-    triggered_acquisition = _triggering_system.run(
-        dataframe=run_record.signal.analog,
+    triggered_acquisition = _discriminator.run_with_dataframe(
+        dataframe=run_record.signal.analog
     )
 
     peak_algorithm = peak_locator.GlobalPeakLocator()
@@ -255,16 +250,16 @@ def test_peak_plot(mock_show, flow_cytometer, digitizer):
     run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
     run_record.plot_analog()
 
-    trigger = triggering_system.DynamicWindow(
-        trigger_detector_name="default",
+    _discriminator = discriminator.DynamicWindow(
+        trigger_channel="default",
         max_triggers=-1,
         pre_buffer=20,
         post_buffer=20,
         threshold="3 sigma",
     )
 
-    triggered_acquisition = trigger.run(
-        dataframe=run_record.signal.analog,
+    triggered_acquisition = _discriminator.run_with_dataframe(
+        dataframe=run_record.signal.analog
     )
 
     peak_algorithm = peak_locator.GlobalPeakLocator()

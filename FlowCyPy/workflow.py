@@ -21,25 +21,26 @@ from FlowCyPy.fluidics import (
     distributions,
     populations,
 )  # noqa: F401
-from FlowCyPy.binary.populations import GammaModel, ExplicitModel  # noqa: F401
+
+from FlowCyPy.fluidics.populations import GammaModel, ExplicitModel  # noqa: F401
 
 from FlowCyPy.flow_cytometer import FlowCytometer
-from FlowCyPy.source import GaussianBeam, AstigmaticGaussianBeam
+from FlowCyPy.opto_electronics.source import GaussianBeam, AstigmaticGaussianBeam
 from FlowCyPy.opto_electronics import (
     Detector,
     OptoElectronics,
     TransimpedanceAmplifier,
 )
-from FlowCyPy.binary.peak_locator import BasePeakLocator
-from FlowCyPy import classifier as classifiers
+
 from FlowCyPy.signal_processing import (
     Digitizer,
     SignalProcessing,
     circuits,
+    classifier as classifiers,
     peak_locator,
-    triggering_system,
+    discriminator,
 )
-from FlowCyPy.triggering_system import BaseTrigger
+from FlowCyPy.signal_processing.discriminator import BaseDiscriminator
 
 config_dict = ConfigDict(arbitrary_types_allowed=True, extra="forbid", kw_only=True)
 
@@ -59,20 +60,21 @@ class Workflow:
 
     # Opto-electronic parameters
     detectors: List[Detector] = None
-    bit_depth: str
-    saturation_levels: str
+    bit_depth: int
+    use_auto_range: bool = True
     sampling_rate: Frequency
     background_power: Power = 0 * ureg.watt
 
     # Population parameters
     population_list: List[populations.SpherePopulation] = None
+    dilution_factor: float = 1
 
     # signal processing parameters
     gain: Resistance
     bandwidth: Frequency
     analog_processing: List[object] = None
-    peak_locator: BasePeakLocator
-    trigger: BaseTrigger
+    peak_locator: peak_locator.BasePeakLocator
+    discriminator: discriminator.BaseDiscriminator
 
     def __post_init__(self):
         if self.analog_processing is None:
@@ -91,6 +93,8 @@ class Workflow:
         scatterer_collection = ScattererCollection(
             populations=self.population_list,
         )
+
+        scatterer_collection.dilute(self.dilution_factor)
 
         flow_cell = FlowCell(
             sample_volume_flow=self.sample_volume_flow,
@@ -135,13 +139,13 @@ class Workflow:
         digitizer = Digitizer(
             bit_depth=self.bit_depth,
             sampling_rate=self.sampling_rate,
-            saturation_levels=self.saturation_levels,
+            use_auto_range=self.use_auto_range,
         )
 
         return SignalProcessing(
             digitizer=digitizer,
             peak_algorithm=self.peak_locator,
-            triggering_system=self.trigger,
+            discriminator=self.discriminator,
             analog_processing=self.analog_processing,
         )
 

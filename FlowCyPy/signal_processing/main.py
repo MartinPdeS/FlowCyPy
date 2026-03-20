@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from . import circuits
-from . import triggering_system
+from . import discriminator
 from . import peak_locator
 from .digitizer import Digitizer
 from FlowCyPy.binary.signal_generator import SignalGenerator
@@ -23,7 +23,7 @@ class SignalProcessing:
     digitizer : Digitizer
         Digitization module that converts analog voltage signals to digital values using
         specified bit depth, voltage range, and sampling parameters.
-    triggering_system : triggering_system.BaseTrigger
+    discriminator : discriminator.BaseDiscriminator
         Component responsible for extracting signal segments based on threshold-crossing
         or window-based logic applied to the analog signal.
     peak_algorithm : peak_locator.BasePeakLocator
@@ -35,12 +35,12 @@ class SignalProcessing:
         self,
         digitizer: Digitizer,
         analog_processing: list[circuits.BaseCircuit] = (),
-        triggering_system: triggering_system.BaseTrigger = None,
+        discriminator: discriminator.BaseDiscriminator = None,
         peak_algorithm: peak_locator.BasePeakLocator = None,
     ):
         self.analog_processing = analog_processing
         self.digitizer = digitizer
-        self.triggering_system = triggering_system
+        self.discriminator = discriminator
         self.peak_algorithm = peak_algorithm
 
     def process_analog(self, signal_generator: SignalGenerator) -> None:

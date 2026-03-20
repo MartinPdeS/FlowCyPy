@@ -5,6 +5,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <algorithm> // std::minmax_element
 
 /**
  * @brief Threshold representation used by trigger detectors.

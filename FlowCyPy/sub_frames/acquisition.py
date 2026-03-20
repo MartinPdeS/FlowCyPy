@@ -81,9 +81,8 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
         )
 
         for detector_name in self.detector_names:
-            digital_df[detector_name] = digitizer.process_signal(
-                signal=self[detector_name].pint.quantity
-            )
+            array = self[detector_name].pint.quantity
+            digital_df[detector_name] = digitizer.process_signal(array)
 
         output = self.__class__(dataframe=digital_df)
 
@@ -193,11 +192,6 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
         Plot acquisition data for each detector and the scatterer events.
         This method creates a multi-panel plot with each detector's signal and a scatterer event plot.
 
-        Parameters
-        ----------
-        filter_population : Union[str, List[str]], optional
-            If provided, filters the scatterer events to only include those from the specified population(s).
-            Can be a single population name or a list of names.
 
         Returns
         -------
@@ -276,7 +270,10 @@ class AcquisitionDataFrame(BaseAcquisitionDataFrame):
             ax = axes[detector_name]
 
             time = self["Time"].pint.to(self.time_units).pint.quantity
-            signal = self[detector_name].pint.to(self.signal_units).pint.quantity
+            signal = self[detector_name]
+
+            if hasattr(signal, "pint"):
+                signal = signal.pint.to(self.signal_units).pint.quantity
 
             ax.plot(time, signal, label="Analog Signal", linestyle="-", color="black")
 

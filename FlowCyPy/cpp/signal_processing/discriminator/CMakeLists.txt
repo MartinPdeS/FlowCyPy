@@ -1,9 +1,8 @@
-# cpp/triggering_system/CMakeLists.txt
-set(NAME "triggering_system")
+# cpp/discriminator/CMakeLists.txt
+set(NAME "discriminator")
 set(LIB_NAME "${NAME}_lib")
 
-add_library("${LIB_NAME}" STATIC "${NAME}.cpp")
-target_link_libraries("${LIB_NAME}" PRIVATE pybind11::module trigger_lib)
+add_library("${LIB_NAME}" STATIC "${NAME}.cpp" trigger.cpp)
 
 pybind11_add_module("interface_${NAME}" MODULE interface.cpp)
 set_target_properties("interface_${NAME}" PROPERTIES OUTPUT_NAME "${NAME}")
