@@ -4,7 +4,7 @@
 
 | Name                                          |    Stmts |     Miss |   Branch |   BrPart |      Cover |   Missing |
 |---------------------------------------------- | -------: | -------: | -------: | -------: | ---------: | --------: |
-| FlowCyPy/calibration.py                       |      158 |      158 |       22 |        0 |      0.00% |     1-477 |
+| FlowCyPy/calibration.py                       |      159 |      159 |       22 |        0 |      0.00% |     1-478 |
 | FlowCyPy/flow\_cytometer.py                   |      126 |       40 |       40 |        7 |     65.66% |107, 110, 154-205, 340-355, 408, 417, 438-469 |
 | FlowCyPy/fluidics/event\_collection.py        |      118 |       79 |       54 |        4 |     27.33% |32-40, 62, 85, 122, 123->130, 131, 159-189, 195-202, 258-344, 375-390, 427-443 |
 | FlowCyPy/fluidics/scatterer\_collection.py    |       31 |        7 |       12 |        2 |     74.42% |37-39, 79, 99, 109-112 |
@@ -25,7 +25,7 @@
 | FlowCyPy/sub\_frames/utils.py                 |       13 |        9 |        6 |        0 |     21.05% |     26-41 |
 | FlowCyPy/utils.py                             |       70 |       51 |       22 |        0 |     20.65% |16-31, 41-46, 57-69, 72, 97-106, 130-179 |
 | FlowCyPy/workflow.py                          |       45 |       45 |        4 |        0 |      0.00% |     1-162 |
-| **TOTAL**                                     | **1270** |  **805** |  **300** |   **25** | **34.78%** |           |
+| **TOTAL**                                     | **1271** |  **806** |  **300** |   **25** | **34.75%** |           |
 
 4 files skipped due to complete coverage.
 
