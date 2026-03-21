@@ -15,7 +15,7 @@ from FlowCyPy.fluidics import populations, distributions
 
 
 diameter = distributions.RosinRammler(
-    scale=30 * ureg.nanometer,
+    scale=60 * ureg.nanometer,
     shape=150,
 )
 
@@ -36,8 +36,11 @@ population_0 = populations.SpherePopulation(
 facs_canto = FacsCanto(
     sample_volume_flow=SampleFlowRate.MEDIUM,
     sheath_volume_flow=SheathFlowRate.DEFAULT,
-    optical_power=20 * ureg.milliwatt,
-    background_power=1 * ureg.nanowatt,
+    optical_power=200 * ureg.milliwatt,
+    threshold="3sigma",
+    include_shot_noise=True,
+    include_rin_noise=True,
+    background_power=0.01 * ureg.nanowatt,
 )
 
 facs_canto.add_population(population_0)
@@ -46,4 +49,4 @@ facs_canto.dilute_sample(factor=100)
 
 run_record = facs_canto.run(run_time=0.2 * ureg.millisecond)
 
-run_record.plot_digital()
+run_record.plot_analog()

@@ -11,13 +11,13 @@
 
 class BaseSource {
 public:
-    double wavelength;      // [meter]
-    double rin;             // [dB / hertz]
-    double optical_power;   // [watt]
-    double amplitude;       // [volt / meter]
-    double polarization;    // [radian]
-    bool include_shot_noise; // whether to include shot noise in generated signals
-    bool include_rin_noise;  // whether to include RIN noise in generated signals
+    double wavelength;          // [meter]
+    double rin;                 // [dB / hertz]
+    double optical_power;       // [watt]
+    double amplitude;           // [volt / meter]
+    double polarization;        // [radian]
+    bool include_shot_noise;    // include shot noise in power signals
+    bool include_rin_noise;     // include RIN noise in amplitude or power signals
 
     virtual ~BaseSource() = default;
 
@@ -26,16 +26,16 @@ public:
         const double rin,
         const double optical_power,
         const double polarization,
-        bool include_shot_noise = true,
-        bool include_rin_noise = true
+        const bool include_shot_noise = true,
+        const bool include_rin_noise = true
     )
-        :   wavelength(wavelength),
-            rin(rin),
-            optical_power(optical_power),
-            amplitude(0.0),
-            polarization(polarization),
-            include_shot_noise(include_shot_noise),
-            include_rin_noise(include_rin_noise)
+        : wavelength(wavelength),
+          rin(rin),
+          optical_power(optical_power),
+          amplitude(0.0),
+          polarization(polarization),
+          include_shot_noise(include_shot_noise),
+          include_rin_noise(include_rin_noise)
     {
         if (this->wavelength <= 0.0) {
             throw std::runtime_error("wavelength must be strictly positive.");
@@ -58,15 +58,38 @@ public:
         return std::pow(10.0, this->rin / 10.0);
     }
 
-    double get_watt_to_photon_factor(const double bandwidth) const {
-        if (bandwidth <= 0.0) {
-            throw std::runtime_error("bandwidth must be strictly positive.");
+    double get_watt_to_photon_factor(const double time_step) const {
+        if (time_step <= 0.0) {
+            throw std::runtime_error("time_step must be strictly positive.");
         }
 
-        const double photon_energy = this->get_photon_energy();
-        const double sampling_interval = 1.0 / (2.0 * bandwidth);
+        return time_step / this->get_photon_energy();   // [photons / watt]
+    }
 
-        return sampling_interval / photon_energy;   // [photons / watt]
+    double get_time_step_from_time_array(const std::vector<double>& time_array) const {
+        if (time_array.size() < 2) {
+            throw std::runtime_error("time_array must contain at least two samples.");
+        }
+
+        const double time_step = time_array[1] - time_array[0];
+
+        if (time_step <= 0.0) {
+            throw std::runtime_error("time_array must be strictly increasing.");
+        }
+
+        for (size_t index = 2; index < time_array.size(); ++index) {
+            const double current_step = time_array[index] - time_array[index - 1];
+
+            if (current_step <= 0.0) {
+                throw std::runtime_error("time_array must be strictly increasing.");
+            }
+
+            if (std::abs(current_step - time_step) > 1e-12 * std::max(1.0, std::abs(time_step))) {
+                throw std::runtime_error("time_array must be uniformly sampled.");
+            }
+        }
+
+        return time_step;
     }
 
     void add_rin_to_signal(
@@ -84,29 +107,40 @@ public:
 
         for (size_t index = 0; index < signal_values.size(); ++index) {
             const double signal_value = signal_values[index];
-            const double standard_deviation = std::sqrt(rin_linear * bandwidth) * signal_value;
+
+            if (signal_value < 0.0) {
+                throw std::runtime_error("RIN cannot be applied to negative signal values.");
+            }
+
+            const double standard_deviation =
+                std::sqrt(rin_linear * bandwidth) * signal_value;
 
             std::normal_distribution<double> distribution(0.0, standard_deviation);
 
             signal_values[index] += distribution(generator);
+
+            if (signal_values[index] < 0.0) {
+                signal_values[index] = 0.0;
+            }
         }
     }
 
     void add_shot_noise_to_signal(
         std::vector<double>& power_values,
-        const double bandwidth
+        const double time_step
     ) const {
-        if (bandwidth <= 0.0) {
-            throw std::runtime_error("bandwidth must be strictly positive.");
+        if (time_step <= 0.0) {
+            throw std::runtime_error("time_step must be strictly positive.");
         }
 
         static thread_local std::random_device random_device;
         static thread_local std::mt19937 generator(random_device());
 
-        const double watt_to_photon = this->get_watt_to_photon_factor(bandwidth);
+        const double watt_to_photon = this->get_watt_to_photon_factor(time_step);
 
         for (size_t index = 0; index < power_values.size(); ++index) {
             const double current_power = power_values[index];
+
 
             if (current_power < 0.0) {
                 throw std::runtime_error("shot noise cannot be applied to negative optical power values.");
@@ -163,7 +197,8 @@ public:
         const std::vector<double>& x,
         const std::vector<double>& y,
         const std::vector<double>& z,
-        const double bandwidth
+        const double bandwidth,
+        const double time_step
     ) const {
         this->validate_coordinate_vectors(x, y, z);
 
@@ -185,7 +220,7 @@ public:
         }
 
         if (this->include_shot_noise) {
-            this->add_shot_noise_to_signal(power_values, bandwidth);
+            this->add_shot_noise_to_signal(power_values, time_step);
         }
 
         return power_values;
@@ -242,16 +277,16 @@ protected:
     }
 
     void validate_pulse_vectors(
-        const std::vector<double>& pulse_widths,
+        const std::vector<double>& velocities,
         const std::vector<double>& pulse_centers,
         const std::vector<double>& pulse_amplitudes
     ) const {
         if (
-            pulse_widths.size() != pulse_centers.size() ||
-            pulse_widths.size() != pulse_amplitudes.size()
+            velocities.size() != pulse_centers.size() ||
+            velocities.size() != pulse_amplitudes.size()
         ) {
             throw std::runtime_error(
-                "pulse_widths, pulse_centers, and pulse_amplitudes must have the same size."
+                "velocities, pulse_centers, and pulse_amplitudes must have the same size."
             );
         }
     }
@@ -271,7 +306,6 @@ protected:
 
 
 
-
 class Gaussian : public BaseSource {
 public:
     double waist_y;   // [meter]
@@ -284,10 +318,17 @@ public:
         const double waist_y,
         const double waist_z,
         const double polarization,
-        bool include_shot_noise = true,
-        bool include_rin_noise = true
+        const bool include_shot_noise = true,
+        const bool include_rin_noise = true
     )
-        : BaseSource(wavelength, rin, optical_power, polarization, include_shot_noise, include_rin_noise),
+        : BaseSource(
+            wavelength,
+            rin,
+            optical_power,
+            polarization,
+            include_shot_noise,
+            include_rin_noise
+        ),
           waist_y(waist_y),
           waist_z(waist_z)
     {
@@ -361,6 +402,10 @@ public:
             pulse_amplitudes
         );
 
+        this->validate_velocity_vector(velocities);
+
+        const double time_step = this->get_time_step_from_time_array(time_array);
+
         std::vector<double> signal;
         signal.reserve(time_array.size());
 
@@ -368,10 +413,6 @@ public:
             double signal_value = base_level;
 
             for (size_t index = 0; index < velocities.size(); ++index) {
-                if (velocities[index] <= 0.0) {
-                    throw std::runtime_error("all velocity values must be strictly positive.");
-                }
-
                 const double pulse_width = this->waist_z / (2.0 * velocities[index]);
                 const double normalized_time =
                     (time_value - pulse_centers[index]) / pulse_width;
@@ -384,8 +425,12 @@ public:
             signal.push_back(signal_value);
         }
 
+        if (this->include_rin_noise) {
+            this->add_rin_to_signal(signal, bandwidth);
+        }
+
         if (this->include_shot_noise) {
-            this->add_shot_noise_to_signal(signal, bandwidth);
+            this->add_shot_noise_to_signal(signal, time_step);
         }
 
         return signal;
@@ -434,10 +479,17 @@ public:
         const double waist_y,
         const double waist_z,
         const double polarization,
-        bool include_shot_noise = true,
-        bool include_rin_noise = true
+        const bool include_shot_noise = true,
+        const bool include_rin_noise = true
     )
-        : BaseSource(wavelength, rin, optical_power, polarization, include_shot_noise, include_rin_noise),
+        : BaseSource(
+            wavelength,
+            rin,
+            optical_power,
+            polarization,
+            include_shot_noise,
+            include_rin_noise
+        ),
           waist_y(waist_y),
           waist_z(waist_z)
     {
@@ -516,6 +568,10 @@ public:
             pulse_amplitudes
         );
 
+        this->validate_velocity_vector(velocities);
+
+        const double time_step = this->get_time_step_from_time_array(time_array);
+
         std::vector<double> signal;
         signal.reserve(time_array.size());
 
@@ -523,10 +579,6 @@ public:
             double signal_value = base_level;
 
             for (size_t index = 0; index < velocities.size(); ++index) {
-                if (velocities[index] <= 0.0) {
-                    throw std::runtime_error("all velocity values must be strictly positive.");
-                }
-
                 const double pulse_width = this->waist_z / (2.0 * velocities[index]);
                 const bool is_inside_pulse =
                     std::abs(time_value - pulse_centers[index]) <= pulse_width / 2.0;
@@ -537,8 +589,12 @@ public:
             signal.push_back(signal_value);
         }
 
+        if (this->include_rin_noise) {
+            this->add_rin_to_signal(signal, bandwidth);
+        }
+
         if (this->include_shot_noise) {
-            this->add_shot_noise_to_signal(signal, bandwidth);
+            this->add_shot_noise_to_signal(signal, time_step);
         }
 
         return signal;

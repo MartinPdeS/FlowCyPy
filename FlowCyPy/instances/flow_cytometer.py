@@ -45,10 +45,16 @@ class FacsCanto:
         sheath_volume_flow: SheathFlowRate | FlowRate,
         optical_power: Power,
         background_power: Power,
+        threshold: str = "4sigma",
+        include_shot_noise: bool = True,
+        include_rin_noise: bool = True,
     ):
         self.sample_volume_flow = sample_volume_flow
         self.sheath_volume_flow = sheath_volume_flow
         self.optical_power = optical_power
+        self.threshold = threshold
+        self.include_shot_noise = include_shot_noise
+        self.include_rin_noise = include_rin_noise
 
         self.instance = FlowCytometer(
             opto_electronics=self.get_optoelectronics(),
@@ -137,14 +143,16 @@ class FacsCanto:
         opto_electronics.OptoElectronics
             Configured optoelectronics system
         """
-        source = opto_electronics.source.AstigmaticGaussianBeam(
+        source = opto_electronics.source.Gaussian(
             waist_y=65 * ureg.micrometer,
             waist_z=10 * ureg.micrometer,
             wavelength=488 * ureg.nanometer,
             optical_power=self.optical_power,
+            include_shot_noise=self.include_shot_noise,
+            include_rin_noise=self.include_rin_noise,
         )
 
-        amplifier = opto_electronics.TransimpedanceAmplifier(
+        amplifier = opto_electronics.Amplifier(
             gain=10 * ureg.volt / ureg.ampere,
             bandwidth=10 * ureg.megahertz,
         )
@@ -152,7 +160,8 @@ class FacsCanto:
         detector_0 = PMT(
             name="forward",
             phi_angle=0 * ureg.degree,
-            numerical_aperture=0.7 * ureg.AU,
+            numerical_aperture=1.2 * ureg.AU,
+            dark_current=0 * ureg.picoampere,
         )
 
         detector_1 = PMT(
@@ -160,6 +169,7 @@ class FacsCanto:
             phi_angle=0 * ureg.degree,
             numerical_aperture=0.3 * ureg.AU,
             cache_numerical_aperture=0.1 * ureg.AU,
+            dark_current=0 * ureg.picoampere,
         )
 
         return opto_electronics.OptoElectronics(
@@ -194,7 +204,7 @@ class FacsCanto:
 
         triggering = signal_processing.discriminator.DynamicWindow(
             trigger_channel="forward",
-            threshold="4sigma",
+            threshold=self.threshold,
             pre_buffer=20,
             post_buffer=20,
             max_triggers=-1,

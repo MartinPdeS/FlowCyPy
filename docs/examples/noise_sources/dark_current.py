@@ -14,7 +14,7 @@ from TypedUnit import ureg
 
 from FlowCyPy import SimulationSettings
 from FlowCyPy.opto_electronics.detector import Detector
-from FlowCyPy.binary.signal_generator import SignalGenerator
+from FlowCyPy.signal_generator import SignalGenerator
 
 SimulationSettings.include_noises = True
 SimulationSettings.include_shot_noise = False

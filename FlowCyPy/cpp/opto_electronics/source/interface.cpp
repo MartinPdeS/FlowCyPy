@@ -390,13 +390,15 @@ PYBIND11_MODULE(source, module) {
                 const py::object& x,
                 const py::object& y,
                 const py::object& z,
-                const py::object& bandwidth
+                const py::object& bandwidth,
+                const py::object& time_step
             ) {
                 std::vector<double> values = source.get_power_signal(
                     x.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
                     y.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
                     z.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
-                    bandwidth.attr("to")("hertz").attr("magnitude").cast<double>()
+                    bandwidth.attr("to")("hertz").attr("magnitude").cast<double>(),
+                    time_step.attr("to")("second").attr("magnitude").cast<double>()
                 );
 
                 return py::cast(values) * ureg.attr("watt");
@@ -405,6 +407,7 @@ PYBIND11_MODULE(source, module) {
             py::arg("y"),
             py::arg("z"),
             py::arg("bandwidth"),
+            py::arg("time_step"),
             R"doc(
                 Evaluate optical power over multiple particle positions.
 
@@ -418,6 +421,8 @@ PYBIND11_MODULE(source, module) {
                     Array of Z positions in meter.
                 bandwidth : pint.Quantity
                     Detection bandwidth in hertz.
+                time_step : pint.Quantity
+                    Time step for power signal generation in second.
 
                 Returns
                 -------
