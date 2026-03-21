@@ -59,7 +59,7 @@ dependencies = [
     "numpy >=2.0",
     'pint ~=0.24',
     "scipy >=1.15.3",
-    'PyMieSim',
+    'PyMieSim==5.0.1',
     'MPSPlots >=1.8.1',
     "TypedUnit"
 ]
@@ -73,7 +73,7 @@ keywords = [
 ]
 
 
- 
+
 [project.optional-dependencies]
 testing = [
     "pytest>=7",
