@@ -128,7 +128,7 @@ void register_source(py::module& module) {
         )
         .def(
             "amplitude_at",
-            [](const BaseSource& source, const py::object& x, const py::object& y, const py::object& z) {
+            [ureg](const BaseSource& source, const py::object& x, const py::object& y, const py::object& z) {
                 const double x_meter = x.attr("to")("meter").attr("magnitude").cast<double>();
                 const double y_meter = y.attr("to")("meter").attr("magnitude").cast<double>();
                 const double z_meter = z.attr("to")("meter").attr("magnitude").cast<double>();
