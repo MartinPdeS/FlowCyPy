@@ -20,14 +20,14 @@ class OptoElectronics(StrictDataclassMixing):
     ----------
     detectors : List[Detector], optional
         A list of Detector instances to be included in the optoelectronics setup.
-    source : source.BaseBeam
+    source : source.BaseSource
         The light source instance used in the setup.
     amplifier : Amplifier
         The amplifier instance used to amplify the detected signals.
     """
 
     detectors: List[Detector]
-    source: source.BaseBeam
+    source: source.BaseSource
     amplifier: Amplifier
 
     def _add_coupling_to_dataframe(

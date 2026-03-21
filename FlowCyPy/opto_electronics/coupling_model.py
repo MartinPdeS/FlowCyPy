@@ -5,7 +5,7 @@ import pint_pandas
 import PyMieSim.experiment as _PyMieSim
 from TypedUnit import Frequency, ureg
 
-from FlowCyPy.opto_electronics.source import BaseBeam
+from FlowCyPy.opto_electronics.source import BaseSource
 
 
 class ScatteringModel:
@@ -18,7 +18,7 @@ class ScatteringModel:
 
     def __init__(
         self,
-        source: BaseBeam,
+        source: BaseSource,
         detector: object,
         bandwidth: Frequency,
     ):
@@ -27,7 +27,7 @@ class ScatteringModel:
 
         Parameters
         ----------
-        source : BaseBeam
+        source : BaseSource
             The light source object.
         detector : object
             The detector configuration.
@@ -82,7 +82,10 @@ class ScatteringModel:
             (PyMieSim PlaneWave source, PyMieSim Photodiode detector)
         """
         amplitude = self.source.get_amplitude_signal(
-            bandwidth=self.bandwidth, x=event_df["x"], y=event_df["y"]
+            bandwidth=self.bandwidth,
+            x=event_df["x"].pint.quantity,
+            y=event_df["y"].pint.quantity,
+            z=event_df["y"].pint.quantity * 0,
         )
 
         source = _PyMieSim.source_set.PlaneWaveSet.build_sequential(

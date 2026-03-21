@@ -71,42 +71,6 @@ class Detector(StrictDataclassMixing):
         if self.name is None:
             self.name = str(id(self))
 
-    def _transform_coupling_power_to_current(
-        self,
-        signal_generator: SignalGenerator,
-        bandwidth: Frequency,
-        wavelength: Length,
-    ) -> Current:
-        """
-        Converts the coupling power (in watts) to voltage using the detector's responsivity.
-
-        Parameters
-        ----------
-        signal_generator : SignalGenerator
-            The signal generator instance used to apply the conversion.
-        wavelength : Length
-            The wavelength of the incident light (in meters).
-        bandwidth : Frequency
-            The bandwidth of the signal (in Hz).
-
-        Returns
-        -------
-        Current
-            The resulting voltage signal (in volts).
-        """
-        # Step 1: Add shot noise to optical power if enabled
-        if SimulationSettings.include_shot_noise and SimulationSettings.include_noises:
-            self.apply_shot_noise(
-                signal_generator=signal_generator,
-                wavelength=wavelength,
-                bandwidth=bandwidth,
-            )
-
-        # Step 2: Convert optical power to current using the responsivity
-        signal_generator.multiply_signal(
-            channel=self.name, factor=self.responsivity.to("ampere/watt").magnitude
-        )
-
     def apply_dark_current_noise(
         self, signal_generator: SignalGenerator, bandwidth: Frequency
     ) -> None:

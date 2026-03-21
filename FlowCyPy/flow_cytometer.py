@@ -82,8 +82,8 @@ class FlowCytometer:
 
         signal_generator.add_time(time_series)
 
-        for detector in self.opto_electronics.detectors:
-            signal_generator.create_zero_signal(channel=detector.name)
+        # for detector in self.opto_electronics.detectors:
+        #     signal_generator.create_zero_signal(channel=detector.name)
 
         return signal_generator
 
@@ -110,15 +110,22 @@ class FlowCytometer:
                 continue
 
             for detector in self.opto_electronics.detectors:
-                signal_generator.generate_pulses_to_signal(
-                    channel=detector.name,
-                    sigmas=events["Sigmas"].pint.to("second").values.quantity.magnitude,
-                    centers=events["Time"].pint.to("second").values.quantity.magnitude,
-                    amplitudes=events[detector.name]
-                    .pint.to("watt")
-                    .values.quantity.magnitude,
-                    base_level=0,
+                signal_watt = self.opto_electronics.source.generate_pulses(
+                    velocities=events["Velocity"].pint.quantity,
+                    pulse_centers=events["Time"].pint.quantity,
+                    pulse_amplitudes=events[detector.name].pint.quantity,
+                    time_array=signal_generator.get_time(),
+                    base_level=self.background_power,
+                    bandwidth=self.signal_processing.digitizer.bandwidth,
                 )
+
+                import matplotlib.pyplot as plt
+
+                plt.figure()
+                plt.plot(signal_generator.get_time(), signal_watt)
+                plt.show()
+
+                signal_generator.add_channel(detector.name, signal_watt.magnitude)
 
     def run_gamma_models(self, event_collection, signal_generator) -> None:
         """
@@ -259,10 +266,6 @@ class FlowCytometer:
         """
         signal_generator = self._create_signal_generator(run_time=run_time)
 
-        signal_generator.add_constant(
-            constant=self.background_power.to("watt").magnitude
-        )  # Initial unit: optical power
-
         self.run_explicit_models(
             event_collection=event_collection, signal_generator=signal_generator
         )
@@ -272,24 +275,22 @@ class FlowCytometer:
         )
 
         # Optical power → photocurrent
-        for detector in self.opto_electronics.detectors:
-            detector._transform_coupling_power_to_current(
-                signal_generator=signal_generator,
-                wavelength=self.opto_electronics.source.wavelength,
-                bandwidth=self.signal_processing.digitizer.bandwidth,
+        for (
+            detector
+        ) in (
+            self.opto_electronics.detectors
+        ):  # Step: Convert optical power to current using the responsivity
+            signal_generator.multiply_signal(
+                channel=detector.name,
+                factor=detector.responsivity.to("ampere/watt").magnitude,
             )
 
-        # Add dark current noise if enabled
         # Signal units are now ampere
-        if (
-            SimulationSettings.include_noises
-            and SimulationSettings.include_dark_current_noise
-        ):
-            for detector in self.opto_electronics.detectors:
-                detector.apply_dark_current_noise(
-                    signal_generator=signal_generator,
-                    bandwidth=self.signal_processing.digitizer.bandwidth,
-                )
+        for detector in self.opto_electronics.detectors:
+            detector.apply_dark_current_noise(
+                signal_generator=signal_generator,
+                bandwidth=self.signal_processing.digitizer.bandwidth,
+            )
 
         # Photocurrent → voltage
         # Signal units are now volt
@@ -330,7 +331,6 @@ class FlowCytometer:
             Simulation output containing all analog, digital, and peak-level data.
         """
         event_collection = self.generate_event_collection(run_time=run_time)
-
         analog = self.compute_analog(
             event_collection=event_collection, run_time=run_time
         )
@@ -441,12 +441,6 @@ class FlowCytometer:
                 }.items():
                     dataframe[key] = PintArray(value, value.units)
 
-                widths = self.opto_electronics.source.get_particle_width(
-                    velocity=velocities
-                )
-
-                dataframe["Sigmas"] = PintArray(widths, widths.units)
-
             elif isinstance(population.sampling_method, populations.GammaModel):
                 n_events = population.sampling_method.number_of_samples
 
@@ -468,7 +462,7 @@ class FlowCytometer:
 
                 dataframe.attrs["VelocitySigmas"] = (
                     self.opto_electronics.source.get_particle_width(
-                        velocity=dataframe["Velocity"]
+                        velocity=dataframe["Velocity"].pint.quantity
                     ).mean()
                 )
 

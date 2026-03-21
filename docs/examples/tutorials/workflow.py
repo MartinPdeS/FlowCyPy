@@ -21,17 +21,6 @@ Steps Covered:
 # -----------------------------------
 from TypedUnit import ureg
 
-from FlowCyPy import SimulationSettings
-
-SimulationSettings.include_noises = False
-SimulationSettings.include_shot_noise = True
-SimulationSettings.include_dark_current_noise = True
-SimulationSettings.include_source_noise = True
-SimulationSettings.include_amplifier_noise = True
-SimulationSettings.assume_perfect_hydrodynamic_focusing = True
-SimulationSettings.population_cutoff_bypass = False
-
-
 # %%
 # Step 1: Define Flow Cell and Fluidics
 # -------------------------------------
@@ -98,7 +87,7 @@ population_1 = populations.SpherePopulation(
     sampling_method=sampling_method,
 )
 
-scatterer_collection.add_population(population_0, population_1)
+scatterer_collection.add_population(population_0)
 
 scatterer_collection.dilute(factor=80)
 
@@ -114,11 +103,14 @@ from FlowCyPy.opto_electronics import (
     source,
 )
 
-source = source.GaussianBeam(
-    numerical_aperture=0.1,
+
+source = source.FlatTop(
+    waist_z=10e-6 * ureg.meter,  # Beam waist along flow direction (z-axis)
+    waist_y=60e-6 * ureg.meter,
     wavelength=405 * ureg.nanometer,
     optical_power=200 * ureg.milliwatt,
-    RIN=-180,
+    include_shot_noise=False,
+    # rin=-180,
 )
 
 detectors = [
@@ -139,8 +131,8 @@ detectors = [
 amplifier = Amplifier(
     gain=10 * ureg.volt / ureg.ampere,
     bandwidth=10 * ureg.megahertz,
-    voltage_noise_density=0.1 * ureg.nanovolt / ureg.sqrt_hertz,
-    current_noise_density=0.2 * ureg.femtoampere / ureg.sqrt_hertz,
+    voltage_noise_density=0.0 * ureg.nanovolt / ureg.sqrt_hertz,
+    current_noise_density=0.0 * ureg.femtoampere / ureg.sqrt_hertz,
 )
 
 opto_electronics = OptoElectronics(
@@ -172,7 +164,7 @@ analog_processing = [
 
 triggering = discriminator.DynamicWindow(
     trigger_channel="forward",
-    threshold="4sigma",
+    threshold="2sigma",
     pre_buffer=20,
     post_buffer=20,
     max_triggers=-1,
@@ -196,7 +188,7 @@ cytometer = FlowCytometer(
     opto_electronics=opto_electronics,
     fluidics=fluidics,
     signal_processing=signal_processing,
-    background_power=0.001 * ureg.milliwatt,
+    # background_power=0.001 * ureg.milliwatt,
 )
 
 run_record = cytometer.run(run_time=1 * ureg.millisecond)
