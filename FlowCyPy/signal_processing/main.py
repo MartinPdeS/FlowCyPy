@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import FlowCyPy.units as _
 from . import circuits
 from . import discriminator
 from . import peak_locator
