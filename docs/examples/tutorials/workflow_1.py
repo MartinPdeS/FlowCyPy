@@ -18,25 +18,17 @@ Steps Covered:
 
 from FlowCyPy.workflow import (
     ureg,
-    SimulationSettings,
     Workflow,
     Detector,
     circuits,
+    FlatTop,
     peak_locator,
     discriminator,
     distributions,
     populations,
     GammaModel,
-    classifiers,
+    classifier,
 )
-
-SimulationSettings.include_noises = False
-SimulationSettings.include_shot_noise = True
-SimulationSettings.include_dark_current_noise = True
-SimulationSettings.include_source_noise = True
-SimulationSettings.include_amplifier_noise = True
-SimulationSettings.assume_perfect_hydrodynamic_focusing = True
-SimulationSettings.population_cutoff_bypass = False
 
 population_0 = populations.SpherePopulation(
     name="Pop 0",
@@ -99,9 +91,18 @@ analog_processing = [
     circuits.BesselLowPass(cutoff=2 * ureg.megahertz, order=4, gain=2),
 ]
 
+source = FlatTop(
+    waist_z=10e-6 * ureg.meter,  # Beam waist along flow direction (z-axis)
+    waist_y=60e-6 * ureg.meter,
+    wavelength=405 * ureg.nanometer,
+    optical_power=200 * ureg.milliwatt,
+    include_shot_noise=False,
+    # rin=-180,
+)
+
 workflow = Workflow(
     wavelength=405 * ureg.nanometer,
-    source_numerical_aperture=0.1 * ureg.AU,
+    source=source,
     optical_power=200 * ureg.milliwatt,
     sample_volume_flow=80 * ureg.microliter / ureg.minute,
     sheath_volume_flow=1 * ureg.milliliter / ureg.minute,
@@ -154,12 +155,12 @@ _ = run_record.peaks.plot(x=("forward", "Height"))
 # %%
 # Step 8: Classify Events from Peak Features
 # ------------------------------------------
-classifier = classifiers.KmeansClassifier(number_of_clusters=2)
+class_ = classifier.KmeansClassifier(number_of_clusters=2)
 
-classified = classifier.run(
+classification = class_.run(
     dataframe=run_record.peaks.unstack("Detector"),
     features=["Height"],
     detectors=["side", "forward"],
 )
 
-_ = classified.plot(x=("side", "Height"), y=("forward", "Height"))
+_ = classification.plot(x=("side", "Height"), y=("forward", "Height"))

@@ -25,18 +25,18 @@ from FlowCyPy.fluidics import (
 from FlowCyPy.fluidics.populations import GammaModel, ExplicitModel  # noqa: F401
 
 from FlowCyPy.flow_cytometer import FlowCytometer
-from FlowCyPy.opto_electronics.source import GaussianBeam, AstigmaticGaussianBeam
+from FlowCyPy.opto_electronics.source import Gaussian, FlatTop  # noqa: F401
 from FlowCyPy.opto_electronics import (
     Detector,
     OptoElectronics,
-    TransimpedanceAmplifier,
+    Amplifier,
 )
 
 from FlowCyPy.signal_processing import (
     Digitizer,
     SignalProcessing,
     circuits,
-    classifier as classifiers,
+    classifier,
     peak_locator,
     discriminator,
 )
@@ -49,7 +49,7 @@ config_dict = ConfigDict(arbitrary_types_allowed=True, extra="forbid", kw_only=T
 class Workflow:
     # Source parameters
     wavelength: Length
-    source_numerical_aperture: Dimensionless
+    source: object
     optical_power: Power
 
     # Flowcell parameters
@@ -113,18 +113,11 @@ class Workflow:
         -------
         OptoElectronics
         """
-        source = GaussianBeam(
-            numerical_aperture=self.source_numerical_aperture,
-            wavelength=self.wavelength,
-            optical_power=self.optical_power,
-            polarization=0 * ureg.degree,
-        )
-
-        amplifier = TransimpedanceAmplifier(gain=self.gain, bandwidth=self.bandwidth)
+        amplifier = Amplifier(gain=self.gain, bandwidth=self.bandwidth)
 
         return OptoElectronics(
             detectors=self.detectors,
-            source=source,
+            source=self.source,
             amplifier=amplifier,
         )
 

@@ -15,7 +15,7 @@ from FlowCyPy.fluidics import (
 from FlowCyPy.opto_electronics import (
     Detector,
     OptoElectronics,
-    TransimpedanceAmplifier,
+    Amplifier,
     source,
 )
 from FlowCyPy.signal_processing import (
@@ -32,9 +32,7 @@ from FlowCyPy.signal_processing import (
 
 @pytest.fixture
 def amplifier():
-    return TransimpedanceAmplifier(
-        gain=100 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz
-    )
+    return Amplifier(gain=100 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz)
 
 
 @pytest.fixture
@@ -110,8 +108,9 @@ def flow_cytometer(
 ):
     """Fixture for creating a default Flow Cytometer."""
 
-    beam = source.GaussianBeam(
-        numerical_aperture=0.1 * ureg.AU,
+    beam = source.Gaussian(
+        waist_z=10 * ureg.micrometer,
+        waist_y=60 * ureg.micrometer,
         wavelength=1550 * ureg.nanometer,
         optical_power=100e-3 * ureg.watt,
     )
