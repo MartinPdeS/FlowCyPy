@@ -8,7 +8,7 @@ add_library("${LIB_NAME}" STATIC "${NAME}.cpp")
 
 pybind11_add_module("${NAME}" MODULE interface.cpp)
 set_target_properties("${NAME}" PROPERTIES OUTPUT_NAME "${NAME}")
-target_link_libraries("${NAME}" PUBLIC pybind11::module "${LIB_NAME}")
+target_link_libraries("${NAME}" PUBLIC pybind11::module "${LIB_NAME}" pint_lib)
 
 
 install(
