@@ -2,8 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from TypedUnit import ureg
 
-from FlowCyPy import FlowCytometer, circuits
-from FlowCyPy.binary.populations import SpherePopulation
+from FlowCyPy import FlowCytometer
+from FlowCyPy.signal_processing import circuits
+from FlowCyPy.fluidics.populations import SpherePopulation
 
 
 class SignalStatistics:
