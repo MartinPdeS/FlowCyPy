@@ -5,10 +5,12 @@ branch = True
 relative_files = True
 parallel = True
 omit =
-    */__init__.py
+    **/__init__.py
     FlowCyPy/_version.py
     FlowCyPy/directories.py
     FlowCyPy/**/__main__.py
+    FlowCyPy/gui/**
+    FlowCyPy/_utils.py
 
 [report]
 skip_covered = True
@@ -20,3 +22,9 @@ directory = htmlcov
 
 [xml]
 output = coverage.xml
+
+[paths]
+source =
+    FlowCyPy
+    /home/runner/work/FlowCyPy/FlowCyPy/FlowCyPy
+    /github/workspace/FlowCyPy
