@@ -53,7 +53,13 @@ void apply_baseline_restoration_to_signal(std::vector<double> &signal, const int
  *
  * @throws std::runtime_error If the input array is not a 1D float64 NumPy array.
  */
-void apply_butterworth_lowpass_filter_to_signal(std::vector<double> &signal, const double sampling_rate, const double cutoff_freq, const int order = 1, const double gain = 1);
+void apply_butterworth_lowpass_filter_to_signal(
+    std::vector<double> &signal,
+    const double sampling_rate,
+    const double cutoff_freq,
+    const int order = 1,
+    const double gain = 1
+);
 
 
 /**

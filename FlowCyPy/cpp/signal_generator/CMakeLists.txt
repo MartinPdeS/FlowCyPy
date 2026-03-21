@@ -35,13 +35,12 @@ set(LIB_NAME "${NAME}_lib")
 
 add_library("${LIB_NAME}" STATIC "${NAME}.cpp")
 set_target_properties("${LIB_NAME}" PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries("${LIB_NAME}" PUBLIC OpenMP::OpenMP_CXX PkgConfig::FFTW utils)
 target_include_directories("${LIB_NAME}" PUBLIC ${FFTW_INCLUDE_DIRS})
+target_link_libraries("${LIB_NAME}" PUBLIC OpenMP::OpenMP_CXX PkgConfig::FFTW utils_lib)
 
 pybind11_add_module("interface_${NAME}" MODULE interface.cpp)
 set_target_properties("interface_${NAME}" PROPERTIES OUTPUT_NAME "${NAME}")
 target_link_libraries("interface_${NAME}" PUBLIC pybind11::module "${LIB_NAME}" pint_lib)
-
 # --- macOS: use shared Homebrew libomp, not a vendored copy -------------
 if(APPLE)
     if(DEFINED ENV{HOMEBREW_PREFIX}) # where Homebrew normally installs libomp

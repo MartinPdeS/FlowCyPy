@@ -98,9 +98,9 @@ population_1 = populations.SpherePopulation(
     sampling_method=sampling_method,
 )
 
-scatterer_collection.add_population(population_0)
+scatterer_collection.add_population(population_0, population_1)
 
-scatterer_collection.dilute(factor=280)
+scatterer_collection.dilute(factor=80)
 
 fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
@@ -110,7 +110,7 @@ fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_ce
 from FlowCyPy.opto_electronics import (
     Detector,
     OptoElectronics,
-    TransimpedanceAmplifier,
+    Amplifier,
     source,
 )
 
@@ -136,7 +136,7 @@ detectors = [
     ),
 ]
 
-amplifier = TransimpedanceAmplifier(
+amplifier = Amplifier(
     gain=10 * ureg.volt / ureg.ampere,
     bandwidth=10 * ureg.megahertz,
     voltage_noise_density=0.1 * ureg.nanovolt / ureg.sqrt_hertz,

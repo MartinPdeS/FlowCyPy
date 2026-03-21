@@ -144,7 +144,8 @@ public:
         std::vector<std::string> channels;
         channels.reserve(data_dict.size());
         for (const auto &pair : data_dict) {
-            if (pair.first == TIME_KEY) continue;
+            if (pair.first == TIME_KEY)
+                continue;
             channels.push_back(pair.first);
         }
         return channels;

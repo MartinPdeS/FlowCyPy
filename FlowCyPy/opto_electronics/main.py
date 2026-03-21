@@ -1,7 +1,7 @@
 from typing import List
 
 from . import source
-from .amplifier import TransimpedanceAmplifier
+from .amplifier import Amplifier
 from .coupling_model import ScatteringModel
 from .detector import Detector
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
@@ -22,13 +22,13 @@ class OptoElectronics(StrictDataclassMixing):
         A list of Detector instances to be included in the optoelectronics setup.
     source : source.BaseBeam
         The light source instance used in the setup.
-    amplifier : TransimpedanceAmplifier
+    amplifier : Amplifier
         The amplifier instance used to amplify the detected signals.
     """
 
     detectors: List[Detector]
     source: source.BaseBeam
-    amplifier: TransimpedanceAmplifier
+    amplifier: Amplifier
 
     def _add_coupling_to_dataframe(
         self, event_collection: EventCollection, compute_cross_section: bool = False

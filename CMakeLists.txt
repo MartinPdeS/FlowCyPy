@@ -109,6 +109,7 @@ add_subdirectory(FlowCyPy/cpp/fluidics/populations)                  # populatio
 add_subdirectory(FlowCyPy/cpp/fluidics/flow_cell)                    # flow_cell
 
 add_subdirectory(FlowCyPy/cpp/opto_electronics/source)               # source
+add_subdirectory(FlowCyPy/cpp/opto_electronics/amplifier)            # amplifier
 
 add_subdirectory(FlowCyPy/cpp/signal_processing/circuits)            # circuits
 add_subdirectory(FlowCyPy/cpp/signal_processing/digitizer)           # digitizer
