@@ -6,21 +6,7 @@ from FlowCyPy import fluidics
 from FlowCyPy import opto_electronics
 from FlowCyPy import signal_processing
 from FlowCyPy.run_record import RunRecord
-
-from enum import Enum
-
-
-class SheathFlowRate(Enum):
-    DEFAULT = 18 * ureg.milliliter / ureg.minute
-    LOW = 20 * ureg.milliliter / ureg.minute
-    MEDIUM = 30 * ureg.milliliter / ureg.minute
-    HIGH = 40 * ureg.milliliter / ureg.minute
-
-
-class SampleFlowRate(Enum):
-    LOW = 10 * ureg.microliter / ureg.minute
-    MEDIUM = 60 * ureg.microliter / ureg.minute
-    HIGH = 120 * ureg.microliter / ureg.minute
+from FlowCyPy.fluidics import SheathFlowRate, SampleFlowRate
 
 
 class FacsCanto:

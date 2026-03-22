@@ -10,7 +10,6 @@ from FlowCyPy.fluidics import Fluidics
 from FlowCyPy.opto_electronics import OptoElectronics
 from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.signal_processing import SignalProcessing
-from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.run_record import RunRecord
 from FlowCyPy.fluidics import populations

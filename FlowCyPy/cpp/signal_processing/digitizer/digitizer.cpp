@@ -111,6 +111,7 @@ void Digitizer::set_auto_range(const std::vector<double>& signal) {
 }
 
 void Digitizer::digitize_signal(std::vector<double>& signal) const {
+
     if (!this->should_digitize()) {
         return;
     }
@@ -135,17 +136,23 @@ void Digitizer::digitize_signal(std::vector<double>& signal) const {
             continue;
         }
 
-        const double normalized_value = (sample - this->min_voltage) / voltage_span;
-        const double quantized_index = std::round(
-            normalized_value * static_cast<double>(quantization_level_count)
+        const double clipped_sample = std::clamp(
+            sample,
+            this->min_voltage,
+            this->max_voltage
         );
 
-        sample = this->min_voltage + (
-            quantized_index / static_cast<double>(quantization_level_count)
-        ) * voltage_span;
+        const double normalized_value = (clipped_sample - this->min_voltage) / voltage_span;
+
+        const uint64_t quantized_index = static_cast<uint64_t>(
+            std::llround(
+                normalized_value * static_cast<double>(quantization_level_count)
+            )
+        );
+
+        sample = static_cast<double>(quantized_index);
     }
 }
-
 
 void Digitizer::process_signal(std::vector<double>& signal) {
     if (this->use_auto_range) {
