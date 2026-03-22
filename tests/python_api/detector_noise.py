@@ -38,6 +38,7 @@ digitizer = Digitizer(
     min_voltage=0.0 * ureg.volt,
     max_voltage=1e30 * ureg.volt,
     sampling_rate=1e6 * ureg.hertz,  # High sampling frequency
+    bandwidth=1e6 * ureg.hertz,  # High bandwidth to capture noise accurately
 )
 
 

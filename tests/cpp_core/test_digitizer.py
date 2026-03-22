@@ -25,10 +25,10 @@ def test_constructor_with_quantity_inputs():
     assert digitizer.use_auto_range is False
 
 
-def test_constructor_defaults_bandwidth_to_nyquist():
+def test_constructor_clamps_bandwidth_to_nyquist():
     digitizer = Digitizer(
         sampling_rate=100 * ureg.megahertz,
-        bandwidth=None,
+        bandwidth=50 * ureg.megahertz,
         bit_depth=12,
         min_voltage=-1.0 * ureg.volt,
         max_voltage=1.0 * ureg.volt,
@@ -135,7 +135,7 @@ def test_set_auto_range():
     assert digitizer.has_voltage_range() is True
 
 
-def test_clip_signal():
+def test_clip_signal_operates_in_place():
     digitizer = Digitizer(
         sampling_rate=100 * ureg.megahertz,
         bandwidth=20 * ureg.megahertz,
@@ -144,12 +144,13 @@ def test_clip_signal():
         max_voltage=0.5 * ureg.volt,
     )
 
-    result = digitizer.clip_signal(np.array([-1.0, -0.25, 0.25, 1.0]) * ureg.volt)
+    signal = np.array([-1.0, -0.25, 0.25, 1.0]) * ureg.volt
+    signal = digitizer.clip_signal(signal)
 
-    assert result == pytest.approx([-0.5, -0.25, 0.25, 0.5])
+    assert np.allclose(signal.to("volt").magnitude, [-0.5, -0.25, 0.25, 0.5])
 
 
-def test_clip_signal_without_voltage_range_returns_unchanged_signal():
+def test_clip_signal_without_voltage_range_leaves_signal_unchanged():
     digitizer = Digitizer(
         sampling_rate=100 * ureg.megahertz,
         bandwidth=20 * ureg.megahertz,
@@ -159,9 +160,9 @@ def test_clip_signal_without_voltage_range_returns_unchanged_signal():
     )
 
     signal = np.array([-1.0, 0.0, 1.0]) * ureg.volt
-    result = digitizer.clip_signal(signal)
+    signal = digitizer.clip_signal(signal)
 
-    assert np.allclose(result, signal.to("volt").magnitude)
+    assert np.allclose(signal.to("volt").magnitude, [-1.0, 0.0, 1.0])
 
 
 def test_digitize_signal_disabled_when_bit_depth_is_zero():
@@ -174,9 +175,9 @@ def test_digitize_signal_disabled_when_bit_depth_is_zero():
     )
 
     signal = np.array([-1.0, -0.1, 0.2, 1.0]) * ureg.volt
-    result = digitizer.digitize_signal(signal)
+    signal = digitizer.digitize_signal(signal)
 
-    assert np.allclose(result, signal.to("volt").magnitude)
+    assert np.allclose(signal, [-1.0, -0.1, 0.2, 1.0])
 
 
 def test_digitize_signal_requires_voltage_range():
@@ -188,11 +189,13 @@ def test_digitize_signal_requires_voltage_range():
         max_voltage=None,
     )
 
+    signal = np.array([0.1, 0.2, 0.3]) * ureg.volt
+
     with pytest.raises(RuntimeError):
-        digitizer.digitize_signal(np.array([0.1, 0.2, 0.3]) * ureg.volt)
+        digitizer.digitize_signal(signal)
 
 
-def test_digitize_signal_quantizes_values():
+def test_digitize_signal_quantizes_to_integer_levels_in_place():
     digitizer = Digitizer(
         sampling_rate=100 * ureg.megahertz,
         bandwidth=20 * ureg.megahertz,
@@ -201,22 +204,29 @@ def test_digitize_signal_quantizes_values():
         max_voltage=1.0 * ureg.volt,
     )
 
-    result = digitizer.digitize_signal(
-        np.array([0.0, 0.2, 0.49, 0.51, 0.8, 1.0]) * ureg.volt
+    signal = np.array([0.0, 0.2, 0.49, 0.51, 0.8, 1.0]) * ureg.volt
+    signal = digitizer.digitize_signal(signal)
+
+    expected = np.array([0.0, 1.0, 1.0, 2.0, 2.0, 3.0])
+
+    assert np.allclose(signal, expected)
+
+
+def test_digitize_signal_clips_before_quantization():
+    digitizer = Digitizer(
+        sampling_rate=100 * ureg.megahertz,
+        bandwidth=20 * ureg.megahertz,
+        bit_depth=8,
+        min_voltage=0.0 * ureg.volt,
+        max_voltage=1.0 * ureg.volt,
     )
 
-    expected = np.array(
-        [
-            0.0,
-            1.0 / 3.0,
-            1.0 / 3.0,
-            2.0 / 3.0,
-            2.0 / 3.0,
-            1.0,
-        ]
-    )
+    signal = np.array([-1.0, 0.0, 0.5, 1.0, 2.0]) * ureg.volt
+    signal = digitizer.digitize_signal(signal)
 
-    assert np.allclose(result, expected)
+    expected = np.array([0.0, 0.0, 128.0, 255.0, 255.0])
+
+    assert np.allclose(signal, expected)
 
 
 def test_process_signal_only_clips_when_bit_depth_is_zero():
@@ -229,9 +239,10 @@ def test_process_signal_only_clips_when_bit_depth_is_zero():
         use_auto_range=False,
     )
 
-    result = digitizer.process_signal(np.array([-1.0, -0.25, 0.25, 1.0]) * ureg.volt)
+    signal = np.array([-1.0, -0.25, 0.25, 1.0]) * ureg.volt
+    signal = digitizer.process_signal(signal)
 
-    assert result == pytest.approx([-0.5, -0.25, 0.25, 0.5])
+    assert np.allclose(signal, [-0.5, -0.25, 0.25, 0.5])
 
 
 def test_process_signal_with_explicit_auto_range_override():
@@ -244,21 +255,12 @@ def test_process_signal_with_explicit_auto_range_override():
         use_auto_range=False,
     )
 
-    result = digitizer.process_signal(
-        np.array([0.0, 0.25, 0.75, 1.0]) * ureg.volt,
-        use_auto_range=True,
-    )
+    signal = np.array([0.0, 0.25, 0.75, 1.0]) * ureg.volt
+    signal = digitizer.process_signal(signal, use_auto_range=True)
 
-    expected = np.array(
-        [
-            0.0,
-            1.0 / 3.0,
-            2.0 / 3.0,
-            1.0,
-        ]
-    )
-    print(result, expected)
-    assert np.allclose(result, expected)
+    expected = np.array([0.0, 1.0, 2.0, 3.0])
+
+    assert np.allclose(signal, expected)
     assert digitizer.min_voltage.to("volt").magnitude == pytest.approx(0.0)
     assert digitizer.max_voltage.to("volt").magnitude == pytest.approx(1.0)
 
@@ -273,18 +275,12 @@ def test_process_signal_uses_persistent_auto_range_setting():
         use_auto_range=True,
     )
 
-    result = digitizer.process_signal(np.array([0.0, 0.25, 0.75, 1.0]) * ureg.volt)
+    signal = np.array([0.0, 0.25, 0.75, 1.0]) * ureg.volt
+    signal = digitizer.process_signal(signal)
 
-    expected = np.array(
-        [
-            0.0,
-            1.0 / 3.0,
-            2.0 / 3.0,
-            1.0,
-        ]
-    )
+    expected = np.array([0.0, 1.0, 2.0, 3.0])
 
-    assert np.allclose(result, expected)
+    assert np.allclose(signal, expected)
     assert digitizer.min_voltage.to("volt").magnitude == pytest.approx(0.0)
     assert digitizer.max_voltage.to("volt").magnitude == pytest.approx(1.0)
 
@@ -334,20 +330,18 @@ def test_nan_values_are_preserved_during_processing():
         max_voltage=1.0 * ureg.volt,
     )
 
-    result = digitizer.process_signal(np.array([0.0, np.nan, 0.6, 1.0]) * ureg.volt)
+    signal = np.array([0.0, np.nan, 0.6, 1.0]) * ureg.volt
+    signal = digitizer.process_signal(signal)
 
-    result_magnitude = result
-
-    assert result_magnitude[0] == pytest.approx(0.0)
-    assert math.isnan(result_magnitude[1])
-    assert result_magnitude[2] == pytest.approx(2.0 / 3.0)
-    assert result_magnitude[3] == pytest.approx(1.0)
+    assert signal[0] == pytest.approx(0.0)
+    assert math.isnan(signal[1])
+    assert signal[2] == pytest.approx(2.0)
+    assert signal[3] == pytest.approx(3.0)
 
 
 def test_get_time_series():
     digitizer = Digitizer(
         sampling_rate=4 * ureg.hertz,
-        # bandwidth=None,
         bit_depth=8,
     )
 

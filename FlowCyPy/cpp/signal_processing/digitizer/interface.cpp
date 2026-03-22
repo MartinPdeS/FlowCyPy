@@ -499,7 +499,7 @@ PYBIND11_MODULE(digitizer, module) {
 
                 self.digitize_signal(signal_vector);
 
-                return py::array_t<double>(signal_vector.size(), signal_vector.data()) * ureg.attr("volt");
+                return py::array_t<double>(signal_vector.size(), signal_vector.data());
             },
             py::arg("signal"),
             R"pbdoc(
