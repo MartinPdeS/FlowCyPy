@@ -41,6 +41,7 @@ def signal_digitizer():
         bit_depth=10,
         use_auto_range=True,
         sampling_rate=1e6 * ureg.hertz,  # Default sampling rate
+        bandwidth=1e6 * ureg.hertz,  # Default bandwidth
     )
 
 
