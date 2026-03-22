@@ -32,33 +32,49 @@ PYBIND11_MODULE(distributions, module) {
         .def(
             py::init(
                 [](
-                    const py::object& mean,
-                    const py::object& standard_deviation,
-                    const py::object& low_cutoff,
-                    const py::object& high_cutoff
+                    const py::object& mean_py,
+                    const py::object& standard_deviation_py,
+                    const py::object& low_cutoff_py,
+                    const py::object& high_cutoff_py
                 ) {
-                    py::object units = mean.attr("to_base_units")().attr("units");
-                    double _low_cutoff, _high_cutoff, _mean, _standard_deviation;
+                    py::object units;
+                    double mean, standard_deviation, low_cutoff, high_cutoff;
 
-                    _mean = mean.attr("to")(units).attr("magnitude").cast<double>();
-                    _standard_deviation = standard_deviation.attr("to")(units).attr("magnitude").cast<double>();
 
-                    if (low_cutoff.is(py::none()))
-                        _low_cutoff = std::numeric_limits<double>::lowest();
-                    else
-                        _low_cutoff = low_cutoff.attr("to")(units).attr("magnitude").cast<double>();
+                    if (py::hasattr(mean_py, "to_base_units")) {
+                        units = mean_py.attr("to_base_units")().attr("units");
+                        mean = mean_py.attr("to")(units).attr("magnitude").cast<double>();
+                        standard_deviation = standard_deviation_py.attr("to")(units).attr("magnitude").cast<double>();
+                        if (low_cutoff_py.is(py::none()))
+                            low_cutoff = std::numeric_limits<double>::lowest();
+                        else
+                            low_cutoff = low_cutoff_py.attr("to")(units).attr("magnitude").cast<double>();
 
-                    if (high_cutoff.is(py::none()))
-                        _high_cutoff = std::numeric_limits<double>::infinity();
-                    else
-                        _high_cutoff = high_cutoff.attr("to")(units).attr("magnitude").cast<double>();
+                        if (high_cutoff_py.is(py::none()))
+                            high_cutoff = std::numeric_limits<double>::infinity();
+                        else
+                            high_cutoff = high_cutoff_py.attr("to")(units).attr("magnitude").cast<double>();
+                    } else {
+                        units = py::str("dimensionless");
+                        mean = mean_py.cast<double>();
+                        standard_deviation = standard_deviation_py.cast<double>();
+                        if (low_cutoff_py.is(py::none()))
+                            low_cutoff = std::numeric_limits<double>::lowest();
+                        else
+                            low_cutoff = low_cutoff_py.cast<double>();
 
+                        if (high_cutoff_py.is(py::none()))
+                            high_cutoff = std::numeric_limits<double>::infinity();
+                        else
+                            high_cutoff = high_cutoff_py.cast<double>();
+
+                    }
 
                     std::shared_ptr<Normal> output = std::make_shared<Normal>(
-                        _mean,
-                        _standard_deviation,
-                        _low_cutoff,
-                        _high_cutoff
+                        mean,
+                        standard_deviation,
+                        low_cutoff,
+                        high_cutoff
                     );
 
                     output->units = units.attr("__str__")().cast<std::string>();
@@ -134,32 +150,50 @@ PYBIND11_MODULE(distributions, module) {
         .def(
             py::init(
                 [](
-                    const py::object& scale,
+                    const py::object& scale_py,
                     const double& shape,
-                    const py::object& low_cutoff,
-                    const py::object& high_cutoff
+                    const py::object& low_cutoff_py,
+                    const py::object& high_cutoff_py
                 ) {
-                    py::object units = scale.attr("to_base_units")().attr("units");
 
-                    double _scale = scale.attr("to")(units).attr("magnitude").cast<double>();
+                    py::object units;
+                    double scale, low_cutoff, high_cutoff;
 
-                    double _low_cutoff, _high_cutoff;
 
-                    if (low_cutoff.is(py::none()))
-                        _low_cutoff = std::numeric_limits<double>::lowest();
-                    else
-                        _low_cutoff = low_cutoff.attr("to")(units).attr("magnitude").cast<double>();
+                    if (py::hasattr(scale_py, "to_base_units")) {
+                        units = scale_py.attr("to_base_units")().attr("units");
+                        scale = scale_py.attr("to")(units).attr("magnitude").cast<double>();
 
-                    if (high_cutoff.is(py::none()))
-                        _high_cutoff = std::numeric_limits<double>::infinity();
-                    else
-                        _high_cutoff = high_cutoff.attr("to")(units).attr("magnitude").cast<double>();
+                        if (low_cutoff_py.is(py::none()))
+                            low_cutoff = std::numeric_limits<double>::lowest();
+                        else
+                            low_cutoff = low_cutoff_py.attr("to")(units).attr("magnitude").cast<double>();
+
+                        if (high_cutoff_py.is(py::none()))
+                            high_cutoff = std::numeric_limits<double>::infinity();
+                        else
+                            high_cutoff = high_cutoff_py.attr("to")(units).attr("magnitude").cast<double>();
+                    } else {
+                        units = py::str("dimensionless");
+                        scale = scale_py.cast<double>();
+
+                        if (low_cutoff_py.is(py::none()))
+                            low_cutoff = std::numeric_limits<double>::lowest();
+                        else
+                            low_cutoff = low_cutoff_py.cast<double>();
+
+                        if (high_cutoff_py.is(py::none()))
+                            high_cutoff = std::numeric_limits<double>::infinity();
+                        else
+                            high_cutoff = high_cutoff_py.cast<double>();
+
+                    }
 
                     std::shared_ptr<RosinRammler> output = std::make_shared<RosinRammler>(
-                        _scale,
+                        scale,
                         shape,
-                        _low_cutoff,
-                        _high_cutoff
+                        low_cutoff,
+                        high_cutoff
                     );
 
                     output->units = units.attr("__str__")().cast<std::string>();
@@ -267,16 +301,20 @@ PYBIND11_MODULE(distributions, module) {
         .def(
             py::init(
                 [](
-                    const py::object& value
+                    const py::object& object
                 ) {
-                    py::object units = value.attr("to_base_units")().attr("units");
+                    py::object units;
+                    double value;
+                    if (py::hasattr(object, "to_base_units")) {
+                        units = object.attr("to_base_units")().attr("units");
+                        value = object.attr("to")(units).attr("magnitude").cast<double>();
+                    }
+                    else {
+                        units = py::str("dimensionless");
+                        value = object.cast<double>();
+                    }
 
-                    double _value = value.attr("to")(units).attr("magnitude").cast<double>();
-
-
-                    std::shared_ptr<Delta> output = std::make_shared<Delta>(
-                        _value
-                    );
+                    std::shared_ptr<Delta> output = std::make_shared<Delta>(value);
 
                     output->units = units.attr("__str__")().cast<std::string>();
 

@@ -22,6 +22,7 @@ from FlowCyPy.workflow import (
     Detector,
     circuits,
     FlatTop,
+    Gaussian,
     peak_locator,
     discriminator,
     distributions,
@@ -32,7 +33,7 @@ from FlowCyPy.workflow import (
 
 population_0 = populations.SpherePopulation(
     name="Pop 0",
-    medium_refractive_index=distributions.Delta(1.33 * ureg.RIU),
+    medium_refractive_index=distributions.Delta(1.33),
     concentration=5e10 * ureg.particle / ureg.milliliter,
     diameter=distributions.RosinRammler(
         scale=50 * ureg.nanometer,
@@ -40,24 +41,24 @@ population_0 = populations.SpherePopulation(
         low_cutoff=50.0 * ureg.nanometer,
     ),
     refractive_index=distributions.Normal(
-        mean=1.44 * ureg.RIU,
-        standard_deviation=0.002 * ureg.RIU,
-        low_cutoff=1.33 * ureg.RIU,
+        mean=1.44,
+        standard_deviation=0.002,
+        low_cutoff=1.33,
     ),
 )
 
 population_1 = populations.SpherePopulation(
     name="Pop 1",
-    medium_refractive_index=distributions.Delta(1.33 * ureg.RIU),
+    medium_refractive_index=distributions.Delta(1.33),
     concentration=5e17 * ureg.particle / ureg.milliliter,
     diameter=distributions.RosinRammler(
         scale=50 * ureg.nanometer,
         shape=50,
     ),
     refractive_index=distributions.Normal(
-        mean=1.44 * ureg.RIU,
-        standard_deviation=0.002 * ureg.RIU,
-        low_cutoff=1.33 * ureg.RIU,
+        mean=1.44,
+        standard_deviation=0.002,
+        low_cutoff=1.33,
     ),
     sampling_method=GammaModel(number_of_samples=10_000),
 )

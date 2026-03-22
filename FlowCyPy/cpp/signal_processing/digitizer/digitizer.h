@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <utility>
 
 
 class Digitizer {
@@ -19,6 +20,24 @@ public:
     double max_voltage;
     bool use_auto_range;
 
+    /**
+     * @brief Construct a new Digitizer object.
+     *
+     * The digitizer can optionally clip a signal to a voltage range and quantize it
+     * according to a specified bit depth.
+     *
+     * The bandwidth is optional. When it is unset, it is not considered in any
+     * computation and simply remains undefined.
+     *
+     * A bit depth of 0 disables quantization.
+     *
+     * @param bandwidth Digitizer bandwidth in hertz, or NaN if unset.
+     * @param sampling_rate Sampling rate in hertz. Must be strictly positive.
+     * @param bit_depth Number of quantization bits. A value of 0 disables digitization.
+     * @param min_voltage Minimum clipping voltage in volts, or NaN if unset.
+     * @param max_voltage Maximum clipping voltage in volts, or NaN if unset.
+     * @param use_auto_range Persistent automatic voltage range inference flag.
+     */
     Digitizer(
         const double bandwidth,
         const double sampling_rate,
@@ -26,169 +45,149 @@ public:
         const double min_voltage = std::numeric_limits<double>::quiet_NaN(),
         const double max_voltage = std::numeric_limits<double>::quiet_NaN(),
         const bool use_auto_range = false
-    )
-        : bandwidth(bandwidth),
-          sampling_rate(sampling_rate),
-          bit_depth(bit_depth),
-          min_voltage(min_voltage),
-          max_voltage(max_voltage),
-          use_auto_range(use_auto_range)
-    {
-        if (sampling_rate <= 0.0) {
-            throw std::invalid_argument("Digitizer sampling_rate must be strictly positive.");
-        }
+    );
 
-        if (bandwidth <= 0.0) {
-            throw std::invalid_argument("Digitizer bandwidth must be strictly positive.");
-        }
+    /**
+     * @brief Return whether a bandwidth has been defined.
+     *
+     * @return True if the bandwidth is defined, false otherwise.
+     */
+    bool has_bandwidth() const;
 
-        if (
-            !std::isnan(this->min_voltage) &&
-            !std::isnan(this->max_voltage) &&
-            this->max_voltage <= this->min_voltage
-        ) {
-            throw std::invalid_argument("Digitizer requires max_voltage to be greater than min_voltage.");
-        }
-    }
+    /**
+     * @brief Return whether both clipping bounds are defined.
+     *
+     * @return True if both min_voltage and max_voltage are defined.
+     */
+    bool has_voltage_range() const;
 
-    bool has_voltage_range() const {
-        return !std::isnan(this->min_voltage) && !std::isnan(this->max_voltage);
-    }
+    /**
+     * @brief Return whether digitization is enabled.
+     *
+     * @return True if bit_depth is greater than 0.
+     */
+    bool should_digitize() const;
 
-    bool should_digitize() const {
-        return this->bit_depth > 0;
-    }
+    /**
+     * @brief Clear the configured bandwidth.
+     *
+     * After this call, the bandwidth is considered unset and should not be used
+     * in downstream computations.
+     */
+    void clear_bandwidth();
 
-    void clear_voltage_range() {
-        this->min_voltage = std::numeric_limits<double>::quiet_NaN();
-        this->max_voltage = std::numeric_limits<double>::quiet_NaN();
-    }
+    /**
+     * @brief Clear the configured voltage range.
+     *
+     * After this call, both clipping bounds become undefined.
+     */
+    void clear_voltage_range();
 
-    void clip_signal(std::vector<double>& signal) const {
-        if (!this->has_voltage_range()) {
-            return;
-        }
+    /**
+     * @brief Clip a signal to the configured voltage range.
+     *
+     * If the voltage range is not fully defined, this method leaves the signal unchanged.
+     *
+     * NaN values are preserved.
+     *
+     * @param signal Signal values in volts.
+     */
+    void clip_signal(std::vector<double>& signal) const;
 
-        for (auto& sample : signal) {
-            if (std::isnan(sample)) {
-                continue;
-            }
+    /**
+     * @brief Compute the minimum and maximum finite values of a signal.
+     *
+     * NaN values are ignored.
+     *
+     * @param signal Signal values in volts.
+     * @return Pair containing minimum and maximum finite values.
+     * @throws std::runtime_error If the signal contains only NaN values.
+     */
+    std::pair<double, double> get_min_max(const std::vector<double>& signal) const;
 
-            if (sample < this->min_voltage) {
-                sample = this->min_voltage;
-            }
-            else if (sample > this->max_voltage) {
-                sample = this->max_voltage;
-            }
-        }
-    }
+    /**
+     * @brief Infer the clipping range from a signal.
+     *
+     * The minimum and maximum finite values of the input signal are used to update
+     * min_voltage and max_voltage.
+     *
+     * @param signal Signal values in volts.
+     */
+    void set_auto_range(const std::vector<double>& signal);
 
-    std::pair<double, double> get_min_max(const std::vector<double>& signal) const {
-        double minimum_value = std::numeric_limits<double>::infinity();
-        double maximum_value = -std::numeric_limits<double>::infinity();
-        bool found_valid_sample = false;
+    /**
+     * @brief Digitize a signal according to the configured bit depth and voltage range.
+     *
+     * If bit_depth is 0, the signal is left unchanged.
+     *
+     * Digitization requires a defined voltage range.
+     *
+     * NaN values are preserved.
+     *
+     * @param signal Signal values in volts.
+     * @throws std::runtime_error If digitization is enabled but the voltage range is undefined.
+     * @throws std::runtime_error If the voltage range is invalid.
+     */
+    void digitize_signal(std::vector<double>& signal) const;
 
-        for (const auto& sample : signal) {
-            if (std::isnan(sample)) {
-                continue;
-            }
+    /**
+     * @brief Process a signal using the instance automatic range setting.
+     *
+     * Processing order:
+     *
+     * 1. optional automatic range inference
+     * 2. clipping
+     * 3. digitization
+     *
+     * @param signal Signal values in volts.
+     */
+    void process_signal(std::vector<double>& signal);
 
-            found_valid_sample = true;
-            minimum_value = std::min(minimum_value, sample);
-            maximum_value = std::max(maximum_value, sample);
-        }
+    /**
+     * @brief Process a signal using an explicit automatic range override.
+     *
+     * Processing order:
+     *
+     * 1. optional automatic range inference
+     * 2. clipping
+     * 3. digitization
+     *
+     * @param signal Signal values in volts.
+     * @param use_auto_range_override If true, infer the voltage range from the signal before processing.
+     */
+    void process_signal(std::vector<double>& signal, const bool use_auto_range_override);
 
-        if (!found_valid_sample) {
-            throw std::runtime_error(
-                "Cannot compute min and max from a signal containing only NaN values."
-            );
-        }
+    /**
+     * @brief Update internal voltage range information without modifying the signal.
+     *
+     * @param signal Signal values in volts.
+     */
+    void capture_signal(const std::vector<double>& signal);
 
-        return {minimum_value, maximum_value};
-    }
 
-    void set_auto_range(const std::vector<double>& signal) {
-        const auto [computed_min_voltage, computed_max_voltage] = this->get_min_max(signal);
-        this->min_voltage = computed_min_voltage;
-        this->max_voltage = computed_max_voltage;
-    }
+    /**
+     * @brief Update internal voltage range information using an explicit override.
+     *
+     * @param signal Signal values in volts.
+     * @param use_auto_range_override If true, infer the voltage range from the signal.
+     */
+    void capture_signal(const std::vector<double>& signal, const bool use_auto_range_override);
 
-    void digitize_signal(std::vector<double>& signal) const {
-        if (!this->should_digitize()) {
-            return;
-        }
 
-        if (!this->has_voltage_range()) {
-            throw std::runtime_error(
-                "Digitization requires min_voltage and max_voltage to be defined."
-            );
-        }
-
-        if (this->max_voltage <= this->min_voltage) {
-            throw std::runtime_error(
-                "Digitization requires max_voltage to be greater than min_voltage."
-            );
-        }
-
-        const uint64_t quantization_level_count = (uint64_t(1) << this->bit_depth) - uint64_t(1);
-        const double voltage_span = this->max_voltage - this->min_voltage;
-
-        for (auto& sample : signal) {
-            if (std::isnan(sample)) {
-                continue;
-            }
-
-            const double normalized_value = (sample - this->min_voltage) / voltage_span;
-            const double quantized_index = std::round(normalized_value * static_cast<double>(quantization_level_count));
-
-            sample = this->min_voltage + (
-                quantized_index / static_cast<double>(quantization_level_count)
-            ) * voltage_span;
-        }
-    }
-
-    void process_signal(std::vector<double>& signal) {
-        if (this->use_auto_range) {
-            this->set_auto_range(signal);
-        }
-
-        this->clip_signal(signal);
-        this->digitize_signal(signal);
-    }
-
-    void process_signal(std::vector<double>& signal, const bool use_auto_range_override) {
-        if (use_auto_range_override) {
-            this->set_auto_range(signal);
-        }
-
-        this->clip_signal(signal);
-        this->digitize_signal(signal);
-    }
-
-    void capture_signal(const std::vector<double>& signal) {
-        if (this->use_auto_range) {
-            this->set_auto_range(signal);
-        }
-    }
-
-    void capture_signal(const std::vector<double>& signal, const bool use_auto_range_override) {
-        if (use_auto_range_override) {
-            this->set_auto_range(signal);
-        }
-    }
-
-    std::vector<double> get_time_series(const double run_time) const {
-        if (run_time < 0.0) {
-            throw std::invalid_argument("Digitizer run_time must be non negative.");
-        }
-
-        const size_t sample_count = static_cast<size_t>(this->sampling_rate * run_time);
-        std::vector<double> time_series(sample_count);
-
-        for (size_t index = 0; index < sample_count; ++index) {
-            time_series[index] = static_cast<double>(index) / this->sampling_rate;
-        }
-
-        return time_series;
-    }
+    /**
+     * @brief Generate the digitizer sampling time axis for a given acquisition duration.
+     *
+     * The returned sequence is:
+     *
+     * time[index] = index / sampling_rate
+     *
+     * for index in [0, sample_count), where
+     *
+     * sample_count = floor(sampling_rate * run_time)
+     *
+     * @param run_time Acquisition duration in seconds.
+     * @return Time axis in seconds.
+     * @throws std::invalid_argument If run_time is negative.
+     */
+    std::vector<double> get_time_series(const double run_time) const;
 };

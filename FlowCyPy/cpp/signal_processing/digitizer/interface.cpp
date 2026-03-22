@@ -33,9 +33,8 @@ PYBIND11_MODULE(digitizer, module) {
             If both are unset, clipping is disabled and digitization cannot proceed
             unless a range is inferred automatically.
 
-            The bandwidth and sampling rate are related through the Nyquist limit.
-            If ``bandwidth`` is not provided, it is automatically set to
-            ``sampling_rate / 2``.
+            The bandwidth is optional. If ``bandwidth`` is not provided, it remains unset
+            and is not considered in any computation.
 
             Automatic range inference can be enabled persistently by setting
             ``use_auto_range=True`` at construction, or temporarily per call with
@@ -47,7 +46,7 @@ PYBIND11_MODULE(digitizer, module) {
                 Sampling rate of the digitizer. Must be compatible with hertz.
             bandwidth : pint.Quantity or None, default=None
                 Digitizer bandwidth. Must be compatible with hertz. If ``None``,
-                the bandwidth is set to ``sampling_rate / 2``.
+                bandwidth remains unset.
             bit_depth : int, default=0
                 Number of quantization bits. A value of ``0`` disables digitization.
             min_voltage : pint.Quantity or None, default=None
@@ -61,8 +60,8 @@ PYBIND11_MODULE(digitizer, module) {
 
             Attributes
             ----------
-            bandwidth : pint.Quantity
-                Bandwidth of the digitizer.
+            bandwidth : pint.Quantity or None
+                Bandwidth of the digitizer, or ``None`` if unset.
             sampling_rate : pint.Quantity
                 Sampling rate of the digitizer.
             bit_depth : int
@@ -83,7 +82,7 @@ PYBIND11_MODULE(digitizer, module) {
 
             Examples
             --------
-            Create a digitizer with explicit voltage limits:
+            Create a digitizer with explicit bandwidth and voltage limits:
 
             >>> digitizer = Digitizer(
             ...     sampling_rate=100e6 * ureg.hertz,
@@ -93,15 +92,15 @@ PYBIND11_MODULE(digitizer, module) {
             ...     max_voltage=1.0 * ureg.volt,
             ... )
 
-            Create a digitizer with bandwidth inferred from the sampling rate:
+            Create a digitizer with no bandwidth constraint:
 
             >>> digitizer = Digitizer(
             ...     sampling_rate=100e6 * ureg.hertz,
             ...     bandwidth=None,
             ...     bit_depth=12,
             ... )
-            >>> digitizer.bandwidth
-            <Quantity(50.0, 'megahertz')>
+            >>> digitizer.bandwidth is None
+            True
 
             Enable persistent automatic range inference:
 
@@ -129,7 +128,7 @@ PYBIND11_MODULE(digitizer, module) {
                 );
 
                 const double bandwidth_value = bandwidth.is_none()
-                    ? sampling_rate_value / 2.0
+                    ? std::numeric_limits<double>::quiet_NaN()
                     : Casting::cast_py_to_scalar<double>(
                         bandwidth,
                         "bandwidth",
@@ -162,14 +161,14 @@ PYBIND11_MODULE(digitizer, module) {
             R"pbdoc(
                 Initialize a digitizer.
 
-                If ``bandwidth`` is not provided, it is set to ``sampling_rate / 2``.
+                If ``bandwidth`` is not provided, it remains unset and is not used.
 
                 Parameters
                 ----------
                 sampling_rate : pint.Quantity
                     Sampling rate in hertz.
                 bandwidth : pint.Quantity or None, default=None
-                    Digitizer bandwidth in hertz. If ``None``, ``sampling_rate / 2`` is used.
+                    Digitizer bandwidth in hertz. If ``None``, bandwidth remains unset.
                 bit_depth : int, default=0
                     Number of quantization bits. A value of ``0`` disables digitization.
                 min_voltage : pint.Quantity or None, default=None
@@ -181,29 +180,46 @@ PYBIND11_MODULE(digitizer, module) {
             )pbdoc"
         )
 
+        .def(
+            "has_bandwidth",
+            &Digitizer::has_bandwidth,
+            R"pbdoc(
+                Return whether the digitizer bandwidth is defined.
+
+                Returns
+                -------
+                bool
+                    ``True`` if bandwidth is set.
+            )pbdoc"
+        )
+
         .def_property(
             "bandwidth",
             [ureg](const Digitizer& self) -> py::object {
+                if (std::isnan(self.bandwidth)) {
+                    return py::none();
+                }
+
                 return (py::float_(self.bandwidth) * ureg.attr("hertz")).attr("to_compact")();
             },
             [](Digitizer& self, const py::object& value) {
-                self.bandwidth = Casting::cast_py_to_scalar<double>(
+                self.bandwidth = Casting::cast_py_to_optional_scalar<double>(
                     value,
                     "bandwidth",
                     "hertz"
                 );
+
+                if (!std::isnan(self.bandwidth) && self.bandwidth <= 0.0) {
+                    throw std::invalid_argument("Digitizer bandwidth must be strictly positive when provided.");
+                }
             },
             R"pbdoc(
                 Bandwidth of the digitizer.
 
-                If the bandwidth was omitted during construction, it is initialized to
-                ``sampling_rate / 2``. Updating this attribute later does not modify the
-                sampling rate.
-
                 Returns
                 -------
-                pint.Quantity
-                    Bandwidth in hertz.
+                pint.Quantity or None
+                    Bandwidth in hertz, or ``None`` if unset.
             )pbdoc"
         )
 
@@ -218,6 +234,10 @@ PYBIND11_MODULE(digitizer, module) {
                     "sampling_rate",
                     "hertz"
                 );
+
+                if (self.sampling_rate <= 0.0) {
+                    throw std::invalid_argument("Digitizer sampling_rate must be strictly positive.");
+                }
             },
             R"pbdoc(
                 Sampling rate of the digitizer.
@@ -277,6 +297,14 @@ PYBIND11_MODULE(digitizer, module) {
                     "min_voltage",
                     "volt"
                 );
+
+                if (
+                    !std::isnan(self.min_voltage) &&
+                    !std::isnan(self.max_voltage) &&
+                    self.max_voltage <= self.min_voltage
+                ) {
+                    throw std::invalid_argument("Digitizer requires max_voltage to be greater than min_voltage.");
+                }
             },
             R"pbdoc(
                 Minimum clipping voltage.
@@ -303,6 +331,14 @@ PYBIND11_MODULE(digitizer, module) {
                     "max_voltage",
                     "volt"
                 );
+
+                if (
+                    !std::isnan(self.min_voltage) &&
+                    !std::isnan(self.max_voltage) &&
+                    self.max_voltage <= self.min_voltage
+                ) {
+                    throw std::invalid_argument("Digitizer requires max_voltage to be greater than min_voltage.");
+                }
             },
             R"pbdoc(
                 Maximum clipping voltage.
@@ -337,6 +373,17 @@ PYBIND11_MODULE(digitizer, module) {
                 -------
                 bool
                     ``True`` if ``bit_depth > 0``.
+            )pbdoc"
+        )
+
+        .def(
+            "clear_bandwidth",
+            &Digitizer::clear_bandwidth,
+            R"pbdoc(
+                Clear the bandwidth setting.
+
+                After calling this method, the bandwidth becomes unset and is not
+                considered in any computation.
             )pbdoc"
         )
 
@@ -418,7 +465,7 @@ PYBIND11_MODULE(digitizer, module) {
 
                 self.clip_signal(signal_vector);
 
-                return py::array_t<double>(signal_vector.size(), signal_vector.data());
+                return py::array_t<double>(signal_vector.size(), signal_vector.data()) * ureg.attr("volt");
             },
             py::arg("signal"),
             R"pbdoc(
@@ -452,7 +499,7 @@ PYBIND11_MODULE(digitizer, module) {
 
                 self.digitize_signal(signal_vector);
 
-                return py::array_t<double>(signal_vector.size(), signal_vector.data());
+                return py::array_t<double>(signal_vector.size(), signal_vector.data()) * ureg.attr("volt");
             },
             py::arg("signal"),
             R"pbdoc(
@@ -487,7 +534,7 @@ PYBIND11_MODULE(digitizer, module) {
 
                 self.process_signal(signal_vector);
 
-                return py::array_t<double>(signal_vector.size(), signal_vector.data());
+                return py::array_t<double>(signal_vector.size(), signal_vector.data()) * ureg.attr("volt");
             },
             py::arg("signal"),
             R"pbdoc(
@@ -526,7 +573,7 @@ PYBIND11_MODULE(digitizer, module) {
 
                 self.process_signal(signal_vector, use_auto_range);
 
-                return py::array_t<double>(signal_vector.size(), signal_vector.data());
+                return py::array_t<double>(signal_vector.size(), signal_vector.data()) * ureg.attr("volt");
             },
             py::arg("signal"),
             py::arg("use_auto_range"),
@@ -642,7 +689,9 @@ PYBIND11_MODULE(digitizer, module) {
             [](const Digitizer& self) {
                 return
                     "Digitizer("
-                    "bandwidth=" + std::to_string(self.bandwidth) +
+                    "bandwidth=" + (
+                        std::isnan(self.bandwidth) ? std::string("None") : std::to_string(self.bandwidth)
+                    ) +
                     ", sampling_rate=" + std::to_string(self.sampling_rate) +
                     ", bit_depth=" + std::to_string(self.bit_depth) +
                     ", min_voltage=" + (

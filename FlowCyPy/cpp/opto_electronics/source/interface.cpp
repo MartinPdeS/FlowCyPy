@@ -35,6 +35,8 @@ PYBIND11_MODULE(source, module) {
         - Electric field amplitude outputs are expressed in volt / meter.
         - Photon statistics based shot noise can optionally be enabled at construction.
         - Relative intensity noise can optionally be enabled at construction.
+        - Bandwidth is optional in bandwidth dependent methods. If ``None`` is provided,
+          bandwidth dependent RIN contributions are skipped entirely.
     )doc";
 
     py::class_<BaseSource, std::shared_ptr<BaseSource>>(
@@ -97,7 +99,7 @@ PYBIND11_MODULE(source, module) {
                 Whether shot noise is enabled for power based signal generation.
 
                 Shot noise is modeled from photon counting statistics using the source
-                wavelength and the provided detection bandwidth.
+                wavelength and the sampling time step.
 
                 Returns
                 -------
@@ -133,10 +135,14 @@ PYBIND11_MODULE(source, module) {
                     Relative intensity noise in dB / Hz.
             )doc"
         )
-        .def_property_readonly(
+        .def_property(
             "optical_power",
             [ureg](const BaseSource& source) {
                 return py::cast(source.optical_power) * ureg.attr("watt");
+            },
+            [ureg](BaseSource& source, const py::object& power) {
+                source.optical_power = power.attr("to")("watt").attr("magnitude").cast<double>();
+                source.update_amplitude();
             },
             R"doc(
                 Total optical power of the source.
@@ -223,8 +229,9 @@ PYBIND11_MODULE(source, module) {
         .def(
             "add_rin_to_signal",
             [ureg](const BaseSource& source, std::vector<double> signal_values, const py::object& bandwidth) {
-                const double bandwidth_hertz =
-                    bandwidth.attr("to")("hertz").attr("magnitude").cast<double>();
+                const double bandwidth_hertz = bandwidth.is_none()
+                    ? std::numeric_limits<double>::quiet_NaN()
+                    : bandwidth.attr("to")("hertz").attr("magnitude").cast<double>();
 
                 source.add_rin_to_signal(signal_values, bandwidth_hertz);
 
@@ -238,25 +245,30 @@ PYBIND11_MODULE(source, module) {
                 return output;
             },
             py::arg("signal_values"),
-            py::arg("bandwidth"),
+            py::arg("bandwidth") = py::none(),
             R"doc(
                 Add relative intensity noise to a signal array.
 
                 This method perturbs an input signal according to the source RIN and
-                the specified detection bandwidth. The returned values are plain scalar
-                values and keep the same numerical convention as the input array.
+                the specified detection bandwidth.
+
+                If ``bandwidth`` is ``None``, no RIN contribution is applied and the
+                input values are returned unchanged.
+
+                The returned values are plain scalar values and keep the same numerical
+                convention as the input array.
 
                 Parameters
                 ----------
                 signal_values : array-like of float
                     Signal values to perturb.
-                bandwidth : pint.Quantity
-                    Detection bandwidth in hertz.
+                bandwidth : pint.Quantity or None, optional
+                    Detection bandwidth in hertz. If ``None``, RIN is not applied.
 
                 Returns
                 -------
                 numpy.ndarray
-                    Noisy signal values as a dimensionless NumPy array.
+                    Signal values as a dimensionless NumPy array.
 
                 Notes
                 -----
@@ -346,11 +358,15 @@ PYBIND11_MODULE(source, module) {
                 const py::object& z,
                 const py::object& bandwidth
             ) {
+                const double bandwidth_hertz = bandwidth.is_none()
+                    ? std::numeric_limits<double>::quiet_NaN()
+                    : bandwidth.attr("to")("hertz").attr("magnitude").cast<double>();
+
                 std::vector<double> values = source.get_amplitude_signal(
                     x.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
                     y.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
                     z.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
-                    bandwidth.attr("to")("hertz").attr("magnitude").cast<double>()
+                    bandwidth_hertz
                 );
 
                 return py::cast(values) * ureg.attr("volt / meter");
@@ -358,9 +374,11 @@ PYBIND11_MODULE(source, module) {
             py::arg("x"),
             py::arg("y"),
             py::arg("z"),
-            py::arg("bandwidth"),
+            py::arg("bandwidth") = py::none(),
             R"doc(
                 Evaluate the electric field amplitude over multiple particle positions.
+
+                If ``bandwidth`` is ``None``, bandwidth dependent RIN is not applied.
 
                 Parameters
                 ----------
@@ -370,8 +388,8 @@ PYBIND11_MODULE(source, module) {
                     Array of Y positions in meter.
                 z : pint.Quantity
                     Array of Z positions in meter.
-                bandwidth : pint.Quantity
-                    Detection bandwidth in hertz.
+                bandwidth : pint.Quantity or None, optional
+                    Detection bandwidth in hertz. If ``None``, RIN is not applied.
 
                 Returns
                 -------
@@ -380,7 +398,8 @@ PYBIND11_MODULE(source, module) {
 
                 Notes
                 -----
-                Source level RIN can be included depending on the source configuration.
+                Source level RIN can be included depending on the source configuration
+                and only when a bandwidth is provided.
             )doc"
         )
         .def(
@@ -393,11 +412,15 @@ PYBIND11_MODULE(source, module) {
                 const py::object& bandwidth,
                 const py::object& time_step
             ) {
+                const double bandwidth_hertz = bandwidth.is_none()
+                    ? std::numeric_limits<double>::quiet_NaN()
+                    : bandwidth.attr("to")("hertz").attr("magnitude").cast<double>();
+
                 std::vector<double> values = source.get_power_signal(
                     x.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
                     y.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
                     z.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
-                    bandwidth.attr("to")("hertz").attr("magnitude").cast<double>(),
+                    bandwidth_hertz,
                     time_step.attr("to")("second").attr("magnitude").cast<double>()
                 );
 
@@ -406,10 +429,14 @@ PYBIND11_MODULE(source, module) {
             py::arg("x"),
             py::arg("y"),
             py::arg("z"),
-            py::arg("bandwidth"),
+            py::arg("bandwidth") = py::none(),
             py::arg("time_step"),
             R"doc(
                 Evaluate optical power over multiple particle positions.
+
+                If ``bandwidth`` is ``None``, bandwidth dependent RIN is not applied.
+
+                Shot noise remains available because it depends on ``time_step``, not on ``bandwidth``.
 
                 Parameters
                 ----------
@@ -419,8 +446,8 @@ PYBIND11_MODULE(source, module) {
                     Array of Y positions in meter.
                 z : pint.Quantity
                     Array of Z positions in meter.
-                bandwidth : pint.Quantity
-                    Detection bandwidth in hertz.
+                bandwidth : pint.Quantity or None, optional
+                    Detection bandwidth in hertz. If ``None``, RIN is not applied.
                 time_step : pint.Quantity
                     Time step for power signal generation in second.
 
@@ -474,13 +501,17 @@ PYBIND11_MODULE(source, module) {
                 const py::object& base_level,
                 const py::object& bandwidth
             ) {
+                const double bandwidth_hertz = bandwidth.is_none()
+                    ? std::numeric_limits<double>::quiet_NaN()
+                    : bandwidth.attr("to")("hertz").attr("magnitude").cast<double>();
+
                 std::vector<double> values = source.generate_pulses(
                     velocities.attr("to")("meter / second").attr("magnitude").cast<std::vector<double>>(),
                     pulse_centers.attr("to")("second").attr("magnitude").cast<std::vector<double>>(),
                     pulse_amplitudes.attr("to")("watt").attr("magnitude").cast<std::vector<double>>(),
                     time_array.attr("to")("second").attr("magnitude").cast<std::vector<double>>(),
                     base_level.attr("to")("watt").attr("magnitude").cast<double>(),
-                    bandwidth.attr("to")("hertz").attr("magnitude").cast<double>()
+                    bandwidth_hertz
                 );
 
                 return py::cast(values) * ureg.attr("watt");
@@ -490,13 +521,18 @@ PYBIND11_MODULE(source, module) {
             py::arg("pulse_amplitudes"),
             py::arg("time_array"),
             py::arg("base_level"),
-            py::arg("bandwidth"),
+            py::arg("bandwidth") = py::none(),
             R"doc(
                 Generate a time domain optical power signal.
 
                 This method synthesizes a pulse train using the source specific pulse
                 model. Pulse widths are computed internally from the provided particle
                 velocities and the source geometry.
+
+                If ``bandwidth`` is ``None``, bandwidth dependent RIN is not applied.
+
+                Shot noise remains available because it depends on the time sampling
+                implied by ``time_array``, not on ``bandwidth``.
 
                 Parameters
                 ----------
@@ -510,8 +546,8 @@ PYBIND11_MODULE(source, module) {
                     Time axis in second.
                 base_level : pint.Quantity
                     Baseline optical power in watt.
-                bandwidth : pint.Quantity
-                    Detection bandwidth in hertz.
+                bandwidth : pint.Quantity or None, optional
+                    Detection bandwidth in hertz. If ``None``, RIN is not applied.
 
                 Returns
                 -------

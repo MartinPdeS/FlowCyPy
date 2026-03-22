@@ -8,16 +8,15 @@
 namespace py = pybind11;
 
 
-std::shared_ptr<BaseDistribution> as_distribution(py::object obj, const char* delta_unit_expr) {
-    py::object ureg = get_shared_ureg();
-
-    if (py::hasattr(obj, "units")) {
-        const double value = obj.attr("to_base_units")().attr("magnitude").cast<double>();
-
-        return std::make_shared<Delta>(value);
+std::shared_ptr<BaseDistribution> as_distribution(const py::object& object, const char* units = "") {
+    if (py::isinstance<BaseDistribution>(object)) {
+        return object.cast<std::shared_ptr<BaseDistribution>>();
     }
 
-    return obj.cast<std::shared_ptr<BaseDistribution>>();
+    if (py::hasattr(object, "units"))
+        return std::make_shared<Delta>(object.attr("to")(units).attr("magnitude").cast<double>());
+
+    return std::make_shared<Delta>(object.cast<double>());
 };
 
 
@@ -191,19 +190,16 @@ PYBIND11_MODULE(populations, module) {
                 [ureg](
                     const std::string &name,
                     py::object &concentration,
-                    py::object &medium_refractive_index_obj,
-                    py::object &refractive_index_obj,
+                    py::object &medium,
+                    py::object &material,
                     py::object &diameter_obj,
                     std::shared_ptr<BaseSamplingMethod> sampling_method
                 ) {
-                    std::shared_ptr<BaseDistribution> medium_refractive_index =
-                        as_distribution(medium_refractive_index_obj, "RIU");
+                    std::shared_ptr<BaseDistribution> medium_refractive_index = as_distribution(medium);
 
-                    std::shared_ptr<BaseDistribution> refractive_index =
-                        as_distribution(refractive_index_obj, "RIU");
+                    std::shared_ptr<BaseDistribution> refractive_index = as_distribution(material);
 
-                    std::shared_ptr<BaseDistribution> diameter =
-                        as_distribution(diameter_obj, "meter");
+                    std::shared_ptr<BaseDistribution> diameter = as_distribution(diameter_obj, "meter");
 
                     return std::make_shared<SpherePopulation>(
                         name,
@@ -296,14 +292,23 @@ PYBIND11_MODULE(populations, module) {
             py::init<>(
                 [](
                     const std::string &name,
-                    const py::object &concentration,
-                    const std::shared_ptr<BaseDistribution> &medium_refractive_index,
-                    const std::shared_ptr<BaseDistribution> &core_refractive_index,
-                    const std::shared_ptr<BaseDistribution> &shell_refractive_index,
-                    const std::shared_ptr<BaseDistribution> &core_diameter,
-                    const std::shared_ptr<BaseDistribution> &shell_thickness,
+                    const py::object& concentration,
+                    const py::object& medium_py,
+                    const py::object& core_material_py,
+                    const py::object& shell_material_py,
+                    const py::object& core_diameter_py,
+                    const py::object& shell_thickness_py,
                     const std::shared_ptr<BaseSamplingMethod> &sampling_method
                 ) {
+                    std::shared_ptr<BaseDistribution> medium_refractive_index = as_distribution(medium_py);
+
+                    std::shared_ptr<BaseDistribution> shell_refractive_index = as_distribution(shell_material_py);
+                    std::shared_ptr<BaseDistribution> core_refractive_index = as_distribution(core_material_py);
+
+                    std::shared_ptr<BaseDistribution> core_diameter = as_distribution(core_diameter_py, "meter");
+
+                    std::shared_ptr<BaseDistribution> shell_thickness = as_distribution(shell_thickness_py, "meter");
+
                     return std::make_shared<CoreShellPopulation>(
                         name,
                         concentration.attr("to")("particle / liter").attr("magnitude").cast<double>(),

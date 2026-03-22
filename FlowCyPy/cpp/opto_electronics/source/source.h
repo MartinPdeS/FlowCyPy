@@ -5,6 +5,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <algorithm>
+#include <limits>
 
 #include <utils/constants.h>
 
@@ -46,26 +47,55 @@ public:
         }
     }
 
+    /**
+     * @brief Return the optical frequency corresponding to the wavelength.
+     *
+     * @return Optical frequency in hertz.
+     */
     double get_frequency() const {
         return Constants::light_speed / this->wavelength;
     }
 
+    /**
+     * @brief Return the energy of a single photon at the source wavelength.
+     *
+     * @return Photon energy in joule.
+     */
     double get_photon_energy() const {
         return Constants::plank * this->get_frequency();
     }
 
+    /**
+     * @brief Convert the relative intensity noise from dB / Hz to linear units.
+     *
+     * @return Linear RIN in 1 / hertz.
+     */
     double get_rin_linear() const {
         return std::pow(10.0, this->rin / 10.0);
     }
 
+    /**
+     * @brief Return the factor converting optical power into expected photon count.
+     *
+     * The returned factor has units of photons / watt for a given time step.
+     *
+     * @param time_step Time step in second.
+     * @return Conversion factor from watt to expected photon count.
+     */
     double get_watt_to_photon_factor(const double time_step) const {
         if (time_step <= 0.0) {
             throw std::runtime_error("time_step must be strictly positive.");
         }
 
-        return time_step / this->get_photon_energy();   // [photons / watt]
+        return time_step / this->get_photon_energy();
     }
 
+    /**
+     * @brief Infer the time step from a uniformly sampled time array.
+     *
+     * @param time_array Time samples in second.
+     * @return Time step in second.
+     */
     double get_time_step_from_time_array(const std::vector<double>& time_array) const {
         if (time_array.size() < 2) {
             throw std::runtime_error("time_array must contain at least two samples.");
@@ -92,10 +122,23 @@ public:
         return time_step;
     }
 
+    /**
+     * @brief Add relative intensity noise to a signal.
+     *
+     * If bandwidth is NaN, the bandwidth is treated as unset and the signal is left unchanged.
+     * This makes the bandwidth truly optional.
+     *
+     * @param signal_values Signal values to perturb.
+     * @param bandwidth Detection bandwidth in hertz, or NaN if unset.
+     */
     void add_rin_to_signal(
         std::vector<double>& signal_values,
-        const double bandwidth
+        const double bandwidth = std::numeric_limits<double>::quiet_NaN()
     ) const {
+        if (std::isnan(bandwidth)) {
+            return;
+        }
+
         if (bandwidth < 0.0) {
             throw std::runtime_error("bandwidth must be non negative.");
         }
@@ -125,6 +168,12 @@ public:
         }
     }
 
+    /**
+     * @brief Add shot noise to an optical power signal.
+     *
+     * @param power_values Optical power values in watt.
+     * @param time_step Sampling time step in second.
+     */
     void add_shot_noise_to_signal(
         std::vector<double>& power_values,
         const double time_step
@@ -141,7 +190,6 @@ public:
         for (size_t index = 0; index < power_values.size(); ++index) {
             const double current_power = power_values[index];
 
-
             if (current_power < 0.0) {
                 throw std::runtime_error("shot noise cannot be applied to negative optical power values.");
             }
@@ -153,7 +201,8 @@ public:
             if (mean_photon_count < 100.0) {
                 std::poisson_distribution<int> distribution(mean_photon_count);
                 noisy_photon_count = static_cast<double>(distribution(generator));
-            } else {
+            }
+            else {
                 std::normal_distribution<double> distribution(
                     mean_photon_count,
                     std::sqrt(mean_photon_count)
@@ -165,11 +214,23 @@ public:
         }
     }
 
+    /**
+     * @brief Evaluate the electric field amplitude over multiple particle positions.
+     *
+     * If relative intensity noise is enabled and bandwidth is provided, RIN is applied.
+     * If bandwidth is unset, RIN is skipped entirely.
+     *
+     * @param x X positions in meter.
+     * @param y Y positions in meter.
+     * @param z Z positions in meter.
+     * @param bandwidth Detection bandwidth in hertz, or NaN if unset.
+     * @return Electric field amplitudes in volt / meter.
+     */
     std::vector<double> get_amplitude_signal(
         const std::vector<double>& x,
         const std::vector<double>& y,
         const std::vector<double>& z,
-        const double bandwidth
+        const double bandwidth = std::numeric_limits<double>::quiet_NaN()
     ) const {
         this->validate_coordinate_vectors(x, y, z);
 
@@ -193,6 +254,21 @@ public:
         return amplitudes;
     }
 
+    /**
+     * @brief Evaluate optical power over multiple particle positions.
+     *
+     * If relative intensity noise is enabled and bandwidth is provided, RIN is applied.
+     * If bandwidth is unset, RIN is skipped entirely.
+     *
+     * Shot noise depends only on time_step and is applied independently of bandwidth.
+     *
+     * @param x X positions in meter.
+     * @param y Y positions in meter.
+     * @param z Z positions in meter.
+     * @param bandwidth Detection bandwidth in hertz, or NaN if unset.
+     * @param time_step Sampling time step in second.
+     * @return Optical power values in watt.
+     */
     std::vector<double> get_power_signal(
         const std::vector<double>& x,
         const std::vector<double>& y,
@@ -226,6 +302,14 @@ public:
         return power_values;
     }
 
+    /**
+     * @brief Evaluate the optical power at a spatial position.
+     *
+     * @param x X position in meter.
+     * @param y Y position in meter.
+     * @param z Z position in meter.
+     * @return Optical power in watt.
+     */
     double get_power_at(
         const double x,
         const double y,
@@ -244,14 +328,37 @@ public:
         const double z = 0.0
     ) const = 0;
 
+    /**
+     * @brief Generate a time domain optical power signal.
+     *
+     * If relative intensity noise is enabled and bandwidth is provided, RIN is applied.
+     * If bandwidth is unset, RIN is skipped entirely.
+     *
+     * Shot noise depends only on the inferred time step from time_array.
+     *
+     * @param velocities Particle velocities in meter / second.
+     * @param pulse_centers Pulse center times in second.
+     * @param pulse_amplitudes Pulse amplitudes in watt.
+     * @param time_array Time axis in second.
+     * @param base_level Baseline optical power in watt.
+     * @param bandwidth Detection bandwidth in hertz, or NaN if unset.
+     * @return Time domain optical power signal in watt.
+     */
     virtual std::vector<double> generate_pulses(
         const std::vector<double>& velocities,
         const std::vector<double>& pulse_centers,
         const std::vector<double>& pulse_amplitudes,
         const std::vector<double>& time_array,
         const double base_level,
-        const double bandwidth
+        const double bandwidth = std::numeric_limits<double>::quiet_NaN()
     ) const = 0;
+
+    /**
+     * @brief Update the internally stored focal electric field amplitude.
+     */
+    void update_amplitude() {
+        this->amplitude = this->get_amplitude_at_focus();
+    }
 
 protected:
     virtual double get_amplitude_at_focus() const = 0;
@@ -262,10 +369,13 @@ protected:
         const double z = 0.0
     ) const = 0;
 
-    void update_amplitude() {
-        this->amplitude = this->get_amplitude_at_focus();
-    }
-
+    /**
+     * @brief Validate that coordinate vectors have matching sizes.
+     *
+     * @param x X positions.
+     * @param y Y positions.
+     * @param z Z positions.
+     */
     void validate_coordinate_vectors(
         const std::vector<double>& x,
         const std::vector<double>& y,
@@ -276,6 +386,13 @@ protected:
         }
     }
 
+    /**
+     * @brief Validate that pulse related vectors have matching sizes.
+     *
+     * @param velocities Particle velocities.
+     * @param pulse_centers Pulse center times.
+     * @param pulse_amplitudes Pulse amplitudes.
+     */
     void validate_pulse_vectors(
         const std::vector<double>& velocities,
         const std::vector<double>& pulse_centers,
@@ -291,6 +408,11 @@ protected:
         }
     }
 
+    /**
+     * @brief Validate that the velocity vector is non empty and strictly positive.
+     *
+     * @param velocity Particle velocities.
+     */
     void validate_velocity_vector(
         const std::vector<double>& velocity
     ) const {
@@ -343,6 +465,12 @@ public:
         this->update_amplitude();
     }
 
+    /**
+     * @brief Update the Gaussian beam waists.
+     *
+     * @param waist_y Waist along Y in meter.
+     * @param waist_z Waist along Z in meter.
+     */
     void set_waist(
         const double waist_y,
         const double waist_z
@@ -360,6 +488,12 @@ public:
         this->update_amplitude();
     }
 
+    /**
+     * @brief Compute pulse widths induced by particle transit through the Gaussian beam.
+     *
+     * @param velocity Particle velocities in meter / second.
+     * @return Pulse widths in second.
+     */
     std::vector<double> get_particle_width(
         const std::vector<double>& velocity
     ) const override {
@@ -375,6 +509,14 @@ public:
         return widths;
     }
 
+    /**
+     * @brief Evaluate the electric field amplitude at a spatial position.
+     *
+     * @param x X position in meter.
+     * @param y Y position in meter.
+     * @param z Z position in meter.
+     * @return Electric field amplitude in volt / meter.
+     */
     double get_amplitude_at(
         const double x,
         const double y,
@@ -388,13 +530,29 @@ public:
         );
     }
 
+    /**
+     * @brief Generate a Gaussian shaped pulse train.
+     *
+     * If relative intensity noise is enabled and bandwidth is provided, RIN is applied.
+     * If bandwidth is unset, RIN is skipped entirely.
+     *
+     * Shot noise depends only on the time step inferred from time_array.
+     *
+     * @param velocities Particle velocities in meter / second.
+     * @param pulse_centers Pulse center times in second.
+     * @param pulse_amplitudes Pulse amplitudes in watt.
+     * @param time_array Time axis in second.
+     * @param base_level Baseline optical power in watt.
+     * @param bandwidth Detection bandwidth in hertz, or NaN if unset.
+     * @return Time domain optical power signal in watt.
+     */
     std::vector<double> generate_pulses(
         const std::vector<double>& velocities,
         const std::vector<double>& pulse_centers,
         const std::vector<double>& pulse_amplitudes,
         const std::vector<double>& time_array,
         const double base_level,
-        const double bandwidth
+        const double bandwidth = std::numeric_limits<double>::quiet_NaN()
     ) const override {
         this->validate_pulse_vectors(
             velocities,
@@ -504,6 +662,12 @@ public:
         this->update_amplitude();
     }
 
+    /**
+     * @brief Update the flat top support widths.
+     *
+     * @param waist_y Support width along Y in meter.
+     * @param waist_z Support width along Z in meter.
+     */
     void set_waist(
         const double waist_y,
         const double waist_z
@@ -521,6 +685,12 @@ public:
         this->update_amplitude();
     }
 
+    /**
+     * @brief Compute pulse widths induced by particle transit through the flat top beam.
+     *
+     * @param velocity Particle velocities in meter / second.
+     * @return Pulse widths in second.
+     */
     std::vector<double> get_particle_width(
         const std::vector<double>& velocity
     ) const override {
@@ -536,6 +706,14 @@ public:
         return widths;
     }
 
+    /**
+     * @brief Evaluate the electric field amplitude at a spatial position.
+     *
+     * @param x X position in meter.
+     * @param y Y position in meter.
+     * @param z Z position in meter.
+     * @return Electric field amplitude in volt / meter.
+     */
     double get_amplitude_at(
         const double x,
         const double y,
@@ -554,13 +732,29 @@ public:
         return 0.0;
     }
 
+    /**
+     * @brief Generate a flat top pulse train.
+     *
+     * If relative intensity noise is enabled and bandwidth is provided, RIN is applied.
+     * If bandwidth is unset, RIN is skipped entirely.
+     *
+     * Shot noise depends only on the time step inferred from time_array.
+     *
+     * @param velocities Particle velocities in meter / second.
+     * @param pulse_centers Pulse center times in second.
+     * @param pulse_amplitudes Pulse amplitudes in watt.
+     * @param time_array Time axis in second.
+     * @param base_level Baseline optical power in watt.
+     * @param bandwidth Detection bandwidth in hertz, or NaN if unset.
+     * @return Time domain optical power signal in watt.
+     */
     std::vector<double> generate_pulses(
         const std::vector<double>& velocities,
         const std::vector<double>& pulse_centers,
         const std::vector<double>& pulse_amplitudes,
         const std::vector<double>& time_array,
         const double base_level,
-        const double bandwidth
+        const double bandwidth = std::numeric_limits<double>::quiet_NaN()
     ) const override {
         this->validate_pulse_vectors(
             velocities,

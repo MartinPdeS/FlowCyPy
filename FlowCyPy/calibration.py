@@ -47,7 +47,7 @@ class BaseEstimator:
         results = flow_cytometer.run(run_time=run_time)
 
         if self.debug_mode:
-            results.trigger.plot()
+            results.plot_analog()
 
         return results.peaks
 
@@ -155,8 +155,8 @@ class JEstimator(BaseEstimator):
             name="population",
             concentration=concentration,
             diameter=bead_diameter,
-            medium_refractive_index=1.33 * ureg.RIU,
-            refractive_index=1.47 * ureg.RIU,
+            medium_refractive_index=1.33,
+            refractive_index=1.47,
         )
 
         flow_cytometer.fluidics.scatterer_collection.populations = [population_0]
@@ -226,6 +226,8 @@ class JEstimator(BaseEstimator):
         )
         axes.legend()
 
+        plt.show()
+
         return figure
 
     def plot_statistics(self) -> plt.Figure:
@@ -279,6 +281,8 @@ class JEstimator(BaseEstimator):
             title="STD vs Illumination Power",
         )
         axes[1].legend()
+
+        plt.show()
 
         return figure
 
@@ -375,8 +379,8 @@ class KEstimator(BaseEstimator):
             name="population",
             concentration=concentration,
             diameter=bead_diameter,
-            medium_refractive_index=1.33 * ureg.RIU,
-            refractive_index=1.47 * ureg.RIU,
+            medium_refractive_index=1.33,
+            refractive_index=1.47,
         )
         flow_cytometer.fluidics.scatterer_collection.populations = [population]
         flow_cytometer.opto_electronics.source.optical_power = illumination_power

@@ -82,9 +82,6 @@ class FlowCytometer:
 
         signal_generator.add_time(time_series)
 
-        # for detector in self.opto_electronics.detectors:
-        #     signal_generator.create_zero_signal(channel=detector.name)
-
         return signal_generator
 
     def run_explicit_models(self, event_collection, signal_generator) -> None:
@@ -269,11 +266,8 @@ class FlowCytometer:
         )
 
         # Optical power → photocurrent
-        for (
-            detector
-        ) in (
-            self.opto_electronics.detectors
-        ):  # Step: Convert optical power to current using the responsivity
+        # Step: Convert optical power to current using the responsivity
+        for detector in self.opto_electronics.detectors:
             signal_generator.multiply_signal(
                 channel=detector.name,
                 factor=detector.responsivity.to("ampere/watt").magnitude,
@@ -325,6 +319,7 @@ class FlowCytometer:
             Simulation output containing all analog, digital, and peak-level data.
         """
         event_collection = self.generate_event_collection(run_time=run_time)
+
         analog = self.compute_analog(
             event_collection=event_collection, run_time=run_time
         )
@@ -413,15 +408,9 @@ class FlowCytometer:
                     dataframe=dataframe, population=population
                 )
 
-                if SimulationSettings.evenly_spaced_events:
-                    arrival_time = (
-                        np.linspace(0, run_time.to("second").magnitude, n_events)
-                        * ureg.second
-                    )
-                else:
-                    arrival_time = self.fluidics.flow_cell.sample_arrival_times(
-                        n_events=n_events, run_time=run_time
-                    )
+                arrival_time = self.fluidics.flow_cell.sample_arrival_times(
+                    n_events=n_events, run_time=run_time
+                )
 
                 x, y, velocities = self.fluidics.flow_cell.sample_transverse_profile(
                     n_events
