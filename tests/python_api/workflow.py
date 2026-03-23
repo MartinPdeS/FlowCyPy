@@ -28,8 +28,6 @@ from FlowCyPy.signal_processing import (
 
 
 # ----------------- FIXTURES -----------------
-
-
 @pytest.fixture
 def amplifier():
     return Amplifier(gain=100 * ureg.volt / ureg.ampere, bandwidth=1 * ureg.megahertz)
