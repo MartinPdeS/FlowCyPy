@@ -22,7 +22,6 @@ from FlowCyPy.workflow import (
     Detector,
     circuits,
     FlatTop,
-    Gaussian,
     peak_locator,
     discriminator,
     distributions,
@@ -34,9 +33,9 @@ from FlowCyPy.workflow import (
 population_0 = populations.SpherePopulation(
     name="Pop 0",
     medium_refractive_index=distributions.Delta(1.33),
-    concentration=5e10 * ureg.particle / ureg.milliliter,
+    concentration=1e10 * ureg.particle / ureg.milliliter,
     diameter=distributions.RosinRammler(
-        scale=50 * ureg.nanometer,
+        scale=150 * ureg.nanometer,
         shape=150,
         low_cutoff=50.0 * ureg.nanometer,
     ),
@@ -60,21 +59,22 @@ population_1 = populations.SpherePopulation(
         standard_deviation=0.002,
         low_cutoff=1.33,
     ),
-    sampling_method=GammaModel(number_of_samples=10_000),
+    sampling_method=GammaModel(number_of_samples=1_000),
 )
 
 
 detector_0 = Detector(
     name="side",
     phi_angle=90 * ureg.degree,
-    numerical_aperture=0.3 * ureg.AU,
+    numerical_aperture=1.2,
     responsivity=1 * ureg.ampere / ureg.watt,
 )
 
 detector_1 = Detector(
     name="forward",
     phi_angle=0 * ureg.degree,
-    numerical_aperture=0.3 * ureg.AU,
+    numerical_aperture=0.3,
+    cache_numerical_aperture=0.1,
     responsivity=1 * ureg.ampere / ureg.watt,
 )
 
@@ -89,7 +89,7 @@ peak_locator = peak_locator.GlobalPeakLocator(compute_width=False)
 
 analog_processing = [
     circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
-    circuits.BesselLowPass(cutoff=2 * ureg.megahertz, order=4, gain=2),
+    circuits.BesselLowPass(cutoff_frequency=2 * ureg.megahertz, order=4, gain=2),
 ]
 
 source = FlatTop(
@@ -97,9 +97,12 @@ source = FlatTop(
     waist_y=60e-6 * ureg.meter,
     wavelength=405 * ureg.nanometer,
     optical_power=200 * ureg.milliwatt,
-    include_shot_noise=False,
-    # rin=-180,
+    include_shot_noise=True,
+    include_rin_noise=True,
+    rin=-200,
+    bandwidth=10 * ureg.megahertz,
 )
+
 
 workflow = Workflow(
     wavelength=405 * ureg.nanometer,
@@ -127,12 +130,12 @@ workflow.initialize()
 
 run_record = workflow.run(run_time=1 * ureg.millisecond)
 
-_ = run_record.event_collection.plot(x="Diameter")
+# _ = run_record.event_collection.plot(x="Diameter")
 
 # %%
 # Step 5: Plot Events and Raw Analog Signals
 # ------------------------------------------
-_ = run_record.event_collection.plot(x="forward")
+_ = run_record.event_collection.plot(x="side")
 
 
 # %%

@@ -15,28 +15,9 @@ PYBIND11_MODULE(source, module) {
         Optical source models for time domain flow cytometry simulations.
 
         This module exposes beam models that can generate spatially varying optical
-        fields, optical power traces, and time domain pulse signals. All physical
-        inputs and outputs are unit aware on the Python side through Pint.
-
-        Available source types
-        ----------------------
-        BaseSource
-            Abstract base interface shared by all optical source models.
-        Gaussian
-            Astigmatic Gaussian beam with independent waists along the Y and Z axes.
-        FlatTop
-            Astigmatic flat top beam with independent support widths along the Y and Z axes.
-
-        General notes
-        -------------
-        - Length inputs are expressed in meter.
-        - Time inputs are expressed in second.
-        - Optical power outputs are expressed in watt.
-        - Electric field amplitude outputs are expressed in volt / meter.
-        - Photon statistics based shot noise can optionally be enabled at construction.
-        - Relative intensity noise can optionally be enabled at construction.
-        - Bandwidth is optional in bandwidth dependent methods. If ``None`` is provided,
-          bandwidth dependent RIN contributions are skipped entirely.
+        fields, optical power traces, stochastic gamma-based aggregate power traces,
+        and time domain pulse signals. All physical inputs and outputs are unit aware
+        on the Python side through Pint.
     )doc";
 
     py::class_<BaseSource, std::shared_ptr<BaseSource>>(
@@ -44,96 +25,28 @@ PYBIND11_MODULE(source, module) {
         "BaseSource",
         R"doc(
             Abstract base class for optical source models.
-
-            This class stores the core physical parameters of an optical source and
-            provides common operations used by all derived beam models.
-
-            Exposed physical quantities
-            ---------------------------
-            wavelength
-                Optical wavelength.
-            optical_power
-                Total optical power carried by the source.
-            polarization
-                Polarization angle.
-            rin
-                Relative intensity noise specified in dB / Hz.
-            rin_linear
-                Relative intensity noise converted to linear units of 1 / Hz.
-            frequency
-                Optical frequency derived from the wavelength.
-            photon_energy
-                Energy of a single photon at the source wavelength.
-
-            Noise model flags
-            -----------------
-            include_shot_noise
-                If true, shot noise is included when generating power based pulse signals.
-            include_rin_noise
-                If true, relative intensity noise is included in methods that apply source noise.
-
-            Notes
-            -----
-            This class is not intended to be instantiated directly from Python.
-            Use a concrete subclass such as Gaussian or FlatTop instead.
         )doc"
-    )
+        )
         .def_property_readonly(
             "wavelength",
             [ureg](const BaseSource& source) {
                 return py::cast(source.wavelength) * ureg.attr("meter");
-            },
-            R"doc(
-                Optical wavelength of the source.
-
-                Returns
-                -------
-                pint.Quantity
-                    Wavelength in meter.
-            )doc"
+            }
         )
+        .def("test_openmp", &BaseSource::test_openmp)
         .def_readwrite(
             "include_shot_noise",
-            &BaseSource::include_shot_noise,
-            R"doc(
-                Whether shot noise is enabled for power based signal generation.
-
-                Shot noise is modeled from photon counting statistics using the source
-                wavelength and the sampling time step.
-
-                Returns
-                -------
-                bool
-                    True if shot noise is enabled.
-            )doc"
+            &BaseSource::include_shot_noise
         )
         .def_readwrite(
             "include_rin_noise",
-            &BaseSource::include_rin_noise,
-            R"doc(
-                Whether relative intensity noise is enabled for source signal generation.
-
-                Returns
-                -------
-                bool
-                    True if relative intensity noise is enabled.
-            )doc"
+            &BaseSource::include_rin_noise
         )
         .def_property_readonly(
             "rin",
             [](const BaseSource& source) {
                 return source.rin;
-            },
-            R"doc(
-                Relative intensity noise of the source.
-
-                The value is stored as a scalar in dB / Hz.
-
-                Returns
-                -------
-                float
-                    Relative intensity noise in dB / Hz.
-            )doc"
+            }
         )
         .def_property(
             "optical_power",
@@ -143,137 +56,151 @@ PYBIND11_MODULE(source, module) {
             [ureg](BaseSource& source, const py::object& power) {
                 source.optical_power = power.attr("to")("watt").attr("magnitude").cast<double>();
                 source.update_amplitude();
-            },
-            R"doc(
-                Total optical power of the source.
-
-                Returns
-                -------
-                pint.Quantity
-                    Optical power in watt.
-            )doc"
+            }
         )
         .def_property_readonly(
             "amplitude",
             [ureg](const BaseSource& source) {
                 return py::cast(source.amplitude) * ureg.attr("volt / meter");
-            },
-            R"doc(
-                On axis electric field amplitude at focus.
-
-                This value corresponds to the peak electric field amplitude of the beam
-                model at the focal position.
-
-                Returns
-                -------
-                pint.Quantity
-                    Electric field amplitude in volt / meter.
-            )doc"
+            }
         )
         .def_property_readonly(
             "polarization",
             [ureg](const BaseSource& source) {
                 return py::cast(source.polarization) * ureg.attr("radian");
-            },
-            R"doc(
-                Polarization angle of the source.
-
-                Returns
-                -------
-                pint.Quantity
-                    Polarization angle in radian.
-            )doc"
+            }
         )
         .def_property_readonly(
             "frequency",
             [ureg](const BaseSource& source) {
                 return py::cast(source.get_frequency()) * ureg.attr("hertz");
+            }
+        )
+        .def_property(
+            "bandwidth",
+            [ureg](const BaseSource& source) {
+                return py::cast(source.bandwidth) * ureg.attr("hertz");
             },
-            R"doc(
-                Optical frequency derived from the source wavelength.
-
-                Returns
-                -------
-                pint.Quantity
-                    Frequency in hertz.
-            )doc"
+            [ureg](BaseSource& source, const py::object& bandwidth) {
+                source.bandwidth = bandwidth.attr("to")("hertz").attr("magnitude").cast<double>();
+            }
         )
         .def_property_readonly(
             "photon_energy",
             [ureg](const BaseSource& source) {
                 return py::cast(source.get_photon_energy()) * ureg.attr("joule");
-            },
-            R"doc(
-                Energy of a single photon at the source wavelength.
-
-                Returns
-                -------
-                pint.Quantity
-                    Photon energy in joule.
-            )doc"
+            }
         )
         .def_property_readonly(
             "rin_linear",
             [ureg](const BaseSource& source) {
                 return py::cast(source.get_rin_linear()) / ureg.attr("hertz");
-            },
-            R"doc(
-                Relative intensity noise converted to linear units.
-
-                Returns
-                -------
-                pint.Quantity
-                    Linear RIN in 1 / hertz.
-            )doc"
+            }
         )
         .def(
-            "add_rin_to_signal",
-            [ureg](const BaseSource& source, std::vector<double> signal_values, const py::object& bandwidth) {
-                const double bandwidth_hertz = bandwidth.is_none()
-                    ? std::numeric_limits<double>::quiet_NaN()
-                    : bandwidth.attr("to")("hertz").attr("magnitude").cast<double>();
+            "add_shot_noise_to_signal",
+            [ureg](const BaseSource& source, const py::object& signal, const py::object& time_array) {
+                const double time_step = source.get_time_step_from_time_array(
+                    time_array.attr("to")("second").attr("magnitude").cast<std::vector<double>>()
+                );
 
-                source.add_rin_to_signal(signal_values, bandwidth_hertz);
+                std::vector<double> signal_values =
+                    signal.attr("to")("watt").attr("magnitude").cast<std::vector<double>>();
+
+                source.add_shot_noise_to_signal(signal_values, time_step);
 
                 py::array_t<double> output(signal_values.size());
                 auto mutable_view = output.mutable_unchecked<1>();
 
                 for (ssize_t index = 0; index < static_cast<ssize_t>(signal_values.size()); ++index) {
-                    mutable_view(index) = signal_values[index];
+                    mutable_view(index) = signal_values[static_cast<size_t>(index)];
                 }
 
-                return output;
+                return output * ureg.attr("watt");
             },
-            py::arg("signal_values"),
-            py::arg("bandwidth") = py::none(),
+            py::arg("signal"),
+            py::arg("time"),
             R"doc(
-                Add relative intensity noise to a signal array.
+                Add shot noise to an optical power signal.
+            )doc"
+        )
+        .def(
+            "add_rin_to_signal",
+            [ureg](const BaseSource& source, const py::object& signal) {
+                std::vector<double> signal_values =
+                    signal.attr("to")("watt").attr("magnitude").cast<std::vector<double>>();
 
-                This method perturbs an input signal according to the source RIN and
-                the specified detection bandwidth.
+                source.add_rin_to_signal(signal_values);
+                py::array_t<double> output(signal_values.size());
+                auto mutable_view = output.mutable_unchecked<1>();
 
-                If ``bandwidth`` is ``None``, no RIN contribution is applied and the
-                input values are returned unchanged.
+                for (ssize_t index = 0; index < static_cast<ssize_t>(signal_values.size()); ++index) {
+                    mutable_view(index) = signal_values[static_cast<size_t>(index)];
+                }
 
-                The returned values are plain scalar values and keep the same numerical
-                convention as the input array.
+                return output * ureg.attr("watt");
+            },
+            py::arg("signal"),
+            R"doc(
+                Add source RIN to a single optical power signal.
+            )doc"
+        )
+        .def(
+            "add_rin_to_signal_dict",
+            [ureg](const BaseSource& source, const py::dict& signal_dict) {
+                if (!signal_dict.contains("Time")) {
+                    throw std::runtime_error("signal_dict must contain a 'Time' entry.");
+                }
 
-                Parameters
-                ----------
-                signal_values : array-like of float
-                    Signal values to perturb.
-                bandwidth : pint.Quantity or None, optional
-                    Detection bandwidth in hertz. If ``None``, RIN is not applied.
+                std::vector<std::string> detector_names;
+                std::vector<std::vector<double>> detector_signals;
 
-                Returns
-                -------
-                numpy.ndarray
-                    Signal values as a dimensionless NumPy array.
+                for (auto item : signal_dict) {
+                    const std::string key = py::cast<std::string>(item.first);
 
-                Notes
-                -----
-                This is a low level utility method. It does not attach physical units
-                to the returned array.
+                    if (key == "Time") {
+                        continue;
+                    }
+
+                    py::object value = py::reinterpret_borrow<py::object>(item.second);
+
+                    if (!py::hasattr(value, "units") || !py::hasattr(value, "magnitude")) {
+                        throw std::runtime_error(
+                            "Each detector entry in signal_dict must be a Pint quantity."
+                        );
+                    }
+
+                    py::object signal_in_watt = value.attr("to")("watt");
+
+                    detector_names.push_back(key);
+                    detector_signals.push_back(
+                        signal_in_watt.attr("magnitude").cast<std::vector<double>>()
+                    );
+                }
+
+                source.add_common_rin_to_signals(detector_signals);
+
+                py::dict output_signal_dict;
+                output_signal_dict["Time"] = signal_dict["Time"];
+
+                for (size_t channel_index = 0; channel_index < detector_names.size(); ++channel_index) {
+                    py::array_t<double> output_array(detector_signals[channel_index].size());
+                    auto mutable_view = output_array.mutable_unchecked<1>();
+
+                    for (ssize_t sample_index = 0; sample_index < static_cast<ssize_t>(detector_signals[channel_index].size()); ++sample_index) {
+                        mutable_view(sample_index) =
+                            detector_signals[channel_index][static_cast<size_t>(sample_index)];
+                    }
+
+                    output_signal_dict[py::str(detector_names[channel_index])] =
+                        output_array * ureg.attr("watt");
+                }
+
+                return output_signal_dict;
+            },
+            py::arg("signal_dict"),
+            R"doc(
+                Apply one common source RIN realization to all detector channels in a signal dictionary.
             )doc"
         )
         .def(
@@ -294,24 +221,7 @@ PYBIND11_MODULE(source, module) {
             },
             py::arg("x"),
             py::arg("y"),
-            py::arg("z") = py::float_(0.0) * ureg.attr("meter"),
-            R"doc(
-                Evaluate the electric field amplitude at a spatial position.
-
-                Parameters
-                ----------
-                x : pint.Quantity
-                    X position in meter.
-                y : pint.Quantity
-                    Y position in meter.
-                z : pint.Quantity, optional
-                    Z position in meter. Defaults to 0 meter.
-
-                Returns
-                -------
-                pint.Quantity
-                    Electric field amplitude in volt / meter.
-            )doc"
+            py::arg("z") = py::float_(0.0) * ureg.attr("meter")
         )
         .def(
             "get_power_at",
@@ -330,24 +240,7 @@ PYBIND11_MODULE(source, module) {
             },
             py::arg("x"),
             py::arg("y"),
-            py::arg("z") = py::float_(0.0) * ureg.attr("meter"),
-            R"doc(
-                Evaluate optical power at a spatial position.
-
-                Parameters
-                ----------
-                x : pint.Quantity
-                    X position in meter.
-                y : pint.Quantity
-                    Y position in meter.
-                z : pint.Quantity, optional
-                    Z position in meter. Defaults to 0 meter.
-
-                Returns
-                -------
-                pint.Quantity
-                    Optical power in watt.
-            )doc"
+            py::arg("z") = py::float_(0.0) * ureg.attr("meter")
         )
         .def(
             "get_amplitude_signal",
@@ -355,52 +248,19 @@ PYBIND11_MODULE(source, module) {
                 const BaseSource& source,
                 const py::object& x,
                 const py::object& y,
-                const py::object& z,
-                const py::object& bandwidth
+                const py::object& z
             ) {
-                const double bandwidth_hertz = bandwidth.is_none()
-                    ? std::numeric_limits<double>::quiet_NaN()
-                    : bandwidth.attr("to")("hertz").attr("magnitude").cast<double>();
-
                 std::vector<double> values = source.get_amplitude_signal(
                     x.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
                     y.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
-                    z.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
-                    bandwidth_hertz
+                    z.attr("to")("meter").attr("magnitude").cast<std::vector<double>>()
                 );
 
                 return py::cast(values) * ureg.attr("volt / meter");
             },
             py::arg("x"),
             py::arg("y"),
-            py::arg("z"),
-            py::arg("bandwidth") = py::none(),
-            R"doc(
-                Evaluate the electric field amplitude over multiple particle positions.
-
-                If ``bandwidth`` is ``None``, bandwidth dependent RIN is not applied.
-
-                Parameters
-                ----------
-                x : pint.Quantity
-                    Array of X positions in meter.
-                y : pint.Quantity
-                    Array of Y positions in meter.
-                z : pint.Quantity
-                    Array of Z positions in meter.
-                bandwidth : pint.Quantity or None, optional
-                    Detection bandwidth in hertz. If ``None``, RIN is not applied.
-
-                Returns
-                -------
-                pint.Quantity
-                    Array of electric field amplitudes in volt / meter.
-
-                Notes
-                -----
-                Source level RIN can be included depending on the source configuration
-                and only when a bandwidth is provided.
-            )doc"
+            py::arg("z")
         )
         .def(
             "get_power_signal",
@@ -409,18 +269,12 @@ PYBIND11_MODULE(source, module) {
                 const py::object& x,
                 const py::object& y,
                 const py::object& z,
-                const py::object& bandwidth,
                 const py::object& time_step
             ) {
-                const double bandwidth_hertz = bandwidth.is_none()
-                    ? std::numeric_limits<double>::quiet_NaN()
-                    : bandwidth.attr("to")("hertz").attr("magnitude").cast<double>();
-
                 std::vector<double> values = source.get_power_signal(
                     x.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
                     y.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
                     z.attr("to")("meter").attr("magnitude").cast<std::vector<double>>(),
-                    bandwidth_hertz,
                     time_step.attr("to")("second").attr("magnitude").cast<double>()
                 );
 
@@ -429,65 +283,44 @@ PYBIND11_MODULE(source, module) {
             py::arg("x"),
             py::arg("y"),
             py::arg("z"),
-            py::arg("bandwidth") = py::none(),
-            py::arg("time_step"),
-            R"doc(
-                Evaluate optical power over multiple particle positions.
-
-                If ``bandwidth`` is ``None``, bandwidth dependent RIN is not applied.
-
-                Shot noise remains available because it depends on ``time_step``, not on ``bandwidth``.
-
-                Parameters
-                ----------
-                x : pint.Quantity
-                    Array of X positions in meter.
-                y : pint.Quantity
-                    Array of Y positions in meter.
-                z : pint.Quantity
-                    Array of Z positions in meter.
-                bandwidth : pint.Quantity or None, optional
-                    Detection bandwidth in hertz. If ``None``, RIN is not applied.
-                time_step : pint.Quantity
-                    Time step for power signal generation in second.
-
-                Returns
-                -------
-                pint.Quantity
-                    Array of optical power values in watt.
-
-                Notes
-                -----
-                Depending on the source configuration, this method may include
-                relative intensity noise and shot noise.
-            )doc"
+            py::arg("time_step")
         )
         .def(
             "get_particle_width",
             [ureg](const BaseSource& source, const py::object& velocity) {
-                std::vector<double> velocity_values = velocity.attr("to")("meter / second").attr("magnitude").cast<std::vector<double>>();
+                std::vector<double> velocity_values =
+                    velocity.attr("to")("meter / second").attr("magnitude").cast<std::vector<double>>();
+
                 std::vector<double> widths = source.get_particle_width(velocity_values);
+
                 return py::cast(widths) * ureg.attr("second");
             },
-            py::arg("velocity"),
+            py::arg("velocity")
+        )
+        .def(
+            "get_gamma_trace",
+            [ureg](
+                const BaseSource& source,
+                const py::object& time_array,
+                const double shape,
+                const py::object& scale,
+                const py::object& mean_velocity
+            ) {
+                std::vector<double> values = source.get_gamma_trace(
+                    time_array.attr("to")("second").attr("magnitude").cast<std::vector<double>>(),
+                    shape,
+                    scale.attr("to")("watt").attr("magnitude").cast<double>(),
+                    mean_velocity.attr("to")("meter / second").attr("magnitude").cast<double>()
+                );
+
+                return py::cast(values) * ureg.attr("watt");
+            },
+            py::arg("time_array"),
+            py::arg("shape"),
+            py::arg("scale"),
+            py::arg("mean_velocity"),
             R"doc(
-                Compute pulse widths induced by particle transit through the beam.
-
-                Parameters
-                ----------
-                velocity : pint.Quantity
-                    Particle velocities in meter / second.
-
-                Returns
-                -------
-                pint.Quantity
-                    Pulse widths in second.
-
-                Notes
-                -----
-                These widths are temporal widths derived from the source profile and
-                the particle velocities. They are intended to be used as inputs to
-                pulse synthesis routines.
+                Generate a gamma-distributed optical power trace using the intrinsic source kernel.
             )doc"
         )
         .def(
@@ -498,20 +331,15 @@ PYBIND11_MODULE(source, module) {
                 const py::object& pulse_centers,
                 const py::object& pulse_amplitudes,
                 const py::object& time_array,
-                const py::object& base_level,
-                const py::object& bandwidth
+                const py::object& base_level
             ) {
-                const double bandwidth_hertz = bandwidth.is_none()
-                    ? std::numeric_limits<double>::quiet_NaN()
-                    : bandwidth.attr("to")("hertz").attr("magnitude").cast<double>();
 
                 std::vector<double> values = source.generate_pulses(
                     velocities.attr("to")("meter / second").attr("magnitude").cast<std::vector<double>>(),
                     pulse_centers.attr("to")("second").attr("magnitude").cast<std::vector<double>>(),
                     pulse_amplitudes.attr("to")("watt").attr("magnitude").cast<std::vector<double>>(),
                     time_array.attr("to")("second").attr("magnitude").cast<std::vector<double>>(),
-                    base_level.attr("to")("watt").attr("magnitude").cast<double>(),
-                    bandwidth_hertz
+                    base_level.attr("to")("watt").attr("magnitude").cast<double>()
                 );
 
                 return py::cast(values) * ureg.attr("watt");
@@ -520,77 +348,13 @@ PYBIND11_MODULE(source, module) {
             py::arg("pulse_centers"),
             py::arg("pulse_amplitudes"),
             py::arg("time_array"),
-            py::arg("base_level"),
-            py::arg("bandwidth") = py::none(),
-            R"doc(
-                Generate a time domain optical power signal.
-
-                This method synthesizes a pulse train using the source specific pulse
-                model. Pulse widths are computed internally from the provided particle
-                velocities and the source geometry.
-
-                If ``bandwidth`` is ``None``, bandwidth dependent RIN is not applied.
-
-                Shot noise remains available because it depends on the time sampling
-                implied by ``time_array``, not on ``bandwidth``.
-
-                Parameters
-                ----------
-                velocities : pint.Quantity
-                    Particle velocities in meter / second.
-                pulse_centers : pint.Quantity
-                    Pulse center times in second.
-                pulse_amplitudes : pint.Quantity
-                    Pulse amplitudes in watt.
-                time_array : pint.Quantity
-                    Time axis in second.
-                base_level : pint.Quantity
-                    Baseline optical power in watt.
-                bandwidth : pint.Quantity or None, optional
-                    Detection bandwidth in hertz. If ``None``, RIN is not applied.
-
-                Returns
-                -------
-                pint.Quantity
-                    Time domain optical power signal in watt.
-
-                Notes
-                -----
-                Shot noise and relative intensity noise are included according to the
-                source configuration.
-            )doc"
+            py::arg("base_level")
         );
 
     py::class_<Gaussian, BaseSource, std::shared_ptr<Gaussian>>(
         module,
-        "Gaussian",
-        R"doc(
-            Astigmatic Gaussian optical source.
-
-            This class represents a Gaussian beam with independent waists along the
-            Y and Z axes. The beam profile decays smoothly away from the optical axis
-            and supports both spatial power evaluation and time domain pulse synthesis.
-
-            Parameters
-            ----------
-            wavelength : pint.Quantity
-                Optical wavelength in meter.
-            optical_power : pint.Quantity
-                Total optical power in watt.
-            waist_y : pint.Quantity
-                Beam waist along the Y axis in meter.
-            waist_z : pint.Quantity
-                Beam waist along the Z axis in meter.
-            rin : float, optional
-                Relative intensity noise in dB / Hz. Default is -120.0.
-            polarization : pint.Quantity, optional
-                Polarization angle in radian. Default is 0 radian.
-            include_shot_noise : bool, optional
-                Whether shot noise is enabled. Default is True.
-            include_rin_noise : bool, optional
-                Whether relative intensity noise is enabled. Default is True.
-        )doc"
-    )
+        "Gaussian"
+        )
         .def(
             py::init(
                 [ureg](
@@ -600,8 +364,10 @@ PYBIND11_MODULE(source, module) {
                     const py::object& waist_z,
                     const double rin,
                     const py::object& polarization,
+                    const py::object& bandwidth,
                     const bool include_shot_noise,
-                    const bool include_rin_noise
+                    const bool include_rin_noise,
+                    const bool debug_mode
                 ) {
                     const double wavelength_meter =
                         wavelength.attr("to")("meter").attr("magnitude").cast<double>();
@@ -618,6 +384,10 @@ PYBIND11_MODULE(source, module) {
                     const double polarization_radian =
                         polarization.attr("to")("radian").attr("magnitude").cast<double>();
 
+                    const double bandwidth_hertz = bandwidth.is_none()
+                        ? std::numeric_limits<double>::quiet_NaN()
+                        : bandwidth.attr("to")("hertz").attr("magnitude").cast<double>();
+
                     return std::make_shared<Gaussian>(
                         wavelength_meter,
                         rin,
@@ -625,8 +395,10 @@ PYBIND11_MODULE(source, module) {
                         waist_y_meter,
                         waist_z_meter,
                         polarization_radian,
+                        bandwidth_hertz,
                         include_shot_noise,
-                        include_rin_noise
+                        include_rin_noise,
+                        debug_mode
                     );
                 }
             ),
@@ -636,39 +408,22 @@ PYBIND11_MODULE(source, module) {
             py::arg("waist_z"),
             py::arg("rin") = -120.0,
             py::arg("polarization") = py::float_(0.0) * ureg.attr("radian"),
+            py::arg("bandwidth") = py::none(),
             py::arg("include_shot_noise") = true,
             py::arg("include_rin_noise") = true,
-            R"doc(
-                Construct an astigmatic Gaussian source.
-            )doc"
+            py::arg("debug_mode") = false
         )
         .def_property_readonly(
             "waist_y",
             [ureg](const Gaussian& source) {
                 return py::cast(source.waist_y) * ureg.attr("meter");
-            },
-            R"doc(
-                Beam waist along the Y axis.
-
-                Returns
-                -------
-                pint.Quantity
-                    Waist along Y in meter.
-            )doc"
+            }
         )
         .def_property_readonly(
             "waist_z",
             [ureg](const Gaussian& source) {
                 return py::cast(source.waist_z) * ureg.attr("meter");
-            },
-            R"doc(
-                Beam waist along the Z axis.
-
-                Returns
-                -------
-                pint.Quantity
-                    Waist along Z in meter.
-            )doc"
+            }
         )
         .def(
             "set_waist",
@@ -682,53 +437,12 @@ PYBIND11_MODULE(source, module) {
                 source.set_waist(waist_y_meter, waist_z_meter);
             },
             py::arg("waist_y"),
-            py::arg("waist_z"),
-            R"doc(
-                Update the Gaussian beam waists.
-
-                Parameters
-                ----------
-                waist_y : pint.Quantity
-                    New waist along the Y axis in meter.
-                waist_z : pint.Quantity
-                    New waist along the Z axis in meter.
-
-                Notes
-                -----
-                Updating the beam waists also updates the internally stored focal
-                electric field amplitude.
-            )doc"
+            py::arg("waist_z")
         );
 
     py::class_<FlatTop, BaseSource, std::shared_ptr<FlatTop>>(
         module,
-        "FlatTop",
-        R"doc(
-            Astigmatic flat top optical source.
-
-            This class represents a beam with approximately uniform optical power
-            inside its support and sharp transitions at the beam edges. Independent
-            support widths are used along the Y and Z axes.
-
-            Parameters
-            ----------
-            wavelength : pint.Quantity
-                Optical wavelength in meter.
-            optical_power : pint.Quantity
-                Total optical power in watt.
-            waist_y : pint.Quantity
-                Support half width along the Y axis in meter.
-            waist_z : pint.Quantity
-                Support half width along the Z axis in meter.
-            rin : float, optional
-                Relative intensity noise in dB / Hz. Default is -120.0.
-            polarization : pint.Quantity, optional
-                Polarization angle in radian. Default is 0 radian.
-            include_shot_noise : bool, optional
-                Whether shot noise is enabled. Default is True.
-            include_rin_noise : bool, optional
-                Whether relative intensity noise is enabled. Default is True.
-        )doc"
+        "FlatTop"
     )
         .def(
             py::init(
@@ -739,8 +453,10 @@ PYBIND11_MODULE(source, module) {
                     const py::object& waist_z,
                     const double rin,
                     const py::object& polarization,
+                    const py::object& bandwidth,
                     const bool include_shot_noise,
-                    const bool include_rin_noise
+                    const bool include_rin_noise,
+                    const bool debug_mode
                 ) {
                     const double wavelength_meter =
                         wavelength.attr("to")("meter").attr("magnitude").cast<double>();
@@ -757,6 +473,10 @@ PYBIND11_MODULE(source, module) {
                     const double polarization_radian =
                         polarization.attr("to")("radian").attr("magnitude").cast<double>();
 
+                    const double bandwidth_hertz = bandwidth.is_none()
+                        ? std::numeric_limits<double>::quiet_NaN()
+                        : bandwidth.attr("to")("hertz").attr("magnitude").cast<double>();
+
                     return std::make_shared<FlatTop>(
                         wavelength_meter,
                         rin,
@@ -764,8 +484,10 @@ PYBIND11_MODULE(source, module) {
                         waist_y_meter,
                         waist_z_meter,
                         polarization_radian,
+                        bandwidth_hertz,
                         include_shot_noise,
-                        include_rin_noise
+                        include_rin_noise,
+                        debug_mode
                     );
                 }
             ),
@@ -775,39 +497,22 @@ PYBIND11_MODULE(source, module) {
             py::arg("waist_z"),
             py::arg("rin") = -120.0,
             py::arg("polarization") = py::float_(0.0) * ureg.attr("radian"),
+            py::arg("bandwidth") = py::none(),
             py::arg("include_shot_noise") = true,
             py::arg("include_rin_noise") = true,
-            R"doc(
-                Construct an astigmatic flat top source.
-            )doc"
+            py::arg("debug_mode") = false
         )
         .def_property_readonly(
             "waist_y",
             [ureg](const FlatTop& source) {
                 return py::cast(source.waist_y) * ureg.attr("meter");
-            },
-            R"doc(
-                Support width along the Y axis.
-
-                Returns
-                -------
-                pint.Quantity
-                    Width along Y in meter.
-            )doc"
+            }
         )
         .def_property_readonly(
             "waist_z",
             [ureg](const FlatTop& source) {
                 return py::cast(source.waist_z) * ureg.attr("meter");
-            },
-            R"doc(
-                Support width along the Z axis.
-
-                Returns
-                -------
-                pint.Quantity
-                    Width along Z in meter.
-            )doc"
+            }
         )
         .def(
             "set_waist",
@@ -821,21 +526,6 @@ PYBIND11_MODULE(source, module) {
                 source.set_waist(waist_y_meter, waist_z_meter);
             },
             py::arg("waist_y"),
-            py::arg("waist_z"),
-            R"doc(
-                Update the flat top support widths.
-
-                Parameters
-                ----------
-                waist_y : pint.Quantity
-                    New support width along the Y axis in meter.
-                waist_z : pint.Quantity
-                    New support width along the Z axis in meter.
-
-                Notes
-                -----
-                Updating the support widths also updates the internally stored focal
-                electric field amplitude.
-            )doc"
+            py::arg("waist_z")
         );
 }

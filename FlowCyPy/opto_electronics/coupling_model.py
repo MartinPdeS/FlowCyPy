@@ -20,7 +20,6 @@ class ScatteringModel:
         self,
         source: BaseSource,
         detector: object,
-        bandwidth: Frequency,
     ):
         """
         Initialize the scattering simulator with source, detector, digitizer, and medium refractive index.
@@ -36,7 +35,6 @@ class ScatteringModel:
         """
         self.source = source
         self.detector = detector
-        self.bandwidth = bandwidth
 
     def run(
         self, event_frames: List[pd.DataFrame], compute_cross_section: bool = False
@@ -82,7 +80,6 @@ class ScatteringModel:
             (PyMieSim PlaneWave source, PyMieSim Photodiode detector)
         """
         amplitude = self.source.get_amplitude_signal(
-            bandwidth=self.bandwidth,
             x=event_df["x"].pint.quantity,
             y=event_df["y"].pint.quantity,
             z=event_df["y"].pint.quantity * 0,

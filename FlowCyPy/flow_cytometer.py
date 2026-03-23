@@ -79,11 +79,11 @@ class FlowCytometer:
 
         signal_generator = SignalGenerator(n_elements=len(time_series))
 
-        signal_generator.add_time(time_series)
+        signal_generator.set_time_channel(time_series)
 
         return signal_generator
 
-    def run_explicit_models(self, event_collection, signal_generator) -> None:
+    def run_explicit_models(self, event_collection, signals: dict) -> None:
         """
         Run all ExplicitModel populations and add their optical power pulses to the signal generator.
 
@@ -110,14 +110,13 @@ class FlowCytometer:
                     velocities=events["Velocity"].pint.quantity,
                     pulse_centers=events["Time"].pint.quantity,
                     pulse_amplitudes=events[detector.name].pint.quantity,
-                    time_array=signal_generator.get_time(),
-                    base_level=self.background_power,
-                    bandwidth=self.signal_processing.digitizer.bandwidth,
+                    time_array=signals["Time"],
+                    base_level=0 * ureg.watt,
                 )
 
-                signal_generator.add_channel(detector.name, signal_watt.magnitude)
+                signals[detector.name] += signal_watt
 
-    def run_gamma_models(self, event_collection, signal_generator) -> None:
+    def run_gamma_models(self, event_collection, signals: dict) -> None:
         """
         Run all GammaModel populations and add correlated optical power traces to the signal generator.
 
@@ -139,7 +138,6 @@ class FlowCytometer:
         Skips populations whose event frame is empty.
         Assumes:
         - events.population.concentration exists
-        - events.attrs["VelocitySigmas"] exists (Pint Quantity)
         - signal_generator._cpp_add_gamma_trace writes into the named signal and returns the trace
         - signal_generator.add_array_to_signal exists (as in your SignalGenerator wrapper)
         """
@@ -176,32 +174,24 @@ class FlowCytometer:
                 reference_detector.name
             ].values.quantity.mean()
 
-            reference_power_trace = (
-                signal_generator.add_gamma_trace_to_signal(
-                    channel=reference_detector.name,
-                    shape=expected_number_of_particles,
-                    scale=reference_mean_amplitude.to("watt").magnitude,
-                    gaussian_sigma=events.attrs["VelocitySigmas"]
-                    .to("second")
-                    .magnitude,
-                )
-                * ureg.watt
+            reference_power_trace = self.opto_electronics.source.get_gamma_trace(
+                time_array=signals["Time"],
+                shape=expected_number_of_particles,
+                scale=reference_mean_amplitude,
+                mean_velocity=events.attrs["VelocityMean"],
             )
 
             particles_trace = reference_power_trace / (reference_mean_amplitude)
 
             events.attrs["particles_trace"] = particles_trace
-            events.attrs["time_trace"] = signal_generator.get_time()
+            events.attrs["time_trace"] = signals["Time"]
 
-            for detector in self.opto_electronics.detectors[1:]:
-                mean_amplitude = events[detector.name].values.quantity.mean().to("watt")
+            for detector in self.opto_electronics.detectors:
+                mean_amplitude = events[detector.name].values.quantity.mean()
 
                 detector_power_trace = particles_trace * mean_amplitude
 
-                signal_generator.add_array_to_signal(
-                    channel=detector.name,
-                    array=detector_power_trace.to("watt").magnitude,
-                )
+                signals[detector.name] += detector_power_trace
 
     def compute_analog(
         self, run_time: Time, event_collection: pd.DataFrame
@@ -254,43 +244,64 @@ class FlowCytometer:
             If required event fields are missing, including Sigmas or Time for
             explicit pulse generation
         """
+        signal_dict = {}
         signal_generator = self._create_signal_generator(run_time=run_time)
 
-        self.run_explicit_models(
-            event_collection=event_collection, signal_generator=signal_generator
-        )
+        signal_dict["Time"] = signal_generator.get_time_channel()
+        n_elements = len(signal_dict["Time"])
 
-        self.run_gamma_models(
-            event_collection=event_collection, signal_generator=signal_generator
-        )
+        for detector in self.opto_electronics.detectors:
+            signal_dict[detector.name] = np.zeros(n_elements) * self.background_power
+
+        self.run_explicit_models(event_collection=event_collection, signals=signal_dict)
+
+        self.run_gamma_models(event_collection=event_collection, signals=signal_dict)
+
+        if self.opto_electronics.source.include_rin_noise:
+            signal_dict = self.opto_electronics.source.add_rin_to_signal_dict(
+                signal_dict=signal_dict,
+            )
+
+        if self.opto_electronics.source.include_shot_noise:
+            for detector in self.opto_electronics.detectors:
+                signal_dict[detector.name] = (
+                    self.opto_electronics.source.add_shot_noise_to_signal(
+                        signal=signal_dict[detector.name],
+                        time=signal_dict["Time"],
+                    )
+                )
 
         # Optical power → photocurrent
         # Step: Convert optical power to current using the responsivity
         for detector in self.opto_electronics.detectors:
-            signal_generator.multiply_signal(
-                channel=detector.name,
-                factor=detector.responsivity.to("ampere/watt").magnitude,
-            )
+            signal_dict[detector.name] *= detector.responsivity.to("ampere / watt")
 
         # Signal units are now ampere
         for detector in self.opto_electronics.detectors:
-            detector.apply_dark_current_noise(
-                signal_generator=signal_generator,
+            signal_dict[detector.name] = detector.apply_dark_current_noise(
+                signal=signal_dict[detector.name],
                 bandwidth=self.signal_processing.digitizer.bandwidth,
             )
 
         # Photocurrent → voltage
         # Signal units are now volt
-        self.opto_electronics.amplifier.amplify(
-            signal_generator=signal_generator,
-        )
+        for detector in self.opto_electronics.detectors:
+            signal_dict[detector.name] = self.opto_electronics.amplifier.amplify(
+                signal=signal_dict[detector.name],
+                sampling_rate=self.signal_processing.digitizer.sampling_rate,
+            )
 
         # Final analog signal conditioning
-        self.signal_processing.process_analog(signal_generator)
+        for detector in self.opto_electronics.detectors:
+            for circuit in self.signal_processing.analog_processing:
+                signal_dict[detector.name] = circuit.process(
+                    signal=signal_dict[detector.name],
+                    sampling_rate=self.signal_processing.digitizer.sampling_rate,
+                )
 
         # Create structured DataFrame output
-        analog_aquisition = AcquisitionDataFrame._construct_from_signal_generator(
-            signal_generator=signal_generator,
+        analog_aquisition = AcquisitionDataFrame._construct_from_signal_dict(
+            signal_dict=signal_dict,
         )
 
         return analog_aquisition
@@ -441,12 +452,6 @@ class FlowCytometer:
                 )
 
                 dataframe.attrs["VelocityMean"] = dataframe["Velocity"].mean()
-
-                dataframe.attrs["VelocitySigmas"] = (
-                    self.opto_electronics.source.get_particle_width(
-                        velocity=dataframe["Velocity"].pint.quantity
-                    ).mean()
-                )
 
                 dataframe.attrs["InterrogationVolumePerTimeBin"] = (
                     dataframe.attrs["VelocityMean"]

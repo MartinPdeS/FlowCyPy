@@ -4,150 +4,123 @@ from TypedUnit import ureg
 
 import FlowCyPy
 from FlowCyPy.opto_electronics import Detector
+from FlowCyPy.opto_electronics.source import Gaussian
 from FlowCyPy.physical_constant import PhysicalConstant
-from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.signal_processing import Digitizer
 
-FlowCyPy.debug_mode = True  # Enable debug mode for detailed logging
+FlowCyPy.debug_mode = True
 
 # ----------------- CONSTANTS -----------------
 
-TOLERANCE = 0.05  # Allowable error margin (5%)
-N_ELEMENTS = 5000  # Number of elements in the signal
-TIME_ARRAY = np.linspace(0.0, 1.0, N_ELEMENTS) * ureg.microsecond
+TOLERANCE = 0.05
+N_ELEMENTS = 5000
+
 
 # ----------------- FIXTURES -----------------
 
 
 @pytest.fixture
-def signal_generator():
-    """
-    Returns a SignalGenerator instance with a predefined time array.
-    This is used to avoid code duplication in tests.
-    """
-    signal_generator = SignalGenerator(N_ELEMENTS)
-    signal_generator.add_time(TIME_ARRAY)
-    signal_generator.create_zero_signal(channel="TestDetector")
-    return signal_generator
-
-
-@pytest.fixture
-def signal_digitizer():
-    """
-    Returns a Digitizer instance with default parameters.
-    This is used to avoid code duplication in tests.
-    """
+def digitizer():
     return Digitizer(
         bit_depth=10,
         use_auto_range=True,
-        sampling_rate=1e6 * ureg.hertz,  # Default sampling rate
-        bandwidth=1e6 * ureg.hertz,  # Default bandwidth
+        sampling_rate=1e6 * ureg.hertz,
+        bandwidth=1e6 * ureg.hertz,
     )
 
 
-# Helper function to validate noise
-def validate_noise(noise, expected_std, tolerance=TOLERANCE):
-    measured_std = np.std(noise)
+# ----------------- HELPERS -----------------
 
+
+def validate_noise(
+    noise: np.ndarray, expected_std: float, tolerance: float = TOLERANCE
+):
+    measured_std = np.std(noise)
     assert np.isclose(
         measured_std, expected_std, rtol=tolerance, atol=1e-10
     ), f"Measured noise std {measured_std} does not match expected {expected_std}."
 
 
-# Test Shot Noise
-def test_shot_noise(signal_generator, signal_digitizer):
+# ----------------- TESTS -----------------
+
+
+def test_shot_noise(digitizer):
     """
-    Test that shot noise added to the signal matches the theoretical standard deviation.
-
-    Shot noise is computed as the square root of the signal power in the context of the
-    detector's responsivity and resistance.
+    Shot noise is applied by the source on an optical power signal.
     """
-    # Signal and Detector Properties
-    optical_power = 0.001 * ureg.milliwatt  # Power in watts
 
-    signal_generator.add_constant(
-        optical_power.to("watt").magnitude
-    )  # Add constant optical power to the signal
+    # Constant optical power (P)
+    optical_power = 0.001 * ureg.milliwatt
+    power_watt = optical_power.to("watt").magnitude
+    power_signal = np.full(N_ELEMENTS, power_watt, dtype=float)
 
-    # Initialize Detector
-    detector = Detector(
-        name="TestDetector",
-        responsivity=1 * ureg.ampere / ureg.watt,  # Responsitivity (current per power)
-        numerical_aperture=0.2 * ureg.AU,
-        dark_current=1e-12 * ureg.ampere,
-        phi_angle=0 * ureg.degree,
-    )
-
-    detector.apply_shot_noise(
-        signal_generator=signal_generator,
+    # Source with shot noise enabled
+    source = Gaussian(
         wavelength=1550 * ureg.nanometer,
-        bandwidth=signal_digitizer.bandwidth,
+        optical_power=optical_power,
+        waist_y=1e-6 * ureg.meter,
+        waist_z=1e-6 * ureg.meter,
+        rin=-120.0,
+        polarization=0.0 * ureg.radian,
+        bandwidth=digitizer.bandwidth,
+        include_shot_noise=True,
+        include_rin_noise=False,
+        debug_mode=False,
     )
 
-    shot_noised_optical_power = signal_generator.get_signal("TestDetector") * ureg.watt
+    # Use a time step consistent with the bandwidth convention:
+    # Δt = 1 / (2 B)  ⇒  B = 1 / (2 Δt)
+    bandwidth_hz = digitizer.bandwidth.to("hertz")
+    dt = 1.0 / (2.0 * bandwidth_hz)
 
-    # # Step 1: Compute Equivalent Shot Noise in Voltage
-    shot_noised_current = shot_noised_optical_power * detector.responsivity
+    noisy_power = power_signal.copy() * ureg.watt
+    time_array = np.arange(N_ELEMENTS) * dt
+    # C++ signature: add_shot_noise_to_signal(std::vector<double>& power_values, double time_step)
+    noisy_power = source.add_shot_noise_to_signal(noisy_power, time_array)
 
+    # Convert power → current using responsivity
+    responsivity = 1 * ureg.ampere / ureg.watt
+    current_amp = noisy_power * responsivity.to("ampere/watt")
+
+    # Expected shot noise std: σ = sqrt(2 e I B)
+    current_mean = (optical_power * responsivity).to("ampere")
     expected_std = np.sqrt(
-        2
-        * PhysicalConstant.e
-        * signal_digitizer.bandwidth
-        * optical_power
-        * detector.responsivity
-    )  # Shot noise current std
+        2 * PhysicalConstant.e * current_mean * digitizer.bandwidth
+    ).to("ampere")
 
-    # Step 2: Measure the actual noise standard deviation
-    validate_noise(
-        noise=shot_noised_current,
-        expected_std=expected_std.to(ureg.ampere),
-    )
+    validate_noise(current_amp, expected_std)
 
 
-# Test Dark Current Noise
-def test_dark_current_noise(signal_generator, signal_digitizer):
+def test_dark_current_noise(digitizer):
     """
-    Test that dark current noise added to the signal matches the theoretical standard deviation.
-
-    Dark current noise arises due to the statistical fluctuations of thermally generated electrons
-    in the detector when no light is incident. The noise behaves like shot noise and is proportional
-    to the square root of the dark current.
+    Dark current noise is applied by the detector on a current signal.
     """
-    # Detector Properties
-    dark_current = 1e-12 * ureg.ampere  # Dark current in amps
 
-    signal_generator.add_constant(
-        dark_current.to("ampere").magnitude
-    )  # Add constant optical power to the signal
+    dark_current = 1e-12 * ureg.ampere
+    # Baseline signal (can be zero or dark_current; only noise std matters)
+    signal = np.full(N_ELEMENTS, 0.0, dtype=float) * ureg.ampere
 
-    # Initialize Detector
     detector = Detector(
         name="TestDetector",
-        responsivity=1
-        * ureg.ampere
-        / ureg.watt,  # Responsitivity (not used here but required)
+        responsivity=1 * ureg.ampere / ureg.watt,
         numerical_aperture=0.2 * ureg.AU,
         dark_current=dark_current,
         phi_angle=0 * ureg.degree,
     )
 
-    # Generate dark current noise
-    detector.apply_dark_current_noise(
-        signal_generator=signal_generator, bandwidth=signal_digitizer.bandwidth
-    )  # Capture returned noise
-
-    dark_current_noise = signal_generator.get_signal("TestDetector") * ureg.ampere
-
-    # Step 1: Compute Theoretical Dark Current Noise in Voltage
-    expected_current_std = np.sqrt(
-        2 * PhysicalConstant.e * dark_current * signal_digitizer.bandwidth
+    noisy_signal = detector.apply_dark_current_noise(
+        signal=signal,
+        bandwidth=digitizer.bandwidth,
     )
 
-    # Step 2: Measure the actual noise standard deviation
-    validate_noise(
-        noise=dark_current_noise,
-        expected_std=expected_current_std,
+    # Expected dark current noise std: σ = sqrt(2 q I_d B)
+    expected_std = (
+        np.sqrt(2 * PhysicalConstant.e * dark_current * digitizer.bandwidth)
+        .to("ampere")
+        .magnitude
     )
+
+    validate_noise(noisy_signal.to("ampere").magnitude, expected_std)
 
 
 if __name__ == "__main__":

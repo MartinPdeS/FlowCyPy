@@ -14,7 +14,6 @@ from TypedUnit import (
 
 from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.physical_constant import PhysicalConstant
-from FlowCyPy.simulation_settings import SimulationSettings
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
 
 
@@ -28,8 +27,9 @@ class Detector(StrictDataclassMixing):
     transformations and optional noise sources into the signal processing workflow.
 
     The detector supports bandwidth dependent operations such as dark current noise and
-    shot noise modeling. When ``bandwidth`` is not provided to these methods, the related
-    bandwidth dependent computation is skipped entirely.
+    shot noise modeling. The bandwidth can be provided explicitly to each method, or stored
+    directly on the detector instance through the ``bandwidth`` attribute. If neither is
+    defined, the corresponding bandwidth dependent computation is skipped.
 
     Parameters
     ----------
@@ -46,6 +46,9 @@ class Detector(StrictDataclassMixing):
         Detector responsivity in ampere per watt. Default is 1 A/W.
     dark_current : Current, optional
         Dark current in ampere. Default is 0 A.
+    bandwidth : Frequency, optional
+        Detector bandwidth. If ``None``, bandwidth dependent effects are not applied
+        unless a bandwidth is explicitly provided to the relevant methods.
     gamma_angle : Angle, optional
         The complementary longitudinal angle of incidence. Default is 0 degree.
     sampling : int, optional
@@ -63,6 +66,7 @@ class Detector(StrictDataclassMixing):
     sampling: Optional[int] = 200
     responsivity: Optional[Responsitivity] = 1 * ureg.ampere / ureg.watt
     dark_current: Optional[Current] = 0.0 * ureg.ampere
+    bandwidth: Optional[Frequency] = None
     name: Optional[str] = None
     channel: str = "scattering"
 
@@ -76,16 +80,43 @@ class Detector(StrictDataclassMixing):
         if self.name is None:
             self.name = str(id(self))
 
+    def _resolve_bandwidth(
+        self,
+        bandwidth: Optional[Frequency],
+    ) -> Optional[Frequency]:
+        """
+        Return the effective bandwidth to use for a computation.
+
+        The explicitly provided bandwidth takes precedence. If it is ``None``,
+        the detector's own ``bandwidth`` attribute is used. If both are ``None``,
+        the computation should be skipped by the caller.
+
+        Parameters
+        ----------
+        bandwidth : Frequency or None
+            Bandwidth provided directly to a method.
+
+        Returns
+        -------
+        Frequency or None
+            Effective bandwidth to use.
+        """
+        if bandwidth is not None:
+            return bandwidth
+
+        return self.bandwidth
+
     def apply_dark_current_noise(
         self,
-        signal_generator: SignalGenerator,
-        bandwidth: Optional[Frequency],
-    ) -> None:
+        signal: Current,
+        bandwidth: Optional[Frequency] = None,
+    ) -> Current:
         r"""
-        Apply dark current noise to the detector channel.
+        Apply dark current noise directly to a detector current signal.
 
-        Dark current noise is bandwidth dependent. If ``bandwidth`` is ``None``,
-        this method returns immediately and no dark current noise is applied.
+        Dark current noise is bandwidth dependent. The method first resolves the
+        effective bandwidth from the method argument or from ``self.bandwidth``.
+        If no bandwidth is available, the input signal is returned unchanged.
 
         The dark current noise standard deviation is computed as:
 
@@ -99,25 +130,44 @@ class Detector(StrictDataclassMixing):
         - :math:`I_d` is the dark current
         - :math:`B` is the bandwidth
 
+        A Gaussian random term with mean equal to the detector dark current and
+        standard deviation :math:`\sigma_{\mathrm{dark}}` is added directly to
+        each sample of the signal.
+
         Parameters
         ----------
-        signal_generator : SignalGenerator
-            Signal generator instance used to apply noise to the detector channel.
-        bandwidth : Frequency or None
-            Signal bandwidth. If ``None``, dark current noise is skipped.
+        signal : Current
+            Input detector current signal.
+        bandwidth : Frequency or None, optional
+            Signal bandwidth. If ``None``, ``self.bandwidth`` is used. If both are
+            undefined, dark current noise is skipped.
+
+        Returns
+        -------
+        Current
+            Signal with dark current noise added.
         """
+        bandwidth = self._resolve_bandwidth(bandwidth)
+
         if bandwidth is None:
-            return
+            return signal
 
         standard_deviation_noise = np.sqrt(
             2 * 1.602176634e-19 * ureg.coulomb * self.dark_current * bandwidth
         )
 
-        signal_generator.apply_gaussian_noise_to_signal(
-            channel=self.name,
-            mean=self.dark_current.to("ampere").magnitude,
-            standard_deviation=standard_deviation_noise.to("ampere").magnitude,
+        signal_magnitude = np.asarray(signal.to("ampere").magnitude, dtype=float)
+
+        if signal_magnitude.size == 0:
+            raise ValueError("Signal array is empty.")
+
+        noisy_signal_magnitude = signal_magnitude + np.random.normal(
+            loc=self.dark_current.to("ampere").magnitude,
+            scale=standard_deviation_noise.to("ampere").magnitude,
+            size=signal_magnitude.shape,
         )
+
+        return noisy_signal_magnitude * ureg.ampere
 
     def _get_optical_power_to_photon_factor(
         self,
@@ -141,11 +191,6 @@ class Detector(StrictDataclassMixing):
         -------
         AnyUnit
             Conversion factor in ``1 / watt``.
-
-        Notes
-        -----
-        This method is inherently bandwidth dependent and therefore requires
-        a defined bandwidth.
         """
         energy_per_photon = PhysicalConstant.h * PhysicalConstant.c / wavelength
         sampling_interval = 1 / (bandwidth * 2)
@@ -155,128 +200,3 @@ class Detector(StrictDataclassMixing):
         ).to("1 / watt")
 
         return optical_power_to_photon_count_conversion_factor
-
-    def _get_photon_count_to_current_factor(
-        self,
-        wavelength: Length,
-        bandwidth: Frequency,
-    ) -> Current:
-        """
-        Compute the conversion factor from photon count to current.
-
-        This factor converts a photon count per effective sampling interval into
-        detector current using the detector responsivity.
-
-        Parameters
-        ----------
-        wavelength : Length
-            Optical wavelength of the incident light.
-        bandwidth : Frequency
-            Signal bandwidth.
-
-        Returns
-        -------
-        Current
-            Conversion factor relating photon count to current.
-
-        Notes
-        -----
-        This method is inherently bandwidth dependent and therefore requires
-        a defined bandwidth.
-        """
-        energy_per_photon = PhysicalConstant.h * PhysicalConstant.c / wavelength
-        photon_to_power_factor = energy_per_photon * (bandwidth * 2)
-        power_to_current_factor = self.responsivity
-
-        return photon_to_power_factor * power_to_current_factor
-
-    def _transform_optical_power_to_photon_count(
-        self,
-        signal_generator: SignalGenerator,
-        wavelength: Length,
-        bandwidth: Optional[Frequency],
-    ) -> None:
-        """
-        Convert optical power to photon count on the detector channel.
-
-        If ``bandwidth`` is ``None``, this method returns immediately and no
-        conversion is applied.
-
-        Parameters
-        ----------
-        signal_generator : SignalGenerator
-            Signal generator instance used to apply the conversion.
-        wavelength : Length
-            Optical wavelength of the incident light.
-        bandwidth : Frequency or None
-            Signal bandwidth. If ``None``, the transformation is skipped.
-        """
-        if bandwidth is None:
-            return
-
-        optical_power_to_photon_count_conversion = (
-            self._get_optical_power_to_photon_factor(
-                wavelength=wavelength,
-                bandwidth=bandwidth,
-            )
-        )
-
-        signal_generator.multiply(
-            channel=self.name,
-            factor=optical_power_to_photon_count_conversion,
-        )
-
-    @validate_units
-    def apply_shot_noise(
-        self,
-        signal_generator: SignalGenerator,
-        wavelength: Length,
-        bandwidth: Optional[Frequency],
-    ) -> None:
-        r"""
-        Apply shot noise arising from photon statistics.
-
-        Shot noise is modeled by converting optical power into an effective photon count
-        over a sampling interval determined by the bandwidth, applying Poisson statistics,
-        and mapping the result back through the detector chain.
-
-        If ``bandwidth`` is ``None``, this method returns immediately and no shot noise
-        is applied.
-
-        Parameters
-        ----------
-        signal_generator : SignalGenerator
-            Signal generator instance used to apply shot noise.
-        wavelength : Length
-            Optical wavelength of the incident light.
-        bandwidth : Frequency or None
-            Signal bandwidth. If ``None``, shot noise is skipped.
-
-        Notes
-        -----
-        The conversion uses:
-
-        .. math::
-
-            E_{\mathrm{photon}} = \frac{h c}{\lambda}
-
-        and an effective sampling interval of:
-
-        .. math::
-
-            \Delta t = \frac{1}{2 B}
-
-        so that the mean photon count scales with both optical power and bandwidth.
-        """
-        if bandwidth is None:
-            return
-
-        watt_to_photon = self._get_optical_power_to_photon_factor(
-            wavelength=wavelength,
-            bandwidth=bandwidth,
-        )
-
-        signal_generator.apply_poisson_noise_through_conversion(
-            channel=self.name,
-            watt_to_photon=watt_to_photon.to("1/watt").magnitude,
-        )

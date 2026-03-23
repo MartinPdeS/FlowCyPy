@@ -1,27 +1,104 @@
 #include "circuits.h"
 
-void BaseLineRestoration::process(SignalGenerator &signal_generator) {
-    double sampling_rate = signal_generator.get_sampling_rate();
 
-    size_t window_size_units = round(this->window_size  / sampling_rate);
+std::vector<double> BaseLineRestoration::process(
+    const std::vector<double>& signal,
+    const double sampling_rate
+) const {
+    if (signal.empty()) {
+        throw std::runtime_error("signal vector is empty.");
+    }
 
-    for (auto &entry : signal_generator.data_dict)
-        if (entry.first != "Time")
-            signal_generator.apply_baseline_restoration(window_size_units);
+    std::vector<double> output_signal(signal);
+
+    int window_size_in_samples = -1;
+
+    if (this->window_size != -1.0) {
+        if (std::isnan(sampling_rate) || sampling_rate <= 0.0) {
+            throw std::runtime_error(
+                "sampling_rate must be strictly positive for finite baseline restoration window."
+            );
+        }
+
+        window_size_in_samples = static_cast<int>(
+            std::llround(this->window_size * sampling_rate)
+        );
+
+        if (window_size_in_samples <= 0) {
+            throw std::runtime_error(
+                "window_size corresponds to fewer than one sample."
+            );
+        }
+    }
+
+    utils::apply_baseline_restoration_to_signal(
+        output_signal,
+        window_size_in_samples
+    );
+
+    return output_signal;
 }
 
-void ButterworthLowPassFilter::process(SignalGenerator &signal_generator) {
-    double sampling_rate = signal_generator.get_sampling_rate();
 
-    for (auto &entry : signal_generator.data_dict)
-        if (entry.first != "Time")
-            utils::apply_butterworth_lowpass_filter_to_signal(entry.second, sampling_rate, cutoff_frequency, order, gain);
+std::vector<double> ButterworthLowPassFilter::process(
+    const std::vector<double>& signal,
+    const double sampling_rate
+) const {
+    if (signal.empty()) {
+        throw std::runtime_error("signal vector is empty.");
+    }
+
+    if (sampling_rate <= 0.0 || std::isnan(sampling_rate)) {
+        throw std::runtime_error("sampling_rate must be strictly positive.");
+    }
+
+    if (this->cutoff_frequency >= 0.5 * sampling_rate) {
+        throw std::runtime_error(
+            "cutoff_frequency must be strictly smaller than the Nyquist frequency."
+        );
+    }
+
+    std::vector<double> output_signal(signal);
+
+    utils::apply_butterworth_lowpass_filter_to_signal(
+        output_signal,
+        sampling_rate,
+        this->cutoff_frequency,
+        this->order,
+        this->gain
+    );
+
+    return output_signal;
 }
 
-void BesselLowPassFilter::process(SignalGenerator &signal_generator) {
-    double sampling_rate = signal_generator.get_sampling_rate();
 
-    for (auto &entry : signal_generator.data_dict)
-        if (entry.first != "Time")
-            utils::apply_bessel_lowpass_filter_to_signal(entry.second, sampling_rate, cutoff_frequency, order, gain);
+std::vector<double> BesselLowPassFilter::process(
+    const std::vector<double>& signal,
+    const double sampling_rate
+) const {
+    if (signal.empty()) {
+        throw std::runtime_error("signal vector is empty.");
+    }
+
+    if (sampling_rate <= 0.0 || std::isnan(sampling_rate)) {
+        throw std::runtime_error("sampling_rate must be strictly positive.");
+    }
+
+    if (this->cutoff_frequency >= 0.5 * sampling_rate) {
+        throw std::runtime_error(
+            "cutoff_frequency must be strictly smaller than the Nyquist frequency."
+        );
+    }
+
+    std::vector<double> output_signal(signal);
+
+    utils::apply_bessel_lowpass_filter_to_signal(
+        output_signal,
+        sampling_rate,
+        this->cutoff_frequency,
+        this->order,
+        this->gain
+    );
+
+    return output_signal;
 }

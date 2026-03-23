@@ -4,7 +4,7 @@ set(LIB_NAME "${NAME}_lib")
 
 add_library("${LIB_NAME}" STATIC "${NAME}.cpp")
 target_include_directories("${LIB_NAME}" PUBLIC ${FFTW_INCLUDE_DIRS})
-target_link_libraries("${LIB_NAME}" PUBLIC signal_generator_lib)
+target_link_libraries("${LIB_NAME}" PUBLIC utils_lib)
 
 pybind11_add_module("${NAME}" MODULE interface.cpp)
 set_target_properties("${NAME}" PROPERTIES OUTPUT_NAME "${NAME}")

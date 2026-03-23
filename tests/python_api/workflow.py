@@ -32,7 +32,7 @@ from FlowCyPy.signal_processing import (
 
 @pytest.fixture
 def amplifier():
-    return Amplifier(gain=100 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz)
+    return Amplifier(gain=100 * ureg.volt / ureg.ampere, bandwidth=1 * ureg.megahertz)
 
 
 @pytest.fixture
@@ -217,7 +217,7 @@ def test_peak_detection(flow_cytometer, digitizer):
     """Ensure peak detection works correctly on the triggered acquisition."""
     flow_cytometer.signal_processing.analog_processing = [
         circuits.BaselineRestorator(window_size=1000 * ureg.microsecond),
-        circuits.BesselLowPass(cutoff=1 * ureg.megahertz, order=4, gain=2),
+        circuits.BesselLowPass(cutoff_frequency=1 * ureg.megahertz, order=4, gain=2),
     ]
 
     run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)

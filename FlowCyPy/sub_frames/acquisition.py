@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import List, Optional, Union
+from typing import List, Mapping, Optional, Union
 
 import matplotlib.pyplot as plt
 from MPSPlots import helper
@@ -7,7 +8,6 @@ import pandas as pd
 import seaborn as sns
 from TypedUnit import Dimensionless, Time, Voltage, ureg
 
-from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.sub_frames import utils
 from FlowCyPy.sub_frames.base import BaseSubFrame
 
@@ -21,38 +21,61 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
         super().__init__(dataframe)
 
     @classmethod
-    def _construct_from_signal_generator(
+    def _construct_from_signal_dict(
         cls,
-        signal_generator: SignalGenerator,
+        signal_dict: Mapping[str, object],
     ) -> "AcquisitionDataFrame":
         """
-        Converts a signal generator's output into a pandas DataFrame.
+        Convert a dictionary of time and detector signals into a pandas DataFrame.
+
+        The input dictionary must contain a ``"Time"`` entry and one or more detector
+        entries. The ``"Time"`` entry is stored as a Pint time series in seconds.
+        All other entries are interpreted as detector signals and stored as Pint
+        voltage series.
 
         Parameters
         ----------
-        signal_generator : SignalGenerator
-            The signal generator instance containing the generated signals.
-        time_units : Time | str
-            The units for the time column in the resulting DataFrame.
-        signal_units : Voltage | str
-            The units for the signal columns in the resulting DataFrame.
+        signal_dict : Mapping[str, object]
+            Dictionary containing the acquisition data. It must contain the key
+            ``"Time"`` and all arrays must have the same length.
 
         Returns
         -------
         AcquisitionDataFrame
-            A DataFrame containing the signals from the signal generator.
+            A DataFrame containing the time axis and detector signals.
         """
+        if "Time" not in signal_dict:
+            raise ValueError("signal_dict must contain a 'Time' entry.")
+
+        if len(signal_dict) < 2:
+            raise ValueError(
+                "signal_dict must contain at least 'Time' and one detector signal."
+            )
+
+        time_values = signal_dict["Time"]
+
+        expected_length = len(time_values)
+
         signal_dataframe = pd.DataFrame()
 
-        time = signal_generator.get_time()
+        signal_dataframe["Time"] = pd.Series(
+            time_values,
+            dtype="pint[second]",
+        )
 
-        signal_dataframe["Time"] = pd.Series(time, dtype=f"pint[second]")
+        for detector_name, detector_signal in signal_dict.items():
+            if detector_name == "Time":
+                continue
 
-        for detector_name in signal_generator.get_channels():
-            channel_signal = signal_generator.get_signal(detector_name)
+            if len(detector_signal) != expected_length:
+                raise ValueError(
+                    f"Signal '{detector_name}' has length {len(detector_signal)} but "
+                    f"'Time' has length {expected_length}."
+                )
+
             signal_dataframe[detector_name] = pd.Series(
-                channel_signal,
-                dtype=f"pint[volt]",
+                detector_signal,
+                dtype="pint[volt]",
             )
 
         signal_dataframe = cls(signal_dataframe)
@@ -81,6 +104,9 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         for detector_name in self.detector_names:
             array = self[detector_name].pint.quantity
+            # import matplotlib.pyplot as plt
+            # plt.plot(self["Time"].pint.quantity, array)
+            # plt.show()
             digital_df[detector_name] = digitizer.process_signal(array)
 
         output = self.__class__(dataframe=digital_df)
@@ -189,8 +215,7 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
     def plot(self) -> None:
         """
         Plot acquisition data for each detector and the scatterer events.
-        This method creates a multi-panel plot with each detector's signal and a scatterer event plot.
-
+        This method creates a multi panel plot with each detector's signal and a scatterer event plot.
 
         Returns
         -------

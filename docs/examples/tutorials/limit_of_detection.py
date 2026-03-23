@@ -26,7 +26,7 @@ from FlowCyPy.fluidics import (
 from FlowCyPy.opto_electronics import (
     Detector,
     OptoElectronics,
-    TransimpedanceAmplifier,
+    Amplifier,
     source,
 )
 from FlowCyPy.signal_processing import (
@@ -49,8 +49,9 @@ np.random.seed(3)
 
 # %%
 # Optical Source
-source = source.GaussianBeam(
-    numerical_aperture=0.2 * ureg.AU,
+source = source.Gaussian(
+    waist_z=10 * ureg.micrometer,
+    waist_y=60 * ureg.micrometer,
     wavelength=405 * ureg.nanometer,
     optical_power=100 * ureg.milliwatt,
 )
@@ -106,7 +107,7 @@ detector_forward = Detector(
 
 # %%
 # Amplifier and Opto-Electronics
-amplifier = TransimpedanceAmplifier(
+amplifier = Amplifier(
     gain=10_000 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz
 )
 

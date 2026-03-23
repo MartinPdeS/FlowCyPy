@@ -55,7 +55,6 @@ class OptoElectronics(StrictDataclassMixing):
             simulator = ScatteringModel(
                 source=self.source,
                 detector=detector,
-                bandwidth=self.amplifier.bandwidth,
             )
 
             simulator.run(event_collection, compute_cross_section=compute_cross_section)

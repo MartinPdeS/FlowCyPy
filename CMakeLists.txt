@@ -15,18 +15,44 @@ set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Type of build")
 # --------------------- Set the output directory for libraries --------------------
 set(LOCAL_CXX_DIR "${PROJECT_NAME}/cpp")
 set(LOCAL_BIN_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/binary")
-include_directories(${NAME} ${LOCAL_CXX_DIR})
+include_directories(${LOCAL_CXX_DIR})
 # --------------------- Set the output directory for libraries --------------------
 
 # --------------------- Platform-specific compiler and linker options --------------------
+# if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+#     set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp" CACHE STRING "")
+#     set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "")
+#     find_library(OpenMP_omp_LIBRARY omp HINTS $ENV{LIBOMP_PREFIX}/lib /opt/homebrew/opt/libomp/lib /usr/local/opt/libomp/lib)
+#     if(OpenMP_omp_LIBRARY)
+#         set(OpenMP_CXX_LIBRARIES "${OpenMP_omp_LIBRARY}" CACHE STRING "")
+#     endif()
+# endif()
+
+
+
+# --- macOS: use shared Homebrew libomp, not a vendored copy -------------
 if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp" CACHE STRING "")
-    set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "")
-    find_library(OpenMP_omp_LIBRARY omp HINTS $ENV{LIBOMP_PREFIX}/lib /opt/homebrew/opt/libomp/lib /usr/local/opt/libomp/lib)
-    if(OpenMP_omp_LIBRARY)
-        set(OpenMP_CXX_LIBRARIES "${OpenMP_omp_LIBRARY}" CACHE STRING "")
+    if(DEFINED ENV{HOMEBREW_PREFIX})
+        set(OpenMP_ROOT "$ENV{HOMEBREW_PREFIX}/opt/libomp")
+    else()
+        set(OpenMP_ROOT "/opt/homebrew/opt/libomp")
     endif()
+
+    set(CMAKE_PREFIX_PATH "${OpenMP_ROOT};${CMAKE_PREFIX_PATH}")
 endif()
+
+find_package(OpenMP REQUIRED)
+
+add_library(flowcypy_openmp INTERFACE)
+
+target_link_libraries(flowcypy_openmp INTERFACE OpenMP::OpenMP_CXX)
+
+if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    target_include_directories(flowcypy_openmp INTERFACE "${OpenMP_ROOT}/include")
+endif()
+
+
+
 
 # Platform-specific settings for static linking
 if (WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -70,8 +96,12 @@ message(STATUS "  Fortran version      : ${CMAKE_Fortran_COMPILER_VERSION}")
 
 message(STATUS "")
 message(STATUS "OpenMP configuration")
-message(STATUS "  OpenMP flags         : ${OpenMP_CXX_FLAGS}")
 message(STATUS "  OpenMP detected      : ${OpenMP_FOUND}")
+message(STATUS "  OpenMP CXX found     : ${OpenMP_CXX_FOUND}")
+message(STATUS "  OpenMP flags         : ${OpenMP_CXX_FLAGS}")
+message(STATUS "  OpenMP include dirs  : ${OpenMP_CXX_INCLUDE_DIRS}")
+message(STATUS "  OpenMP libraries     : ${OpenMP_CXX_LIBRARIES}")
+message(STATUS "  OpenMP lib names     : ${OpenMP_CXX_LIB_NAMES}")
 message(STATUS "  OpenMP version       : ${OpenMP_CXX_VERSION}")
 
 message(STATUS "")
