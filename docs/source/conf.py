@@ -65,7 +65,6 @@ def reset_mpl(gallery_conf, fname):
 
 examples_files = [
     "tutorials",
-    "noise_sources",
     "validation",
 ]
 
