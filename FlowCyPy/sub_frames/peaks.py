@@ -8,14 +8,170 @@ import seaborn as sns
 from TypedUnit import ureg
 
 from FlowCyPy.sub_frames import utils
-from FlowCyPy.sub_frames.base import BaseSubFrame
 from MPSPlots.styles import scientific
 
 
-class PeakDataFrame(BaseSubFrame):
+class PeakDataFrame(pd.DataFrame):
     """
     A subclass of pandas DataFrame for handling peak data with custom plotting.
     """
+
+    @property
+    def _constructor(self) -> type:
+        """Ensure operations return instances of PeakDataFrame."""
+        return self.__class__
+
+    def __init__(self, dataframe: pd.DataFrame):
+        super().__init__(dataframe)
+
+    @classmethod
+    def _construct_from_dict(
+        cls,
+        peak_dictionary: dict[int, dict[str, dict[str, list[float]]]],
+    ) -> "PeakDataFrame":
+        """
+        Construct a PeakDataFrame from the nested dictionary returned by the C++
+        peak locator.
+
+        The expected input structure is
+
+            {
+                segment_id: {
+                    channel_name: {
+                        "Index":  [...],
+                        "Height": [...],
+                        "Width":  [...],   # optional
+                        "Area":   [...],   # optional
+                    },
+                    ...
+                },
+                ...
+            }
+
+        The resulting dataframe uses a three level row MultiIndex:
+
+            ("Detector", "SegmentID", "PeakID")
+
+        and stores the peak metrics in the dataframe columns.
+
+        Parameters
+        ----------
+        peak_dictionary : dict[int, dict[str, dict[str, list[float]]]]
+            Nested dictionary of peak metrics indexed by segment id, then channel
+            name, then metric name.
+
+        Returns
+        -------
+        PeakDataFrame
+            Peak dataframe with MultiIndex rows and metric columns.
+
+        Raises
+        ------
+        TypeError
+            If the nested structure is malformed.
+        ValueError
+            If metric vectors of a given channel do not all have the same length.
+        """
+        if peak_dictionary is None:
+            raise TypeError("peak_dictionary must not be None.")
+
+        if not isinstance(peak_dictionary, dict):
+            raise TypeError(
+                f"peak_dictionary must be a dict, received {type(peak_dictionary).__name__!r}."
+            )
+
+        preferred_metric_order = ["Index", "Height", "Width", "Area"]
+
+        row_tuples: list[tuple[str, int, int]] = []
+        row_records: list[dict[str, float]] = []
+        discovered_metric_names: list[str] = []
+
+        for segment_id, segment_dictionary in peak_dictionary.items():
+            if not isinstance(segment_dictionary, dict):
+                raise TypeError(
+                    f"Each segment entry must be a dict. Segment {segment_id!r} "
+                    f"contains {type(segment_dictionary).__name__!r}."
+                )
+
+            for channel_name, metric_dictionary in segment_dictionary.items():
+                if not isinstance(metric_dictionary, dict):
+                    raise TypeError(
+                        f"Each channel entry must be a dict. Segment {segment_id!r}, "
+                        f"channel {channel_name!r} contains "
+                        f"{type(metric_dictionary).__name__!r}."
+                    )
+
+                if len(metric_dictionary) == 0:
+                    continue
+
+                metric_lengths = {}
+                for metric_name, metric_values in metric_dictionary.items():
+                    if not isinstance(metric_values, (list, tuple, numpy.ndarray)):
+                        raise TypeError(
+                            f"Metric {metric_name!r} for segment {segment_id!r}, "
+                            f"channel {channel_name!r} must be array-like."
+                        )
+
+                    metric_lengths[metric_name] = len(metric_values)
+
+                    if metric_name not in discovered_metric_names:
+                        discovered_metric_names.append(metric_name)
+
+                unique_lengths = set(metric_lengths.values())
+                if len(unique_lengths) != 1:
+                    raise ValueError(
+                        f"All metric vectors must have the same length for "
+                        f"segment {segment_id!r}, channel {channel_name!r}. "
+                        f"Received lengths: {metric_lengths}."
+                    )
+
+                peak_count = unique_lengths.pop()
+
+                for peak_id in range(peak_count):
+                    row_tuples.append(
+                        (str(channel_name), int(segment_id), int(peak_id))
+                    )
+
+                    row_records.append(
+                        {
+                            metric_name: float(metric_values[peak_id])
+                            for metric_name, metric_values in metric_dictionary.items()
+                        }
+                    )
+
+        ordered_metric_names = [
+            metric_name
+            for metric_name in preferred_metric_order
+            if metric_name in discovered_metric_names
+        ] + [
+            metric_name
+            for metric_name in discovered_metric_names
+            if metric_name not in preferred_metric_order
+        ]
+
+        if len(row_tuples) == 0:
+            empty_index = pd.MultiIndex.from_tuples(
+                [],
+                names=["Detector", "SegmentID", "PeakID"],
+            )
+            empty_dataframe = pd.DataFrame(
+                columns=ordered_metric_names, index=empty_index
+            )
+            return cls(empty_dataframe)
+
+        multi_index = pd.MultiIndex.from_tuples(
+            row_tuples,
+            names=["Detector", "SegmentID", "PeakID"],
+        )
+
+        dataframe = pd.DataFrame(row_records, index=multi_index)
+
+        if ordered_metric_names:
+            dataframe = dataframe.reindex(columns=ordered_metric_names)
+
+        dataframe = dataframe.sort_index()
+
+        return cls(dataframe)
 
     def plot(self, **kwargs) -> Any:
         """
@@ -281,10 +437,10 @@ class PeakDataFrame(BaseSubFrame):
             y_values = numpy.asarray(df.loc[y], dtype=float)
 
             current_xlabel = (
-                xlabel if xlabel is not None else f"Channel: {x_channel} | {x_feature}"
+                xlabel if xlabel is not None else f"{x_channel} | {x_feature}"
             )
             current_ylabel = (
-                ylabel if ylabel is not None else f"Channel: {y_channel} | {y_feature}"
+                ylabel if ylabel is not None else f"{y_channel} | {y_feature}"
             )
 
             if xscale not in {"linear", "log"}:

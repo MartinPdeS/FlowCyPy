@@ -1,176 +1,204 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+
 #include "peak_locator.h"
 
 namespace py = pybind11;
 
+
 PYBIND11_MODULE(peak_locator, module) {
     module.doc() = R"pbdoc(
-        Peak locator module for identifying signal peaks.
+        Fast C++ peak detection utilities for segmented 1D signals.
 
-        This module provides fast C++ implementations for locating peaks in 1D signals
-        using overlapping sliding windows or global search strategies.
+        This module exposes two peak locator strategies:
 
-        If `window_step` is not explicitly set in `SlidingWindowPeakLocator`,
-        it defaults to `window_size`, resulting in non-overlapping windows.
+        1. SlidingWindowPeakLocator
+           The signal is divided into windows and one local maximum is extracted
+           from each window. The detected peaks are then sorted by descending
+           height.
+
+        2. GlobalPeakLocator
+           The strongest sample in the full signal is selected as the peak.
+
+        In addition to processing a single 1D signal, locators can process a
+        segmented Python dictionary of the form
+
+            {
+                segment_id: {
+                    "Time": <ignored>,
+                    "forward": array([...]),
+                    "side": array([...]),
+                    ...
+                },
+                ...
+            }
+
+        The "Time" entry is ignored. Every other entry is interpreted as a
+        signal channel and processed independently.
     )pbdoc";
 
     py::class_<BasePeakLocator, std::shared_ptr<BasePeakLocator>>(module, "BasePeakLocator")
         .def_readonly(
             "max_number_of_peaks",
-            &BasePeakLocator::max_number_of_peaks
+            &BasePeakLocator::max_number_of_peaks,
+            R"pbdoc(
+                Maximum number of peaks stored in the fixed size output buffers.
+            )pbdoc"
         )
         .def(
             "get_metrics",
             &BasePeakLocator::get_metrics,
+            py::arg("array"),
             R"pbdoc(
-                Get the computed peak metrics.
+                Compute peak metrics for a single 1D signal.
+
+                Parameters
+                ----------
+                array : array-like of float
+                    Input signal values.
 
                 Returns
                 -------
-                dict of numpy.ndarray
-                    A dictionary containing arrays of computed peak properties (e.g., positions, widths, areas).
+                dict
+                    Dictionary containing:
+                        - "Index": peak indices
+                        - "Height": peak heights
+
+                    and, when enabled at construction:
+                        - "Width": peak widths in samples
+                        - "Area": peak areas
             )pbdoc"
         )
         .def(
             "compute",
             &BasePeakLocator::compute,
+            py::arg("array"),
             R"pbdoc(
-                Perform peak detection on the entire signal.
+                Run peak detection on a single 1D signal.
 
                 Parameters
                 ----------
-                signal : numpy.ndarray
-                    The input 1D signal array.
+                array : array-like of float
+                    Input signal values.
 
-                Returns
-                -------
-                dict of numpy.ndarray
-                    A dictionary containing arrays for global peak positions and optionally widths/areas.
+                Notes
+                -----
+                This method updates the internal buffers of the locator but does
+                not itself return a dictionary. To directly obtain the computed
+                metrics, use `get_metrics(...)`.
             )pbdoc"
         )
         .def(
             "run",
-            [](BasePeakLocator& self, py::object signal_dataframe) -> py::object {
-                py::module_ pandas_module = py::module_::import("pandas");
-                py::object peak_dataframe_class =
-                    py::module_::import("FlowCyPy.sub_frames.peaks").attr("PeakDataFrame");
+            [](BasePeakLocator& self, const py::dict& segmented_signal_dictionary) -> py::dict {
+                SegmentedSignalDictionary segmented_signals;
 
-                py::object detector_names = signal_dataframe.attr("detector_names");
-                py::object segment_ids = signal_dataframe
-                    .attr("index")
-                    .attr("get_level_values")("SegmentID")
-                    .attr("unique")();
+                for (const auto& segment_item : segmented_signal_dictionary) {
+                    const int segment_id = py::cast<int>(segment_item.first);
+                    py::dict segment_dictionary = py::reinterpret_borrow<py::dict>(segment_item.second);
 
-                py::object multi_index = pandas_module
-                    .attr("MultiIndex")
-                    .attr("from_product")(
-                        py::make_tuple(
-                            detector_names,
-                            segment_ids,
-                            py::module_::import("builtins").attr("range")(self.max_number_of_peaks)
-                        ),
-                        py::arg("names") = py::make_tuple("Detector", "SegmentID", "PeakID")
-                    );
+                    ChannelDictionary channel_dictionary;
 
-                py::object output_dataframe = pandas_module.attr("DataFrame")(
-                    py::arg("index") = multi_index,
-                    py::arg("columns") = py::make_tuple("Index", "Height", "Width", "Area")
-                );
+                    for (const auto& channel_item : segment_dictionary) {
+                        const std::string channel_name = py::cast<std::string>(channel_item.first);
 
-                output_dataframe.attr("sort_index")(py::arg("inplace") = true);
-
-                for (py::handle detector_name_handle : detector_names) {
-                    py::object detector_name = py::reinterpret_borrow<py::object>(detector_name_handle);
-
-                    py::object detector_series = signal_dataframe.attr("__getitem__")(detector_name);
-                    py::object grouped_detector_series = detector_series.attr("groupby")("SegmentID");
-
-                    for (py::handle grouped_item_handle : grouped_detector_series) {
-                        py::tuple grouped_item = py::reinterpret_borrow<py::tuple>(grouped_item_handle);
-
-                        py::object segment_id = grouped_item[0];
-                        py::object group = grouped_item[1];
-
-                        std::vector<double> signal_vector =
-                            group.attr("to_numpy")().cast<std::vector<double>>();
-
-                        std::unordered_map<std::string, std::vector<double>> peak_metrics =
-                            self.get_metrics(signal_vector);
-
-                        for (const auto& [metric_name, metric_values] : peak_metrics) {
-                            output_dataframe.attr("loc").attr("__setitem__")(
-                                py::make_tuple(
-                                    py::make_tuple(detector_name, segment_id),
-                                    py::str(metric_name)
-                                ),
-                                py::cast(metric_values)
-                            );
+                        if (channel_name == "Time") {
+                            continue;
                         }
+
+                        channel_dictionary[channel_name] =
+                            py::cast<std::vector<double>>(channel_item.second);
                     }
+
+                    segmented_signals[segment_id] = std::move(channel_dictionary);
                 }
 
-                return peak_dataframe_class(output_dataframe);
+                const SegmentedMetricDictionary segmented_metrics =
+                    self.run_segmented_signals(segmented_signals);
+
+                py::dict output_dictionary;
+
+                for (const auto& [segment_id, segment_metric_dictionary] : segmented_metrics) {
+                    py::dict segment_output_dictionary;
+
+                    for (const auto& [channel_name, metric_dictionary] : segment_metric_dictionary) {
+                        py::dict channel_output_dictionary;
+
+                        for (const auto& [metric_name, metric_values] : metric_dictionary) {
+                            channel_output_dictionary[py::str(metric_name)] = py::cast(metric_values);
+                        }
+
+                        segment_output_dictionary[py::str(channel_name)] = channel_output_dictionary;
+                    }
+
+                    output_dictionary[py::int_(segment_id)] = segment_output_dictionary;
+                }
+
+                return output_dictionary;
             },
-            py::arg("signal_dataframe"),
+            py::arg("segmented_signal_dictionary"),
             R"pbdoc(
-                Detect peaks for each detector and segment and return a PeakDataFrame.
+                Compute peak metrics for all channels in a segmented dictionary.
 
                 Parameters
                 ----------
-                signal_dataframe : pandas.DataFrame
-                    Input segmented detector signal dataframe.
+                segmented_signal_dictionary : dict
+                    Nested dictionary structured as
+
+                        {
+                            segment_id: {
+                                "Time": quantity_or_array,
+                                "channel_name": array_like,
+                                ...
+                            },
+                            ...
+                        }
+
+                    The "Time" entry is ignored. Every other key is treated as a
+                    1D signal channel.
 
                 Returns
                 -------
-                PeakDataFrame
-                    MultiIndex dataframe containing peak metrics for each detector,
-                    segment, and peak identifier.
+                dict
+                    Nested dictionary structured as
+
+                        {
+                            segment_id: {
+                                "channel_name": {
+                                    "Index": [...],
+                                    "Height": [...],
+                                    "Width": [...],   # if enabled
+                                    "Area": [...],    # if enabled
+                                },
+                                ...
+                            },
+                            ...
+                        }
+
+                Notes
+                -----
+                The iteration over segments and channels is handled in C++, while
+                this binding layer only performs Python to C++ and C++ to Python
+                conversions.
             )pbdoc"
-        )
-        ;
+        );
 
-    py::class_<SlidingWindowPeakLocator, BasePeakLocator, std::shared_ptr<SlidingWindowPeakLocator>>(module, "SlidingWindowPeakLocator",
+    py::class_<SlidingWindowPeakLocator, BasePeakLocator, std::shared_ptr<SlidingWindowPeakLocator>>(
+        module,
+        "SlidingWindowPeakLocator",
         R"pbdoc(
-            A sliding-window-based peak detection utility for 1D signals. This class segments the input signal
-            into fixed-size windows (which can be overlapping if window_step is less than window_size) and identifies
-            the local maximum in each window. Optionally, it computes additional metrics for each peak:
-            - Width: the number of contiguous samples above a specified fraction of the peak's height.
-            - Area: the sum of signal values under the peak within its window.
+            Sliding window peak detector for 1D signals.
 
-            The results are returned as a dictionary containing fixed-length arrays. If fewer peaks are detected than
-            max_number_of_peaks, the arrays are padded with padding_value (for indices) or NaN (for numeric values).
+            One local maximum is extracted per window. The resulting peaks are
+            sorted by descending height, and the strongest peaks are returned in
+            fixed size output arrays.
 
-            Parameters
-            ----------
-            window_size : int
-                The size of the sliding window used for local peak detection.
-            window_step : int, optional
-                The step size between consecutive windows. If not provided or set to -1, defaults to window_size
-                (i.e., non-overlapping windows). To create overlapping windows, specify a value less than window_size.
-            max_number_of_peaks : int, optional
-                The maximum number of peaks to report. If fewer peaks are detected, the results are padded. Default is 5.
-            padding_value : int, optional
-                The value used to pad the output array for indices when fewer than max_number_of_peaks peaks are found.
-                Default is -1.
-            compute_width : bool, optional
-                If True, compute and return the width of each detected peak (in samples). Default is False.
-            compute_area : bool, optional
-                If True, compute and return the area (sum of signal values) under each detected peak. Default is False.
-            threshold : float, optional
-                The fraction of the peak's height used to determine the boundaries for width and area calculations.
-                For example, a threshold of 0.5 uses 50% of the peak height as the cutoff. Default is 0.5.
-
-            Returns
-            -------
-            dict
-                A dictionary containing the following keys:
-                - "Index": A fixed-length array of detected peak indices, padded as necessary.
-                - "Height": A fixed-length array of the corresponding peak values.
-                - "Width": (optional) A fixed-length array of computed peak widths (if compute_width is True).
-                - "Area": (optional) A fixed-length array of computed peak areas (if compute_area is True).
+            Optional metrics:
+                - Width: number of contiguous samples above
+                  `threshold * peak_height`
+                - Area: sum of signal values over the same support
         )pbdoc"
-        )
+    )
         .def(
             py::init<int, int, int, int, bool, bool, double>(),
             py::arg("window_size"),
@@ -179,40 +207,65 @@ PYBIND11_MODULE(peak_locator, module) {
             py::arg("padding_value") = -1,
             py::arg("compute_width") = false,
             py::arg("compute_area") = false,
-            py::arg("threshold") = 0.5
-        )
-        ;
+            py::arg("threshold") = 0.5,
+            R"pbdoc(
+                Construct a sliding window peak locator.
 
-    py::class_<GlobalPeakLocator, BasePeakLocator, std::shared_ptr<GlobalPeakLocator>>(module, "GlobalPeakLocator",
+                Parameters
+                ----------
+                window_size : int
+                    Number of samples in each window.
+                window_step : int, default=-1
+                    Step between consecutive windows. If set to -1, the step is
+                    set equal to `window_size`.
+                max_number_of_peaks : int, default=5
+                    Maximum number of peaks to report.
+                padding_value : int, default=-1
+                    Value used to pad unused output entries.
+                compute_width : bool, default=False
+                    Whether to compute peak widths.
+                compute_area : bool, default=False
+                    Whether to compute peak areas.
+                threshold : float, default=0.5
+                    Fraction of peak height used to define the support of the
+                    peak for width and area calculations.
+            )pbdoc"
+        );
+
+    py::class_<GlobalPeakLocator, BasePeakLocator, std::shared_ptr<GlobalPeakLocator>>(
+        module,
+        "GlobalPeakLocator",
         R"pbdoc(
-            A peak detection utility that identifies the maximum value in each row of a 2D array.
+            Global peak detector for 1D signals.
 
-            Optionally, the peak detection can also compute the width and area of the peak.
-
-            The width is computed as the number of contiguous points around the maximum that remain above
-            a specified fraction (threshold) of the maximum value. The area is the sum of the values over
-            that same region.
-
-            Parameters
-            ----------
-            padding_value : object, optional
-                Value used to pad the output if a row contains no data. Default is -1.
-            compute_width : bool, optional
-                If True, the width of the peak (number of samples) is computed. Default is False.
-            compute_area : bool, optional
-                If True, the area (sum of values) of the peak is computed. Default is False.
-            threshold : float, optional
-                Fraction of the peak value used to determine the boundaries for width and area computation.
-                For example, a threshold of 0.5 means the region above 50% of the maximum is considered.
-                Default is 0.5.
+            This locator identifies the maximum value over the full signal and
+            can optionally compute the width and area of that peak.
         )pbdoc"
-        )
-        .def(py::init<int, int, bool, bool, double>(),
+    )
+        .def(
+            py::init<int, int, bool, bool, double>(),
             py::arg("max_number_of_peaks") = 1,
             py::arg("padding_value") = -1,
             py::arg("compute_width") = false,
             py::arg("compute_area") = false,
-            py::arg("threshold") = 0.5
-        )
-    ;
+            py::arg("threshold") = 0.5,
+            R"pbdoc(
+                Construct a global peak locator.
+
+                Parameters
+                ----------
+                max_number_of_peaks : int, default=1
+                    Maximum number of peaks to report. Only one physical peak is
+                    detected, so remaining entries are padded.
+                padding_value : int, default=-1
+                    Value used to pad unused output entries.
+                compute_width : bool, default=False
+                    Whether to compute the width of the detected peak.
+                compute_area : bool, default=False
+                    Whether to compute the area of the detected peak.
+                threshold : float, default=0.5
+                    Fraction of peak height used to define the support of the
+                    peak for width and area calculations.
+            )pbdoc"
+        );
 }

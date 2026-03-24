@@ -1,12 +1,10 @@
 import math
 
 import pytest
-from pint import UnitRegistry
+
 
 from FlowCyPy.opto_electronics.source import Gaussian, FlatTop
-
-
-ureg = UnitRegistry()
+from FlowCyPy.units import ureg
 
 
 def test_asymetric_gaussian_constructor_and_properties():
@@ -15,7 +13,7 @@ def test_asymetric_gaussian_constructor_and_properties():
         optical_power=5e-3 * ureg.watt,
         waist_y=2.0e-6 * ureg.meter,
         waist_z=4.0e-6 * ureg.meter,
-        rin=-110.0,
+        rin=-110.0 * ureg.dB_per_Hz,
         polarization=0.0 * ureg.radian,
     )
 
@@ -23,7 +21,7 @@ def test_asymetric_gaussian_constructor_and_properties():
     assert source.optical_power.to("watt").magnitude == pytest.approx(5e-3)
     assert source.waist_y.to("meter").magnitude == pytest.approx(2.0e-6)
     assert source.waist_z.to("meter").magnitude == pytest.approx(4.0e-6)
-    assert source.rin == pytest.approx(-110.0)
+    assert source.rin.to("dB_per_Hz").magnitude == pytest.approx(-110.0)
 
 
 def test_asymetric_flat_top_constructor_and_properties():
@@ -32,12 +30,13 @@ def test_asymetric_flat_top_constructor_and_properties():
         optical_power=2e-3 * ureg.watt,
         waist_y=3.0e-6 * ureg.meter,
         waist_z=6.0e-6 * ureg.meter,
-        rin=-100.0,
+        rin=-100.0 * ureg.dB_per_Hz,
         polarization=0.0 * ureg.radian,
     )
 
     assert source.waist_y.to("meter").magnitude == pytest.approx(3.0e-6)
     assert source.waist_z.to("meter").magnitude == pytest.approx(6.0e-6)
+    assert source.rin.to("dB_per_Hz").magnitude == pytest.approx(-100.0)
 
 
 def test_asymetric_gaussian_amplitude_matches_formula_at_focus():

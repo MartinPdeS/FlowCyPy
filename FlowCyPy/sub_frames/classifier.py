@@ -2,14 +2,18 @@
 import matplotlib.pyplot as plt
 from MPSPlots import helper
 import seaborn as sns
+import pandas as pd
 
-from FlowCyPy.sub_frames.base import BaseSubFrame
 
-
-class ClassifierDataFrame(BaseSubFrame):
+class ClassifierDataFrame(pd.DataFrame):
     """
     A subclass of pandas DataFrame for classifying peaks.
     """
+
+    @property
+    def _constructor(self) -> type:
+        """Ensure operations return instances of ScattererDataFrame."""
+        return self.__class__
 
     @helper.post_mpl_plot
     def plot(self, x: str, y: str) -> plt.Figure:

@@ -8,8 +8,6 @@ from TypedUnit import ureg, Time, Voltage, Frequency
 from MPSPlots import helper
 import matplotlib.pyplot as plt
 
-from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
-
 
 class NameSpace:
     def __init__(self, **kwargs):

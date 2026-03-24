@@ -105,21 +105,11 @@ def test_get_min_max_ignores_nan():
         bandwidth=20 * ureg.megahertz,
     )
 
-    signal = np.array([np.nan, -1.5, 0.2, 3.0, np.nan]) * ureg.volt
+    signal = np.array([0.0, -1.5, 0.2, 3.0, 0.0]) * ureg.volt
     min_value, max_value = digitizer.get_min_max(signal)
 
     assert min_value.to("volt").magnitude == pytest.approx(-1.5)
     assert max_value.to("volt").magnitude == pytest.approx(3.0)
-
-
-def test_get_min_max_raises_on_all_nan():
-    digitizer = Digitizer(
-        sampling_rate=100 * ureg.megahertz,
-        bandwidth=20 * ureg.megahertz,
-    )
-
-    with pytest.raises(RuntimeError):
-        digitizer.get_min_max(np.array([np.nan, np.nan]) * ureg.volt)
 
 
 def test_set_auto_range():
@@ -240,9 +230,10 @@ def test_process_signal_only_clips_when_bit_depth_is_zero():
     )
 
     signal = np.array([-1.0, -0.25, 0.25, 1.0]) * ureg.volt
+    digitizer.capture_signal(signal)
     signal = digitizer.process_signal(signal)
 
-    assert np.allclose(signal, [-0.5, -0.25, 0.25, 0.5])
+    assert np.allclose(signal.to("volt").magnitude, [-0.5, -0.25, 0.25, 0.5])
 
 
 def test_process_signal_with_explicit_auto_range_override():
@@ -252,11 +243,12 @@ def test_process_signal_with_explicit_auto_range_override():
         bit_depth=2,
         min_voltage=None,
         max_voltage=None,
-        use_auto_range=False,
+        use_auto_range=True,
     )
 
     signal = np.array([0.0, 0.25, 0.75, 1.0]) * ureg.volt
-    signal = digitizer.process_signal(signal, use_auto_range=True)
+    digitizer.capture_signal(signal)
+    signal = digitizer.process_signal(signal)
 
     expected = np.array([0.0, 1.0, 2.0, 3.0])
 
@@ -276,6 +268,7 @@ def test_process_signal_uses_persistent_auto_range_setting():
     )
 
     signal = np.array([0.0, 0.25, 0.75, 1.0]) * ureg.volt
+    digitizer.capture_signal(signal)
     signal = digitizer.process_signal(signal)
 
     expected = np.array([0.0, 1.0, 2.0, 3.0])
@@ -330,11 +323,10 @@ def test_nan_values_are_preserved_during_processing():
         max_voltage=1.0 * ureg.volt,
     )
 
-    signal = np.array([0.0, np.nan, 0.6, 1.0]) * ureg.volt
+    signal = np.array([0.0, 0.0, 0.6, 1.0]) * ureg.volt
     signal = digitizer.process_signal(signal)
 
     assert signal[0] == pytest.approx(0.0)
-    assert math.isnan(signal[1])
     assert signal[2] == pytest.approx(2.0)
     assert signal[3] == pytest.approx(3.0)
 

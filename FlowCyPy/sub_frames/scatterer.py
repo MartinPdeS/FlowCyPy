@@ -11,17 +11,15 @@ from TypedUnit import AnyUnit, Time, ureg
 from FlowCyPy.sub_frames import utils
 
 
-class BaseSubFrame(pd.DataFrame):
+class ScattererDataFrame(pd.DataFrame):
+    """
+    A subclass of pandas DataFrame with custom plotting and logging for scatterer data.
+    """
+
     @property
     def _constructor(self) -> type:
         """Ensure operations return instances of ScattererDataFrame."""
         return self.__class__
-
-
-class ScattererDataFrame(BaseSubFrame):
-    """
-    A subclass of pandas DataFrame with custom plotting and logging for scatterer data.
-    """
 
     def plot(self, x: str = None, y: str = None, z: str = None, **kwargs) -> AnyUnit:
         """

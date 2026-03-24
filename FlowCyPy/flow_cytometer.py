@@ -12,6 +12,7 @@ from FlowCyPy.opto_electronics import OptoElectronics
 from FlowCyPy.signal_processing import SignalProcessing
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
 from FlowCyPy.sub_frames.triggered import TriggerDataFrame
+from FlowCyPy.sub_frames.peaks import PeakDataFrame
 from FlowCyPy.run_record import RunRecord
 from FlowCyPy.fluidics import populations
 from FlowCyPy.fluidics.event_collection import EventCollection
@@ -342,9 +343,10 @@ class FlowCytometer:
         if self.signal_processing.discriminator is None:
             return run_record
 
-        run_record.peaks = self.signal_processing.peak_algorithm.run(
-            run_record.signal.digital
-        )
+        peaks_dict = self.signal_processing.peak_algorithm.run(triggered_digital_dict)
+
+        run_record.peaks = PeakDataFrame._construct_from_dict(peaks_dict)
+
         run_record.discriminator = self.signal_processing.discriminator
 
         return run_record

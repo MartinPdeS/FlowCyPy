@@ -166,7 +166,9 @@ def test_flow_cytometer_plot(mock_show, flow_cytometer, digitizer):
     run_record.plot_analog()
     plt.close()
 
-    run_record.signal.analog.digitalize(digitizer=digitizer)
+    digitizer.capture_signal(run_record.signal.analog.raw_data["default"])
+    digitizer.digitize_data_dict(run_record.signal.analog.raw_data)
+
     plt.close()
 
 
@@ -182,9 +184,7 @@ def test_flow_cytometer_triggered_acquisition(flow_cytometer):
         post_buffer=20,
     )
 
-    triggered_signal = _discriminator.run_with_dataframe(
-        dataframe=run_record.signal.analog
-    )
+    triggered_signal = _discriminator.run_with_dict(run_record.signal.analog.raw_data)
 
     assert (
         triggered_signal is not None
@@ -204,17 +204,17 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
         threshold="3 sigma",
     )
 
-    triggered_signal = _discriminator.run_with_dataframe(
-        dataframe=run_record.signal.analog
-    )
+    triggered_signal = _discriminator.run_with_dict(run_record.signal.analog.raw_data)
 
-    assert np.std(triggered_signal["default"]) > 0, "Filtered signal has zero variance."
+    assert (
+        np.std(triggered_signal[0]["default"]) > 0
+    ), "Filtered signal has zero variance."
 
 
 def test_peak_detection(flow_cytometer, digitizer):
     """Ensure peak detection works correctly on the triggered acquisition."""
     flow_cytometer.signal_processing.analog_processing = [
-        circuits.BaselineRestorator(window_size=1000 * ureg.microsecond),
+        circuits.BaselineRestorationServo(time_constant=10 * ureg.microsecond),
         circuits.BesselLowPass(cutoff_frequency=1 * ureg.megahertz, order=4, gain=2),
     ]
 
@@ -228,15 +228,17 @@ def test_peak_detection(flow_cytometer, digitizer):
         post_buffer=20,
     )
 
-    triggered_acquisition = _discriminator.run_with_dataframe(
-        dataframe=run_record.signal.analog
+    triggered_acquisition = _discriminator.run_with_dict(
+        run_record.signal.analog.raw_data
     )
 
     peak_algorithm = peak_locator.GlobalPeakLocator()
 
-    digital_signal = triggered_acquisition.digitalize(digitizer=digitizer)
+    digitizer.capture_signal(run_record.signal.analog.raw_data["default"])
 
-    peaks = peak_algorithm.run(digital_signal)
+    digital_signal_dict = digitizer.digitize_data_dict(triggered_acquisition)
+
+    peaks = peak_algorithm.run(digital_signal_dict)
 
     assert len(peaks) > 0, "No peaks detected when they were expected."
 
@@ -255,15 +257,17 @@ def test_peak_plot(mock_show, flow_cytometer, digitizer):
         threshold="3 sigma",
     )
 
-    triggered_acquisition = _discriminator.run_with_dataframe(
-        dataframe=run_record.signal.analog
+    triggered_acquisition = _discriminator.run_with_dict(
+        run_record.signal.analog.raw_data
     )
 
     peak_algorithm = peak_locator.GlobalPeakLocator()
 
-    digital_signal = triggered_acquisition.digitalize(digitizer=digitizer)
+    digitizer.capture_signal(run_record.signal.analog.raw_data["default"])
 
-    _ = peak_algorithm.run(digital_signal)
+    digital_signal_dict = digitizer.digitize_data_dict(triggered_acquisition)
+
+    _ = peak_algorithm.run(digital_signal_dict)
 
 
 if __name__ == "__main__":

@@ -516,7 +516,7 @@ PYBIND11_MODULE(source, module) {
             py::arg("optical_power"),
             py::arg("waist_y"),
             py::arg("waist_z"),
-            py::arg("rin") = std::numeric_limits<double>::quiet_NaN(),
+            py::arg("rin") = py::none(),
             py::arg("polarization") = py::float_(0.0) * ureg.attr("radian"),
             py::arg("bandwidth") = py::none(),
             py::arg("include_shot_noise") = true,

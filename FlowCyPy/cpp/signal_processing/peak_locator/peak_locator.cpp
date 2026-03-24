@@ -4,7 +4,6 @@
 #include <stdexcept>
 
 
-// ----------- Implementation of BasePeakLocator -----------------
 BasePeakLocator::BasePeakLocator(
     bool compute_width,
     bool compute_area,
@@ -84,42 +83,12 @@ PeakMetrics BasePeakLocator::compute_segment_metrics(
 }
 
 
-void BasePeakLocator::pad_peaks(
-    const std::vector<std::pair<int, double>>& peaks,
-    size_t max_number_of_peaks,
-    int padding_value,
-    std::vector<int>& pad_index,
-    std::vector<double>& pad_height
-) {
-    const size_t number_of_found_peaks = peaks.size();
-
-    pad_index.assign(max_number_of_peaks, padding_value);
-    pad_height.assign(max_number_of_peaks, static_cast<double>(padding_value));
-
-    for (size_t index = 0; index < std::min(max_number_of_peaks, number_of_found_peaks); ++index) {
-        pad_index[index] = peaks[index].first;
-        pad_height[index] = peaks[index].second;
-    }
-}
-
-
 void BasePeakLocator::sort_peaks_descending(std::vector<PeakData>& peaks) {
     std::sort(
         peaks.begin(),
         peaks.end(),
         [](const PeakData& left_peak, const PeakData& right_peak) {
             return left_peak.value > right_peak.value;
-        }
-    );
-}
-
-
-void BasePeakLocator::sort_peaks_descending(std::vector<std::pair<int, double>>& peaks) {
-    std::sort(
-        peaks.begin(),
-        peaks.end(),
-        [](const std::pair<int, double>& left_peak, const std::pair<int, double>& right_peak) {
-            return left_peak.second > right_peak.second;
         }
     );
 }
@@ -188,15 +157,14 @@ std::vector<double> BasePeakLocator::get_metric_py(const std::string& metric_nam
         return this->peak_areas;
     }
 
-    throw pybind11::value_error(std::string("No valid metric chosen: ") + metric_name);
+    throw std::runtime_error("No valid metric chosen: " + metric_name);
 }
 
 
-std::unordered_map<std::string, std::vector<double>>
-BasePeakLocator::get_metrics(const std::vector<double>& array) {
+MetricDictionary BasePeakLocator::get_metrics(const std::vector<double>& array) {
     this->compute(array);
 
-    std::unordered_map<std::string, std::vector<double>> output;
+    MetricDictionary output;
     output["Index"] = std::vector<double>(this->peak_indices.begin(), this->peak_indices.end());
     output["Height"] = this->peak_heights;
 
@@ -212,6 +180,25 @@ BasePeakLocator::get_metrics(const std::vector<double>& array) {
 }
 
 
+SegmentedMetricDictionary BasePeakLocator::run_segmented_signals(
+    const SegmentedSignalDictionary& segmented_signals
+) {
+    SegmentedMetricDictionary output_dictionary;
+
+    for (const auto& [segment_id, channel_dictionary] : segmented_signals) {
+        std::unordered_map<std::string, MetricDictionary> segment_output_dictionary;
+
+        for (const auto& [channel_name, signal_vector] : channel_dictionary) {
+            segment_output_dictionary[channel_name] = this->get_metrics(signal_vector);
+        }
+
+        output_dictionary[segment_id] = segment_output_dictionary;
+    }
+
+    return output_dictionary;
+}
+
+
 void BasePeakLocator::initialize_output_vectors() {
     this->peak_indices.assign(this->max_number_of_peaks, this->padding_value);
     this->peak_heights.assign(this->max_number_of_peaks, static_cast<double>(this->padding_value));
@@ -220,7 +207,6 @@ void BasePeakLocator::initialize_output_vectors() {
 }
 
 
-// ----------- Implementation of the SlidingWindowPeakLocator -----------------
 SlidingWindowPeakLocator::SlidingWindowPeakLocator(
     int window_size,
     int window_step,
@@ -256,8 +242,12 @@ void SlidingWindowPeakLocator::compute(const std::vector<double>& signal) {
     }
 
     const size_t number_of_samples = signal.size();
+
     std::vector<PeakData> peaks;
-    peaks.reserve((number_of_samples + static_cast<size_t>(this->window_step) - 1) / static_cast<size_t>(this->window_step));
+    peaks.reserve(
+        (number_of_samples + static_cast<size_t>(this->window_step) - 1) /
+        static_cast<size_t>(this->window_step)
+    );
 
     for (size_t start = 0; start < number_of_samples; start += static_cast<size_t>(this->window_step)) {
         const size_t end = std::min(start + static_cast<size_t>(this->window_size), number_of_samples);
@@ -301,8 +291,10 @@ void SlidingWindowPeakLocator::compute(const std::vector<double>& signal) {
     this->sort_peaks_descending(peaks);
     this->initialize_output_vectors();
 
-    const size_t number_of_windows = peaks.size();
-    const size_t number_of_output_peaks = std::min(static_cast<size_t>(this->max_number_of_peaks), number_of_windows);
+    const size_t number_of_output_peaks = std::min(
+        static_cast<size_t>(this->max_number_of_peaks),
+        peaks.size()
+    );
 
     for (size_t index = 0; index < number_of_output_peaks; ++index) {
         this->peak_indices[index] = peaks[index].index;
@@ -319,7 +311,6 @@ void SlidingWindowPeakLocator::compute(const std::vector<double>& signal) {
 }
 
 
-// ----------- Implementation of the GlobalPeakLocator -----------------
 GlobalPeakLocator::GlobalPeakLocator(
     int max_number_of_peaks,
     int padding_value,
@@ -341,8 +332,7 @@ void GlobalPeakLocator::compute(const std::vector<double>& signal) {
         throw std::runtime_error("signal must not be empty.");
     }
 
-    const size_t number_of_samples = signal.size();
-    const size_t global_peak_index = this->find_local_peak(signal.data(), 0, number_of_samples);
+    const size_t global_peak_index = this->find_local_peak(signal.data(), 0, signal.size());
 
     double width = static_cast<double>(this->padding_value);
     double area = static_cast<double>(this->padding_value);
@@ -351,7 +341,7 @@ void GlobalPeakLocator::compute(const std::vector<double>& signal) {
         const PeakMetrics metrics = this->compute_segment_metrics(
             signal.data(),
             0,
-            number_of_samples,
+            signal.size(),
             global_peak_index,
             this->threshold
         );

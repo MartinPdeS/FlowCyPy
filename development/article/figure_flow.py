@@ -55,7 +55,7 @@ scatterer_collection = ScattererCollection()
 medium_refractive_index = distributions.Delta(1.33)
 
 diameter_dist = distributions.RosinRammler(
-    scale=50 * ureg.nanometer,
+    scale=20 * ureg.nanometer,
     shape=1.1,
     low_cutoff=0.0 * ureg.nanometer,
 )
@@ -131,15 +131,15 @@ digitizer = Digitizer(
 )
 
 analog_processing = [
-    circuits.BaselineRestorationServo(time_constant=100 * ureg.microsecond),
-    circuits.BesselLowPass(cutoff_frequency=2 * ureg.megahertz, order=4, gain=2),
+    circuits.BaselineRestorationServo(time_constant=10 * ureg.microsecond),
+    circuits.BesselLowPass(cutoff_frequency=1 * ureg.megahertz, order=4, gain=2),
 ]
 
 triggering = discriminator.DynamicWindow(
     trigger_channel="side",
-    threshold="2sigma",
-    pre_buffer=10,
-    post_buffer=10,
+    threshold="1sigma",
+    pre_buffer=2,
+    post_buffer=2,
     max_triggers=-1,
 )
 
@@ -159,7 +159,7 @@ cytometer = FlowCytometer(
     background_power=0.01 * ureg.milliwatt,
 )
 
-run_record = cytometer.run(run_time=1 * ureg.millisecond)
+run_record = cytometer.run(run_time=0.1 * ureg.millisecond)
 
 # _ = run_record.event_collection.plot(x="Diameter")
 

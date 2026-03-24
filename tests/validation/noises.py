@@ -60,7 +60,7 @@ def test_shot_noise(digitizer):
         optical_power=optical_power,
         waist_y=1e-6 * ureg.meter,
         waist_z=1e-6 * ureg.meter,
-        rin=-120.0,
+        rin=-120.0 * ureg.dB_per_Hz,
         polarization=0.0 * ureg.radian,
         bandwidth=digitizer.bandwidth,
         include_shot_noise=True,

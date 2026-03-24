@@ -160,57 +160,6 @@ PYBIND11_MODULE(discriminator, module) {
             )pbdoc"
         )
         .def(
-            "run_with_dataframe",
-            [](BaseDiscriminator &self, const py::object &dataframe) {
-                const std::vector<double> time_vector =
-                    dataframe["Time"]
-                        .attr("pint")
-                        .attr("quantity")
-                        .attr("to")("second")
-                        .attr("magnitude")
-                        .cast<std::vector<double>>();
-
-                self.add_time(time_vector);
-
-                const py::object &channel_list = dataframe.attr("columns");
-                for (const auto &channel : channel_list) {
-                    if (channel.cast<std::string>() == "Time") {
-                        continue;
-                    }
-
-                    const std::vector<double> signal_vector =
-                        dataframe[channel]
-                            .attr("pint")
-                            .attr("quantity")
-                            .attr("to")("volt")
-                            .attr("magnitude")
-                            .cast<std::vector<double>>();
-
-                    self.add_signal(channel.cast<std::string>(), signal_vector);
-                }
-
-                self.run();
-
-                return py::cast(self).attr("_assemble_dataframe")(dataframe);
-            },
-            py::arg("dataframe"),
-            R"pbdoc(
-                Run trigger detection from a dataframe.
-
-                The dataframe must contain a "Time" column and one or more signal columns.
-
-                Parameters
-                ----------
-                dataframe : pandas.DataFrame
-                    Dataframe containing time and signal columns.
-
-                Returns
-                -------
-                TriggerDataFrame
-                    Segmented trigger output assembled as a tidy dataframe.
-            )pbdoc"
-        )
-        .def(
             "run_with_dict",
             [ureg](BaseDiscriminator &self, const py::dict &data_dict) {
                 if (!data_dict.contains("Time")) {
@@ -326,7 +275,7 @@ PYBIND11_MODULE(discriminator, module) {
                             continue;
                         }
 
-                        final_segment_dict[py::str(key)] = (numpy.attr("array")(channel_item.second) * ureg.attr("volt")).attr("to_compact")();
+                        final_segment_dict[py::str(key)] = numpy.attr("array")(channel_item.second) * ureg.attr("volt");
                     }
 
                     final_output[segment_id] = final_segment_dict;
@@ -353,57 +302,7 @@ PYBIND11_MODULE(discriminator, module) {
                     contains a "Time" entry and one entry per signal channel.
             )pbdoc"
         )
-        .def(
-            "_assemble_dataframe",
-            [](BaseDiscriminator &self, const py::object &dataframe) {
-                py::module_ pandas = py::module_::import("pandas");
-                py::module_ pint_pandas = py::module_::import("pint_pandas");
-
-                py::list detector_names = dataframe.attr("detector_names");
-                py::object signal_units = dataframe.attr("signal_units");
-
-                py::dict data;
-                data["SegmentID"] = py::cast(self.trigger.segment_ids_out);
-                data["Time"] = pint_pandas.attr("PintArray")(
-                    py::cast(self.trigger.time_out),
-                    "second"
-                );
-
-                for (const py::handle &detector_name_handle : detector_names) {
-                    py::object detector_name =
-                        py::reinterpret_borrow<py::object>(detector_name_handle);
-
-                    data[detector_name] = pint_pandas.attr("PintArray")(
-                        py::cast(
-                            self.trigger.get_segmented_signal(
-                                detector_name.cast<std::string>()
-                            )
-                        ),
-                        signal_units
-                    );
-                }
-
-                py::object tidy =
-                    pandas.attr("DataFrame")(data).attr("set_index")("SegmentID");
-
-                py::object trigger_dataframe_class =
-                    py::module_::import("FlowCyPy.sub_frames.acquisition")
-                        .attr("TriggerDataFrame");
-
-                tidy = trigger_dataframe_class(tidy);
-
-                tidy.attr("normalize_units")(
-                    py::arg("signal_units") = "max",
-                    py::arg("time_units") = "max"
-                );
-
-                return tidy;
-            },
-            py::arg("dataframe"),
-            R"pbdoc(
-                Assemble a tidy trigger dataframe from segmented C++ backend results.
-            )pbdoc"
-        );
+        ;
 
     py::class_<FixedWindow, BaseDiscriminator>(module, "FixedWindow")
         .def(
@@ -449,20 +348,29 @@ PYBIND11_MODULE(discriminator, module) {
                 Execute fixed window trigger detection.
             )pbdoc"
         )
-        .def(
-            "set_threshold",
+        .def_property(
+            "threshold",
+            [ureg](FixedWindow &self) -> py::object {
+                if (self.threshold.is_numeric()) {
+                    return py::cast(self.threshold.get_numeric()) * ureg.attr("volt");
+                } else if (self.threshold.is_symbolic()) {
+                    return py::cast(self.threshold.get_symbolic());
+                } else {
+                    return py::none();
+                }
+            },
             [](FixedWindow &self, const py::object &threshold) {
                 if (py::isinstance<py::str>(threshold)) {
                     self.set_threshold(threshold.cast<std::string>());
                 } else {
-                    self.set_threshold(
-                        threshold.attr("to")("volt").attr("magnitude").cast<double>()
-                    );
+                    self.set_threshold(threshold.attr("to")("volt").attr("magnitude").cast<double>());
                 }
             },
-            py::arg("threshold"),
             R"pbdoc(
-                Update the trigger threshold after construction.
+                Get or set the trigger threshold.
+
+                The getter returns either a numeric value, a symbolic expression, or None.
+                The setter accepts either a numeric value or a symbolic expression.
             )pbdoc"
         )
         .def(
@@ -542,34 +450,43 @@ PYBIND11_MODULE(discriminator, module) {
                 Execute dynamic window trigger detection.
             )pbdoc"
         )
-        .def(
-            "set_threshold",
+        .def_property(
+            "threshold",
+            [ureg](DynamicWindow &self) -> py::object {
+                if (self.threshold.is_numeric()) {
+                    return py::cast(self.threshold.get_numeric()) * ureg.attr("volt");
+                } else if (self.threshold.is_symbolic()) {
+                    return py::cast(self.threshold.get_symbolic());
+                } else {
+                    return py::none();
+                }
+            },
             [](DynamicWindow &self, const py::object &threshold) {
                 if (py::isinstance<py::str>(threshold)) {
                     self.set_threshold(threshold.cast<std::string>());
                 } else {
-                    self.set_threshold(
-                        threshold.attr("to")("volt").attr("magnitude").cast<double>()
+                    self.set_threshold(threshold.attr("to")("volt").attr("magnitude").cast<double>()
                     );
                 }
             },
-            py::arg("threshold"),
             R"pbdoc(
-                Update the trigger threshold after construction.
+                Get or set the trigger threshold.
+
+                The getter returns either a numeric value, a symbolic expression, or None.
+                The setter accepts either a numeric value or a symbolic expression.
             )pbdoc"
         )
         .def(
             "_add_to_ax",
-            [](DynamicWindow &self, py::object ax, py::object signal_units) {
+            [ureg](DynamicWindow &self, py::object ax, py::object signal_units) {
                 if (std::isnan(self.resolved_threshold)) {
                     throw std::runtime_error(
                         "Threshold has not been resolved. Run the trigger first."
                     );
                 }
 
-                py::module_ pint = py::module_::import("pint");
-                py::object quantity =
-                    pint.attr("Quantity")(self.resolved_threshold, "volt");
+                py::object quantity = py::cast(self.resolved_threshold) * ureg.attr("volt");
+
                 py::object converted_quantity = quantity.attr("to")(signal_units);
 
                 ax.attr("axhline")(
@@ -577,9 +494,7 @@ PYBIND11_MODULE(discriminator, module) {
                     py::arg("color") = "red",
                     py::arg("linestyle") = "--",
                     py::arg("linewidth") = 1,
-                    py::arg("label") = py::str("Threshold: {:.2f}").format(
-                        quantity.attr("to_compact")()
-                    )
+                    py::arg("label") = py::str("Threshold: {:.2f}").format(quantity.attr("to_compact")())
                 );
 
                 ax.attr("legend")();
@@ -660,46 +575,56 @@ PYBIND11_MODULE(discriminator, module) {
                 Execute double threshold trigger detection.
             )pbdoc"
         )
-        .def(
-            "set_threshold",
+        .def_property(
+            "threshold",
+            [ureg](DoubleThreshold &self) -> py::object {
+                if (self.threshold.is_numeric()) {
+                    return py::cast(self.threshold.get_numeric()) * ureg.attr("volt");
+                } else if (self.threshold.is_symbolic()) {
+                    return py::cast(self.threshold.get_symbolic());
+                } else {
+                    return py::none();
+                }
+            },
             [](DoubleThreshold &self, const py::object &threshold) {
                 if (py::isinstance<py::str>(threshold)) {
                     self.set_threshold(threshold.cast<std::string>());
                 } else {
-                    self.set_threshold(
-                        threshold.attr("to")("volt").attr("magnitude").cast<double>()
+                    self.set_threshold(threshold.attr("to")("volt").attr("magnitude").cast<double>()
                     );
                 }
             },
-            py::arg("threshold"),
             R"pbdoc(
-                Update the primary threshold after construction.
+                Get or set the trigger threshold.
+
+                The getter returns either a numeric value, a symbolic expression, or None.
+                The setter accepts either a numeric value or a symbolic expression.
             )pbdoc"
         )
-        .def(
-            "set_lower_threshold",
-            [](DoubleThreshold &self, const py::object &lower_threshold) {
-                if (
-                    lower_threshold.is_none() ||
-                    (
-                        py::isinstance<py::float_>(lower_threshold) &&
-                        std::isnan(lower_threshold.cast<double>())
-                    )
-                ) {
-                    self.clear_lower_threshold();
-                } else if (py::isinstance<py::str>(lower_threshold)) {
-                    self.set_lower_threshold(lower_threshold.cast<std::string>());
+        .def_property(
+            "lower_threshold",
+            [ureg](DoubleThreshold &self) -> py::object {
+                if (self.lower_threshold.is_numeric()) {
+                    return py::cast(self.lower_threshold.get_numeric()) * ureg.attr("volt");
+                } else if (self.lower_threshold.is_symbolic()) {
+                    return py::cast(self.lower_threshold.get_symbolic());
                 } else {
-                    self.set_lower_threshold(
-                        lower_threshold.attr("to")("volt").attr("magnitude").cast<double>()
+                    return py::none();
+                }
+            },
+            [](DoubleThreshold &self, const py::object &threshold) {
+                if (py::isinstance<py::str>(threshold)) {
+                    self.set_lower_threshold(threshold.cast<std::string>());
+                } else {
+                    self.set_lower_threshold(threshold.attr("to")("volt").attr("magnitude").cast<double>()
                     );
                 }
             },
-            py::arg("lower_threshold"),
             R"pbdoc(
-                Update the lower threshold after construction.
+                Get or set the trigger threshold.
 
-                Passing None clears the lower threshold.
+                The getter returns either a numeric value, a symbolic expression, or None.
+                The setter accepts either a numeric value or a symbolic expression.
             )pbdoc"
         )
         .def(
@@ -739,9 +664,7 @@ PYBIND11_MODULE(discriminator, module) {
                     py::arg("color") = "blue",
                     py::arg("linestyle") = "--",
                     py::arg("linewidth") = 1,
-                    py::arg("label") = py::str("Upper Threshold: {:.2f}").format(
-                        upper_quantity.attr("to_compact")()
-                    )
+                    py::arg("label") = py::str("Upper Threshold: {:.2f}").format(upper_quantity.attr("to_compact")())
                 );
 
                 if (!std::isnan(self.resolved_lower_threshold)) {
@@ -755,9 +678,7 @@ PYBIND11_MODULE(discriminator, module) {
                         py::arg("color") = "red",
                         py::arg("linestyle") = "--",
                         py::arg("linewidth") = 1,
-                        py::arg("label") = py::str("Lower Threshold: {:.2f}").format(
-                            lower_quantity.attr("to_compact")()
-                        )
+                        py::arg("label") = py::str("Lower Threshold: {:.2f}").format(lower_quantity.attr("to_compact")())
                     );
                 }
 

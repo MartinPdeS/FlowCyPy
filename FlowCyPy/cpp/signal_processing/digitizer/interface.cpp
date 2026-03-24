@@ -342,13 +342,12 @@ PYBIND11_MODULE(digitizer, module) {
         .def(
             "digitize_signal",
             [](const Digitizer& self, const py::object& signal) -> py::object {
-                std::vector<double> signal_vector =
-                    Casting::cast_py_to_vector<double>(signal, "volt");
+                std::vector<double> signal_vector = Casting::cast_py_to_vector<double>(signal, "volt");
 
                 self.digitize_signal(signal_vector);
 
                 if (!self.should_digitize()) {
-                    return signal;
+                    return signal.attr("magnitude");
                 }
 
                 if (self.output_signed_codes) {
@@ -410,8 +409,7 @@ PYBIND11_MODULE(digitizer, module) {
         .def(
             "process_signal",
             [ureg](Digitizer& self, const py::object& signal) -> py::object {
-                std::vector<double> signal_vector =
-                    Casting::cast_py_to_vector<double>(signal, "volt");
+                std::vector<double> signal_vector = Casting::cast_py_to_vector<double>(signal, "volt");
 
                 self.process_signal(signal_vector);
 

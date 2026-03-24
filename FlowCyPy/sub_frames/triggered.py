@@ -5,13 +5,16 @@ import matplotlib.pyplot as plt
 from MPSPlots import helper
 import pandas as pd
 
-from FlowCyPy.sub_frames.base import BaseSubFrame
 
-
-class TriggerDataFrame(BaseSubFrame):
+class TriggerDataFrame(pd.DataFrame):
     """
     DataFrame subclass for triggered analog acquisition data.
     """
+
+    @property
+    def _constructor(self) -> type:
+        """Ensure operations return instances of TriggerDataFrame."""
+        return self.__class__
 
     def __init__(self, dataframe: pd.DataFrame):
         super().__init__(dataframe)
@@ -69,6 +72,7 @@ class TriggerDataFrame(BaseSubFrame):
         TriggerDataFrame
             Triggered acquisition dataframe indexed by ``SegmentID``.
         """
+        cls.raw_data = segment_dict
         if len(segment_dict) == 0:
             raise ValueError("segment_dict must not be empty.")
 

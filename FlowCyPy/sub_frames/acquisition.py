@@ -6,13 +6,16 @@ from MPSPlots import helper
 import pandas as pd
 from TypedUnit import Time, Voltage, ureg
 
-from FlowCyPy.sub_frames.base import BaseSubFrame
 
-
-class AcquisitionDataFrame(BaseSubFrame):
+class AcquisitionDataFrame(pd.DataFrame):
     """
     DataFrame subclass for continuous analog acquisition data.
     """
+
+    @property
+    def _constructor(self) -> type:
+        """Ensure operations return instances of PeakDataFrame."""
+        return self.__class__
 
     def __init__(self, dataframe: pd.DataFrame):
         super().__init__(dataframe)
@@ -41,6 +44,7 @@ class AcquisitionDataFrame(BaseSubFrame):
         AcquisitionDataFrame
             A DataFrame containing the time axis and detector signals.
         """
+        cls.raw_data = signal_dict
         if "Time" not in signal_dict:
             raise ValueError("signal_dict must contain a 'Time' entry.")
 
