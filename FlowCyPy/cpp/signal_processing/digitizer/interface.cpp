@@ -340,22 +340,90 @@ PYBIND11_MODULE(digitizer, module) {
         )
 
         .def(
-            "digitize_signal",
-            [](const Digitizer& self, const py::object& signal) -> py::object {
-                std::vector<double> signal_vector = Casting::cast_py_to_vector<double>(signal, "volt");
-
-                self.digitize_signal(signal_vector);
-
-                if (!self.should_digitize()) {
-                    return signal.attr("magnitude");
+            "digitize_data_dict",
+            [ureg](const Digitizer& self, const py::dict& data_dict) -> py::object {
+                if (!data_dict.contains("segment_id")) {
+                    throw std::runtime_error(
+                        "Input dictionary must contain a 'segment_id' key."
+                    );
                 }
 
-                if (self.output_signed_codes) {
-                    py::array_t<int64_t> output_array(signal_vector.size());
+                if (!data_dict.contains("Time")) {
+                    throw std::runtime_error(
+                        "Input dictionary must contain a 'Time' key."
+                    );
+                }
+
+                std::map<std::string, std::vector<double>> input_data_map;
+
+                for (const auto& item : data_dict) {
+                    const std::string key =
+                        py::reinterpret_borrow<py::object>(item.first).cast<std::string>();
+
+                    if (key == "segment_id") {
+                        continue;
+                    }
+
+                    if (key == "Time") {
+                        input_data_map[key] = Casting::cast_py_to_vector<double>(
+                            py::reinterpret_borrow<py::object>(item.second),
+                            "second"
+                        );
+                    }
+                    else {
+                        input_data_map[key] = Casting::cast_py_to_vector<double>(
+                            py::reinterpret_borrow<py::object>(item.second),
+                            "volt"
+                        );
+                    }
+                }
+
+                const std::map<std::string, std::vector<double>> processed_data_map =
+                    self.get_processed_data_map(input_data_map);
+
+                py::dict output_dict;
+                output_dict[py::str("segment_id")] = data_dict[py::str("segment_id")];
+                output_dict[py::str("Time")] = data_dict[py::str("Time")];
+
+                for (const auto& [channel_name, channel_signal] : processed_data_map) {
+                    if (channel_name == "Time") {
+                        continue;
+                    }
+
+                    if (!self.should_digitize()) {
+                        output_dict[py::str(channel_name)] =
+                            py::array_t<double>(
+                                channel_signal.size(),
+                                channel_signal.data()
+                            ) * ureg.attr("volt");
+                        continue;
+                    }
+
+                    if (self.output_signed_codes) {
+                        py::array_t<int64_t> output_array(channel_signal.size());
+                        auto output_view = output_array.mutable_unchecked<1>();
+
+                        for (ssize_t index = 0; index < static_cast<ssize_t>(channel_signal.size()); ++index) {
+                            const double sample = channel_signal[static_cast<size_t>(index)];
+
+                            if (std::isnan(sample)) {
+                                throw std::runtime_error(
+                                    "Digitized integer output cannot represent NaN values."
+                                );
+                            }
+
+                            output_view(index) = static_cast<int64_t>(std::llround(sample));
+                        }
+
+                        output_dict[py::str(channel_name)] = output_array;
+                        continue;
+                    }
+
+                    py::array_t<uint64_t> output_array(channel_signal.size());
                     auto output_view = output_array.mutable_unchecked<1>();
 
-                    for (ssize_t index = 0; index < static_cast<ssize_t>(signal_vector.size()); ++index) {
-                        const double sample = signal_vector[static_cast<size_t>(index)];
+                    for (ssize_t index = 0; index < static_cast<ssize_t>(channel_signal.size()); ++index) {
+                        const double sample = channel_signal[static_cast<size_t>(index)];
 
                         if (std::isnan(sample)) {
                             throw std::runtime_error(
@@ -363,46 +431,42 @@ PYBIND11_MODULE(digitizer, module) {
                             );
                         }
 
-                        output_view(index) = static_cast<int64_t>(std::llround(sample));
+                        const int64_t code_value = static_cast<int64_t>(std::llround(sample));
+
+                        if (code_value < 0) {
+                            throw std::runtime_error(
+                                "Unsigned digitizer output encountered a negative code."
+                            );
+                        }
+
+                        output_view(index) = static_cast<uint64_t>(code_value);
                     }
 
-                    return output_array;
+                    output_dict[py::str(channel_name)] = output_array;
                 }
 
-                py::array_t<uint64_t> output_array(signal_vector.size());
-                auto output_view = output_array.mutable_unchecked<1>();
-
-                for (ssize_t index = 0; index < static_cast<ssize_t>(signal_vector.size()); ++index) {
-                    const double sample = signal_vector[static_cast<size_t>(index)];
-
-                    if (std::isnan(sample)) {
-                        throw std::runtime_error(
-                            "Digitized integer output cannot represent NaN values."
-                        );
-                    }
-
-                    const int64_t code_value = static_cast<int64_t>(std::llround(sample));
-
-                    if (code_value < 0) {
-                        throw std::runtime_error(
-                            "Unsigned digitizer output encountered a negative code."
-                        );
-                    }
-
-                    output_view(index) = static_cast<uint64_t>(code_value);
-                }
-
-                return output_array;
+                return output_dict;
             },
-            py::arg("signal"),
+            py::arg("data_dict"),
             R"pbdoc(
-                Quantize a signal according to the configured bit depth and voltage range.
+                Digitize acquisition data stored in a flat triggered dictionary.
 
-                Returns
-                -------
-                numpy.ndarray or pint.Quantity
-                    Integer ADC codes when digitization is enabled.
-                    Otherwise the original signal is returned unchanged.
+                Expected input format
+                ---------------------
+                {
+                    "segment_id": integer_array,
+                    "Time": time_quantity,
+                    "DetectorA": voltage_quantity,
+                    "DetectorB": voltage_quantity,
+                    ...
+                }
+
+                The ``segment_id`` and ``Time`` entries are copied unchanged.
+                All detector channels are processed in C++.
+
+                If digitization is disabled, processed detector channels are returned as
+                volt quantities. If digitization is enabled, detector channels are
+                returned as integer ADC codes.
             )pbdoc"
         )
 
@@ -493,7 +557,91 @@ PYBIND11_MODULE(digitizer, module) {
                 Update internal range information with an explicit automatic range inference override.
             )pbdoc"
         )
+        .def(
+            "digitize_signal",
+            [](const Digitizer& self, const py::object& signal) -> py::object {
+                std::vector<double> signal_vector = Casting::cast_py_to_vector<double>(signal, "volt");
 
+                self.digitize_signal(signal_vector);
+
+                if (!self.should_digitize()) {
+                    return py::array_t<double>(
+                        signal_vector.size(),
+                        signal_vector.data()
+                    );
+                }
+
+                if (self.output_signed_codes) {
+                    py::array_t<int64_t> output_array(signal_vector.size());
+                    auto output_view = output_array.mutable_unchecked<1>();
+
+                    for (ssize_t index = 0; index < static_cast<ssize_t>(signal_vector.size()); ++index) {
+                        const double sample = signal_vector[static_cast<size_t>(index)];
+
+                        if (std::isnan(sample)) {
+                            throw std::runtime_error(
+                                "Digitized integer output cannot represent NaN values."
+                            );
+                        }
+
+                        output_view(index) = static_cast<int64_t>(std::llround(sample));
+                    }
+
+                    return output_array;
+                }
+
+                py::array_t<uint64_t> output_array(signal_vector.size());
+                auto output_view = output_array.mutable_unchecked<1>();
+
+                for (ssize_t index = 0; index < static_cast<ssize_t>(signal_vector.size()); ++index) {
+                    const double sample = signal_vector[static_cast<size_t>(index)];
+
+                    if (std::isnan(sample)) {
+                        throw std::runtime_error(
+                            "Digitized integer output cannot represent NaN values."
+                        );
+                    }
+
+                    const int64_t code_value = static_cast<int64_t>(std::llround(sample));
+
+                    if (code_value < 0) {
+                        throw std::runtime_error(
+                            "Unsigned digitizer output encountered a negative code."
+                        );
+                    }
+
+                    output_view(index) = static_cast<uint64_t>(code_value);
+                }
+
+                return output_array;
+            },
+            py::arg("signal"),
+            R"pbdoc(
+                Digitize a voltage signal.
+
+                This method applies only the digitization step to the input signal.
+                The input must be a Pint quantity compatible with volts.
+
+                Processing performed here:
+                1. quantization using the configured bit depth
+                2. optional signed or unsigned integer code conversion
+
+                Unlike ``process_signal``, this method does not perform clipping or
+                automatic range inference.
+
+                Parameters
+                ----------
+                signal : pint.Quantity
+                    One dimensional voltage signal.
+
+                Returns
+                -------
+                pint.Quantity or numpy.ndarray
+                    If digitization is disabled, returns the signal as a volt quantity.
+                    If signed output codes are enabled, returns an ``int64`` array.
+                    Otherwise, returns a ``uint64`` array.
+            )pbdoc"
+        )
         .def(
             "digitize_data_dict",
             [ureg](const Digitizer& self, const py::dict& data_dict) -> py::object {

@@ -336,7 +336,7 @@ class FlowCytometer:
             triggered_analog_dict
         )
 
-        run_record.signal.digital = TriggerDataFrame._construct_from_segment_dict(
+        run_record.signal.digital = TriggerDataFrame._construct_from_flat_dict(
             triggered_digital_dict,
         )
 

@@ -1,9 +1,19 @@
 #pragma once
 
-#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
 #include <limits>
-#include <unordered_map>
+#include <memory>
+#include <stdexcept>
 #include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 
 /**
@@ -39,16 +49,17 @@ struct PeakData {
      * @param value
      *     Peak height.
      * @param width
-     *     Peak width in samples. May remain NaN when width computation is
-     *     disabled.
+     *     Peak width in samples. May remain equal to the padding value when
+     *     width computation is disabled.
      * @param area
-     *     Peak area. May remain NaN when area computation is disabled.
+     *     Peak area. May remain equal to the padding value when area
+     *     computation is disabled.
      */
     PeakData(
         int index,
         double value,
-        double width = std::numeric_limits<double>::quiet_NaN(),
-        double area = std::numeric_limits<double>::quiet_NaN()
+        double width,
+        double area
     )
         : index(index),
           value(value),
@@ -104,14 +115,31 @@ using SegmentedMetricDictionary = std::unordered_map<
 
 
 /**
+ * @brief Flat dictionary of signal channels.
+ *
+ * This container stores only actual signal channels from the flat
+ * discriminator output. Metadata such as "segment_id" and "Time" must not be
+ * stored here.
+ */
+using FlatSignalDictionary = std::unordered_map<std::string, std::vector<double>>;
+
+
+/**
  * @brief Base class for 1D peak locators.
  *
  * This class owns the common parameters, internal output buffers, and utility
- * methods shared by different peak locator strategies. Derived classes only
- * need to implement the `compute` method for a single 1D signal.
+ * methods shared by different peak locator strategies. Derived classes must
+ * implement a stateless peak search method for one 1D signal.
  *
- * The class also provides a batch API to process a segmented collection of
- * channels entirely on the C++ side.
+ * Single signal processing keeps the original stateful behavior through the
+ * fixed size output buffers:
+ *     - peak_indices
+ *     - peak_heights
+ *     - peak_widths
+ *     - peak_areas
+ *
+ * Segmented batch processing uses a stateless internal path so it can be
+ * parallelized safely.
  */
 class BasePeakLocator {
 public:
@@ -151,21 +179,36 @@ public:
     virtual ~BasePeakLocator() = default;
 
     /**
+     * @brief Locate peak candidates for a single 1D signal.
+     *
+     * Derived classes must return peak candidates for the provided signal.
+     * The base class is responsible for sorting them and formatting the final
+     * fixed size metric outputs.
+     *
+     * @param array
+     *     Input 1D signal.
+     *
+     * @return
+     *     Peak candidate list.
+     */
+    virtual std::vector<PeakData> locate_peaks(
+        const std::vector<double>& array
+    ) const = 0;
+
+    /**
      * @brief Compute peaks for a single 1D signal.
      *
-     * Derived classes must update the internal fixed size output buffers:
-     * `peak_indices`, `peak_heights`, and optionally `peak_widths` and
-     * `peak_areas`.
+     * Derived classes are not required to override this method. It uses the
+     * stateless `locate_peaks(...)` path, then updates the internal fixed size
+     * output buffers.
      *
      * @param array
      *     Input 1D signal.
      */
-    virtual void compute(const std::vector<double>& array) = 0;
+    virtual void compute(const std::vector<double>& array);
 
     /**
      * @brief Return one already computed metric as a vector of doubles.
-     *
-     * This is mainly a convenience accessor around the internal output buffers.
      *
      * @param metric_name
      *     Name of the requested metric. Must be one of:
@@ -197,12 +240,9 @@ public:
     /**
      * @brief Compute peak metrics for all channels of all segments.
      *
-     * This batch method keeps the main loops in C++. It expects a nested input
-     * dictionary of the form:
-     *
-     *     segment_id -> channel_name -> signal_vector
-     *
-     * Each channel is processed independently using the current locator.
+     * This batch method keeps the main loops in C++. Each channel is processed
+     * independently using a stateless internal path, which makes the method
+     * safe to parallelize.
      *
      * @param segmented_signals
      *     Nested segmented signal dictionary.
@@ -214,7 +254,33 @@ public:
      */
     SegmentedMetricDictionary run_segmented_signals(
         const SegmentedSignalDictionary& segmented_signals
-    );
+    ) const;
+
+    /**
+     * @brief Compute peak metrics for the flat segmented signal format.
+     *
+     * The flat input format is:
+     *
+     *     "segment_id" -> one segment id per sample
+     *     "channel_name" -> one signal value per sample
+     *
+     * The regrouping is handled in C++, then batch processing is delegated to
+     * `run_segmented_signals(...)`.
+     *
+     * @param segment_ids
+     *     Segment identifier for each sample.
+     * @param flat_signals
+     *     Flat dictionary containing only actual signal channels.
+     *
+     * @return
+     *     Nested segmented metric dictionary:
+     *
+     *         segment_id -> channel_name -> metric_name -> values
+     */
+    SegmentedMetricDictionary run_flat_segmented_signals(
+        const std::vector<int>& segment_ids,
+        const FlatSignalDictionary& flat_signals
+    ) const;
 
     /**
      * @brief Initialize all internal output vectors with padded default values.
@@ -231,7 +297,7 @@ public:
      * @param peaks
      *     Peak container to sort in place.
      */
-    void sort_peaks_descending(std::vector<PeakData>& peaks);
+    void sort_peaks_descending(std::vector<PeakData>& peaks) const;
 
     /**
      * @brief Find the index of the maximum element inside a half open interval.
@@ -252,7 +318,7 @@ public:
         const double* ptr,
         size_t start,
         size_t end
-    );
+    ) const;
 
     /**
      * @brief Compute width and area for a detected peak.
@@ -280,7 +346,7 @@ public:
         size_t end,
         size_t peak_index,
         double threshold
-    );
+    ) const;
 
     /**
      * @brief Compute left and right boundaries of a peak.
@@ -311,7 +377,31 @@ public:
         double threshold,
         size_t& left_boundary,
         size_t& right_boundary
-    );
+    ) const;
+
+protected:
+    /**
+     * @brief Validate one input signal.
+     *
+     * @param array
+     *     Input signal.
+     */
+    void validate_input_signal(const std::vector<double>& array) const;
+
+    /**
+     * @brief Compute a fixed size metric dictionary from one signal.
+     *
+     * This is the stateless path used internally by segmented batch execution.
+     *
+     * @param array
+     *     Input signal.
+     *
+     * @return
+     *     Fixed size metric dictionary.
+     */
+    MetricDictionary compute_metric_dictionary(
+        const std::vector<double>& array
+    ) const;
 };
 
 
@@ -359,12 +449,17 @@ public:
     );
 
     /**
-     * @brief Compute peaks for one 1D signal using a sliding window strategy.
+     * @brief Locate peaks for one 1D signal using a sliding window strategy.
      *
      * @param array
      *     Input 1D signal.
+     *
+     * @return
+     *     Peak candidate list.
      */
-    void compute(const std::vector<double>& array) override;
+    std::vector<PeakData> locate_peaks(
+        const std::vector<double>& array
+    ) const override;
 };
 
 
@@ -404,10 +499,15 @@ public:
     );
 
     /**
-     * @brief Compute the global peak of one 1D signal.
+     * @brief Locate the global peak of one 1D signal.
      *
      * @param array
      *     Input 1D signal.
+     *
+     * @return
+     *     Peak candidate list containing one peak.
      */
-    void compute(const std::vector<double>& array) override;
+    std::vector<PeakData> locate_peaks(
+        const std::vector<double>& array
+    ) const override;
 };

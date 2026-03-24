@@ -21,15 +21,13 @@ PYBIND11_MODULE(peak_locator, module) {
            The strongest sample in the full signal is selected as the peak.
 
         In addition to processing a single 1D signal, locators can process a
-        segmented Python dictionary of the form
+        flat segmented Python dictionary of the form
 
             {
-                segment_id: {
-                    "Time": <ignored>,
-                    "forward": array([...]),
-                    "side": array([...]),
-                    ...
-                },
+                "segment_id": [...],
+                "Time": <ignored>,
+                "forward": array([...]),
+                "side": array([...]),
                 ...
             }
 
@@ -90,31 +88,46 @@ PYBIND11_MODULE(peak_locator, module) {
         )
         .def(
             "run",
-            [](BasePeakLocator& self, const py::dict& segmented_signal_dictionary) -> py::dict {
-                SegmentedSignalDictionary segmented_signals;
+            [](const BasePeakLocator& self, const py::dict& segmented_signal_dictionary) -> py::dict {
+                if (!segmented_signal_dictionary.contains("segment_id")) {
+                    throw std::runtime_error(
+                        "Input dictionary must contain a 'segment_id' key."
+                    );
+                }
 
-                for (const auto& segment_item : segmented_signal_dictionary) {
-                    const int segment_id = py::cast<int>(segment_item.first);
-                    py::dict segment_dictionary = py::reinterpret_borrow<py::dict>(segment_item.second);
+                if (!segmented_signal_dictionary.contains("Time")) {
+                    throw std::runtime_error(
+                        "Input dictionary must contain a 'Time' key."
+                    );
+                }
 
-                    ChannelDictionary channel_dictionary;
+                const std::vector<int> segment_ids =
+                    py::cast<std::vector<int>>(segmented_signal_dictionary[py::str("segment_id")]);
 
-                    for (const auto& channel_item : segment_dictionary) {
-                        const std::string channel_name = py::cast<std::string>(channel_item.first);
+                FlatSignalDictionary flat_signal_dictionary;
 
-                        if (channel_name == "Time") {
-                            continue;
-                        }
+                for (const auto& item : segmented_signal_dictionary) {
+                    const std::string key = py::cast<std::string>(item.first);
 
-                        channel_dictionary[channel_name] =
-                            py::cast<std::vector<double>>(channel_item.second);
+                    if (key == "segment_id" || key == "Time") {
+                        continue;
                     }
 
-                    segmented_signals[segment_id] = std::move(channel_dictionary);
+                    flat_signal_dictionary[key] =
+                        py::cast<std::vector<double>>(item.second);
+                }
+
+                if (flat_signal_dictionary.empty()) {
+                    throw std::runtime_error(
+                        "Input dictionary must contain at least one signal channel in addition to 'segment_id' and 'Time'."
+                    );
                 }
 
                 const SegmentedMetricDictionary segmented_metrics =
-                    self.run_segmented_signals(segmented_signals);
+                    self.run_flat_segmented_signals(
+                        segment_ids,
+                        flat_signal_dictionary
+                    );
 
                 py::dict output_dictionary;
 
@@ -138,24 +151,23 @@ PYBIND11_MODULE(peak_locator, module) {
             },
             py::arg("segmented_signal_dictionary"),
             R"pbdoc(
-                Compute peak metrics for all channels in a segmented dictionary.
+                Compute peak metrics for all channels in a flat segmented dictionary.
 
                 Parameters
                 ----------
                 segmented_signal_dictionary : dict
-                    Nested dictionary structured as
+                    Flat dictionary structured as
 
                         {
-                            segment_id: {
-                                "Time": quantity_or_array,
-                                "channel_name": array_like,
-                                ...
-                            },
+                            "segment_id": integer_array,
+                            "Time": quantity_or_array,
+                            "channel_name": array_like,
                             ...
                         }
 
-                    The "Time" entry is ignored. Every other key is treated as a
-                    1D signal channel.
+                    The "segment_id" entry identifies the segment of each sample.
+                    The "Time" entry is ignored.
+                    Every other key is treated as a 1D signal channel.
 
                 Returns
                 -------
@@ -177,9 +189,7 @@ PYBIND11_MODULE(peak_locator, module) {
 
                 Notes
                 -----
-                The iteration over segments and channels is handled in C++, while
-                this binding layer only performs Python to C++ and C++ to Python
-                conversions.
+                The regrouping and segmented batch processing are handled in C++.
             )pbdoc"
         );
 

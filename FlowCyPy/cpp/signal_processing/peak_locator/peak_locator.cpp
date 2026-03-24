@@ -18,6 +18,15 @@ BasePeakLocator::BasePeakLocator(
     if (this->max_number_of_peaks <= 0) {
         throw std::runtime_error("max_number_of_peaks must be strictly positive.");
     }
+
+    this->initialize_output_vectors();
+}
+
+
+void BasePeakLocator::validate_input_signal(const std::vector<double>& array) const {
+    if (array.empty()) {
+        throw std::runtime_error("signal must not be empty.");
+    }
 }
 
 
@@ -25,7 +34,7 @@ size_t BasePeakLocator::find_local_peak(
     const double* ptr,
     size_t start,
     size_t end
-) {
+) const {
     if (ptr == nullptr) {
         throw std::runtime_error("Input pointer must not be null.");
     }
@@ -54,7 +63,7 @@ PeakMetrics BasePeakLocator::compute_segment_metrics(
     size_t end,
     size_t peak_index,
     double threshold
-) {
+) const {
     PeakMetrics metrics{};
 
     size_t left_boundary = peak_index;
@@ -83,7 +92,7 @@ PeakMetrics BasePeakLocator::compute_segment_metrics(
 }
 
 
-void BasePeakLocator::sort_peaks_descending(std::vector<PeakData>& peaks) {
+void BasePeakLocator::sort_peaks_descending(std::vector<PeakData>& peaks) const {
     std::sort(
         peaks.begin(),
         peaks.end(),
@@ -102,7 +111,7 @@ void BasePeakLocator::compute_boundaries(
     double threshold,
     size_t& left_boundary,
     size_t& right_boundary
-) {
+) const {
     if (ptr == nullptr) {
         throw std::runtime_error("Input pointer must not be null.");
     }
@@ -136,6 +145,108 @@ void BasePeakLocator::compute_boundaries(
         ptr[right_boundary + 1] >= threshold_value
     ) {
         ++right_boundary;
+    }
+}
+
+
+void BasePeakLocator::initialize_output_vectors() {
+    this->peak_indices.assign(this->max_number_of_peaks, this->padding_value);
+    this->peak_heights.assign(
+        this->max_number_of_peaks,
+        static_cast<double>(this->padding_value)
+    );
+    this->peak_widths.assign(
+        this->max_number_of_peaks,
+        static_cast<double>(this->padding_value)
+    );
+    this->peak_areas.assign(
+        this->max_number_of_peaks,
+        static_cast<double>(this->padding_value)
+    );
+}
+
+
+MetricDictionary BasePeakLocator::compute_metric_dictionary(
+    const std::vector<double>& array
+) const {
+    this->validate_input_signal(array);
+
+    std::vector<PeakData> peaks = this->locate_peaks(array);
+    this->sort_peaks_descending(peaks);
+
+    MetricDictionary output;
+    output["Index"] = std::vector<double>(
+        this->max_number_of_peaks,
+        static_cast<double>(this->padding_value)
+    );
+    output["Height"] = std::vector<double>(
+        this->max_number_of_peaks,
+        static_cast<double>(this->padding_value)
+    );
+
+    if (this->compute_area) {
+        output["Area"] = std::vector<double>(
+            this->max_number_of_peaks,
+            static_cast<double>(this->padding_value)
+        );
+    }
+
+    if (this->compute_width) {
+        output["Width"] = std::vector<double>(
+            this->max_number_of_peaks,
+            static_cast<double>(this->padding_value)
+        );
+    }
+
+    const size_t number_of_output_peaks = std::min(
+        static_cast<size_t>(this->max_number_of_peaks),
+        peaks.size()
+    );
+
+    for (size_t index = 0; index < number_of_output_peaks; ++index) {
+        output["Index"][index] = static_cast<double>(peaks[index].index);
+        output["Height"][index] = peaks[index].value;
+
+        if (this->compute_width) {
+            output["Width"][index] = peaks[index].width;
+        }
+
+        if (this->compute_area) {
+            output["Area"][index] = peaks[index].area;
+        }
+    }
+
+    return output;
+}
+
+
+void BasePeakLocator::compute(const std::vector<double>& array) {
+    const MetricDictionary output = this->compute_metric_dictionary(array);
+
+    this->initialize_output_vectors();
+
+    const std::vector<double>& index_values = output.at("Index");
+    const std::vector<double>& height_values = output.at("Height");
+
+    for (size_t index = 0; index < index_values.size(); ++index) {
+        this->peak_indices[index] = static_cast<int>(std::llround(index_values[index]));
+        this->peak_heights[index] = height_values[index];
+    }
+
+    if (this->compute_width) {
+        const std::vector<double>& width_values = output.at("Width");
+
+        for (size_t index = 0; index < width_values.size(); ++index) {
+            this->peak_widths[index] = width_values[index];
+        }
+    }
+
+    if (this->compute_area) {
+        const std::vector<double>& area_values = output.at("Area");
+
+        for (size_t index = 0; index < area_values.size(); ++index) {
+            this->peak_areas[index] = area_values[index];
+        }
     }
 }
 
@@ -182,28 +293,94 @@ MetricDictionary BasePeakLocator::get_metrics(const std::vector<double>& array) 
 
 SegmentedMetricDictionary BasePeakLocator::run_segmented_signals(
     const SegmentedSignalDictionary& segmented_signals
-) {
-    SegmentedMetricDictionary output_dictionary;
+) const {
+    struct Task {
+        int segment_id;
+        std::string channel_name;
+        const std::vector<double>* signal_vector;
+    };
+
+    struct TaskResult {
+        int segment_id;
+        std::string channel_name;
+        MetricDictionary metrics;
+    };
+
+    std::vector<Task> tasks;
+    tasks.reserve(segmented_signals.size() * 4);
 
     for (const auto& [segment_id, channel_dictionary] : segmented_signals) {
-        std::unordered_map<std::string, MetricDictionary> segment_output_dictionary;
-
         for (const auto& [channel_name, signal_vector] : channel_dictionary) {
-            segment_output_dictionary[channel_name] = this->get_metrics(signal_vector);
+            tasks.push_back(Task{
+                segment_id,
+                channel_name,
+                &signal_vector
+            });
         }
+    }
 
-        output_dictionary[segment_id] = segment_output_dictionary;
+    std::vector<TaskResult> results(tasks.size());
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+    for (int task_index = 0; task_index < static_cast<int>(tasks.size()); ++task_index) {
+        const Task& task = tasks[static_cast<size_t>(task_index)];
+
+        results[static_cast<size_t>(task_index)] = TaskResult{
+            task.segment_id,
+            task.channel_name,
+            this->compute_metric_dictionary(*task.signal_vector)
+        };
+    }
+
+    SegmentedMetricDictionary output_dictionary;
+
+    for (TaskResult& result : results) {
+        output_dictionary[result.segment_id][result.channel_name] =
+            std::move(result.metrics);
     }
 
     return output_dictionary;
 }
 
 
-void BasePeakLocator::initialize_output_vectors() {
-    this->peak_indices.assign(this->max_number_of_peaks, this->padding_value);
-    this->peak_heights.assign(this->max_number_of_peaks, static_cast<double>(this->padding_value));
-    this->peak_widths.assign(this->max_number_of_peaks, static_cast<double>(this->padding_value));
-    this->peak_areas.assign(this->max_number_of_peaks, static_cast<double>(this->padding_value));
+SegmentedMetricDictionary BasePeakLocator::run_flat_segmented_signals(
+    const std::vector<int>& segment_ids,
+    const FlatSignalDictionary& flat_signals
+) const {
+    if (segment_ids.empty()) {
+        throw std::runtime_error("segment_ids must not be empty.");
+    }
+
+    if (flat_signals.empty()) {
+        throw std::runtime_error(
+            "flat_signals must contain at least one signal channel."
+        );
+    }
+
+    const size_t number_of_samples = segment_ids.size();
+
+    SegmentedSignalDictionary segmented_signals;
+
+    for (const auto& [channel_name, signal_vector] : flat_signals) {
+        if (signal_vector.size() != number_of_samples) {
+            throw std::runtime_error(
+                "Channel '" + channel_name + "' has length " +
+                std::to_string(signal_vector.size()) +
+                " but segment_ids has length " +
+                std::to_string(number_of_samples) + "."
+            );
+        }
+
+        for (size_t sample_index = 0; sample_index < number_of_samples; ++sample_index) {
+            segmented_signals[segment_ids[sample_index]][channel_name].push_back(
+                signal_vector[sample_index]
+            );
+        }
+    }
+
+    return this->run_segmented_signals(segmented_signals);
 }
 
 
@@ -218,6 +395,7 @@ SlidingWindowPeakLocator::SlidingWindowPeakLocator(
 )
     : BasePeakLocator(compute_width, compute_area, padding_value, max_number_of_peaks),
       window_size(window_size),
+      window_step((window_step == -1) ? window_size : window_step),
       threshold(threshold)
 {
     if (this->window_size <= 0) {
@@ -228,18 +406,16 @@ SlidingWindowPeakLocator::SlidingWindowPeakLocator(
         throw std::runtime_error("threshold must be non negative.");
     }
 
-    this->window_step = (window_step == -1) ? this->window_size : window_step;
-
     if (this->window_step <= 0) {
         throw std::runtime_error("window_step must be strictly positive.");
     }
 }
 
 
-void SlidingWindowPeakLocator::compute(const std::vector<double>& signal) {
-    if (signal.empty()) {
-        throw std::runtime_error("signal must not be empty.");
-    }
+std::vector<PeakData> SlidingWindowPeakLocator::locate_peaks(
+    const std::vector<double>& signal
+) const {
+    this->validate_input_signal(signal);
 
     const size_t number_of_samples = signal.size();
 
@@ -250,7 +426,10 @@ void SlidingWindowPeakLocator::compute(const std::vector<double>& signal) {
     );
 
     for (size_t start = 0; start < number_of_samples; start += static_cast<size_t>(this->window_step)) {
-        const size_t end = std::min(start + static_cast<size_t>(this->window_size), number_of_samples);
+        const size_t end = std::min(
+            start + static_cast<size_t>(this->window_size),
+            number_of_samples
+        );
 
         if (end <= start) {
             continue;
@@ -288,26 +467,7 @@ void SlidingWindowPeakLocator::compute(const std::vector<double>& signal) {
         );
     }
 
-    this->sort_peaks_descending(peaks);
-    this->initialize_output_vectors();
-
-    const size_t number_of_output_peaks = std::min(
-        static_cast<size_t>(this->max_number_of_peaks),
-        peaks.size()
-    );
-
-    for (size_t index = 0; index < number_of_output_peaks; ++index) {
-        this->peak_indices[index] = peaks[index].index;
-        this->peak_heights[index] = peaks[index].value;
-
-        if (this->compute_width) {
-            this->peak_widths[index] = peaks[index].width;
-        }
-
-        if (this->compute_area) {
-            this->peak_areas[index] = peaks[index].area;
-        }
-    }
+    return peaks;
 }
 
 
@@ -327,10 +487,10 @@ GlobalPeakLocator::GlobalPeakLocator(
 }
 
 
-void GlobalPeakLocator::compute(const std::vector<double>& signal) {
-    if (signal.empty()) {
-        throw std::runtime_error("signal must not be empty.");
-    }
+std::vector<PeakData> GlobalPeakLocator::locate_peaks(
+    const std::vector<double>& signal
+) const {
+    this->validate_input_signal(signal);
 
     const size_t global_peak_index = this->find_local_peak(signal.data(), 0, signal.size());
 
@@ -355,16 +515,12 @@ void GlobalPeakLocator::compute(const std::vector<double>& signal) {
         }
     }
 
-    this->initialize_output_vectors();
-
-    this->peak_indices[0] = static_cast<int>(global_peak_index);
-    this->peak_heights[0] = signal[global_peak_index];
-
-    if (this->compute_width) {
-        this->peak_widths[0] = width;
-    }
-
-    if (this->compute_area) {
-        this->peak_areas[0] = area;
-    }
+    return std::vector<PeakData>{
+        PeakData(
+            static_cast<int>(global_peak_index),
+            signal[global_peak_index],
+            width,
+            area
+        )
+    };
 }

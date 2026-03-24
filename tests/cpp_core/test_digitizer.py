@@ -215,7 +215,7 @@ def test_digitize_signal_clips_before_quantization():
     signal = digitizer.digitize_signal(signal)
 
     expected = np.array([0.0, 0.0, 128.0, 255.0, 255.0])
-
+    print(signal)
     assert np.allclose(signal, expected)
 
 

@@ -1,4 +1,5 @@
 #include "amplifier.h"
+#include <omp.h>
 
 
 Amplifier::Amplifier(
@@ -6,13 +7,15 @@ Amplifier::Amplifier(
     const double bandwidth,
     const double voltage_noise_density,
     const double current_noise_density,
-    const int filter_order
+    const int filter_order,
+    const bool debug_mode
 )
     : gain(gain),
         bandwidth(bandwidth),
         voltage_noise_density(voltage_noise_density),
         current_noise_density(current_noise_density),
-        filter_order(filter_order)
+        filter_order(filter_order),
+        debug_mode(debug_mode)
 {
     if (this->gain < 0.0) {
         throw std::runtime_error("gain must be non negative.");
@@ -33,8 +36,18 @@ Amplifier::Amplifier(
     if (this->filter_order <= 0) {
         throw std::runtime_error("filter_order must be strictly positive.");
     }
-}
 
+    if (this->debug_mode) {
+        std::printf(
+            "[Amplifier] Initialized | gain=%g | bandwidth=%g Hz | voltage_noise_density=%g V/sqrt(Hz) | current_noise_density=%g A/sqrt(Hz) | filter_order=%d\n",
+            this->gain,
+            this->bandwidth,
+            this->voltage_noise_density,
+            this->current_noise_density,
+            this->filter_order
+        );
+    }
+}
 
 double Amplifier::get_rms_noise() const {
     if (std::isnan(this->bandwidth)) {
@@ -148,8 +161,22 @@ std::vector<double> Amplifier::amplify_without_bandwidth(
 
     std::vector<double> output_signal(signal.size());
 
-    for (size_t index = 0; index < signal.size(); ++index) {
-        output_signal[index] = signal[index] * this->gain;
+    #pragma omp parallel
+    {
+        #pragma omp single
+        {
+            if (this->debug_mode) {
+                std::printf(
+                    "[Amplifier::amplify_without_bandwidth] using %d OpenMP threads\n",
+                    omp_get_num_threads()
+                );
+            }
+        }
+
+        #pragma omp for
+        for (long long index = 0; index < static_cast<long long>(signal.size()); ++index) {
+            output_signal[index] = signal[index] * this->gain;
+        }
     }
 
     return output_signal;
@@ -173,15 +200,32 @@ std::vector<double> Amplifier::add_gaussian_noise(
         return signal;
     }
 
-    static thread_local std::random_device random_device;
-    static thread_local std::mt19937 generator(random_device());
-
-    std::normal_distribution<double> distribution(mean, standard_deviation);
-
     std::vector<double> output_signal(signal);
 
-    for (double& sample : output_signal) {
-        sample += distribution(generator);
+    #pragma omp parallel
+    {
+        #pragma omp single
+        {
+            if (this->debug_mode) {
+                std::printf(
+                    "[Amplifier::add_gaussian_noise] using %d OpenMP threads | mean=%g | std=%g\n",
+                    omp_get_num_threads(),
+                    mean,
+                    standard_deviation
+                );
+            }
+        }
+
+        std::random_device random_device;
+        std::mt19937 generator(
+            random_device() + static_cast<unsigned int>(omp_get_thread_num())
+        );
+        std::normal_distribution<double> distribution(mean, standard_deviation);
+
+        #pragma omp for
+        for (long long index = 0; index < static_cast<long long>(output_signal.size()); ++index) {
+            output_signal[index] += distribution(generator);
+        }
     }
 
     return output_signal;

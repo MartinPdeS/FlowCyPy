@@ -9,136 +9,171 @@ import pandas as pd
 class TriggerDataFrame(pd.DataFrame):
     """
     DataFrame subclass for triggered analog acquisition data.
+
+    Notes
+    -----
+    This class does not use pint-pandas.
+    Time values are stored as plain numeric magnitudes in the ``"Time"`` column.
+    Their unit is stored in:
+
+        self.attrs["units"]["Time"]
+
+    The input ``data_dict["Time"]`` is expected to be a Pint quantity-like object
+    exposing both ``.magnitude`` and ``.units``.
     """
 
     @property
     def _constructor(self) -> type:
-        """Ensure operations return instances of TriggerDataFrame."""
+        """
+        Ensure pandas operations return instances of TriggerDataFrame.
+        """
         return self.__class__
 
     def __init__(self, dataframe: pd.DataFrame):
+        """
+        Initialize the TriggerDataFrame.
+
+        Parameters
+        ----------
+        dataframe : pd.DataFrame
+            Input dataframe.
+        """
         super().__init__(dataframe)
 
-    @property
-    def detector_names(self) -> List[str]:
-        """
-        Return detector column names.
-        """
-        return [col for col in self.columns if col != "Time"]
+        if "units" not in self.attrs:
+            self.attrs["units"] = {}
 
-    def __finalize__(self, other, method=..., **kwargs):
+    def __finalize__(self, other, method=None, **kwargs):
         """
-        Finalize the DataFrame after operations, preserving scatterer attributes.
+        Finalize the DataFrame after pandas operations and preserve metadata.
+
+        Parameters
+        ----------
+        other : object
+            Source object used by pandas during dataframe propagation.
+        method : str, optional
+            Finalization method name.
+        **kwargs
+            Additional keyword arguments forwarded by pandas.
+
+        Returns
+        -------
+        TriggerDataFrame
+            Finalized dataframe with copied unit metadata.
         """
-        output = super().__finalize__(other, method, **kwargs)
+        output = super().__finalize__(other, method=method, **kwargs)
+
+        if hasattr(other, "attrs"):
+            output.attrs["units"] = dict(other.attrs.get("units", {}))
 
         return output
 
     @classmethod
-    def _construct_from_segment_dict(
+    def _construct_from_flat_dict(
         cls,
-        segment_dict: Mapping[object, Mapping[str, object]],
+        data_dict: Mapping[str, object],
     ) -> "TriggerDataFrame":
         """
-        Convert a nested segment dictionary into a TriggerDataFrame.
+        Convert a flat segmented dictionary into a TriggerDataFrame.
 
         Expected input format
         ---------------------
         {
-            0: {
-                "Time": time_values_for_segment_0,
-                "DetectorA": signal_values_for_segment_0,
-                "DetectorB": signal_values_for_segment_0,
-            },
-            1: {
-                "Time": time_values_for_segment_1,
-                "DetectorA": signal_values_for_segment_1,
-                "DetectorB": signal_values_for_segment_1,
-            },
+            "segment_id": integer_array,
+            "Time": time_quantity_array,
+            "DetectorA": signal_values,
+            "DetectorB": signal_values,
         }
 
-        Each segment dictionary must contain a ``"Time"`` entry and one or more
-        detector entries. All arrays inside a given segment must have the same
-        length. All segments must share the same detector names.
+        Each key contains a one dimensional array. All arrays must have the same
+        length. The ``"segment_id"`` key identifies which trigger segment each
+        sample belongs to.
+
+        The time unit is read from:
+
+            data_dict["Time"].units
+
+        and stored in:
+
+            dataframe.attrs["units"]["Time"]
 
         Parameters
         ----------
-        segment_dict : Mapping[object, Mapping[str, object]]
-            Nested mapping from segment identifier to a dictionary containing
-            ``"Time"`` and detector signals.
+        data_dict : Mapping[str, object]
+            Flat mapping containing ``"segment_id"``, ``"Time"``, and one or more
+            detector signals.
 
         Returns
         -------
         TriggerDataFrame
             Triggered acquisition dataframe indexed by ``SegmentID``.
         """
-        cls.raw_data = segment_dict
-        if len(segment_dict) == 0:
-            raise ValueError("segment_dict must not be empty.")
+        if len(data_dict) == 0:
+            raise ValueError("data_dict must not be empty.")
 
-        rows = []
-        expected_detector_names = None
+        if "segment_id" not in data_dict:
+            raise ValueError("data_dict must contain a 'segment_id' entry.")
 
-        for raw_segment_id, signal_dict in segment_dict.items():
-            if "Time" not in signal_dict:
+        if "Time" not in data_dict:
+            raise ValueError("data_dict must contain a 'Time' entry.")
+
+        if not hasattr(data_dict["Time"], "units"):
+            raise ValueError("data_dict['Time'] must have a 'units' attribute.")
+
+        if not hasattr(data_dict["Time"], "magnitude"):
+            raise ValueError("data_dict['Time'] must have a 'magnitude' attribute.")
+
+        detector_names = [
+            key for key in data_dict.keys() if key not in ["segment_id", "Time"]
+        ]
+
+        if len(detector_names) == 0:
+            raise ValueError(
+                "data_dict must contain at least one detector signal in addition to 'segment_id' and 'Time'."
+            )
+
+        segment_ids = data_dict["segment_id"]
+        time_quantity = data_dict["Time"]
+
+        expected_length = len(segment_ids)
+
+        if len(time_quantity) != expected_length:
+            raise ValueError(
+                f"'Time' has length {len(time_quantity)} but 'segment_id' has length {expected_length}."
+            )
+
+        for detector_name in detector_names:
+            detector_signal = data_dict[detector_name]
+
+            if len(detector_signal) != expected_length:
                 raise ValueError(
-                    f"Segment '{raw_segment_id}' must contain a 'Time' entry."
+                    f"Signal '{detector_name}' has length {len(detector_signal)} "
+                    f"but 'segment_id' has length {expected_length}."
                 )
 
-            if len(signal_dict) < 2:
-                raise ValueError(
-                    f"Segment '{raw_segment_id}' must contain 'Time' and at least one detector signal."
-                )
-
-            detector_names = [key for key in signal_dict.keys() if key != "Time"]
-
-            if expected_detector_names is None:
-                expected_detector_names = detector_names
-            elif detector_names != expected_detector_names:
-                raise ValueError(
-                    f"Segment '{raw_segment_id}' does not have the same detector names "
-                    f"as previous segments. Expected {expected_detector_names}, got {detector_names}."
-                )
-
-            time_values = signal_dict["Time"]
-            expected_length = len(time_values)
-
-            for detector_name in detector_names:
-                detector_signal = signal_dict[detector_name]
-
-                if len(detector_signal) != expected_length:
-                    raise ValueError(
-                        f"Segment '{raw_segment_id}', signal '{detector_name}' has length "
-                        f"{len(detector_signal)} but 'Time' has length {expected_length}."
-                    )
-
-            for sample_index in range(expected_length):
-                row = {
-                    "SegmentID": raw_segment_id,
-                    "Time": time_values[sample_index],
-                }
-
-                for detector_name in detector_names:
-                    row[detector_name] = signal_dict[detector_name][sample_index]
-
-                rows.append(row)
-
-        trigger_dataframe = pd.DataFrame(rows)
-
-        trigger_dataframe["Time"] = pd.Series(
-            trigger_dataframe["Time"],
-            dtype="pint[second]",
+        trigger_dataframe = pd.DataFrame(
+            {
+                "SegmentID": segment_ids,
+                "Time": time_quantity.magnitude,
+                **{
+                    detector_name: data_dict[detector_name]
+                    for detector_name in detector_names
+                },
+            }
         )
 
-        for detector_name in expected_detector_names:
+        trigger_dataframe["Time"] = pd.Series(trigger_dataframe["Time"])
+
+        for detector_name in detector_names:
             trigger_dataframe[detector_name] = pd.Series(
-                trigger_dataframe[detector_name],
+                trigger_dataframe[detector_name]
             )
 
         trigger_dataframe = trigger_dataframe.set_index("SegmentID")
         trigger_dataframe.index.name = "SegmentID"
 
         trigger_dataframe = cls(trigger_dataframe)
+        trigger_dataframe.attrs["units"]["Time"] = time_quantity.units
 
         return trigger_dataframe
 
@@ -147,17 +182,69 @@ class TriggerDataFrame(pd.DataFrame):
         """
         Return detector column names.
         """
-        return [col for col in self.columns if col not in ["Time", "SegmentID"]]
+        return [column for column in self.columns if column != "Time"]
 
     @property
     def n_segment(self) -> int:
         """
         Return the number of unique trigger segments.
         """
-        return len(self.index.get_level_values("SegmentID").unique())
+        return len(self.index.unique())
+
+    def get_units(self, column: str):
+        """
+        Return the stored unit associated with a column.
+
+        Parameters
+        ----------
+        column : str
+            Column name for which unit metadata should be retrieved.
+
+        Returns
+        -------
+        object
+            Stored unit object.
+
+        Raises
+        ------
+        KeyError
+            If no unit metadata exists for the requested column.
+        """
+        if "units" not in self.attrs:
+            raise KeyError("No unit metadata is stored in this TriggerDataFrame.")
+
+        if column not in self.attrs["units"]:
+            raise KeyError(f"No unit metadata is stored for column '{column}'.")
+
+        return self.attrs["units"][column]
+
+    def to_compact(self) -> "TriggerDataFrame":
+        """
+        Rescale the ``Time`` column to a compact unit and update unit metadata.
+
+        This reproduces the behavior conceptually equivalent to:
+
+            self["Time"] = self["Time"].to(self["Time"].max().to_compact().units)
+
+        except that the dataframe stores only plain numeric magnitudes, while the
+        unit is stored separately in ``self.attrs["units"]["Time"]``.
+
+        Returns
+        -------
+        TriggerDataFrame
+            The same dataframe instance, modified in place.
+        """
+        time_unit = self.get_units("Time")
+        maximum_time_quantity = self["Time"].max() * time_unit
+        compact_unit = maximum_time_quantity.to_compact().units
+
+        self["Time"] = (self["Time"].to_numpy() * time_unit).to(compact_unit).magnitude
+        self.attrs["units"]["Time"] = compact_unit
+
+        return self
 
     @helper.post_mpl_plot
-    def plot(self) -> None:
+    def plot(self) -> plt.Figure:
         """
         Plot acquisition data for each detector.
 
@@ -166,7 +253,7 @@ class TriggerDataFrame(pd.DataFrame):
         plt.Figure
             Figure containing the detector plots.
         """
-        self.normalize_units(signal_units="max", time_units="max")
+        self.to_compact()
 
         figure, axes = self._get_axes_dict()
         self._add_to_axes(axes=axes)
@@ -179,8 +266,8 @@ class TriggerDataFrame(pd.DataFrame):
 
         Returns
         -------
-        tuple[plt.Figure, dict[str, plt.Axes]]
-            Figure and mapping from detector names to axes.
+        dict[str, plt.Axes]
+            Mapping from detector names to matplotlib axes.
         """
         n_plots = len(self.detector_names)
 
@@ -193,34 +280,31 @@ class TriggerDataFrame(pd.DataFrame):
 
         axes = {name: ax for name, ax in zip(self.detector_names, axes_array.flatten())}
 
-        for _, ax in axes.items():
+        for ax in axes.values():
             ax.yaxis.tick_right()
 
         for detector_name in self.detector_names:
             ax = axes[detector_name]
-            ax.set_ylabel(
-                rf"{detector_name} [{self.signal_units._repr_latex_()}]",
-                labelpad=20,
-            )
+            ax.set_ylabel(detector_name, labelpad=20)
 
-        ax.set_xlabel(rf"Time [{self.time_units._repr_latex_()}]")
+        ax.set_xlabel(f"Time [{self.get_units('Time')}]")
 
         return figure, axes
 
-    def _add_to_axes(self, axes: dict, time_units: object) -> None:
+    def _add_to_axes(self, axes: dict[str, plt.Axes]) -> None:
         """
         Plot triggered analog signal data for each detector and highlight each segment.
+
+        Parameters
+        ----------
+        axes : dict[str, plt.Axes]
+            Mapping from detector names to axes.
         """
-        # time_units = self["Time"].max().to_compact().units
-
-        self["Time"] = self["Time"].pint.to(time_units)
-
         for detector_name in self.detector_names:
             ax = axes[detector_name]
 
-            for segment_id, group in self.groupby("SegmentID"):
+            for segment_id, group in self.groupby(level="SegmentID"):
                 time = group["Time"]
-
                 signal = group[detector_name]
 
                 start_time = time.min()

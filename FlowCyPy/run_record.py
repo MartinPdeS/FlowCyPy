@@ -226,12 +226,14 @@ class RunRecord:
         during the run.
 
         """
-        time_units = self.signal.digital["Time"].max().to_compact().units
+        self.signal.digital.to_compact()
+
+        time_units = self.signal.digital.attrs["units"]["Time"]
 
         figure, axes = self.get_axes_dict(
             time_units=time_units,
         )
 
-        self.signal.digital._add_to_axes(axes=axes, time_units=time_units)
+        self.signal.digital._add_to_axes(axes=axes)
 
         return figure

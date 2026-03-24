@@ -16,13 +16,15 @@ public:
     double voltage_noise_density;   // [volt / sqrt(hertz)]
     double current_noise_density;   // [ampere / sqrt(hertz)]
     int filter_order;               // low-pass filter order
+    bool debug_mode = false;        // if true, print debug information during amplification
 
     Amplifier(
         const double gain,
         const double bandwidth = std::numeric_limits<double>::quiet_NaN(),
         const double voltage_noise_density = 0.0,
         const double current_noise_density = 0.0,
-        const int filter_order = 2
+        const int filter_order = 2,
+        const bool debug_mode = false
     );
 
     /**

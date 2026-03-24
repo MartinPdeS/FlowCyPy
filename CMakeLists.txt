@@ -131,8 +131,7 @@ message(STATUS "")
 
 # ----------------- collect subdirectories --------------------
 add_subdirectory(FlowCyPy/cpp/utils)                                 # utils
-add_subdirectory(FlowCyPy/cpp/pint)                                  # pint
-add_subdirectory(FlowCyPy/cpp/signal_generator)                      # signal_generator
+add_subdirectory(FlowCyPy/cpp/pint)                                  # pint                  # signal_generator
 
 add_subdirectory(FlowCyPy/cpp/fluidics/distributions)                # distributions
 add_subdirectory(FlowCyPy/cpp/fluidics/populations)                  # populations

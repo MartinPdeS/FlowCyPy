@@ -138,12 +138,12 @@ def test_flow_cytometer_acquisition(flow_cytometer):
     """Test if the Flow Cytometer generates a non-zero acquisition signal."""
     result = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
 
-    assert result.signal.analog["default"].pint.quantity.check(
-        ureg.volt
+    assert (
+        result.signal.analog["default"].units == ureg.volt
     ), "Acquisition signal is not in volts."
 
     assert (
-        np.std(result.signal.analog["default"].pint.quantity.magnitude) > 0
+        np.std(result.signal.analog["default"].magnitude) > 0
     ), "Acquisition signal variance is zero, indicating no noise added."
 
 
@@ -167,7 +167,6 @@ def test_flow_cytometer_plot(mock_show, flow_cytometer, digitizer):
     plt.close()
 
     digitizer.capture_signal(run_record.signal.analog.raw_data["default"])
-    digitizer.digitize_data_dict(run_record.signal.analog.raw_data)
 
     plt.close()
 
@@ -206,9 +205,7 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
 
     triggered_signal = _discriminator.run_with_dict(run_record.signal.analog.raw_data)
 
-    assert (
-        np.std(triggered_signal[0]["default"]) > 0
-    ), "Filtered signal has zero variance."
+    assert np.std(triggered_signal["default"]) > 0, "Filtered signal has zero variance."
 
 
 def test_peak_detection(flow_cytometer, digitizer):

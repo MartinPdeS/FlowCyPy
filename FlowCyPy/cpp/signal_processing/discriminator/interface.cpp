@@ -113,53 +113,6 @@ PYBIND11_MODULE(discriminator, module) {
             )pbdoc"
         )
         .def(
-            "add_time",
-            [](BaseDiscriminator &self, const py::object &time_array) {
-                const std::vector<double> time_vector =
-                    time_array
-                        .attr("to")("second")
-                        .attr("magnitude")
-                        .cast<std::vector<double>>();
-
-                self.add_time(time_vector);
-            },
-            py::arg("time_array"),
-            R"pbdoc(
-                Add the global time axis.
-
-                Parameters
-                ----------
-                time_array : array-like quantity
-                    One dimensional array convertible to seconds.
-            )pbdoc"
-        )
-        .def(
-            "add_channel",
-            [](BaseDiscriminator &self,
-               const std::string &channel,
-               const py::object &signal_array) {
-                const std::vector<double> signal_vector =
-                    signal_array
-                        .attr("to")("volt")
-                        .attr("magnitude")
-                        .cast<std::vector<double>>();
-
-                self.add_signal(channel, signal_vector);
-            },
-            py::arg("channel"),
-            py::arg("signal_array"),
-            R"pbdoc(
-                Add a signal channel.
-
-                Parameters
-                ----------
-                channel : str
-                    Name of the signal channel.
-                signal_array : array-like quantity
-                    One dimensional array convertible to volts.
-            )pbdoc"
-        )
-        .def(
             "run_with_dict",
             [ureg](BaseDiscriminator &self, const py::dict &data_dict) {
                 if (!data_dict.contains("Time")) {
@@ -167,11 +120,15 @@ PYBIND11_MODULE(discriminator, module) {
                 }
 
                 const std::vector<double> time_vector =
-                    py::reinterpret_borrow<py::object>(data_dict["Time"]).attr("to")("second").attr("magnitude").cast<std::vector<double>>();
+                    py::reinterpret_borrow<py::object>(data_dict["Time"])
+                        .attr("to")("second")
+                        .attr("magnitude")
+                        .cast<std::vector<double>>();
 
                 self.add_time(time_vector);
 
-                bool found_signal_channel = false;
+                std::vector<std::string> channel_names;
+                channel_names.reserve(data_dict.size() > 0 ? data_dict.size() - 1 : 0);
 
                 for (const auto &item : data_dict) {
                     const std::string key =
@@ -181,14 +138,20 @@ PYBIND11_MODULE(discriminator, module) {
                         continue;
                     }
 
-                    const std::vector<double> signal_vector = py::reinterpret_borrow<py::object>(item.second).attr("to")("volt").attr("magnitude").cast<std::vector<double>>();
+                    const std::vector<double> signal_vector =
+                        py::reinterpret_borrow<py::object>(item.second)
+                            .attr("to")("volt")
+                            .attr("magnitude")
+                            .cast<std::vector<double>>();
 
                     self.add_signal(key, signal_vector);
-                    found_signal_channel = true;
+                    channel_names.push_back(key);
                 }
 
-                if (!found_signal_channel) {
-                    throw std::runtime_error("Input dictionary must contain at least one signal channel in addition to 'Time'.");
+                if (channel_names.empty()) {
+                    throw std::runtime_error(
+                        "Input dictionary must contain at least one signal channel in addition to 'Time'."
+                    );
                 }
 
                 self.run();
@@ -204,81 +167,23 @@ PYBIND11_MODULE(discriminator, module) {
                     );
                 }
 
-                py::dict grouped_output;
-
-                for (size_t sample_index = 0; sample_index < segment_ids.size(); ++sample_index) {
-                    const int segment_id = segment_ids[sample_index];
-                    py::int_ py_segment_id(segment_id);
-
-                    if (!grouped_output.contains(py_segment_id)) {
-                        py::dict segment_dict;
-                        segment_dict["Time"] = py::list();
-
-                        for (const auto &item : data_dict) {
-                            const std::string key =
-                                py::reinterpret_borrow<py::object>(item.first).cast<std::string>();
-
-                            if (key == "Time") {
-                                continue;
-                            }
-
-                            segment_dict[py::str(key)] = py::list();
-                        }
-
-                        grouped_output[py_segment_id] = segment_dict;
-                    }
-
-                    py::dict segment_dict =
-                        py::reinterpret_borrow<py::dict>(grouped_output[py_segment_id]);
-
-                    py::list time_list =
-                        py::reinterpret_borrow<py::list>(segment_dict["Time"]);
-                    time_list.append(segmented_time[sample_index]);
-
-                    for (const auto &item : data_dict) {
-                        const std::string key =
-                            py::reinterpret_borrow<py::object>(item.first).cast<std::string>();
-
-                        if (key == "Time") {
-                            continue;
-                        }
-
-                        const std::vector<double> &segmented_signal =
-                            self.trigger.get_segmented_signal(key);
-
-                        if (segmented_signal.size() != segment_ids.size()) {
-                            throw std::runtime_error(
-                                "Segmented signal size mismatch for channel '" + key + "'."
-                            );
-                        }
-
-                        py::list channel_list =
-                            py::reinterpret_borrow<py::list>(segment_dict[py::str(key)]);
-                        channel_list.append(segmented_signal[sample_index]);
-                    }
-                }
-
                 py::dict final_output;
 
-                for (const auto &item : grouped_output) {
-                    py::int_ segment_id = py::reinterpret_borrow<py::int_>(item.first);
-                    py::dict raw_segment_dict = py::reinterpret_borrow<py::dict>(item.second);
+                final_output["segment_id"] = numpy.attr("array")(segment_ids);
+                final_output["Time"] = numpy.attr("array")(segmented_time) * ureg.attr("second");
 
-                    py::dict final_segment_dict;
+                for (const std::string &channel_name : channel_names) {
+                    const std::vector<double> &segmented_signal =
+                        self.trigger.get_segmented_signal(channel_name);
 
-                    final_segment_dict["Time"] = numpy.attr("array")(raw_segment_dict["Time"]) * ureg.attr("second");
-
-                    for (const auto &channel_item : raw_segment_dict) {
-                        const std::string key = py::reinterpret_borrow<py::object>(channel_item.first).cast<std::string>();
-
-                        if (key == "Time") {
-                            continue;
-                        }
-
-                        final_segment_dict[py::str(key)] = numpy.attr("array")(channel_item.second) * ureg.attr("volt");
+                    if (segmented_signal.size() != segment_ids.size()) {
+                        throw std::runtime_error(
+                            "Segmented signal size mismatch for channel '" + channel_name + "'."
+                        );
                     }
 
-                    final_output[segment_id] = final_segment_dict;
+                    final_output[py::str(channel_name)] =
+                        numpy.attr("array")(segmented_signal) * ureg.attr("volt");
                 }
 
                 return final_output;
@@ -298,8 +203,21 @@ PYBIND11_MODULE(discriminator, module) {
                 Returns
                 -------
                 dict
-                    Nested dictionary indexed by segment identifier. Each segment
-                    contains a "Time" entry and one entry per signal channel.
+                    Flat dictionary where each entry corresponds to one segmented sample.
+
+                    The output contains:
+                    - "segment_id": integer array identifying the segment of each sample
+                    - "Time": time array with units of seconds
+                    - one array per signal channel with units of volts
+
+                    Example
+                    -------
+                    {
+                        "segment_id": [...],
+                        "Time": [...]*second,
+                        "ChannelA": [...]*volt,
+                        "ChannelB": [...]*volt,
+                    }
             )pbdoc"
         )
         ;
