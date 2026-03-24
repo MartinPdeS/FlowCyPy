@@ -5,7 +5,6 @@ from . import circuits
 from . import discriminator
 from . import peak_locator
 from .digitizer import Digitizer
-from FlowCyPy.signal_generator import SignalGenerator
 
 
 class SignalProcessing:
