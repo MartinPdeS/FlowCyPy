@@ -49,7 +49,13 @@ class BasePeakLocator {
          * \throws py::value_error if the metric name is invalid.
          * \details This function retrieves the specified metric from the peak locator's data.
          */
-        std::vector<double> get_metric_py(const std::string &metric_name);
+        std::vector<double> get_metric_py(const std::string &metric_name) const;
+
+        /**
+         * \brief Initializes the output vectors for peak data.
+         * \details This function clears and resizes the output vectors based on the maximum number of peaks.
+         */
+        void initialize_output_vectors();
 
         /**
          * \brief Virtual destructor for BasePeakLocator.

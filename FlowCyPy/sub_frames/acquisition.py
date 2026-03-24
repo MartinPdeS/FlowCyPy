@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
-from typing import List, Optional, Union
-from typing import List, Mapping, Optional, Union
+from typing import List, Mapping
 
 import matplotlib.pyplot as plt
 from MPSPlots import helper
 import pandas as pd
-import seaborn as sns
-from TypedUnit import Dimensionless, Time, Voltage, ureg
+from TypedUnit import Time, Voltage, ureg
 
-from FlowCyPy.sub_frames import utils
 from FlowCyPy.sub_frames.base import BaseSubFrame
 
 
-class BaseAcquisitionDataFrame(BaseSubFrame):
+class AcquisitionDataFrame(BaseSubFrame):
     """
-    Base class for acquisition data frames with common plotting and logging functionalities.
+    DataFrame subclass for continuous analog acquisition data.
     """
 
     def __init__(self, dataframe: pd.DataFrame):
@@ -53,7 +50,6 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
             )
 
         time_values = signal_dict["Time"]
-
         expected_length = len(time_values)
 
         signal_dataframe = pd.DataFrame()
@@ -79,39 +75,9 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
             )
 
         signal_dataframe = cls(signal_dataframe)
-
         signal_dataframe.normalize_units(signal_units="SI", time_units="SI")
 
         return signal_dataframe
-
-    def digitalize(self, digitizer: object):
-        """
-        Convert analog signals to digital signals using the provided digitizer.
-
-        Parameters
-        ----------
-        digitizer : object
-            An instance of a digitizer that implements the `capture_signal` method.
-
-        Returns
-        -------
-        BaseAcquisitionDataFrame
-            A new instance of the class with digitalized signals.
-        """
-        digital_df = pd.DataFrame(
-            index=self.index, columns=self.columns, data=dict(Time=self.Time)
-        )
-
-        for detector_name in self.detector_names:
-            array = self[detector_name].pint.quantity
-            # import matplotlib.pyplot as plt
-            # plt.plot(self["Time"].pint.quantity, array)
-            # plt.show()
-            digital_df[detector_name] = digitizer.process_signal(array)
-
-        output = self.__class__(dataframe=digital_df)
-
-        return output
 
     def normalize_units(
         self, signal_units: Voltage | str = None, time_units: Time | str = None
@@ -121,9 +87,9 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
         Parameters
         ----------
-        signal_units : Voltage
+        signal_units : Voltage | str
             The units to which the signal columns should be normalized.
-        time_units : Time
+        time_units : Time | str
             The units to which the time column should be normalized.
         """
         name = f"{self.detector_names[0]}"
@@ -163,7 +129,6 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
     def __finalize__(self, other, method=..., **kwargs):
         """
         Finalize the DataFrame after operations, preserving scatterer attributes.
-        This method ensures that the scatterer attribute is retained in the output DataFrame.
         """
         output = super().__finalize__(other, method, **kwargs)
 
@@ -171,21 +136,19 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
 
     @property
     def detector_names(self) -> List[str]:
-        """Return a list of unique detector names."""
+        """
+        Return detector column names.
+        """
         return [col for col in self.columns if col != "Time"]
 
     def _get_axes_dict(self) -> dict[str, plt.Axes]:
         """
-        Creates a dictionary of matplotlib Axes for each detector and scatterer.
-
-        This method generates a dictionary where each key is the name of a detector or "scatterer",
-        and the corresponding value is a matplotlib Axes object. This is useful for plotting
-        multiple signals in a structured manner.
+        Create one matplotlib axis per detector.
 
         Returns
         -------
-        dict[str, plt.Axes]
-            A dictionary mapping detector names and "scatterer" to their respective Axes objects.
+        tuple[plt.Figure, dict[str, plt.Axes]]
+            Figure and mapping from detector names to axes.
         """
         n_plots = len(self.detector_names)
 
@@ -204,7 +167,8 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
         for detector_name in self.detector_names:
             ax = axes[detector_name]
             ax.set_ylabel(
-                rf"{detector_name} [{self.signal_units._repr_latex_()}]", labelpad=20
+                rf"{detector_name} [{self.signal_units._repr_latex_()}]",
+                labelpad=20,
             )
 
         ax.set_xlabel(rf"Time [{self.time_units._repr_latex_()}]")
@@ -214,77 +178,19 @@ class BaseAcquisitionDataFrame(BaseSubFrame):
     @helper.post_mpl_plot
     def plot(self) -> None:
         """
-        Plot acquisition data for each detector and the scatterer events.
-        This method creates a multi panel plot with each detector's signal and a scatterer event plot.
+        Plot acquisition data for each detector.
 
         Returns
         -------
         plt.Figure
-            The figure containing the acquisition data plots.
-
+            Figure containing the detector plots.
         """
         self.normalize_units(signal_units="max", time_units="max")
 
         figure, axes = self._get_axes_dict()
-
         self._add_to_axes(axes=axes)
 
         return figure
-
-    @helper.post_mpl_plot
-    def hist(
-        self,
-        kde: bool = False,
-        bins: Optional[int] = "auto",
-        color: Optional[Union[str, dict]] = None,
-        clip_data: Optional[Union[str, Voltage | Dimensionless]] = None,
-    ) -> plt.Figure:
-        """
-        Plot a histogram distribution for a given column using Seaborn, with an option to remove extreme values.
-
-        Parameters
-        ----------
-        kde : bool, optional
-            Whether to overlay a KDE curve (default: False).
-        bins : Optional[int], optional
-            Number of bins for the histogram (default: 'auto', letting Seaborn decide).
-        color : Optional[Union[str, dict]], optional
-            Color specification for the plot (default: None).
-        clip_data : Optional[Union[str, units.Quantity]], optional
-            If provided, removes data above a threshold. If a string ending with '%' (e.g., "20%") is given,
-            the function removes values above the corresponding quantile (e.g., the top 20% of values).
-            If a pint.Quantity is given, it removes values above that absolute value.
-        save_as : str, optional
-            If provided, the figure is saved to this filename.
-
-        Returns
-        -------
-        plt.Figure
-            The figure containing the acquisition data plots.
-        """
-        if len(self) == 1:
-            return
-
-        n_plots = len(self.detector_names)
-
-        figure, axes = plt.subplots(nrows=n_plots, sharex=True, sharey=True)
-
-        for ax, detector_name in zip(axes, self.detector_names):
-            ax.set_ylabel(detector_name)
-
-            signal = self[detector_name].pint.quantity.magnitude
-
-            signal = utils.clip_data(signal=signal, clip_value=clip_data)
-
-            sns.histplot(x=signal, ax=ax, kde=kde, bins=bins, color=color)
-
-        return figure
-
-
-class AcquisitionDataFrame(BaseAcquisitionDataFrame):
-    """
-    DataFrame subclass for continuous (analog) acquisition data.
-    """
 
     def _add_to_axes(self, axes: dict) -> None:
         """
@@ -300,39 +206,3 @@ class AcquisitionDataFrame(BaseAcquisitionDataFrame):
                 signal = signal.pint.to(self.signal_units).pint.quantity
 
             ax.plot(time, signal, label="Analog Signal", linestyle="-", color="black")
-
-
-class TriggerDataFrame(BaseAcquisitionDataFrame):
-    """
-    DataFrame subclass for triggered analog acquisition data.
-    """
-
-    @property
-    def detector_names(self) -> List[str]:
-        """Return a list of unique detector names."""
-        return [col for col in self.columns if col not in ["Time", "SegmentID"]]
-
-    @property
-    def n_segment(self) -> int:
-        return len(self.index.get_level_values("SegmentID").unique())
-
-    def _add_to_axes(self, axes: dict) -> None:
-        """
-        Plot triggered analog signal data for each detector and highlight each SegmentID region
-        with a distinct color.
-        """
-        for detector_name in self.detector_names:
-            ax = axes[detector_name]
-
-            for segment_id, group in self.groupby("SegmentID"):
-                time = group["Time"].pint.to(self.time_units)
-                signal = group[detector_name]
-
-                start_time = time.min()
-                end_time = time.max()
-
-                color = plt.cm.tab10(int(segment_id) % 10)
-
-                ax.axvspan(start_time, end_time, facecolor=color, alpha=0.3)
-
-                ax.step(time, signal, where="mid", color="black", linestyle="-")

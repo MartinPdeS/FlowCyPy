@@ -1,221 +1,380 @@
 #include "peak_locator.h"
 
+#include <algorithm>
+#include <stdexcept>
+
 
 // ----------- Implementation of BasePeakLocator -----------------
-BasePeakLocator::BasePeakLocator(bool compute_width, bool compute_area, int padding_value, int max_number_of_peaks)
-: compute_width(compute_width), compute_area(compute_area), padding_value(padding_value), max_number_of_peaks(max_number_of_peaks)
-{}
+BasePeakLocator::BasePeakLocator(
+    bool compute_width,
+    bool compute_area,
+    int padding_value,
+    int max_number_of_peaks
+)
+    : compute_width(compute_width),
+      compute_area(compute_area),
+      padding_value(padding_value),
+      max_number_of_peaks(max_number_of_peaks)
+{
+    if (this->max_number_of_peaks <= 0) {
+        throw std::runtime_error("max_number_of_peaks must be strictly positive.");
+    }
+}
 
-size_t BasePeakLocator::find_local_peak(const double* ptr, size_t start, size_t end) {
+
+size_t BasePeakLocator::find_local_peak(
+    const double* ptr,
+    size_t start,
+    size_t end
+) {
+    if (ptr == nullptr) {
+        throw std::runtime_error("Input pointer must not be null.");
+    }
+
+    if (end <= start) {
+        throw std::runtime_error("Invalid interval: end must be greater than start.");
+    }
+
     size_t local_peak_index = start;
-    double max_val = ptr[start];
-    for (size_t i = start; i < end; i++) {
-        if (ptr[i] > max_val) {
-            max_val = ptr[i];
-            local_peak_index = i;
+    double maximum_value = ptr[start];
+
+    for (size_t index = start + 1; index < end; ++index) {
+        if (ptr[index] > maximum_value) {
+            maximum_value = ptr[index];
+            local_peak_index = index;
         }
     }
+
     return local_peak_index;
 }
 
-PeakMetrics BasePeakLocator::compute_segment_metrics(const double* ptr, size_t start, size_t end, size_t peak_index, double threshold) {
-    PeakMetrics metrics;
-    size_t left_boundary, right_boundary;
-    this->compute_boundaries(ptr, start, end, peak_index, threshold, left_boundary, right_boundary);
+
+PeakMetrics BasePeakLocator::compute_segment_metrics(
+    const double* ptr,
+    size_t start,
+    size_t end,
+    size_t peak_index,
+    double threshold
+) {
+    PeakMetrics metrics{};
+
+    size_t left_boundary = peak_index;
+    size_t right_boundary = peak_index;
+
+    this->compute_boundaries(
+        ptr,
+        start,
+        end,
+        peak_index,
+        threshold,
+        left_boundary,
+        right_boundary
+    );
+
     metrics.width = static_cast<double>(right_boundary - left_boundary + 1);
 
     double area = 0.0;
-    for (size_t i = left_boundary; i <= right_boundary; i++)
-        area += ptr[i];
+    for (size_t index = left_boundary; index <= right_boundary; ++index) {
+        area += ptr[index];
+    }
 
     metrics.area = area;
+
     return metrics;
 }
 
-void BasePeakLocator::pad_peaks(const std::vector<std::pair<int, double>>& peaks, size_t max_number_of_peaks, int padding_value, std::vector<int>& pad_index, std::vector<double>& pad_height) {
-    size_t num_found = peaks.size();
+
+void BasePeakLocator::pad_peaks(
+    const std::vector<std::pair<int, double>>& peaks,
+    size_t max_number_of_peaks,
+    int padding_value,
+    std::vector<int>& pad_index,
+    std::vector<double>& pad_height
+) {
+    const size_t number_of_found_peaks = peaks.size();
+
     pad_index.assign(max_number_of_peaks, padding_value);
-    pad_height.assign(max_number_of_peaks, padding_value);
-    for (size_t i = 0; i < std::min(max_number_of_peaks, num_found); i++) {
-        pad_index[i] = peaks[i].first;
-        pad_height[i] = peaks[i].second;
+    pad_height.assign(max_number_of_peaks, static_cast<double>(padding_value));
+
+    for (size_t index = 0; index < std::min(max_number_of_peaks, number_of_found_peaks); ++index) {
+        pad_index[index] = peaks[index].first;
+        pad_height[index] = peaks[index].second;
     }
 }
 
 
 void BasePeakLocator::sort_peaks_descending(std::vector<PeakData>& peaks) {
-    std::sort(peaks.begin(), peaks.end(), [](const PeakData &a, const PeakData &b) {
-        return a.value > b.value;
-    });
+    std::sort(
+        peaks.begin(),
+        peaks.end(),
+        [](const PeakData& left_peak, const PeakData& right_peak) {
+            return left_peak.value > right_peak.value;
+        }
+    );
 }
+
 
 void BasePeakLocator::sort_peaks_descending(std::vector<std::pair<int, double>>& peaks) {
     std::sort(
         peaks.begin(),
         peaks.end(),
-        [](const std::pair<int, double>& a, const std::pair<int, double>& b) { return a.second > b.second;}
+        [](const std::pair<int, double>& left_peak, const std::pair<int, double>& right_peak) {
+            return left_peak.second > right_peak.second;
+        }
     );
 }
 
-void BasePeakLocator::compute_boundaries(const double* ptr, size_t start, size_t end, size_t peak_index, double threshold, size_t &left_boundary, size_t &right_boundary)
-{
-    double peak_value = ptr[peak_index];
-    double thresh_val = threshold * peak_value;
 
-    // Find left boundary.
-    size_t left = peak_index;
-    while (left > start && ptr[left] >= thresh_val)
-        left--;
-    left_boundary = left + 1;
+void BasePeakLocator::compute_boundaries(
+    const double* ptr,
+    size_t start,
+    size_t end,
+    size_t peak_index,
+    double threshold,
+    size_t& left_boundary,
+    size_t& right_boundary
+) {
+    if (ptr == nullptr) {
+        throw std::runtime_error("Input pointer must not be null.");
+    }
 
-    // Find right boundary.
-    size_t right = peak_index;
-    while (right < end - 1 && ptr[right] >= thresh_val)
-        right++;
-    right_boundary = (right > 0 ? right - 1 : 0);
+    if (end <= start) {
+        throw std::runtime_error("Invalid interval: end must be greater than start.");
+    }
+
+    if (peak_index < start || peak_index >= end) {
+        throw std::runtime_error("peak_index must lie inside [start, end).");
+    }
+
+    if (threshold < 0.0) {
+        throw std::runtime_error("threshold must be non negative.");
+    }
+
+    const double peak_value = ptr[peak_index];
+    const double threshold_value = threshold * peak_value;
+
+    left_boundary = peak_index;
+    while (
+        left_boundary > start &&
+        ptr[left_boundary - 1] >= threshold_value
+    ) {
+        --left_boundary;
+    }
+
+    right_boundary = peak_index;
+    while (
+        right_boundary + 1 < end &&
+        ptr[right_boundary + 1] >= threshold_value
+    ) {
+        ++right_boundary;
+    }
 }
 
 
-std::vector<double> BasePeakLocator::get_metric_py(const std::string &metric_name){
-    if (metric_name == "Index")
+std::vector<double> BasePeakLocator::get_metric_py(const std::string& metric_name) const {
+    if (metric_name == "Index") {
         return std::vector<double>(this->peak_indices.begin(), this->peak_indices.end());
-    if (metric_name == "Height")
+    }
+
+    if (metric_name == "Height") {
         return this->peak_heights;
-    if (metric_name == "Width")
+    }
+
+    if (metric_name == "Width") {
         return this->peak_widths;
-    if (metric_name == "Area")
+    }
+
+    if (metric_name == "Area") {
         return this->peak_areas;
+    }
 
     throw pybind11::value_error(std::string("No valid metric chosen: ") + metric_name);
 }
 
 
 std::unordered_map<std::string, std::vector<double>>
-BasePeakLocator::get_metrics(const std::vector<double> &array){
+BasePeakLocator::get_metrics(const std::vector<double>& array) {
     this->compute(array);
+
     std::unordered_map<std::string, std::vector<double>> output;
-
     output["Index"] = std::vector<double>(this->peak_indices.begin(), this->peak_indices.end());
-
     output["Height"] = this->peak_heights;
 
-    if (this->compute_area)
+    if (this->compute_area) {
         output["Area"] = this->peak_areas;
+    }
 
-    if (this->compute_width)
+    if (this->compute_width) {
         output["Width"] = this->peak_widths;
+    }
 
     return output;
 }
 
 
+void BasePeakLocator::initialize_output_vectors() {
+    this->peak_indices.assign(this->max_number_of_peaks, this->padding_value);
+    this->peak_heights.assign(this->max_number_of_peaks, static_cast<double>(this->padding_value));
+    this->peak_widths.assign(this->max_number_of_peaks, static_cast<double>(this->padding_value));
+    this->peak_areas.assign(this->max_number_of_peaks, static_cast<double>(this->padding_value));
+}
+
+
 // ----------- Implementation of the SlidingWindowPeakLocator -----------------
-SlidingWindowPeakLocator::SlidingWindowPeakLocator(int window_size, int window_step, int max_number_of_peaks, int padding_value, bool compute_width, bool compute_area, double threshold)
-:   BasePeakLocator(compute_width, compute_area, padding_value, max_number_of_peaks), window_size(window_size), threshold(threshold)
+SlidingWindowPeakLocator::SlidingWindowPeakLocator(
+    int window_size,
+    int window_step,
+    int max_number_of_peaks,
+    int padding_value,
+    bool compute_width,
+    bool compute_area,
+    double threshold
+)
+    : BasePeakLocator(compute_width, compute_area, padding_value, max_number_of_peaks),
+      window_size(window_size),
+      threshold(threshold)
 {
-    this->window_step = (window_step == -1) ? window_size : window_step;
+    if (this->window_size <= 0) {
+        throw std::runtime_error("window_size must be strictly positive.");
+    }
+
+    if (this->threshold < 0.0) {
+        throw std::runtime_error("threshold must be non negative.");
+    }
+
+    this->window_step = (window_step == -1) ? this->window_size : window_step;
+
+    if (this->window_step <= 0) {
+        throw std::runtime_error("window_step must be strictly positive.");
+    }
 }
 
-void SlidingWindowPeakLocator::compute(const std::vector<double> &signal) {
-    if (signal.empty())
-        throw std::runtime_error("Input array must be 1D.");
 
-    size_t num_cols = signal.size();
+void SlidingWindowPeakLocator::compute(const std::vector<double>& signal) {
+    if (signal.empty()) {
+        throw std::runtime_error("signal must not be empty.");
+    }
 
+    const size_t number_of_samples = signal.size();
     std::vector<PeakData> peaks;
+    peaks.reserve((number_of_samples + static_cast<size_t>(this->window_step) - 1) / static_cast<size_t>(this->window_step));
 
-    // Process each window using window_step.
-    // This loop covers the entire signal even if the last window is incomplete.
-    for (size_t start = 0; start < num_cols; start += window_step) {
-        size_t end = std::min(start + static_cast<size_t>(window_size), num_cols);
+    for (size_t start = 0; start < number_of_samples; start += static_cast<size_t>(this->window_step)) {
+        const size_t end = std::min(start + static_cast<size_t>(this->window_size), number_of_samples);
 
-        if (end <= start)
+        if (end <= start) {
             continue;
-
-        // Find the local maximum in this window.
-        size_t local_peak_index = this->find_local_peak(signal.data(), start, end);
-        double peak_value = signal[local_peak_index];
-
-        double
-            width = padding_value,
-            area = padding_value;
-
-        // Optionally compute width and area using the helper function.
-        if (compute_width || compute_area) {
-            PeakMetrics metrics = this->compute_segment_metrics(signal.data(), start, end, local_peak_index, threshold);
-            if (compute_width)
-                width = metrics.width;
-
-            if (compute_area)
-                area = metrics.area;
-
         }
-        peaks.emplace_back(static_cast<int>(local_peak_index), peak_value, width, area);
+
+        const size_t local_peak_index = this->find_local_peak(signal.data(), start, end);
+        const double peak_value = signal[local_peak_index];
+
+        double width = static_cast<double>(this->padding_value);
+        double area = static_cast<double>(this->padding_value);
+
+        if (this->compute_width || this->compute_area) {
+            const PeakMetrics metrics = this->compute_segment_metrics(
+                signal.data(),
+                start,
+                end,
+                local_peak_index,
+                this->threshold
+            );
+
+            if (this->compute_width) {
+                width = metrics.width;
+            }
+
+            if (this->compute_area) {
+                area = metrics.area;
+            }
+        }
+
+        peaks.emplace_back(
+            static_cast<int>(local_peak_index),
+            peak_value,
+            width,
+            area
+        );
     }
 
-    // Sort peaks by amplitude in descending order.
     this->sort_peaks_descending(peaks);
+    this->initialize_output_vectors();
 
-    // Pad the results to a fixed size.
-    size_t number_of_windows = peaks.size();
-    peak_indices = std::vector<int>(max_number_of_peaks, padding_value);
-    peak_heights = std::vector<double>(max_number_of_peaks, padding_value);
-    peak_widths = std::vector<double>(max_number_of_peaks, padding_value);
-    peak_areas = std::vector<double>(max_number_of_peaks, padding_value);
+    const size_t number_of_windows = peaks.size();
+    const size_t number_of_output_peaks = std::min(static_cast<size_t>(this->max_number_of_peaks), number_of_windows);
 
-    for (size_t i = 0; i < std::min(static_cast<size_t>(max_number_of_peaks), number_of_windows); i++) {
-        this->peak_indices[i] = peaks[i].index;
-        this->peak_heights[i] = peaks[i].value;
+    for (size_t index = 0; index < number_of_output_peaks; ++index) {
+        this->peak_indices[index] = peaks[index].index;
+        this->peak_heights[index] = peaks[index].value;
 
-        if (compute_width)
-            this->peak_widths[i] = peaks[i].width;
+        if (this->compute_width) {
+            this->peak_widths[index] = peaks[index].width;
+        }
 
-        if (compute_area)
-            this->peak_areas[i] = peaks[i].area;
+        if (this->compute_area) {
+            this->peak_areas[index] = peaks[index].area;
+        }
     }
 }
+
 
 // ----------- Implementation of the GlobalPeakLocator -----------------
-GlobalPeakLocator::GlobalPeakLocator( int max_number_of_peaks, int padding_value, bool compute_width, bool compute_area, double threshold)
-:   BasePeakLocator(compute_width, compute_area, padding_value, max_number_of_peaks), threshold(threshold)
-{}
+GlobalPeakLocator::GlobalPeakLocator(
+    int max_number_of_peaks,
+    int padding_value,
+    bool compute_width,
+    bool compute_area,
+    double threshold
+)
+    : BasePeakLocator(compute_width, compute_area, padding_value, max_number_of_peaks),
+      threshold(threshold)
+{
+    if (this->threshold < 0.0) {
+        throw std::runtime_error("threshold must be non negative.");
+    }
+}
 
-void GlobalPeakLocator::compute(const std::vector<double> &signal) {
-    if (signal.empty())
-        throw std::runtime_error("Input array must be 1D.");
 
-    size_t num_cols = signal.size();
-
-    // Find the global maximum using find_local_peak.
-    size_t global_peak_index = this->find_local_peak(signal.data(), 0, num_cols);
-    double
-        width = padding_value,
-        area = padding_value;
-
-    // Use the helper function to compute width and area if requested.
-    if (compute_width || compute_area) {
-        PeakMetrics metrics = this->compute_segment_metrics(signal.data(), 0, num_cols, global_peak_index, threshold);
-
-        if (compute_width)
-            width = metrics.width;
-
-        if (compute_area)
-            area = metrics.area;
-
+void GlobalPeakLocator::compute(const std::vector<double>& signal) {
+    if (signal.empty()) {
+        throw std::runtime_error("signal must not be empty.");
     }
 
-    peak_indices = std::vector<int>(max_number_of_peaks, padding_value);
-    peak_heights = std::vector<double>(max_number_of_peaks, padding_value);
-    peak_widths = std::vector<double>(max_number_of_peaks, padding_value);
-    peak_areas = std::vector<double>(max_number_of_peaks, padding_value);
+    const size_t number_of_samples = signal.size();
+    const size_t global_peak_index = this->find_local_peak(signal.data(), 0, number_of_samples);
 
-    peak_indices[0] = global_peak_index;
-    peak_heights[0] = signal[global_peak_index];
+    double width = static_cast<double>(this->padding_value);
+    double area = static_cast<double>(this->padding_value);
 
-    // Prepare width and area vectors for output.
-    if (compute_width)
+    if (this->compute_width || this->compute_area) {
+        const PeakMetrics metrics = this->compute_segment_metrics(
+            signal.data(),
+            0,
+            number_of_samples,
+            global_peak_index,
+            this->threshold
+        );
+
+        if (this->compute_width) {
+            width = metrics.width;
+        }
+
+        if (this->compute_area) {
+            area = metrics.area;
+        }
+    }
+
+    this->initialize_output_vectors();
+
+    this->peak_indices[0] = static_cast<int>(global_peak_index);
+    this->peak_heights[0] = signal[global_peak_index];
+
+    if (this->compute_width) {
         this->peak_widths[0] = width;
+    }
 
-    if (compute_area)
+    if (this->compute_area) {
         this->peak_areas[0] = area;
+    }
 }

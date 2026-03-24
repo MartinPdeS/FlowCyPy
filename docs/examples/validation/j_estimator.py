@@ -272,7 +272,7 @@ digitizer = Digitizer(
 
 amplifier = Amplifier(
     gain=10 * ureg.volt / ureg.ampere,
-    bandwidth=60 * ureg.megahertz,
+    bandwidth=20 * ureg.megahertz,
     voltage_noise_density=0 * ureg.volt / ureg.sqrt_hertz,
     current_noise_density=0 * ureg.ampere / ureg.sqrt_hertz,
 )

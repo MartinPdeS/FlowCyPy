@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import signal
 from typing import Optional
 import pandas as pd
 import numpy as np
@@ -8,9 +9,9 @@ from pint_pandas import PintArray
 
 from FlowCyPy.fluidics import Fluidics
 from FlowCyPy.opto_electronics import OptoElectronics
-from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.signal_processing import SignalProcessing
 from FlowCyPy.sub_frames.acquisition import AcquisitionDataFrame
+from FlowCyPy.sub_frames.triggered import TriggerDataFrame
 from FlowCyPy.run_record import RunRecord
 from FlowCyPy.fluidics import populations
 from FlowCyPy.fluidics.event_collection import EventCollection
@@ -55,33 +56,6 @@ class FlowCytometer:
         self.background_power = background_power
         self.opto_electronics = opto_electronics
         self.signal_processing = signal_processing
-
-    def _create_signal_generator(self, run_time: Time) -> SignalGenerator:
-        """
-        Creates a signal generator for the flow cytometer.
-
-        This method initializes a signal generator with the specified run time and prepares it
-        to generate signals based on the flow cytometer's configuration.
-
-        Parameters
-        ----------
-        run_time : pint.Quantity
-            The duration of the acquisition in seconds.
-
-        Returns
-        -------
-        SignalGenerator
-            An instance of `SignalGenerator` configured for the flow cytometer.
-        """
-        time_series = self.signal_processing.digitizer.get_time_series(
-            run_time=run_time
-        )
-
-        signal_generator = SignalGenerator(n_elements=len(time_series))
-
-        signal_generator.set_time_channel(time_series)
-
-        return signal_generator
 
     def run_explicit_models(self, event_collection, signals: dict) -> None:
         """
@@ -245,23 +219,29 @@ class FlowCytometer:
             explicit pulse generation
         """
         signal_dict = {}
-        signal_generator = self._create_signal_generator(run_time=run_time)
 
-        signal_dict["Time"] = signal_generator.get_time_channel()
+        signal_dict["Time"] = self.signal_processing.digitizer.get_time_series(
+            run_time=run_time
+        )
         n_elements = len(signal_dict["Time"])
 
         for detector in self.opto_electronics.detectors:
-            signal_dict[detector.name] = np.zeros(n_elements) * self.background_power
+            signal_dict[detector.name] = np.ones(n_elements) * self.background_power
 
         self.run_explicit_models(event_collection=event_collection, signals=signal_dict)
 
         self.run_gamma_models(event_collection=event_collection, signals=signal_dict)
 
-        if self.opto_electronics.source.include_rin_noise:
+        # Add RIN noise if enabled (before shot noise, as it is a modulation of the optical power)
+        if (
+            self.opto_electronics.source.include_rin_noise
+            and self.opto_electronics.source.rin is not None
+        ):
             signal_dict = self.opto_electronics.source.add_rin_to_signal_dict(
                 signal_dict=signal_dict,
             )
 
+        # Add shot noise if enabled (after all optical processing steps)
         if self.opto_electronics.source.include_shot_noise:
             for detector in self.opto_electronics.detectors:
                 signal_dict[detector.name] = (
@@ -299,12 +279,7 @@ class FlowCytometer:
                     sampling_rate=self.signal_processing.digitizer.sampling_rate,
                 )
 
-        # Create structured DataFrame output
-        analog_aquisition = AcquisitionDataFrame._construct_from_signal_dict(
-            signal_dict=signal_dict,
-        )
-
-        return analog_aquisition
+        return signal_dict
 
     def run(self, run_time: Time) -> RunRecord:
         """
@@ -330,34 +305,47 @@ class FlowCytometer:
         """
         event_collection = self.generate_event_collection(run_time=run_time)
 
-        analog = self.compute_analog(
-            event_collection=event_collection, run_time=run_time
-        )
-
         run_record = RunRecord(
             run_time=run_time,
             detector_names=[d.name for d in self.opto_electronics.detectors],
             event_collection=event_collection,
-            analog=analog,
         )
 
-        if self.signal_processing.discriminator is not None:
-            run_record.signal.analog_triggered = (
-                self.signal_processing.discriminator.run_with_dataframe(
-                    dataframe=analog
-                )
+        analog_dict = self.compute_analog(
+            event_collection=event_collection, run_time=run_time
+        )
+
+        run_record.signal.analog = AcquisitionDataFrame._construct_from_signal_dict(
+            signal_dict=analog_dict,
+        )
+
+        if self.signal_processing.discriminator is None:
+            return run_record
+
+        triggered_analog_dict = self.signal_processing.discriminator.run_with_dict(
+            analog_dict
+        )
+
+        if self.signal_processing.digitizer.use_auto_range:
+            self.signal_processing.digitizer.capture_signal(
+                analog_dict[self.signal_processing.discriminator.trigger_channel]
             )
 
-            run_record.signal.digital = run_record.signal.analog_triggered.digitalize(
-                digitizer=self.signal_processing.digitizer
-            )
+        triggered_digital_dict = self.signal_processing.digitizer.digitize_data_dict(
+            triggered_analog_dict
+        )
 
-            if self.signal_processing.peak_algorithm is not None:
-                run_record.peaks = self.signal_processing.peak_algorithm.run(
-                    run_record.signal.digital
-                )
+        run_record.signal.digital = TriggerDataFrame._construct_from_segment_dict(
+            triggered_digital_dict,
+        )
 
-            run_record.discriminator = self.signal_processing.discriminator
+        if self.signal_processing.discriminator is None:
+            return run_record
+
+        run_record.peaks = self.signal_processing.peak_algorithm.run(
+            run_record.signal.digital
+        )
+        run_record.discriminator = self.signal_processing.discriminator
 
         return run_record
 
@@ -388,6 +376,117 @@ class FlowCytometer:
         for key, value in properties.items():
             dataframe[key] = PintArray(value, dtype=value.units)
 
+    def _generate_explicit_event(
+        self,
+        population: populations.BasePopulation,
+        effective_concentration,
+        run_time: Time,
+    ) -> pd.DataFrame:
+        """
+        Generates events for a population using the ExplicitModel sampling method.
+        This method calculates the expected number of particles based on the effective concentration and flow conditions,
+        then samples particle events according to the ExplicitModel. The resulting DataFrame includes event times, positions, velocities, and any additional properties from the population.
+
+        Parameters
+        ----------
+        population : populations.BasePopulation
+            The population for which to generate events.
+        effective_concentration : pint.Quantity
+            The effective concentration of particles in the flow.
+        run_time : Time
+            The total duration of the simulated acquisition.
+
+        Returns
+        -------
+        None
+            The method modifies the DataFrame in place and does not return anything.
+        """
+
+        flow_volume_per_second = (
+            self.fluidics.flow_cell.sample.average_flow_speed
+            * self.fluidics.flow_cell.sample.area
+        )
+        particle_flux = effective_concentration * flow_volume_per_second
+
+        n_events = int(np.rint((particle_flux * run_time).to("particle").magnitude))
+        if n_events <= 0:
+            return
+
+        dataframe = pd.DataFrame(index=range(n_events))
+
+        self.add_population_property_to_frame(
+            dataframe=dataframe, population=population
+        )
+
+        arrival_time = self.fluidics.flow_cell.sample_arrival_times(
+            n_events=n_events, run_time=run_time
+        )
+
+        x, y, velocities = self.fluidics.flow_cell.sample_transverse_profile(n_events)
+
+        for key, value in {
+            "Time": arrival_time,
+            "x": x,
+            "y": y,
+            "Velocity": velocities,
+        }.items():
+            dataframe[key] = PintArray(value, value.units)
+
+        return dataframe
+
+    def _generate_gamma_event(
+        self, population: populations.BasePopulation, effective_concentration
+    ) -> pd.DataFrame:
+        """
+        Generates events for a population using the GammaModel sampling method.
+
+        This method calculates the expected number of particles based on the effective concentration and flow conditions,
+        then samples particle events according to the GammaModel. The resulting DataFrame includes event times, positions,
+        velocities, and any additional properties from the population.
+
+        Parameters
+        ----------
+        population : populations.BasePopulation
+            The population for which to generate events.
+        effective_concentration : pint.Quantity
+            The effective concentration of particles in the flow.
+
+        Returns
+        -------
+        None
+            The method modifies the DataFrame in place and does not return anything.
+        """
+
+        n_events = population.sampling_method.number_of_samples
+
+        dataframe = pd.DataFrame(index=range(n_events))
+
+        x, y, velocities = self.fluidics.flow_cell.sample_transverse_profile(n_events)
+
+        dataframe["x"] = PintArray(x, ureg.meter)
+        dataframe["y"] = PintArray(y, ureg.meter)
+        dataframe["Velocity"] = PintArray(velocities, ureg.meter / ureg.second)
+
+        self.add_population_property_to_frame(
+            dataframe=dataframe, population=population
+        )
+
+        dataframe.attrs["VelocityMean"] = dataframe["Velocity"].mean()
+
+        dataframe.attrs["InterrogationVolumePerTimeBin"] = (
+            dataframe.attrs["VelocityMean"]
+            / self.signal_processing.digitizer.sampling_rate
+            * self.fluidics.flow_cell.sample.area
+        ).mean()
+
+        dataframe.expected = (
+            (effective_concentration * dataframe.attrs["InterrogationVolumePerTimeBin"])
+            .to("particle")
+            .magnitude
+        )
+
+        return dataframe
+
     @validate_units
     def generate_event_collection(self, run_time: Time) -> EventCollection:
         """
@@ -399,73 +498,16 @@ class FlowCytometer:
             effective_concentration = population.get_effective_concentration()
 
             if isinstance(population.sampling_method, populations.ExplicitModel):
-
-                flow_volume_per_second = (
-                    self.fluidics.flow_cell.sample.average_flow_speed
-                    * self.fluidics.flow_cell.sample.area
+                dataframe = self._generate_explicit_event(
+                    population=population,
+                    effective_concentration=effective_concentration,
+                    run_time=run_time,
                 )
-                particle_flux = effective_concentration * flow_volume_per_second
-
-                n_events = int(
-                    np.rint((particle_flux * run_time).to("particle").magnitude)
-                )
-                if n_events <= 0:
-                    continue
-
-                dataframe = pd.DataFrame(index=range(n_events))
-
-                self.add_population_property_to_frame(
-                    dataframe=dataframe, population=population
-                )
-
-                arrival_time = self.fluidics.flow_cell.sample_arrival_times(
-                    n_events=n_events, run_time=run_time
-                )
-
-                x, y, velocities = self.fluidics.flow_cell.sample_transverse_profile(
-                    n_events
-                )
-
-                for key, value in {
-                    "Time": arrival_time,
-                    "x": x,
-                    "y": y,
-                    "Velocity": velocities,
-                }.items():
-                    dataframe[key] = PintArray(value, value.units)
 
             elif isinstance(population.sampling_method, populations.GammaModel):
-                n_events = population.sampling_method.number_of_samples
-
-                dataframe = pd.DataFrame(index=range(n_events))
-
-                x, y, velocities = self.fluidics.flow_cell.sample_transverse_profile(
-                    n_events
-                )
-
-                dataframe["x"] = PintArray(x, ureg.meter)
-                dataframe["y"] = PintArray(y, ureg.meter)
-                dataframe["Velocity"] = PintArray(velocities, ureg.meter / ureg.second)
-
-                self.add_population_property_to_frame(
-                    dataframe=dataframe, population=population
-                )
-
-                dataframe.attrs["VelocityMean"] = dataframe["Velocity"].mean()
-
-                dataframe.attrs["InterrogationVolumePerTimeBin"] = (
-                    dataframe.attrs["VelocityMean"]
-                    / self.signal_processing.digitizer.sampling_rate
-                    * self.fluidics.flow_cell.sample.area
-                ).mean()
-
-                dataframe.expected = (
-                    (
-                        effective_concentration
-                        * dataframe.attrs["InterrogationVolumePerTimeBin"]
-                    )
-                    .to("particle")
-                    .magnitude
+                dataframe = self._generate_gamma_event(
+                    population=population,
+                    effective_concentration=effective_concentration,
                 )
 
             dataframe.attrs["Name"] = population.name

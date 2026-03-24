@@ -1,7 +1,7 @@
 #include "circuits.h"
 
 
-std::vector<double> BaseLineRestoration::process(
+std::vector<double> SlidingMinimumBaselineCorrection::process(
     const std::vector<double>& signal,
     const double sampling_rate
 ) const {
@@ -16,7 +16,7 @@ std::vector<double> BaseLineRestoration::process(
     if (this->window_size != -1.0) {
         if (std::isnan(sampling_rate) || sampling_rate <= 0.0) {
             throw std::runtime_error(
-                "sampling_rate must be strictly positive for finite baseline restoration window."
+                "sampling_rate must be strictly positive for finite sliding minimum correction window."
             );
         }
 
@@ -35,6 +35,40 @@ std::vector<double> BaseLineRestoration::process(
         output_signal,
         window_size_in_samples
     );
+
+    return output_signal;
+}
+
+
+std::vector<double> BaselineRestorationServo::process(
+    const std::vector<double>& signal,
+    const double sampling_rate
+) const {
+    if (signal.empty()) {
+        throw std::runtime_error("signal vector is empty.");
+    }
+
+    if (std::isnan(sampling_rate) || sampling_rate <= 0.0) {
+        throw std::runtime_error("sampling_rate must be strictly positive.");
+    }
+
+    const double time_step = 1.0 / sampling_rate;
+    const double alpha = 1.0 - std::exp(-time_step / this->time_constant);
+
+    std::vector<double> output_signal(signal.size());
+
+    double baseline_estimate = this->initialize_with_first_sample
+        ? signal.front()
+        : this->reference_level;
+
+    for (size_t index = 0; index < signal.size(); ++index) {
+        baseline_estimate =
+            (1.0 - alpha) * baseline_estimate +
+            alpha * signal[index];
+
+        output_signal[index] =
+            signal[index] - baseline_estimate + this->reference_level;
+    }
 
     return output_signal;
 }

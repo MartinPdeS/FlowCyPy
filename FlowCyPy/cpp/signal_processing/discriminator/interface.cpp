@@ -7,125 +7,71 @@
 #include <pybind11/stl.h>
 
 #include "discriminator.h"
+#include <pint/pint.h>
 
 namespace py = pybind11;
 
-namespace {
-
-/**
- * @brief Return true if the Python object is a NaN float.
- *
- * This is used for optional lower thresholds in the DoubleThreshold wrapper.
- */
-bool is_nan_python_float(const py::object &object) {
-    return py::isinstance<py::float_>(object) && std::isnan(object.cast<double>());
-}
-
-/**
- * @brief Assign a Python threshold object to a trigger instance.
- *
- * Supported Python inputs are:
- * - str, interpreted as symbolic threshold such as "3sigma"
- * - Pint quantity convertible to volt
- */
-template <typename TriggerType>
-void assign_threshold_from_python(TriggerType &self, const py::object &threshold) {
-    if (py::isinstance<py::str>(threshold)) {
-        self.set_threshold(threshold.cast<std::string>());
-        return;
-    }
-
-    self.set_threshold(
-        threshold.attr("to")("volt").attr("magnitude").cast<double>()
-    );
-}
-
-/**
- * @brief Assign a Python lower threshold object to a DoubleThreshold instance.
- *
- * Supported Python inputs are:
- * - None, clears the lower threshold
- * - NaN float, also clears the lower threshold
- * - str, interpreted as symbolic threshold such as "2sigma"
- * - Pint quantity convertible to volt
- */
-void assign_lower_threshold_from_python(
-    DoubleThreshold &self,
-    const py::object &lower_threshold
-) {
-    if (lower_threshold.is_none() || is_nan_python_float(lower_threshold)) {
-        self.clear_lower_threshold();
-        return;
-    }
-
-    if (py::isinstance<py::str>(lower_threshold)) {
-        self.set_lower_threshold(lower_threshold.cast<std::string>());
-        return;
-    }
-
-    self.set_lower_threshold(
-        lower_threshold.attr("to")("volt").attr("magnitude").cast<double>()
-    );
-}
-
-} // namespace
-
 PYBIND11_MODULE(discriminator, module) {
+    py::object ureg = get_shared_ureg();
+
     module.doc() = R"pbdoc(
         Signal Discrimination System.
 
-        Provides an efficient framework for threshold-based and dynamic
+        Provides an efficient framework for threshold based and dynamic
         window discrimination of signals, with support for debouncing,
         pre/post buffering, and segment extraction.
     )pbdoc";
 
-    pybind11::class_<Trigger>(module, "Trigger")
-        .def(pybind11::init<>())
-        .def_readonly("global_time",
-             &Trigger::global_time,
-             pybind11::return_value_policy::reference_internal,
-             R"pbdoc(
-                 Global time vector used for all signal operations.
+    py::class_<Trigger>(module, "Trigger")
+        .def(py::init<>())
+        .def_readonly(
+            "global_time",
+            &Trigger::global_time,
+            py::return_value_policy::reference_internal,
+            R"pbdoc(
+                Global time vector used for all signal operations.
 
-                 This aligns one-to-one with samples in added signals.
-             )pbdoc"
+                This aligns one to one with samples in added signals.
+            )pbdoc"
         )
-        .def("get_segmented_signal",
-             &Trigger::get_segmented_signal,
-             pybind11::arg("detector_name"),
-             R"pbdoc(
-                 Retrieve the signal data for a specific detector.
+        .def(
+            "get_segmented_signal",
+            &Trigger::get_segmented_signal,
+            py::arg("detector_name"),
+            R"pbdoc(
+                Retrieve the segmented signal values for a specific detector.
 
-                 Parameters
-                 ----------
-                 detector_name : str
-                     Name of the signal detector to retrieve.
+                Parameters
+                ----------
+                detector_name : str
+                    Name of the signal detector to retrieve.
 
-                 Returns
-                 -------
-                 numpy.ndarray
-                     1D array of signal values for the specified detector.
-             )pbdoc"
+                Returns
+                -------
+                numpy.ndarray
+                    One dimensional array of segmented signal values.
+            )pbdoc"
         )
-        .def_readonly("segmented_time",
-             &Trigger::time_out,
-             R"pbdoc(
-                 Time segments corresponding to each detected trigger.
+        .def_readonly(
+            "segmented_time",
+            &Trigger::time_out,
+            py::return_value_policy::reference_internal,
+            R"pbdoc(
+                Time samples corresponding to the segmented output.
 
-                 This is a 1D array where each entry corresponds to the
-                 time stamps of a trigger segment.
-             )pbdoc"
+                This is flattened across all detected segments.
+            )pbdoc"
         )
-        .def_readonly("segment_ids",
-             &Trigger::segment_ids_out,
-             R"pbdoc(
-                 Mapping of sample indices to segment IDs.
+        .def_readonly(
+            "segment_ids",
+            &Trigger::segment_ids_out,
+            py::return_value_policy::reference_internal,
+            R"pbdoc(
+                Segment identifier associated with each segmented sample.
 
-                 This is a 1D array where each entry indicates the segment
-                 ID for that sample, or -1 if it does not belong to any segment.
-             )pbdoc"
-        )
-        ;
+                This is flattened across all detected segments.
+            )pbdoc"
+        );
 
     py::class_<BaseDiscriminator>(module, "BaseDiscriminator")
         .def_readonly(
@@ -133,93 +79,96 @@ PYBIND11_MODULE(discriminator, module) {
             &BaseDiscriminator::trigger,
             py::return_value_policy::reference_internal,
             R"pbdoc(
-                The underlying trigger system used for detection and segmentation.
-
-                This object manages the signal data, time stamps, and segment extraction.
+                Underlying trigger container holding raw and segmented signal data.
             )pbdoc"
         )
         .def_readwrite(
             "trigger_channel",
             &BaseDiscriminator::trigger_channel,
             R"pbdoc(
-                Name of the trigger detection channel used.
-
-                This is set during initialization and determines which signal
-                is used for trigger detection.
+                Name of the signal channel used for trigger detection.
             )pbdoc"
         )
         .def_readwrite(
             "pre_buffer",
             &BaseDiscriminator::pre_buffer,
             R"pbdoc(
-                Number of samples to include before each detected trigger.
+                Number of samples included before the detected trigger position.
             )pbdoc"
         )
         .def_readwrite(
             "post_buffer",
             &BaseDiscriminator::post_buffer,
             R"pbdoc(
-                Number of samples to include after each detected trigger.
+                Number of samples included after the detected trigger position.
             )pbdoc"
         )
         .def_readwrite(
             "max_triggers",
             &BaseDiscriminator::max_triggers,
             R"pbdoc(
-                Maximum number of triggers to record.
+                Maximum number of triggers to accept.
 
-                If set to -1, there is no limit on the number of triggers.
+                A value of -1 disables the limit.
             )pbdoc"
         )
         .def(
             "add_time",
             [](BaseDiscriminator &self, const py::object &time_array) {
-                const std::vector<double> time_vector = time_array.attr("to")("second").attr("magnitude").cast<std::vector<double>>();
+                const std::vector<double> time_vector =
+                    time_array
+                        .attr("to")("second")
+                        .attr("magnitude")
+                        .cast<std::vector<double>>();
 
                 self.add_time(time_vector);
             },
             py::arg("time_array"),
             R"pbdoc(
-                Add a global time axis for the signals.
+                Add the global time axis.
 
                 Parameters
                 ----------
                 time_array : array-like quantity
-                    One dimensional array of time values convertible to seconds.
+                    One dimensional array convertible to seconds.
             )pbdoc"
         )
         .def(
             "add_channel",
-            [](BaseDiscriminator &self, const std::string &channel, const py::object &signal_array) {
-                const std::vector<double> signal_vector = signal_array
-                    .attr("to")("volt")
-                    .attr("magnitude")
-                    .cast<std::vector<double>>();
+            [](BaseDiscriminator &self,
+               const std::string &channel,
+               const py::object &signal_array) {
+                const std::vector<double> signal_vector =
+                    signal_array
+                        .attr("to")("volt")
+                        .attr("magnitude")
+                        .cast<std::vector<double>>();
 
                 self.add_signal(channel, signal_vector);
             },
-            py::arg("channel") = "default",
+            py::arg("channel"),
             py::arg("signal_array"),
             R"pbdoc(
-                Add a signal trace to be analyzed for triggers.
+                Add a signal channel.
 
                 Parameters
                 ----------
                 channel : str
                     Name of the signal channel.
                 signal_array : array-like quantity
-                    One dimensional array of signal values convertible to volts.
+                    One dimensional array convertible to volts.
             )pbdoc"
         )
         .def(
             "run_with_dataframe",
             [](BaseDiscriminator &self, const py::object &dataframe) {
-                const std::vector<double> time_vector = dataframe["Time"]
-                    .attr("pint")
-                    .attr("quantity")
-                    .attr("to")("second")
-                    .attr("magnitude")
-                    .cast<std::vector<double>>();
+                const std::vector<double> time_vector =
+                    dataframe["Time"]
+                        .attr("pint")
+                        .attr("quantity")
+                        .attr("to")("second")
+                        .attr("magnitude")
+                        .cast<std::vector<double>>();
 
                 self.add_time(time_vector);
 
@@ -228,35 +177,181 @@ PYBIND11_MODULE(discriminator, module) {
                     if (channel.cast<std::string>() == "Time") {
                         continue;
                     }
-                    const std::vector<double> signal_vector = dataframe[channel]
-                        .attr("pint")
-                        .attr("quantity")
-                        .attr("to")("volt")
-                        .attr("magnitude")
-                        .cast<std::vector<double>>();
+
+                    const std::vector<double> signal_vector =
+                        dataframe[channel]
+                            .attr("pint")
+                            .attr("quantity")
+                            .attr("to")("volt")
+                            .attr("magnitude")
+                            .cast<std::vector<double>>();
 
                     self.add_signal(channel.cast<std::string>(), signal_vector);
                 }
+
                 self.run();
 
                 return py::cast(self).attr("_assemble_dataframe")(dataframe);
-
             },
             py::arg("dataframe"),
             R"pbdoc(
-                Run trigger detection using a DataFrame. The DataFrame must contain a "Time" column and one or more signal columns.
+                Run trigger detection from a dataframe.
+
+                The dataframe must contain a "Time" column and one or more signal columns.
 
                 Parameters
                 ----------
                 dataframe : pandas.DataFrame
-                    DataFrame containing time and signal columns.
+                    Dataframe containing time and signal columns.
 
                 Returns
                 -------
                 TriggerDataFrame
-                    A DataFrame containing the trigger windows with segment IDs, times, and signals.
+                    Segmented trigger output assembled as a tidy dataframe.
             )pbdoc"
+        )
+        .def(
+            "run_with_dict",
+            [ureg](BaseDiscriminator &self, const py::dict &data_dict) {
+                if (!data_dict.contains("Time")) {
+                    throw std::runtime_error("Input dictionary must contain a 'Time' key.");
+                }
 
+                const std::vector<double> time_vector =
+                    py::reinterpret_borrow<py::object>(data_dict["Time"]).attr("to")("second").attr("magnitude").cast<std::vector<double>>();
+
+                self.add_time(time_vector);
+
+                bool found_signal_channel = false;
+
+                for (const auto &item : data_dict) {
+                    const std::string key =
+                        py::reinterpret_borrow<py::object>(item.first).cast<std::string>();
+
+                    if (key == "Time") {
+                        continue;
+                    }
+
+                    const std::vector<double> signal_vector = py::reinterpret_borrow<py::object>(item.second).attr("to")("volt").attr("magnitude").cast<std::vector<double>>();
+
+                    self.add_signal(key, signal_vector);
+                    found_signal_channel = true;
+                }
+
+                if (!found_signal_channel) {
+                    throw std::runtime_error("Input dictionary must contain at least one signal channel in addition to 'Time'.");
+                }
+
+                self.run();
+
+                py::module_ numpy = py::module_::import("numpy");
+
+                const std::vector<int> &segment_ids = self.trigger.segment_ids_out;
+                const std::vector<double> &segmented_time = self.trigger.time_out;
+
+                if (segment_ids.size() != segmented_time.size()) {
+                    throw std::runtime_error(
+                        "Segmented output is inconsistent: segment_ids_out and time_out do not have the same length."
+                    );
+                }
+
+                py::dict grouped_output;
+
+                for (size_t sample_index = 0; sample_index < segment_ids.size(); ++sample_index) {
+                    const int segment_id = segment_ids[sample_index];
+                    py::int_ py_segment_id(segment_id);
+
+                    if (!grouped_output.contains(py_segment_id)) {
+                        py::dict segment_dict;
+                        segment_dict["Time"] = py::list();
+
+                        for (const auto &item : data_dict) {
+                            const std::string key =
+                                py::reinterpret_borrow<py::object>(item.first).cast<std::string>();
+
+                            if (key == "Time") {
+                                continue;
+                            }
+
+                            segment_dict[py::str(key)] = py::list();
+                        }
+
+                        grouped_output[py_segment_id] = segment_dict;
+                    }
+
+                    py::dict segment_dict =
+                        py::reinterpret_borrow<py::dict>(grouped_output[py_segment_id]);
+
+                    py::list time_list =
+                        py::reinterpret_borrow<py::list>(segment_dict["Time"]);
+                    time_list.append(segmented_time[sample_index]);
+
+                    for (const auto &item : data_dict) {
+                        const std::string key =
+                            py::reinterpret_borrow<py::object>(item.first).cast<std::string>();
+
+                        if (key == "Time") {
+                            continue;
+                        }
+
+                        const std::vector<double> &segmented_signal =
+                            self.trigger.get_segmented_signal(key);
+
+                        if (segmented_signal.size() != segment_ids.size()) {
+                            throw std::runtime_error(
+                                "Segmented signal size mismatch for channel '" + key + "'."
+                            );
+                        }
+
+                        py::list channel_list =
+                            py::reinterpret_borrow<py::list>(segment_dict[py::str(key)]);
+                        channel_list.append(segmented_signal[sample_index]);
+                    }
+                }
+
+                py::dict final_output;
+
+                for (const auto &item : grouped_output) {
+                    py::int_ segment_id = py::reinterpret_borrow<py::int_>(item.first);
+                    py::dict raw_segment_dict = py::reinterpret_borrow<py::dict>(item.second);
+
+                    py::dict final_segment_dict;
+
+                    final_segment_dict["Time"] = numpy.attr("array")(raw_segment_dict["Time"]) * ureg.attr("second");
+
+                    for (const auto &channel_item : raw_segment_dict) {
+                        const std::string key = py::reinterpret_borrow<py::object>(channel_item.first).cast<std::string>();
+
+                        if (key == "Time") {
+                            continue;
+                        }
+
+                        final_segment_dict[py::str(key)] = (numpy.attr("array")(channel_item.second) * ureg.attr("volt")).attr("to_compact")();
+                    }
+
+                    final_output[segment_id] = final_segment_dict;
+                }
+
+                return final_output;
+            },
+            py::arg("data_dict"),
+            R"pbdoc(
+                Run trigger detection from a dictionary.
+
+                Expected input format
+                ---------------------
+                {
+                    "Time": quantity_array_convertible_to_seconds,
+                    "ChannelA": quantity_array_convertible_to_volts,
+                    "ChannelB": quantity_array_convertible_to_volts,
+                }
+
+                Returns
+                -------
+                dict
+                    Nested dictionary indexed by segment identifier. Each segment
+                    contains a "Time" entry and one entry per signal channel.
+            )pbdoc"
         )
         .def(
             "_assemble_dataframe",
@@ -275,7 +370,8 @@ PYBIND11_MODULE(discriminator, module) {
                 );
 
                 for (const py::handle &detector_name_handle : detector_names) {
-                    py::object detector_name = py::reinterpret_borrow<py::object>(detector_name_handle);
+                    py::object detector_name =
+                        py::reinterpret_borrow<py::object>(detector_name_handle);
 
                     data[detector_name] = pint_pandas.attr("PintArray")(
                         py::cast(
@@ -287,9 +383,13 @@ PYBIND11_MODULE(discriminator, module) {
                     );
                 }
 
-                py::object tidy = pandas.attr("DataFrame")(data).attr("set_index")("SegmentID");
+                py::object tidy =
+                    pandas.attr("DataFrame")(data).attr("set_index")("SegmentID");
 
-                py::object trigger_dataframe_class = py::module_::import("FlowCyPy.sub_frames.acquisition").attr("TriggerDataFrame");
+                py::object trigger_dataframe_class =
+                    py::module_::import("FlowCyPy.sub_frames.acquisition")
+                        .attr("TriggerDataFrame");
+
                 tidy = trigger_dataframe_class(tidy);
 
                 tidy.attr("normalize_units")(
@@ -301,25 +401,9 @@ PYBIND11_MODULE(discriminator, module) {
             },
             py::arg("dataframe"),
             R"pbdoc(
-                Assemble a tidy trigger dataframe from the segmented C++ backend results.
-
-                This method collects the segmented time axis, segment identifiers, and
-                segmented signal values for all detectors present in the input dataframe,
-                then builds a pandas based output dataframe with Pint units preserved.
-
-                Parameters
-                ----------
-                dataframe : TriggerDataFrame
-                    Input dataframe used to recover detector names and signal units.
-
-                Returns
-                -------
-                TriggerDataFrame
-                    A tidy dataframe indexed by segment identifier and containing the
-                    segmented time axis and detector signals.
+                Assemble a tidy trigger dataframe from segmented C++ backend results.
             )pbdoc"
-        )
-        ;
+        );
 
     py::class_<FixedWindow, BaseDiscriminator>(module, "FixedWindow")
         .def(
@@ -338,7 +422,13 @@ PYBIND11_MODULE(discriminator, module) {
                         max_triggers
                     );
 
-                    assign_threshold_from_python(instance, threshold);
+                    if (py::isinstance<py::str>(threshold)) {
+                        instance.set_threshold(threshold.cast<std::string>());
+                    } else {
+                        instance.set_threshold(
+                            threshold.attr("to")("volt").attr("magnitude").cast<double>()
+                        );
+                    }
 
                     return instance;
                 }
@@ -350,32 +440,25 @@ PYBIND11_MODULE(discriminator, module) {
             py::arg("max_triggers") = -1,
             R"pbdoc(
                 Initialize a FixedWindow trigger detector.
-
-                Parameters
-                ----------
-                trigger_channel : str
-                    Name of the detection channel to apply.
-                threshold : float or str
-                    Trigger threshold in volts or a symbolic threshold such as "3sigma".
-                pre_buffer : int, optional
-                    Samples to buffer before each detected event. Default = 0.
-                post_buffer : int, optional
-                    Samples to buffer after each detected event. Default = 0.
-                max_triggers : int, optional
-                    Maximum number of triggers to record. Use -1 for no limit.
             )pbdoc"
         )
         .def(
             "run",
             &FixedWindow::run,
             R"pbdoc(
-                Execute fixed window trigger detection using the stored threshold.
+                Execute fixed window trigger detection.
             )pbdoc"
         )
         .def(
             "set_threshold",
             [](FixedWindow &self, const py::object &threshold) {
-                assign_threshold_from_python(self, threshold);
+                if (py::isinstance<py::str>(threshold)) {
+                    self.set_threshold(threshold.cast<std::string>());
+                } else {
+                    self.set_threshold(
+                        threshold.attr("to")("volt").attr("magnitude").cast<double>()
+                    );
+                }
             },
             py::arg("threshold"),
             R"pbdoc(
@@ -392,7 +475,8 @@ PYBIND11_MODULE(discriminator, module) {
                 }
 
                 py::module_ pint = py::module_::import("pint");
-                py::object quantity = pint.attr("Quantity")(self.resolved_threshold, "volt");
+                py::object quantity =
+                    pint.attr("Quantity")(self.resolved_threshold, "volt");
                 py::object converted_quantity = quantity.attr("to")(signal_units);
 
                 ax.attr("axhline")(
@@ -410,10 +494,9 @@ PYBIND11_MODULE(discriminator, module) {
             py::arg("ax"),
             py::arg("signal_units"),
             R"pbdoc(
-                Add a horizontal line to the provided Axes representing the resolved threshold.
+                Add the resolved threshold to a matplotlib Axes.
             )pbdoc"
-        )
-        ;
+        );
 
     py::class_<DynamicWindow, BaseDiscriminator>(module, "DynamicWindow")
         .def(
@@ -432,7 +515,13 @@ PYBIND11_MODULE(discriminator, module) {
                         max_triggers
                     );
 
-                    assign_threshold_from_python(instance, threshold);
+                    if (py::isinstance<py::str>(threshold)) {
+                        instance.set_threshold(threshold.cast<std::string>());
+                    } else {
+                        instance.set_threshold(
+                            threshold.attr("to")("volt").attr("magnitude").cast<double>()
+                        );
+                    }
 
                     return instance;
                 }
@@ -444,32 +533,25 @@ PYBIND11_MODULE(discriminator, module) {
             py::arg("max_triggers") = -1,
             R"pbdoc(
                 Initialize a DynamicWindow trigger detector.
-
-                Parameters
-                ----------
-                trigger_channel : str
-                    Name of the detection channel to apply.
-                threshold : float or str
-                    Trigger threshold in volts or a symbolic threshold such as "3sigma".
-                pre_buffer : int, optional
-                    Samples to buffer before each detected event. Default = 0.
-                post_buffer : int, optional
-                    Samples to buffer after each detected event. Default = 0.
-                max_triggers : int, optional
-                    Maximum number of triggers to record. Use -1 for no limit.
             )pbdoc"
         )
         .def(
             "run",
             &DynamicWindow::run,
             R"pbdoc(
-                Execute dynamic window trigger detection using the stored threshold.
+                Execute dynamic window trigger detection.
             )pbdoc"
         )
         .def(
             "set_threshold",
             [](DynamicWindow &self, const py::object &threshold) {
-                assign_threshold_from_python(self, threshold);
+                if (py::isinstance<py::str>(threshold)) {
+                    self.set_threshold(threshold.cast<std::string>());
+                } else {
+                    self.set_threshold(
+                        threshold.attr("to")("volt").attr("magnitude").cast<double>()
+                    );
+                }
             },
             py::arg("threshold"),
             R"pbdoc(
@@ -486,7 +568,8 @@ PYBIND11_MODULE(discriminator, module) {
                 }
 
                 py::module_ pint = py::module_::import("pint");
-                py::object quantity = pint.attr("Quantity")(self.resolved_threshold, "volt");
+                py::object quantity =
+                    pint.attr("Quantity")(self.resolved_threshold, "volt");
                 py::object converted_quantity = quantity.attr("to")(signal_units);
 
                 ax.attr("axhline")(
@@ -504,10 +587,9 @@ PYBIND11_MODULE(discriminator, module) {
             py::arg("ax"),
             py::arg("signal_units"),
             R"pbdoc(
-                Add a horizontal line to the provided Axes representing the resolved threshold.
+                Add the resolved threshold to a matplotlib Axes.
             )pbdoc"
-        )
-        ;
+        );
 
     py::class_<DoubleThreshold, BaseDiscriminator>(module, "DoubleThreshold")
         .def(
@@ -529,8 +611,29 @@ PYBIND11_MODULE(discriminator, module) {
                         max_triggers
                     );
 
-                    assign_threshold_from_python(instance, threshold);
-                    assign_lower_threshold_from_python(instance, lower_threshold);
+                    if (py::isinstance<py::str>(threshold)) {
+                        instance.set_threshold(threshold.cast<std::string>());
+                    } else {
+                        instance.set_threshold(
+                            threshold.attr("to")("volt").attr("magnitude").cast<double>()
+                        );
+                    }
+
+                    if (
+                        lower_threshold.is_none() ||
+                        (
+                            py::isinstance<py::float_>(lower_threshold) &&
+                            std::isnan(lower_threshold.cast<double>())
+                        )
+                    ) {
+                        instance.clear_lower_threshold();
+                    } else if (py::isinstance<py::str>(lower_threshold)) {
+                        instance.set_lower_threshold(lower_threshold.cast<std::string>());
+                    } else {
+                        instance.set_lower_threshold(
+                            lower_threshold.attr("to")("volt").attr("magnitude").cast<double>()
+                        );
+                    }
 
                     instance.set_debounce_enabled(debounce_enabled);
                     instance.set_min_window_duration(min_window_duration);
@@ -548,39 +651,25 @@ PYBIND11_MODULE(discriminator, module) {
             py::arg("max_triggers") = -1,
             R"pbdoc(
                 Initialize a DoubleThreshold trigger detector.
-
-                Parameters
-                ----------
-                trigger_channel : str
-                    Name of the detection channel to apply.
-                threshold : float or str
-                    Primary threshold in volts or a symbolic threshold such as "3sigma".
-                lower_threshold : float, str, or None, optional
-                    Secondary threshold in volts, symbolic form, or None.
-                debounce_enabled : bool, optional
-                    If true, applies debouncing to avoid rapid successive triggers.
-                min_window_duration : int, optional
-                    Minimum samples above threshold required for a valid trigger.
-                    Use -1 to disable this constraint.
-                pre_buffer : int, optional
-                    Samples to buffer before each detected event. Default = 0.
-                post_buffer : int, optional
-                    Samples to buffer after each detected event. Default = 0.
-                max_triggers : int, optional
-                    Maximum number of triggers to record. Use -1 for no limit.
             )pbdoc"
         )
         .def(
             "run",
             &DoubleThreshold::run,
             R"pbdoc(
-                Execute double threshold trigger detection using the stored parameters.
+                Execute double threshold trigger detection.
             )pbdoc"
         )
         .def(
             "set_threshold",
             [](DoubleThreshold &self, const py::object &threshold) {
-                assign_threshold_from_python(self, threshold);
+                if (py::isinstance<py::str>(threshold)) {
+                    self.set_threshold(threshold.cast<std::string>());
+                } else {
+                    self.set_threshold(
+                        threshold.attr("to")("volt").attr("magnitude").cast<double>()
+                    );
+                }
             },
             py::arg("threshold"),
             R"pbdoc(
@@ -590,7 +679,21 @@ PYBIND11_MODULE(discriminator, module) {
         .def(
             "set_lower_threshold",
             [](DoubleThreshold &self, const py::object &lower_threshold) {
-                assign_lower_threshold_from_python(self, lower_threshold);
+                if (
+                    lower_threshold.is_none() ||
+                    (
+                        py::isinstance<py::float_>(lower_threshold) &&
+                        std::isnan(lower_threshold.cast<double>())
+                    )
+                ) {
+                    self.clear_lower_threshold();
+                } else if (py::isinstance<py::str>(lower_threshold)) {
+                    self.set_lower_threshold(lower_threshold.cast<std::string>());
+                } else {
+                    self.set_lower_threshold(
+                        lower_threshold.attr("to")("volt").attr("magnitude").cast<double>()
+                    );
+                }
             },
             py::arg("lower_threshold"),
             R"pbdoc(
@@ -626,8 +729,10 @@ PYBIND11_MODULE(discriminator, module) {
 
                 py::module_ pint = py::module_::import("pint");
 
-                py::object upper_quantity = pint.attr("Quantity")(self.resolved_upper_threshold, "volt");
-                py::object upper_converted_quantity = upper_quantity.attr("to")(signal_units);
+                py::object upper_quantity =
+                    pint.attr("Quantity")(self.resolved_upper_threshold, "volt");
+                py::object upper_converted_quantity =
+                    upper_quantity.attr("to")(signal_units);
 
                 ax.attr("axhline")(
                     upper_converted_quantity.attr("magnitude"),
@@ -640,8 +745,10 @@ PYBIND11_MODULE(discriminator, module) {
                 );
 
                 if (!std::isnan(self.resolved_lower_threshold)) {
-                    py::object lower_quantity = pint.attr("Quantity")(self.resolved_lower_threshold, "volt");
-                    py::object lower_converted_quantity = lower_quantity.attr("to")(signal_units);
+                    py::object lower_quantity =
+                        pint.attr("Quantity")(self.resolved_lower_threshold, "volt");
+                    py::object lower_converted_quantity =
+                        lower_quantity.attr("to")(signal_units);
 
                     ax.attr("axhline")(
                         lower_converted_quantity.attr("magnitude"),
@@ -659,8 +766,7 @@ PYBIND11_MODULE(discriminator, module) {
             py::arg("ax"),
             py::arg("signal_units"),
             R"pbdoc(
-                Add horizontal lines to the provided Axes representing the resolved thresholds.
+                Add the resolved thresholds to a matplotlib Axes.
             )pbdoc"
-        )
-        ;
+        );
 }

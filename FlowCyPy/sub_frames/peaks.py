@@ -9,6 +9,7 @@ from TypedUnit import ureg
 
 from FlowCyPy.sub_frames import utils
 from FlowCyPy.sub_frames.base import BaseSubFrame
+from MPSPlots.styles import scientific
 
 
 class PeakDataFrame(BaseSubFrame):
@@ -175,51 +176,499 @@ class PeakDataFrame(BaseSubFrame):
 
         return figure
 
-    @helper.post_mpl_plot
     def plot_2d(
-        self, x: tuple[str, str], y: tuple[str, str], bandwidth_adjust: float = 0.8
-    ) -> plt.Figure:
+        self,
+        x: tuple[str, str],
+        y: tuple[str, str],
+        plot_type: str = "scatter",
+        bandwidth_adjust: float = 0.8,
+        xscale: str = "linear",
+        yscale: str = "linear",
+        xlim: tuple[float, float] | None = None,
+        ylim: tuple[float, float] | None = None,
+        color_scale: str = "linear",
+        figure: plt.Figure | None = None,
+        ax: plt.Axes | None = None,
+        figsize: tuple[float, float] = (9, 8),
+        show_marginals: bool = False,
+        show_colorbar: bool = True,
+        show_scatter: bool = False,
+        fill: bool = False,
+        scatter_alpha: float = 0.5,
+        scatter_size: float = 20,
+        kde_alpha: float = 0.7,
+        hexbin_grid_size: int = 30,
+        hexbin_min_count: int = 1,
+        hexbin_reduce_function=None,
+        cmap: str = "Blues",
+        title: str = "",
+        xlabel: str | None = None,
+        ylabel: str | None = None,
+    ) -> tuple[plt.Figure, plt.Axes]:
         """
-        Plot the joint KDE distribution of a feature between two detectors.
+        Plot the joint distribution of one feature against another for two channels.
 
         Parameters
         ----------
         x : tuple[str, str]
-            Detector for the x-axis.
+            Tuple ``(channel_name, feature_name)`` used for the x axis.
         y : tuple[str, str]
-            Detector for the y-axis.
+            Tuple ``(channel_name, feature_name)`` used for the y axis.
+        plot_type : str, optional
+            Type of 2D rendering. Supported values are ``"scatter"``, ``"kde"``,
+            and ``"hexbin"``.
         bandwidth_adjust : float, optional
-            KDE bandwidth adjustment (default: 0.8).
+            Bandwidth scaling factor passed to the KDE estimator.
+        xscale : str, optional
+            Scale used for the x axis. Typical values are ``"linear"`` and ``"log"``.
+        yscale : str, optional
+            Scale used for the y axis. Typical values are ``"linear"`` and ``"log"``.
+        xlim : tuple[float, float] | None, optional
+            Limits for the x axis.
+        ylim : tuple[float, float] | None, optional
+            Limits for the y axis.
+        color_scale : str, optional
+            Color scaling used for hexbin counts. Supported values are ``"linear"``
+            and ``"log"``.
+        figure : matplotlib.figure.Figure | None, optional
+            Existing figure to use. If omitted, a new figure is created.
+        ax : matplotlib.axes.Axes | None, optional
+            Existing axes to use. If omitted, new axes are created.
+        figsize : tuple[float, float], optional
+            Figure size used when a new figure is created.
+        show_marginals : bool, optional
+            If ``True``, use a seaborn joint layout with marginal histograms.
+        show_colorbar : bool, optional
+            If ``True``, add a colorbar for hexbin density.
+        show_scatter : bool, optional
+            If ``True``, overlay raw points on top of the main rendering.
+        fill : bool, optional
+            If ``True``, fill the KDE contours.
+        scatter_alpha : float, optional
+            Transparency of the scatter overlay.
+        scatter_size : float, optional
+            Marker size of the scatter overlay.
+        kde_alpha : float, optional
+            Transparency of the KDE layer.
+        hexbin_grid_size : int, optional
+            Number of hexagons in the x direction used by ``hexbin``.
+        hexbin_min_count : int, optional
+            Minimum number of points required for a hexbin cell to be colored.
+        hexbin_reduce_function : callable | None, optional
+            Reduction function used by ``hexbin``. If ``None``, point counts are used.
+        cmap : str, optional
+            Colormap used for KDE or hexbin.
+        title : str, optional
+            Figure title.
+        xlabel : str | None, optional
+            Custom x label.
+        ylabel : str | None, optional
+            Custom y label.
 
         Returns
         -------
-        plt.Figure
-            The joint KDE plot figure.
+        tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]
+            The created or reused figure and main axes.
         """
-        x_detector, x_feature = x
-        y_detector, y_feature = y
+        with plt.style.context(scientific):
+            x_channel, x_feature = x
+            y_channel, y_feature = y
 
-        features = tuple(set([x_feature, y_feature]))
+            features = list(dict.fromkeys([x_feature, y_feature]))
+            df = self.loc[[x_channel, y_channel], features].sort_index()
 
-        df = self.loc[[x_detector, y_detector], features].sort_index()
+            x_values = numpy.asarray(df.loc[x], dtype=float)
+            y_values = numpy.asarray(df.loc[y], dtype=float)
 
-        grid = sns.jointplot(
-            x=df.loc[x],
-            y=df.loc[y],
-            kind="kde",
-            fill=True,
-            cmap="Blues",
-            joint_kws={"bw_adjust": bandwidth_adjust, "alpha": 0.7},
-        )
+            current_xlabel = (
+                xlabel if xlabel is not None else f"Channel: {x_channel} | {x_feature}"
+            )
+            current_ylabel = (
+                ylabel if ylabel is not None else f"Channel: {y_channel} | {y_feature}"
+            )
 
-        grid.figure.suptitle("Peaks properties")
-        grid.ax_joint.scatter(df.loc[x], df.loc[y], color="C1", alpha=0.6)
+            if xscale not in {"linear", "log"}:
+                raise ValueError(
+                    f"Unsupported xscale: {xscale!r}. Expected 'linear' or 'log'."
+                )
 
-        grid.set_axis_labels(
-            f"Detector: {x_detector} : feature: {x_feature}",
-            f"Detector: {y_detector} : feature: {y_feature}",
-        )
-        return grid.figure
+            if yscale not in {"linear", "log"}:
+                raise ValueError(
+                    f"Unsupported yscale: {yscale!r}. Expected 'linear' or 'log'."
+                )
+
+            if plot_type not in {"scatter", "kde", "hexbin"}:
+                raise ValueError(
+                    f"Unsupported plot_type: {plot_type!r}. "
+                    "Expected 'scatter', 'kde', or 'hexbin'."
+                )
+
+            if color_scale not in {"linear", "log"}:
+                raise ValueError(
+                    f"Unsupported color_scale: {color_scale!r}. "
+                    "Expected 'linear' or 'log'."
+                )
+
+            if xscale == "log":
+                valid = x_values > 0
+                x_values = x_values[valid]
+                y_values = y_values[valid]
+
+            if yscale == "log":
+                valid = y_values > 0
+                x_values = x_values[valid]
+                y_values = y_values[valid]
+
+            if x_values.size == 0 or y_values.size == 0:
+                raise ValueError("No valid data points remain after scale filtering.")
+
+            def draw_main_artist(target_ax: plt.Axes):
+                artist = None
+
+                if plot_type == "scatter":
+                    artist = target_ax.scatter(
+                        x_values,
+                        y_values,
+                        alpha=scatter_alpha,
+                        s=scatter_size,
+                        color="C1",
+                    )
+
+                elif plot_type == "kde":
+                    sns.kdeplot(
+                        x=x_values,
+                        y=y_values,
+                        ax=target_ax,
+                        fill=fill,
+                        cmap=cmap,
+                        bw_adjust=bandwidth_adjust,
+                        alpha=kde_alpha,
+                    )
+                    artist = None
+
+                    if show_scatter:
+                        target_ax.scatter(
+                            x_values,
+                            y_values,
+                            alpha=scatter_alpha,
+                            s=scatter_size,
+                            color="C1",
+                        )
+
+                elif plot_type == "hexbin":
+                    hexbin_kwargs = dict(
+                        x=x_values,
+                        y=y_values,
+                        gridsize=hexbin_grid_size,
+                        cmap=cmap,
+                        mincnt=hexbin_min_count,
+                        reduce_C_function=hexbin_reduce_function,
+                        linewidths=0.0,
+                        xscale=xscale,
+                        yscale=yscale,
+                    )
+
+                    if color_scale == "log":
+                        hexbin_kwargs["bins"] = "log"
+
+                    artist = target_ax.hexbin(**hexbin_kwargs)
+
+                    if show_scatter:
+                        target_ax.scatter(
+                            x_values,
+                            y_values,
+                            alpha=min(scatter_alpha, 0.15),
+                            s=max(scatter_size * 0.5, 1),
+                            color="black",
+                        )
+
+                return artist
+
+            if show_marginals:
+                grid = sns.JointGrid(x=x_values, y=y_values, height=figsize[0])
+
+                main_artist = draw_main_artist(grid.ax_joint)
+
+                sns.histplot(x=x_values, ax=grid.ax_marg_x, bins=40)
+                sns.histplot(y=y_values, ax=grid.ax_marg_y, bins=40)
+
+                grid.ax_joint.set_xscale(xscale)
+                grid.ax_joint.set_yscale(yscale)
+
+                if xlim is not None:
+                    grid.ax_joint.set_xlim(xlim)
+
+                if ylim is not None:
+                    grid.ax_joint.set_ylim(ylim)
+
+                grid.ax_joint.set_xlabel(current_xlabel)
+                grid.ax_joint.set_ylabel(current_ylabel)
+                grid.ax_joint.set_title(title)
+
+                grid.ax_marg_x.tick_params(
+                    axis="both",
+                    which="both",
+                    bottom=False,
+                    top=False,
+                    left=False,
+                    right=False,
+                    labelbottom=False,
+                    labelleft=False,
+                )
+                grid.ax_marg_y.tick_params(
+                    axis="both",
+                    which="both",
+                    bottom=False,
+                    top=False,
+                    left=False,
+                    right=False,
+                    labelbottom=False,
+                    labelleft=False,
+                )
+
+                grid.ax_marg_x.set_xlabel("")
+                grid.ax_marg_x.set_ylabel("")
+                grid.ax_marg_y.set_xlabel("")
+                grid.ax_marg_y.set_ylabel("")
+
+                if plot_type == "hexbin" and show_colorbar and main_artist is not None:
+                    colorbar_label = "log10(count)" if color_scale == "log" else "count"
+                    grid.figure.colorbar(
+                        main_artist, ax=grid.ax_joint, pad=0.02, label=colorbar_label
+                    )
+
+                grid.figure.tight_layout()
+                return grid.figure, grid.ax_joint
+
+            if ax is None:
+                figure, ax = plt.subplots(figsize=figsize)
+            else:
+                figure = ax.figure if figure is None else figure
+
+            main_artist = draw_main_artist(ax)
+
+            ax.set_xscale(xscale)
+            ax.set_yscale(yscale)
+
+            if xlim is not None:
+                ax.set_xlim(xlim)
+
+            if ylim is not None:
+                ax.set_ylim(ylim)
+
+            ax.set_xlabel(current_xlabel)
+            ax.set_ylabel(current_ylabel)
+            ax.set_title(title)
+
+            if plot_type == "hexbin" and show_colorbar and main_artist is not None:
+                colorbar_label = "log10(count)" if color_scale == "log" else "count"
+                figure.colorbar(main_artist, ax=ax, pad=0.02, label=colorbar_label)
+
+            figure.tight_layout()
+            return figure, ax
+
+    # def plot_2d(
+    #     self,
+    #     x: tuple[str, str],
+    #     y: tuple[str, str],
+    #     bandwidth_adjust: float = 0.8,
+    #     xscale: str = "linear",
+    #     yscale: str = "linear",
+    #     xlim: tuple[float, float] | None = None,
+    #     ylim: tuple[float, float] | None = None,
+    #     figure: plt.Figure | None = None,
+    #     ax: plt.Axes | None = None,
+    #     figsize: tuple[float, float] = (9, 8),
+    #     show_scatter: bool = True,
+    #     show_kde: bool = False,
+    #     fill: bool = False,
+    #     show_marginals: bool = False,
+    #     scatter_alpha: float = 0.5,
+    #     scatter_size: float = 20,
+    #     kde_alpha: float = 0.7,
+    #     cmap: str = "Blues",
+    #     title: str = "",
+    #     xlabel: str | None = None,
+    #     ylabel: str | None = None,
+    # ) -> tuple[plt.Figure, plt.Axes]:
+    #     """
+    #     Plot the joint distribution of one feature against another for two detectors.
+
+    #     Parameters
+    #     ----------
+    #     x : tuple[str, str]
+    #         Tuple ``(detector_name, feature_name)`` used for the x axis.
+    #     y : tuple[str, str]
+    #         Tuple ``(detector_name, feature_name)`` used for the y axis.
+    #     bandwidth_adjust : float, optional
+    #         Bandwidth scaling factor passed to the KDE estimator.
+    #     xscale : str, optional
+    #         Scale used for the x axis. Typical values are ``"linear"`` and ``"log"``.
+    #     yscale : str, optional
+    #         Scale used for the y axis. Typical values are ``"linear"`` and ``"log"``.
+    #     figure : matplotlib.figure.Figure, optional
+    #         Existing figure to use. If omitted, a new figure is created.
+    #     ax : matplotlib.axes.Axes, optional
+    #         Existing axes to use. If omitted, new axes are created.
+    #     figsize : tuple[float, float], optional
+    #         Figure size used when a new figure is created.
+    #     show_scatter : bool, optional
+    #         If ``True``, overlay the raw data points.
+    #     show_kde : bool, optional
+    #         If ``True``, draw the 2D KDE.
+    #     fill : bool, optional
+    #         If ``True``, fill the KDE contours.
+    #     show_marginals : bool, optional
+    #         If ``True``, use a seaborn joint layout with marginal distributions.
+    #         In this mode, a dedicated figure layout is created and the provided
+    #         ``figure`` and ``ax`` are ignored.
+    #     scatter_alpha : float, optional
+    #         Transparency of the scatter points.
+    #     scatter_size : float, optional
+    #         Marker size of the scatter points.
+    #     kde_alpha : float, optional
+    #         Transparency of the KDE layer.
+    #     cmap : str, optional
+    #         Colormap used for the KDE.
+    #     title : str, optional
+    #         Figure title.
+    #     xlabel : str, optional
+    #         Custom x axis label. If omitted, an automatic label is generated.
+    #     ylabel : str, optional
+    #         Custom y axis label. If omitted, an automatic label is generated.
+
+    #     Returns
+    #     -------
+    #     tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]
+    #         The created or reused figure and main axes.
+
+    #     Notes
+    #     -----
+    #     The dataframe is expected to be indexed by ``(detector_name, feature_name)``
+    #     pairs so that ``df.loc[x]`` and ``df.loc[y]`` return the corresponding
+    #     feature vectors.
+    #     """
+    #     with plt.style.context(scientific):
+    #         x_detector, x_feature = x
+    #         y_detector, y_feature = y
+
+    #         features = list(dict.fromkeys([x_feature, y_feature]))
+    #         df = self.loc[[x_detector, y_detector], features].sort_index()
+
+    #         x_values = df.loc[x]
+    #         y_values = df.loc[y]
+
+    #         current_xlabel = xlabel if xlabel is not None else f"Channel: {x_detector} | {x_feature}"
+    #         current_ylabel = ylabel if ylabel is not None else f"Channel: {y_detector} | {y_feature}"
+
+    #         if show_marginals:
+    #             grid = sns.JointGrid(x=x_values, y=y_values, height=figsize[0])
+
+    #             if show_kde:
+    #                 sns.kdeplot(
+    #                     x=x_values,
+    #                     y=y_values,
+    #                     ax=grid.ax_joint,
+    #                     fill=fill,
+    #                     cmap=cmap,
+    #                     bw_adjust=bandwidth_adjust,
+    #                     alpha=kde_alpha,
+    #                 )
+
+    #             if show_scatter:
+    #                 grid.ax_joint.scatter(
+    #                     x_values,
+    #                     y_values,
+    #                     alpha=scatter_alpha,
+    #                     s=scatter_size,
+    #                     color="C1",
+    #                 )
+
+    #             sns.histplot(x=x_values, ax=grid.ax_marg_x, bins=40)
+    #             sns.histplot(y=y_values, ax=grid.ax_marg_y, bins=40)
+
+    #             grid.ax_joint.set_xscale(xscale)
+    #             grid.ax_joint.set_yscale(yscale)
+    #             if xlim is not None:
+    #                 grid.ax_joint.set_xlim(xlim)
+
+    #             if ylim is not None:
+    #                 grid.ax_joint.set_ylim(ylim)
+
+    #             grid.ax_joint.set_xlabel(current_xlabel)
+    #             grid.ax_joint.set_ylabel(current_ylabel)
+
+    #             grid.ax_marg_x.tick_params(
+    #                 axis="both",
+    #                 which="both",
+    #                 bottom=False,
+    #                 top=False,
+    #                 left=False,
+    #                 right=False,
+    #                 labelbottom=False,
+    #                 labelleft=False,
+    #             )
+    #             grid.ax_marg_y.tick_params(
+    #                 axis="both",
+    #                 which="both",
+    #                 bottom=False,
+    #                 top=False,
+    #                 left=False,
+    #                 right=False,
+    #                 labelbottom=False,
+    #                 labelleft=False,
+    #             )
+
+    #             grid.ax_marg_x.set_xlabel("")
+    #             grid.ax_marg_x.set_ylabel("")
+    #             grid.ax_marg_y.set_xlabel("")
+    #             grid.ax_marg_y.set_ylabel("")
+    #             grid.ax_joint.set_title(title)
+
+    #             grid.figure.tight_layout()
+
+    #             return grid.figure, grid.ax_joint
+
+    #         if ax is None:
+    #             figure, ax = plt.subplots(figsize=figsize)
+    #         else:
+    #             figure = ax.figure if figure is None else figure
+
+    #         if show_kde:
+    #             sns.kdeplot(
+    #                 x=x_values,
+    #                 y=y_values,
+    #                 ax=ax,
+    #                 fill=fill,
+    #                 cmap=cmap,
+    #                 bw_adjust=bandwidth_adjust,
+    #                 alpha=kde_alpha,
+    #             )
+
+    #         if show_scatter:
+    #             ax.scatter(
+    #                 x_values,
+    #                 y_values,
+    #                 alpha=scatter_alpha,
+    #                 s=scatter_size,
+    #                 color="C1",
+    #             )
+
+    #         ax.set_xscale(xscale)
+    #         ax.set_yscale(yscale)
+
+    #         if xlim is not None:
+    #             ax.set_xlim(xlim)
+
+    #         if ylim is not None:
+    #             ax.set_ylim(ylim)
+
+    #         ax.set_xlabel(current_xlabel)
+    #         ax.set_ylabel(current_ylabel)
+    #         ax.set_title(title)
+    #         plt.tight_layout()
+
+    #         return figure, ax
 
     @helper.post_mpl_plot
     def plot_3d(self, x: str, y: str, z: str) -> plt.Figure:

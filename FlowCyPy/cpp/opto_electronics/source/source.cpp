@@ -226,19 +226,27 @@ void BaseSource::add_shot_noise_to_signal(std::vector<double>& power_values, con
         throw std::runtime_error("time_step must be strictly positive.");
     }
 
-    const double photon_energy  = this->get_photon_energy();
+    const double photon_energy = this->get_photon_energy();
     const double watt_to_photon = time_step / photon_energy;
 
     if (debug_mode && !power_values.empty()) {
-        double min_power = *std::min_element(power_values.begin(), power_values.end());
-        double max_power = *std::max_element(power_values.begin(), power_values.end());
+        const double minimum_power = *std::min_element(power_values.begin(), power_values.end());
+        const double maximum_power = *std::max_element(power_values.begin(), power_values.end());
+
         std::printf(
             "[ShotNoise] min=%.6e W | max=%.6e W | photon_energy=%.6e J | factor=%.6e\n",
-            min_power, max_power, photon_energy, watt_to_photon
+            minimum_power,
+            maximum_power,
+            photon_energy,
+            watt_to_photon
         );
     }
 
-    const size_t N = power_values.size();
+    bool found_negative_input = false;
+    size_t bad_index = 0;
+    double bad_value = 0.0;
+
+    const size_t number_of_samples = power_values.size();
 
     #pragma omp parallel
     {
@@ -249,30 +257,63 @@ void BaseSource::add_shot_noise_to_signal(std::vector<double>& power_values, con
             }
         }
 
-        static thread_local std::random_device rd;
-        static thread_local std::mt19937 gen(rd());
+        static thread_local std::random_device random_device;
+        static thread_local std::mt19937 generator(random_device());
         static thread_local std::normal_distribution<double> standard_normal(0.0, 1.0);
 
-        #pragma omp for
-        for (size_t i = 0; i < N; ++i) {
-            const double P = power_values[i];
+        bool local_found_negative_input = false;
+        size_t local_bad_index = 0;
+        double local_bad_value = 0.0;
 
-            if (P < 0.0) {
-                throw std::runtime_error("shot noise cannot be applied to negative power values.");
+        #pragma omp for
+        for (size_t sample_index = 0; sample_index < number_of_samples; ++sample_index) {
+            if (found_negative_input) {
+                continue;
             }
 
-            const double mean_photons = P * watt_to_photon;
+            const double power_value = power_values[sample_index];
+
+            if (power_value < 0.0) {
+                local_found_negative_input = true;
+                local_bad_index = sample_index;
+                local_bad_value = power_value;
+                continue;
+            }
+
+            const double mean_photons = power_value * watt_to_photon;
             double noisy_photons = 0.0;
 
             if (mean_photons < 100.0) {
-                std::poisson_distribution<int> pois(mean_photons);
-                noisy_photons = pois(gen);
+                std::poisson_distribution<int> poisson_distribution(mean_photons);
+                noisy_photons = static_cast<double>(poisson_distribution(generator));
             } else {
-                noisy_photons = std::max(0.0, mean_photons + standard_normal(gen) * std::sqrt(mean_photons));
+                noisy_photons = std::max(
+                    0.0,
+                    mean_photons + standard_normal(generator) * std::sqrt(mean_photons)
+                );
             }
 
-            power_values[i] = noisy_photons / watt_to_photon;
+            power_values[sample_index] = noisy_photons / watt_to_photon;
         }
+
+        #pragma omp critical
+        {
+            if (local_found_negative_input && !found_negative_input) {
+                found_negative_input = true;
+                bad_index = local_bad_index;
+                bad_value = local_bad_value;
+            }
+        }
+    }
+
+    if (found_negative_input) {
+        throw std::runtime_error(
+            "Shot noise received a negative optical power sample, which is nonphysical. "
+            "Shot noise can only be applied to nonnegative optical power. "
+            "This usually indicates that the source RIN noise produces invalid power values. "
+            "First invalid sample: index=" + std::to_string(bad_index) +
+            ", value=" + std::to_string(bad_value) + " W."
+        );
     }
 }
 

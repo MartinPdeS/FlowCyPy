@@ -20,9 +20,9 @@ public:
      * new vector.
      *
      * Some circuit elements require the sampling rate to interpret time dependent
-     * parameters such as filter cutoff frequency or baseline restoration window
-     * duration. If a given circuit does not require the sampling rate, the value
-     * may be left unset.
+     * parameters such as filter cutoff frequency or baseline servo time constant.
+     * If a given circuit does not require the sampling rate, the value may be
+     * left unset.
      *
      * @param signal Input signal samples.
      * @param sampling_rate Sampling rate in hertz. Use NaN when not required.
@@ -35,22 +35,40 @@ public:
 };
 
 
-class BaseLineRestoration : public BaseCircuit {
+/**
+ * @brief Subtract the sliding minimum value from a signal.
+ *
+ * This class implements a running floor subtraction over a finite or infinite
+ * history window. It is useful as a generic signal conditioning operation, but
+ * it should not be interpreted as a faithful model of an analog baseline
+ * restoration servo.
+ *
+ * The processed output is:
+ *
+ *     output[n] = signal[n] - min(signal over window ending at n)
+ *
+ * which forces the local minimum inside the selected window to zero.
+ *
+ * This operation is fundamentally different from a capacitor based baseline
+ * restoration loop, because it uses an extreme value operator rather than a
+ * slowly evolving analog state.
+ */
+class SlidingMinimumBaselineCorrection : public BaseCircuit {
 public:
     double window_size;  // [second]
 
-    BaseLineRestoration() = default;
+    SlidingMinimumBaselineCorrection() = default;
 
     /**
-     * @brief Construct a baseline restoration circuit with a specified time window.
+     * @brief Construct a sliding minimum baseline correction circuit.
      *
-     * The window size is expressed in second. If set to -1, the window is treated
-     * as infinite and all previous samples are considered when estimating the local
-     * baseline.
+     * The window size is expressed in second. If set to -1, the window is
+     * treated as infinite and all previous samples are considered when
+     * estimating the running minimum.
      *
      * @param window_size Window size in second, or -1 for an infinite window.
      */
-    BaseLineRestoration(const double window_size)
+    SlidingMinimumBaselineCorrection(const double window_size)
         : window_size(window_size)
     {
         if (this->window_size <= 0.0 && this->window_size != -1.0) {
@@ -61,29 +79,109 @@ public:
     }
 
     /**
-     * @brief Apply baseline restoration to a signal.
+     * @brief Apply sliding minimum baseline correction to a signal.
      *
-     * This method removes a drifting baseline by subtracting the minimum value
-     * observed inside a sliding window. The window size is expressed in second
-     * and is converted internally to a number of samples using the provided
-     * sampling rate.
+     * This method subtracts the minimum value observed inside a sliding window.
+     * The window size is expressed in second and is converted internally to a
+     * number of samples using the provided sampling rate.
      *
      * If `window_size` is `-1`, an infinite history window is used and the
      * method does not require a sampling rate.
      *
      * @param signal Input signal samples.
-     * @param sampling_rate Sampling rate in hertz. Required for finite window sizes.
-     * @return Baseline restored signal.
+     * @param sampling_rate Sampling rate in hertz. Required for finite windows.
+     * @return Corrected signal samples.
      *
      * @throws std::runtime_error If the input signal is empty.
-     * @throws std::runtime_error If a finite window is requested and the sampling
-     * rate is not strictly positive.
+     * @throws std::runtime_error If a finite window is requested and the
+     * sampling rate is not strictly positive.
      * @throws std::runtime_error If the finite window corresponds to fewer than
      * one sample.
      */
     std::vector<double> process(
         const std::vector<double>& signal,
         const double sampling_rate = std::numeric_limits<double>::quiet_NaN()
+    ) const override;
+};
+
+
+/**
+ * @brief First order baseline restoration servo.
+ *
+ * This class models a simple analog inspired baseline restoration loop. A slow
+ * baseline estimate is tracked with a first order exponential smoother and then
+ * subtracted from the incoming signal.
+ *
+ * The internal baseline state is:
+ *
+ *     baseline[n] = (1 - alpha) * baseline[n - 1] + alpha * signal[n]
+ *
+ * with:
+ *
+ *     alpha = 1 - exp(-dt / time_constant)
+ *
+ * and:
+ *
+ *     dt = 1 / sampling_rate
+ *
+ * The processed signal is:
+ *
+ *     output[n] = signal[n] - baseline[n] + reference_level
+ *
+ * This is a much better approximation of a capacitor based baseline restoration
+ * loop than a sliding minimum subtraction.
+ */
+class BaselineRestorationServo : public BaseCircuit {
+public:
+    double time_constant;   // [second]
+    double reference_level; // output baseline target
+    bool initialize_with_first_sample;
+
+    BaselineRestorationServo() = default;
+
+    /**
+     * @brief Construct a baseline restoration servo.
+     *
+     * @param time_constant Servo time constant in second.
+     * @param reference_level Output reference level after baseline subtraction.
+     * A value of 0.0 corresponds to a baseline centered around zero.
+     * @param initialize_with_first_sample If true, the initial baseline state is
+     * set to the first sample. If false, it starts from `reference_level`.
+     */
+    BaselineRestorationServo(
+        const double time_constant,
+        const double reference_level = 0.0,
+        const bool initialize_with_first_sample = true
+    )
+        : time_constant(time_constant),
+          reference_level(reference_level),
+          initialize_with_first_sample(initialize_with_first_sample)
+    {
+        if (this->time_constant <= 0.0) {
+            throw std::runtime_error("time_constant must be strictly positive.");
+        }
+    }
+
+    /**
+     * @brief Apply baseline restoration servo processing to a signal.
+     *
+     * This method estimates the slow baseline using a first order recursive
+     * update and subtracts that estimate from the signal. The output is then
+     * shifted by `reference_level`.
+     *
+     * This operation behaves like a simple RC servo that removes slow baseline
+     * drift while preserving fast transients.
+     *
+     * @param signal Input signal samples.
+     * @param sampling_rate Sampling rate in hertz.
+     * @return Baseline restored signal samples.
+     *
+     * @throws std::runtime_error If the signal is empty.
+     * @throws std::runtime_error If the sampling rate is not strictly positive.
+     */
+    std::vector<double> process(
+        const std::vector<double>& signal,
+        const double sampling_rate
     ) const override;
 };
 
@@ -195,8 +293,8 @@ public:
      * axis.
      *
      * The Bessel filter is often preferred when preserving pulse shape and group
-     * delay characteristics is more important than achieving the sharpest possible
-     * magnitude roll off.
+     * delay characteristics is more important than achieving the sharpest
+     * possible magnitude roll off.
      *
      * The `gain` parameter adjusts the output amplitude after filtering.
      *

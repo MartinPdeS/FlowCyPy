@@ -4,6 +4,8 @@
 
 #include <opto_electronics/source/source.h>
 #include <pint/pint.h>
+#include <limits>
+
 
 namespace py = pybind11;
 
@@ -42,10 +44,21 @@ PYBIND11_MODULE(source, module) {
             "include_rin_noise",
             &BaseSource::include_rin_noise
         )
-        .def_property_readonly(
+        .def_property(
             "rin",
-            [](const BaseSource& source) {
-                return source.rin;
+            [ureg](const BaseSource& source) -> py::object {
+                if (std::isnan(source.rin)) {
+                    return py::none();
+                } else {
+                    return py::cast(source.rin) * ureg.attr("dB_per_Hz");
+                }
+            },
+            [](BaseSource& source, const py::object& rin) {
+                if (rin.is_none()) {
+                    source.rin = std::numeric_limits<double>::quiet_NaN();
+                } else {
+                    source.rin = rin.attr("to")("dB_per_Hz").attr("magnitude").cast<double>();
+                }
             }
         )
         .def_property(
@@ -362,7 +375,7 @@ PYBIND11_MODULE(source, module) {
                     const py::object& optical_power,
                     const py::object& waist_y,
                     const py::object& waist_z,
-                    const double rin,
+                    const py::object& rin,
                     const py::object& polarization,
                     const py::object& bandwidth,
                     const bool include_shot_noise,
@@ -388,9 +401,13 @@ PYBIND11_MODULE(source, module) {
                         ? std::numeric_limits<double>::quiet_NaN()
                         : bandwidth.attr("to")("hertz").attr("magnitude").cast<double>();
 
+                    const double rin_value = rin.is_none()
+                        ? std::numeric_limits<double>::quiet_NaN()
+                        : rin.attr("to")("dB_per_Hz").attr("magnitude").cast<double>();
+
                     return std::make_shared<Gaussian>(
                         wavelength_meter,
-                        rin,
+                        rin_value,
                         optical_power_watt,
                         waist_y_meter,
                         waist_z_meter,
@@ -406,7 +423,7 @@ PYBIND11_MODULE(source, module) {
             py::arg("optical_power"),
             py::arg("waist_y"),
             py::arg("waist_z"),
-            py::arg("rin") = -120.0,
+            py::arg("rin") = py::none(),
             py::arg("polarization") = py::float_(0.0) * ureg.attr("radian"),
             py::arg("bandwidth") = py::none(),
             py::arg("include_shot_noise") = true,
@@ -451,7 +468,7 @@ PYBIND11_MODULE(source, module) {
                     const py::object& optical_power,
                     const py::object& waist_y,
                     const py::object& waist_z,
-                    const double rin,
+                    const py::object& rin,
                     const py::object& polarization,
                     const py::object& bandwidth,
                     const bool include_shot_noise,
@@ -477,9 +494,13 @@ PYBIND11_MODULE(source, module) {
                         ? std::numeric_limits<double>::quiet_NaN()
                         : bandwidth.attr("to")("hertz").attr("magnitude").cast<double>();
 
+                    const double rin_value = rin.is_none()
+                        ? std::numeric_limits<double>::quiet_NaN()
+                        : rin.attr("to")("dB_per_Hz").attr("magnitude").cast<double>();
+
                     return std::make_shared<FlatTop>(
                         wavelength_meter,
-                        rin,
+                        rin_value,
                         optical_power_watt,
                         waist_y_meter,
                         waist_z_meter,
@@ -495,7 +516,7 @@ PYBIND11_MODULE(source, module) {
             py::arg("optical_power"),
             py::arg("waist_y"),
             py::arg("waist_z"),
-            py::arg("rin") = -120.0,
+            py::arg("rin") = std::numeric_limits<double>::quiet_NaN(),
             py::arg("polarization") = py::float_(0.0) * ureg.attr("radian"),
             py::arg("bandwidth") = py::none(),
             py::arg("include_shot_noise") = true,

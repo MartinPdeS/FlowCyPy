@@ -44,18 +44,13 @@ class RunRecord:
         detector_names: list[str],
         run_time: Time,
         event_collection: pd.DataFrame,
-        analog: AcquisitionDataFrame,
-        digital: AcquisitionDataFrame = None,
     ):
 
         self.detector_names = detector_names
         self.run_time = run_time
         self.event_collection = event_collection
 
-        self.signal = NameSpace(
-            analog=analog,
-            digital=digital,
-        )
+        self.signal = NameSpace()
 
     @property
     def number_of_scatterers(self) -> int:
@@ -206,21 +201,20 @@ class RunRecord:
         It provides a visual representation of the voltage signals over time for each detector.
 
         """
-        analog = self.signal.analog
-        analog.normalize_units(signal_units="max", time_units="max")
+        self.signal.analog.normalize_units(signal_units="max", time_units="max")
 
         figure, axes = self.get_axes_dict(
-            signal_units=analog.signal_units,
-            time_units=analog.time_units,
+            signal_units=self.signal.analog.signal_units,
+            time_units=self.signal.analog.time_units,
         )
 
-        analog._add_to_axes(axes=axes)
+        self.signal.analog._add_to_axes(axes=axes)
 
-        for (_, ax), detector_name in zip(axes.items(), self.detector_names):
-            if not hasattr(self, "triggering_system"):
-                break
-            if detector_name == self.triggering_system.trigger_channel:
-                self.triggering_system._add_to_ax(ax, signal_units=analog.signal_units)
+        if hasattr(self, "discriminator"):
+            self.discriminator._add_to_ax(
+                axes[self.discriminator.trigger_channel],
+                signal_units=self.signal.analog.signal_units,
+            )
 
         return figure
 
@@ -234,13 +228,12 @@ class RunRecord:
         during the run.
 
         """
-        digital = self.signal.digital
-        digital.normalize_units(time_units="max")
+        time_units = self.signal.digital["Time"].max().to_compact().units
 
         figure, axes = self.get_axes_dict(
-            time_units=digital.time_units,
+            time_units=time_units,
         )
 
-        digital._add_to_axes(axes=axes)
+        self.signal.digital._add_to_axes(axes=axes, time_units=time_units)
 
         return figure

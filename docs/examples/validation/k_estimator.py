@@ -264,15 +264,15 @@ illumination_source = source.Gaussian(
 )
 
 digitizer = Digitizer(
-    bit_depth=20,
+    bit_depth=24,
     min_voltage=0 * ureg.volt,
-    max_voltage=10_000 * ureg.microvolt,
+    max_voltage=100 * ureg.millivolt,
     sampling_rate=60 * ureg.megahertz,
 )
 
 amplifier = Amplifier(
     gain=10 * ureg.volt / ureg.ampere,
-    bandwidth=60 * ureg.megahertz,
+    bandwidth=20 * ureg.megahertz,
     voltage_noise_density=0 * ureg.volt / ureg.sqrt_hertz,
     current_noise_density=0 * ureg.ampere / ureg.sqrt_hertz,
 )
@@ -280,7 +280,7 @@ amplifier = Amplifier(
 detector_0 = Detector(
     name="default",
     phi_angle=0 * ureg.degree,
-    numerical_aperture=0.2,
+    numerical_aperture=0.5,
     cache_numerical_aperture=0.0,
     responsivity=1 * ureg.ampere / ureg.watt,
     dark_current=0 * ureg.ampere,
@@ -323,10 +323,10 @@ flow_cytometer = FlowCytometer(
 # ---------------------------
 
 debug_mode = False
-run_time = 1 * ureg.millisecond
+run_time = 2 * ureg.millisecond
 illumination_power = 200 * ureg.milliwatt
-concentration = 2.5e7 * ureg.particle / ureg.milliliter / 3
-bead_diameters = np.linspace(300, 1200, 25) * ureg.nanometer
+concentration = 2.5e7 * ureg.particle / ureg.milliliter
+bead_diameters = np.linspace(300, 1500, 25) * ureg.nanometer
 
 medians = []
 robust_stds = []

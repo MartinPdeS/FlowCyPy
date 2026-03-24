@@ -331,7 +331,6 @@ void DynamicWindow::run() {
 // =============================
 // DoubleThreshold implementation
 // =============================
-
 void DoubleThreshold::run() {
     if (!this->threshold.is_defined()) {
         throw std::runtime_error(
@@ -355,12 +354,12 @@ void DoubleThreshold::run() {
 
     this->validate_detector_existence(this->trigger_channel);
 
-    const double resolved_threshold = this->parse_threshold(this->threshold);
+    this->resolved_upper_threshold = this->parse_threshold(this->threshold);
 
-    const double effective_lower_threshold =
+    this->resolved_lower_threshold =
         this->lower_threshold.is_defined()
             ? this->parse_threshold(this->lower_threshold)
-            : resolved_threshold;
+            : this->resolved_upper_threshold;
 
     const std::vector<double> &signal =
         this->trigger.signal_map.at(this->trigger_channel);
@@ -371,8 +370,8 @@ void DoubleThreshold::run() {
 
     for (size_t index = 1; index < signal.size(); ++index) {
         if (
-            signal[index - 1] <= resolved_threshold &&
-            signal[index] > resolved_threshold
+            signal[index - 1] <= this->resolved_upper_threshold &&
+            signal[index] > this->resolved_upper_threshold
         ) {
             size_t threshold_crossing_end = index;
 
@@ -381,7 +380,7 @@ void DoubleThreshold::run() {
 
                 while (
                     threshold_crossing_end < signal.size() &&
-                    signal[threshold_crossing_end] > resolved_threshold
+                    signal[threshold_crossing_end] > this->resolved_upper_threshold
                 ) {
                     ++above_threshold_count;
                     ++threshold_crossing_end;
@@ -404,7 +403,7 @@ void DoubleThreshold::run() {
             } else {
                 while (
                     threshold_crossing_end < signal.size() &&
-                    signal[threshold_crossing_end] > resolved_threshold
+                    signal[threshold_crossing_end] > this->resolved_upper_threshold
                 ) {
                     ++threshold_crossing_end;
                 }
@@ -420,7 +419,7 @@ void DoubleThreshold::run() {
 
             while (
                 lower_threshold_crossing_end < signal.size() &&
-                signal[lower_threshold_crossing_end] > effective_lower_threshold
+                signal[lower_threshold_crossing_end] > this->resolved_lower_threshold
             ) {
                 ++lower_threshold_crossing_end;
             }
@@ -451,5 +450,4 @@ void DoubleThreshold::run() {
 
     this->trigger.run_segmentation(valid_triggers);
     this->print_warning_if_no_signal_met_trigger_criteria();
-
 }
