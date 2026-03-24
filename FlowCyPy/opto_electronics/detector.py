@@ -9,10 +9,8 @@ from TypedUnit import (
     Length,
     Responsitivity,
     ureg,
-    validate_units,
 )
 
-from FlowCyPy.signal_generator import SignalGenerator
 from FlowCyPy.physical_constant import PhysicalConstant
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
 
