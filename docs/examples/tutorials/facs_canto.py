@@ -34,8 +34,8 @@ population_0 = populations.SpherePopulation(
 )
 
 facs_canto = FacsCanto(
-    sample_volume_flow=SampleFlowRate.MEDIUM,
-    sheath_volume_flow=SheathFlowRate.DEFAULT,
+    sample_volume_flow=SampleFlowRate.MEDIUM.value,
+    sheath_volume_flow=SheathFlowRate.DEFAULT.value,
     optical_power=200 * ureg.milliwatt,
     threshold="3sigma",
     include_shot_noise=True,

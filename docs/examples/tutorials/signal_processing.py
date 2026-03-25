@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from TypedUnit import ureg
 
-from FlowCyPy import FlowCytometer, SimulationSettings
+from FlowCyPy import FlowCytometer
 from FlowCyPy.fluidics import distributions
 
 # Import necessary components from FlowCyPy
@@ -32,22 +32,18 @@ from FlowCyPy.fluidics import (
 from FlowCyPy.opto_electronics import (
     Detector,
     OptoElectronics,
-    TransimpedanceAmplifier,
+    Amplifier,
     source,
 )
 from FlowCyPy.signal_processing import Digitizer, SignalProcessing, circuits
 
-# Enable noise settings if desired
-SimulationSettings.include_noises = True
-
-# Set random seed for reproducibility
-np.random.seed(3)
-
-# Define the optical source: a Gaussian beam.
-source = source.GaussianBeam(
-    numerical_aperture=0.3 * ureg.AU,  # Numerical aperture of the laser
-    wavelength=488 * ureg.nanometer,  # Laser wavelength: 488 nm
-    optical_power=100 * ureg.milliwatt,  # Laser optical power: 100 mW
+source = source.Gaussian(
+    waist_z=10 * ureg.micrometer,
+    waist_y=60 * ureg.micrometer,
+    wavelength=488 * ureg.nanometer,
+    optical_power=100 * ureg.milliwatt,
+    bandwidth=10 * ureg.megahertz,
+    rin=-100 * ureg.dB_per_Hz,
 )
 
 # %%
@@ -74,9 +70,9 @@ fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_ce
 
 # Define the signal digitizer.
 digitizer = Digitizer(
-    bit_depth="14bit",
-    saturation_levels="auto",
-    sampling_rate=60 * ureg.megahertz,  # Sampling rate: 60 MHz
+    bit_depth=14,
+    use_auto_range=True,
+    sampling_rate=60 * ureg.megahertz,
 )
 
 # Define two detectors.
@@ -96,9 +92,7 @@ detector_1 = Detector(
     dark_current=1 * ureg.microampere,
 )
 
-amplifier = TransimpedanceAmplifier(
-    gain=100 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz
-)
+amplifier = Amplifier(gain=100 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz)
 
 opto_electronics = OptoElectronics(
     detectors=[detector_0, detector_1], source=source, amplifier=amplifier
@@ -126,34 +120,34 @@ run_time = 0.1 * ureg.millisecond
 
 # Acquisition 1: Raw Signal (no processing)
 signal_processing.analog_processing = []
-results = flow_cytometer.run(run_time=run_time)
+run_record = flow_cytometer.run(run_time=run_time)
 ax.plot(
-    results.signal.analog["Time"].pint.to("microsecond"),
-    results.signal.analog["forward"].pint.to("millivolt"),
+    run_record.signal.analog["Time"].to("microsecond"),
+    run_record.signal.analog["forward"].to("millivolt"),
     linestyle="-",
     label="Raw Signal",
 )
 
 # Acquisition 2: Baseline Restoration
 signal_processing.analog_processing = [
-    circuits.BaselineRestorator(window_size=1000 * ureg.microsecond)
+    circuits.BaselineRestorationServo(time_constant=10 * ureg.microsecond)
 ]
-results = flow_cytometer.run(run_time=run_time)
+run_record = flow_cytometer.run(run_time=run_time)
 ax.plot(
-    results.signal.analog["Time"].pint.to("microsecond"),
-    results.signal.analog["forward"].pint.to("millivolt"),
+    run_record.signal.analog["Time"].to("microsecond"),
+    run_record.signal.analog["forward"].to("millivolt"),
     linestyle="--",
     label="Baseline Restored",
 )
 
 # Acquisition 3: Bessel LowPass Filter
 signal_processing.analog_processing = [
-    circuits.BesselLowPass(cutoff=3 * ureg.megahertz, order=4, gain=2)
+    circuits.BesselLowPass(cutoff_frequency=3 * ureg.megahertz, order=4, gain=2)
 ]
-results = flow_cytometer.run(run_time=run_time)
+run_record = flow_cytometer.run(run_time=run_time)
 ax.plot(
-    results.signal.analog["Time"].pint.to("microsecond"),
-    results.signal.analog["forward"].pint.to("millivolt"),
+    run_record.signal.analog["Time"].to("microsecond"),
+    run_record.signal.analog["forward"].to("millivolt"),
     linestyle="-.",
     label="Bessel LowPass",
 )

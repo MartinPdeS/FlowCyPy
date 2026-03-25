@@ -21,8 +21,8 @@ class PeakDataFrame(pd.DataFrame):
         """Ensure operations return instances of PeakDataFrame."""
         return self.__class__
 
-    def __init__(self, dataframe: pd.DataFrame):
-        super().__init__(dataframe)
+    def __init__(self, dataframe: pd.DataFrame, **kwargs):
+        super().__init__(dataframe, **kwargs)
 
     @classmethod
     def _construct_from_dict(

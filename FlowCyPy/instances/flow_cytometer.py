@@ -7,6 +7,7 @@ from FlowCyPy import opto_electronics
 from FlowCyPy import signal_processing
 from FlowCyPy.run_record import RunRecord
 from FlowCyPy.fluidics import SheathFlowRate, SampleFlowRate
+from enum import Enum
 
 
 class FacsCanto:
@@ -140,7 +141,7 @@ class FacsCanto:
 
         amplifier = opto_electronics.Amplifier(
             gain=10 * ureg.volt / ureg.ampere,
-            bandwidth=10 * ureg.megahertz,
+            bandwidth=2 * ureg.megahertz,
         )
 
         detector_0 = PMT(
@@ -180,11 +181,11 @@ class FacsCanto:
         )
 
         analog_processing = [
-            signal_processing.circuits.BaselineRestorator(
-                window_size=10 * ureg.microsecond
+            signal_processing.circuits.BaselineRestorationServo(
+                time_constant=50 * ureg.microsecond
             ),
             signal_processing.circuits.BesselLowPass(
-                cutoff=2 * ureg.megahertz, order=4, gain=2
+                cutoff_frequency=2 * ureg.megahertz, order=4, gain=2
             ),
         ]
 

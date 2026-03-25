@@ -11,11 +11,8 @@ The main goal is to evaluate whether such particles produce detectable and disti
 scatter signals in the presence of system noise and fluidic variability.
 """
 
-# %% Imports
-import numpy as np
-from TypedUnit import ureg
-
-from FlowCyPy import FlowCytometer, SimulationSettings
+from FlowCyPy.units import ureg
+from FlowCyPy import FlowCytometer
 from FlowCyPy.fluidics import distributions
 from FlowCyPy.fluidics import (
     FlowCell,
@@ -36,16 +33,6 @@ from FlowCyPy.signal_processing import (
     peak_locator,
     discriminator,
 )
-
-# %%
-# Simulation Configuration
-SimulationSettings.include_noises = True
-SimulationSettings.include_shot_noise = True
-SimulationSettings.include_source_noise = True
-SimulationSettings.include_dark_current_noise = True
-SimulationSettings.assume_perfect_hydrodynamic_focusing = True
-
-np.random.seed(3)
 
 # %%
 # Optical Source
@@ -118,15 +105,15 @@ opto_electronics = OptoElectronics(
 # %%
 # Analog Processing Pipeline
 analog_processing = [
-    circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
-    circuits.BesselLowPass(cutoff=1.5 * ureg.megahertz, order=4, gain=2),
+    circuits.BaselineRestorationServo(time_constant=10 * ureg.microsecond),
+    circuits.BesselLowPass(cutoff_frequency=1.5 * ureg.megahertz, order=4, gain=2),
 ]
 
 # %%
 # Triggering and Peak Detection
 discriminator = discriminator.DynamicWindow(
     trigger_channel="forward",
-    threshold="5sigma",
+    threshold="3sigma",
     max_triggers=-1,
     pre_buffer=128,
     post_buffer=128,

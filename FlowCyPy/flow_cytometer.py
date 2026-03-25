@@ -327,6 +327,12 @@ class FlowCytometer:
             analog_dict
         )
 
+        if len(triggered_analog_dict["segment_id"]) == 0:
+            print(
+                "No triggers detected. Returning analog signal without digital processing."
+            )
+            return run_record
+
         if self.signal_processing.digitizer.use_auto_range:
             self.signal_processing.digitizer.capture_signal(
                 analog_dict[self.signal_processing.discriminator.trigger_channel]

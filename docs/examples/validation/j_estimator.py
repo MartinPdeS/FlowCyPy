@@ -302,7 +302,9 @@ dynamic_window_discriminator = discriminator.DynamicWindow(
     post_buffer=200,
 )
 
-baseline_restoration = circuits.BaselineRestorator(window_size=10 * ureg.microsecond)
+baseline_restoration = circuits.BaselineRestorationServo(
+    time_constant=10 * ureg.microsecond
+)
 
 signal_processing = SignalProcessing(
     digitizer=digitizer,
@@ -324,9 +326,9 @@ flow_cytometer = FlowCytometer(
 # ---------------------------
 
 debug_mode = False
-run_time = 1 * ureg.millisecond
+run_time = 10 * ureg.millisecond
 bead_diameter = 1000 * ureg.nanometer
-concentration = 2.5e7 * ureg.particle / ureg.milliliter / 3
+concentration = 2.5e7 * ureg.particle / ureg.milliliter / 1
 illumination_powers = np.linspace(10, 380, 25) * ureg.milliwatt
 
 medians = []

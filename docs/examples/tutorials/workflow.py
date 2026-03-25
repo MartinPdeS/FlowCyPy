@@ -17,23 +17,26 @@ Steps Covered:
 """
 
 # %%
-# Step 0: Global Settings and Imports
-# -----------------------------------
-from TypedUnit import ureg
-
-# %%
 # Step 1: Define Flow Cell and Fluidics
 # -------------------------------------
-from FlowCyPy.fluidics import Fluidics, FlowCell, ScattererCollection, populations
+from FlowCyPy.units import ureg
+from FlowCyPy.fluidics import (
+    Fluidics,
+    FlowCell,
+    ScattererCollection,
+    populations,
+    SampleFlowRate,
+    SheathFlowRate,
+)
 
 # from FlowCyPy.sampling_method import GammaModel, ExplicitModel
 from FlowCyPy.fluidics import distributions
 
 flow_cell = FlowCell(
-    sample_volume_flow=80 * ureg.microliter / ureg.minute,
-    sheath_volume_flow=1 * ureg.milliliter / ureg.minute,
-    width=200 * ureg.micrometer,
-    height=100 * ureg.micrometer,
+    sample_volume_flow=SampleFlowRate.MEDIUM.value,
+    sheath_volume_flow=SheathFlowRate.MEDIUM.value,
+    width=400 * ureg.micrometer,
+    height=150 * ureg.micrometer,
 )
 
 scatterer_collection = ScattererCollection()
@@ -41,11 +44,9 @@ scatterer_collection = ScattererCollection()
 medium_refractive_index = distributions.Delta(1.33 * ureg.RIU)
 
 diameter_dist = distributions.RosinRammler(
-    scale=50 * ureg.nanometer,
-    shape=150,
-    low_cutoff=50.0 * ureg.nanometer,
+    scale=200 * ureg.nanometer,
+    shape=10,
 )
-
 
 ri_dist = distributions.Normal(
     mean=1.44 * ureg.RIU,
@@ -66,7 +67,7 @@ population_0 = populations.SpherePopulation(
 
 
 diameter_dist = distributions.RosinRammler(
-    scale=50 * ureg.nanometer,
+    scale=30 * ureg.nanometer,
     shape=50,
 )
 
@@ -76,20 +77,18 @@ ri_dist = distributions.Normal(
     low_cutoff=1.33 * ureg.RIU,
 )
 
-sampling_method = populations.GammaModel(number_of_samples=10_000)
-
 population_1 = populations.SpherePopulation(
     name="Pop 1",
     medium_refractive_index=medium_refractive_index,
     concentration=5e17 * ureg.particle / ureg.milliliter,
     diameter=diameter_dist,
     refractive_index=ri_dist,
-    sampling_method=sampling_method,
+    sampling_method=populations.GammaModel(number_of_samples=5_000),
 )
 
-scatterer_collection.add_population(population_0)
+scatterer_collection.add_population(population_0, population_1)
 
-scatterer_collection.dilute(factor=80)
+scatterer_collection.dilute(factor=800)
 
 fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
@@ -104,13 +103,13 @@ from FlowCyPy.opto_electronics import (
 )
 
 
-source = source.FlatTop(
+source = source.Gaussian(
     waist_z=10e-6 * ureg.meter,  # Beam waist along flow direction (z-axis)
     waist_y=60e-6 * ureg.meter,
     wavelength=405 * ureg.nanometer,
     optical_power=200 * ureg.milliwatt,
-    include_shot_noise=False,
-    # rin=-180,
+    rin=-140 * ureg.dB_per_Hz,
+    bandwidth=10 * ureg.megahertz,
 )
 
 detectors = [
@@ -158,15 +157,15 @@ digitizer = Digitizer(
 )
 
 analog_processing = [
-    circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
-    circuits.BesselLowPass(cutoff=2 * ureg.megahertz, order=4, gain=2),
+    circuits.BaselineRestorationServo(time_constant=30 * ureg.microsecond),
+    circuits.BesselLowPass(cutoff_frequency=2 * ureg.megahertz, order=4, gain=2),
 ]
 
 triggering = discriminator.DynamicWindow(
     trigger_channel="forward",
-    threshold="2sigma",
-    pre_buffer=20,
-    post_buffer=20,
+    threshold="4sigma",
+    pre_buffer=40,
+    post_buffer=40,
     max_triggers=-1,
 )
 
@@ -188,10 +187,10 @@ cytometer = FlowCytometer(
     opto_electronics=opto_electronics,
     fluidics=fluidics,
     signal_processing=signal_processing,
-    # background_power=0.001 * ureg.milliwatt,
+    background_power=0.001 * ureg.milliwatt,
 )
 
-run_record = cytometer.run(run_time=1 * ureg.millisecond)
+run_record = cytometer.run(run_time=10 * ureg.millisecond)
 
 _ = run_record.event_collection.plot(x="Diameter")
 

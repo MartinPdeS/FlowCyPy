@@ -20,8 +20,8 @@ and vary bead diameter across multiple runs.
 
 import matplotlib.pyplot as plt
 import numpy as np
-from TypedUnit import ureg
 
+from FlowCyPy.units import ureg
 from FlowCyPy import FlowCytometer
 from FlowCyPy.fluidics import (
     FlowCell,
@@ -81,7 +81,7 @@ def compute_signal_statistics(data: np.ndarray) -> dict:
 
 
 def get_peaks(
-    flow_cytometer: FlowCytometer, run_time=1.5 * ureg.millisecond, debug_mode=False
+    flow_cytometer: FlowCytometer, run_time=5.0 * ureg.millisecond, debug_mode=False
 ):
     """
     Run the flow cytometer and return the detected peaks.
@@ -301,7 +301,9 @@ dynamic_window_discriminator = discriminator.DynamicWindow(
     post_buffer=200,
 )
 
-baseline_restoration = circuits.BaselineRestorator(window_size=10 * ureg.microsecond)
+baseline_restoration = circuits.BaselineRestorationServo(
+    time_constant=50 * ureg.microsecond
+)
 
 signal_processing = SignalProcessing(
     digitizer=digitizer,
@@ -323,7 +325,7 @@ flow_cytometer = FlowCytometer(
 # ---------------------------
 
 debug_mode = False
-run_time = 2 * ureg.millisecond
+run_time = 10 * ureg.millisecond
 illumination_power = 200 * ureg.milliwatt
 concentration = 2.5e7 * ureg.particle / ureg.milliliter
 bead_diameters = np.linspace(300, 1500, 25) * ureg.nanometer

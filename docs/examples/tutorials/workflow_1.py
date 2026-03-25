@@ -36,7 +36,7 @@ population_0 = populations.SpherePopulation(
     concentration=1e10 * ureg.particle / ureg.milliliter,
     diameter=distributions.RosinRammler(
         scale=150 * ureg.nanometer,
-        shape=150,
+        shape=50,
         low_cutoff=50.0 * ureg.nanometer,
     ),
     refractive_index=distributions.Normal(
@@ -52,7 +52,7 @@ population_1 = populations.SpherePopulation(
     concentration=5e17 * ureg.particle / ureg.milliliter,
     diameter=distributions.RosinRammler(
         scale=50 * ureg.nanometer,
-        shape=50,
+        shape=2,
     ),
     refractive_index=distributions.Normal(
         mean=1.44,
@@ -88,7 +88,7 @@ discriminator = discriminator.DynamicWindow(
 peak_locator = peak_locator.GlobalPeakLocator(compute_width=False)
 
 analog_processing = [
-    circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
+    circuits.BaselineRestorationServo(time_constant=10 * ureg.microsecond),
     circuits.BesselLowPass(cutoff_frequency=2 * ureg.megahertz, order=4, gain=2),
 ]
 
@@ -99,7 +99,7 @@ source = FlatTop(
     optical_power=200 * ureg.milliwatt,
     include_shot_noise=True,
     include_rin_noise=True,
-    rin=-200,
+    rin=-200 * ureg.dB_per_Hz,
     bandwidth=10 * ureg.megahertz,
 )
 
@@ -130,7 +130,7 @@ workflow.initialize()
 
 run_record = workflow.run(run_time=1 * ureg.millisecond)
 
-# _ = run_record.event_collection.plot(x="Diameter")
+_ = run_record.event_collection.plot(x="Diameter")
 
 # %%
 # Step 5: Plot Events and Raw Analog Signals

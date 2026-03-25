@@ -3,13 +3,10 @@ from TypedUnit import (
     Length,
     Power,
     FlowRate,
-    Dimensionless,
     Frequency,
     Resistance,
     Time,
 )
-from FlowCyPy import SimulationSettings  # noqa: F401
-
 from pydantic import ConfigDict
 from pydantic.dataclasses import dataclass
 
