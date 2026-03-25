@@ -4,26 +4,25 @@
 
 | Name                                          |    Stmts |     Miss |   Branch |   BrPart |      Cover |   Missing |
 |---------------------------------------------- | -------: | -------: | -------: | -------: | ---------: | --------: |
-| FlowCyPy/flow\_cytometer.py                   |      143 |       47 |       54 |        8 |     65.99% |78, 81, 123-169, 241, 246->257, 326-352, 415, 462-490, 509-510 |
+| FlowCyPy/flow\_cytometer.py                   |      146 |       50 |       56 |        8 |     64.36% |78, 81, 123-169, 241, 246->257, 326-358, 421, 468-496, 515-516 |
 | FlowCyPy/fluidics/event\_collection.py        |      118 |       79 |       54 |        4 |     27.33% |32-40, 62, 85, 122, 123->130, 131, 159-189, 195-202, 258-344, 375-390, 427-443 |
 | FlowCyPy/fluidics/scatterer\_collection.py    |       31 |        7 |       12 |        2 |     74.42% |37-39, 79, 99, 109-112 |
 | FlowCyPy/instances/detector.py                |       11 |       11 |        0 |        0 |      0.00% |      1-62 |
-| FlowCyPy/instances/flow\_cytometer.py         |       41 |       41 |        0 |        0 |      0.00% |     1-203 |
+| FlowCyPy/instances/flow\_cytometer.py         |       42 |       42 |        0 |        0 |      0.00% |     1-204 |
 | FlowCyPy/instances/population.py              |       24 |       24 |        2 |        0 |      0.00% |      1-66 |
 | FlowCyPy/opto\_electronics/coupling\_model.py |       45 |       14 |       14 |        3 |     61.02% |59-62, 127, 151, 171-202 |
 | FlowCyPy/opto\_electronics/detector.py        |       37 |        6 |        8 |        2 |     82.22% |79, 160, 193-200 |
 | FlowCyPy/opto\_electronics/main.py            |       15 |        1 |        4 |        1 |     89.47% |        51 |
 | FlowCyPy/run\_record.py                       |       64 |       17 |       12 |        1 |     68.42% |67, 83-85, 101-103, 119, 135-137, 212, 229-239 |
 | FlowCyPy/sub\_frames/acquisition.py           |      139 |       37 |       66 |       19 |     68.78% |43, 56->exit, 86, 106-111, 139, 142, 149, 152, 163, 169, 174, 213, 216, 239, 249, 258-259, 302, 310, 321, 329, 337->340, 340->344, 355-378, 390-395 |
-| FlowCyPy/sub\_frames/base.py                  |        5 |        5 |        0 |        0 |      0.00% |       1-8 |
 | FlowCyPy/sub\_frames/classifier.py            |       21 |       12 |        2 |        0 |     39.13% | 16, 42-62 |
 | FlowCyPy/sub\_frames/peaks.py                 |      203 |      178 |       82 |        0 |      8.77% |22, 25, 75-174, 180-186, 206-208, 228-230, 246-247, 267-282, 316-333, 429-624, 852-872 |
 | FlowCyPy/sub\_frames/scatterer.py             |       87 |       87 |       16 |        0 |      0.00% |     1-286 |
 | FlowCyPy/sub\_frames/triggered.py             |       97 |       76 |       36 |        0 |     15.79% |30, 41-44, 64-69, 111-178, 185, 192, 213-219, 237-244, 256-261, 272-292, 303-316 |
 | FlowCyPy/sub\_frames/utils.py                 |       13 |        9 |        6 |        0 |     21.05% |     26-41 |
 | FlowCyPy/utils.py                             |       70 |       51 |       22 |        0 |     20.65% |16-31, 41-46, 57-69, 72, 97-106, 130-179 |
-| FlowCyPy/workflow.py                          |       45 |       45 |        4 |        0 |      0.00% |     1-162 |
-| **TOTAL**                                     | **1239** |  **747** |  **394** |   **40** | **36.74%** |           |
+| FlowCyPy/workflow.py                          |       44 |       44 |        4 |        0 |      0.00% |     1-159 |
+| **TOTAL**                                     | **1237** |  **745** |  **396** |   **40** | **36.74%** |           |
 
 4 files skipped due to complete coverage.
 
