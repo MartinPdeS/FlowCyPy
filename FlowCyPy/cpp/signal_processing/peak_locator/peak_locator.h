@@ -1,39 +1,78 @@
 #pragma once
 
-#include <algorithm>
-#include <cmath>
-#include <cstddef>
-#include <limits>
+#include <map>
 #include <memory>
-#include <stdexcept>
 #include <string>
-#include <unordered_map>
-#include <utility>
 #include <vector>
 
-#ifdef _OPENMP
-#include <omp.h>
-#endif
-
 
 /**
- * @brief Metrics computed over the support of a detected peak.
+ * @brief Dictionary mapping metric names to arrays of numeric values.
  *
- * The peak width is expressed in number of samples. The peak area is the raw
- * sum of the signal values inside the detected peak boundaries.
+ * Typical keys are
+ * - "Index"
+ * - "Height"
+ * - "Width"
+ * - "Area"
  */
-struct PeakMetrics {
-    double width;
-    double area;
-};
+using MetricDictionary = std::map<std::string, std::vector<double>>;
+
+/**
+ * @brief Dictionary mapping channel names to flat signal vectors.
+ *
+ * This representation is used before regrouping samples by segment id.
+ */
+using FlatSignalDictionary = std::map<std::string, std::vector<double>>;
+
+/**
+ * @brief Dictionary mapping segment id to per-channel segmented vectors.
+ *
+ * The nested structure is:
+ *
+ *     {
+ *         segment_id: {
+ *             channel_name: [samples...],
+ *             ...
+ *         },
+ *         ...
+ *     }
+ */
+using SegmentedSignalDictionary = std::map<int, std::map<std::string, std::vector<double>>>;
+
+/**
+ * @brief Dictionary mapping segment id to per-channel metric dictionaries.
+ *
+ * The nested structure is:
+ *
+ *     {
+ *         segment_id: {
+ *             channel_name: {
+ *                 "Index": [...],
+ *                 "Height": [...],
+ *                 "Width": [...],
+ *                 "Area": [...],
+ *             },
+ *             ...
+ *         },
+ *         ...
+ *     }
+ */
+using SegmentedMetricDictionary = std::map<int, std::map<std::string, MetricDictionary>>;
 
 
 /**
- * @brief Temporary container used to store a detected peak before final output.
+ * @brief Container storing one detected peak and its optional metrics.
  *
- * Instances of this structure are used internally to gather peak candidates,
- * sort them by descending amplitude, and then copy the strongest ones into the
- * fixed size output vectors of the locator.
+ * Parameters
+ * ----------
+ * index :
+ *     Sample index of the detected peak.
+ * value :
+ *     Peak height.
+ * width :
+ *     Peak width in samples.
+ * area :
+ *     Peak area.
  */
 struct PeakData {
     int index;
@@ -41,278 +80,244 @@ struct PeakData {
     double width;
     double area;
 
-    /**
-     * @brief Construct a peak description.
-     *
-     * @param index
-     *     Index of the detected peak in the signal.
-     * @param value
-     *     Peak height.
-     * @param width
-     *     Peak width in samples. May remain equal to the padding value when
-     *     width computation is disabled.
-     * @param area
-     *     Peak area. May remain equal to the padding value when area
-     *     computation is disabled.
-     */
-    PeakData(
-        int index,
-        double value,
-        double width,
-        double area
-    )
-        : index(index),
-          value(value),
-          width(width),
-          area(area)
-    {}
+    PeakData(int index, double value, double width, double area)
+        : index(index), value(value), width(width), area(area) {}
 };
 
 
 /**
- * @brief Metric dictionary for one processed signal.
+ * @brief Internal container describing the support used for width and area.
  *
- * Typical keys are:
- *     - "Index"
- *     - "Height"
- *     - "Width"
- *     - "Area"
- *
- * Width and area are only present when explicitly requested.
+ * Fields
+ * ------
+ * width :
+ *     Width of the selected support in samples.
+ * area :
+ *     Area integrated on the selected support.
+ * left_boundary :
+ *     Inclusive left support boundary.
+ * right_boundary :
+ *     Inclusive right support boundary.
+ * left_touches_boundary :
+ *     Whether the support reaches the left edge of the analyzed interval.
+ * right_touches_boundary :
+ *     Whether the support reaches the right edge of the analyzed interval.
  */
-using MetricDictionary = std::unordered_map<std::string, std::vector<double>>;
+struct PeakMetrics {
+    double width;
+    double area;
+    size_t left_boundary;
+    size_t right_boundary;
+    bool left_touches_boundary;
+    bool right_touches_boundary;
+};
 
 
 /**
- * @brief Dictionary of signal channels for one segment.
+ * @brief Abstract base class describing how width and area support is defined.
  *
- * The key is the channel name, for example "forward" or "side", and the value
- * is the corresponding 1D signal.
+ * A support object is responsible for determining the semantics of width and
+ * area computations.
+ *
+ * Two concrete implementations are provided:
+ * - FullWindowSupport
+ * - PulseSupport
  */
-using ChannelDictionary = std::unordered_map<std::string, std::vector<double>>;
+class BaseSupport {
+public:
+    virtual ~BaseSupport() = default;
+
+    /**
+     * @brief Whether this support mode uses the full analyzed interval.
+     *
+     * Returns
+     * -------
+     * bool
+     *     True for full-window support, False otherwise.
+     */
+    virtual bool is_full_window() const = 0;
+
+    /**
+     * @brief Whether this support mode is channel independent.
+     *
+     * Returns
+     * -------
+     * bool
+     *     True when each channel computes its own support independently.
+     */
+    virtual bool is_independent() const = 0;
+
+    /**
+     * @brief Return the configured support channel specifier.
+     *
+     * Returns
+     * -------
+     * std::string
+     *     One of:
+     *     - "full_window"
+     *     - "default"
+     *     - "independent"
+     *     - a detector or channel name
+     */
+    virtual std::string get_channel() const = 0;
+
+    /**
+     * @brief Return the relative threshold associated with the support.
+     *
+     * Returns
+     * -------
+     * double
+     *     Threshold value in the interval [0, 1] for pulse support.
+     *     For full-window support, this is conventionally 0.
+     */
+    virtual double get_threshold() const = 0;
+
+    /**
+     * @brief Return a short support mode name.
+     *
+     * Returns
+     * -------
+     * std::string
+     *     Human readable support mode identifier.
+     */
+    virtual std::string get_name() const = 0;
+};
 
 
 /**
- * @brief Dictionary of segmented input signals.
+ * @brief Support strategy that uses the full analyzed interval.
  *
- * The top level key is the segment identifier. Each segment contains a channel
- * dictionary with one 1D signal per channel.
+ * Width and area are computed on the full segment or full sliding window.
+ * No threshold expansion is used.
  */
-using SegmentedSignalDictionary = std::unordered_map<int, ChannelDictionary>;
+class FullWindowSupport : public BaseSupport {
+public:
+    FullWindowSupport() = default;
+    ~FullWindowSupport() override = default;
+
+    bool is_full_window() const override;
+    bool is_independent() const override;
+    std::string get_channel() const override;
+    double get_threshold() const override;
+    std::string get_name() const override;
+};
 
 
 /**
- * @brief Dictionary of computed metrics for segmented signals.
+ * @brief Support strategy based on a positive pulse support around a peak.
  *
- * Structure:
+ * The support is defined by first identifying a positive peak on a support
+ * signal, then expanding left and right while the neighboring samples remain
+ * above
  *
- *     segment_id -> channel_name -> metric_name -> values
+ *     threshold * peak_height
+ *
+ * Parameters
+ * ----------
+ * channel :
+ *     Support channel selection rule.
+ *
+ *     Accepted values are:
+ *     - "default"
+ *         In segmented mode, use the provided trigger channel.
+ *         In single-array mode, fall back to the current signal.
+ *     - "independent"
+ *         Each channel computes its own support independently.
+ *     - "<detector_name>"
+ *         Use the named detector or channel as a shared support channel.
+ *
+ * threshold :
+ *     Relative threshold in the interval [0, 1].
  */
-using SegmentedMetricDictionary = std::unordered_map<
-    int,
-    std::unordered_map<std::string, MetricDictionary>
->;
+class PulseSupport : public BaseSupport {
+public:
+    std::string channel;
+    double threshold;
+
+    PulseSupport(
+        const std::string& channel = "default",
+        double threshold = 0.5
+    );
+
+    ~PulseSupport() override = default;
+
+    bool is_full_window() const override;
+    bool is_independent() const override;
+    std::string get_channel() const override;
+    double get_threshold() const override;
+    std::string get_name() const override;
+};
 
 
 /**
- * @brief Flat dictionary of signal channels.
+ * @brief Abstract base class for peak detection on 1D signals.
  *
- * This container stores only actual signal channels from the flat
- * discriminator output. Metadata such as "segment_id" and "Time" must not be
- * stored here.
- */
-using FlatSignalDictionary = std::unordered_map<std::string, std::vector<double>>;
-
-
-/**
- * @brief Base class for 1D peak locators.
+ * This class provides:
+ * - validation utilities
+ * - metric storage
+ * - metric computation helpers
+ * - segmented batch processing
  *
- * This class owns the common parameters, internal output buffers, and utility
- * methods shared by different peak locator strategies. Derived classes must
- * implement a stateless peak search method for one 1D signal.
- *
- * Single signal processing keeps the original stateful behavior through the
- * fixed size output buffers:
- *     - peak_indices
- *     - peak_heights
- *     - peak_widths
- *     - peak_areas
- *
- * Segmented batch processing uses a stateless internal path so it can be
- * parallelized safely.
+ * Concrete subclasses define how the peak index is chosen.
  */
 class BasePeakLocator {
 public:
     bool compute_width;
     bool compute_area;
+    bool allow_negative_area;
     int padding_value;
     int max_number_of_peaks;
+    bool debug_mode;
+    std::shared_ptr<BaseSupport> support;
 
     std::vector<int> peak_indices;
     std::vector<double> peak_heights;
     std::vector<double> peak_widths;
     std::vector<double> peak_areas;
 
-    /**
-     * @brief Construct a base peak locator.
-     *
-     * @param compute_width
-     *     If true, compute the width of each detected peak.
-     * @param compute_area
-     *     If true, compute the area of each detected peak.
-     * @param padding_value
-     *     Value used to pad unused output entries when fewer than
-     *     `max_number_of_peaks` peaks are available.
-     * @param max_number_of_peaks
-     *     Maximum number of peaks to report.
-     */
     BasePeakLocator(
         bool compute_width,
         bool compute_area,
+        bool allow_negative_area,
         int padding_value,
-        int max_number_of_peaks
+        int max_number_of_peaks,
+        std::shared_ptr<BaseSupport> support,
+        bool debug_mode
     );
 
-    /**
-     * @brief Virtual destructor.
-     */
     virtual ~BasePeakLocator() = default;
 
     /**
-     * @brief Locate peak candidates for a single 1D signal.
+     * @brief Validate that an input signal is not empty.
      *
-     * Derived classes must return peak candidates for the provided signal.
-     * The base class is responsible for sorting them and formatting the final
-     * fixed size metric outputs.
+     * Parameters
+     * ----------
+     * array :
+     *     Input signal values.
      *
-     * @param array
-     *     Input 1D signal.
-     *
-     * @return
-     *     Peak candidate list.
+     * Throws
+     * ------
+     * std::runtime_error
+     *     If the signal is empty.
      */
-    virtual std::vector<PeakData> locate_peaks(
-        const std::vector<double>& array
-    ) const = 0;
+    void validate_input_signal(const std::vector<double>& array) const;
 
     /**
-     * @brief Compute peaks for a single 1D signal.
+     * @brief Find the index of the maximum value in [start, end).
      *
-     * Derived classes are not required to override this method. It uses the
-     * stateless `locate_peaks(...)` path, then updates the internal fixed size
-     * output buffers.
-     *
-     * @param array
-     *     Input 1D signal.
-     */
-    virtual void compute(const std::vector<double>& array);
-
-    /**
-     * @brief Return one already computed metric as a vector of doubles.
-     *
-     * @param metric_name
-     *     Name of the requested metric. Must be one of:
-     *         - "Index"
-     *         - "Height"
-     *         - "Width"
-     *         - "Area"
-     *
-     * @return
-     *     Requested metric vector.
-     */
-    std::vector<double> get_metric_py(const std::string& metric_name) const;
-
-    /**
-     * @brief Compute all enabled metrics for a single 1D signal.
-     *
-     * This method executes the locator on one signal and returns the metrics as
-     * a dictionary.
-     *
-     * @param array
-     *     Input 1D signal.
-     *
-     * @return
-     *     Dictionary containing at least "Index" and "Height", and optionally
-     *     "Width" and "Area".
-     */
-    MetricDictionary get_metrics(const std::vector<double>& array);
-
-    /**
-     * @brief Compute peak metrics for all channels of all segments.
-     *
-     * This batch method keeps the main loops in C++. Each channel is processed
-     * independently using a stateless internal path, which makes the method
-     * safe to parallelize.
-     *
-     * @param segmented_signals
-     *     Nested segmented signal dictionary.
-     *
-     * @return
-     *     Nested segmented metric dictionary:
-     *
-     *         segment_id -> channel_name -> metric_name -> values
-     */
-    SegmentedMetricDictionary run_segmented_signals(
-        const SegmentedSignalDictionary& segmented_signals
-    ) const;
-
-    /**
-     * @brief Compute peak metrics for the flat segmented signal format.
-     *
-     * The flat input format is:
-     *
-     *     "segment_id" -> one segment id per sample
-     *     "channel_name" -> one signal value per sample
-     *
-     * The regrouping is handled in C++, then batch processing is delegated to
-     * `run_segmented_signals(...)`.
-     *
-     * @param segment_ids
-     *     Segment identifier for each sample.
-     * @param flat_signals
-     *     Flat dictionary containing only actual signal channels.
-     *
-     * @return
-     *     Nested segmented metric dictionary:
-     *
-     *         segment_id -> channel_name -> metric_name -> values
-     */
-    SegmentedMetricDictionary run_flat_segmented_signals(
-        const std::vector<int>& segment_ids,
-        const FlatSignalDictionary& flat_signals
-    ) const;
-
-    /**
-     * @brief Initialize all internal output vectors with padded default values.
-     *
-     * The vectors are resized to `max_number_of_peaks`. Index vectors are
-     * padded with `padding_value`, while floating point outputs are padded with
-     * the same value cast to double.
-     */
-    void initialize_output_vectors();
-
-    /**
-     * @brief Sort peaks by descending peak height.
-     *
-     * @param peaks
-     *     Peak container to sort in place.
-     */
-    void sort_peaks_descending(std::vector<PeakData>& peaks) const;
-
-    /**
-     * @brief Find the index of the maximum element inside a half open interval.
-     *
-     * The interval follows the convention [start, end).
-     *
-     * @param ptr
+     * Parameters
+     * ----------
+     * ptr :
      *     Pointer to the signal data.
-     * @param start
-     *     Inclusive start index.
-     * @param end
-     *     Exclusive end index.
+     * start :
+     *     Inclusive interval start.
+     * end :
+     *     Exclusive interval end.
      *
-     * @return
-     *     Index of the maximum element in the requested interval.
+     * Returns
+     * -------
+     * size_t
+     *     Index of the maximum sample inside the interval.
      */
     size_t find_local_peak(
         const double* ptr,
@@ -321,193 +326,328 @@ public:
     ) const;
 
     /**
-     * @brief Compute width and area for a detected peak.
+     * @brief Compute support boundaries around a peak.
      *
-     * Peak boundaries are obtained from `compute_boundaries`, then the width and
-     * area are computed over that support.
+     * Behavior depends on the configured support object.
      *
-     * @param ptr
-     *     Pointer to the signal data.
-     * @param start
-     *     Inclusive start index of the valid region.
-     * @param end
-     *     Exclusive end index of the valid region.
-     * @param peak_index
-     *     Index of the detected peak.
-     * @param threshold
-     *     Fraction of peak height used to determine the boundaries.
+     * - FullWindowSupport
+     *     The support is the full interval [start, end).
      *
-     * @return
-     *     Structure containing width and area.
-     */
-    PeakMetrics compute_segment_metrics(
-        const double* ptr,
-        size_t start,
-        size_t end,
-        size_t peak_index,
-        double threshold
-    ) const;
-
-    /**
-     * @brief Compute left and right boundaries of a peak.
+     * - PulseSupport
+     *     The support is expanded around a positive peak while neighboring
+     *     samples remain above
      *
-     * The boundaries are expanded away from the peak until the signal falls
-     * below `threshold * peak_value`.
+     *         threshold * peak_height
      *
-     * @param ptr
-     *     Pointer to the signal data.
-     * @param start
-     *     Inclusive start index of the valid region.
-     * @param end
-     *     Exclusive end index of the valid region.
-     * @param peak_index
-     *     Index of the peak.
-     * @param threshold
-     *     Fraction of the peak height used as the cutoff.
-     * @param left_boundary
-     *     Output left boundary index.
-     * @param right_boundary
-     *     Output right boundary index.
+     * Parameters
+     * ----------
+     * ptr :
+     *     Pointer to the support signal data.
+     * start :
+     *     Inclusive interval start.
+     * end :
+     *     Exclusive interval end.
+     * peak_index :
+     *     Index of the peak used to define the support.
+     * left_boundary :
+     *     Output inclusive left support boundary.
+     * right_boundary :
+     *     Output inclusive right support boundary.
      */
     void compute_boundaries(
         const double* ptr,
         size_t start,
         size_t end,
         size_t peak_index,
-        double threshold,
         size_t& left_boundary,
         size_t& right_boundary
     ) const;
 
-protected:
     /**
-     * @brief Validate one input signal.
+     * @brief Compute width and area metrics inside a selected support.
      *
-     * @param array
-     *     Input signal.
+     * Parameters
+     * ----------
+     * ptr :
+     *     Pointer to the value signal used for area accumulation.
+     * start :
+     *     Inclusive interval start.
+     * end :
+     *     Exclusive interval end.
+     * peak_index :
+     *     Peak index used to build the support.
+     *
+     * Returns
+     * -------
+     * PeakMetrics
+     *     Width, area, and support boundary information.
      */
-    void validate_input_signal(const std::vector<double>& array) const;
+    PeakMetrics compute_segment_metrics(
+        const double* ptr,
+        const double* support_ptr,
+        size_t start,
+        size_t end,
+        size_t peak_index
+    ) const;
 
     /**
-     * @brief Compute a fixed size metric dictionary from one signal.
+     * @brief Compute metrics for a single 1D signal using the same signal for
+     * both value and support logic.
      *
-     * This is the stateless path used internally by segmented batch execution.
-     *
-     * @param array
+     * Parameters
+     * ----------
+     * array :
      *     Input signal.
      *
-     * @return
-     *     Fixed size metric dictionary.
+     * Returns
+     * -------
+     * MetricDictionary
+     *     Dictionary containing Index, Height, and optionally Width and Area.
      */
     MetricDictionary compute_metric_dictionary(
         const std::vector<double>& array
     ) const;
+
+    /**
+     * @brief Compute metrics for a value signal using a separate support signal.
+     *
+     * Parameters
+     * ----------
+     * value_signal :
+     *     Signal used for height extraction and area accumulation.
+     * support_signal :
+     *     Signal used to define the support boundaries.
+     *
+     * Returns
+     * -------
+     * MetricDictionary
+     *     Dictionary containing Index, Height, and optionally Width and Area.
+     */
+    MetricDictionary compute_metric_dictionary_with_shared_support(
+        const std::vector<double>& value_signal,
+        const std::vector<double>& support_signal
+    ) const;
+
+    /**
+     * @brief Sort detected peaks by descending height.
+     *
+     * Parameters
+     * ----------
+     * peaks :
+     *     Vector of detected peaks to sort in place.
+     */
+    void sort_peaks_descending(std::vector<PeakData>& peaks) const;
+
+    /**
+     * @brief Initialize the fixed-size output buffers with padding values.
+     */
+    void initialize_output_vectors();
+
+    /**
+     * @brief Compute metrics for a single signal and update internal buffers.
+     *
+     * Parameters
+     * ----------
+     * array :
+     *     Input signal.
+     */
+    void compute(const std::vector<double>& array);
+
+    /**
+     * @brief Return one stored metric buffer.
+     *
+     * Parameters
+     * ----------
+     * metric_name :
+     *     One of "Index", "Height", "Width", or "Area".
+     *
+     * Returns
+     * -------
+     * std::vector<double>
+     *     Stored metric values.
+     */
+    std::vector<double> get_metric_py(const std::string& metric_name) const;
+
+    /**
+     * @brief Compute and return metrics for a single signal.
+     *
+     * Parameters
+     * ----------
+     * array :
+     *     Input signal.
+     *
+     * Returns
+     * -------
+     * MetricDictionary
+     *     Dictionary containing computed metrics.
+     */
+    MetricDictionary get_metrics(const std::vector<double>& array);
+
+    /**
+     * @brief Compute metrics for all channels in segmented multi-channel data.
+     *
+     * Parameters
+     * ----------
+     * segmented_signals :
+     *     Nested segmented dictionary.
+     * trigger_channel :
+     *     Trigger channel name used when PulseSupport(channel="default") is
+     *     configured.
+     *
+     * Returns
+     * -------
+     * SegmentedMetricDictionary
+     *     Nested metric dictionary.
+     */
+    SegmentedMetricDictionary run_segmented_signals(
+        const SegmentedSignalDictionary& segmented_signals,
+        const std::string& trigger_channel = ""
+    ) const;
+
+    /**
+     * @brief Regroup flat per-sample signals by segment id, then compute metrics.
+     *
+     * Parameters
+     * ----------
+     * segment_ids :
+     *     Segment id associated with each sample.
+     * flat_signals :
+     *     Per-channel flat sample arrays.
+     * trigger_channel :
+     *     Trigger channel name used when PulseSupport(channel="default") is
+     *     configured.
+     *
+     * Returns
+     * -------
+     * SegmentedMetricDictionary
+     *     Nested metric dictionary.
+     */
+    SegmentedMetricDictionary run_flat_segmented_signals(
+        const std::vector<int>& segment_ids,
+        const FlatSignalDictionary& flat_signals,
+        const std::string& trigger_channel = ""
+    ) const;
+
+    /**
+     * @brief Resolve the support channel name for a given current channel.
+     *
+     * Parameters
+     * ----------
+     * channel_dictionary :
+     *     Map of channels available in the current segment.
+     * current_channel_name :
+     *     Channel currently being evaluated.
+     * trigger_channel :
+     *     Trigger channel name supplied by the caller.
+     *
+     * Returns
+     * -------
+     * std::string
+     *     Resolved support channel name.
+     */
+    std::string resolve_support_channel_name(
+        const std::map<std::string, std::vector<double>>& channel_dictionary,
+        const std::string& current_channel_name,
+        const std::string& trigger_channel
+    ) const;
+
+    /**
+     * @brief Detect peaks using one signal for both peak selection and support.
+     *
+     * Parameters
+     * ----------
+     * signal :
+     *     Input signal.
+     *
+     * Returns
+     * -------
+     * std::vector<PeakData>
+     *     Detected peaks.
+     */
+    virtual std::vector<PeakData> locate_peaks(
+        const std::vector<double>& signal
+    ) const = 0;
+
+    /**
+     * @brief Detect peaks using a value signal and a separate support signal.
+     *
+     * Parameters
+     * ----------
+     * value_signal :
+     *     Signal used for peak value extraction and area accumulation.
+     * support_signal :
+     *     Signal used to define support boundaries.
+     *
+     * Returns
+     * -------
+     * std::vector<PeakData>
+     *     Detected peaks.
+     */
+    virtual std::vector<PeakData> locate_peaks_with_support(
+        const std::vector<double>& value_signal,
+        const std::vector<double>& support_signal
+    ) const = 0;
 };
 
 
 /**
- * @brief Peak locator based on sliding windows.
+ * @brief Peak locator that extracts one local maximum per sliding window.
  *
- * The signal is split into successive windows. One local maximum is extracted
- * per window, optional peak metrics are computed within that window, and the
- * resulting peaks are ranked by descending height.
+ * One peak is selected in each window and the resulting peaks are sorted by
+ * descending height before being written to the fixed-size output buffers.
  */
 class SlidingWindowPeakLocator : public BasePeakLocator {
 public:
     int window_size;
     int window_step;
-    double threshold;
 
-    /**
-     * @brief Construct a sliding window peak locator.
-     *
-     * @param window_size
-     *     Number of samples per window.
-     * @param window_step
-     *     Step between consecutive windows. If set to -1, it defaults to
-     *     `window_size`, which gives non overlapping windows.
-     * @param max_number_of_peaks
-     *     Maximum number of peaks to report.
-     * @param padding_value
-     *     Padding value for unused output entries.
-     * @param compute_width
-     *     If true, compute the width of each detected peak.
-     * @param compute_area
-     *     If true, compute the area of each detected peak.
-     * @param threshold
-     *     Fraction of peak height used to determine the support of the peak
-     *     when computing width and area.
-     */
     SlidingWindowPeakLocator(
         int window_size,
-        int window_step = -1,
-        int max_number_of_peaks = 5,
-        int padding_value = -1,
-        bool compute_width = false,
-        bool compute_area = false,
-        double threshold = 0.5
+        int window_step,
+        int max_number_of_peaks,
+        int padding_value,
+        bool compute_width,
+        bool compute_area,
+        bool allow_negative_area,
+        std::shared_ptr<BaseSupport> support,
+        bool debug_mode
     );
 
-    /**
-     * @brief Locate peaks for one 1D signal using a sliding window strategy.
-     *
-     * @param array
-     *     Input 1D signal.
-     *
-     * @return
-     *     Peak candidate list.
-     */
     std::vector<PeakData> locate_peaks(
-        const std::vector<double>& array
+        const std::vector<double>& signal
+    ) const override;
+
+    std::vector<PeakData> locate_peaks_with_support(
+        const std::vector<double>& value_signal,
+        const std::vector<double>& support_signal
     ) const override;
 };
 
 
 /**
- * @brief Peak locator that finds the global maximum of a signal.
+ * @brief Peak locator that extracts the single strongest sample in a signal.
  *
- * Only one physical peak is searched in the full signal. The first output entry
- * stores that peak, and the remaining entries are padded if
- * `max_number_of_peaks` is larger than one.
+ * Only one physical peak is detected in the full signal. Output buffers still
+ * honor the configured maximum number of peaks and are padded when needed.
  */
 class GlobalPeakLocator : public BasePeakLocator {
 public:
-    double threshold;
-
-    /**
-     * @brief Construct a global peak locator.
-     *
-     * @param max_number_of_peaks
-     *     Maximum number of peaks to report. Only one actual peak is detected,
-     *     so remaining entries are padded.
-     * @param padding_value
-     *     Padding value for unused output entries.
-     * @param compute_width
-     *     If true, compute the width of the detected peak.
-     * @param compute_area
-     *     If true, compute the area of the detected peak.
-     * @param threshold
-     *     Fraction of peak height used to determine the support of the peak
-     *     when computing width and area.
-     */
     GlobalPeakLocator(
-        int max_number_of_peaks = 1,
-        int padding_value = -1,
-        bool compute_width = false,
-        bool compute_area = false,
-        double threshold = 0.5
+        int max_number_of_peaks,
+        int padding_value,
+        bool compute_width,
+        bool compute_area,
+        bool allow_negative_area,
+        std::shared_ptr<BaseSupport> support,
+        bool debug_mode
     );
 
-    /**
-     * @brief Locate the global peak of one 1D signal.
-     *
-     * @param array
-     *     Input 1D signal.
-     *
-     * @return
-     *     Peak candidate list containing one peak.
-     */
     std::vector<PeakData> locate_peaks(
-        const std::vector<double>& array
+        const std::vector<double>& signal
+    ) const override;
+
+    std::vector<PeakData> locate_peaks_with_support(
+        const std::vector<double>& value_signal,
+        const std::vector<double>& support_signal
     ) const override;
 };

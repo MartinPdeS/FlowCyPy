@@ -58,9 +58,9 @@ py::object get_shared_ureg() {
 
     py::gil_scoped_acquire gil;
 
-    py::module_ interface_module = py::module_::import("FlowCyPy.binary.interface_pint");
+    py::module_ interface_module = py::module_::import("FlowCyPy.interface_pint");
     if (!py::hasattr(interface_module, "get_ureg")) {
-        throw std::runtime_error("FlowCyPy.binary.interface_pint.get_ureg not found.");
+        throw std::runtime_error("FlowCyPy.interface_pint.get_ureg not found.");
     }
 
     py::object ureg = interface_module.attr("get_ureg")();

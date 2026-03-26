@@ -3,124 +3,142 @@
 #include <cmath>
 #include <optional>
 #include <string>
-#include <utility>
-#include <vector>
-#include <algorithm> // std::minmax_element
-#include <stdexcept> // std::runtime_error
+#include <stdexcept>
+
 
 /**
- * @brief Threshold representation used by trigger detectors.
+ * @brief Threshold container used by trigger detectors.
  *
- * A threshold can be stored either as:
+ * A threshold may carry:
  *
  * - a numeric value
- * - a symbolic string such as "3sigma"
+ * - a symbolic expression
+ * - both at the same time
+ * - neither, if undefined
  *
- * The class provides explicit setters and accessors so the rest of the code
- * does not need to manipulate raw variants or duplicate validation logic.
+ * This is useful for trigger systems where a threshold may be specified
+ * symbolically, such as "3sigma", and later resolved to a numeric value
+ * during computation while still preserving the original expression.
  */
 class Threshold {
-public:
-    enum class Mode {
-        Undefined,
-        Numeric,
-        Symbolic
-    };
-
 private:
-    Mode mode_ = Mode::Undefined;
-    double numeric_value_ = 0.0;
-    std::string symbolic_value_;
+    std::optional<double> numeric_value_;
+    std::optional<std::string> symbolic_value_;
 
 public:
     Threshold() = default;
 
-    Threshold(const double value) {
+    explicit Threshold(const double value) {
         this->set_numeric(value);
     }
 
-    Threshold(const std::string &value) {
+    explicit Threshold(const std::string &value) {
         this->set_symbolic(value);
     }
 
-    /**
-     * @brief Set the threshold as a numeric value.
-     */
-    void set_numeric(const double value) {
-        this->mode_ = Mode::Numeric;
-        this->numeric_value_ = value;
-        this->symbolic_value_.clear();
+    Threshold(const double numeric_value, const std::string &symbolic_value) {
+        this->set_numeric(numeric_value);
+        this->set_symbolic(symbolic_value);
     }
 
     /**
-     * @brief Set the threshold as a symbolic string.
+     * @brief Set or replace the numeric value.
+     */
+    void set_numeric(const double value) {
+        this->numeric_value_ = value;
+    }
+
+    /**
+     * @brief Set or replace the symbolic value.
      */
     void set_symbolic(const std::string &value) {
-        this->mode_ = Mode::Symbolic;
+        if (value.empty()) {
+            throw std::runtime_error("Threshold symbolic value must not be empty.");
+        }
+
         this->symbolic_value_ = value;
-        this->numeric_value_ = 0.0;
+    }
+
+    /**
+     * @brief Remove the numeric value while preserving the symbolic value.
+     */
+    void clear_numeric() {
+        this->numeric_value_.reset();
+    }
+
+    /**
+     * @brief Remove the symbolic value while preserving the numeric value.
+     */
+    void clear_symbolic() {
+        this->symbolic_value_.reset();
     }
 
     /**
      * @brief Reset the threshold to an undefined state.
      */
     void clear() {
-        this->mode_ = Mode::Undefined;
-        this->numeric_value_ = 0.0;
-        this->symbolic_value_.clear();
+        this->numeric_value_.reset();
+        this->symbolic_value_.reset();
     }
 
     /**
-     * @brief Return true if the threshold has been configured.
+     * @brief Return true if either a numeric or symbolic value is present.
      */
     bool is_defined() const {
-        return this->mode_ != Mode::Undefined;
+        return this->numeric_value_.has_value() || this->symbolic_value_.has_value();
     }
 
     /**
-     * @brief Return true if the threshold stores a numeric value.
+     * @brief Return true if a numeric value is present.
      */
-    bool is_numeric() const {
-        return this->mode_ == Mode::Numeric;
+    bool has_numeric() const {
+        return this->numeric_value_.has_value();
     }
 
     /**
-     * @brief Return true if the threshold stores a symbolic value.
+     * @brief Return true if a symbolic value is present.
      */
-    bool is_symbolic() const {
-        return this->mode_ == Mode::Symbolic;
-    }
-
-    /**
-     * @brief Get the current storage mode.
-     */
-    Mode get_mode() const {
-        return this->mode_;
+    bool has_symbolic() const {
+        return this->symbolic_value_.has_value();
     }
 
     /**
      * @brief Get the numeric value.
      *
-     * Throws if the threshold is not numeric.
+     * Throws if no numeric value is available.
      */
     double get_numeric() const {
-        if (!this->is_numeric()) {
+        if (!this->numeric_value_.has_value()) {
             throw std::runtime_error("Threshold does not contain a numeric value.");
         }
 
-        return this->numeric_value_;
+        return *this->numeric_value_;
     }
 
     /**
      * @brief Get the symbolic value.
      *
-     * Throws if the threshold is not symbolic.
+     * Throws if no symbolic value is available.
      */
     const std::string &get_symbolic() const {
-        if (!this->is_symbolic()) {
+        if (!this->symbolic_value_.has_value()) {
             throw std::runtime_error("Threshold does not contain a symbolic value.");
         }
 
+        return *this->symbolic_value_;
+    }
+
+    /**
+     * @brief Return the numeric value if present.
+     */
+    const std::optional<double> &get_optional_numeric() const {
+        return this->numeric_value_;
+    }
+
+    /**
+     * @brief Return the symbolic value if present.
+     */
+    const std::optional<std::string> &get_optional_symbolic() const {
         return this->symbolic_value_;
     }
 };

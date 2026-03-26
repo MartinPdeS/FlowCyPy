@@ -6,6 +6,7 @@ from .coupling_model import ScatteringModel
 from .detector import Detector
 from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
 from FlowCyPy.fluidics.event_collection import EventCollection
+from FlowCyPy.signal_processing.digitizer import Digitizer
 
 
 @dataclass(config=config_dict)
@@ -24,11 +25,14 @@ class OptoElectronics(StrictDataclassMixing):
         The light source instance used in the setup.
     amplifier : Amplifier
         The amplifier instance used to amplify the detected signals.
+    digitizer : Digitizer
+        The digitizer instance used to convert analog signals to digital form.
     """
 
     detectors: List[Detector]
     source: source.BaseSource
     amplifier: Amplifier
+    digitizer: Digitizer
 
     def _add_coupling_to_dataframe(
         self, event_collection: EventCollection, compute_cross_section: bool = False

@@ -1,1 +1,1 @@
-from .main import SignalProcessing, Digitizer, discriminator, peak_locator
+from .main import SignalProcessing, discriminator, peak_locator

@@ -78,7 +78,7 @@ population_0 = populations.SpherePopulation(
 )
 
 
-scatterer_collection.add_population(population_0)
+# scatterer_collection.add_population(population_0)
 
 scatterer_collection.dilute(factor=80)
 
@@ -92,7 +92,7 @@ source = source.Gaussian(
     optical_power=200 * ureg.milliwatt,
     include_shot_noise=True,
     bandwidth=2 * ureg.megahertz,
-    rin=-110 * ureg.dB_per_Hz,
+    rin=-130 * ureg.dB_per_Hz,
 )
 
 
@@ -136,14 +136,16 @@ analog_processing = [
 ]
 
 triggering = discriminator.DynamicWindow(
-    trigger_channel="side",
+    trigger_channel="forward",
     threshold="1sigma",
     pre_buffer=2,
     post_buffer=2,
     max_triggers=-1,
 )
 
-peak_algo = peak_locator.GlobalPeakLocator(compute_width=False, compute_area=True)
+peak_algo = peak_locator.GlobalPeakLocator(
+    compute_width=False, compute_area=True, debug_mode=False
+)
 
 signal_processing = SignalProcessing(
     digitizer=digitizer,
@@ -159,19 +161,19 @@ cytometer = FlowCytometer(
     background_power=0.01 * ureg.milliwatt,
 )
 
-run_record = cytometer.run(run_time=0.1 * ureg.millisecond)
+run_record = cytometer.run(run_time=6 * ureg.millisecond)
 
 # _ = run_record.event_collection.plot(x="Diameter")
 
 # _ = run_record.event_collection.plot(x="forward")
 
-_ = run_record.plot_analog(figure_size=(12, 8))
+# _ = run_record.plot_analog(figure_size=(12, 8))
 
-_ = run_record.plot_digital(figure_size=(12, 8))
+# _ = run_record.plot_digital(figure_size=(12, 8))
 
 _ = run_record.peaks.plot(
-    x=("forward", "Height"),
-    y=("side", "Height"),
+    x=("forward", "Area"),
+    y=("side", "Area"),
     # yscale="log",
     # xscale='log',
     plot_type="scatter",

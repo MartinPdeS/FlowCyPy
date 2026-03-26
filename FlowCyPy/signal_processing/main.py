@@ -4,7 +4,6 @@ import FlowCyPy.units as _
 from . import circuits
 from . import discriminator
 from . import peak_locator
-from .digitizer import Digitizer
 
 
 class SignalProcessing:
@@ -33,12 +32,10 @@ class SignalProcessing:
 
     def __init__(
         self,
-        digitizer: Digitizer,
         analog_processing: list[circuits.BaseCircuit] = (),
         discriminator: discriminator.BaseDiscriminator = None,
         peak_algorithm: peak_locator.BasePeakLocator = None,
     ):
         self.analog_processing = analog_processing
-        self.digitizer = digitizer
         self.discriminator = discriminator
         self.peak_algorithm = peak_algorithm

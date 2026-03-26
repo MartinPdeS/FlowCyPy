@@ -22,6 +22,131 @@ PYBIND11_MODULE(discriminator, module) {
         pre/post buffering, and segment extraction.
     )pbdoc";
 
+    py::class_<Threshold>(module, "Threshold")
+        .def(py::init<>())
+        .def(py::init<double>(), py::arg("numeric_value"))
+        .def(py::init<const std::string &>(), py::arg("symbolic_value"))
+        .def(
+            py::init<double, const std::string &>(),
+            py::arg("numeric_value"),
+            py::arg("symbolic_value")
+        )
+        .def(
+            "set_numeric",
+            &Threshold::set_numeric,
+            py::arg("value"),
+            R"pbdoc(
+                Set or replace the numeric threshold value.
+            )pbdoc"
+        )
+        .def(
+            "set_symbolic",
+            &Threshold::set_symbolic,
+            py::arg("value"),
+            R"pbdoc(
+                Set or replace the symbolic threshold expression.
+            )pbdoc"
+        )
+        .def(
+            "clear_numeric",
+            &Threshold::clear_numeric,
+            R"pbdoc(
+                Remove the numeric threshold value.
+            )pbdoc"
+        )
+        .def(
+            "clear_symbolic",
+            &Threshold::clear_symbolic,
+            R"pbdoc(
+                Remove the symbolic threshold expression.
+            )pbdoc"
+        )
+        .def(
+            "clear",
+            &Threshold::clear,
+            R"pbdoc(
+                Remove both numeric and symbolic threshold values.
+            )pbdoc"
+        )
+        .def_property_readonly(
+            "has_numeric",
+            &Threshold::has_numeric,
+            R"pbdoc(
+                Return True if a numeric value is available.
+            )pbdoc"
+        )
+        .def_property_readonly(
+            "has_symbolic",
+            &Threshold::has_symbolic,
+            R"pbdoc(
+                Return True if a symbolic value is available.
+            )pbdoc"
+        )
+        .def_property_readonly(
+            "is_defined",
+            &Threshold::is_defined,
+            R"pbdoc(
+                Return True if the threshold contains at least one value.
+            )pbdoc"
+        )
+        .def_property_readonly(
+            "numeric",
+            [ureg](const Threshold &self) -> py::object {
+                if (!self.has_numeric()) {
+                    return py::none();
+                }
+
+                return py::cast(self.get_numeric()) * ureg.attr("volt");
+            },
+            R"pbdoc(
+                Numeric threshold value as a Pint quantity in volts, or None.
+            )pbdoc"
+        )
+        .def_property_readonly(
+            "symbolic",
+            [](const Threshold &self) -> py::object {
+                if (!self.has_symbolic()) {
+                    return py::none();
+                }
+
+                return py::cast(self.get_symbolic());
+            },
+            R"pbdoc(
+                Symbolic threshold expression, or None.
+            )pbdoc"
+        )
+        .def(
+            "__repr__",
+            [ureg](const Threshold &self) {
+                std::string output = "Threshold(";
+                bool has_previous = false;
+
+                if (self.has_numeric()) {
+                    py::object quantity = py::cast(self.get_numeric()) * ureg.attr("volt");
+                    py::object compact_quantity = quantity.attr("to_compact")();
+                    output += "numeric=" + py::str(compact_quantity).cast<std::string>();
+                    has_previous = true;
+                }
+
+                if (self.has_symbolic()) {
+                    if (has_previous) {
+                        output += ", ";
+                    }
+                    output += "symbolic='" + self.get_symbolic() + "'";
+                }
+
+                output += ")";
+                return output;
+            }
+        );
+
+
+
+
+
+
+
+
     py::class_<Trigger>(module, "Trigger")
         .def(py::init<>())
         .def_readonly(
@@ -268,27 +393,23 @@ PYBIND11_MODULE(discriminator, module) {
         )
         .def_property(
             "threshold",
-            [ureg](FixedWindow &self) -> py::object {
-                if (self.threshold.is_numeric()) {
-                    return py::cast(self.threshold.get_numeric()) * ureg.attr("volt");
-                } else if (self.threshold.is_symbolic()) {
-                    return py::cast(self.threshold.get_symbolic());
+            [](FixedWindow &self) -> Threshold & {
+                return self.threshold;
+            },
+            [](FixedWindow &self, const py::object &threshold_object) {
+                if (py::isinstance<Threshold>(threshold_object)) {
+                    self.threshold = threshold_object.cast<Threshold>();
+                } else if (py::isinstance<py::str>(threshold_object)) {
+                    self.set_threshold(threshold_object.cast<std::string>());
                 } else {
-                    return py::none();
+                    self.set_threshold(
+                        threshold_object.attr("to")("volt").attr("magnitude").cast<double>()
+                    );
                 }
             },
-            [](FixedWindow &self, const py::object &threshold) {
-                if (py::isinstance<py::str>(threshold)) {
-                    self.set_threshold(threshold.cast<std::string>());
-                } else {
-                    self.set_threshold(threshold.attr("to")("volt").attr("magnitude").cast<double>());
-                }
-            },
+            py::return_value_policy::reference_internal,
             R"pbdoc(
-                Get or set the trigger threshold.
-
-                The getter returns either a numeric value, a symbolic expression, or None.
-                The setter accepts either a numeric value or a symbolic expression.
+                Threshold object storing the symbolic expression and resolved numeric value.
             )pbdoc"
         )
         .def(
@@ -370,28 +491,23 @@ PYBIND11_MODULE(discriminator, module) {
         )
         .def_property(
             "threshold",
-            [ureg](DynamicWindow &self) -> py::object {
-                if (self.threshold.is_numeric()) {
-                    return py::cast(self.threshold.get_numeric()) * ureg.attr("volt");
-                } else if (self.threshold.is_symbolic()) {
-                    return py::cast(self.threshold.get_symbolic());
-                } else {
-                    return py::none();
-                }
+            [](DynamicWindow &self) -> Threshold & {
+                return self.threshold;
             },
-            [](DynamicWindow &self, const py::object &threshold) {
-                if (py::isinstance<py::str>(threshold)) {
-                    self.set_threshold(threshold.cast<std::string>());
+            [](DynamicWindow &self, const py::object &threshold_object) {
+                if (py::isinstance<Threshold>(threshold_object)) {
+                    self.threshold = threshold_object.cast<Threshold>();
+                } else if (py::isinstance<py::str>(threshold_object)) {
+                    self.set_threshold(threshold_object.cast<std::string>());
                 } else {
-                    self.set_threshold(threshold.attr("to")("volt").attr("magnitude").cast<double>()
+                    self.set_threshold(
+                        threshold_object.attr("to")("volt").attr("magnitude").cast<double>()
                     );
                 }
             },
+            py::return_value_policy::reference_internal,
             R"pbdoc(
-                Get or set the trigger threshold.
-
-                The getter returns either a numeric value, a symbolic expression, or None.
-                The setter accepts either a numeric value or a symbolic expression.
+                Threshold object storing the symbolic expression and resolved numeric value.
             )pbdoc"
         )
         .def(
@@ -495,54 +611,44 @@ PYBIND11_MODULE(discriminator, module) {
         )
         .def_property(
             "threshold",
-            [ureg](DoubleThreshold &self) -> py::object {
-                if (self.threshold.is_numeric()) {
-                    return py::cast(self.threshold.get_numeric()) * ureg.attr("volt");
-                } else if (self.threshold.is_symbolic()) {
-                    return py::cast(self.threshold.get_symbolic());
-                } else {
-                    return py::none();
-                }
+            [](DoubleThreshold &self) -> Threshold & {
+                return self.threshold;
             },
-            [](DoubleThreshold &self, const py::object &threshold) {
-                if (py::isinstance<py::str>(threshold)) {
-                    self.set_threshold(threshold.cast<std::string>());
+            [](DoubleThreshold &self, const py::object &threshold_object) {
+                if (py::isinstance<Threshold>(threshold_object)) {
+                    self.threshold = threshold_object.cast<Threshold>();
+                } else if (py::isinstance<py::str>(threshold_object)) {
+                    self.set_threshold(threshold_object.cast<std::string>());
                 } else {
-                    self.set_threshold(threshold.attr("to")("volt").attr("magnitude").cast<double>()
+                    self.set_threshold(
+                        threshold_object.attr("to")("volt").attr("magnitude").cast<double>()
                     );
                 }
             },
+            py::return_value_policy::reference_internal,
             R"pbdoc(
-                Get or set the trigger threshold.
-
-                The getter returns either a numeric value, a symbolic expression, or None.
-                The setter accepts either a numeric value or a symbolic expression.
+                Threshold object storing the symbolic expression and resolved numeric value.
             )pbdoc"
         )
         .def_property(
             "lower_threshold",
-            [ureg](DoubleThreshold &self) -> py::object {
-                if (self.lower_threshold.is_numeric()) {
-                    return py::cast(self.lower_threshold.get_numeric()) * ureg.attr("volt");
-                } else if (self.lower_threshold.is_symbolic()) {
-                    return py::cast(self.lower_threshold.get_symbolic());
-                } else {
-                    return py::none();
-                }
+            [](DoubleThreshold &self) -> Threshold & {
+                return self.lower_threshold;
             },
-            [](DoubleThreshold &self, const py::object &threshold) {
-                if (py::isinstance<py::str>(threshold)) {
-                    self.set_lower_threshold(threshold.cast<std::string>());
+            [](DoubleThreshold &self, const py::object &threshold_object) {
+                if (py::isinstance<Threshold>(threshold_object)) {
+                    self.lower_threshold = threshold_object.cast<Threshold>();
+                } else if (py::isinstance<py::str>(threshold_object)) {
+                    self.set_lower_threshold(threshold_object.cast<std::string>());
                 } else {
-                    self.set_lower_threshold(threshold.attr("to")("volt").attr("magnitude").cast<double>()
+                    self.set_lower_threshold(
+                        threshold_object.attr("to")("volt").attr("magnitude").cast<double>()
                     );
                 }
             },
+            py::return_value_policy::reference_internal,
             R"pbdoc(
-                Get or set the trigger threshold.
-
-                The getter returns either a numeric value, a symbolic expression, or None.
-                The setter accepts either a numeric value or a symbolic expression.
+                Threshold object storing the symbolic expression and resolved numeric value.
             )pbdoc"
         )
         .def(

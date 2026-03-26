@@ -1,178 +1,195 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from typing import Optional
+from dataclasses import dataclass, field
+from typing import Any, Optional
 
-import numpy as np
-import pandas as pd
-from TypedUnit import ureg, Time, Voltage, Frequency
-from MPSPlots import helper
 import matplotlib.pyplot as plt
+import numpy as np
+
+from MPSPlots import helper
+from TypedUnit import Frequency, Time, Voltage, ureg
+
+from FlowCyPy.fluidics.event_collection import EventCollection
 
 
-class NameSpace:
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
+@dataclass
+class SignalRecord:
+    """
+    Container grouping the signal representations associated with one run.
+
+    Parameters
+    ----------
+    analog : Any, optional
+        Analog signal representation for the acquisition. This is typically an
+        ``AcquisitionDataFrame`` or another structured signal container.
+    digital : Any, optional
+        Digital triggered signal representation for the acquisition. This is
+        typically a ``TriggerDataFrame`` or another structured signal container.
+    """
+
+    analog: Any = None
+    digital: Any = None
 
 
+@dataclass
 class RunRecord:
     """
-    A class to store the results of a flow cytometer run.
-    This class holds various attributes related to the results of a flow cytometer simulation run,
-    including the run time, detected peaks, analog signals, triggered analog signals, and event data.
+    Container storing the outputs and context of one flow cytometry run.
 
-    Attributes
+    This class is the main result object returned by the simulation pipeline.
+    It stores both the acquisition context and all available downstream data,
+    including analog signals, digital triggered segments, and peak features.
+
+    The object is intentionally self descriptive. In particular, it can store
+    the ``opto_electronics`` configuration used during acquisition so the run
+    may later be processed further without requiring the caller to pass that
+    configuration again.
+
+    Parameters
     ----------
+    detector_names : list[str]
+        Names of the detector channels associated with this run.
     run_time : Time
-        The duration of the acquisition in seconds.
-    peaks : Optional[pd.DataFrame]
-        A DataFrame containing the detected peaks and their features.
-    analog : Optional[AcquisitionDataFrame]
-        A structured DataFrame representing the multi-detector analog voltage signals.
-    triggered_analog : Optional[AcquisitionDataFrame]
-        A structured DataFrame representing the triggered segments of the analog voltage signals.
-    event_collection : Optional[pd.DataFrame]
-        A DataFrame containing event data for the scatterers.
+        Acquisition duration.
+    event_collection : EventCollection
+        Structured event collection used for the run.
+    opto_electronics : Any, optional
+        Opto electronic configuration used during acquisition.
+    signal_processing : Any, optional
+        Signal processing configuration used during downstream processing.
+    signal : SignalRecord, optional
+        Container holding analog and digital signal objects.
+    peaks : Any, optional
+        Peak level data extracted from triggered digital segments.
+    discriminator : Any, optional
+        Discriminator object used for triggering.
     """
 
-    signal: NameSpace = None
-    event_collection: Optional[pd.DataFrame] = None
-
-    def __init__(
-        self,
-        detector_names: list[str],
-        run_time: Time,
-        event_collection: pd.DataFrame,
-    ):
-
-        self.detector_names = detector_names
-        self.run_time = run_time
-        self.event_collection = event_collection
-
-        self.signal = NameSpace()
+    detector_names: list[str]
+    run_time: Time
+    event_collection: EventCollection
+    opto_electronics: Any = None
+    signal_processing: Any = None
+    signal: SignalRecord = field(default_factory=SignalRecord)
+    peaks: Any = None
+    discriminator: Any = None
 
     @property
     def number_of_scatterers(self) -> int:
         """
-        Returns the number of scatterers sent through the flow cytometer.
-
-        This property calculates the number of scatterers that were sent through the flow cytometer
-        during the run. It is determined by the length of the `events` DataFrame, which contains
-        information about each scatterer.
+        Return the total number of simulated scatterers across all populations.
 
         Returns
         -------
         int
-            The number of scatterers sent through the flow cytometer.
+            Total number of event rows across the event collection.
         """
-        return np.sum(len(event) for event in self.event_collection)
-
-    @property
-    def capture_ratio(self) -> Optional[float]:
-        """
-        Returns the capture ratio of scatterers to detected events.
-
-        This property calculates the capture ratio, which is the ratio of the number of detected events
-        to the number of scatterers sent through the flow cytometer. It provides insight into the efficiency
-        of the detection process.
-
-        Returns
-        -------
-        Optional[float]
-            The capture ratio, or None if no events were detected.
-        """
-        if self.number_of_triggers is not None:
-            return self.number_of_triggers / self.number_of_scatterers
-        return None
+        return int(np.sum(len(events) for events in self.event_collection))
 
     @property
     def number_of_triggers(self) -> Optional[int]:
         """
-        Returns the number of window triggers detected during the run.
-
-        This property calculates the number of window triggers that were detected during the run.
-        It is determined by counting the unique segments in the `triggered` DataFrame,
-        which contains information about each detected event.
+        Return the number of triggered segments detected during the run.
 
         Returns
         -------
-        Optional[int]
-            The number of events detected, or None if no events were detected.
+        int or None
+            Number of unique triggered segments if digital data are available,
+            otherwise ``None``.
         """
-        if hasattr(self.signal, "digital"):
-            return len(self.signal.digital.groupby("SegmentID"))
-        return None
+        if self.signal.digital is None:
+            return None
+
+        return len(self.signal.digital.groupby("SegmentID"))
 
     @property
-    def scatterer_rate(self) -> Optional[ureg.Quantity]:
+    def capture_ratio(self) -> Optional[float]:
         """
-        Returns the rate of scatterers sent through the flow cytometer.
-
-        This property calculates the rate of scatterers that were sent through the flow cytometer
-        during the run. It is determined by dividing the number of scatterers by the run time.
+        Return the ratio of detected triggers to simulated scatterers.
 
         Returns
         -------
-        Optional[ureg.Quantity]
-            The rate of scatterers sent through the flow cytometer in particles per second,
-            or None if the run time is zero.
+        float or None
+            Capture ratio if trigger data are available and at least one
+            scatterer exists, otherwise ``None``.
+        """
+        if self.number_of_triggers is None:
+            return None
+
+        if self.number_of_scatterers == 0:
+            return None
+
+        return self.number_of_triggers / self.number_of_scatterers
+
+    @property
+    def scatterer_rate(self):
+        """
+        Return the rate of simulated scatterers over the acquisition interval.
+
+        Returns
+        -------
+        pint.Quantity
+            Scatterer rate in particles per second.
         """
         return self.number_of_scatterers / self.run_time.to("second")
 
     @property
     def trigger_rate(self) -> Optional[Frequency]:
         """
-        Returns the rate of triggers during the run.
-
-        This property calculates the rate of triggers that occurred during the run.
-        It is determined by dividing the number of detected events by the run time.
+        Return the trigger rate over the acquisition interval.
 
         Returns
         -------
-        Optional[ureg.Quantity]
-            The rate of detections in events per second, or None if no events were detected
-            or if the run time is zero.
+        pint.Quantity or None
+            Trigger rate in events per second if trigger data are available,
+            otherwise ``None``.
         """
-        if self.number_of_triggers is not None:
-            return self.number_of_triggers / self.run_time.to("second")
-        return None
+        if self.number_of_triggers is None:
+            return None
+
+        return self.number_of_triggers / self.run_time.to("second")
 
     def get_axes_dict(
         self,
         signal_units: Voltage = None,
         time_units: Time = None,
-    ) -> dict[str, plt.Axes]:
+    ) -> tuple[plt.Figure, dict[str, plt.Axes]]:
         """
-        Creates a dictionary of matplotlib Axes for each detector and scatterer.
+        Create a figure and one axis per detector, plus one scatterer axis.
 
-        This method generates a dictionary where each key is the name of a detector or "scatterer",
-        and the corresponding value is a matplotlib Axes object. This is useful for plotting
-        multiple signals in a structured manner.
-
+        Parameters
+        ----------
+        signal_units : Voltage, optional
+            Voltage unit used to label detector axes.
+        time_units : Time, optional
+            Time unit passed to the event collection plotting helper.
 
         Returns
         -------
-        dict[str, plt.Axes]
-            A dictionary mapping detector names and "scatterer" to their respective Axes objects.
+        tuple[matplotlib.figure.Figure, dict[str, matplotlib.axes.Axes]]
+            Figure and axis dictionary keyed by detector names plus
+            ``"scatterer"``.
         """
-        n_plots = len(self.detector_names) + 1  # One extra plot for events
+        number_of_plots = len(self.detector_names) + 1
 
         figure, axes_array = plt.subplots(
-            nrows=n_plots,
+            nrows=number_of_plots,
             sharex=True,
             sharey=False,
-            gridspec_kw={"height_ratios": [1] * (n_plots - 1) + [0.5]},
+            gridspec_kw={"height_ratios": [1] * (number_of_plots - 1) + [0.5]},
         )
 
         axes = {
-            name: ax
-            for name, ax in zip(self.detector_names + ["scatterer"], axes_array)
+            name: axis
+            for name, axis in zip(self.detector_names + ["scatterer"], axes_array)
         }
 
-        for _, ax in axes.items():
-            ax.yaxis.tick_right()
+        for axis in axes.values():
+            axis.yaxis.tick_right()
 
-        for (_, ax), detector_name in zip(axes.items(), self.detector_names):
-            ax.set_ylabel(
+        for detector_name in self.detector_names:
+            axis = axes[detector_name]
+            axis.set_ylabel(
                 (
                     rf"{detector_name} [{signal_units._repr_latex_()}]"
                     if signal_units is not None
@@ -191,14 +208,23 @@ class RunRecord:
         return figure, axes
 
     @helper.post_mpl_plot
-    def plot_analog(self) -> None:
+    def plot_analog(self) -> plt.Figure:
         """
-        Plots the analog signals.
+        Plot the analog detector signals together with the event timeline.
 
-        This method generates a plot of the analog signals stored in the `analog` attribute.
-        It provides a visual representation of the voltage signals over time for each detector.
+        Returns
+        -------
+        matplotlib.figure.Figure
+            Generated matplotlib figure.
 
+        Raises
+        ------
+        ValueError
+            If no analog signal is available in the run record.
         """
+        if self.signal.analog is None:
+            raise ValueError("No analog signal is available in this run record.")
+
         self.signal.analog.normalize_units(signal_units="max", time_units="max")
 
         figure, axes = self.get_axes_dict(
@@ -208,7 +234,7 @@ class RunRecord:
 
         self.signal.analog._add_to_axes(axes=axes)
 
-        if hasattr(self, "discriminator"):
+        if self.discriminator is not None:
             self.discriminator._add_to_ax(
                 axes[self.discriminator.trigger_channel],
                 signal_units=self.signal.analog.signal_units,
@@ -217,15 +243,23 @@ class RunRecord:
         return figure
 
     @helper.post_mpl_plot
-    def plot_digital(self) -> None:
+    def plot_digital(self) -> plt.Figure:
         """
-        Plots the triggered digital signals.
+        Plot the triggered digital segments together with the event timeline.
 
-        This method generates a plot of the triggered digital signals stored in the `triggered` attribute.
-        It provides a visual representation of the segments of the digital voltage signals that were captured
-        during the run.
+        Returns
+        -------
+        matplotlib.figure.Figure
+            Generated matplotlib figure.
 
+        Raises
+        ------
+        ValueError
+            If no digital signal is available in the run record.
         """
+        if self.signal.digital is None:
+            raise ValueError("No digital signal is available in this run record.")
+
         self.signal.digital.to_compact()
 
         time_units = self.signal.digital.attrs["units"]["Time"]
@@ -237,3 +271,20 @@ class RunRecord:
         self.signal.digital._add_to_axes(axes=axes)
 
         return figure
+
+    def __repr__(self) -> str:
+        """
+        Return a concise summary string for the run record.
+
+        Returns
+        -------
+        str
+            Human readable summary of the run.
+        """
+        return (
+            f"RunRecord(run_time={self.run_time}, "
+            f"number_of_scatterers={self.number_of_scatterers}, "
+            f"number_of_triggers={self.number_of_triggers}, "
+            f"scatterer_rate={self.scatterer_rate}, "
+            f"trigger_rate={self.trigger_rate})"
+        )

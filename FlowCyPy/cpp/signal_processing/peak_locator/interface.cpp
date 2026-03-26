@@ -10,7 +10,7 @@ PYBIND11_MODULE(peak_locator, module) {
     module.doc() = R"pbdoc(
         Fast C++ peak detection utilities for segmented 1D signals.
 
-        This module exposes two peak locator strategies:
+        This module exposes two peak locator strategies.
 
         1. SlidingWindowPeakLocator
            The signal is divided into windows and one local maximum is extracted
@@ -20,8 +20,34 @@ PYBIND11_MODULE(peak_locator, module) {
         2. GlobalPeakLocator
            The strongest sample in the full signal is selected as the peak.
 
-        In addition to processing a single 1D signal, locators can process a
-        flat segmented Python dictionary of the form
+        Width and area semantics are controlled by support objects.
+
+        Available support objects
+        -------------------------
+        FullWindowSupport()
+            Width and area are computed on the full analyzed interval.
+
+        PulseSupport(channel="default", threshold=0.5)
+            Width and area are computed on a positive pulse support defined by
+
+                threshold * peak_height
+
+            The `channel` argument controls how the support channel is selected.
+
+            - "default"
+                In segmented mode, use the supplied trigger channel.
+                In single-array mode, fall back to the current signal.
+
+            - "independent"
+                Each channel computes its own support independently.
+
+            - "<detector_name>"
+                Reuse the named detector channel as shared support for all
+                channels in the same segment.
+
+        Segmented dictionary interface
+        ------------------------------
+        Locators can process a flat segmented Python dictionary of the form
 
             {
                 "segment_id": [...],
@@ -32,15 +58,129 @@ PYBIND11_MODULE(peak_locator, module) {
             }
 
         The "Time" entry is ignored. Every other entry is interpreted as a
-        signal channel and processed independently.
+        signal channel and processed independently or with shared support,
+        depending on the configured support object.
     )pbdoc";
 
-    py::class_<BasePeakLocator, std::shared_ptr<BasePeakLocator>>(module, "BasePeakLocator")
+    py::class_<BaseSupport, std::shared_ptr<BaseSupport>>(
+        module,
+        "BaseSupport",
+        R"pbdoc(
+            Abstract base class describing how event support is defined.
+
+            Support objects control the semantics of width and area
+            computations. They are passed to peak locator constructors.
+        )pbdoc"
+    );
+
+    py::class_<FullWindowSupport, BaseSupport, std::shared_ptr<FullWindowSupport>>(
+        module,
+        "FullWindowSupport",
+        R"pbdoc(
+            Support object that uses the full analyzed interval.
+
+            In this mode, width is the full segment or window length and area is
+            accumulated on the full interval.
+
+            No threshold expansion is used.
+        )pbdoc"
+    )
+        .def(
+            py::init<>(),
+            R"pbdoc(
+                Construct a full-window support object.
+
+                This support mode uses the full interval for width and area
+                computations.
+            )pbdoc"
+        );
+
+    py::class_<PulseSupport, BaseSupport, std::shared_ptr<PulseSupport>>(
+        module,
+        "PulseSupport",
+        R"pbdoc(
+            Support object based on a positive pulse support around a peak.
+
+            The support is defined on a support signal by first locating a
+            positive peak, then expanding left and right while neighboring
+            samples remain above
+
+                threshold * peak_height
+
+            Parameters
+            ----------
+            channel : str, default="default"
+                Support channel selection rule.
+
+                Accepted values are:
+
+                - "default"
+                  In segmented mode, use the trigger channel supplied to
+                  `run(..., trigger_channel=...)`.
+
+                  In single-array mode, fall back to the current signal.
+
+                - "independent"
+                  Each channel computes its own support independently.
+
+                - "<detector_name>"
+                  Use the named detector or channel as shared support for all
+                  channels in the same segment.
+
+            threshold : float, default=0.5
+                Relative threshold in the interval [0, 1].
+            )pbdoc"
+    )
+        .def(
+            py::init<const std::string&, double>(),
+            py::arg("channel") = "default",
+            py::arg("threshold") = 0.5,
+            R"pbdoc(
+                Construct a pulse-support object.
+
+                Parameters
+                ----------
+                channel : str, default="default"
+                    Support channel selection rule.
+                threshold : float, default=0.5
+                    Relative threshold used to define the pulse support.
+            )pbdoc"
+        )
+        .def_readonly(
+            "channel",
+            &PulseSupport::channel,
+            R"pbdoc(
+                Support channel selector.
+
+                This is one of:
+                - "default"
+                - "independent"
+                - a detector or channel name
+            )pbdoc"
+        )
+        .def_readonly(
+            "threshold",
+            &PulseSupport::threshold,
+            R"pbdoc(
+                Relative threshold used during support expansion.
+            )pbdoc"
+        );
+
+    py::class_<BasePeakLocator, std::shared_ptr<BasePeakLocator>>(
+        module,
+        "BasePeakLocator",
+        R"pbdoc(
+            Abstract base class for 1D peak detection.
+
+            Concrete subclasses define how the peak index is selected, while the
+            provided support object defines how width and area are computed.
+        )pbdoc"
+    )
         .def_readonly(
             "max_number_of_peaks",
             &BasePeakLocator::max_number_of_peaks,
             R"pbdoc(
-                Maximum number of peaks stored in the fixed size output buffers.
+                Maximum number of peaks stored in the fixed-size output buffers.
             )pbdoc"
         )
         .def(
@@ -59,12 +199,12 @@ PYBIND11_MODULE(peak_locator, module) {
                 -------
                 dict
                     Dictionary containing:
-                        - "Index": peak indices
-                        - "Height": peak heights
+                    - "Index": peak indices
+                    - "Height": peak heights
 
-                    and, when enabled at construction:
-                        - "Width": peak widths in samples
-                        - "Area": peak areas
+                    and, when enabled:
+                    - "Width": peak widths
+                    - "Area": peak areas
             )pbdoc"
         )
         .def(
@@ -72,23 +212,20 @@ PYBIND11_MODULE(peak_locator, module) {
             &BasePeakLocator::compute,
             py::arg("array"),
             R"pbdoc(
-                Run peak detection on a single 1D signal.
+                Run peak detection on a single 1D signal and update internal
+                output buffers.
 
                 Parameters
                 ----------
                 array : array-like of float
                     Input signal values.
-
-                Notes
-                -----
-                This method updates the internal buffers of the locator but does
-                not itself return a dictionary. To directly obtain the computed
-                metrics, use `get_metrics(...)`.
             )pbdoc"
         )
         .def(
             "run",
-            [](const BasePeakLocator& self, const py::dict& segmented_signal_dictionary) -> py::dict {
+            [](const BasePeakLocator& self,
+               const py::dict& segmented_signal_dictionary,
+               const std::string& trigger_channel) -> py::dict {
                 if (!segmented_signal_dictionary.contains("segment_id")) {
                     throw std::runtime_error(
                         "Input dictionary must contain a 'segment_id' key."
@@ -126,7 +263,8 @@ PYBIND11_MODULE(peak_locator, module) {
                 const SegmentedMetricDictionary segmented_metrics =
                     self.run_flat_segmented_signals(
                         segment_ids,
-                        flat_signal_dictionary
+                        flat_signal_dictionary,
+                        trigger_channel
                     );
 
                 py::dict output_dictionary;
@@ -150,6 +288,7 @@ PYBIND11_MODULE(peak_locator, module) {
                 return output_dictionary;
             },
             py::arg("segmented_signal_dictionary"),
+            py::arg("trigger_channel") = "",
             R"pbdoc(
                 Compute peak metrics for all channels in a flat segmented dictionary.
 
@@ -168,6 +307,10 @@ PYBIND11_MODULE(peak_locator, module) {
                     The "segment_id" entry identifies the segment of each sample.
                     The "Time" entry is ignored.
                     Every other key is treated as a 1D signal channel.
+
+                trigger_channel : str, default=""
+                    Trigger channel name used when the configured support object
+                    is `PulseSupport(channel="default", ...)`.
 
                 Returns
                 -------
@@ -189,7 +332,7 @@ PYBIND11_MODULE(peak_locator, module) {
 
                 Notes
                 -----
-                The regrouping and segmented batch processing are handled in C++.
+                The regrouping and segmented processing are handled in C++.
             )pbdoc"
         );
 
@@ -201,23 +344,23 @@ PYBIND11_MODULE(peak_locator, module) {
 
             One local maximum is extracted per window. The resulting peaks are
             sorted by descending height, and the strongest peaks are returned in
-            fixed size output arrays.
+            fixed-size output arrays.
 
-            Optional metrics:
-                - Width: number of contiguous samples above
-                  `threshold * peak_height`
-                - Area: sum of signal values over the same support
+            Width and area semantics are controlled by the supplied support
+            object.
         )pbdoc"
     )
         .def(
-            py::init<int, int, int, int, bool, bool, double>(),
+            py::init<int, int, int, int, bool, bool, bool, std::shared_ptr<BaseSupport>, bool>(),
             py::arg("window_size"),
             py::arg("window_step") = -1,
             py::arg("max_number_of_peaks") = 5,
             py::arg("padding_value") = -1,
             py::arg("compute_width") = false,
             py::arg("compute_area") = false,
-            py::arg("threshold") = 0.5,
+            py::arg("allow_negative_area") = true,
+            py::arg("support") = std::make_shared<FullWindowSupport>(),
+            py::arg("debug_mode") = false,
             R"pbdoc(
                 Construct a sliding window peak locator.
 
@@ -225,20 +368,31 @@ PYBIND11_MODULE(peak_locator, module) {
                 ----------
                 window_size : int
                     Number of samples in each window.
+
                 window_step : int, default=-1
                     Step between consecutive windows. If set to -1, the step is
                     set equal to `window_size`.
+
                 max_number_of_peaks : int, default=5
                     Maximum number of peaks to report.
+
                 padding_value : int, default=-1
                     Value used to pad unused output entries.
+
                 compute_width : bool, default=False
                     Whether to compute peak widths.
+
                 compute_area : bool, default=False
                     Whether to compute peak areas.
-                threshold : float, default=0.5
-                    Fraction of peak height used to define the support of the
-                    peak for width and area calculations.
+
+                allow_negative_area : bool, default=True
+                    Whether negative samples are allowed during area accumulation.
+
+                support : BaseSupport, default=FullWindowSupport()
+                    Support object controlling how width and area are defined.
+
+                debug_mode : bool, default=False
+                    Whether to print debug information during peak detection.
             )pbdoc"
         );
 
@@ -248,17 +402,21 @@ PYBIND11_MODULE(peak_locator, module) {
         R"pbdoc(
             Global peak detector for 1D signals.
 
-            This locator identifies the maximum value over the full signal and
-            can optionally compute the width and area of that peak.
+            This locator identifies the maximum value over the full signal.
+
+            Width and area semantics are controlled by the supplied support
+            object.
         )pbdoc"
     )
         .def(
-            py::init<int, int, bool, bool, double>(),
+            py::init<int, int, bool, bool, bool, std::shared_ptr<BaseSupport>, bool>(),
             py::arg("max_number_of_peaks") = 1,
             py::arg("padding_value") = -1,
             py::arg("compute_width") = false,
             py::arg("compute_area") = false,
-            py::arg("threshold") = 0.5,
+            py::arg("allow_negative_area") = true,
+            py::arg("support") = std::make_shared<FullWindowSupport>(),
+            py::arg("debug_mode") = false,
             R"pbdoc(
                 Construct a global peak locator.
 
@@ -267,15 +425,24 @@ PYBIND11_MODULE(peak_locator, module) {
                 max_number_of_peaks : int, default=1
                     Maximum number of peaks to report. Only one physical peak is
                     detected, so remaining entries are padded.
+
                 padding_value : int, default=-1
                     Value used to pad unused output entries.
+
                 compute_width : bool, default=False
-                    Whether to compute the width of the detected peak.
+                    Whether to compute width.
+
                 compute_area : bool, default=False
-                    Whether to compute the area of the detected peak.
-                threshold : float, default=0.5
-                    Fraction of peak height used to define the support of the
-                    peak for width and area calculations.
+                    Whether to compute area.
+
+                allow_negative_area : bool, default=True
+                    Whether negative samples are allowed during area accumulation.
+
+                support : BaseSupport, default=FullWindowSupport()
+                    Support object controlling how width and area are defined.
+
+                debug_mode : bool, default=False
+                    Whether to print debug information during peak detection.
             )pbdoc"
         );
 }

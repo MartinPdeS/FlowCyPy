@@ -47,11 +47,15 @@ double BaseDiscriminator::parse_threshold(const Threshold &threshold) const {
         throw std::runtime_error("Threshold is undefined.");
     }
 
-    if (threshold.is_numeric()) {
+    if (threshold.has_numeric()) {
         return threshold.get_numeric();
     }
 
-    return this->parse_sigma_threshold_string(threshold.get_symbolic());
+    if (threshold.has_symbolic()) {
+        return this->parse_sigma_threshold_string(threshold.get_symbolic());
+    }
+
+    throw std::runtime_error("Threshold is defined but contains no numeric or symbolic value.");
 }
 
 
@@ -197,6 +201,7 @@ void FixedWindow::run() {
     this->validate_detector_existence(this->trigger_channel);
 
     this->resolved_threshold = this->parse_threshold(this->threshold);
+    this->threshold.set_numeric(this->resolved_threshold);
 
     const std::vector<double> &signal =
         this->trigger.signal_map.at(this->trigger_channel);
@@ -270,6 +275,7 @@ void DynamicWindow::run() {
     this->validate_detector_existence(this->trigger_channel);
 
     this->resolved_threshold = this->parse_threshold(this->threshold);
+    this->threshold.set_numeric(this->resolved_threshold);
 
     const std::vector<double> &signal =
         this->trigger.signal_map.at(this->trigger_channel);
@@ -281,7 +287,7 @@ void DynamicWindow::run() {
     for (size_t index = 1; index < signal.size(); ++index) {
         if (
             signal[index - 1] <= this->resolved_threshold &&
-            signal[index] > resolved_threshold
+            signal[index] > this->resolved_threshold
         ) {
             int start = static_cast<int>(index) - static_cast<int>(this->pre_buffer);
 
@@ -331,6 +337,7 @@ void DynamicWindow::run() {
 // =============================
 // DoubleThreshold implementation
 // =============================
+
 void DoubleThreshold::run() {
     if (!this->threshold.is_defined()) {
         throw std::runtime_error(
@@ -355,11 +362,14 @@ void DoubleThreshold::run() {
     this->validate_detector_existence(this->trigger_channel);
 
     this->resolved_upper_threshold = this->parse_threshold(this->threshold);
+    this->threshold.set_numeric(this->resolved_upper_threshold);
 
-    this->resolved_lower_threshold =
-        this->lower_threshold.is_defined()
-            ? this->parse_threshold(this->lower_threshold)
-            : this->resolved_upper_threshold;
+    if (this->lower_threshold.is_defined()) {
+        this->resolved_lower_threshold = this->parse_threshold(this->lower_threshold);
+        this->lower_threshold.set_numeric(this->resolved_lower_threshold);
+    } else {
+        this->resolved_lower_threshold = this->resolved_upper_threshold;
+    }
 
     const std::vector<double> &signal =
         this->trigger.signal_map.at(this->trigger_channel);

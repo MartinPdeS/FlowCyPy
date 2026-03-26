@@ -12,6 +12,6 @@ from TypedUnit import (
 )  # noqa: E501
 
 
-from FlowCyPy.binary import interface_pint
+from FlowCyPy.interface_pint import set_ureg
 
-interface_pint.set_ureg(ureg)
+set_ureg(ureg)

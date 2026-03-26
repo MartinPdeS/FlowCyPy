@@ -11,7 +11,7 @@ target_link_libraries("interface_${NAME}" PUBLIC "${NAME}_lib" pybind11::module)
 
 install(
     TARGETS "${NAME}_lib" "interface_${NAME}"
-    LIBRARY DESTINATION "FlowCyPy/binary"
-    RUNTIME DESTINATION "FlowCyPy/binary"
-    ARCHIVE DESTINATION "FlowCyPy/binary"
+    LIBRARY DESTINATION "FlowCyPy"
+    RUNTIME DESTINATION "FlowCyPy"
+    ARCHIVE DESTINATION "FlowCyPy"
 )
