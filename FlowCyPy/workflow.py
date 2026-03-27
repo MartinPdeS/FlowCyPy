@@ -27,17 +27,17 @@ from FlowCyPy.opto_electronics import (
     Detector,
     OptoElectronics,
     Amplifier,
+    circuits,
+    Digitizer,
 )
 
-from FlowCyPy.signal_processing import (
-    Digitizer,
-    SignalProcessing,
-    circuits,
+from FlowCyPy.digital_processing import (
+    DigitalProcessing,
     classifier,
     peak_locator,
     discriminator,
 )
-from FlowCyPy.signal_processing.discriminator import BaseDiscriminator
+from FlowCyPy.digital_processing.discriminator import BaseDiscriminator
 
 config_dict = ConfigDict(arbitrary_types_allowed=True, extra="forbid", kw_only=True)
 
@@ -112,31 +112,31 @@ class Workflow:
         """
         amplifier = Amplifier(gain=self.gain, bandwidth=self.bandwidth)
 
-        return OptoElectronics(
-            detectors=self.detectors,
-            source=self.source,
-            amplifier=amplifier,
-        )
-
-    def _get_signal_processing(self) -> SignalProcessing:
-        """
-        Get the signal processing components for the workflow.
-
-        Returns
-        -------
-        SignalProcessing
-        """
         digitizer = Digitizer(
             bit_depth=self.bit_depth,
             sampling_rate=self.sampling_rate,
             use_auto_range=self.use_auto_range,
         )
 
-        return SignalProcessing(
+        return OptoElectronics(
+            analog_processing=self.analog_processing,
             digitizer=digitizer,
+            detectors=self.detectors,
+            source=self.source,
+            amplifier=amplifier,
+        )
+
+    def _get_digital_processing(self) -> DigitalProcessing:
+        """
+        Get the signal processing components for the workflow.
+
+        Returns
+        -------
+        DigitalProcessing
+        """
+        return DigitalProcessing(
             peak_algorithm=self.peak_locator,
             discriminator=self.discriminator,
-            analog_processing=self.analog_processing,
         )
 
     def initialize(self) -> None:
@@ -146,14 +146,16 @@ class Workflow:
 
         self.fluidics = self._get_fluidics()
         self.opto_electronics = self._get_opto_electronics()
-        self.signal_processing = self._get_signal_processing()
+        self.digital_processing = self._get_digital_processing()
 
         self.cytometer = FlowCytometer(
-            opto_electronics=self.opto_electronics,
             fluidics=self.fluidics,
-            signal_processing=self.signal_processing,
             background_power=self.background_power,
         )
 
     def run(self, run_time: Time):
-        return self.cytometer.run(run_time=run_time)
+        return self.cytometer.run(
+            run_time=run_time,
+            opto_electronics=self.opto_electronics,
+            digital_processing=self.digital_processing,
+        )

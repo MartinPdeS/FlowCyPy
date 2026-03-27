@@ -4,7 +4,7 @@ from FlowCyPy.instances.detector import PMT
 from FlowCyPy.flow_cytometer import FlowCytometer
 from FlowCyPy import fluidics
 from FlowCyPy import opto_electronics
-from FlowCyPy import signal_processing
+from FlowCyPy import digital_processing
 from FlowCyPy.run_record import RunRecord
 from FlowCyPy.fluidics import SheathFlowRate, SampleFlowRate
 from enum import Enum
@@ -46,7 +46,7 @@ class FacsCanto:
         self.instance = FlowCytometer(
             opto_electronics=self.get_optoelectronics(),
             fluidics=self.get_fluidics(),
-            signal_processing=self.get_signal_processing(),
+            digital_processing=self.get_digital_processing(),
             background_power=background_power,
         )
 
@@ -144,6 +144,12 @@ class FacsCanto:
             bandwidth=2 * ureg.megahertz,
         )
 
+        digitizer = opto_electronics.Digitizer(
+            bit_depth=14,
+            use_auto_range=True,
+            sampling_rate=10 * ureg.megahertz,
+        )
+
         detector_0 = PMT(
             name="forward",
             phi_angle=0 * ureg.degree,
@@ -159,37 +165,33 @@ class FacsCanto:
             dark_current=0 * ureg.picoampere,
         )
 
+        analog_processing = [
+            opto_electronics.circuits.BaselineRestorationServo(
+                time_constant=50 * ureg.microsecond
+            ),
+            opto_electronics.circuits.BesselLowPass(
+                cutoff_frequency=2 * ureg.megahertz, order=4, gain=2
+            ),
+        ]
+
         return opto_electronics.OptoElectronics(
             detectors=[detector_0, detector_1],
             source=source,
+            digitizer=digitizer,
+            analog_processing=analog_processing,
             amplifier=amplifier,
         )
 
-    def get_signal_processing(self) -> signal_processing.SignalProcessing:
+    def get_digital_processing(self) -> digital_processing.DigitalProcessing:
         """
         Returns the signal processing system.
 
         Returns
         -------
-        signal_processing.SignalProcessing
+        digital_processing.DigitalProcessing
             Configured signal processing system
         """
-        digitizer = signal_processing.Digitizer(
-            bit_depth=14,
-            use_auto_range=True,
-            sampling_rate=10 * ureg.megahertz,
-        )
-
-        analog_processing = [
-            signal_processing.circuits.BaselineRestorationServo(
-                time_constant=50 * ureg.microsecond
-            ),
-            signal_processing.circuits.BesselLowPass(
-                cutoff_frequency=2 * ureg.megahertz, order=4, gain=2
-            ),
-        ]
-
-        triggering = signal_processing.discriminator.DynamicWindow(
+        triggering = digital_processing.discriminator.DynamicWindow(
             trigger_channel="forward",
             threshold=self.threshold,
             pre_buffer=20,
@@ -197,13 +199,11 @@ class FacsCanto:
             max_triggers=-1,
         )
 
-        peak_algo = signal_processing.peak_locator.GlobalPeakLocator(
+        peak_algo = digital_processing.peak_locator.GlobalPeakLocator(
             compute_width=False
         )
 
-        return signal_processing.SignalProcessing(
-            digitizer=digitizer,
-            analog_processing=analog_processing,
+        return digital_processing.DigitalProcessing(
             discriminator=triggering,
             peak_algorithm=peak_algo,
         )

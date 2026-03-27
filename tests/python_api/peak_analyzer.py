@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import math
 
-from FlowCyPy.signal_processing import peak_locator
+from FlowCyPy.digital_processing import peak_locator
 
 PEAK_CENTERS = [30, 70]
 

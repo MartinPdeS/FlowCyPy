@@ -20,8 +20,8 @@ from FlowCyPy.opto_electronics import (
     Digitizer,
     circuits,
 )
-from FlowCyPy.signal_processing import (
-    SignalProcessing,
+from FlowCyPy.digital_processing import (
+    DigitalProcessing,
     peak_locator,
     discriminator,
     classifier,
@@ -138,7 +138,7 @@ def test_flow_cytometer_acquisition(flow_cytometer, opto_electronics):
     result = flow_cytometer.run(
         run_time=0.05 * ureg.millisecond,
         opto_electronics=opto_electronics,
-        signal_processing=SignalProcessing(),
+        digital_processing=DigitalProcessing(),
     )
 
     assert (
@@ -155,7 +155,7 @@ def test_flow_cytometer_multiple_detectors(flow_cytometer, opto_electronics):
     run_record = flow_cytometer.run(
         run_time=0.05 * ureg.millisecond,
         opto_electronics=opto_electronics,
-        signal_processing=SignalProcessing(),
+        digital_processing=DigitalProcessing(),
     )
 
     signal_0 = run_record.signal.analog["default"]
@@ -171,7 +171,7 @@ def test_flow_cytometer_plot(mock_show, flow_cytometer, digitizer, opto_electron
     run_record = flow_cytometer.run(
         run_time=0.05 * ureg.millisecond,
         opto_electronics=opto_electronics,
-        signal_processing=SignalProcessing(),
+        digital_processing=DigitalProcessing(),
     )
 
     run_record.plot_analog()
@@ -187,7 +187,7 @@ def test_flow_cytometer_triggered_acquisition(flow_cytometer, opto_electronics):
     run_record = flow_cytometer.run(
         run_time=0.05 * ureg.millisecond,
         opto_electronics=opto_electronics,
-        signal_processing=SignalProcessing(),
+        digital_processing=DigitalProcessing(),
     )
 
     _discriminator = discriminator.DynamicWindow(
@@ -206,12 +206,12 @@ def test_flow_cytometer_triggered_acquisition(flow_cytometer, opto_electronics):
     assert len(triggered_signal) > 0, "Triggered acquisition has no signal data."
 
 
-def test_flow_cytometer_signal_processing(flow_cytometer, opto_electronics):
+def test_flow_cytometer_digital_processing(flow_cytometer, opto_electronics):
     """Test filtering and baseline restoration on the acquired signal."""
     run_record = flow_cytometer.run(
         run_time=0.05 * ureg.millisecond,
         opto_electronics=opto_electronics,
-        signal_processing=SignalProcessing(),
+        digital_processing=DigitalProcessing(),
     )
 
     _discriminator = discriminator.DynamicWindow(
@@ -237,7 +237,7 @@ def test_peak_detection(flow_cytometer, digitizer, opto_electronics):
     run_record = flow_cytometer.run(
         run_time=0.05 * ureg.millisecond,
         opto_electronics=opto_electronics,
-        signal_processing=SignalProcessing(),
+        digital_processing=DigitalProcessing(),
     )
 
     _discriminator = discriminator.DynamicWindow(
@@ -269,7 +269,7 @@ def test_peak_plot(mock_show, flow_cytometer, digitizer, opto_electronics):
     run_record = flow_cytometer.run(
         run_time=0.05 * ureg.millisecond,
         opto_electronics=opto_electronics,
-        signal_processing=SignalProcessing(),
+        digital_processing=DigitalProcessing(),
     )
     run_record.plot_analog()
 

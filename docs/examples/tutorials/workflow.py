@@ -159,7 +159,7 @@ opto_electronics = OptoElectronics(
 # Step 3: Signal Processing Configuration
 # ---------------------------------------
 from FlowCyPy.signal_processing import (
-    SignalProcessing,
+    DigitalProcessing,
     peak_locator,
     discriminator,
 )
@@ -174,7 +174,7 @@ triggering = discriminator.DynamicWindow(
 
 peak_algo = peak_locator.GlobalPeakLocator(compute_width=False)
 
-signal_processing = SignalProcessing(
+signal_processing = DigitalProcessing(
     discriminator=triggering,
     peak_algorithm=peak_algo,
 )

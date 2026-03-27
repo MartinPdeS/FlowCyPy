@@ -2,7 +2,7 @@
 Limit of Detection
 ==================
 
-This example simulates the detection of small nanoparticles (90–150 nm diameter)
+This example simulates the detection of small nanoparticles (90-150 nm diameter)
 in a flow cytometry setup using a dual-detector configuration (side and forward scatter).
 The simulation includes noise models, realistic fluidics, analog signal conditioning,
 digitization, triggering, and peak detection.
@@ -13,8 +13,8 @@ scatter signals in the presence of system noise and fluidic variability.
 
 from FlowCyPy.units import ureg
 from FlowCyPy import FlowCytometer
-from FlowCyPy.fluidics import distributions
 from FlowCyPy.fluidics import (
+    distributions,
     FlowCell,
     Fluidics,
     ScattererCollection,
@@ -23,13 +23,13 @@ from FlowCyPy.fluidics import (
 from FlowCyPy.opto_electronics import (
     Detector,
     OptoElectronics,
+    Digitizer,
     Amplifier,
     source,
-)
-from FlowCyPy.signal_processing import (
-    Digitizer,
-    SignalProcessing,
     circuits,
+)
+from FlowCyPy.digital_processing import (
+    DigitalProcessing,
     peak_locator,
     discriminator,
 )
@@ -81,7 +81,7 @@ detector_side = Detector(
     phi_angle=90 * ureg.degree,
     numerical_aperture=0.2 * ureg.AU,
     responsivity=1 * ureg.ampere / ureg.watt,
-    dark_current=0.01 * ureg.milliampere,
+    dark_current=0.1 * ureg.nanoampere,
 )
 
 detector_forward = Detector(
@@ -89,52 +89,54 @@ detector_forward = Detector(
     phi_angle=0 * ureg.degree,
     numerical_aperture=0.2 * ureg.AU,
     responsivity=1 * ureg.ampere / ureg.watt,
-    dark_current=0.01 * ureg.milliampere,
+    dark_current=0.1 * ureg.nanoampere,
 )
 
 # %%
-# Amplifier and Opto-Electronics
+# Opto-Electronics Processing Pipeline
 amplifier = Amplifier(
     gain=10_000 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz
 )
 
+analog_processing = [
+    circuits.BesselLowPass(cutoff_frequency=0.4 * ureg.megahertz, order=4, gain=2),
+    circuits.BaselineRestorationServo(time_constant=50 * ureg.microsecond),
+]
+
 opto_electronics = OptoElectronics(
-    detectors=[detector_side, detector_forward], source=source, amplifier=amplifier
+    digitizer=digitizer,
+    analog_processing=analog_processing,
+    detectors=[detector_side, detector_forward],
+    source=source,
+    amplifier=amplifier,
 )
 
 # %%
-# Analog Processing Pipeline
-analog_processing = [
-    circuits.BaselineRestorationServo(time_constant=10 * ureg.microsecond),
-    circuits.BesselLowPass(cutoff_frequency=1.5 * ureg.megahertz, order=4, gain=2),
-]
-
-# %%
-# Triggering and Peak Detection
-discriminator = discriminator.DynamicWindow(
-    trigger_channel="forward",
-    threshold="3sigma",
+# Digital Processing Pipeline
+discriminator = discriminator.FixedWindow(
+    trigger_channel="side",
+    threshold="4sigma",
     max_triggers=-1,
     pre_buffer=128,
     post_buffer=128,
 )
 
-signal_processing = SignalProcessing(
-    digitizer=digitizer,
-    analog_processing=analog_processing,
+digital_processing = DigitalProcessing(
     discriminator=discriminator,
     peak_algorithm=peak_locator.GlobalPeakLocator(),
 )
 
 # %% Create and Run the Cytometer Simulation
 cytometer = FlowCytometer(
-    opto_electronics=opto_electronics,
     fluidics=fluidics,
-    signal_processing=signal_processing,
-    background_power=0.0001 * ureg.milliwatt,
+    background_power=0.1 * ureg.nanowatt,
 )
 
-run_record = cytometer.run(run_time=5.0 * ureg.millisecond)
+run_record = cytometer.run(
+    run_time=10.0 * ureg.millisecond,
+    digital_processing=digital_processing,
+    opto_electronics=opto_electronics,
+)
 
 # %%
 # Plot Raw Analog Signal
@@ -143,7 +145,3 @@ run_record.plot_analog()
 # %%
 # Plot Triggered Analog Signal Segments
 run_record.plot_digital()
-
-# %%
-# Plot Peak Features (Side vs Forward Height)
-run_record.peaks.plot(x=("side", "Height"), y=("forward", "Height"))

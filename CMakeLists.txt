@@ -142,7 +142,7 @@ add_subdirectory(FlowCyPy/cpp/opto_electronics/amplifier)            # amplifier
 add_subdirectory(FlowCyPy/cpp/opto_electronics/digitizer)           # digitizer
 add_subdirectory(FlowCyPy/cpp/opto_electronics/circuits)            # circuits
 
-add_subdirectory(FlowCyPy/cpp/signal_processing/discriminator)       # discriminator
-add_subdirectory(FlowCyPy/cpp/signal_processing/peak_locator)        # peak_locator
-add_subdirectory(FlowCyPy/cpp/signal_processing/classifier)          # classifier
+add_subdirectory(FlowCyPy/cpp/digital_processing/discriminator)       # discriminator
+add_subdirectory(FlowCyPy/cpp/digital_processing/peak_locator)        # peak_locator
+add_subdirectory(FlowCyPy/cpp/digital_processing/classifier)          # classifier
 # ----------------- collect subdirectories --------------------

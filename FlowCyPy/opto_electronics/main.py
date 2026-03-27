@@ -139,7 +139,7 @@ class OptoElectronics(StrictDataclassMixing):
 
         return power_signal_dict
 
-    def _add_coupling_to_dataframe(
+    def add_coupling_to_dataframe(
         self, event_collection: EventCollection, compute_cross_section: bool = False
     ):
         """

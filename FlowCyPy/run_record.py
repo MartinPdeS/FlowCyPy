@@ -47,15 +47,13 @@ class RunRecord:
 
     Parameters
     ----------
-    detector_names : list[str]
-        Names of the detector channels associated with this run.
     run_time : Time
         Acquisition duration.
     event_collection : EventCollection
         Structured event collection used for the run.
     opto_electronics : Any, optional
         Opto electronic configuration used during acquisition.
-    signal_processing : Any, optional
+    digital_processing : Any, optional
         Signal processing configuration used during downstream processing.
     signal : SignalRecord, optional
         Container holding analog and digital signal objects.
@@ -65,14 +63,26 @@ class RunRecord:
         Discriminator object used for triggering.
     """
 
-    detector_names: list[str]
     run_time: Time
     event_collection: EventCollection
     opto_electronics: Any = None
-    signal_processing: Any = None
+    digital_processing: Any = None
     signal: SignalRecord = field(default_factory=SignalRecord)
     peaks: Any = None
-    discriminator: Any = None
+
+    @property
+    def detector_names(self):
+        """
+        Return the list of detector names associated with this run.
+
+        Returns
+        -------
+        list[str]
+            List of detector names.
+        """
+        if self.opto_electronics is None:
+            return []
+        return [detector.name for detector in self.opto_electronics.detectors]
 
     @property
     def number_of_scatterers(self) -> int:
@@ -234,9 +244,9 @@ class RunRecord:
 
         self.signal.analog._add_to_axes(axes=axes)
 
-        if self.discriminator is not None:
-            self.discriminator._add_to_ax(
-                axes[self.discriminator.trigger_channel],
+        if self.digital_processing.discriminator is not None:
+            self.digital_processing.discriminator._add_to_ax(
+                axes[self.digital_processing.discriminator.trigger_channel],
                 signal_units=self.signal.analog.signal_units,
             )
 

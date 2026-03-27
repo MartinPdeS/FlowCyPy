@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from FlowCyPy.signal_processing.peak_locator import (
+from FlowCyPy.digital_processing.peak_locator import (
     GlobalPeakLocator,
     SlidingWindowPeakLocator,
     FullWindowSupport,

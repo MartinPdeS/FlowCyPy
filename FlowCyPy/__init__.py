@@ -6,11 +6,11 @@ except ImportError:
 
 import FlowCyPy.units as _
 import FlowCyPy.opto_electronics.circuits as _
-import FlowCyPy.signal_processing.classifier as _
+import FlowCyPy.digital_processing.classifier as _
 from .flow_cytometer import FlowCytometer
 from .fluidics import Fluidics
 from .opto_electronics import OptoElectronics
-from .signal_processing import SignalProcessing
+from .digital_processing import DigitalProcessing
 
 
 debug_mode = False

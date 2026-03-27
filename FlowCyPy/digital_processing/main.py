@@ -5,7 +5,7 @@ from . import discriminator
 from . import peak_locator
 
 
-class SignalProcessing:
+class DigitalProcessing:
     """
     Container for analog and digital signal processing stages in a simulated flow cytometry pipeline.
 
@@ -15,9 +15,6 @@ class SignalProcessing:
 
     Parameters
     ----------
-    digitizer : Digitizer
-        Digitization module that converts analog voltage signals to digital values using
-        specified bit depth, voltage range, and sampling parameters.
     discriminator : discriminator.BaseDiscriminator
         Component responsible for extracting signal segments based on threshold-crossing
         or window-based logic applied to the analog signal.

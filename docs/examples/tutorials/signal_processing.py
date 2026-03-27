@@ -16,7 +16,6 @@ The resulting signals are plotted for comparison.
 """
 
 import matplotlib.pyplot as plt
-import numpy as np
 from TypedUnit import ureg
 
 from FlowCyPy import FlowCytometer
@@ -31,11 +30,14 @@ from FlowCyPy.fluidics import (
 )
 from FlowCyPy.opto_electronics import (
     Detector,
+    Digitizer,
+    circuits,
     OptoElectronics,
     Amplifier,
     source,
 )
-from FlowCyPy.signal_processing import Digitizer, SignalProcessing, circuits
+
+from FlowCyPy.digital_processing import DigitalProcessing
 
 source = source.Gaussian(
     waist_z=10 * ureg.micrometer,
@@ -95,19 +97,16 @@ detector_1 = Detector(
 amplifier = Amplifier(gain=100 * ureg.volt / ureg.ampere, bandwidth=10 * ureg.megahertz)
 
 opto_electronics = OptoElectronics(
-    detectors=[detector_0, detector_1], source=source, amplifier=amplifier
-)
-
-signal_processing = SignalProcessing(
+    detectors=[detector_0, detector_1],
+    source=source,
+    amplifier=amplifier,
     digitizer=digitizer,
     analog_processing=[],
 )
 
 # Setup the flow cytometer.
 flow_cytometer = FlowCytometer(
-    opto_electronics=opto_electronics,
     fluidics=fluidics,
-    signal_processing=signal_processing,
     background_power=2 * ureg.microwatt,
 )
 
@@ -119,8 +118,11 @@ fig, ax = plt.subplots(1, 1, figsize=(12, 6))
 run_time = 0.1 * ureg.millisecond
 
 # Acquisition 1: Raw Signal (no processing)
-signal_processing.analog_processing = []
-run_record = flow_cytometer.run(run_time=run_time)
+opto_electronics.analog_processing = []
+run_record = flow_cytometer.run(
+    run_time=run_time,
+    opto_electronics=opto_electronics,
+)
 ax.plot(
     run_record.signal.analog["Time"].to("microsecond"),
     run_record.signal.analog["forward"].to("millivolt"),
@@ -129,10 +131,13 @@ ax.plot(
 )
 
 # Acquisition 2: Baseline Restoration
-signal_processing.analog_processing = [
+opto_electronics.analog_processing = [
     circuits.BaselineRestorationServo(time_constant=10 * ureg.microsecond)
 ]
-run_record = flow_cytometer.run(run_time=run_time)
+run_record = flow_cytometer.run(
+    run_time=run_time,
+    opto_electronics=opto_electronics,
+)
 ax.plot(
     run_record.signal.analog["Time"].to("microsecond"),
     run_record.signal.analog["forward"].to("millivolt"),
@@ -141,10 +146,13 @@ ax.plot(
 )
 
 # Acquisition 3: Bessel LowPass Filter
-signal_processing.analog_processing = [
+opto_electronics.analog_processing = [
     circuits.BesselLowPass(cutoff_frequency=3 * ureg.megahertz, order=4, gain=2)
 ]
-run_record = flow_cytometer.run(run_time=run_time)
+run_record = flow_cytometer.run(
+    run_time=run_time,
+    opto_electronics=opto_electronics,
+)
 ax.plot(
     run_record.signal.analog["Time"].to("microsecond"),
     run_record.signal.analog["forward"].to("millivolt"),

@@ -19,11 +19,9 @@ diameter = distributions.RosinRammler(
     shape=150,
 )
 
-medium_refractive_index = 1.33 * ureg.RIU
+medium_refractive_index = 1.33
 
-refractive_index = distributions.Normal(
-    mean=1.44 * ureg.RIU, standard_deviation=0.002 * ureg.RIU
-)
+refractive_index = distributions.Normal(mean=1.44, standard_deviation=0.002)
 
 population_0 = populations.SpherePopulation(
     name="Pop 0",

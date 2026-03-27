@@ -46,8 +46,6 @@ class PopulationEvents:
         Sampling method used to generate the event block.
     name : str
         Population name.
-    population_type : str
-        Concrete class name of the population.
     scatterer_type : str
         Scatterer type label associated with the population.
     metadata : dict[str, Any], optional
@@ -58,7 +56,6 @@ class PopulationEvents:
     population: object
     sampling_method: object
     name: str
-    population_type: str
     scatterer_type: str
     metadata: dict[str, Any] = field(default_factory=dict)
 
@@ -140,7 +137,6 @@ class PopulationEvents:
             population=self.population,
             sampling_method=self.sampling_method,
             name=self.name,
-            population_type=self.population_type,
             scatterer_type=self.scatterer_type,
             metadata=dict(self.metadata),
         )
@@ -191,7 +187,7 @@ class PopulationEvents:
         dataframe = self.dataframe.copy(deep=True)
 
         dataframe.attrs["Name"] = self.name
-        dataframe.attrs["PopulationType"] = self.population_type
+        dataframe.attrs["PopulationType"] = self.scatterer_type
         dataframe.attrs["ScattererType"] = self.scatterer_type
         dataframe.attrs["SamplingMethod"] = self.sampling_method.__class__.__name__
 
@@ -744,9 +740,9 @@ class EventCollection:
             Units for the time axis (default is 'second').
         """
         ax.fill_between(
-            x=events.metadata["time_trace"].to(time_units),
+            x=events.metadata["TimeTrace"].to(time_units),
             y1=0,
-            y2=events.metadata["particles_trace"],
+            y2=events.metadata["ParticleTrace"],
             label=events.population.name,
             color=color,
             alpha=0.5,

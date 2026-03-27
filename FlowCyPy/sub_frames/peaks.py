@@ -178,12 +178,15 @@ class PeakDataFrame(pd.DataFrame):
         Dispatch plotting to 2D or 3D methods based on provided kwargs.
         """
         if "z" in kwargs:
-            return self.plot_3d(**kwargs)
+            self.plot_3d(**kwargs)
+            return plt.show()
 
         if "y" in kwargs:
-            return self.plot_2d(**kwargs)
+            self.plot_2d(**kwargs)
+            return plt.show()
 
-        return self.hist(**kwargs)
+        self.hist(**kwargs)
+        return plt.show()
 
     def standard_deviation(
         self, detector_name: str, metrics: str | slice = slice(None)
