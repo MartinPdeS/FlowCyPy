@@ -3,10 +3,9 @@ import pytest
 from TypedUnit import ureg
 
 import FlowCyPy
-from FlowCyPy.opto_electronics import Detector
+from FlowCyPy.opto_electronics import Detector, Digitizer
 from FlowCyPy.opto_electronics.source import Gaussian
 from FlowCyPy.physical_constant import PhysicalConstant
-from FlowCyPy.signal_processing import Digitizer
 
 FlowCyPy.debug_mode = True
 

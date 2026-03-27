@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from PyMieSim.units import ureg
-from FlowCyPy.signal_processing import Digitizer
+from FlowCyPy.opto_electronics import Digitizer
 
 
 def test_constructor_with_quantity_inputs():

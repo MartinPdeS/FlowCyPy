@@ -4,6 +4,7 @@ import pytest
 from FlowCyPy.signal_processing.peak_locator import (
     GlobalPeakLocator,
     SlidingWindowPeakLocator,
+    FullWindowSupport,
 )
 
 # ----------------- HELPER FUNCTIONS -----------------
@@ -94,7 +95,7 @@ def test_sliding_window_with_width_and_area():
         max_number_of_peaks=5,
         compute_width=True,
         compute_area=True,
-        threshold=0.5,
+        support=FullWindowSupport(),
     )
 
     result = locator.get_metrics(signal)
@@ -104,7 +105,7 @@ def test_sliding_window_with_width_and_area():
 
 def test_sliding_window_empty_signal():
     signal = np.zeros(100)
-    locator = SlidingWindowPeakLocator(window_size=20)
+    locator = SlidingWindowPeakLocator(window_size=20, support=FullWindowSupport())
 
     result = locator.get_metrics(signal)
 
@@ -113,7 +114,7 @@ def test_sliding_window_empty_signal():
 
 
 def test_sliding_window_rejects_non_1d_input():
-    locator = SlidingWindowPeakLocator(window_size=10)
+    locator = SlidingWindowPeakLocator(window_size=10, support=FullWindowSupport())
     bad_input = np.zeros((10, 10))
     with pytest.raises(TypeError):
         locator.compute(bad_input)

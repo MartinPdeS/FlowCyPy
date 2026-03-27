@@ -1,9 +1,8 @@
 from typing import List
-import numpy as np
 import pandas as pd
 import pint_pandas
 import PyMieSim.experiment as _PyMieSim
-from TypedUnit import Frequency, ureg
+from TypedUnit import ureg
 
 from FlowCyPy.opto_electronics.source import BaseSource
 
@@ -143,7 +142,7 @@ class ScatteringModel:
             detector_set=detector,
         )
 
-        event_dataframe.loc[:, self.detector.name] = pint_pandas.PintArray(
+        event_dataframe.dataframe.loc[:, self.detector.name] = pint_pandas.PintArray(
             experiment.get_sequential("coupling"), dtype=ureg.watt
         )
 

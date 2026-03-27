@@ -4,8 +4,8 @@ try:
 except ImportError:
     __version__ = "0.0.0"
 
-import PyMieSim.units as _
-import FlowCyPy.signal_processing.circuits as _
+import FlowCyPy.units as _
+import FlowCyPy.opto_electronics.circuits as _
 import FlowCyPy.signal_processing.classifier as _
 from .flow_cytometer import FlowCytometer
 from .fluidics import Fluidics

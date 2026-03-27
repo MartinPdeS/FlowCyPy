@@ -97,11 +97,17 @@ fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_ce
 # --------------------------------
 from FlowCyPy.opto_electronics import (
     Detector,
+    Digitizer,
     OptoElectronics,
     Amplifier,
     source,
+    circuits,
 )
 
+analog_processing = [
+    circuits.BaselineRestorationServo(time_constant=30 * ureg.microsecond),
+    circuits.BesselLowPass(cutoff_frequency=2 * ureg.megahertz, order=4, gain=2),
+]
 
 source = source.Gaussian(
     waist_z=10e-6 * ureg.meter,  # Beam waist along flow direction (z-axis)
@@ -127,6 +133,12 @@ detectors = [
     ),
 ]
 
+digitizer = Digitizer(
+    sampling_rate=60 * ureg.megahertz,
+    bit_depth=14,
+    use_auto_range=True,
+)
+
 amplifier = Amplifier(
     gain=10 * ureg.volt / ureg.ampere,
     bandwidth=10 * ureg.megahertz,
@@ -135,7 +147,11 @@ amplifier = Amplifier(
 )
 
 opto_electronics = OptoElectronics(
-    detectors=detectors, source=source, amplifier=amplifier
+    digitizer=digitizer,
+    detectors=detectors,
+    source=source,
+    amplifier=amplifier,
+    analog_processing=analog_processing,
 )
 
 
@@ -143,23 +159,10 @@ opto_electronics = OptoElectronics(
 # Step 3: Signal Processing Configuration
 # ---------------------------------------
 from FlowCyPy.signal_processing import (
-    Digitizer,
     SignalProcessing,
-    circuits,
     peak_locator,
     discriminator,
 )
-
-digitizer = Digitizer(
-    sampling_rate=60 * ureg.megahertz,
-    bit_depth=14,
-    use_auto_range=True,
-)
-
-analog_processing = [
-    circuits.BaselineRestorationServo(time_constant=30 * ureg.microsecond),
-    circuits.BesselLowPass(cutoff_frequency=2 * ureg.megahertz, order=4, gain=2),
-]
 
 triggering = discriminator.DynamicWindow(
     trigger_channel="forward",
@@ -172,8 +175,6 @@ triggering = discriminator.DynamicWindow(
 peak_algo = peak_locator.GlobalPeakLocator(compute_width=False)
 
 signal_processing = SignalProcessing(
-    digitizer=digitizer,
-    analog_processing=analog_processing,
     discriminator=triggering,
     peak_algorithm=peak_algo,
 )
@@ -184,13 +185,15 @@ signal_processing = SignalProcessing(
 from FlowCyPy import FlowCytometer
 
 cytometer = FlowCytometer(
-    opto_electronics=opto_electronics,
     fluidics=fluidics,
-    signal_processing=signal_processing,
     background_power=0.001 * ureg.milliwatt,
 )
 
-run_record = cytometer.run(run_time=10 * ureg.millisecond)
+run_record = cytometer.run(
+    opto_electronics=opto_electronics,
+    signal_processing=signal_processing,
+    run_time=1 * ureg.millisecond,
+)
 
 _ = run_record.event_collection.plot(x="Diameter")
 
@@ -200,15 +203,15 @@ _ = run_record.event_collection.plot(x="Diameter")
 _ = run_record.event_collection.plot(x="forward")
 
 
-# # %%
-# # Plot raw analog signals
-# # -----------------------
+# %%
+# Plot raw analog signals
+# -----------------------
 _ = run_record.plot_analog(figure_size=(12, 8))
 
 
-# # %%
-# # Step 6: Plot Triggered Analog Segments
-# # --------------------------------------
+# %%
+# Step 6: Plot Triggered Analog Segments
+# --------------------------------------
 _ = run_record.plot_digital(figure_size=(12, 8))
 
 

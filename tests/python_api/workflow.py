@@ -17,13 +17,14 @@ from FlowCyPy.opto_electronics import (
     OptoElectronics,
     Amplifier,
     source,
+    Digitizer,
+    circuits,
 )
 from FlowCyPy.signal_processing import (
-    Digitizer,
     SignalProcessing,
-    circuits,
     peak_locator,
     discriminator,
+    classifier,
 )
 
 
@@ -101,11 +102,8 @@ def scatterer_collection():
 
 
 @pytest.fixture
-def flow_cytometer(
-    detector_0, detector_1, scatterer_collection, flow_cell, amplifier, digitizer
-):
-    """Fixture for creating a default Flow Cytometer."""
-
+def opto_electronics(detector_0, detector_1, amplifier, digitizer):
+    """Fixture for creating a default optical source."""
     beam = source.Gaussian(
         waist_z=10 * ureg.micrometer,
         waist_y=60 * ureg.micrometer,
@@ -113,20 +111,21 @@ def flow_cytometer(
         optical_power=100e-3 * ureg.watt,
     )
 
-    opto_electronics = OptoElectronics(
-        detectors=[detector_0, detector_1], source=beam, amplifier=amplifier
-    )
-
-    fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
-
-    signal_processing = SignalProcessing(
+    return OptoElectronics(
+        detectors=[detector_0, detector_1],
+        source=beam,
+        amplifier=amplifier,
         digitizer=digitizer,
     )
 
+
+@pytest.fixture
+def flow_cytometer(scatterer_collection, flow_cell):
+    """Fixture for creating a default Flow Cytometer."""
+    fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
+
     return FlowCytometer(
-        opto_electronics=opto_electronics,
         fluidics=fluidics,
-        signal_processing=signal_processing,
         background_power=0.01 * ureg.milliwatt,
     )
 
@@ -134,9 +133,13 @@ def flow_cytometer(
 # ----------------- UNIT TESTS -----------------
 
 
-def test_flow_cytometer_acquisition(flow_cytometer):
+def test_flow_cytometer_acquisition(flow_cytometer, opto_electronics):
     """Test if the Flow Cytometer generates a non-zero acquisition signal."""
-    result = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
+    result = flow_cytometer.run(
+        run_time=0.05 * ureg.millisecond,
+        opto_electronics=opto_electronics,
+        signal_processing=SignalProcessing(),
+    )
 
     assert (
         result.signal.analog["default"].units == ureg.volt
@@ -147,9 +150,13 @@ def test_flow_cytometer_acquisition(flow_cytometer):
     ), "Acquisition signal variance is zero, indicating no noise added."
 
 
-def test_flow_cytometer_multiple_detectors(flow_cytometer):
+def test_flow_cytometer_multiple_detectors(flow_cytometer, opto_electronics):
     """Ensure that both detectors generate non-zero signals."""
-    run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
+    run_record = flow_cytometer.run(
+        run_time=0.05 * ureg.millisecond,
+        opto_electronics=opto_electronics,
+        signal_processing=SignalProcessing(),
+    )
 
     signal_0 = run_record.signal.analog["default"]
     signal_1 = run_record.signal.analog["default"]
@@ -159,9 +166,13 @@ def test_flow_cytometer_multiple_detectors(flow_cytometer):
 
 
 @patch("matplotlib.pyplot.show")
-def test_flow_cytometer_plot(mock_show, flow_cytometer, digitizer):
+def test_flow_cytometer_plot(mock_show, flow_cytometer, digitizer, opto_electronics):
     """Test if the flow cytometer plots without error."""
-    run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
+    run_record = flow_cytometer.run(
+        run_time=0.05 * ureg.millisecond,
+        opto_electronics=opto_electronics,
+        signal_processing=SignalProcessing(),
+    )
 
     run_record.plot_analog()
     plt.close()
@@ -171,9 +182,13 @@ def test_flow_cytometer_plot(mock_show, flow_cytometer, digitizer):
     plt.close()
 
 
-def test_flow_cytometer_triggered_acquisition(flow_cytometer):
+def test_flow_cytometer_triggered_acquisition(flow_cytometer, opto_electronics):
     """Test triggered acquisition with a defined threshold."""
-    run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
+    run_record = flow_cytometer.run(
+        run_time=0.05 * ureg.millisecond,
+        opto_electronics=opto_electronics,
+        signal_processing=SignalProcessing(),
+    )
 
     _discriminator = discriminator.DynamicWindow(
         trigger_channel="default",
@@ -191,9 +206,13 @@ def test_flow_cytometer_triggered_acquisition(flow_cytometer):
     assert len(triggered_signal) > 0, "Triggered acquisition has no signal data."
 
 
-def test_flow_cytometer_signal_processing(flow_cytometer):
+def test_flow_cytometer_signal_processing(flow_cytometer, opto_electronics):
     """Test filtering and baseline restoration on the acquired signal."""
-    run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
+    run_record = flow_cytometer.run(
+        run_time=0.05 * ureg.millisecond,
+        opto_electronics=opto_electronics,
+        signal_processing=SignalProcessing(),
+    )
 
     _discriminator = discriminator.DynamicWindow(
         trigger_channel="default",
@@ -208,14 +227,18 @@ def test_flow_cytometer_signal_processing(flow_cytometer):
     assert np.std(triggered_signal["default"]) > 0, "Filtered signal has zero variance."
 
 
-def test_peak_detection(flow_cytometer, digitizer):
+def test_peak_detection(flow_cytometer, digitizer, opto_electronics):
     """Ensure peak detection works correctly on the triggered acquisition."""
-    flow_cytometer.signal_processing.analog_processing = [
+    opto_electronics.analog_processing = [
         circuits.BaselineRestorationServo(time_constant=10 * ureg.microsecond),
         circuits.BesselLowPass(cutoff_frequency=1 * ureg.megahertz, order=4, gain=2),
     ]
 
-    run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
+    run_record = flow_cytometer.run(
+        run_time=0.05 * ureg.millisecond,
+        opto_electronics=opto_electronics,
+        signal_processing=SignalProcessing(),
+    )
 
     _discriminator = discriminator.DynamicWindow(
         threshold="3 sigma",
@@ -241,9 +264,13 @@ def test_peak_detection(flow_cytometer, digitizer):
 
 
 @patch("matplotlib.pyplot.show")
-def test_peak_plot(mock_show, flow_cytometer, digitizer):
+def test_peak_plot(mock_show, flow_cytometer, digitizer, opto_electronics):
     """Ensure peak plots render correctly."""
-    run_record = flow_cytometer.run(run_time=0.05 * ureg.millisecond)
+    run_record = flow_cytometer.run(
+        run_time=0.05 * ureg.millisecond,
+        opto_electronics=opto_electronics,
+        signal_processing=SignalProcessing(),
+    )
     run_record.plot_analog()
 
     _discriminator = discriminator.DynamicWindow(

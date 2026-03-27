@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import FlowCyPy.units as _
-from . import circuits
 from . import discriminator
 from . import peak_locator
 
@@ -16,9 +15,6 @@ class SignalProcessing:
 
     Parameters
     ----------
-    analog_processing : list of circuits.SignalProcessor
-        List of analog signal processing components (e.g., amplifiers, filters) applied to
-        simulated voltage traces before digitization.
     digitizer : Digitizer
         Digitization module that converts analog voltage signals to digital values using
         specified bit depth, voltage range, and sampling parameters.
@@ -32,10 +28,8 @@ class SignalProcessing:
 
     def __init__(
         self,
-        analog_processing: list[circuits.BaseCircuit] = (),
         discriminator: discriminator.BaseDiscriminator = None,
         peak_algorithm: peak_locator.BasePeakLocator = None,
     ):
-        self.analog_processing = analog_processing
         self.discriminator = discriminator
         self.peak_algorithm = peak_algorithm

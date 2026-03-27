@@ -47,7 +47,7 @@ class FlowCytometer:
         self.fluidics = fluidics
         self.background_power = background_power
 
-    def _copy_signal_dict(self, signal_dict: dict) -> dict:
+    def copy_dict(self, dictionnary: dict) -> dict:
         """
         Create a safe working copy of a signal dictionary.
 
@@ -63,7 +63,7 @@ class FlowCytometer:
         """
         copied_signal_dict = {}
 
-        for key, value in signal_dict.items():
+        for key, value in dictionnary.items():
             if hasattr(value, "copy"):
                 copied_signal_dict[key] = value.copy()
             else:
@@ -313,40 +313,6 @@ class FlowCytometer:
 
         return event_collection
 
-    def _initialize_optical_signal_dict(
-        self,
-        run_time: Time,
-        opto_electronics: OptoElectronics,
-    ) -> dict:
-        """
-        Initialize detector optical power traces.
-
-        Parameters
-        ----------
-        run_time : Time
-            Acquisition duration.
-        opto_electronics : OptoElectronics
-            Opto electronic configuration.
-
-        Returns
-        -------
-        dict
-            Optical power signal dictionary.
-        """
-        signal_dict = {}
-        signal_dict["Time"] = opto_electronics.digitizer.get_time_series(
-            run_time=run_time
-        )
-
-        number_of_elements = len(signal_dict["Time"])
-
-        for detector in opto_electronics.detectors:
-            signal_dict[detector.name] = (
-                np.ones(number_of_elements) * self.background_power
-            )
-
-        return signal_dict
-
     def run_explicit_models(
         self,
         event_collection: EventCollection,
@@ -436,126 +402,6 @@ class FlowCytometer:
                 detector_power_trace = particle_trace * mean_amplitude
                 signal_dict[detector.name] += detector_power_trace
 
-    def _apply_source_noise_to_optical_signals(
-        self,
-        signal_dict: dict,
-        opto_electronics: OptoElectronics,
-    ) -> dict:
-        """
-        Apply source level optical noise processes.
-
-        Parameters
-        ----------
-        signal_dict : dict
-            Optical power signals.
-        opto_electronics : OptoElectronics
-            Opto electronic configuration.
-
-        Returns
-        -------
-        dict
-            Updated optical power signals.
-        """
-        if (
-            opto_electronics.source.include_rin_noise
-            and opto_electronics.source.rin is not None
-        ):
-            signal_dict = opto_electronics.source.add_rin_to_signal_dict(
-                signal_dict=signal_dict,
-            )
-
-        if opto_electronics.source.include_shot_noise:
-            for detector in opto_electronics.detectors:
-                signal_dict[detector.name] = (
-                    opto_electronics.source.add_shot_noise_to_signal(
-                        signal=signal_dict[detector.name],
-                        time=signal_dict["Time"],
-                    )
-                )
-
-        return signal_dict
-
-    def _convert_optical_power_to_photocurrent(
-        self,
-        signal_dict: dict,
-        opto_electronics: OptoElectronics,
-    ) -> dict:
-        """
-        Convert detector optical power traces to photocurrent traces.
-
-        Parameters
-        ----------
-        signal_dict : dict
-            Optical power signal dictionary.
-        opto_electronics : OptoElectronics
-            Opto electronic configuration.
-
-        Returns
-        -------
-        dict
-            Photocurrent signal dictionary.
-        """
-        for detector in opto_electronics.detectors:
-            signal_dict[detector.name] *= detector.responsivity.to("ampere / watt")
-
-        return signal_dict
-
-    def _apply_detector_current_noise(
-        self,
-        signal_dict: dict,
-        opto_electronics: OptoElectronics,
-    ) -> dict:
-        """
-        Apply detector current noise to photocurrent traces.
-
-        Parameters
-        ----------
-        signal_dict : dict
-            Photocurrent signal dictionary.
-        opto_electronics : OptoElectronics
-            Opto electronic configuration.
-
-        Returns
-        -------
-        dict
-            Updated photocurrent signal dictionary.
-        """
-        for detector in opto_electronics.detectors:
-            signal_dict[detector.name] = detector.apply_dark_current_noise(
-                signal=signal_dict[detector.name],
-                bandwidth=opto_electronics.digitizer.bandwidth,
-            )
-
-        return signal_dict
-
-    def _convert_photocurrent_to_voltage(
-        self,
-        signal_dict: dict,
-        opto_electronics: OptoElectronics,
-    ) -> dict:
-        """
-        Convert photocurrent traces to analog voltage traces.
-
-        Parameters
-        ----------
-        signal_dict : dict
-            Photocurrent signal dictionary.
-        opto_electronics : OptoElectronics
-            Opto electronic configuration.
-
-        Returns
-        -------
-        dict
-            Analog voltage signal dictionary.
-        """
-        for detector in opto_electronics.detectors:
-            signal_dict[detector.name] = opto_electronics.amplifier.amplify(
-                signal=signal_dict[detector.name],
-                sampling_rate=opto_electronics.digitizer.sampling_rate,
-            )
-
-        return signal_dict
-
     def compute_analog(
         self,
         run_time: Time,
@@ -579,104 +425,24 @@ class FlowCytometer:
         dict
             Analog voltage signal dictionary.
         """
-        signal_dict = self._initialize_optical_signal_dict(
+        power_signal_dict = opto_electronics.initialize_optical_signal_dict(
             run_time=run_time,
-            opto_electronics=opto_electronics,
+            background_power=self.background_power,
         )
 
         self.run_explicit_models(
             event_collection=event_collection,
-            signal_dict=signal_dict,
+            signal_dict=power_signal_dict,
             opto_electronics=opto_electronics,
         )
 
         self.run_gamma_models(
             event_collection=event_collection,
-            signal_dict=signal_dict,
+            signal_dict=power_signal_dict,
             opto_electronics=opto_electronics,
         )
 
-        signal_dict = self._apply_source_noise_to_optical_signals(
-            signal_dict=signal_dict,
-            opto_electronics=opto_electronics,
-        )
-
-        signal_dict = self._convert_optical_power_to_photocurrent(
-            signal_dict=signal_dict,
-            opto_electronics=opto_electronics,
-        )
-
-        signal_dict = self._apply_detector_current_noise(
-            signal_dict=signal_dict,
-            opto_electronics=opto_electronics,
-        )
-
-        signal_dict = self._convert_photocurrent_to_voltage(
-            signal_dict=signal_dict,
-            opto_electronics=opto_electronics,
-        )
-
-        return signal_dict
-
-    def _apply_analog_processing(
-        self,
-        analog_dict: dict,
-        signal_processing: SignalProcessing,
-        opto_electronics: OptoElectronics,
-    ) -> dict:
-        """
-        Apply analog post processing circuits to an analog signal dictionary.
-
-        Parameters
-        ----------
-        analog_dict : dict
-            Analog voltage signals.
-        signal_processing : SignalProcessing
-            Processing configuration.
-        opto_electronics : OptoElectronics
-            Opto electronic configuration.
-
-        Returns
-        -------
-        dict
-            Processed analog signal dictionary.
-        """
-        processed_analog_dict = self._copy_signal_dict(analog_dict)
-
-        for detector in opto_electronics.detectors:
-            for circuit in signal_processing.analog_processing:
-                processed_analog_dict[detector.name] = circuit.process(
-                    signal=processed_analog_dict[detector.name],
-                    sampling_rate=opto_electronics.digitizer.sampling_rate,
-                )
-
-        return processed_analog_dict
-
-    def _run_discriminator(
-        self,
-        analog_dict: dict,
-        signal_processing: SignalProcessing,
-    ) -> Optional[dict]:
-        """
-        Run the discriminator on analog voltage signals.
-
-        Parameters
-        ----------
-        analog_dict : dict
-            Analog voltage signals.
-        signal_processing : SignalProcessing
-            Processing configuration.
-
-        Returns
-        -------
-        dict or None
-            Triggered analog segment dictionary, or ``None`` if no discriminator
-            is configured.
-        """
-        if signal_processing.discriminator is None:
-            return None
-
-        return signal_processing.discriminator.run_with_dict(analog_dict)
+        return opto_electronics.convert_optical_power_to_voltage(power_signal_dict)
 
     def _digitize_triggered_segments(
         self,
@@ -776,22 +542,21 @@ class FlowCytometer:
         )
 
         run_record.signal.analog = AcquisitionDataFrame._construct_from_signal_dict(
-            signal_dict=self._copy_signal_dict(analog_dict),
+            signal_dict=self.copy_dict(analog_dict),
         )
 
-        processed_analog_dict = self._apply_analog_processing(
+        processed_analog_dict = opto_electronics.apply_analog_processing(
             analog_dict=analog_dict,
-            signal_processing=signal_processing,
-            opto_electronics=opto_electronics,
         )
 
         run_record.signal.analog = AcquisitionDataFrame._construct_from_signal_dict(
             signal_dict=processed_analog_dict,
         )
 
-        triggered_analog_dict = self._run_discriminator(
-            analog_dict=processed_analog_dict,
-            signal_processing=signal_processing,
+        triggered_analog_dict = (
+            signal_processing.discriminator.run_with_dict(analog_dict)
+            if signal_processing.discriminator is not None
+            else None
         )
 
         if triggered_analog_dict is None:
