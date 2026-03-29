@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 #include <cstdio> // for printf
+#include <algorithm> // for std::minmax_element
 
 #include "threshold.h"
 #include "trigger.h"
