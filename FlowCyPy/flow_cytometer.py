@@ -209,9 +209,19 @@ class FlowCytometer:
             Triggered digital segment dictionary.
         """
         if opto_electronics.digitizer.use_auto_range:
-            opto_electronics.digitizer.capture_signal(
-                processed_analog_dict[digital_processing.discriminator.trigger_channel]
-            )
+
+            min_list = []
+            max_list = []
+            for detector in opto_electronics.detectors:
+                min_, max_ = (
+                    processed_analog_dict[detector.name].min(),
+                    processed_analog_dict[detector.name].max(),
+                )
+                min_list.append(min_)
+                max_list.append(max_)
+
+            opto_electronics.digitizer.min_voltage = min(min_list)
+            opto_electronics.digitizer.max_voltage = max(max_list)
 
         return opto_electronics.digitizer.digitize_data_dict(triggered_analog_dict)
 

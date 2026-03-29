@@ -33,15 +33,15 @@ from FlowCyPy.fluidics import (
 from FlowCyPy.fluidics.populations import SpherePopulation
 from FlowCyPy.opto_electronics import (
     Detector,
+    circuits,
+    Digitizer,
     OptoElectronics,
     Amplifier,
     source,
 )
-from FlowCyPy.signal_processing import (
-    Digitizer,
-    SignalProcessing,
+from FlowCyPy.digital_processing import (
+    DigitalProcessing,
     peak_locator,
-    circuits,
     discriminator,
 )
 
@@ -81,12 +81,20 @@ def compute_signal_statistics(data: np.ndarray) -> dict:
 
 
 def get_peaks(
-    flow_cytometer: FlowCytometer, run_time=1.5 * ureg.millisecond, debug_mode=False
+    flow_cytometer: FlowCytometer,
+    opto_electronics,
+    digital_processing,
+    run_time=1.5 * ureg.millisecond,
+    debug_mode=False,
 ):
     """
     Run the flow cytometer and return the detected peaks.
     """
-    results = flow_cytometer.run(run_time=run_time)
+    results = flow_cytometer.run(
+        opto_electronics=opto_electronics,
+        digital_processing=digital_processing,
+        run_time=run_time,
+    )
 
     if debug_mode:
         results.plot_analog()
@@ -99,6 +107,8 @@ def get_peaks(
 
 def run_experiment(
     flow_cytometer: FlowCytometer,
+    opto_electronics,
+    digital_processing,
     bead_diameter,
     illumination_power,
     concentration,
@@ -117,10 +127,12 @@ def run_experiment(
     )
 
     flow_cytometer.fluidics.scatterer_collection.populations = [population]
-    flow_cytometer.opto_electronics.source.optical_power = illumination_power
+    opto_electronics.source.optical_power = illumination_power
 
     return get_peaks(
         flow_cytometer=flow_cytometer,
+        opto_electronics=opto_electronics,
+        digital_processing=digital_processing,
         run_time=run_time,
         debug_mode=debug_mode,
     )
@@ -286,8 +298,14 @@ detector_0 = Detector(
     dark_current=0 * ureg.ampere,
 )
 
+baseline_restoration = circuits.BaselineRestorationServo(
+    time_constant=10 * ureg.microsecond
+)
+
 opto_electronics = OptoElectronics(
     detectors=[detector_0],
+    digitizer=digitizer,
+    analog_processing=[baseline_restoration],
     source=illumination_source,
     amplifier=amplifier,
 )
@@ -302,21 +320,14 @@ dynamic_window_discriminator = discriminator.DynamicWindow(
     post_buffer=200,
 )
 
-baseline_restoration = circuits.BaselineRestorationServo(
-    time_constant=10 * ureg.microsecond
-)
 
-signal_processing = SignalProcessing(
-    digitizer=digitizer,
-    analog_processing=[baseline_restoration],
+digital_processing = DigitalProcessing(
     peak_algorithm=peak_algorithm,
     discriminator=dynamic_window_discriminator,
 )
 
 flow_cytometer = FlowCytometer(
-    opto_electronics=opto_electronics,
     fluidics=fluidics,
-    signal_processing=signal_processing,
     background_power=illumination_source.optical_power * 0.00,
 )
 
@@ -344,6 +355,8 @@ for index, illumination_power in enumerate(illumination_powers):
 
     peaks = run_experiment(
         flow_cytometer=flow_cytometer,
+        opto_electronics=opto_electronics,
+        digital_processing=digital_processing,
         bead_diameter=bead_diameter,
         illumination_power=illumination_power,
         concentration=concentration,

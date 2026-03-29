@@ -80,7 +80,7 @@ ri_dist = distributions.Normal(
 population_1 = populations.SpherePopulation(
     name="Pop 1",
     medium_refractive_index=medium_refractive_index,
-    concentration=5e17 * ureg.particle / ureg.milliliter,
+    concentration=5e11 * ureg.particle / ureg.milliliter,
     diameter=diameter_dist,
     refractive_index=ri_dist,
     sampling_method=populations.GammaModel(number_of_samples=5_000),
@@ -88,7 +88,7 @@ population_1 = populations.SpherePopulation(
 
 scatterer_collection.add_population(population_0, population_1)
 
-scatterer_collection.dilute(factor=800)
+scatterer_collection.dilute(factor=80)
 
 fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
@@ -122,13 +122,14 @@ detectors = [
     Detector(
         name="side",
         phi_angle=90 * ureg.degree,
-        numerical_aperture=0.3,
+        numerical_aperture=1.1,
         responsivity=1 * ureg.ampere / ureg.watt,
     ),
     Detector(
         name="forward",
         phi_angle=0 * ureg.degree,
         numerical_aperture=0.3,
+        cache_numerical_aperture=0.1,
         responsivity=1 * ureg.ampere / ureg.watt,
     ),
 ]
@@ -158,7 +159,7 @@ opto_electronics = OptoElectronics(
 # %%
 # Step 3: Signal Processing Configuration
 # ---------------------------------------
-from FlowCyPy.signal_processing import (
+from FlowCyPy.digital_processing import (
     DigitalProcessing,
     peak_locator,
     discriminator,
@@ -174,7 +175,7 @@ triggering = discriminator.DynamicWindow(
 
 peak_algo = peak_locator.GlobalPeakLocator(compute_width=False)
 
-signal_processing = DigitalProcessing(
+digital_processing = DigitalProcessing(
     discriminator=triggering,
     peak_algorithm=peak_algo,
 )
@@ -191,7 +192,7 @@ cytometer = FlowCytometer(
 
 run_record = cytometer.run(
     opto_electronics=opto_electronics,
-    signal_processing=signal_processing,
+    digital_processing=digital_processing,
     run_time=1 * ureg.millisecond,
 )
 
@@ -224,7 +225,7 @@ _ = run_record.peaks.plot(x=("forward", "Height"))
 # %%
 # Step 8: Classify Events from Peak Features
 # ------------------------------------------
-from FlowCyPy.signal_processing.classifier import KmeansClassifier
+from FlowCyPy.digital_processing.classifier import KmeansClassifier
 
 classifier = KmeansClassifier(number_of_clusters=2)
 

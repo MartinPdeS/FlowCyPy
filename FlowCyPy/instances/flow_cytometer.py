@@ -44,9 +44,7 @@ class FacsCanto:
         self.include_rin_noise = include_rin_noise
 
         self.instance = FlowCytometer(
-            opto_electronics=self.get_optoelectronics(),
             fluidics=self.get_fluidics(),
-            digital_processing=self.get_digital_processing(),
             background_power=background_power,
         )
 
@@ -86,7 +84,11 @@ class FacsCanto:
         RunRecord
             Results of the simulation run
         """
-        return self.instance.run(run_time=run_time)
+        return self.instance.run(
+            run_time=run_time,
+            opto_electronics=self.get_optoelectronics(),
+            digital_processing=self.get_digital_processing(),
+        )
 
     def get_fluidics(self) -> fluidics.Fluidics:
         """
