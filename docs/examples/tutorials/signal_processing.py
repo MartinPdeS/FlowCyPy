@@ -21,7 +21,6 @@ from TypedUnit import ureg
 from FlowCyPy import FlowCytometer
 from FlowCyPy.fluidics import distributions
 
-# Import necessary components from FlowCyPy
 from FlowCyPy.fluidics import (
     FlowCell,
     Fluidics,
