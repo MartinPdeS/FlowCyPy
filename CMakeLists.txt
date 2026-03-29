@@ -1,0 +1,148 @@
+# --------------------- CMake configuration --------------------
+cmake_minimum_required(VERSION 3.20)
+set(CMAKE_OSX_DEPLOYMENT_TARGET "15.0" CACHE STRING "Minimum OS X deployment version")
+project(FlowCyPy LANGUAGES CXX)
+
+# CMake settings
+set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Type of build")
+# --------------------- CMake configuration --------------------
+
+
+# --------------------- Set the output directory for libraries --------------------
+set(LOCAL_CXX_DIR "${PROJECT_NAME}/cpp")
+set(LOCAL_BIN_DIR "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}/binary")
+include_directories(${LOCAL_CXX_DIR})
+# --------------------- Set the output directory for libraries --------------------
+
+# --------------------- Platform-specific compiler and linker options --------------------
+# if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+#     set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp" CACHE STRING "")
+#     set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "")
+#     find_library(OpenMP_omp_LIBRARY omp HINTS $ENV{LIBOMP_PREFIX}/lib /opt/homebrew/opt/libomp/lib /usr/local/opt/libomp/lib)
+#     if(OpenMP_omp_LIBRARY)
+#         set(OpenMP_CXX_LIBRARIES "${OpenMP_omp_LIBRARY}" CACHE STRING "")
+#     endif()
+# endif()
+
+
+
+# --- macOS: use shared Homebrew libomp, not a vendored copy -------------
+if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    if(DEFINED ENV{HOMEBREW_PREFIX})
+        set(OpenMP_ROOT "$ENV{HOMEBREW_PREFIX}/opt/libomp")
+    else()
+        set(OpenMP_ROOT "/opt/homebrew/opt/libomp")
+    endif()
+
+    set(CMAKE_PREFIX_PATH "${OpenMP_ROOT};${CMAKE_PREFIX_PATH}")
+endif()
+
+find_package(OpenMP REQUIRED)
+
+add_library(flowcypy_openmp INTERFACE)
+
+target_link_libraries(flowcypy_openmp INTERFACE OpenMP::OpenMP_CXX)
+
+if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    target_include_directories(flowcypy_openmp INTERFACE "${OpenMP_ROOT}/include")
+endif()
+
+
+
+
+# Platform-specific settings for static linking
+if (WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    message("MinGW detected on Windows")
+    set(STATIC_LINK_OPTIONS "-static")
+    add_compile_options(-fopenmp)
+    add_link_options(-static -fopenmp -Wl,--whole-archive -lgomp -Wl,--no-whole-archive)
+endif()
+
+if (WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    add_compile_options(/W4 /permissive- /Zc:preprocessor)
+else()
+    add_compile_options(-Wall -Wextra -pedantic-errors -Wno-unused-parameter)
+endif()
+# --------------------- Platform-specific compiler and linker options --------------------
+
+# --------------------- Find dependencies and compile options --------------------
+find_package(OpenMP REQUIRED)
+find_package(Python REQUIRED COMPONENTS Interpreter Development.Module)
+find_package(pybind11 CONFIG REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_search_module(FFTW REQUIRED fftw3 IMPORTED_TARGET)
+# --------------------- Find dependencies and compile options --------------------
+
+# ----------------- logging build configuration --------------------
+message(STATUS "")
+message(STATUS "==================== Build configuration ====================")
+
+message(STATUS "Compiler information")
+message(STATUS "  C compiler           : ${CMAKE_C_COMPILER}")
+message(STATUS "  C compiler ID        : ${CMAKE_C_COMPILER_ID}")
+message(STATUS "  C compiler version   : ${CMAKE_C_COMPILER_VERSION}")
+
+message(STATUS "  CXX compiler         : ${CMAKE_CXX_COMPILER}")
+message(STATUS "  CXX compiler ID      : ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "  CXX compiler version : ${CMAKE_CXX_COMPILER_VERSION}")
+
+message(STATUS "  Fortran compiler     : ${CMAKE_Fortran_COMPILER}")
+message(STATUS "  Fortran ID           : ${CMAKE_Fortran_COMPILER_ID}")
+message(STATUS "  Fortran version      : ${CMAKE_Fortran_COMPILER_VERSION}")
+
+message(STATUS "")
+message(STATUS "OpenMP configuration")
+message(STATUS "  OpenMP detected      : ${OpenMP_FOUND}")
+message(STATUS "  OpenMP CXX found     : ${OpenMP_CXX_FOUND}")
+message(STATUS "  OpenMP flags         : ${OpenMP_CXX_FLAGS}")
+message(STATUS "  OpenMP include dirs  : ${OpenMP_CXX_INCLUDE_DIRS}")
+message(STATUS "  OpenMP libraries     : ${OpenMP_CXX_LIBRARIES}")
+message(STATUS "  OpenMP lib names     : ${OpenMP_CXX_LIB_NAMES}")
+message(STATUS "  OpenMP version       : ${OpenMP_CXX_VERSION}")
+
+message(STATUS "")
+message(STATUS "FFTW3_FOUND            : ${FFTW_FOUND}")
+message(STATUS "FFTW3_INCLUDE_DIRS     : ${FFTW_INCLUDE_DIRS}")
+message(STATUS "FFTW3_LIBRARIES        : ${FFTW_LIBRARIES}")
+
+message(STATUS "")
+message(STATUS "Python configuration")
+message(STATUS "  Python executable    : ${Python_EXECUTABLE}")
+message(STATUS "  Python version       : ${PYBIND11_PYTHON_VERSION}")
+message(STATUS "  Python include dir   : ${Python_INCLUDE_DIRS}")
+message(STATUS "  Python site packages : ${Python_SITELIB}")
+
+message(STATUS "")
+message(STATUS "FlowCyPy integration")
+message(STATUS "  FlowCyPy version     : ${PACKAGE_VERSION}")
+message(STATUS "  FlowCyPy include dir : ${LOCAL_CXX_DIR}")
+
+message(STATUS "")
+message(STATUS "Install destination")
+message(STATUS "  Binary output path   : ${LOCAL_BIN_DIR}")
+
+message(STATUS "==============================================================")
+message(STATUS "")
+# ----------------- logging build configuration --------------------
+
+# ----------------- collect subdirectories --------------------
+add_subdirectory(FlowCyPy/cpp/utils)                                 # utils
+add_subdirectory(FlowCyPy/cpp/pint)                                  # pint
+
+add_subdirectory(FlowCyPy/cpp/fluidics/distributions)                # distributions
+add_subdirectory(FlowCyPy/cpp/fluidics/populations)                  # populations
+add_subdirectory(FlowCyPy/cpp/fluidics/flow_cell)                    # flow_cell
+
+add_subdirectory(FlowCyPy/cpp/opto_electronics/source)               # source
+add_subdirectory(FlowCyPy/cpp/opto_electronics/amplifier)            # amplifier
+add_subdirectory(FlowCyPy/cpp/opto_electronics/digitizer)           # digitizer
+add_subdirectory(FlowCyPy/cpp/opto_electronics/circuits)            # circuits
+
+add_subdirectory(FlowCyPy/cpp/digital_processing/discriminator)       # discriminator
+add_subdirectory(FlowCyPy/cpp/digital_processing/peak_locator)        # peak_locator
+add_subdirectory(FlowCyPy/cpp/digital_processing/classifier)          # classifier
+# ----------------- collect subdirectories --------------------

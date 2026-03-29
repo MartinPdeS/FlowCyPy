@@ -1,0 +1,118 @@
+[build-system]
+requires = ["scikit-build-core>=0.3.3", "pybind11==3.0.1", "setuptools_scm[toml]>=8.0"]
+build-backend = "scikit_build_core.build"
+
+[tool.scikit-build]
+build-dir = ".skbuild/{wheel_tag}"
+metadata.version.provider = "scikit_build_core.metadata.setuptools_scm"
+logging.level = "INFO"
+wheel.exclude = ["FlowCyPy/cpp"]
+install.strip = false
+sdist.include = ["FlowCyPy/binary/*"]
+sdist.exclude = [
+    "tests",
+    "docs",
+    ".git*",
+    "developments",
+]
+
+[tool.setuptools_scm]
+write_to = "FlowCyPy/_version.py"
+version_scheme = "only-version"
+local_scheme = "no-local-version"
+
+[project]
+name = "FlowCyPy"
+dynamic = ["version"]
+description = "A package for light scattering computation."
+license = {file = "LICENSE"}
+readme = "README.rst"
+requires-python = ">=3.11"
+authors = [{ name="Martin Poinsinet de Sivry-Houle", email="martin.poinsinet.de.sivry@gmail.com"}]
+classifiers = [
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
+    'Programming Language :: Python :: Implementation :: CPython',
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Science/Research',
+    'Intended Audience :: Developers',
+    'Topic :: Scientific/Engineering :: Physics',
+    'Topic :: Scientific/Engineering :: Mathematics',
+    'Topic :: Scientific/Engineering :: Visualization',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'License :: OSI Approved :: MIT License',
+    'Operating System :: OS Independent',
+    'Framework :: Jupyter',
+    'Framework :: Sphinx'
+]
+
+dependencies = [
+    "setuptools_scm[toml] >=8,<10",
+    'pandas >=2.2,<4.0',
+    'seaborn ~=0.13',
+    "pydantic ~=2.9",
+    "numpy >=2.0",
+    'pint ~=0.24',
+    'PyMieSim==5.0.2',
+    'MPSPlots >=1.8.1',
+    "TypedUnit"
+]
+
+keywords = [
+    "flow cytometry", "light scattering", "mie theory", "backscatter",
+    "rayleigh scattering", "biophotonics", "nanoparticle", "microfluidics",
+    "fluorescence", "biomedical imaging", "spectroscopy", "optical simulation",
+    "machine learning", "signal processing", "photonics", "cytometry",
+    "optical sensors", "laser scattering", "particle detection", "flow analysis"
+]
+
+
+
+[project.optional-dependencies]
+testing = [
+    "pytest>=7",
+    "pytest-cov>=2.0",
+    "pytest-json-report ==1.5.0",
+    "coverage==7.13.2"
+]
+
+documentation = [
+    "numpydoc ==1.10.0",
+    "sphinx >=5.1.1",
+    "sphinx-rtd-theme ==3.1.0",
+    "sphinx-gallery ==0.20.0",
+    "pydata-sphinx-theme ==0.15.4",
+]
+
+dev = [
+    "flake8 ==7.3.0",
+]
+
+[tool.cibuildwheel]
+build-frontend = "build"
+test-extras = ["testing"]
+
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64"]
+before-build = "yum install -y fftw-devel"
+build = ["cp311-manylinux*", "cp312-manylinux*", "cp313-manylinux*", ]
+manylinux-x86_64-image = "manylinux_2_28"
+repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
+test-command = "python -m pytest {project}/tests --config-file={project}/pytest.ini"
+
+[tool.cibuildwheel.macos]
+archs = ["arm64"]
+before-build = "brew install fftw"
+build = ["cp311-*", "cp312-*", "cp313-*"]
+repair-wheel-command = "delocate-wheel -w {dest_dir} -v {wheel}"  # --exclude=libomp.dylib
+test-command = 'python -m pytest {project}/tests --config-file={project}/pytest.ini'  # DYLD_PRINT_LIBRARIES=NO
+
+
+[tool.cibuildwheel.windows]
+archs = ["AMD64"]
+build = ["cp311-*", "cp312-*", "cp313-*"]
+test-command = 'python -m pytest {project}/tests --config-file={project}/pytest.ini'
