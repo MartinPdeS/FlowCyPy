@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="z_64ecc9cd9f1c6130_scatterer_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.1">coverage.py v7.13.1</a>,
-            created at 2026-03-29 16:01 +0000
+            created at 2026-03-29 16:11 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -92,7 +92,7 @@
     <p class="run"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t"><span class="key">from</span> <span class="nam">TypedUnit</span> <span class="key">import</span> <span class="nam">ureg</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t"><span class="key">from</span> <span class="nam">FlowCyPy</span><span class="op">.</span><span class="nam">sub_frames</span> <span class="key">import</span> <span class="nam">utils</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t"><span class="key">from</span> <span class="nam">MPSPlots</span><span class="op">.</span><span class="nam">styles</span> <span class="key">import</span> <span class="nam">scientific</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t"><span class="key">from</span> <span class="nam">MPSPlots</span><span class="op">.</span><span class="nam">styles</span> <span class="key">import</span> <span class="nam">mps</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t"><span class="key">class</span> <span class="nam">PeakDataFrame</span><span class="op">(</span><span class="nam">pd</span><span class="op">.</span><span class="nam">DataFrame</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -513,7 +513,7 @@
     <p class="pln"><span class="n"><a id="t429" href="#t429">429</a></span><span class="t"><span class="str">        tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t430" href="#t430">430</a></span><span class="t"><span class="str">            The created or reused figure and main axes.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t431" href="#t431">431</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t432" href="#t432">432</a></span><span class="t">        <span class="key">with</span> <span class="nam">plt</span><span class="op">.</span><span class="nam">style</span><span class="op">.</span><span class="nam">context</span><span class="op">(</span><span class="nam">scientific</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t432" href="#t432">432</a></span><span class="t">        <span class="key">with</span> <span class="nam">plt</span><span class="op">.</span><span class="nam">style</span><span class="op">.</span><span class="nam">context</span><span class="op">(</span><span class="nam">mps</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t433" href="#t433">433</a></span><span class="t">            <span class="nam">x_channel</span><span class="op">,</span> <span class="nam">x_feature</span> <span class="op">=</span> <span class="nam">x</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t434" href="#t434">434</a></span><span class="t">            <span class="nam">y_channel</span><span class="op">,</span> <span class="nam">y_feature</span> <span class="op">=</span> <span class="nam">y</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t435" href="#t435">435</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -791,7 +791,7 @@
     <p class="pln"><span class="n"><a id="t707" href="#t707">707</a></span><span class="t">    <span class="com">#     pairs so that ``df.loc[x]`` and ``df.loc[y]`` return the corresponding</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t708" href="#t708">708</a></span><span class="t">    <span class="com">#     feature vectors.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t709" href="#t709">709</a></span><span class="t">    <span class="com">#     """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t710" href="#t710">710</a></span><span class="t">    <span class="com">#     with plt.style.context(scientific):</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t710" href="#t710">710</a></span><span class="t">    <span class="com">#     with plt.style.context(mps):</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t711" href="#t711">711</a></span><span class="t">    <span class="com">#         x_detector, x_feature = x</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t712" href="#t712">712</a></span><span class="t">    <span class="com">#         y_detector, y_feature = y</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t713" href="#t713">713</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -966,7 +966,7 @@
             <a class="nav" href="z_64ecc9cd9f1c6130_scatterer_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.1">coverage.py v7.13.1</a>,
-            created at 2026-03-29 16:01 +0000
+            created at 2026-03-29 16:11 +0000
         </p>
     </div>
 </footer>
