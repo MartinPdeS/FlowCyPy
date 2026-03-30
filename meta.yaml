@@ -24,6 +24,7 @@ requirements:
     - ninja
     - cmake
     - "{{ compiler('fortran') }}"  # [unix]
+    - fftw
   host:
     - python {{ PY_VER }}*
     - scikit-build-core ~=0.3
