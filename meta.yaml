@@ -7,14 +7,23 @@ source:
 
 build:
   number: 0
-  script:
-    - export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"  # [osx]
-    - {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: |
+    @echo on  # [win]
+    "%PYTHON%" -m pip install . -vv --no-deps --no-build-isolation ^  # [win]
+      "--config-settings=cmake.args=-GNinja;-DCMAKE_Fortran_COMPILER=flang;-DCMAKE_LINKER=link;-DCMAKE_RC_COMPILER=rc;-DCMAKE_MT=mt" ^  # [win]
+      || exit /b 1  # [win]
+
+    "${PYTHON}" -m pip install . -vv --no-deps --no-build-isolation  # [unix]
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
-    - llvm-openmp  # [osx]
+    - "{{ compiler('c') }}"
+    - "{{ compiler('cxx') }}"
+    - vs2022_win-64          # [win]
+    - flang_win-64           # [win]
+    - ninja
+    - cmake
+    - "{{ compiler('fortran') }}"  # [unix]
   host:
     - python {{ PY_VER }}*
     - scikit-build-core ~=0.3
