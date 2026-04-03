@@ -322,12 +322,43 @@ void BasePeakLocator::compute_boundaries(
     if (this->support->is_full_window()) {
         left_boundary = start;
         right_boundary = end - 1;
+
+        if (this->debug_mode) {
+            std::printf(
+                "[BasePeakLocator] compute_boundaries | "
+                "support=%s | start=%zu | end=%zu | peak_index=%zu | "
+                "mode=full_window | left_boundary=%zu | right_boundary=%zu\n",
+                this->support->get_name().c_str(),
+                start,
+                end,
+                peak_index,
+                left_boundary,
+                right_boundary
+            );
+        }
+
         return;
     }
 
     const double peak_value = ptr[peak_index];
 
     if (peak_value <= 0.0) {
+        if (this->debug_mode) {
+            std::printf(
+                "[BasePeakLocator] compute_boundaries | "
+                "support=%s | start=%zu | end=%zu | peak_index=%zu | "
+                "peak_value=%g | mode=non_positive_peak | "
+                "left_boundary=%zu | right_boundary=%zu\n",
+                this->support->get_name().c_str(),
+                start,
+                end,
+                peak_index,
+                peak_value,
+                left_boundary,
+                right_boundary
+            );
+        }
+
         return;
     }
 
@@ -345,6 +376,27 @@ void BasePeakLocator::compute_boundaries(
         ptr[right_boundary + 1] >= threshold_value
     ) {
         ++right_boundary;
+    }
+
+    if (this->debug_mode) {
+        std::printf(
+            "[BasePeakLocator] compute_boundaries | "
+            "support=%s | start=%zu | end=%zu | peak_index=%zu | "
+            "peak_value=%g | relative_threshold=%g | threshold_value=%g | "
+            "left_boundary=%zu | right_boundary=%zu | "
+            "left_touches_boundary=%d | right_touches_boundary=%d\n",
+            this->support->get_name().c_str(),
+            start,
+            end,
+            peak_index,
+            peak_value,
+            this->support->get_threshold(),
+            threshold_value,
+            left_boundary,
+            right_boundary,
+            static_cast<int>(left_boundary == start),
+            static_cast<int>(right_boundary == end - 1)
+        );
     }
 }
 
@@ -418,15 +470,49 @@ PeakMetrics BasePeakLocator::compute_segment_metrics(
     const bool valid_event =
         this->support->is_full_window() || (support_peak_value > 0.0);
 
+    size_t number_of_positive_samples = 0;
+    size_t number_of_negative_samples = 0;
+    size_t number_of_zero_samples = 0;
+
+    double signed_sum = 0.0;
+    double positive_sum = 0.0;
+    double negative_sum = 0.0;
+    double minimum_value = value_ptr[left_boundary];
+    double maximum_value = value_ptr[left_boundary];
+
     if (valid_event) {
         area = 0.0;
 
         for (size_t index = left_boundary; index <= right_boundary; ++index) {
-            if (this->allow_negative_area) {
-                area += value_ptr[index];
+            const double current_value = value_ptr[index];
+
+            signed_sum += current_value;
+            positive_sum += std::max(0.0, current_value);
+            negative_sum += std::min(0.0, current_value);
+
+            if (current_value > 0.0) {
+                ++number_of_positive_samples;
+            }
+            else if (current_value < 0.0) {
+                ++number_of_negative_samples;
             }
             else {
-                area += std::max(0.0, value_ptr[index]);
+                ++number_of_zero_samples;
+            }
+
+            if (current_value < minimum_value) {
+                minimum_value = current_value;
+            }
+
+            if (current_value > maximum_value) {
+                maximum_value = current_value;
+            }
+
+            if (this->allow_negative_area) {
+                area += current_value;
+            }
+            else {
+                area += std::max(0.0, current_value);
             }
         }
     }
@@ -436,11 +522,12 @@ PeakMetrics BasePeakLocator::compute_segment_metrics(
     if (this->debug_mode) {
         std::printf(
             "[BasePeakLocator] compute_segment_metrics | "
-            "support=%s | "
-            "start=%zu | end=%zu | peak_index=%zu | "
-            "support_peak_value=%g | "
-            "left_boundary=%zu | right_boundary=%zu | "
-            "width=%g | area=%g\n",
+            "support=%s | start=%zu | end=%zu | peak_index=%zu | "
+            "support_peak_value=%g | left_boundary=%zu | right_boundary=%zu | "
+            "width=%g | valid_event=%d | allow_negative_area=%d | "
+            "area=%g | signed_sum=%g | positive_sum=%g | negative_sum=%g | "
+            "n_positive=%zu | n_negative=%zu | n_zero=%zu | "
+            "min_value=%g | max_value=%g\n",
             this->support->get_name().c_str(),
             start,
             end,
@@ -449,7 +536,17 @@ PeakMetrics BasePeakLocator::compute_segment_metrics(
             left_boundary,
             right_boundary,
             metrics.width,
-            metrics.area
+            static_cast<int>(valid_event),
+            static_cast<int>(this->allow_negative_area),
+            metrics.area,
+            signed_sum,
+            positive_sum,
+            negative_sum,
+            number_of_positive_samples,
+            number_of_negative_samples,
+            number_of_zero_samples,
+            minimum_value,
+            maximum_value
         );
     }
 
@@ -1164,23 +1261,49 @@ std::vector<PeakData> GlobalPeakLocator::locate_peaks_with_support(
         throw std::runtime_error("value_signal and support_signal must have the same size.");
     }
 
-    const size_t support_peak_index = this->find_local_peak(support_signal.data(), 0, support_signal.size());
-    const size_t value_peak_index = this->find_local_peak(value_signal.data(), 0, value_signal.size());
+    const size_t signal_size = value_signal.size();
+
+    const size_t support_peak_index = this->find_local_peak(
+        support_signal.data(),
+        0,
+        signal_size
+    );
+
+    size_t left_boundary = support_peak_index;
+    size_t right_boundary = support_peak_index;
+
+    this->compute_boundaries(
+        support_signal.data(),
+        0,
+        signal_size,
+        support_peak_index,
+        left_boundary,
+        right_boundary
+    );
+
+    const size_t value_peak_index = this->find_local_peak(
+        value_signal.data(),
+        left_boundary,
+        right_boundary + 1
+    );
+
     const double peak_value = value_signal[value_peak_index];
 
     double width = static_cast<double>(this->padding_value);
     double area = static_cast<double>(this->padding_value);
 
-    if ((this->compute_width || this->compute_area) &&
+    if (
+        (this->compute_width || this->compute_area) &&
         (
             this->support->is_full_window() ||
             support_signal[support_peak_index] > 0.0
-        )) {
+        )
+    ) {
         const PeakMetrics metrics = this->compute_segment_metrics(
             value_signal.data(),
             support_signal.data(),
             0,
-            value_signal.size(),
+            signal_size,
             support_peak_index
         );
 
@@ -1195,11 +1318,17 @@ std::vector<PeakData> GlobalPeakLocator::locate_peaks_with_support(
 
     if (this->debug_mode) {
         std::printf(
-            "[GlobalPeakLocator] locate_peaks | support=%s | signal_size=%zu | support_peak_index=%zu | value_peak_index=%zu | peak_value=%g | width=%g | area=%g\n",
+            "[GlobalPeakLocator] locate_peaks | "
+            "support=%s | signal_size=%zu | "
+            "support_peak_index=%zu | value_peak_index=%zu | "
+            "left_boundary=%zu | right_boundary=%zu | "
+            "peak_value=%g | width=%g | area=%g\n",
             this->support->get_name().c_str(),
-            value_signal.size(),
+            signal_size,
             support_peak_index,
             value_peak_index,
+            left_boundary,
+            right_boundary,
             peak_value,
             width,
             area

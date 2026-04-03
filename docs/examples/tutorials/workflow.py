@@ -41,7 +41,7 @@ flow_cell = FlowCell(
 
 scatterer_collection = ScattererCollection()
 
-medium_refractive_index = distributions.Delta(1.33 * ureg.RIU)
+medium_refractive_index = distributions.Delta(1.33)
 
 diameter_dist = distributions.RosinRammler(
     scale=200 * ureg.nanometer,
@@ -49,9 +49,9 @@ diameter_dist = distributions.RosinRammler(
 )
 
 ri_dist = distributions.Normal(
-    mean=1.44 * ureg.RIU,
-    standard_deviation=0.002 * ureg.RIU,
-    low_cutoff=1.33 * ureg.RIU,
+    mean=1.44,
+    standard_deviation=0.002,
+    low_cutoff=1.33,
 )
 
 sampling_method = populations.ExplicitModel()
@@ -59,7 +59,7 @@ sampling_method = populations.ExplicitModel()
 population_0 = populations.SpherePopulation(
     name="Pop 0",
     medium_refractive_index=medium_refractive_index,
-    concentration=5e10 * ureg.particle / ureg.milliliter,
+    concentration=1e10 * ureg.particle / ureg.milliliter,
     diameter=diameter_dist,
     refractive_index=ri_dist,
     sampling_method=sampling_method,
@@ -72,9 +72,9 @@ diameter_dist = distributions.RosinRammler(
 )
 
 ri_dist = distributions.Normal(
-    mean=1.44 * ureg.RIU,
-    standard_deviation=0.002 * ureg.RIU,
-    low_cutoff=1.33 * ureg.RIU,
+    mean=1.44,
+    standard_deviation=0.002,
+    low_cutoff=1.33,
 )
 
 population_1 = populations.SpherePopulation(
@@ -105,7 +105,7 @@ from FlowCyPy.opto_electronics import (
 )
 
 analog_processing = [
-    circuits.BaselineRestorationServo(time_constant=30 * ureg.microsecond),
+    circuits.BaselineRestorationServo(time_constant=100 * ureg.microsecond),
     circuits.BesselLowPass(cutoff_frequency=2 * ureg.megahertz, order=4, gain=2),
 ]
 
@@ -138,6 +138,7 @@ digitizer = Digitizer(
     sampling_rate=60 * ureg.megahertz,
     bit_depth=14,
     use_auto_range=True,
+    channel_range_mode="shared",
 )
 
 amplifier = Amplifier(
@@ -165,15 +166,15 @@ from FlowCyPy.digital_processing import (
     discriminator,
 )
 
-triggering = discriminator.DynamicWindow(
-    trigger_channel="forward",
+triggering = discriminator.FixedWindow(
+    trigger_channel="side",
     threshold="4sigma",
     pre_buffer=40,
     post_buffer=40,
     max_triggers=-1,
 )
 
-peak_algo = peak_locator.GlobalPeakLocator(compute_width=False)
+peak_algo = peak_locator.GlobalPeakLocator()
 
 digital_processing = DigitalProcessing(
     discriminator=triggering,

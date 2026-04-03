@@ -371,7 +371,10 @@ class EventCollection:
                 )
 
         ax.set_xlabel(f"Time [{time_units}]")
-        ax.legend()
+        handles, labels = ax.get_legend_handles_labels()
+
+        if handles:
+            ax.legend()
 
     def get_concatenated_dataframe(
         self, filter_population: Optional[List[str]] = None
@@ -439,7 +442,8 @@ class EventCollection:
                 continue
 
             try:
-                base_unit = (1 * series.pint.units).to_base_units().units
+                # base_unit = (1 * series.pint.units).to_base_units().units
+                base_unit = series.pint.units
 
                 population_event[column_name] = series.pint.to(base_unit)
             except Exception:
@@ -473,7 +477,7 @@ class EventCollection:
         binrange: Optional[tuple] = None,
         common_norm: bool = False,
         common_bins: bool = False,
-        scale_by_population: bool = True,
+        scale_by_concentration: bool = False,
         scale_by_bin: bool = False,
     ) -> plt.Figure:
         """
@@ -503,7 +507,7 @@ class EventCollection:
             Forwarded to seaborn.
         common_bins : bool
             Forwarded to seaborn.
-        scale_by_population : bool
+        scale_by_concentration : bool
             Scale histogram by population level concentration.
         scale_by_bin : bool
             If True, divides weights by the bin width to display densities
@@ -522,16 +526,18 @@ class EventCollection:
             return figure
 
         # Convert to plain numeric columns
-        df = (
-            population_event.reset_index("Population")
-            .pint.dequantify()
-            .droplevel("unit", axis=1)
-        )
+        df = population_event.reset_index("Population")
+
+        x_units = df[x].max().to_compact().units
+
+        df[x] = df[x].pint.to(x_units)
+
+        df = df.pint.dequantify().droplevel("unit", axis=1)
 
         # ------------------------------------------------------------
         # Construct per population weights
         # ------------------------------------------------------------
-        if scale_by_population:
+        if scale_by_concentration:
             population_weight_map = {
                 event.metadata["Name"]: event.metadata["ParticleCount"]
                 .to("particle/milliliter")
@@ -586,10 +592,9 @@ class EventCollection:
         # ------------------------------------------------------------
         # Axis labels
         # ------------------------------------------------------------
-        x_units = population_event[x].pint.units
-        if scale_by_population and not scale_by_bin:
+        if scale_by_concentration and not scale_by_bin:
             ylabel = "particle per milliliter"
-        elif scale_by_population and scale_by_bin:
+        elif scale_by_concentration and scale_by_bin:
             ylabel = f"Particle (mL {x_units:~P})$^{{-1}}$"
         else:
             ylabel = "Counts"

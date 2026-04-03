@@ -182,49 +182,6 @@ class FlowCytometer:
 
         return opto_electronics.convert_optical_power_to_voltage(power_signal_dict)
 
-    def _digitize_triggered_segments(
-        self,
-        processed_analog_dict: dict,
-        triggered_analog_dict: dict,
-        digital_processing: DigitalProcessing,
-        opto_electronics: OptoElectronics,
-    ) -> dict:
-        """
-        Digitize triggered analog segments.
-
-        Parameters
-        ----------
-        processed_analog_dict : dict
-            Processed analog dictionary before segmentation digitization.
-        triggered_analog_dict : dict
-            Triggered analog segments.
-        digital_processing : DigitalProcessing
-            Processing configuration.
-        opto_electronics : OptoElectronics
-            Opto electronic configuration.
-
-        Returns
-        -------
-        dict
-            Triggered digital segment dictionary.
-        """
-        if opto_electronics.digitizer.use_auto_range:
-
-            min_list = []
-            max_list = []
-            for detector in opto_electronics.detectors:
-                min_, max_ = (
-                    processed_analog_dict[detector.name].min(),
-                    processed_analog_dict[detector.name].max(),
-                )
-                min_list.append(min_)
-                max_list.append(max_)
-
-            opto_electronics.digitizer.min_voltage = min(min_list)
-            opto_electronics.digitizer.max_voltage = max(max_list)
-
-        return opto_electronics.digitizer.digitize_data_dict(triggered_analog_dict)
-
     def _extract_peaks(
         self,
         triggered_digital_dict: dict,
@@ -311,11 +268,8 @@ class FlowCytometer:
             )
             return run_record
 
-        triggered_digital_dict = self._digitize_triggered_segments(
-            processed_analog_dict=processed_analog_dict,
-            triggered_analog_dict=triggered_analog_dict,
-            digital_processing=digital_processing,
-            opto_electronics=opto_electronics,
+        triggered_digital_dict = opto_electronics.digitizer.digitize_data_dict(
+            triggered_analog_dict
         )
 
         run_record.signal.digital = TriggerDataFrame._construct_from_flat_dict(

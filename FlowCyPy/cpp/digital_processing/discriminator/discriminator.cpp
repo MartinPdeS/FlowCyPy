@@ -207,37 +207,32 @@ void FixedWindow::run() {
         this->trigger.signal_map.at(this->trigger_channel);
 
     std::vector<std::pair<int, int>> valid_triggers;
-    std::vector<int> trigger_indices;
+    int last_end = -1;
 
     for (size_t index = 1; index < signal.size(); ++index) {
         if (
             signal[index - 1] <= this->resolved_threshold &&
             signal[index] > this->resolved_threshold
         ) {
-            trigger_indices.push_back(static_cast<int>(index) - 1);
-        }
-    }
+            const int trigger_index = static_cast<int>(index);
+            const int start = trigger_index - static_cast<int>(this->pre_buffer);
+            const int end = trigger_index + static_cast<int>(this->post_buffer);
 
-    int last_end = -1;
+            if (start < 0 || end >= static_cast<int>(signal.size())) {
+                continue;
+            }
 
-    for (const int index : trigger_indices) {
-        const int start = index - static_cast<int>(this->pre_buffer) - 1;
-        const int end = index + static_cast<int>(this->post_buffer);
+            if (start > last_end) {
+                valid_triggers.emplace_back(start, end);
+                last_end = end;
+            }
 
-        if (start < 0 || end >= static_cast<int>(signal.size())) {
-            continue;
-        }
-
-        if (start > last_end) {
-            valid_triggers.emplace_back(start, end);
-            last_end = end;
-        }
-
-        if (
-            this->max_triggers > 0 &&
-            valid_triggers.size() >= static_cast<size_t>(this->max_triggers)
-        ) {
-            break;
+            if (
+                this->max_triggers > 0 &&
+                valid_triggers.size() >= static_cast<size_t>(this->max_triggers)
+            ) {
+                break;
+            }
         }
     }
 
