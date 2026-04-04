@@ -66,7 +66,6 @@ class Detector(StrictDataclassMixing):
     dark_current: Optional[Current] = 0.0 * ureg.ampere
     bandwidth: Optional[Frequency] = None
     name: Optional[str] = None
-    channel: str = "scattering"
 
     def __post_init__(self) -> None:
         """
