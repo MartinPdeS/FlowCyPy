@@ -23,20 +23,20 @@ class CallablePopulation(metaclass=CallablePopulationMeta):
             name=self._name,
             diameter=self._diameter_distribution,
             refractive_index=self._ri_distribution,
-            medium_refractive_index=1.33 * ureg.RIU,
+            medium_refractive_index=1.33,
         )
 
 
 # Define populations
 _populations = (
-    ("Exosome", 70 * ureg.nanometer, 20, 1.39 * ureg.RIU, 0.02 * ureg.RIU),
-    ("MicroVesicle", 400 * ureg.nanometer, 15, 1.39 * ureg.RIU, 0.02 * ureg.RIU),
-    ("ApoptoticBodies", 2 * ureg.micrometer, 12, 1.40 * ureg.RIU, 0.03 * ureg.RIU),
-    ("HDL", 10 * ureg.nanometer, 35, 1.33 * ureg.RIU, 0.01 * ureg.RIU),
-    ("LDL", 20 * ureg.nanometer, 30, 1.35 * ureg.RIU, 0.02 * ureg.RIU),
-    ("VLDL", 50 * ureg.nanometer, 20, 1.445 * ureg.RIU, 0.0005 * ureg.RIU),
-    ("Platelet", 2000 * ureg.nanometer, 25, 1.38 * ureg.RIU, 0.01 * ureg.RIU),
-    ("CellularDebris", 3 * ureg.micrometer, 10, 1.40 * ureg.RIU, 0.03 * ureg.RIU),
+    ("Exosome", 70 * ureg.nanometer, 20, 1.39, 0.02),
+    ("MicroVesicle", 400 * ureg.nanometer, 15, 1.39, 0.02),
+    ("ApoptoticBodies", 2 * ureg.micrometer, 12, 1.40, 0.03),
+    ("HDL", 10 * ureg.nanometer, 35, 1.33, 0.01),
+    ("LDL", 20 * ureg.nanometer, 30, 1.35, 0.02),
+    ("VLDL", 50 * ureg.nanometer, 20, 1.445, 0.0005),
+    ("Platelet", 2000 * ureg.nanometer, 25, 1.38, 0.01),
+    ("CellularDebris", 3 * ureg.micrometer, 10, 1.40, 0.03),
 )
 
 # Dynamically create population classes

@@ -61,8 +61,8 @@ for size in [150, 125, 100, 75, 50]:
         name=f"{size} nm",
         concentration=5e9 * ureg.particle / ureg.milliliter,
         diameter=distributions.Delta(value=size * ureg.nanometer),
-        refractive_index=distributions.Delta(value=1.36 * ureg.RIU),
-        medium_refractive_index=1.33 * ureg.RIU,
+        refractive_index=distributions.Delta(value=1.36),
+        medium_refractive_index=1.33,
     )
     scatterer_collection.add_population(pop)
 
@@ -79,7 +79,7 @@ digitizer = Digitizer(
 detector_side = Detector(
     name="side",
     phi_angle=90 * ureg.degree,
-    numerical_aperture=0.2 * ureg.AU,
+    numerical_aperture=0.2,
     responsivity=1 * ureg.ampere / ureg.watt,
     dark_current=0.1 * ureg.nanoampere,
 )
@@ -87,7 +87,7 @@ detector_side = Detector(
 detector_forward = Detector(
     name="forward",
     phi_angle=0 * ureg.degree,
-    numerical_aperture=0.2 * ureg.AU,
+    numerical_aperture=0.2,
     responsivity=1 * ureg.ampere / ureg.watt,
     dark_current=0.1 * ureg.nanoampere,
 )

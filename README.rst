@@ -50,8 +50,8 @@ Install FlowCyPy via `pip` or `conda``:
     pip install FlowCyPy
     conda install FlowCyPy --channels MartinPdeS
 
-**Requirements**: Python 3.10 or higher with dependencies:
-`numpy`, `scipy`, `pint`, `tabulate`, `seaborn`, `MPSPlots`, `PyMieSim`, `pydantic>=2.6.3`
+**Requirements**: Python 3.11 or higher with dependencies:
+`numpy`, `pint`, `tabulate`, `seaborn`, `MPSPlots`, `PyMieSim`, `pydantic>=2.6.3`
 
 Quick Start
 -----------
@@ -60,75 +60,76 @@ Simulate a simple flow cytometer experiment:
 
 ..  code-block:: python
 
-    # %%
-    # Step 0: Global Settings and Imports
-    # -----------------------------------
-    import numpy as np
-    from TypedUnit import ureg
+    from FlowCyPy.units import ureg
+    from FlowCyPy.fluidics import (
+        Fluidics,
+        FlowCell,
+        ScattererCollection,
+        populations,
+        SampleFlowRate,
+        SheathFlowRate,
+    )
 
-    # %%
-    # Step 1: Define Flow Cell and Fluidics
-    # -------------------------------------
-    from FlowCyPy.fluidics import FlowCell
-    from FlowCyPy.fluidics import Fluidics, ScattererCollection, population
-    from FlowCyPy.sampling_method import GammaModel, ExplicitModel
+    # from FlowCyPy.sampling_method import GammaModel, ExplicitModel
     from FlowCyPy.fluidics import distributions
 
     flow_cell = FlowCell(
-        sample_volume_flow=80 * ureg.microliter / ureg.minute,
-        sheath_volume_flow=1 * ureg.milliliter / ureg.minute,
-        width=200 * ureg.micrometer,
-        height=100 * ureg.micrometer,
+        sample_volume_flow=SampleFlowRate.MEDIUM.value,
+        sheath_volume_flow=SheathFlowRate.MEDIUM.value,
+        width=400 * ureg.micrometer,
+        height=150 * ureg.micrometer,
     )
 
     scatterer_collection = ScattererCollection()
 
-    medium_refractive_index = distributions.Delta(1.33 * ureg.RIU)
+    medium_refractive_index = distributions.Delta(1.33)
 
     diameter_dist = distributions.RosinRammler(
-        shape=150 * ureg.nanometer,
-        scale=50 * ureg.nanometer,
-        low_cutoff=50.0 * ureg.nanometer,
+        scale=200 * ureg.nanometer,
+        shape=10,
     )
 
     ri_dist = distributions.Normal(
-        mean=1.44 * ureg.RIU,
-        standard_deviation=0.002 * ureg.RIU,
-        low_cutoff=1.33 * ureg.RIU,
+        mean=1.44,
+        standard_deviation=0.002,
+        low_cutoff=1.33,
     )
 
-    population_0 = population.Sphere(
+    sampling_method = populations.ExplicitModel()
+
+    population_0 = populations.SpherePopulation(
         name="Pop 0",
         medium_refractive_index=medium_refractive_index,
-        concentration=5e10 * ureg.particle / ureg.milliliter,
+        concentration=1e10 * ureg.particle / ureg.milliliter,
         diameter=diameter_dist,
         refractive_index=ri_dist,
+        sampling_method=sampling_method,
     )
 
 
     diameter_dist = distributions.RosinRammler(
-        shape=50 * ureg.nanometer,
-        scale=50 * ureg.nanometer,
+        scale=30 * ureg.nanometer,
+        shape=50,
     )
 
     ri_dist = distributions.Normal(
-        mean=1.44 * ureg.RIU,
-        standard_deviation=0.002 * ureg.RIU,
-        low_cutoff=1.33 * ureg.RIU,
+        mean=1.44,
+        standard_deviation=0.002,
+        low_cutoff=1.33,
     )
 
-    population_1 = population.Sphere(
+    population_1 = populations.SpherePopulation(
         name="Pop 1",
         medium_refractive_index=medium_refractive_index,
-        concentration=5e17 * ureg.particle / ureg.milliliter,
+        concentration=5e11 * ureg.particle / ureg.milliliter,
         diameter=diameter_dist,
         refractive_index=ri_dist,
-        sampling_method=GammaModel(mc_samples=10_000),
+        sampling_method=populations.GammaModel(number_of_samples=5_000),
     )
 
-    scatterer_collection.add_population(population_0)
+    scatterer_collection.add_population(population_0, population_1)
 
-    scatterer_collection.dilute(factor=280)
+    scatterer_collection.dilute(factor=80)
 
     fluidics = Fluidics(scatterer_collection=scatterer_collection, flow_cell=flow_cell)
 
@@ -137,79 +138,87 @@ Simulate a simple flow cytometer experiment:
     # --------------------------------
     from FlowCyPy.opto_electronics import (
         Detector,
+        Digitizer,
         OptoElectronics,
-        TransimpedanceAmplifier,
+        Amplifier,
         source,
+        circuits,
     )
 
-    source = source.GaussianBeam(
-        numerical_aperture=0.1 * ureg.AU,
+    analog_processing = [
+        circuits.BaselineRestorationServo(time_constant=100 * ureg.microsecond),
+        circuits.BesselLowPass(cutoff_frequency=2 * ureg.megahertz, order=4, gain=2),
+    ]
+
+    source = source.Gaussian(
+        waist_z=10e-6 * ureg.meter,  # Beam waist along flow direction (z-axis)
+        waist_y=60e-6 * ureg.meter,
         wavelength=405 * ureg.nanometer,
         optical_power=200 * ureg.milliwatt,
-        RIN=-180,
+        rin=-140 * ureg.dB_per_Hz,
+        bandwidth=10 * ureg.megahertz,
     )
 
     detectors = [
         Detector(
             name="side",
             phi_angle=90 * ureg.degree,
-            numerical_aperture=0.3 * ureg.AU,
+            numerical_aperture=1.1,
             responsivity=1 * ureg.ampere / ureg.watt,
         ),
         Detector(
             name="forward",
             phi_angle=0 * ureg.degree,
-            numerical_aperture=0.3 * ureg.AU,
+            numerical_aperture=0.3,
+            cache_numerical_aperture=0.1,
             responsivity=1 * ureg.ampere / ureg.watt,
         ),
     ]
 
-    amplifier = TransimpedanceAmplifier(
+    digitizer = Digitizer(
+        sampling_rate=60 * ureg.megahertz,
+        bit_depth=14,
+        use_auto_range=True,
+        channel_range_mode="shared",
+    )
+
+    amplifier = Amplifier(
         gain=10 * ureg.volt / ureg.ampere,
         bandwidth=10 * ureg.megahertz,
-        voltage_noise_density=0.1 * ureg.nanovolt / ureg.sqrt_hertz,
-        current_noise_density=0.2 * ureg.femtoampere / ureg.sqrt_hertz,
+        voltage_noise_density=0.0 * ureg.nanovolt / ureg.sqrt_hertz,
+        current_noise_density=0.0 * ureg.femtoampere / ureg.sqrt_hertz,
     )
 
     opto_electronics = OptoElectronics(
-        detectors=detectors, source=source, amplifier=amplifier
+        digitizer=digitizer,
+        detectors=detectors,
+        source=source,
+        amplifier=amplifier,
+        analog_processing=analog_processing,
     )
 
 
     # %%
     # Step 3: Signal Processing Configuration
     # ---------------------------------------
-    from FlowCyPy.signal_processing import (
-        Digitizer,
-        SignalProcessing,
-        circuits,
+    from FlowCyPy.digital_processing import (
+        DigitalProcessing,
         peak_locator,
-        triggering_system,
+        discriminator,
     )
 
-    digitizer = Digitizer(
-        bit_depth="14bit", saturation_levels="auto", sampling_rate=60 * ureg.megahertz
-    )
-
-    analog_processing = [
-        circuits.BaselineRestorator(window_size=10 * ureg.microsecond),
-        circuits.BesselLowPass(cutoff=2 * ureg.megahertz, order=4, gain=2),
-    ]
-
-    triggering = triggering_system.DynamicWindow(
-        trigger_detector_name="forward",
+    triggering = discriminator.FixedWindow(
+        trigger_channel="side",
         threshold="4sigma",
-        pre_buffer=20,
-        post_buffer=20,
+        pre_buffer=40,
+        post_buffer=40,
         max_triggers=-1,
     )
 
-    peak_algo = peak_locator.GlobalPeakLocator(compute_width=False)
+    peak_algo = peak_locator.GlobalPeakLocator()
 
-    signal_processing = SignalProcessing(
-        digitizer=digitizer,
-        analog_processing=analog_processing,
-        triggering_system=triggering,
+    digital_processing = DigitalProcessing(
+        discriminator=triggering,
         peak_algorithm=peak_algo,
     )
 
@@ -219,54 +228,27 @@ Simulate a simple flow cytometer experiment:
     from FlowCyPy import FlowCytometer
 
     cytometer = FlowCytometer(
-        opto_electronics=opto_electronics,
         fluidics=fluidics,
-        signal_processing=signal_processing,
         background_power=0.001 * ureg.milliwatt,
     )
 
-    run_record = cytometer.run(run_time=3 * ureg.millisecond)
-
-    _ = run_record.event_collection.plot(x="Diameter")
-
-    # %%
-    # Step 5: Plot Events and Raw Analog Signals
-    # ------------------------------------------
-    _ = run_record.event_collection.plot(x="forward")
-
-
-    # %%
-    # Plot raw analog signals
-    # -----------------------
-    _ = run_record.plot_analog(figure_size=(12, 8))
-
-
-    # %%
-    # Step 6: Plot Triggered Analog Segments
-    # --------------------------------------
-    _ = run_record.plot_digital(figure_size=(12, 8))
-
-
-    # %%
-    # Step 7: Plot Peak Features
-    # --------------------------
-    _ = run_record.peaks.plot(x=("forward", "Height"))
-
-
-    # %%
-    # Step 8: Classify Events from Peak Features
-    # ------------------------------------------
-    from FlowCyPy.classifier import KmeansClassifier
-
-    classifier = KmeansClassifier(number_of_clusters=2)
-
-    classified = classifier.run(
-        dataframe=run_record.peaks.unstack("Detector"),
-        features=["Height"],
-        detectors=["side", "forward"],
+    run_record = cytometer.run(
+        opto_electronics=opto_electronics,
+        digital_processing=digital_processing,
+        run_time=1 * ureg.millisecond,
     )
 
-    _ = classified.plot(x=("side", "Height"), y=("forward", "Height"))
+    run_record.event_collection.plot(x="Diameter")
+
+    run_record.event_collection.plot(x="forward")
+
+    run_record.plot_analog()
+
+    run_record.plot_digital()
+
+
+    run_record.peaks.plot(x=("forward", "Height"))
+
 
 
 |readme_events|
@@ -274,9 +256,6 @@ Simulate a simple flow cytometer experiment:
 
 ..  code-block:: python
 
-    # %%
-    # Plot raw analog signals
-    # -----------------------
     _ = run_record.plot_analog(
         figure_size=(12, 8),
         show=False,
@@ -288,9 +267,6 @@ Simulate a simple flow cytometer experiment:
 
 ..  code-block:: python
 
-    # %%
-    # Step 6: Plot Triggered Analog Segments
-    # --------------------------------------
     _ = run_record.plot_digital(
         figure_size=(12, 8),
         show=False,

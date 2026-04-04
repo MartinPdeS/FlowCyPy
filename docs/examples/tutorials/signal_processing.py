@@ -62,8 +62,8 @@ population = populations.SpherePopulation(
     name="Population",
     concentration=5e9 * ureg.particle / ureg.milliliter,
     diameter=distributions.Delta(value=150 * ureg.nanometer),
-    refractive_index=distributions.Delta(value=1.39 * ureg.RIU),
-    medium_refractive_index=1.33 * ureg.RIU,
+    refractive_index=distributions.Delta(value=1.39),
+    medium_refractive_index=1.33,
 )
 scatterer_collection = ScattererCollection(populations=[population])
 
