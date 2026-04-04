@@ -12,7 +12,7 @@
 | FlowCyPy/instances/flow\_cytometer.py         |       42 |       42 |        0 |        0 |      0.00% |     1-208 |
 | FlowCyPy/instances/population.py              |       24 |       24 |        2 |        0 |      0.00% |      1-66 |
 | FlowCyPy/opto\_electronics/coupling\_model.py |       44 |       14 |       14 |        3 |     60.34% |58-61, 126, 150, 170-201 |
-| FlowCyPy/opto\_electronics/detector.py        |       37 |        6 |        8 |        2 |     82.22% |79, 160, 193-200 |
+| FlowCyPy/opto\_electronics/detector.py        |       36 |        6 |        8 |        2 |     81.82% |78, 159, 192-199 |
 | FlowCyPy/opto\_electronics/main.py            |       64 |        3 |       26 |        4 |     92.22% |129, 133-\>140, 160, 245 |
 | FlowCyPy/run\_record.py                       |       78 |       24 |       20 |        3 |     62.24% |84, 97, 110-113, 126-132, 144, 157-160, 236, 248, 270-283, 294 |
 | FlowCyPy/sub\_frames/acquisition.py           |      139 |       37 |       66 |       19 |     68.78% |43, 56-\>exit, 86, 106-111, 139, 142, 149, 152, 163, 169, 174, 213, 216, 239, 249, 258-259, 302, 310, 321, 329, 337-\>340, 340-\>344, 355-378, 390-395 |
@@ -23,7 +23,7 @@
 | FlowCyPy/sub\_frames/utils.py                 |       13 |        9 |        6 |        0 |     21.05% |     26-41 |
 | FlowCyPy/utils.py                             |       70 |       44 |       22 |        2 |     34.78% |17-18, 27, 41-46, 57-69, 72, 97-106, 130-179 |
 | FlowCyPy/workflow.py                          |       44 |       44 |        4 |        0 |      0.00% |     1-157 |
-| **TOTAL**                                     | **1379** |  **804** |  **422** |   **49** | **38.53%** |           |
+| **TOTAL**                                     | **1378** |  **804** |  **422** |   **49** | **38.50%** |           |
 
 3 files skipped due to complete coverage.
 
