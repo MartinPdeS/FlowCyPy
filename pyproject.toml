@@ -50,7 +50,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "setuptools_scm[toml] >=8,<10",
+    "setuptools_scm[toml] >=8,<11",
     'pandas >=2.2,<4.0',
     'seaborn ~=0.13',
     "pydantic ~=2.9",
