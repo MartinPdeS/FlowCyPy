@@ -14,7 +14,7 @@ def test_constructor_with_quantity_inputs():
         max_voltage=1.0 * ureg.volt,
         use_auto_range=False,
         output_signed_codes=False,
-        channel_range_mode="disabled",
+        channel_range_mode="shared",
     )
 
     assert digitizer.bandwidth.to("megahertz").magnitude == pytest.approx(20.0)
@@ -24,7 +24,7 @@ def test_constructor_with_quantity_inputs():
     assert digitizer.max_voltage.to("volt").magnitude == pytest.approx(1.0)
     assert digitizer.use_auto_range is False
     assert digitizer.output_signed_codes is False
-    assert digitizer.channel_range_mode == "disabled"
+    assert digitizer.channel_range_mode == "shared"
 
 
 def test_constructor_with_compact_units():
@@ -34,7 +34,7 @@ def test_constructor_with_compact_units():
         bit_depth=10,
         min_voltage=-500 * ureg.millivolt,
         max_voltage=500 * ureg.millivolt,
-        channel_range_mode="disabled",
+        channel_range_mode="shared",
     )
 
     assert digitizer.bandwidth.to("megahertz").magnitude == pytest.approx(20.0)
@@ -44,21 +44,16 @@ def test_constructor_with_compact_units():
 
 
 def test_constructor_accepts_channel_range_modes():
-    digitizer_disabled = Digitizer(
+    digitizer_shared = Digitizer(
         sampling_rate=100 * ureg.megahertz,
-        channel_range_mode="disabled",
-    )
-    digitizer_global = Digitizer(
-        sampling_rate=100 * ureg.megahertz,
-        channel_range_mode="global",
+        channel_range_mode="shared",
     )
     digitizer_per_channel = Digitizer(
         sampling_rate=100 * ureg.megahertz,
         channel_range_mode="per_channel",
     )
 
-    assert digitizer_disabled.channel_range_mode == "disabled"
-    assert digitizer_global.channel_range_mode == "global"
+    assert digitizer_shared.channel_range_mode == "shared"
     assert digitizer_per_channel.channel_range_mode == "per_channel"
 
 
@@ -414,13 +409,14 @@ def test_clear_all_channel_voltage_ranges():
     assert digitizer.has_channel_voltage_range("side") is False
 
 
-def test_digitize_data_dict_uses_shared_instance_voltage_range_when_disabled():
+def test_digitize_data_dict_uses_fixed_instance_voltage_range_when_auto_range_is_disabled():
     digitizer = Digitizer(
         sampling_rate=100 * ureg.megahertz,
         bit_depth=2,
         min_voltage=0.0 * ureg.volt,
         max_voltage=1.0 * ureg.volt,
-        channel_range_mode="disabled",
+        use_auto_range=False,
+        channel_range_mode="shared",
     )
 
     data_dict = {
@@ -443,11 +439,12 @@ def test_digitize_data_dict_uses_shared_instance_voltage_range_when_disabled():
     )
 
 
-def test_digitize_data_dict_uses_global_range():
+def test_digitize_data_dict_uses_shared_auto_range():
     digitizer = Digitizer(
         sampling_rate=100 * ureg.megahertz,
         bit_depth=2,
-        channel_range_mode="global",
+        use_auto_range=True,
+        channel_range_mode="shared",
     )
 
     data_dict = {
@@ -466,10 +463,11 @@ def test_digitize_data_dict_uses_global_range():
     )
 
 
-def test_digitize_data_dict_uses_per_channel_range():
+def test_digitize_data_dict_uses_per_channel_auto_range():
     digitizer = Digitizer(
         sampling_rate=100 * ureg.megahertz,
         bit_depth=2,
+        use_auto_range=True,
         channel_range_mode="per_channel",
     )
 
@@ -489,11 +487,12 @@ def test_digitize_data_dict_uses_per_channel_range():
     )
 
 
-def test_digitize_data_dict_channel_override_takes_precedence_over_global_mode():
+def test_digitize_data_dict_channel_override_takes_precedence_over_shared_auto_range():
     digitizer = Digitizer(
         sampling_rate=100 * ureg.megahertz,
         bit_depth=2,
-        channel_range_mode="global",
+        use_auto_range=True,
+        channel_range_mode="shared",
     )
 
     digitizer.set_channel_voltage_range(
@@ -522,6 +521,7 @@ def test_digitize_data_dict_returns_voltage_quantities_when_digitization_is_disa
     digitizer = Digitizer(
         sampling_rate=100 * ureg.megahertz,
         bit_depth=0,
+        use_auto_range=True,
         channel_range_mode="per_channel",
     )
 
@@ -541,33 +541,54 @@ def test_digitize_data_dict_returns_voltage_quantities_when_digitization_is_disa
     )
 
 
-def test_digitize_data_dict_supports_nested_trigger_dictionary():
+def test_digitize_data_dict_preserves_segment_id_and_excludes_it_from_shared_auto_range():
     digitizer = Digitizer(
         sampling_rate=100 * ureg.megahertz,
         bit_depth=2,
-        min_voltage=0.0 * ureg.volt,
-        max_voltage=1.0 * ureg.volt,
-        channel_range_mode="disabled",
+        use_auto_range=True,
+        channel_range_mode="shared",
     )
 
     data_dict = {
-        0: {
-            "Time": np.array([0.0, 1.0, 2.0]) * ureg.second,
-            "forward": np.array([0.0, 0.5, 1.0]) * ureg.volt,
-        },
-        1: {
-            "Time": np.array([0.0, 1.0, 2.0]) * ureg.second,
-            "forward": np.array([0.25, 0.75, 1.0]) * ureg.volt,
-        },
+        "segment_id": np.array([0, 50, 100]),
+        "Time": np.array([0.0, 1.0, 2.0]) * ureg.second,
+        "forward": np.array([0.0, 0.5, 1.0]) * ureg.volt,
+    }
+
+    processed_data_dict = digitizer.digitize_data_dict(data_dict)
+
+    assert np.array_equal(processed_data_dict["segment_id"], np.array([0, 50, 100]))
+    assert np.array_equal(
+        processed_data_dict["forward"], np.array([0, 2, 3], dtype=np.uint64)
+    )
+    assert np.allclose(
+        processed_data_dict["Time"].to("second").magnitude,
+        [0.0, 1.0, 2.0],
+    )
+
+
+def test_shared_auto_range_is_not_polluted_by_segment_id_metadata():
+    digitizer = Digitizer(
+        sampling_rate=100 * ureg.megahertz,
+        bit_depth=2,
+        use_auto_range=True,
+        channel_range_mode="shared",
+    )
+
+    data_dict = {
+        "segment_id": np.array([0, 1000, 2000]),
+        "Time": np.array([0.0, 1.0, 2.0]) * ureg.second,
+        "forward": np.array([0.0, 0.5, 1.0]) * ureg.volt,
+        "side": np.array([0.0, 0.5, 1.0]) * ureg.volt,
     }
 
     processed_data_dict = digitizer.digitize_data_dict(data_dict)
 
     assert np.array_equal(
-        processed_data_dict[0]["forward"], np.array([0, 2, 3], dtype=np.uint64)
+        processed_data_dict["forward"], np.array([0, 2, 3], dtype=np.uint64)
     )
     assert np.array_equal(
-        processed_data_dict[1]["forward"], np.array([1, 2, 3], dtype=np.uint64)
+        processed_data_dict["side"], np.array([0, 2, 3], dtype=np.uint64)
     )
 
 

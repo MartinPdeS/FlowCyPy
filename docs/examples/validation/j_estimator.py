@@ -187,65 +187,6 @@ def plot_j_estimation(medians: np.ndarray, robust_cvs: np.ndarray):
     return figure, slope, intercept
 
 
-def plot_statistics(
-    illumination_powers,
-    medians: np.ndarray,
-    robust_stds: np.ndarray,
-):
-    """
-    Plot:
-    1. Median versus illumination power
-    2. Robust STD versus illumination power with fitted trend based on sqrt(median)
-    """
-    if medians.size < 2:
-        raise ValueError("At least two measurements are required to plot statistics.")
-
-    powers_milliwatt = np.array(
-        [float(power.to("mW").magnitude) for power in illumination_powers]
-    )
-
-    figure, axes = plt.subplots(nrows=2, ncols=1, figsize=(9, 6))
-
-    axes[0].plot(powers_milliwatt, medians, "o-", color="C0", label="Median")
-    axes[0].set(
-        xlabel="Illumination Power [mW]",
-        ylabel="Median [AU]",
-        title="Median Signal vs Illumination Power",
-    )
-    axes[0].legend()
-
-    sqrt_medians = np.sqrt(medians)
-    slope, intercept = np.polyfit(sqrt_medians, robust_stds, 1)
-
-    sort_index = np.argsort(powers_milliwatt)
-    powers_sorted = powers_milliwatt[sort_index]
-    medians_sorted = medians[sort_index]
-    std_fit_sorted = slope * np.sqrt(medians_sorted) + intercept
-
-    axes[1].plot(
-        powers_milliwatt,
-        robust_stds,
-        "o",
-        color="C1",
-        label="Robust STD",
-    )
-    axes[1].plot(
-        powers_sorted,
-        std_fit_sorted,
-        "--",
-        color="C1",
-        label=rf"$STD = {slope:.2e} \cdot \sqrt{{M}} + {intercept:.2e}$",
-    )
-    axes[1].set(
-        xlabel="Illumination Power [mW]",
-        ylabel="Robust STD [AU]",
-        title="Robust STD vs Illumination Power",
-    )
-    axes[1].legend()
-
-    return figure
-
-
 # %%
 # Construct simulation components
 # -------------------------------
@@ -423,10 +364,5 @@ figure_j, _, _ = plot_j_estimation(
     robust_cvs=robust_cvs,
 )
 
-figure_statistics = plot_statistics(
-    illumination_powers=valid_illumination_powers,
-    medians=medians,
-    robust_stds=robust_stds,
-)
 
 plt.show()

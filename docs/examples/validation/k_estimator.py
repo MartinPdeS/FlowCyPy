@@ -187,65 +187,6 @@ def plot_k_estimation(medians: np.ndarray, robust_stds: np.ndarray):
     return figure, slope, intercept
 
 
-def plot_statistics(
-    bead_diameters,
-    medians: np.ndarray,
-    robust_stds: np.ndarray,
-):
-    """
-    Plot:
-    1. Median versus bead diameter
-    2. Robust STD versus bead diameter with fitted trend based on sqrt(median)
-    """
-    if medians.size < 2:
-        raise ValueError("At least two measurements are required to plot statistics.")
-
-    diameters_nanometer = np.array(
-        [float(diameter.to("nanometer").magnitude) for diameter in bead_diameters]
-    )
-
-    figure, axes = plt.subplots(nrows=2, ncols=1, figsize=(9, 6))
-
-    axes[0].plot(diameters_nanometer, medians, "o-", color="C0", label="Median")
-    axes[0].set(
-        xlabel="Bead Diameter [nm]",
-        ylabel="Median [AU]",
-        title="Median Signal vs Bead Diameter",
-    )
-    axes[0].legend()
-
-    sqrt_medians = np.sqrt(medians)
-    slope, intercept = np.polyfit(sqrt_medians, robust_stds, 1)
-
-    sort_index = np.argsort(diameters_nanometer)
-    diameters_sorted = diameters_nanometer[sort_index]
-    medians_sorted = medians[sort_index]
-    std_fit_sorted = slope * np.sqrt(medians_sorted) + intercept
-
-    axes[1].plot(
-        diameters_nanometer,
-        robust_stds,
-        "o",
-        color="C1",
-        label="Robust STD",
-    )
-    axes[1].plot(
-        diameters_sorted,
-        std_fit_sorted,
-        "--",
-        color="C1",
-        label=rf"$STD = {slope:.2e} \cdot \sqrt{{M}} + {intercept:.2e}$",
-    )
-    axes[1].set(
-        xlabel="Bead Diameter [nm]",
-        ylabel="Robust STD [AU]",
-        title="Robust STD vs Bead Diameter",
-    )
-    axes[1].legend()
-
-    return figure
-
-
 # %%
 # Construct simulation components
 # -------------------------------
@@ -416,12 +357,6 @@ print(f"Linear intercept: {k_intercept:.6e}")
 # -------------------------------
 
 figure_k, _, _ = plot_k_estimation(
-    medians=medians,
-    robust_stds=robust_stds,
-)
-
-figure_statistics = plot_statistics(
-    bead_diameters=valid_bead_diameters,
     medians=medians,
     robust_stds=robust_stds,
 )
