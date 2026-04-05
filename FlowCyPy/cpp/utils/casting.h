@@ -218,4 +218,39 @@ namespace Casting {
         return py::cast(value);
     }
 
+    std::map<std::string, std::vector<double>> cast_py_dict_to_flat_data_map(
+        const py::dict& data_dict
+    ) {
+        std::map<std::string, std::vector<double>> input_data_map;
+
+        for (const auto& item : data_dict) {
+            const std::string channel_name = py::reinterpret_borrow<py::object>(item.first).cast<std::string>();
+
+            const py::object channel_object = py::reinterpret_borrow<py::object>(item.second);
+
+            if (channel_name == "segment_id") {
+                input_data_map[channel_name] = Casting::cast_py_to_vector<double>(
+                    channel_object,
+                    channel_name
+                );
+            }
+            else if (channel_name == "Time") {
+                input_data_map[channel_name] = Casting::cast_py_to_vector<double>(
+                    channel_object,
+                    channel_name,
+                    "second"
+                );
+            }
+            else {
+                input_data_map[channel_name] = Casting::cast_py_to_vector<double>(
+                    channel_object,
+                    channel_name,
+                    "volt"
+                );
+            }
+        }
+
+        return input_data_map;
+    }
+
 }

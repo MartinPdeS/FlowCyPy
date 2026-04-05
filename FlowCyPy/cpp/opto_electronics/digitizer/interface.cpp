@@ -47,80 +47,6 @@ std::string channel_range_mode_to_string(const ChannelRangeMode value) {
 }
 
 
-py::object as_voltage_quantity(
-    const py::object& unit_registry,
-    const std::vector<double>& values
-) {
-    return py::array_t<double>(values.size(), values.data()) * unit_registry.attr("volt");
-}
-
-
-py::object as_time_quantity(
-    const py::object& unit_registry,
-    const std::vector<double>& values
-) {
-    return py::array_t<double>(values.size(), values.data()) * unit_registry.attr("second");
-}
-
-
-py::object as_voltage_quantity(
-    const py::object& unit_registry,
-    const double value
-) {
-    return (py::float_(value) * unit_registry.attr("volt")).attr("to_compact")();
-}
-
-
-std::map<std::string, std::vector<double>> cast_py_dict_to_flat_data_map(
-    const py::dict& data_dict
-) {
-    std::map<std::string, std::vector<double>> input_data_map;
-
-    for (const auto& item : data_dict) {
-        const std::string channel_name = py::reinterpret_borrow<py::object>(item.first).cast<std::string>();
-
-        const py::object channel_object = py::reinterpret_borrow<py::object>(item.second);
-
-        if (channel_name == "segment_id") {
-            input_data_map[channel_name] = Casting::cast_py_to_vector<double>(
-                channel_object,
-                channel_name
-            );
-        }
-        else if (channel_name == "Time") {
-            input_data_map[channel_name] = Casting::cast_py_to_vector<double>(
-                channel_object,
-                channel_name,
-                "second"
-            );
-        }
-        else {
-            input_data_map[channel_name] = Casting::cast_py_to_vector<double>(
-                channel_object,
-                channel_name,
-                "volt"
-            );
-        }
-    }
-
-    return input_data_map;
-}
-
-std::map<std::string, std::map<std::string, std::vector<double>>> cast_py_dict_to_nested_data_map(
-    const py::dict& data_dict
-) {
-    std::map<std::string, std::map<std::string, std::vector<double>>> nested_data_map;
-
-    for (const auto& segment_item : data_dict) {
-        const std::string segment_identifier = py::str(py::reinterpret_borrow<py::object>(segment_item.first));
-
-        const py::dict segment_dict = py::reinterpret_borrow<py::dict>(segment_item.second);
-
-        nested_data_map[segment_identifier] = cast_py_dict_to_flat_data_map(segment_dict);
-    }
-
-    return nested_data_map;
-}
 
 
 py::dict build_python_output_dict_from_processed_double_map(
@@ -196,46 +122,6 @@ py::dict build_python_output_dict_from_processed_unsigned_map(
     return output_dict;
 }
 
-
-py::object digitize_python_data_dict(
-    const Digitizer& self,
-    const py::object& unit_registry,
-    const py::dict& data_dict
-) {
-
-    const std::map<std::string, std::vector<double>> input_data_map =
-        cast_py_dict_to_flat_data_map(data_dict);
-
-    if (!self.should_digitize()) {
-        const std::map<std::string, std::vector<double>> processed_data_map =
-            self.process_flat_acquisition_data(input_data_map);
-
-        return build_python_output_dict_from_processed_double_map(
-            unit_registry,
-            data_dict,
-            processed_data_map
-        );
-    }
-
-    if (self.output_signed_codes) {
-        const std::map<std::string, std::vector<int64_t>> processed_data_map =
-            self.get_processed_signed_data_map(input_data_map);
-
-        return build_python_output_dict_from_processed_signed_map(
-            data_dict,
-            processed_data_map
-        );
-    }
-
-    const std::map<std::string, std::vector<uint64_t>> processed_data_map =
-        self.get_processed_unsigned_data_map(input_data_map);
-
-    return build_python_output_dict_from_processed_unsigned_map(
-        data_dict,
-        processed_data_map
-    );
-
-}
 
 }  // namespace
 
@@ -757,8 +643,8 @@ PYBIND11_MODULE(digitizer, module) {
                     self.get_channel_voltage_range(channel_name);
 
                 return py::make_tuple(
-                    as_voltage_quantity(unit_registry, minimum_voltage),
-                    as_voltage_quantity(unit_registry, maximum_voltage)
+                    py::float_(minimum_voltage) * unit_registry.attr("volt"),
+                    py::float_(maximum_voltage) * unit_registry.attr("volt")
                 );
             },
             py::arg("channel_name"),
@@ -785,7 +671,7 @@ PYBIND11_MODULE(digitizer, module) {
             "set_auto_range",
             [](Digitizer& self, const py::object& signal) {
                 self.set_auto_range(
-                    Casting::cast_py_to_vector<double>(signal, "volt")
+                    Casting::cast_py_to_vector<double>(signal, "signal", "volt")
                 );
             },
             py::arg("signal"),
@@ -806,12 +692,12 @@ PYBIND11_MODULE(digitizer, module) {
             "get_min_max",
             [unit_registry](const Digitizer& self, const py::object& signal) {
                 const auto [minimum_value, maximum_value] = self.get_min_max(
-                    Casting::cast_py_to_vector<double>(signal, "volt")
+                    Casting::cast_py_to_vector<double>(signal, "signal", "volt")
                 );
 
                 return py::make_tuple(
-                    as_voltage_quantity(unit_registry, minimum_value),
-                    as_voltage_quantity(unit_registry, maximum_value)
+                    py::float_(minimum_value) * unit_registry.attr("volt"),
+                    py::float_(maximum_value) * unit_registry.attr("volt")
                 );
             },
             py::arg("signal"),
@@ -834,11 +720,11 @@ PYBIND11_MODULE(digitizer, module) {
             "clip_signal",
             [unit_registry](const Digitizer& self, const py::object& signal) -> py::object {
                 std::vector<double> signal_vector =
-                    Casting::cast_py_to_vector<double>(signal, "volt");
+                    Casting::cast_py_to_vector<double>(signal, "signal", "volt");
 
                 self.clip_signal(signal_vector);
 
-                return as_voltage_quantity(unit_registry, signal_vector);
+                return py::array_t<double>(signal_vector.size(), signal_vector.data()) * unit_registry.attr("volt");
             },
             py::arg("signal"),
             R"pbdoc(
@@ -864,13 +750,12 @@ PYBIND11_MODULE(digitizer, module) {
         .def(
             "process_signal",
             [unit_registry](Digitizer& self, const py::object& signal) -> py::object {
-                std::vector<double> signal_vector =
-                    Casting::cast_py_to_vector<double>(signal, "volt");
+                std::vector<double> signal_vector = Casting::cast_py_to_vector<double>(signal, "signal", "volt");
 
                 self.process_signal(signal_vector);
 
                 if (!self.should_digitize()) {
-                    return as_voltage_quantity(unit_registry, signal_vector);
+                    return py::array_t<double>(signal_vector.size(), signal_vector.data()) * unit_registry.attr("volt");
                 }
 
                 if (self.output_signed_codes) {
@@ -928,7 +813,7 @@ PYBIND11_MODULE(digitizer, module) {
             "capture_signal",
             [](Digitizer& self, const py::object& signal, const bool use_auto_range) {
                 self.capture_signal(
-                    Casting::cast_py_to_vector<double>(signal, "volt"),
+                    Casting::cast_py_to_vector<double>(signal, "signal", "volt"),
                     use_auto_range
                 );
             },
@@ -950,7 +835,7 @@ PYBIND11_MODULE(digitizer, module) {
             "digitize_signal",
             [](const Digitizer& self, const py::object& signal) -> py::object {
                 std::vector<double> signal_vector =
-                    Casting::cast_py_to_vector<double>(signal, "volt");
+                    Casting::cast_py_to_vector<double>(signal, "signal", "volt");
 
                 self.digitize_signal(signal_vector);
 
@@ -994,7 +879,7 @@ PYBIND11_MODULE(digitizer, module) {
         .def(
             "digitize_data_dict",
             [unit_registry](const Digitizer& self, const py::dict& data_dict) -> py::object {
-                const std::map<std::string, std::vector<double>> input_data_map = cast_py_dict_to_flat_data_map(data_dict);
+                const std::map<std::string, std::vector<double>> input_data_map = Casting::cast_py_dict_to_flat_data_map(data_dict);
 
                 if (!self.should_digitize()) {
                     const std::map<std::string, std::vector<double>> processed_data_map = self.process_flat_acquisition_data(input_data_map);
@@ -1077,7 +962,7 @@ PYBIND11_MODULE(digitizer, module) {
                     )
                 );
 
-                return as_time_quantity(unit_registry, time_series);
+                return py::array_t<double>(time_series.size(), time_series.data()) * unit_registry.attr("second");
             },
             py::arg("run_time"),
             R"pbdoc(
