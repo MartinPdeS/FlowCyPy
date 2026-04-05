@@ -74,7 +74,7 @@ test:
     - pytest-json-report ==1.5
     - coverage ==7.6
   commands:
-    - python -m pytest --config-file=./pytest.ini'
+    - python -m pytest --config-file=./pytest.ini
   source_files:
     - tests
 
