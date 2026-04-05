@@ -46,7 +46,6 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.intersphinx",
-    "sphinx_design",
 ]
 
 autodoc_typehints = "description"
@@ -66,7 +65,6 @@ def reset_mpl(gallery_conf, fname):
 
 examples_files = [
     "tutorials",
-    "studies",
     "validation",
 ]
 
@@ -85,7 +83,7 @@ sphinx_gallery_conf = {
     "remove_config_comments": True,
     "capture_repr": ("_repr_html_", "__repr__"),
     "nested_sections": True,
-    "within_subsection_order": FileNameSortKey,
+    "within_subsection_order": "FileNameSortKey",
 }
 
 

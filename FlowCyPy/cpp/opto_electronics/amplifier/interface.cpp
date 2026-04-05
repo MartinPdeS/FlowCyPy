@@ -43,19 +43,6 @@ PYBIND11_MODULE(amplifier, module) {
                 Input referred current noise spectral density in ampere / hertz ** 0.5.
             filter_order : int, optional
                 Order of the low-pass filter used when bandwidth filtering is enabled.
-
-            Attributes
-            ----------
-            gain : Quantity
-                Transimpedance gain in volt / ampere.
-            bandwidth : Quantity | None
-                Bandwidth in hertz, or None if unlimited.
-            voltage_noise_density : Quantity
-                Voltage noise spectral density in volt / hertz ** 0.5.
-            current_noise_density : Quantity
-                Current noise spectral density in ampere / hertz ** 0.5.
-            filter_order : int
-                Order of the low-pass filter.
         )pdoc"
     )
         .def(
@@ -67,8 +54,7 @@ PYBIND11_MODULE(amplifier, module) {
                     const py::object& current_noise_density,
                     const int filter_order
                 ) {
-                    const double gain_value =
-                        gain.attr("to")("volt / ampere").attr("magnitude").cast<double>();
+                    const double gain_value = gain.attr("to")("volt / ampere").attr("magnitude").cast<double>();
 
                     if (gain_value <= 0.0) {
                         throw std::runtime_error("gain must be strictly positive.");

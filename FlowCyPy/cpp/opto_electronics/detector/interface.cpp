@@ -32,22 +32,6 @@ py::object as_frequency_quantity(
 }
 
 
-py::object as_current_quantity(
-    const py::object& unit_registry,
-    const double value
-) {
-    return (py::float_(value) * unit_registry.attr("ampere")).attr("to_compact")();
-}
-
-
-py::object as_current_quantity(
-    const py::object& unit_registry,
-    const std::vector<double>& values
-) {
-    return py::array_t<double>(values.size(), values.data()) * unit_registry.attr("ampere");
-}
-
-
 py::object as_responsivity_quantity(
     const py::object& unit_registry,
     const double value
@@ -112,28 +96,6 @@ PYBIND11_MODULE(detector, module) {
 
             It does not model downstream analog amplification or digitization.
             Those stages are handled by the amplifier and digitizer components.
-
-            Attributes
-            ----------
-            phi_angle : pint.Quantity
-                Azimuthal detector angle.
-            numerical_aperture : float
-                Numerical aperture of the detector collection cone.
-            cache_numerical_aperture : float
-                Numerical aperture of the central obscuration or cache region.
-            gamma_angle : pint.Quantity
-                Polar or longitudinal detector angle.
-            sampling : int
-                Number of angular or spatial samples used internally to describe
-                the detector support.
-            responsivity : pint.Quantity
-                Detector responsivity expressed in ampere per watt.
-            dark_current : pint.Quantity
-                Mean detector dark current.
-            bandwidth : pint.Quantity or None
-                Stored detector bandwidth used by bandwidth dependent calculations.
-            name : str
-                Detector identifier.
         )pbdoc"
     )
         .def(
@@ -355,7 +317,7 @@ PYBIND11_MODULE(detector, module) {
         .def_property(
             "dark_current",
             [unit_registry](const Detector& self) -> py::object {
-                return as_current_quantity(unit_registry, self.dark_current);
+                return (py::float_(self.dark_current) * unit_registry.attr("ampere")).attr("to_compact")();
             },
             [](Detector& self, const py::object& value) {
                 self.dark_current = Casting::cast_py_to_scalar<double>(
@@ -452,7 +414,7 @@ PYBIND11_MODULE(detector, module) {
                 const py::object& bandwidth
             ) -> py::object {
                 const std::vector<double> signal_vector =
-                    Casting::cast_py_to_vector<double>(signal, "ampere");
+                    Casting::cast_py_to_vector<double>(signal, "signal", "ampere");
 
                 const double bandwidth_value = bandwidth.is_none()
                     ? std::numeric_limits<double>::quiet_NaN()
@@ -465,7 +427,7 @@ PYBIND11_MODULE(detector, module) {
                 const std::vector<double> output_signal =
                     self.apply_dark_current_noise(signal_vector, bandwidth_value);
 
-                return as_current_quantity(unit_registry, output_signal);
+                return py::array_t<double>(output_signal.size(), output_signal.data()) * unit_registry.attr("ampere");
             },
             py::arg("signal"),
             py::arg("bandwidth") = py::none(),

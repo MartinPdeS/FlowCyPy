@@ -17,13 +17,40 @@ PYBIND11_MODULE(circuits, module) {
     py::object ureg = get_shared_ureg();
 
     module.doc() = R"pbdoc(
-        FlowCyPy C++ circuit interface.
+        Analog signal conditioning circuits for FlowCyPy.
 
-        This module exposes C++ signal processing circuits to Python using pybind11.
-        Each circuit processes a one dimensional signal and returns a new processed signal.
+        This module exposes analog processing circuits used in the opto electronic
+        acquisition chain of a flow cytometry simulation.
+        %
+        Each circuit operates on a one dimensional signal and returns a processed
+        signal with the same physical units as the input.
+        %
+        Typical use cases include baseline correction, baseline restoration, and
+        analog low pass filtering prior to digitization or downstream digital
+        processing.
+
+        All public ``process`` methods expect:
+
+        - ``signal`` to be a Pint quantity backed by a one dimensional NumPy array
+        - ``sampling_rate`` to be a Pint quantity compatible with hertz when required
     )pbdoc";
 
-    py::class_<BaseCircuit, std::shared_ptr<BaseCircuit>>(module, "BaseCircuit")
+    py::class_<BaseCircuit, std::shared_ptr<BaseCircuit>>(
+        module,
+        "BaseCircuit",
+        R"pbdoc(
+            Abstract base class for analog signal conditioning circuits.
+
+            A :class:`BaseCircuit` represents a transformation applied to a
+            one dimensional signal in the analog acquisition chain.
+            %
+            Concrete subclasses implement specific operations such as baseline
+            subtraction or low pass filtering.
+            %
+            The processed output always retains the same physical units as the
+            input signal.
+        )pbdoc"
+    )
         .def(
             "process",
             [](
@@ -67,19 +94,28 @@ PYBIND11_MODULE(circuits, module) {
             py::arg("signal"),
             py::arg("sampling_rate") = py::none(),
             R"pbdoc(
-                Process a signal and return the processed output.
+                Process a signal with the circuit.
 
                 Parameters
                 ----------
                 signal : pint.Quantity
-                    One dimensional signal to process.
-                sampling_rate : pint.Quantity | None, optional
-                    Sampling rate in hertz. Required for circuits that depend on it.
+                    One dimensional input signal.
+                sampling_rate : pint.Quantity or None, optional
+                    Sampling rate in hertz.
+                    %
+                    Circuits that depend on time scale or frequency response may
+                    require this value, while others may ignore it.
 
                 Returns
                 -------
                 pint.Quantity
                     Processed signal with the same units as the input.
+
+                Notes
+                -----
+                This method preserves the physical units of the input signal.
+                %
+                Only the numerical values are transformed by the circuit.
             )pbdoc"
         );
 
@@ -90,7 +126,22 @@ PYBIND11_MODULE(circuits, module) {
         std::shared_ptr<SlidingMinimumBaselineCorrection>
     >(
         module,
-        "SlidingMinimumBaselineCorrection"
+        "SlidingMinimumBaselineCorrection",
+        R"pbdoc(
+            Sliding minimum baseline correction circuit.
+
+            This circuit estimates the local baseline by tracking the minimum
+            signal value within a sliding window and subtracting that baseline
+            estimate from the input.
+            %
+            It is useful for suppressing slowly varying offsets or drifting
+            baselines while preserving positive excursions associated with
+            particle events.
+            %
+            A window size of ``-1 * second`` is interpreted as an infinite
+            window, meaning that the baseline is estimated from the global
+            minimum over the full signal.
+        )pbdoc"
     )
         .def(
             py::init(
@@ -110,7 +161,16 @@ PYBIND11_MODULE(circuits, module) {
                 Parameters
                 ----------
                 window_size : pint.Quantity
-                    Sliding window size in second. Use -1 * second for an infinite window.
+                    Sliding window size in second.
+                    %
+                    Use ``-1 * second`` to request an infinite window spanning
+                    the full signal.
+
+                Notes
+                -----
+                When a finite window is used, the effective number of samples in
+                the window depends on the sampling rate supplied to
+                :meth:`process`.
             )pbdoc"
         )
         .def(py::init<>())
@@ -124,12 +184,14 @@ PYBIND11_MODULE(circuits, module) {
                 return py::cast(circuit.window_size) * ureg.attr("second");
             },
             R"pbdoc(
-                Window size used for sliding minimum correction.
+                Sliding window size used for baseline estimation.
 
                 Returns
                 -------
                 pint.Quantity
-                    Window size in second. A value of -1 second means infinite window.
+                    Window size in second.
+                    %
+                    A value of ``-1 * second`` indicates an infinite window.
             )pbdoc"
         )
         .def(
@@ -175,19 +237,24 @@ PYBIND11_MODULE(circuits, module) {
             py::arg("signal"),
             py::arg("sampling_rate") = py::none(),
             R"pbdoc(
-                Apply sliding minimum baseline correction to a signal.
+                Apply sliding minimum baseline correction.
 
                 Parameters
                 ----------
                 signal : pint.Quantity
-                    One dimensional signal to process.
-                sampling_rate : pint.Quantity | None, optional
-                    Sampling rate in hertz. Required unless the window is infinite.
+                    One dimensional input signal.
+                sampling_rate : pint.Quantity or None, optional
+                    Sampling rate in hertz.
+                    %
+                    This is required when ``window_size`` is finite, because the
+                    time window must be converted into a number of samples.
+                    %
+                    It may be omitted when the window is infinite.
 
                 Returns
                 -------
                 pint.Quantity
-                    Corrected signal with the same units as the input.
+                    Baseline corrected signal with the same units as the input.
             )pbdoc"
         )
         .def(
@@ -200,7 +267,26 @@ PYBIND11_MODULE(circuits, module) {
         );
 
 
-    py::class_<BaselineRestorationServo, BaseCircuit, std::shared_ptr<BaselineRestorationServo>>(module, "BaselineRestorationServo")
+    py::class_<
+        BaselineRestorationServo,
+        BaseCircuit,
+        std::shared_ptr<BaselineRestorationServo>
+    >(
+        module,
+        "BaselineRestorationServo",
+        R"pbdoc(
+            Baseline restoration servo circuit.
+
+            This circuit models a baseline restoration stage that continuously
+            estimates the slowly varying baseline of a signal and subtracts it
+            so that the output is driven toward a target reference level.
+            %
+            It is useful for suppressing baseline drift and restoring a stable
+            operating point before digitization or event extraction.
+            %
+            The response speed of the servo is controlled by its time constant.
+        )pbdoc"
+    )
         .def(
             py::init(
                 [ureg](
@@ -228,10 +314,22 @@ PYBIND11_MODULE(circuits, module) {
                 ----------
                 time_constant : pint.Quantity
                     Servo time constant in second.
+                    %
+                    Larger values produce slower baseline tracking, while smaller
+                    values produce faster adaptation.
                 reference_level : float, optional
-                    Target baseline level after restoration.
+                    Output reference level after restoration.
                 initialize_with_first_sample : bool, optional
-                    If True, initialize the baseline state from the first input sample.
+                    If ``True``, initialize the internal baseline state from the
+                    first input sample.
+                    %
+                    If ``False``, the internal state is initialized independently
+                    of the first sample.
+
+                Notes
+                -----
+                This circuit requires a valid sampling rate in order to convert
+                the time constant into a discrete time update rule.
             )pbdoc"
         )
         .def(py::init<>())
@@ -241,7 +339,7 @@ PYBIND11_MODULE(circuits, module) {
                 return py::cast(circuit.time_constant) * ureg.attr("second");
             },
             R"pbdoc(
-                Time constant of the baseline restoration servo.
+                Servo time constant.
 
                 Returns
                 -------
@@ -253,7 +351,10 @@ PYBIND11_MODULE(circuits, module) {
             "reference_level",
             &BaselineRestorationServo::reference_level,
             R"pbdoc(
-                Output reference level used after baseline subtraction.
+                Target output baseline level.
+
+                After restoration, the signal baseline is driven toward this
+                numerical reference value.
             )pbdoc"
         )
         .def_readonly(
@@ -261,6 +362,9 @@ PYBIND11_MODULE(circuits, module) {
             &BaselineRestorationServo::initialize_with_first_sample,
             R"pbdoc(
                 Whether the internal baseline state is initialized from the first sample.
+
+                When enabled, the circuit starts from the first input value,
+                which often reduces initial transients.
             )pbdoc"
         )
         .def(
@@ -308,12 +412,12 @@ PYBIND11_MODULE(circuits, module) {
             py::arg("signal"),
             py::arg("sampling_rate"),
             R"pbdoc(
-                Apply baseline restoration servo processing to a signal.
+                Apply baseline restoration servo processing.
 
                 Parameters
                 ----------
                 signal : pint.Quantity
-                    One dimensional signal to process.
+                    One dimensional input signal.
                 sampling_rate : pint.Quantity
                     Sampling rate in hertz.
 
@@ -321,6 +425,11 @@ PYBIND11_MODULE(circuits, module) {
                 -------
                 pint.Quantity
                     Baseline restored signal with the same units as the input.
+
+                Notes
+                -----
+                A valid sampling rate is required because the circuit dynamics are
+                defined through the servo time constant.
             )pbdoc"
         )
         .def(
@@ -337,9 +446,25 @@ PYBIND11_MODULE(circuits, module) {
         );
 
 
-    py::class_<ButterworthLowPassFilter, BaseCircuit, std::shared_ptr<ButterworthLowPassFilter>>(
+    py::class_<
+        ButterworthLowPassFilter,
+        BaseCircuit,
+        std::shared_ptr<ButterworthLowPassFilter>
+    >(
         module,
-        "ButterworthLowPass"
+        "ButterworthLowPass",
+        R"pbdoc(
+            Butterworth low pass filter.
+
+            This circuit applies a Butterworth low pass response to the input
+            signal.
+            %
+            Butterworth filters provide a maximally flat magnitude response in
+            the passband and are useful when smooth low pass attenuation is
+            desired without passband ripple.
+            %
+            The output can optionally be scaled by a multiplicative gain factor.
+        )pbdoc"
     )
         .def(
             py::init(
@@ -370,8 +495,15 @@ PYBIND11_MODULE(circuits, module) {
                     Cutoff frequency in hertz.
                 order : int
                     Filter order.
+                    %
+                    Higher orders produce a steeper roll off.
                 gain : float
-                    Output gain factor.
+                    Multiplicative gain applied to the filtered output.
+
+                Notes
+                -----
+                This circuit requires a valid sampling rate when calling
+                :meth:`process`.
             )pbdoc"
         )
         .def(py::init<>())
@@ -381,7 +513,7 @@ PYBIND11_MODULE(circuits, module) {
                 return py::cast(circuit.cutoff_frequency) * ureg.attr("hertz");
             },
             R"pbdoc(
-                Cutoff frequency of the Butterworth filter.
+                Filter cutoff frequency.
 
                 Returns
                 -------
@@ -389,8 +521,23 @@ PYBIND11_MODULE(circuits, module) {
                     Cutoff frequency in hertz.
             )pbdoc"
         )
-        .def_readonly("order", &ButterworthLowPassFilter::order)
-        .def_readonly("gain", &ButterworthLowPassFilter::gain)
+        .def_readonly(
+            "order",
+            &ButterworthLowPassFilter::order,
+            R"pbdoc(
+                Filter order.
+
+                Higher orders correspond to a sharper transition between passband
+                and stopband.
+            )pbdoc"
+        )
+        .def_readonly(
+            "gain",
+            &ButterworthLowPassFilter::gain,
+            R"pbdoc(
+                Multiplicative output gain applied after filtering.
+            )pbdoc"
+        )
         .def(
             "process",
             [](
@@ -436,12 +583,12 @@ PYBIND11_MODULE(circuits, module) {
             py::arg("signal"),
             py::arg("sampling_rate"),
             R"pbdoc(
-                Apply the Butterworth filter to a signal.
+                Apply Butterworth low pass filtering.
 
                 Parameters
                 ----------
                 signal : pint.Quantity
-                    One dimensional signal to process.
+                    One dimensional input signal.
                 sampling_rate : pint.Quantity
                     Sampling rate in hertz.
 
@@ -449,6 +596,11 @@ PYBIND11_MODULE(circuits, module) {
                 -------
                 pint.Quantity
                     Filtered signal with the same units as the input.
+
+                Notes
+                -----
+                The sampling rate is required to map the analog cutoff frequency
+                to the discrete time signal.
             )pbdoc"
         )
         .def(
@@ -463,9 +615,24 @@ PYBIND11_MODULE(circuits, module) {
         );
 
 
-    py::class_<BesselLowPassFilter, BaseCircuit, std::shared_ptr<BesselLowPassFilter>>(
+    py::class_<
+        BesselLowPassFilter,
+        BaseCircuit,
+        std::shared_ptr<BesselLowPassFilter>
+    >(
         module,
-        "BesselLowPass"
+        "BesselLowPass",
+        R"pbdoc(
+            Bessel low pass filter.
+
+            This circuit applies a Bessel low pass response to the input signal.
+            %
+            Bessel filters are often preferred when preserving waveform shape and
+            approximate phase linearity is more important than maximizing roll off
+            steepness.
+            %
+            The output can optionally be scaled by a multiplicative gain factor.
+        )pbdoc"
     )
         .def(
             py::init(
@@ -497,7 +664,12 @@ PYBIND11_MODULE(circuits, module) {
                 order : int
                     Filter order.
                 gain : float
-                    Output gain factor.
+                    Multiplicative gain applied to the filtered output.
+
+                Notes
+                -----
+                This circuit requires a valid sampling rate when calling
+                :meth:`process`.
             )pbdoc"
         )
         .def(py::init<>())
@@ -507,7 +679,7 @@ PYBIND11_MODULE(circuits, module) {
                 return py::cast(circuit.cutoff_frequency) * ureg.attr("hertz");
             },
             R"pbdoc(
-                Cutoff frequency of the Bessel filter.
+                Filter cutoff frequency.
 
                 Returns
                 -------
@@ -515,8 +687,22 @@ PYBIND11_MODULE(circuits, module) {
                     Cutoff frequency in hertz.
             )pbdoc"
         )
-        .def_readonly("order", &BesselLowPassFilter::order)
-        .def_readonly("gain", &BesselLowPassFilter::gain)
+        .def_readonly(
+            "order",
+            &BesselLowPassFilter::order,
+            R"pbdoc(
+                Filter order.
+
+                Higher orders increase the sharpness of the low pass transition.
+            )pbdoc"
+        )
+        .def_readonly(
+            "gain",
+            &BesselLowPassFilter::gain,
+            R"pbdoc(
+                Multiplicative output gain applied after filtering.
+            )pbdoc"
+        )
         .def(
             "process",
             [](
@@ -562,12 +748,12 @@ PYBIND11_MODULE(circuits, module) {
             py::arg("signal"),
             py::arg("sampling_rate"),
             R"pbdoc(
-                Apply the Bessel filter to a signal.
+                Apply Bessel low pass filtering.
 
                 Parameters
                 ----------
                 signal : pint.Quantity
-                    One dimensional signal to process.
+                    One dimensional input signal.
                 sampling_rate : pint.Quantity
                     Sampling rate in hertz.
 
@@ -575,6 +761,11 @@ PYBIND11_MODULE(circuits, module) {
                 -------
                 pint.Quantity
                     Filtered signal with the same units as the input.
+
+                Notes
+                -----
+                This filter is typically used when preserving pulse shape is more
+                important than maximizing stopband steepness.
             )pbdoc"
         )
         .def(

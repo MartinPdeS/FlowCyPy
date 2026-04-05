@@ -2,12 +2,12 @@
 
 #include <vector>
 #include <string>
-#include <stdexcept>
 #include <sstream>
 #include <complex>
 #include <memory>
 #include <limits>
 #include <cmath>
+#include <type_traits>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/complex.h>
@@ -19,20 +19,45 @@ using complex128 = std::complex<double>;
 
 namespace Casting {
 
+    inline void raise_type_error(
+        const std::string& name,
+        const std::string& message
+    ) {
+        std::ostringstream output_stream;
+        output_stream << "Parameter '" << name << "': " << message;
+        throw py::type_error(output_stream.str());
+    }
+
+    inline void raise_value_error(
+        const std::string& name,
+        const std::string& message
+    ) {
+        std::ostringstream output_stream;
+        output_stream << "Parameter '" << name << "': " << message;
+        throw py::value_error(output_stream.str());
+    }
 
     template <typename dtype>
     std::vector<dtype> cast_py_to_vector(
         const py::object& object,
+        const std::string& name,
         const std::string& units = ""
     ) {
         py::object value_object = object;
 
         if (!units.empty()) {
+            if (object.is_none()) {
+                raise_type_error(
+                    name,
+                    "expected a quantity with units compatible with '" + units + "', but received None."
+                );
+            }
+
             if (!py::hasattr(object, "to")) {
-                std::ostringstream oss;
-                oss << "Expected a quantity with units compatible with '" << units
-                    << "', but received an object without units.";
-                throw std::invalid_argument(oss.str());
+                raise_type_error(
+                    name,
+                    "expected a quantity with units compatible with '" + units + "', but received an object without a '.to(...)' method."
+                );
             }
 
             try {
@@ -41,10 +66,10 @@ namespace Casting {
                 );
             }
             catch (const py::error_already_set&) {
-                std::ostringstream oss;
-                oss << "Failed to convert object to '" << units
-                    << "'. Ensure the object has compatible units using FlowCyPy.units.ureg.";
-                throw std::invalid_argument(oss.str());
+                raise_value_error(
+                    name,
+                    "failed unit conversion to '" + units + "'. Ensure the object carries compatible units."
+                );
             }
         }
 
@@ -52,14 +77,33 @@ namespace Casting {
             py::array array = py::reinterpret_borrow<py::array>(value_object);
 
             if (array.ndim() == 0) {
-                return {py::cast<dtype>(array.attr("item")())};
+                try {
+                    return {py::cast<dtype>(array.attr("item")())};
+                }
+                catch (const py::cast_error&) {
+                    raise_type_error(
+                        name,
+                        "scalar array value cannot be converted to the requested numeric type."
+                    );
+                }
             }
 
             if (array.ndim() == 1) {
-                return value_object.cast<std::vector<dtype>>();
+                try {
+                    return value_object.cast<std::vector<dtype>>();
+                }
+                catch (const py::cast_error&) {
+                    raise_type_error(
+                        name,
+                        "1D array elements cannot be converted to the requested numeric type."
+                    );
+                }
             }
 
-            throw std::invalid_argument("Only scalar or 1D array inputs are supported.");
+            raise_value_error(
+                name,
+                "only scalar or 1D array inputs are supported."
+            );
         }
 
         try {
@@ -69,10 +113,21 @@ namespace Casting {
         }
 
         if (py::isinstance<py::sequence>(value_object) && !py::isinstance<py::str>(value_object)) {
-            return value_object.cast<std::vector<dtype>>();
+            try {
+                return value_object.cast<std::vector<dtype>>();
+            }
+            catch (const py::cast_error&) {
+                raise_type_error(
+                    name,
+                    "sequence elements cannot be converted to the requested numeric type."
+                );
+            }
         }
 
-        throw std::invalid_argument("Object cannot be converted to a scalar or sequence.");
+        raise_type_error(
+            name,
+            "object cannot be converted to a scalar or 1D numeric sequence."
+        );
     }
 
     template <typename dtype>
@@ -83,17 +138,19 @@ namespace Casting {
         const std::string& units = ""
     ) {
         if (target_size == 0) {
-            std::ostringstream oss;
-            oss << "Parameter '" << name << "' cannot be broadcast because target_size is 0.";
-            throw std::invalid_argument(oss.str());
+            raise_value_error(
+                name,
+                "cannot be broadcast because target_size is 0."
+            );
         }
 
-        std::vector<dtype> values = cast_py_to_vector<dtype>(object, units);
+        std::vector<dtype> values = cast_py_to_vector<dtype>(object, name, units);
 
         if (values.empty()) {
-            std::ostringstream oss;
-            oss << "Parameter '" << name << "' is empty. Provide a scalar or a non empty array.";
-            throw std::invalid_argument(oss.str());
+            raise_value_error(
+                name,
+                "is empty. Provide a scalar or a non empty array."
+            );
         }
 
         if (values.size() == 1) {
@@ -101,9 +158,11 @@ namespace Casting {
         }
 
         if (values.size() != target_size) {
-            std::ostringstream oss;
-            oss << "Inconsistent sizes: '" << name << "' has size " << values.size() << " but expected 1 or " << target_size << ".";
-            throw std::invalid_argument(oss.str());
+            std::ostringstream output_stream;
+            output_stream
+                << "has size " << values.size()
+                << " but expected size 1 or " << target_size << ".";
+            raise_value_error(name, output_stream.str());
         }
 
         return values;
@@ -115,18 +174,20 @@ namespace Casting {
         const std::string& name,
         const std::string& units = ""
     ) {
-        std::vector<dtype> values = cast_py_to_vector<dtype>(object, units);
+        std::vector<dtype> values = cast_py_to_vector<dtype>(object, name, units);
 
         if (values.empty()) {
-            std::ostringstream oss;
-            oss << "Parameter '" << name << "' is empty. Provide a scalar or a size 1 array.";
-            throw std::invalid_argument(oss.str());
+            raise_value_error(
+                name,
+                "is empty. Provide a scalar or a size 1 array."
+            );
         }
 
         if (values.size() != 1) {
-            std::ostringstream oss;
-            oss << "Parameter '" << name << "' must be a scalar or a size 1 array.";
-            throw std::invalid_argument(oss.str());
+            raise_value_error(
+                name,
+                "must be a scalar or a size 1 array."
+            );
         }
 
         return values[0];

@@ -77,23 +77,27 @@ std::map<std::string, std::vector<double>> cast_py_dict_to_flat_data_map(
     std::map<std::string, std::vector<double>> input_data_map;
 
     for (const auto& item : data_dict) {
-        const std::string channel_name =
-            py::reinterpret_borrow<py::object>(item.first).cast<std::string>();
+        const std::string channel_name = py::reinterpret_borrow<py::object>(item.first).cast<std::string>();
+
+        const py::object channel_object = py::reinterpret_borrow<py::object>(item.second);
 
         if (channel_name == "segment_id") {
             input_data_map[channel_name] = Casting::cast_py_to_vector<double>(
-                py::reinterpret_borrow<py::object>(item.second)
+                channel_object,
+                channel_name
             );
         }
         else if (channel_name == "Time") {
             input_data_map[channel_name] = Casting::cast_py_to_vector<double>(
-                py::reinterpret_borrow<py::object>(item.second),
+                channel_object,
+                channel_name,
                 "second"
             );
         }
         else {
             input_data_map[channel_name] = Casting::cast_py_to_vector<double>(
-                py::reinterpret_borrow<py::object>(item.second),
+                channel_object,
+                channel_name,
                 "volt"
             );
         }
@@ -101,7 +105,6 @@ std::map<std::string, std::vector<double>> cast_py_dict_to_flat_data_map(
 
     return input_data_map;
 }
-
 
 std::map<std::string, std::map<std::string, std::vector<double>>> cast_py_dict_to_nested_data_map(
     const py::dict& data_dict
@@ -133,8 +136,7 @@ py::dict build_python_output_dict_from_processed_double_map(
             continue;
         }
 
-        output_dict[py::str(channel_name)] =
-            as_voltage_quantity(unit_registry, channel_signal);
+        output_dict[py::str(channel_name)] = py::array_t<double>(channel_signal.size(), channel_signal.data()) * unit_registry.attr("volt");
     }
 
     return output_dict;
@@ -492,7 +494,6 @@ PYBIND11_MODULE(digitizer, module) {
                 ``min_voltage`` and ``max_voltage`` are used instead.
             )pbdoc"
         )
-
         .def_property(
             "bandwidth",
             [unit_registry](const Digitizer& self) -> py::object {
@@ -524,7 +525,6 @@ PYBIND11_MODULE(digitizer, module) {
                     Bandwidth in hertz, or ``None`` if unset.
             )pbdoc"
         )
-
         .def_property(
             "sampling_rate",
             [unit_registry](const Digitizer& self) -> py::object {
@@ -552,7 +552,6 @@ PYBIND11_MODULE(digitizer, module) {
                     Sampling rate in hertz.
             )pbdoc"
         )
-
         .def_property(
             "bit_depth",
             [](const Digitizer& self) {
@@ -573,7 +572,6 @@ PYBIND11_MODULE(digitizer, module) {
                 A value of ``0`` disables digitization.
             )pbdoc"
         )
-
         .def_readwrite(
             "use_auto_range",
             &Digitizer::use_auto_range,
@@ -588,7 +586,6 @@ PYBIND11_MODULE(digitizer, module) {
                 The scope of that inference is controlled by ``channel_range_mode``.
             )pbdoc"
         )
-
         .def_readwrite(
             "output_signed_codes",
             &Digitizer::output_signed_codes,
@@ -596,7 +593,6 @@ PYBIND11_MODULE(digitizer, module) {
                 Whether digitized outputs use signed integer like code values.
             )pbdoc"
         )
-
         .def_property(
             "min_voltage",
             [unit_registry](const Digitizer& self) -> py::object {
@@ -678,7 +674,6 @@ PYBIND11_MODULE(digitizer, module) {
                 unless an explicit per channel range overrides it.
             )pbdoc"
         )
-
         .def(
             "set_channel_voltage_range",
             [](Digitizer& self,
@@ -716,7 +711,6 @@ PYBIND11_MODULE(digitizer, module) {
                 ``digitizer.set_channel_voltage_range("forward", -0.2 * ureg.volt, 1.5 * ureg.volt)``
             )pbdoc"
         )
-
         .def(
             "clear_channel_voltage_range",
             &Digitizer::clear_channel_voltage_range,
@@ -730,7 +724,6 @@ PYBIND11_MODULE(digitizer, module) {
                     Name of the detector channel.
             )pbdoc"
         )
-
         .def(
             "clear_all_channel_voltage_ranges",
             &Digitizer::clear_all_channel_voltage_ranges,
@@ -738,7 +731,6 @@ PYBIND11_MODULE(digitizer, module) {
                 Clear all explicit per channel voltage ranges.
             )pbdoc"
         )
-
         .def(
             "has_channel_voltage_range",
             &Digitizer::has_channel_voltage_range,
@@ -789,7 +781,6 @@ PYBIND11_MODULE(digitizer, module) {
                     If the channel has no explicit range override.
             )pbdoc"
         )
-
         .def(
             "set_auto_range",
             [](Digitizer& self, const py::object& signal) {
@@ -916,12 +907,11 @@ PYBIND11_MODULE(digitizer, module) {
                     Otherwise returns an integer code array.
             )pbdoc"
         )
-
         .def(
             "capture_signal",
             [](Digitizer& self, const py::object& signal) {
                 self.capture_signal(
-                    Casting::cast_py_to_vector<double>(signal, "volt")
+                    Casting::cast_py_to_vector<double>(signal, "signal", "volt")
                 );
             },
             py::arg("signal"),
@@ -934,7 +924,6 @@ PYBIND11_MODULE(digitizer, module) {
                     One dimensional voltage signal.
             )pbdoc"
         )
-
         .def(
             "capture_signal",
             [](Digitizer& self, const py::object& signal, const bool use_auto_range) {
@@ -957,7 +946,6 @@ PYBIND11_MODULE(digitizer, module) {
                     instance level voltage range.
             )pbdoc"
         )
-
         .def(
             "digitize_signal",
             [](const Digitizer& self, const py::object& signal) -> py::object {
@@ -1003,7 +991,6 @@ PYBIND11_MODULE(digitizer, module) {
                 This method does not perform automatic range inference.
             )pbdoc"
         )
-
         .def(
             "digitize_data_dict",
             [unit_registry](const Digitizer& self, const py::dict& data_dict) -> py::object {

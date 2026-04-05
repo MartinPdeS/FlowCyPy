@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:10.352** total execution time for 9 files **from all galleries**:
+**00:07.220** total execution time for 9 files **from all galleries**:
 
 .. container::
 
@@ -33,16 +33,16 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_gallery_studies_concentration_sweep.py` (``../examples/studies/concentration_sweep.py``)
-     - 00:04.675
-     - 0.0
-   * - :ref:`sphx_glr_gallery_studies_limit_of_detection.py` (``../examples/studies/limit_of_detection.py``)
-     - 00:03.182
+     - 00:04.677
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_threshold_sensitivity.py` (``../examples/studies/threshold_sensitivity.py``)
-     - 00:02.319
+     - 00:02.543
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_limit_of_detection.py` (``../examples/studies/limit_of_detection.py``)
+     - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_signal_processing.py` (``../examples/studies/signal_processing.py``)
-     - 00:00.175
+     - 00:00.000
      - 0.0
    * - :ref:`sphx_glr_gallery_tutorials_facs_canto.py` (``../examples/tutorials/facs_canto.py``)
      - 00:00.000
