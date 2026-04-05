@@ -85,9 +85,7 @@ void Detector::clear_bandwidth() {
 }
 
 
-bool Detector::bandwidth_is_defined(
-    const double bandwidth
-) const {
+bool Detector::bandwidth_is_defined(const double bandwidth) const {
     return !std::isnan(bandwidth);
 }
 
@@ -170,15 +168,15 @@ std::string Detector::repr() const {
     return
         "Detector("
         "name='" + this->name + "'" +
-        ", phi_angle=" + std::to_string(this->phi_angle) +
+        ", phi_angle=" + std::to_string(this->phi_angle) + "rad" +
         ", numerical_aperture=" + std::to_string(this->numerical_aperture) +
         ", cache_numerical_aperture=" + std::to_string(this->cache_numerical_aperture) +
-        ", gamma_angle=" + std::to_string(this->gamma_angle) +
+        ", gamma_angle=" + std::to_string(this->gamma_angle) + "rad" +
         ", sampling=" + std::to_string(this->sampling) +
-        ", responsivity=" + std::to_string(this->responsivity) +
-        ", dark_current=" + std::to_string(this->dark_current) +
+        ", responsivity=" + std::to_string(this->responsivity) + "A/W" +
+        ", dark_current=" + std::to_string(this->dark_current) + "A" +
         ", bandwidth=" + (
             std::isnan(this->bandwidth) ? std::string("None") : std::to_string(this->bandwidth)
-        ) +
+        ) + "Hz"
         ")";
 }

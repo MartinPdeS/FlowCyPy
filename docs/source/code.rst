@@ -10,9 +10,10 @@ codebase using Sphinx `autoclass` directives.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :hidden:
 
-   code/base.rst
-   code/distributions.rst
-   code/peak_locator.rst
+   code/flow_cytometer
+   code/fluidics
+   code/opto_electronics
+   code/digital_processing

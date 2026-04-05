@@ -46,6 +46,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.intersphinx",
+    "sphinx_design",
 ]
 
 autodoc_typehints = "description"
@@ -65,6 +66,7 @@ def reset_mpl(gallery_conf, fname):
 
 examples_files = [
     "tutorials",
+    "studies",
     "validation",
 ]
 

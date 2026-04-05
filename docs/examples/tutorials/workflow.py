@@ -29,7 +29,6 @@ from FlowCyPy.fluidics import (
     SheathFlowRate,
 )
 
-# from FlowCyPy.sampling_method import GammaModel, ExplicitModel
 from FlowCyPy.fluidics import distributions
 
 flow_cell = FlowCell(
@@ -221,20 +220,3 @@ _ = run_record.plot_digital(figure_size=(12, 8))
 # Step 7: Plot Peak Features
 # --------------------------
 _ = run_record.peaks.plot(x=("forward", "Height"))
-
-
-# %%
-# Step 8: Classify Events from Peak Features
-# ------------------------------------------
-from FlowCyPy.digital_processing.classifier import KmeansClassifier
-
-classifier = KmeansClassifier(number_of_clusters=2)
-
-classified = classifier.run(
-    dataframe=run_record.peaks.unstack("Detector"),
-    features=["Height"],
-    detectors=["side", "forward"],
-)
-
-
-_ = classified.plot(x=("side", "Height"), y=("forward", "Height"))

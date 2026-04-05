@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from MPSPlots import helper
-from TypedUnit import Frequency, Time, Voltage, ureg
+from TypedUnit import Frequency, Time, Voltage
 
 from FlowCyPy.fluidics.event_collection import EventCollection
 
