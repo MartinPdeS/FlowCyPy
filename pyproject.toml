@@ -27,6 +27,7 @@ dynamic = ["version"]
 description = "A package for light scattering computation."
 license = {file = "LICENSE"}
 readme = "README.rst"
+urls = {"Documentation" = "https://martinpdes.github.io/FlowCyPy/", "Repository" = "https://github.com/MartinPdeS/FlowCyPy"}
 requires-python = ">=3.11"
 authors = [{ name="Martin Poinsinet de Sivry-Houle", email="martin.poinsinet.de.sivry@gmail.com"}]
 classifiers = [
@@ -78,7 +79,6 @@ testing = [
     "pytest-json-report ==1.5.0",
     "coverage==7.13.5"
 ]
-
 documentation = [
     "numpydoc==1.10.0",
     "sphinx>=5.1.1",
@@ -87,7 +87,6 @@ documentation = [
     "sphinx_design==0.6.1",
     "pydata-sphinx-theme==0.16.1"
 ]
-
 dev = [
     "flake8 ==7.3.0",
 ]

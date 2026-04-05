@@ -66,57 +66,74 @@ PYBIND11_MODULE(detector, module) {
     py::object unit_registry = get_shared_ureg();
 
     module.doc() = R"pbdoc(
-        FlowCyPy detector interface.
+        Detector models for FlowCyPy.
 
-        This module exposes a detector model for flow cytometry simulations.
-        The detector stores geometric and electrical properties and provides
-        bandwidth dependent signal operations such as dark current noise.
+        This module exposes the detector component used in the opto electronic
+        acquisition chain of a flow cytometry simulation.
 
-        Angles are expected to be Pint quantities compatible with radians.
-        Currents are expected to be Pint quantities compatible with amperes.
-        Frequencies are expected to be Pint quantities compatible with hertz.
-        Responsivity is expected to be compatible with ampere / watt.
+        A detector defines the geometric collection configuration of a channel,
+        together with the electrical conversion from collected optical power to
+        detector current through its responsivity.
+
+        The detector can also apply bandwidth dependent dark current noise to a
+        current trace.
+
+        Quantities are expected to be provided as Pint compatible values:
+
+        - angles in units compatible with radians
+        - current in units compatible with amperes
+        - bandwidth in units compatible with hertz
+        - responsivity in units compatible with ampere per watt
     )pbdoc";
 
     py::class_<Detector>(
         module,
         "Detector",
         R"pbdoc(
-            Represents a photodetector for flow cytometry simulations.
+            Detector model for a flow cytometry acquisition channel.
 
-            This class simulates a photodetector that captures light scattering
-            signals in a flow cytometry setup. It models detector response by
-            incorporating detector specific transformations and optional noise
-            sources into the signal processing workflow.
+            A :class:`Detector` represents the collection geometry and electrical
+            response of a single detector channel.
 
-            The detector supports bandwidth dependent operations such as dark
-            current noise modeling. The bandwidth can be provided explicitly
-            to each method, or stored directly on the detector instance through
-            the ``bandwidth`` attribute. If neither is defined, the corresponding
-            bandwidth dependent computation is skipped.
+            It stores the angular placement of the detector, its numerical
+            aperture, optional obscuration by a central cache, the current
+            responsivity, the dark current level, and an optional bandwidth used
+            for bandwidth dependent noise calculations.
 
-            Parameters
+            In a typical FlowCyPy workflow, detector objects are assembled into an
+            :class:`OptoElectronics` configuration and are used to convert channel
+            specific optical power into detector current prior to amplification and
+            digitization.
+
+            Notes
+            -----
+            This class represents the detector level response of the acquisition
+            chain.
+
+            It does not model downstream analog amplification or digitization.
+            Those stages are handled by the amplifier and digitizer components.
+
+            Attributes
             ----------
             phi_angle : pint.Quantity
-                Primary azimuthal angle of incidence.
+                Azimuthal detector angle.
             numerical_aperture : float
-                Numerical aperture of the detector.
-            cache_numerical_aperture : float, default=0
-                Numerical aperture of the caching element placed in front of
-                the detector.
-            gamma_angle : pint.Quantity, default=0 degree
-                Complementary longitudinal angle of incidence.
-            sampling : int, default=200
-                Number of spatial sampling points used to define the detector support.
-            responsivity : pint.Quantity, default=1 ampere / watt
-                Detector responsivity.
-            dark_current : pint.Quantity, default=0 ampere
-                Detector dark current.
-            bandwidth : pint.Quantity or None, default=None
-                Detector bandwidth.
-            name : str or None, default=None
-                Unique identifier for the detector. If ``None``, a unique identifier
-                derived from the object instance is generated.
+                Numerical aperture of the detector collection cone.
+            cache_numerical_aperture : float
+                Numerical aperture of the central obscuration or cache region.
+            gamma_angle : pint.Quantity
+                Polar or longitudinal detector angle.
+            sampling : int
+                Number of angular or spatial samples used internally to describe
+                the detector support.
+            responsivity : pint.Quantity
+                Detector responsivity expressed in ampere per watt.
+            dark_current : pint.Quantity
+                Mean detector dark current.
+            bandwidth : pint.Quantity or None
+                Stored detector bandwidth used by bandwidth dependent calculations.
+            name : str
+                Detector identifier.
         )pbdoc"
     )
         .def(
@@ -195,7 +212,35 @@ PYBIND11_MODULE(detector, module) {
             py::arg("bandwidth") = py::none(),
             py::arg("name") = py::none(),
             R"pbdoc(
-                Initialize a detector.
+                Initialize a detector channel.
+
+                Parameters
+                ----------
+                phi_angle : pint.Quantity
+                    Azimuthal detector angle.
+                numerical_aperture : float
+                    Numerical aperture of the detector collection cone.
+                cache_numerical_aperture : float, optional
+                    Numerical aperture of the central obscuration. A value of zero means that no central cache or obscuration is applied.
+                gamma_angle : pint.Quantity or None, optional
+                    Longitudinal detector angle. If omitted, a value of zero is used.
+                sampling : int, optional
+                    Number of internal sampling points used to represent the
+                    detector support.
+                responsivity : pint.Quantity or None, optional
+                    Detector responsivity in ampere per watt. If omitted, a unit responsivity of ``1 ampere / watt`` is used.
+                dark_current : pint.Quantity or None, optional
+                    Detector dark current. If omitted, a value of ``0 ampere`` is used.
+                bandwidth : pint.Quantity or None, optional
+                    Detector bandwidth used by bandwidth dependent noise calculations. If omitted, no bandwidth is stored on the detector.
+                name : str or None, optional
+                    Detector name. If omitted, the detector is created with an empty name.
+
+                Notes
+                -----
+                The detector bandwidth stored here acts as a default for methods
+                such as :meth:`apply_dark_current_noise`. A method level bandwidth argument, when provided, overrides the
+                stored detector bandwidth.
             )pbdoc"
         )
 
@@ -214,17 +259,36 @@ PYBIND11_MODULE(detector, module) {
                 if (std::isnan(self.phi_angle)) {
                     throw std::invalid_argument("Detector phi_angle must be defined.");
                 }
-            }
+            },
+            R"pbdoc(
+                Azimuthal detector angle.
+
+                This angle defines the detector position around the optical axis
+                in the transverse plane.
+            )pbdoc"
         )
 
         .def_readwrite(
             "numerical_aperture",
-            &Detector::numerical_aperture
+            &Detector::numerical_aperture,
+            R"pbdoc(
+                Numerical aperture of the detector collection cone.
+
+                Larger values correspond to a wider collection angle and therefore
+                a larger accepted range of scattered directions.
+            )pbdoc"
         )
 
         .def_readwrite(
             "cache_numerical_aperture",
-            &Detector::cache_numerical_aperture
+            &Detector::cache_numerical_aperture,
+            R"pbdoc(
+                Numerical aperture of the central obscuration.
+
+                This value can be used to represent a masked or blocked central
+                region in the detector collection geometry, such as the obscuration
+                often present in forward scatter configurations.
+            )pbdoc"
         )
 
         .def_property(
@@ -242,12 +306,24 @@ PYBIND11_MODULE(detector, module) {
                 if (std::isnan(self.gamma_angle)) {
                     throw std::invalid_argument("Detector gamma_angle must be defined.");
                 }
-            }
+            },
+            R"pbdoc(
+                Longitudinal detector angle.
+
+                This angle complements :attr:`phi_angle` and defines the detector
+                orientation relative to the optical axis.
+            )pbdoc"
         )
 
         .def_readwrite(
             "sampling",
-            &Detector::sampling
+            &Detector::sampling,
+            R"pbdoc(
+                Internal sampling density used to represent the detector support.
+
+                Increasing this value may improve geometric resolution at the cost
+                of additional computation.
+            )pbdoc"
         )
 
         .def_property(
@@ -267,7 +343,13 @@ PYBIND11_MODULE(detector, module) {
                         "Detector responsivity must be non negative."
                     );
                 }
-            }
+            },
+            R"pbdoc(
+                Detector responsivity.
+
+                Responsivity defines the conversion factor between collected optical
+                power and detector current.
+            )pbdoc"
         )
 
         .def_property(
@@ -287,7 +369,13 @@ PYBIND11_MODULE(detector, module) {
                         "Detector dark_current must be non negative."
                     );
                 }
-            }
+            },
+            R"pbdoc(
+                Mean detector dark current.
+
+                This value is used by dark current noise calculations when a valid
+                bandwidth is available.
+            )pbdoc"
         )
 
         .def_property(
@@ -311,24 +399,36 @@ PYBIND11_MODULE(detector, module) {
                         "Detector bandwidth must be strictly positive when provided."
                     );
                 }
-            }
+            },
+            R"pbdoc(
+                Optional detector bandwidth.
+
+                When defined, this bandwidth is used as the default bandwidth for
+                bandwidth dependent detector operations. Setting this attribute to ``None`` removes the stored bandwidth.
+            )pbdoc"
         )
 
         .def_readwrite(
             "name",
-            &Detector::name
+            &Detector::name,
+            R"pbdoc(
+                Detector identifier.
+
+                This name is typically used to label detector channels in the
+                acquisition pipeline and in exported results.
+            )pbdoc"
         )
 
         .def(
             "has_bandwidth",
             &Detector::has_bandwidth,
             R"pbdoc(
-                Return whether a detector bandwidth is defined.
+                Return whether the detector has a stored bandwidth.
 
                 Returns
                 -------
                 bool
-                    ``True`` if ``bandwidth`` is set, otherwise ``False``.
+                    ``True`` if :attr:`bandwidth` is defined, otherwise ``False``.
             )pbdoc"
         )
 
@@ -336,7 +436,11 @@ PYBIND11_MODULE(detector, module) {
             "clear_bandwidth",
             &Detector::clear_bandwidth,
             R"pbdoc(
-                Clear the stored detector bandwidth.
+                Remove the stored detector bandwidth.
+
+                After calling this method, bandwidth dependent operations require an
+                explicit method level bandwidth argument in order to use a finite
+                bandwidth.
             )pbdoc"
         )
 
@@ -366,25 +470,31 @@ PYBIND11_MODULE(detector, module) {
             py::arg("signal"),
             py::arg("bandwidth") = py::none(),
             R"pbdoc(
-                Apply dark current noise directly to a detector current signal.
+                Add dark current noise to a detector current signal.
 
-                Dark current noise is bandwidth dependent. The method first resolves
-                the effective bandwidth from the method argument or from
-                ``self.bandwidth``. If no bandwidth is available, the input signal
-                is returned unchanged.
+                Dark current noise depends on the effective bandwidth used for the
+                calculation. The bandwidth is resolved in the following order:
+
+                1. the method argument ``bandwidth``, when provided
+                2. the detector attribute :attr:`bandwidth`
+                3. no finite bandwidth, in which case the input signal is returned unchanged
 
                 Parameters
                 ----------
                 signal : pint.Quantity
-                    Input detector current signal.
+                    Input current trace expressed in amperes.
                 bandwidth : pint.Quantity or None, optional
-                    Signal bandwidth. If ``None``, ``self.bandwidth`` is used. If both
-                    are undefined, dark current noise is skipped.
+                    Bandwidth to use for the noise calculation. If omitted, the detector stored bandwidth is used.
 
                 Returns
                 -------
                 pint.Quantity
-                    Signal with dark current noise added.
+                    Output current trace with dark current noise added.
+
+                Notes
+                -----
+                This method operates directly on detector current, before any
+                downstream amplifier or digitizer stage.
             )pbdoc"
         )
 
