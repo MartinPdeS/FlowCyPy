@@ -77,6 +77,7 @@ test:
     - python -m pytest --config-file=./pytest.ini
   source_files:
     - tests
+    - pytest.ini
 
 extra:
   recipe-maintainers:
