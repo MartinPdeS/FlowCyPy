@@ -1,201 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 from dataclasses import dataclass, field
-from typing import Any, Iterator, Optional
+from typing import Any, Iterator, List, Optional, Union
 
-from typing import List, Optional, Union
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-from MPSPlots import helper
-import seaborn as sns
-import pint_pandas
-
-from .populations import ExplicitModel, GammaModel
-
+import numpy as np
 import pandas as pd
-from pint_pandas import PintArray
+import seaborn as sns
+from MPSPlots import helper
 
-
-@dataclass
-class PopulationEvents:
-    """
-    Structured container storing all event level data for one population.
-
-    This class is the canonical internal event representation used by the
-    simulation pipeline. It separates three categories of information:
-
-    1. Event level tabular data
-       Stored in ``dataframe``. These are per event quantities such as time,
-       position, velocity, and detector specific amplitudes.
-
-    2. Semantic simulation objects
-       Stored explicitly in ``population`` and ``sampling_method``.
-
-    3. Population level metadata
-       Stored in ``metadata``. These are scalar or aggregate quantities such as
-       mean velocity, expected occupancy per time bin, or diagnostic traces.
-
-    Parameters
-    ----------
-    dataframe : pandas.DataFrame
-        Event level table.
-    population : object
-        Population object that generated the events.
-    sampling_method : object
-        Sampling method used to generate the event block.
-    name : str
-        Population name.
-    scatterer_type : str
-        Scatterer type label associated with the population.
-    metadata : dict[str, Any], optional
-        Additional population level metadata.
-    """
-
-    dataframe: pd.DataFrame
-    population: object
-    sampling_method: object
-    name: str
-    scatterer_type: str
-    metadata: dict[str, Any] = field(default_factory=dict)
-
-    def __len__(self) -> int:
-        """
-        Return the number of stored events.
-
-        Returns
-        -------
-        int
-            Number of rows in the underlying dataframe.
-        """
-        return len(self.dataframe)
-
-    def __getitem__(self, key: str) -> pd.Series:
-        """
-        Return one dataframe column.
-
-        Parameters
-        ----------
-        key : str
-            Column name.
-
-        Returns
-        -------
-        pandas.Series
-            Requested column.
-        """
-        return self.dataframe[key]
-
-    def __setitem__(self, key: str, value: Any) -> None:
-        """
-        Assign one dataframe column.
-
-        Parameters
-        ----------
-        key : str
-            Column name.
-        value : Any
-            Values to assign.
-        """
-        self.dataframe[key] = value
-
-    @property
-    def empty(self) -> bool:
-        """
-        Whether this event block is empty.
-
-        Returns
-        -------
-        bool
-            ``True`` if the dataframe has no rows.
-        """
-        return self.dataframe.empty
-
-    @property
-    def columns(self):
-        """
-        Return dataframe columns.
-
-        Returns
-        -------
-        pandas.Index
-            Column index.
-        """
-        return self.dataframe.columns
-
-    def copy(self) -> "PopulationEvents":
-        """
-        Return a deep copy of this event block.
-
-        Returns
-        -------
-        PopulationEvents
-            Copied event container.
-        """
-        return PopulationEvents(
-            dataframe=self.dataframe.copy(deep=True),
-            population=self.population,
-            sampling_method=self.sampling_method,
-            name=self.name,
-            scatterer_type=self.scatterer_type,
-            metadata=dict(self.metadata),
-        )
-
-    def get_quantity(self, column_name: str):
-        """
-        Return a Pint quantity stored in a Pint backed column.
-
-        Parameters
-        ----------
-        column_name : str
-            Target column name.
-
-        Returns
-        -------
-        pint.Quantity
-            Quantity stored in the specified column.
-        """
-        return self.dataframe[column_name].pint.quantity
-
-    def set_quantity_column(self, column_name: str, value) -> None:
-        """
-        Store a Pint quantity in the dataframe using PintArray.
-
-        Parameters
-        ----------
-        column_name : str
-            Name of the target column.
-        value : pint.Quantity
-            Quantity to store.
-        """
-        self.dataframe[column_name] = PintArray(value, dtype=value.units)
-
-    def to_dataframe(self, include_metadata_in_attrs: bool = True) -> pd.DataFrame:
-        """
-        Export this event block as a standalone dataframe.
-
-        Parameters
-        ----------
-        include_metadata_in_attrs : bool, default=True
-            Whether to copy metadata into ``DataFrame.attrs`` on export.
-
-        Returns
-        -------
-        pandas.DataFrame
-            Exported dataframe copy.
-        """
-        dataframe = self.dataframe.copy(deep=True)
-
-        dataframe.attrs["Name"] = self.name
-        dataframe.attrs["PopulationType"] = self.scatterer_type
-        dataframe.attrs["ScattererType"] = self.scatterer_type
-        dataframe.attrs["SamplingMethod"] = self.sampling_method.__class__.__name__
-
-        if include_metadata_in_attrs:
-            for key, value in self.metadata.items():
-                dataframe.attrs[key] = value
-
-        return dataframe
+from FlowCyPy.sub_frames.events import EventDataFrame
+from .populations import ExplicitModel, GammaModel
+from .population_events import PopulationEvents
 
 
 @dataclass
@@ -212,186 +29,49 @@ class EventCollection:
     events_list: list[PopulationEvents] = field(default_factory=list)
 
     def __iter__(self) -> Iterator[PopulationEvents]:
-        """
-        Iterate over stored event blocks.
-
-        Returns
-        -------
-        Iterator[PopulationEvents]
-            Iterator over the collection.
-        """
         return iter(self.events_list)
 
     def __len__(self) -> int:
-        """
-        Return the number of population blocks.
-
-        Returns
-        -------
-        int
-            Number of stored blocks.
-        """
         return len(self.events_list)
 
     def __getitem__(self, index: int) -> PopulationEvents:
-        """
-        Return one population block by index.
-
-        Parameters
-        ----------
-        index : int
-            Block index.
-
-        Returns
-        -------
-        PopulationEvents
-            Requested block.
-        """
         return self.events_list[index]
 
     def append(self, events: PopulationEvents) -> None:
-        """
-        Append one population event block.
-
-        Parameters
-        ----------
-        events : PopulationEvents
-            Event block to append.
-        """
         self.events_list.append(events)
 
     @property
     def empty(self) -> bool:
-        """
-        Whether the whole collection is empty.
-
-        Returns
-        -------
-        bool
-            ``True`` if every population block is empty.
-        """
         return all(events.empty for events in self.events_list)
 
     def copy(self) -> "EventCollection":
-        """
-        Return a deep copy of the full event collection.
-
-        Returns
-        -------
-        EventCollection
-            Copied event collection.
-        """
         return EventCollection(
             events_list=[events.copy() for events in self.events_list]
         )
 
     def to_dataframes(
-        self, include_metadata_in_attrs: bool = True
-    ) -> list[pd.DataFrame]:
-        """
-        Export all event blocks as standalone dataframes.
-
-        Parameters
-        ----------
-        include_metadata_in_attrs : bool, default=True
-            Whether metadata should be copied into dataframe attrs.
-
-        Returns
-        -------
-        list[pandas.DataFrame]
-            Exported dataframe copies.
-        """
+        self,
+        include_metadata_in_attrs: bool = True,
+    ) -> list[EventDataFrame]:
         return [
             events.to_dataframe(include_metadata_in_attrs=include_metadata_in_attrs)
             for events in self.events_list
         ]
 
-    def get_population_events(self, population_name: str) -> Optional[PopulationEvents]:
-        """
-        Return one event block by population name.
-
-        Parameters
-        ----------
-        population_name : str
-            Population name.
-
-        Returns
-        -------
-        PopulationEvents or None
-            Matching block if found, otherwise ``None``.
-        """
+    def get_population_events(
+        self,
+        population_name: str,
+    ) -> Optional[PopulationEvents]:
         for events in self.events_list:
             if events.name == population_name:
                 return events
 
         return None
 
-    def _add_to_ax(
-        self, ax, time_units: str, filter_population: Optional[List[str]] = None
-    ) -> None:
-        """
-        Internal method to add population events to a matplotlib axis.
-
-        Parameters
-        ----------
-        ax : plt.Axes
-            The matplotlib axis to add the events to.
-        filter_population : List[str], optional
-            List of population names to include. If None, includes all populations.
-        time_units : str, optional
-            Units for the time axis (default is 'second').
-        """
-        palette = "tab10"
-        color_mapping = dict(
-            zip(
-                [event.population.name for event in self],
-                sns.color_palette(palette, len(self)),
-            )
-        )
-
-        for events in self.events_list:
-            if (
-                filter_population is not None
-                and events.population.name not in filter_population
-            ):
-                continue
-            if isinstance(events.sampling_method, ExplicitModel):
-                self._add_explicit_model_to_ax(
-                    events,
-                    ax,
-                    color=color_mapping[events.population.name],
-                    time_units=time_units,
-                )
-            if isinstance(events.sampling_method, GammaModel):
-                self._add_gamma_model_to_ax(
-                    events,
-                    ax,
-                    color=color_mapping[events.population.name],
-                    time_units=time_units,
-                )
-
-        ax.set_xlabel(f"Time [{time_units}]")
-        handles, labels = ax.get_legend_handles_labels()
-
-        if handles:
-            ax.legend()
-
-    def get_concatenated_dataframe(
-        self, filter_population: Optional[List[str]] = None
-    ) -> pd.DataFrame:
-        """
-        Concatenate all non empty population event DataFrames into one MultiIndex DataFrame.
-
-        Parameters
-        ----------
-        filter_population : Optional[List[str]], optional
-            List of population names to include. If None, all populations are included.
-
-        Returns
-        -------
-        pd.DataFrame
-            Concatenated DataFrame with a first index level named ``Population``.
-        """
+    def _get_selected_events(
+        self,
+        filter_population: Optional[List[str]] = None,
+    ) -> list[PopulationEvents]:
         selected_events = []
 
         for events in self.events_list:
@@ -401,64 +81,181 @@ class EventCollection:
             if filter_population is not None and events.name not in filter_population:
                 continue
 
-            dataframe = events.dataframe.copy(deep=True)
+            selected_events.append(events)
 
-            for column_name in dataframe.columns:
-                series = dataframe[column_name]
+        return selected_events
 
-                if not hasattr(series, "pint"):
-                    continue
+    def _get_target_units(
+        self,
+        selected_events: list[PopulationEvents],
+    ) -> dict[str, Any]:
+        target_units: dict[str, Any] = {}
 
-                try:
-                    quantity = series.pint.quantity.to_reduced_units()
-                    dataframe[column_name] = pint_pandas.PintArray(
-                        quantity.magnitude,
-                        dtype=quantity.units,
-                    )
-                except Exception:
-                    continue
+        for events in selected_events:
+            for column_name, unit in events.dataframe.units.items():
+                if column_name not in target_units:
+                    target_units[column_name] = unit
 
-            selected_events.append((events.name, dataframe))
+        return target_units
+
+    def _convert_events_to_target_units(
+        self,
+        events: PopulationEvents,
+        target_units: dict[str, Any],
+    ) -> EventDataFrame:
+        dataframe = events.dataframe.copy(deep=True)
+        dataframe.attrs = {
+            key: value.copy() if isinstance(value, dict) else value
+            for key, value in events.dataframe.attrs.items()
+        }
+
+        for column_name, target_unit in target_units.items():
+            if column_name not in dataframe.columns:
+                continue
+
+            column_unit = dataframe.get_unit(column_name)
+
+            if column_unit is None:
+                continue
+
+            quantity = dataframe.get_quantity(column_name).to(target_unit)
+            dataframe.set_column(column_name=column_name, values=quantity)
+
+        return dataframe
+
+    def _get_empty_population_dataframe(self) -> pd.DataFrame:
+        return pd.DataFrame(
+            index=pd.MultiIndex(
+                levels=[[]],
+                codes=[[]],
+                names=["Population"],
+            )
+        )
+
+    def _build_dataframe_and_units(
+        self,
+        filter_population: Optional[List[str]] = None,
+    ) -> tuple[pd.DataFrame, dict[str, Any]]:
+        selected_events = self._get_selected_events(filter_population=filter_population)
 
         if not selected_events:
-            return pd.DataFrame(
-                index=pd.MultiIndex(
-                    levels=[[]],
-                    codes=[[]],
-                    names=["Population"],
-                )
-            )
+            return self._get_empty_population_dataframe(), {}
 
-        population_event = pd.concat(
-            [dataframe for _, dataframe in selected_events],
-            keys=[name for name, _ in selected_events],
+        target_units = self._get_target_units(selected_events=selected_events)
+
+        dataframe_blocks = []
+        population_names = []
+
+        for events in selected_events:
+            converted_dataframe = self._convert_events_to_target_units(
+                events=events,
+                target_units=target_units,
+            )
+            dataframe_blocks.append(pd.DataFrame(converted_dataframe))
+            population_names.append(events.name)
+
+        population_dataframe = pd.concat(
+            dataframe_blocks,
+            keys=population_names,
             names=["Population"],
         )
 
-        for column_name in population_event.columns:
-            series = population_event[column_name]
+        return population_dataframe, target_units
 
-            if not hasattr(series, "pint"):
-                continue
+    def _get_axis_label(
+        self,
+        column_name: str,
+        target_units: dict[str, Any],
+    ) -> str:
+        unit = target_units.get(column_name, None)
 
-            try:
-                # base_unit = (1 * series.pint.units).to_base_units().units
-                base_unit = series.pint.units
+        if unit is None:
+            return column_name
 
-                population_event[column_name] = series.pint.to(base_unit)
-            except Exception:
-                continue
+        return f"{column_name} [{unit:~P}]"
 
-        return population_event
+    def _get_population_weight_map(
+        self,
+        filter_population: Optional[List[str]] = None,
+    ) -> dict[str, float]:
+        return {
+            events.name: events.metadata["ParticleCount"]
+            .to("particle / milliliter")
+            .magnitude
+            for events in self._get_selected_events(filter_population=filter_population)
+        }
 
-    def plot(self, x: str = None, y: str = None, z: str = None, **kwargs) -> plt.Figure:
-        """
-        Dispatch plotting to 2D or 3D methods based on provided kwargs.
-        """
+    def _get_color_mapping(
+        self,
+        selected_events: list[PopulationEvents],
+    ) -> dict[str, Any]:
+        palette = sns.color_palette("tab10", len(selected_events))
+
+        return {
+            events.population.name: color
+            for events, color in zip(selected_events, palette)
+        }
+
+    def _add_to_ax(
+        self,
+        ax,
+        time_units: str,
+        filter_population: Optional[List[str]] = None,
+    ) -> None:
+        selected_events = self._get_selected_events(filter_population=filter_population)
+
+        color_mapping = self._get_color_mapping(selected_events=selected_events)
+
+        for events in selected_events:
+            if isinstance(events.sampling_method, ExplicitModel):
+                self._add_explicit_model_to_ax(
+                    events=events,
+                    ax=ax,
+                    color=color_mapping[events.population.name],
+                    time_units=time_units,
+                )
+
+            elif isinstance(events.sampling_method, GammaModel):
+                self._add_gamma_model_to_ax(
+                    events=events,
+                    ax=ax,
+                    color=color_mapping[events.population.name],
+                    time_units=time_units,
+                )
+
+        ax.set_xlabel(f"Time [{time_units}]")
+
+        handles, _ = ax.get_legend_handles_labels()
+
+        if handles:
+            ax.legend()
+
+    def get_concatenated_dataframe(
+        self,
+        filter_population: Optional[List[str]] = None,
+    ) -> EventDataFrame:
+        population_dataframe, target_units = self._build_dataframe_and_units(
+            filter_population=filter_population
+        )
+
+        concatenated_dataframe = EventDataFrame(population_dataframe)
+        concatenated_dataframe.attrs["units"] = dict(target_units)
+
+        return concatenated_dataframe
+
+    def plot(
+        self,
+        x: str = None,
+        y: str = None,
+        z: str = None,
+        **kwargs,
+    ) -> plt.Figure:
         if x and not y and not z:
             return self.plot_hist(x=x, **kwargs)
+
         if x and y and not z:
             return self.plot_2d(x=x, y=y, **kwargs)
+
         if x and y and z:
             return self.plot_3d(x=x, y=y, z=z, **kwargs)
 
@@ -480,103 +277,47 @@ class EventCollection:
         scale_by_concentration: bool = False,
         scale_by_bin: bool = False,
     ) -> plt.Figure:
-        """
-        Plot a population resolved histogram for a chosen variable.
+        population_dataframe, target_units = self._build_dataframe_and_units(
+            filter_population=filter_population
+        )
 
-        The histogram can be optionally scaled to reflect physical concentration.
-        Two scaling modes are supported:
-
-            1. particle per milliliter (default)
-            2. particle per (milliliter * bin) if `scale_by_bin=True`
-
-        Parameters
-        ----------
-        x : str
-            Column name to plot.
-        kde : bool
-            Whether to overlay a kernel density estimate.
-        bins : int or sequence
-            Number of bins or explicit bin edges.
-        color : str or dict
-            Color specification.
-        filter_population : list or None
-            Which populations to include.
-        binrange : tuple or None
-            Range for the histogram.
-        common_norm : bool
-            Forwarded to seaborn.
-        common_bins : bool
-            Forwarded to seaborn.
-        scale_by_concentration : bool
-            Scale histogram by population level concentration.
-        scale_by_bin : bool
-            If True, divides weights by the bin width to display densities
-            in particle/(milliliter * bin).
-
-        Returns
-        -------
-        matplotlib.figure.Figure
-        """
-
-        population_event = self.get_concatenated_dataframe(filter_population)
         figure, ax = plt.subplots(1, 1)
 
-        if len(population_event) == 0:
-            ax.set(xlabel=f"{x}", title=f"Distribution of {x}")
+        if len(population_dataframe) == 0:
+            ax.set(
+                xlabel=x,
+                title=f"Distribution of {x}",
+            )
             return figure
 
-        # Convert to plain numeric columns
-        df = population_event.reset_index("Population")
+        dataframe = population_dataframe.reset_index("Population")
+        dataframe[x] = dataframe[x].to_numpy(dtype=float)
 
-        x_units = df[x].max().to_compact().units
-
-        df[x] = df[x].pint.to(x_units)
-
-        df = df.pint.dequantify().droplevel("unit", axis=1)
-
-        # ------------------------------------------------------------
-        # Construct per population weights
-        # ------------------------------------------------------------
         if scale_by_concentration:
-            population_weight_map = {
-                event.metadata["Name"]: event.metadata["ParticleCount"]
-                .to("particle/milliliter")
-                .magnitude
-                for event in self
-            }
-            df["Weight"] = df["Population"].map(population_weight_map)
+            population_weight_map = self._get_population_weight_map(
+                filter_population=filter_population
+            )
+            dataframe["Weight"] = dataframe["Population"].map(population_weight_map)
         else:
-            df["Weight"] = 1.0
+            dataframe["Weight"] = 1.0
 
-        # ------------------------------------------------------------
-        # Compute bin width if user wants particle/(milliliter * bin)
-        # ------------------------------------------------------------
         if scale_by_bin:
-            # Determine edges
             if binrange is None:
-                xmin = df[x].min()
-                xmax = df[x].max()
+                minimum_value = dataframe[x].min()
+                maximum_value = dataframe[x].max()
             else:
-                xmin, xmax = binrange
+                minimum_value, maximum_value = binrange
 
             if isinstance(bins, int):
-                bin_edges = np.linspace(xmin, xmax, bins + 1)
+                bin_edges = np.linspace(minimum_value, maximum_value, bins + 1)
             else:
                 bin_edges = np.asarray(bins)
 
             bin_width = np.diff(bin_edges)[0]
+            dataframe["Weight"] = dataframe["Weight"] / bin_width
 
-            # Scaling population weights by bin width
-            # This changes units from particle/mL to particle/(mL * bin)
-            df["Weight"] = df["Weight"] / bin_width
-        else:
-            bin_width = None  # not used
-
-        # ------------------------------------------------------------
-        # Plot histogram
-        # ------------------------------------------------------------
         sns.histplot(
-            data=df,
+            data=dataframe,
             x=x,
             ax=ax,
             kde=kde,
@@ -586,22 +327,26 @@ class EventCollection:
             binrange=binrange,
             common_norm=common_norm,
             common_bins=common_bins,
-            weights=df["Weight"],
+            weights=dataframe["Weight"],
         )
 
-        # ------------------------------------------------------------
-        # Axis labels
-        # ------------------------------------------------------------
+        x_label = self._get_axis_label(column_name=x, target_units=target_units)
+
         if scale_by_concentration and not scale_by_bin:
-            ylabel = "particle per milliliter"
+            y_label = "particle per milliliter"
         elif scale_by_concentration and scale_by_bin:
-            ylabel = f"Particle (mL {x_units:~P})$^{{-1}}$"
+            x_unit = target_units.get(x, None)
+
+            if x_unit is None:
+                y_label = "particle / (milliliter * bin)"
+            else:
+                y_label = f"Particle (mL {x_unit:~P})$^{{-1}}$"
         else:
-            ylabel = "Counts"
+            y_label = "Counts"
 
         ax.set(
-            xlabel=f"{x} [{x_units:~P}]",
-            ylabel=ylabel,
+            xlabel=x_label,
+            ylabel=y_label,
             title=f"Distribution of {x}",
         )
 
@@ -616,30 +361,14 @@ class EventCollection:
         bandwidth_adjust: float = 1.0,
         filter_population: Optional[List[str]] = None,
     ) -> plt.Figure:
-        """
-        Plots the scatterer sampling distribution using seaborn's jointplot.
-        Parameters
-        ----------
-        x : str
-            The column name for the x-axis.
-        y : str
-            The column name for the y-axis.
-        alpha : float, optional
-            The transparency level for the scatter points (default is 0.8).
-        bandwidth_adjust : float, optional
-            Adjustment factor for the bandwidth of the marginal distributions (default is 1.0).
-        filter_population : Optional[List[str]], optional
-            List of population names to include. If None, includes all populations.
+        population_dataframe, target_units = self._build_dataframe_and_units(
+            filter_population=filter_population
+        )
 
-        Returns
-        -------
-        plt.Figure
-            The matplotlib Figure object containing the plot.
-        """
-        population_event = self.get_concatenated_dataframe(filter_population)
+        dataframe = population_dataframe.reset_index()
 
         grid = sns.jointplot(
-            data=population_event,
+            data=dataframe,
             x=x,
             y=y,
             hue="Population",
@@ -648,9 +377,14 @@ class EventCollection:
             marginal_kws={"bw_adjust": bandwidth_adjust},
         )
 
+        grid.ax_joint.set_xlabel(
+            self._get_axis_label(column_name=x, target_units=target_units)
+        )
+        grid.ax_joint.set_ylabel(
+            self._get_axis_label(column_name=y, target_units=target_units)
+        )
         grid.figure.suptitle("Scatterer Sampling Distribution")
-        grid.ax_joint.set_xlabel(f"{x} [{population_event[x].pint.units:~P}]")
-        grid.ax_joint.set_ylabel(f"{y} [{population_event[y].pint.units:~P}]")
+
         return grid.figure
 
     @helper.post_mpl_plot
@@ -658,72 +392,64 @@ class EventCollection:
         self,
         x: str,
         y: str,
-        z: str = None,
+        z: str,
         hue: str = "Population",
         alpha: float = 0.8,
         filter_population: Optional[List[str]] = None,
     ) -> plt.Figure:
-        """
-        Visualize a 3D scatter plot of scatterer properties.
+        population_dataframe, target_units = self._build_dataframe_and_units(
+            filter_population=filter_population
+        )
 
-        Parameters
-        ----------
-        ax : plt.Axes
-            A matplotlib 3D axis to plot on.
-        x : str, optional
-            Column for the x-axis (default: 'Diameter').
-        y : str, optional
-            Column for the y-axis (default: 'RefractiveIndex').
-        z : str, optional
-            Column for the z-axis (default: 'Density').
-        hue : str, optional
-            Column used for grouping/coloring (default: 'Population').
-        alpha : float, optional
-            Transparency for scatter points (default: 0.8).
-        filter_population : Optional[List[str]], optional
-            List of population names to include. If None, includes all populations.
-
-        Returns
-        -------
-        plt.Figure
-            The figure containing the 3D scatter plot.
-        """
-        population_event = self.get_concatenated_dataframe(filter_population)
+        dataframe = population_dataframe.reset_index()
 
         figure = plt.figure()
         ax = figure.add_subplot(111, projection="3d")
 
-        # df, (x_unit, y_unit, z_unit) = self.get_sub_dataframe(x, y, z)
+        for population_name, group in dataframe.groupby(hue):
+            ax.scatter(
+                group[x].to_numpy(dtype=float),
+                group[y].to_numpy(dtype=float),
+                group[z].to_numpy(dtype=float),
+                label=population_name,
+                alpha=alpha,
+            )
 
-        for population, group in (
-            population_event.pint.dequantify().astype(float).groupby(hue)
-        ):
-            ax.scatter(group[x], group[y], group[z], label=population, alpha=alpha)
-
-        ax.set_xlabel(f"{x} [{population_event[x].pint.units:~P}]", labelpad=20)
-        ax.set_ylabel(f"{y} [{population_event[y].pint.units:~P}]", labelpad=20)
-        ax.set_zlabel(f"{z} [{population_event[z].pint.units:~P}]", labelpad=20)
+        ax.set_xlabel(
+            self._get_axis_label(column_name=x, target_units=target_units),
+            labelpad=20,
+        )
+        ax.set_ylabel(
+            self._get_axis_label(column_name=y, target_units=target_units),
+            labelpad=20,
+        )
+        ax.set_zlabel(
+            self._get_axis_label(column_name=z, target_units=target_units),
+            labelpad=20,
+        )
         ax.set_title("Scatterer Sampling Distribution")
+
         return figure
 
     def _add_explicit_model_to_ax(
-        self, events, ax, color, time_units: str = "second"
+        self,
+        events: PopulationEvents,
+        ax,
+        color,
+        time_units: str = "second",
     ) -> None:
-        """
-        Internal method to add explicit model events to a matplotlib axis.
-
-        Parameters
-        ----------
-        ax : plt.Axes
-            The matplotlib axis to add the events to.
-        time_units : str, optional
-            Units for the time axis (default is 'second').
-        """
         if events.empty:
             return
 
+        time_values = events.get_quantity("Time")
+
+        if not hasattr(time_values, "to"):
+            raise ValueError("Column 'Time' is not unit aware.")
+
+        time_values = time_values.to(time_units)
+
         ax.vlines(
-            events.dataframe.Time.pint.to(time_units).pint.quantity,
+            time_values,
             ymin=0,
             ymax=1,
             transform=ax.get_xaxis_transform(),
@@ -732,18 +458,12 @@ class EventCollection:
         )
 
     def _add_gamma_model_to_ax(
-        self, events, ax, color, time_units: str = "second"
+        self,
+        events: PopulationEvents,
+        ax,
+        color,
+        time_units: str = "second",
     ) -> None:
-        """
-        Internal method to add gamma model events to a matplotlib axis.
-
-        Parameters
-        ----------
-        ax : plt.Axes
-            The matplotlib axis to add the events to.
-        time_units : str, optional
-            Units for the time axis (default is 'second').
-        """
         ax.fill_between(
             x=events.metadata["TimeTrace"].to(time_units),
             y1=0,

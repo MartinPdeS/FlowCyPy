@@ -1,18 +1,21 @@
-from typing import List
-import pandas as pd
-import pint_pandas
-import PyMieSim.experiment as _PyMieSim
-from TypedUnit import ureg
+from typing import List, Any
 
+import numpy as np
+import pandas as pd
+import PyMieSim.experiment as _PyMieSim
+
+from TypedUnit import ureg
 from FlowCyPy.opto_electronics.source import BaseSource
+from FlowCyPy.sub_frames.events import EventDataFrame
 
 
 class ScatteringModel:
     """
-    A simulation interface for computing light scattering signals using PyMieSim based on particle types.
+    Interface for computing scattering signals with PyMieSim from particle event frames.
 
-    This class handles the setup of source, detector, and scatterer configurations for sphere and core-shell
-    particles using PyMieSim's sequential interface, and updates a DataFrame of scattering events accordingly.
+    Each event frame is expected to represent a homogeneous scatterer population,
+    such as spheres or core-shell particles, and must expose the columns required
+    by the corresponding PyMieSim scatterer constructor.
     """
 
     def __init__(
@@ -20,184 +23,147 @@ class ScatteringModel:
         source: BaseSource,
         detector: object,
     ):
-        """
-        Initialize the scattering simulator with source, detector, digitizer, and medium refractive index.
-
-        Parameters
-        ----------
-        source : BaseSource
-            The light source object.
-        detector : object
-            The detector configuration.
-        bandwidth : Frequency
-            Signal bandwidth.
-        """
         self.source = source
         self.detector = detector
 
     def run(
-        self, event_frames: List[pd.DataFrame], compute_cross_section: bool = False
+        self,
+        event_frames: List[EventDataFrame],
+        compute_cross_section: bool = False,
     ) -> None:
         """
-        Run the scattering simulation on the provided DataFrame.
+        Compute scattering for each event frame in place.
 
         Parameters
         ----------
-        event_dataframes : List[pd.DataFrame]
-            List of DataFrame of events containing particle types and properties.
+        event_frames : List[EventDataFrame]
+            Event frames containing particle properties and spatial coordinates.
         compute_cross_section : bool, optional
             Whether to compute and store the scattering cross section.
         """
         for event_dataframe in event_frames:
-            _dict = dict(
+            if len(event_dataframe) == 0:
+                continue
+
+            experiment = self._build_experiment(event_dataframe=event_dataframe)
+
+            self._write_results(
                 event_dataframe=event_dataframe,
+                experiment=experiment,
                 compute_cross_section=compute_cross_section,
             )
-            if event_dataframe.scatterer_type == "SpherePopulation":
-                self._process_sphere(**_dict)
-            elif event_dataframe.scatterer_type == "CoreShellPopulation":
-                self._process_coreshell(**_dict)
-            else:
-                raise ValueError(
-                    f"Unknown scatterer type: {event_dataframe.scatterer_type.iloc[0]}"
-                )
 
-    def _build_source_and_detector(self, event_df: pd.DataFrame, num_particles: int):
-        """
-        Construct PyMieSim source and detector objects.
+    def _build_experiment(
+        self,
+        event_dataframe: EventDataFrame,
+    ):
+        num_particles = len(event_dataframe)
 
-        Parameters
-        ----------
-        event_df : pd.DataFrame
-            Event DataFrame containing x/y positions for amplitude computation.
-        num_particles : int
-            Number of particles to simulate.
-
-        Returns
-        -------
-        tuple
-            (PyMieSim PlaneWave source, PyMieSim Photodiode detector)
-        """
-        amplitude = self.source.get_amplitude_signal(
-            x=event_df["x"].pint.quantity,
-            y=event_df["y"].pint.quantity,
-            z=event_df["y"].pint.quantity * 0,
+        source_set = self._build_source_set(
+            event_dataframe=event_dataframe,
+            num_particles=num_particles,
         )
 
-        source = _PyMieSim.source_set.PlaneWaveSet.build_sequential(
+        detector_set = self._build_detector_set(
+            num_particles=num_particles,
+        )
+
+        scatterer_set = self._build_scatterer_set(
+            event_dataframe=event_dataframe,
+            num_particles=num_particles,
+        )
+
+        return _PyMieSim.Setup(
+            source_set=source_set,
+            scatterer_set=scatterer_set,
+            detector_set=detector_set,
+        )
+
+    def _build_source_set(
+        self,
+        event_dataframe: EventDataFrame,
+        num_particles: int,
+    ):
+
+        x_coordinates = event_dataframe["x"]
+        y_coordinates = event_dataframe["y"]
+
+        z_coordinates = np.zeros(len(event_dataframe)) * x_coordinates.units
+
+        amplitude = self.source.get_amplitude_signal(
+            x=x_coordinates,
+            y=y_coordinates,
+            z=z_coordinates,
+        )
+
+        return _PyMieSim.source_set.PlaneWaveSet.build_sequential(
             target_size=num_particles,
             wavelength=self.source.wavelength,
             polarization=0 * ureg.degree,
             amplitude=amplitude,
         )
 
+    def _build_detector_set(
+        self,
+        num_particles: int,
+    ):
         import PyMieSim.material as _
 
-        detector = _PyMieSim.detector_set.PhotodiodeSet.build_sequential(
+        return _PyMieSim.detector_set.PhotodiodeSet.build_sequential(
             target_size=num_particles,
             numerical_aperture=self.detector.numerical_aperture,
             cache_numerical_aperture=self.detector.cache_numerical_aperture,
             gamma_offset=self.detector.gamma_angle,
             phi_offset=self.detector.phi_angle,
             sampling=self.detector.sampling,
-            medium=1.0,  # TODO: make configurable
+            medium=1.0,
         )
 
-        return source, detector
-
-    def _process_sphere(
+    def _build_scatterer_set(
         self,
-        event_dataframe: pd.DataFrame,
-        compute_cross_section: bool,
+        event_dataframe: EventDataFrame,
+        num_particles: int,
     ):
-        """
-        Process and simulate scattering from spherical particles.
+        scatterer_type = event_dataframe.scatterer_type
 
-        Parameters
-        ----------
-        event_dataframes : pd.DataFrame
-            The full event DataFrame.
-        compute_cross_section : bool
-            Whether to compute the scattering cross section.
-        """
-        num_particles = len(event_dataframe)
-
-        if num_particles == 0:
-            return
-
-        source, detector = self._build_source_and_detector(
-            event_dataframe, num_particles
-        )
-
-        scatterer = _PyMieSim.scatterer_set.SphereSet.build_sequential(
-            target_size=num_particles,
-            diameter=event_dataframe["Diameter"].values.quantity,
-            material=event_dataframe["RefractiveIndex"].values.quantity.magnitude,
-            medium=event_dataframe["MediumRefractiveIndex"].values.quantity.magnitude,
-        )
-
-        experiment = _PyMieSim.Setup(
-            source_set=source,
-            scatterer_set=scatterer,
-            detector_set=detector,
-        )
-
-        event_dataframe.dataframe.loc[:, self.detector.name] = pint_pandas.PintArray(
-            experiment.get_sequential("coupling"), dtype=ureg.watt
-        )
-
-        if compute_cross_section:
-            event_dataframe.loc[:, "Csca"] = pint_pandas.PintArray(
-                experiment.get_sequential("Csca"), dtype=ureg.meter * ureg.meter
+        if scatterer_type == "SpherePopulation":
+            return _PyMieSim.scatterer_set.SphereSet.build_sequential(
+                target_size=num_particles,
+                diameter=event_dataframe["Diameter"],
+                material=event_dataframe["RefractiveIndex"].magnitude,
+                medium=event_dataframe["MediumRefractiveIndex"].magnitude,
             )
 
-    def _process_coreshell(
+        if scatterer_type == "CoreShellPopulation":
+            return _PyMieSim.scatterer.CoreShellSet.build_sequential(
+                target_size=num_particles,
+                core_diameter=event_dataframe["CoreDiameter"],
+                core_refractive_index=event_dataframe["CoreRefractiveIndex"],
+                shell_thickness=event_dataframe["ShellThickness"],
+                shell_refractive_index=event_dataframe["ShellRefractiveIndex"],
+                medium_refractive_index=event_dataframe["MediumRefractiveIndex"],
+            )
+
+        raise ValueError(f"Unknown scatterer type: {scatterer_type}")
+
+    def _write_results(
         self,
-        event_dataframe: pd.DataFrame,
+        event_dataframe: EventDataFrame,
+        experiment,
         compute_cross_section: bool,
-    ):
-        """
-        Process and simulate scattering from core-shell particles.
-
-        Parameters
-        ----------
-        event_dataframe : pd.DataFrame
-            The full event DataFrame.
-        compute_cross_section : bool
-            Whether to compute the scattering cross section.
-        """
-
-        num_particles = len(event_dataframe)
-
-        if num_particles == 0:
-            return
-
-        source, detector = self._build_source_and_detector(
-            event_dataframe, num_particles
-        )
-
-        scatterer = _PyMieSim.scatterer.CoreShellSet.build_sequential(
-            target_size=num_particles,
-            core_diameter=event_dataframe["CoreDiameter"].values.quantity,
-            core_refractive_index=event_dataframe[
-                "CoreRefractiveIndex"
-            ].values.quantity,
-            shell_thickness=event_dataframe["ShellThickness"].values.quantity,
-            shell_refractive_index=event_dataframe[
-                "ShellRefractiveIndex"
-            ].values.quantity,
-            medium_refractive_index=event_dataframe.medium_refractive_index,
-        )
-
-        experiment = _PyMieSim.Setup(
-            source_set=source, scatterer_set=scatterer, detector_set=detector
-        )
-
-        event_dataframe.loc[:, self.detector.name] = pint_pandas.PintArray(
-            experiment.get_sequential("coupling"), dtype=ureg.watt
+    ) -> None:
+        coupling = experiment.get_sequential("coupling") * ureg.watt
+        event_dataframe.dataframe.set_column(
+            column_name=self.detector.name,
+            values=coupling,
         )
 
         if compute_cross_section:
-            event_dataframe.loc[:, "Csca"] = pint_pandas.PintArray(
-                experiment.get_sequential("Csca"), dtype=ureg.meter * ureg.meter
+            scattering_cross_section = experiment.get_sequential("Csca") * (
+                ureg.meter**2
+            )
+
+            event_dataframe.dataframe.set_column(
+                column_name="Csca",
+                values=scattering_cross_section,
             )
