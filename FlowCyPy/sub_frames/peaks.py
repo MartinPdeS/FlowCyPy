@@ -709,3 +709,30 @@ class PeakDataFrame(pd.DataFrame):
             signal = signal[signal <= clip_value]
 
         return signal
+
+    def get_flattened_dataframe(self):
+
+        df = self.copy().unstack("Detector")
+
+        # Move detector first, metric second
+        df.columns = df.columns.swaplevel(0, 1)
+
+        # Sort columns if desired
+        df = df.sort_index(axis=1)
+
+        # Rename metrics to short suffixes
+        metric_map = {
+            "Index": "I",
+            "Height": "H",
+            "Area": "A",
+        }
+
+        # Flatten MultiIndex columns
+        df.columns = [
+            f"{detector}-{metric_map[metric]}" for detector, metric in df.columns
+        ]
+
+        # Optional: bring SegmentID / PeakID back as normal columns
+        df = df.reset_index()
+
+        return df
