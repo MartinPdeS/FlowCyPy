@@ -8,12 +8,12 @@ from .amplifier import Amplifier
 from .coupling_model import ScatteringModel
 from .detector import Detector
 from .digitizer import Digitizer
-from FlowCyPy.utils import dataclass, config_dict, StrictDataclassMixing
+from FlowCyPy.utils import dataclass, config_dict
 from FlowCyPy.fluidics.event_collection import EventCollection
 
 
 @dataclass(config=config_dict)
-class OptoElectronics(StrictDataclassMixing):
+class OptoElectronics:
     """
     Base class for optoelectronic components in flow cytometry simulations.
 

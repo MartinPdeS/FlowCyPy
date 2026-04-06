@@ -182,31 +182,6 @@ class FlowCytometer:
 
         return opto_electronics.convert_optical_power_to_voltage(power_signal_dict)
 
-    def _extract_peaks(
-        self,
-        triggered_digital_dict: dict,
-        digital_processing: DigitalProcessing,
-    ) -> Optional[dict]:
-        """
-        Extract peak features from digitized triggered segments.
-
-        Parameters
-        ----------
-        triggered_digital_dict : dict
-            Triggered digital segment dictionary.
-        digital_processing : DigitalProcessing
-            Processing configuration.
-
-        Returns
-        -------
-        dict or None
-            Peak dictionary, or ``None`` if no peak algorithm is configured.
-        """
-        if digital_processing.peak_algorithm is None:
-            return None
-
-        return digital_processing.peak_algorithm.run(triggered_digital_dict)
-
     def process_analog(
         self,
         run_time: Time,
@@ -276,12 +251,9 @@ class FlowCytometer:
             triggered_digital_dict,
         )
 
-        peaks_dict = self._extract_peaks(
-            triggered_digital_dict=triggered_digital_dict,
-            digital_processing=digital_processing,
-        )
+        if digital_processing.peak_algorithm is not None:
+            peaks_dict = digital_processing.peak_algorithm.run(triggered_digital_dict)
 
-        if peaks_dict is not None:
             run_record.peaks = PeakDataFrame._construct_from_dict(peaks_dict)
 
         return run_record

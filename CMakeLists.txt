@@ -19,16 +19,6 @@ include_directories(${LOCAL_CXX_DIR})
 # --------------------- Set the output directory for libraries --------------------
 
 # --------------------- Platform-specific compiler and linker options --------------------
-# if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-#     set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp" CACHE STRING "")
-#     set(OpenMP_CXX_LIB_NAMES "omp" CACHE STRING "")
-#     find_library(OpenMP_omp_LIBRARY omp HINTS $ENV{LIBOMP_PREFIX}/lib /opt/homebrew/opt/libomp/lib /usr/local/opt/libomp/lib)
-#     if(OpenMP_omp_LIBRARY)
-#         set(OpenMP_CXX_LIBRARIES "${OpenMP_omp_LIBRARY}" CACHE STRING "")
-#     endif()
-# endif()
-
-
 
 # --- macOS: use shared Homebrew libomp, not a vendored copy -------------
 if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
@@ -50,8 +40,6 @@ target_link_libraries(flowcypy_openmp INTERFACE OpenMP::OpenMP_CXX)
 if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     target_include_directories(flowcypy_openmp INTERFACE "${OpenMP_ROOT}/include")
 endif()
-
-
 
 
 # Platform-specific settings for static linking

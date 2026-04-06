@@ -1,6 +1,6 @@
 from TypedUnit import FlowRate, Power, ureg
 
-from FlowCyPy.instances.detector import PMT
+from FlowCyPy.presets.detector import PMT
 from FlowCyPy.flow_cytometer import FlowCytometer
 from FlowCyPy import fluidics
 from FlowCyPy import opto_electronics
