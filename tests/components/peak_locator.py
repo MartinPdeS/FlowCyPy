@@ -170,5 +170,38 @@ def test_global_peak_rejects_non_1d_input():
         locator.compute(bad_input)
 
 
+def test_global_peak_supports_negative_polarity():
+    signal = np.array([0.2, -0.3, -1.5, -4.0, -2.0, -0.1, 0.1])
+    locator = GlobalPeakLocator(
+        polarity="negative",
+        height_mode="raw",
+        baseline_mode="zero",
+    )
+
+    result = locator.get_metrics(signal)
+
+    assert result["Index"][0] == 3
+    assert result["Height"][0] == -4.0
+
+
+def test_global_peak_supports_peak_to_baseline_mode():
+    signal = np.array([1.0, 1.5, 5.0, 2.0, 1.0])
+    locator = GlobalPeakLocator(
+        polarity="positive",
+        height_mode="peak_to_baseline",
+        baseline_mode="edge_mean",
+    )
+
+    result = locator.get_metrics(signal)
+
+    assert result["Index"][0] == 2
+    assert result["Height"][0] == 4.0
+
+
+def test_global_peak_rejects_invalid_measurement_mode():
+    with pytest.raises(RuntimeError):
+        GlobalPeakLocator(height_mode="not_a_mode")
+
+
 if __name__ == "__main__":
     pytest.main(["-s", "-W", "error", __file__])

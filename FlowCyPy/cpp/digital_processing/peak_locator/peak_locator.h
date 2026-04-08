@@ -632,6 +632,10 @@ public:
  */
 class GlobalPeakLocator : public BasePeakLocator {
 public:
+    std::string polarity;
+    std::string height_mode;
+    std::string baseline_mode;
+
     GlobalPeakLocator(
         int max_number_of_peaks,
         int padding_value,
@@ -639,6 +643,9 @@ public:
         bool compute_area,
         bool allow_negative_area,
         std::shared_ptr<BaseSupport> support,
+        const std::string& polarity,
+        const std::string& height_mode,
+        const std::string& baseline_mode,
         bool debug_mode
     );
 
@@ -650,4 +657,29 @@ public:
         const std::vector<double>& value_signal,
         const std::vector<double>& support_signal
     ) const override;
+
+    void validate_measurement_modes() const;
+
+    double compute_baseline(
+        const std::vector<double>& signal,
+        size_t start,
+        size_t end,
+        size_t left_boundary,
+        size_t right_boundary
+    ) const;
+
+    size_t find_measurement_peak_index(
+        const std::vector<double>& signal,
+        size_t start,
+        size_t end,
+        double baseline
+    ) const;
+
+    double compute_peak_height(
+        const std::vector<double>& signal,
+        size_t left_boundary,
+        size_t right_boundary,
+        size_t peak_index,
+        double baseline
+    ) const;
 };

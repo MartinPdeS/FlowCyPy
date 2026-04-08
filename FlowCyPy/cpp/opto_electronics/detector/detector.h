@@ -18,6 +18,7 @@ public:
     int sampling;
     double responsivity;
     double dark_current;
+    double current_noise_density;
     double bandwidth;
     std::string name;
 
@@ -29,6 +30,7 @@ public:
         const int sampling = 200,
         const double responsivity = 1.0,
         const double dark_current = 0.0,
+        const double current_noise_density = 0.0,
         const double bandwidth = std::numeric_limits<double>::quiet_NaN(),
         const std::string& name = ""
     );

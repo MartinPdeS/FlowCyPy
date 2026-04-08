@@ -402,20 +402,25 @@ PYBIND11_MODULE(peak_locator, module) {
         R"pbdoc(
             Global peak detector for 1D signals.
 
-            This locator identifies the maximum value over the full signal.
+            This locator identifies a single event over the full signal, then
+            measures its amplitude according to configurable polarity, height,
+            and baseline conventions.
 
             Width and area semantics are controlled by the supplied support
             object.
         )pbdoc"
     )
         .def(
-            py::init<int, int, bool, bool, bool, std::shared_ptr<BaseSupport>, bool>(),
+            py::init<int, int, bool, bool, bool, std::shared_ptr<BaseSupport>, const std::string&, const std::string&, const std::string&, bool>(),
             py::arg("max_number_of_peaks") = 1,
             py::arg("padding_value") = -1,
             py::arg("compute_width") = false,
             py::arg("compute_area") = false,
             py::arg("allow_negative_area") = true,
             py::arg("support") = std::make_shared<FullWindowSupport>(),
+            py::arg("polarity") = "positive",
+            py::arg("height_mode") = "raw",
+            py::arg("baseline_mode") = "zero",
             py::arg("debug_mode") = false,
             R"pbdoc(
                 Construct a global peak locator.
@@ -441,8 +446,40 @@ PYBIND11_MODULE(peak_locator, module) {
                 support : BaseSupport, default=FullWindowSupport()
                     Support object controlling how width and area are defined.
 
+                polarity : {"positive", "negative", "absolute"}, default="positive"
+                    Rule used to choose the sample representing the event.
+
+                height_mode : {"raw", "peak_to_baseline", "peak_to_peak"}, default="raw"
+                    Rule used to convert the selected event into a reported
+                    height.
+
+                baseline_mode : {"zero", "segment_mean", "edge_mean"}, default="zero"
+                    Baseline convention used by height modes that depend on a
+                    reference level.
+
                 debug_mode : bool, default=False
                     Whether to print debug information during peak detection.
+            )pbdoc"
+        )
+        .def_readonly(
+            "polarity",
+            &GlobalPeakLocator::polarity,
+            R"pbdoc(
+                Measurement polarity used to select the event sample.
+            )pbdoc"
+        )
+        .def_readonly(
+            "height_mode",
+            &GlobalPeakLocator::height_mode,
+            R"pbdoc(
+                Height measurement mode used for the reported event amplitude.
+            )pbdoc"
+        )
+        .def_readonly(
+            "baseline_mode",
+            &GlobalPeakLocator::baseline_mode,
+            R"pbdoc(
+                Baseline convention used by baseline-aware measurement modes.
             )pbdoc"
         );
 }

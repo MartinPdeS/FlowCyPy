@@ -5,6 +5,28 @@
 #include <cstdio>
 #include <stdexcept>
 
+namespace {
+
+bool is_supported_global_polarity(const std::string& polarity) {
+    return polarity == "positive" ||
+           polarity == "negative" ||
+           polarity == "absolute";
+}
+
+bool is_supported_global_height_mode(const std::string& height_mode) {
+    return height_mode == "raw" ||
+           height_mode == "peak_to_baseline" ||
+           height_mode == "peak_to_peak";
+}
+
+bool is_supported_global_baseline_mode(const std::string& baseline_mode) {
+    return baseline_mode == "zero" ||
+           baseline_mode == "segment_mean" ||
+           baseline_mode == "edge_mean";
+}
+
+}  // namespace
+
 
 // -------------------- FullWindowSupport --------------------
 /**
@@ -1191,6 +1213,9 @@ GlobalPeakLocator::GlobalPeakLocator(
     bool compute_area,
     bool allow_negative_area,
     std::shared_ptr<BaseSupport> support,
+    const std::string& polarity,
+    const std::string& height_mode,
+    const std::string& baseline_mode,
     bool debug_mode
 )
     : BasePeakLocator(
@@ -1201,19 +1226,150 @@ GlobalPeakLocator::GlobalPeakLocator(
           max_number_of_peaks,
           std::move(support),
           debug_mode
-      )
+      ),
+      polarity(polarity),
+      height_mode(height_mode),
+      baseline_mode(baseline_mode)
 {
+    this->validate_measurement_modes();
+
     if (this->debug_mode) {
         std::printf(
-            "[GlobalPeakLocator] Initialized | support=%s | compute_width=%d | compute_area=%d | allow_negative_area=%d | padding_value=%d | max_number_of_peaks=%d\n",
+            "[GlobalPeakLocator] Initialized | support=%s | compute_width=%d | compute_area=%d | allow_negative_area=%d | padding_value=%d | max_number_of_peaks=%d | polarity=%s | height_mode=%s | baseline_mode=%s\n",
             this->support->get_name().c_str(),
             static_cast<int>(this->compute_width),
             static_cast<int>(this->compute_area),
             static_cast<int>(this->allow_negative_area),
             this->padding_value,
-            this->max_number_of_peaks
+            this->max_number_of_peaks,
+            this->polarity.c_str(),
+            this->height_mode.c_str(),
+            this->baseline_mode.c_str()
         );
     }
+}
+
+
+void GlobalPeakLocator::validate_measurement_modes() const {
+    if (!is_supported_global_polarity(this->polarity)) {
+        throw std::runtime_error(
+            "GlobalPeakLocator polarity must be one of: 'positive', 'negative', 'absolute'."
+        );
+    }
+
+    if (!is_supported_global_height_mode(this->height_mode)) {
+        throw std::runtime_error(
+            "GlobalPeakLocator height_mode must be one of: 'raw', 'peak_to_baseline', 'peak_to_peak'."
+        );
+    }
+
+    if (!is_supported_global_baseline_mode(this->baseline_mode)) {
+        throw std::runtime_error(
+            "GlobalPeakLocator baseline_mode must be one of: 'zero', 'segment_mean', 'edge_mean'."
+        );
+    }
+}
+
+
+double GlobalPeakLocator::compute_baseline(
+    const std::vector<double>& signal,
+    size_t start,
+    size_t end,
+    size_t left_boundary,
+    size_t right_boundary
+) const {
+    if (this->baseline_mode == "zero") {
+        return 0.0;
+    }
+
+    if (this->baseline_mode == "segment_mean") {
+        double sum = 0.0;
+
+        for (size_t index = start; index < end; ++index) {
+            sum += signal[index];
+        }
+
+        return sum / static_cast<double>(end - start);
+    }
+
+    return 0.5 * (signal[left_boundary] + signal[right_boundary]);
+}
+
+
+size_t GlobalPeakLocator::find_measurement_peak_index(
+    const std::vector<double>& signal,
+    size_t start,
+    size_t end,
+    double baseline
+) const {
+    if (this->polarity == "positive") {
+        return this->find_local_peak(signal.data(), start, end);
+    }
+
+    if (this->polarity == "negative") {
+        size_t best_index = start;
+        double minimum_value = signal[start];
+
+        for (size_t index = start + 1; index < end; ++index) {
+            if (signal[index] < minimum_value) {
+                minimum_value = signal[index];
+                best_index = index;
+            }
+        }
+
+        return best_index;
+    }
+
+    size_t best_index = start;
+    double maximum_excursion = std::abs(signal[start] - baseline);
+
+    for (size_t index = start + 1; index < end; ++index) {
+        const double excursion = std::abs(signal[index] - baseline);
+
+        if (excursion > maximum_excursion) {
+            maximum_excursion = excursion;
+            best_index = index;
+        }
+    }
+
+    return best_index;
+}
+
+
+double GlobalPeakLocator::compute_peak_height(
+    const std::vector<double>& signal,
+    size_t left_boundary,
+    size_t right_boundary,
+    size_t peak_index,
+    double baseline
+) const {
+    const double peak_value = signal[peak_index];
+
+    if (this->height_mode == "raw") {
+        return peak_value;
+    }
+
+    if (this->height_mode == "peak_to_baseline") {
+        if (this->polarity == "positive") {
+            return peak_value - baseline;
+        }
+
+        if (this->polarity == "negative") {
+            return baseline - peak_value;
+        }
+
+        return std::abs(peak_value - baseline);
+    }
+
+    double minimum_value = signal[left_boundary];
+    double maximum_value = signal[left_boundary];
+
+    for (size_t index = left_boundary + 1; index <= right_boundary; ++index) {
+        minimum_value = std::min(minimum_value, signal[index]);
+        maximum_value = std::max(maximum_value, signal[index]);
+    }
+
+    return maximum_value - minimum_value;
 }
 
 
@@ -1281,13 +1437,28 @@ std::vector<PeakData> GlobalPeakLocator::locate_peaks_with_support(
         right_boundary
     );
 
-    const size_t value_peak_index = this->find_local_peak(
-        value_signal.data(),
+    const double baseline = this->compute_baseline(
+        value_signal,
+        0,
+        signal_size,
         left_boundary,
-        right_boundary + 1
+        right_boundary
     );
 
-    const double peak_value = value_signal[value_peak_index];
+    const size_t value_peak_index = this->find_measurement_peak_index(
+        value_signal,
+        left_boundary,
+        right_boundary + 1,
+        baseline
+    );
+
+    const double peak_value = this->compute_peak_height(
+        value_signal,
+        left_boundary,
+        right_boundary,
+        value_peak_index,
+        baseline
+    );
 
     double width = static_cast<double>(this->padding_value);
     double area = static_cast<double>(this->padding_value);
@@ -1322,6 +1493,7 @@ std::vector<PeakData> GlobalPeakLocator::locate_peaks_with_support(
             "support=%s | signal_size=%zu | "
             "support_peak_index=%zu | value_peak_index=%zu | "
             "left_boundary=%zu | right_boundary=%zu | "
+            "baseline=%g | polarity=%s | height_mode=%s | baseline_mode=%s | "
             "peak_value=%g | width=%g | area=%g\n",
             this->support->get_name().c_str(),
             signal_size,
@@ -1329,6 +1501,10 @@ std::vector<PeakData> GlobalPeakLocator::locate_peaks_with_support(
             value_peak_index,
             left_boundary,
             right_boundary,
+            baseline,
+            this->polarity.c_str(),
+            this->height_mode.c_str(),
+            this->baseline_mode.c_str(),
             peak_value,
             width,
             area

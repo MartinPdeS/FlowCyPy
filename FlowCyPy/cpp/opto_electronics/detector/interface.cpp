@@ -43,6 +43,7 @@ py::object as_responsivity_quantity(
     ).attr("to_compact")();
 }
 
+
 }  // namespace
 
 
@@ -66,6 +67,7 @@ PYBIND11_MODULE(detector, module) {
 
         - angles in units compatible with radians
         - current in units compatible with amperes
+        - current noise density in units compatible with ampere per square root hertz
         - bandwidth in units compatible with hertz
         - responsivity in units compatible with ampere per watt
     )pbdoc";
@@ -81,8 +83,9 @@ PYBIND11_MODULE(detector, module) {
 
             It stores the angular placement of the detector, its numerical
             aperture, optional obscuration by a central cache, the current
-            responsivity, the dark current level, and an optional bandwidth used
-            for bandwidth dependent noise calculations.
+            responsivity, the dark current level, an optional additive current
+            noise density, and an optional bandwidth used for bandwidth
+            dependent noise calculations.
 
             In a typical FlowCyPy workflow, detector objects are assembled into an
             :class:`OptoElectronics` configuration and are used to convert channel
@@ -107,6 +110,7 @@ PYBIND11_MODULE(detector, module) {
                 const int sampling,
                 const py::object& responsivity,
                 const py::object& dark_current,
+                const py::object& current_noise_density,
                 const py::object& bandwidth,
                 const py::object& name
             ) {
@@ -140,6 +144,15 @@ PYBIND11_MODULE(detector, module) {
                         "ampere"
                     );
 
+                const double current_noise_density_value =
+                    current_noise_density.is_none()
+                    ? 0.0
+                    : Casting::cast_py_to_scalar<double>(
+                        current_noise_density,
+                        "current_noise_density",
+                        "ampere / hertz**0.5"
+                    );
+
                 const double bandwidth_value = bandwidth.is_none()
                     ? std::numeric_limits<double>::quiet_NaN()
                     : Casting::cast_py_to_scalar<double>(
@@ -160,6 +173,7 @@ PYBIND11_MODULE(detector, module) {
                     sampling,
                     responsivity_value,
                     dark_current_value,
+                    current_noise_density_value,
                     bandwidth_value,
                     detector_name
                 );
@@ -171,6 +185,7 @@ PYBIND11_MODULE(detector, module) {
             py::arg("sampling") = 200,
             py::arg("responsivity") = py::none(),
             py::arg("dark_current") = py::none(),
+            py::arg("current_noise_density") = py::none(),
             py::arg("bandwidth") = py::none(),
             py::arg("name") = py::none(),
             R"pbdoc(
@@ -192,7 +207,9 @@ PYBIND11_MODULE(detector, module) {
                 responsivity : pint.Quantity or None, optional
                     Detector responsivity in ampere per watt. If omitted, a unit responsivity of ``1 ampere / watt`` is used.
                 dark_current : pint.Quantity or None, optional
-                    Detector dark current. If omitted, a value of ``0 ampere`` is used.
+                    Mean detector dark current. If omitted, a value of ``0 ampere`` is used.
+                current_noise_density : pint.Quantity or None, optional
+                    Additional detector current-noise density in ``ampere / sqrt(hertz)``. If omitted, a value of ``0 ampere / sqrt(hertz)`` is used.
                 bandwidth : pint.Quantity or None, optional
                     Detector bandwidth used by bandwidth dependent noise calculations. If omitted, no bandwidth is stored on the detector.
                 name : str or None, optional
@@ -335,8 +352,41 @@ PYBIND11_MODULE(detector, module) {
             R"pbdoc(
                 Mean detector dark current.
 
-                This value is used by dark current noise calculations when a valid
-                bandwidth is available.
+                This value is used to model detector dark-current shot noise and
+                the mean dark-current offset when a valid bandwidth is available.
+            )pbdoc"
+        )
+
+        .def_property(
+            "current_noise_density",
+            [unit_registry](const Detector& self) -> py::object {
+                return (
+                    py::float_(self.current_noise_density) *
+                    unit_registry.attr("ampere") /
+                    unit_registry.attr("sqrt_hertz")
+                ).attr("to_compact")();
+            },
+            [](Detector& self, const py::object& value) {
+                self.current_noise_density = Casting::cast_py_to_scalar<double>(
+                    value,
+                    "current_noise_density",
+                    "ampere / hertz**0.5"
+                );
+
+                if (
+                    std::isnan(self.current_noise_density) ||
+                    self.current_noise_density < 0.0
+                ) {
+                    throw std::invalid_argument(
+                        "Detector current_noise_density must be non negative."
+                    );
+                }
+            },
+            R"pbdoc(
+                Detector current-noise density.
+
+                This value represents an additive current-noise spectral density
+                expressed in ``ampere / sqrt(hertz)``.
             )pbdoc"
         )
 
@@ -457,6 +507,9 @@ PYBIND11_MODULE(detector, module) {
                 -----
                 This method operates directly on detector current, before any
                 downstream amplifier or digitizer stage.
+
+                The total RMS current noise is computed from the quadrature sum of
+                dark-current shot noise and additive current-noise density.
             )pbdoc"
         )
 

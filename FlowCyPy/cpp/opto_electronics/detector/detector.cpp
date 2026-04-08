@@ -15,6 +15,7 @@ Detector::Detector(
     const int sampling,
     const double responsivity,
     const double dark_current,
+    const double current_noise_density,
     const double bandwidth,
     const std::string& name
 )
@@ -25,6 +26,7 @@ Detector::Detector(
       sampling(sampling),
       responsivity(responsivity),
       dark_current(dark_current),
+      current_noise_density(current_noise_density),
       bandwidth(bandwidth),
       name(name)
 {
@@ -59,6 +61,15 @@ Detector::Detector(
 
     if (std::isnan(this->dark_current) || this->dark_current < 0.0) {
         throw std::invalid_argument("Detector dark_current must be non negative.");
+    }
+
+    if (
+        std::isnan(this->current_noise_density) ||
+        this->current_noise_density < 0.0
+    ) {
+        throw std::invalid_argument(
+            "Detector current_noise_density must be non negative."
+        );
     }
 
     if (!std::isnan(this->bandwidth) && this->bandwidth <= 0.0) {
@@ -121,11 +132,20 @@ std::vector<double> Detector::apply_dark_current_noise(
         throw std::invalid_argument("Signal array is empty.");
     }
 
-    const double standard_deviation_noise = std::sqrt(
+    const double dark_current_shot_noise_variance =
         2.0 *
         Constants::e *
         this->dark_current *
-        effective_bandwidth
+        effective_bandwidth;
+
+    const double current_noise_density_variance =
+        this->current_noise_density *
+        this->current_noise_density *
+        effective_bandwidth;
+
+    const double standard_deviation_noise = std::sqrt(
+        dark_current_shot_noise_variance +
+        current_noise_density_variance
     );
 
     std::random_device random_device;
@@ -175,6 +195,7 @@ std::string Detector::repr() const {
         ", sampling=" + std::to_string(this->sampling) +
         ", responsivity=" + std::to_string(this->responsivity) + "A/W" +
         ", dark_current=" + std::to_string(this->dark_current) + "A" +
+        ", current_noise_density=" + std::to_string(this->current_noise_density) + "A/sqrt(Hz)" +
         ", bandwidth=" + (
             std::isnan(this->bandwidth) ? std::string("None") : std::to_string(this->bandwidth)
         ) + "Hz"

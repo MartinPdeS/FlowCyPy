@@ -565,7 +565,8 @@ PYBIND11_MODULE(digitizer, module) {
             [](Digitizer& self,
                const std::string& channel_name,
                const py::object& minimum_voltage,
-               const py::object& maximum_voltage) {
+               const py::object& maximum_voltage
+            ) {
                 self.set_channel_voltage_range(
                     channel_name,
                     Casting::cast_py_to_scalar<double>(minimum_voltage, "minimum_voltage", "volt"),

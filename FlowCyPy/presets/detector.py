@@ -11,6 +11,9 @@ class PMT:
         numerical_aperture: ureg.Quantity,
         responsivity: ureg.Quantity = ureg.Quantity(0.2, ureg.ampere / ureg.watt),
         dark_current: ureg.Quantity = ureg.Quantity(1e-9, ureg.ampere),
+        current_noise_density: ureg.Quantity = ureg.Quantity(
+            0.0, ureg.ampere / ureg.hertz**0.5
+        ),
         **kwargs,
     ):
         return Detector(
@@ -19,6 +22,7 @@ class PMT:
             numerical_aperture=numerical_aperture,
             responsivity=responsivity,
             dark_current=dark_current,
+            current_noise_density=current_noise_density,
             **kwargs,
         )
 
@@ -34,6 +38,7 @@ class PIN:
             0.5, ureg.ampere / ureg.watt
         ),  # Higher responsivity for PIN
         dark_current=ureg.Quantity(1e-8, ureg.ampere),  # Slightly higher dark current
+        current_noise_density=ureg.Quantity(0.0, ureg.ampere / ureg.hertz**0.5),
         **kwargs,
     ):
         return Detector(
@@ -42,6 +47,7 @@ class PIN:
             numerical_aperture=numerical_aperture,
             responsivity=responsivity,
             dark_current=dark_current,
+            current_noise_density=current_noise_density,
             **kwargs,
         )
 
@@ -57,6 +63,7 @@ class APD:
             0.7, ureg.ampere / ureg.watt
         ),  # APDs often have high responsivity
         dark_current=ureg.Quantity(5e-9, ureg.ampere),
+        current_noise_density=ureg.Quantity(0.0, ureg.ampere / ureg.hertz**0.5),
         **kwargs,
     ):
         return Detector(
@@ -65,5 +72,6 @@ class APD:
             numerical_aperture=numerical_aperture,
             responsivity=responsivity,
             dark_current=dark_current,
+            current_noise_density=current_noise_density,
             **kwargs,
         )
