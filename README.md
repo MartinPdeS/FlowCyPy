@@ -11,8 +11,8 @@
 | FlowCyPy/fluidics/scatterer\_collection.py    |       31 |        7 |       12 |        2 |     74.42% |37-39, 79, 99, 109-112 |
 | FlowCyPy/opto\_electronics/coupling\_model.py |       45 |        6 |       10 |        3 |     80.00% |46, 137-147, 162-166 |
 | FlowCyPy/opto\_electronics/main.py            |       64 |        3 |       26 |        4 |     92.22% |129, 133-\>140, 160, 245 |
-| FlowCyPy/presets/detector.py                  |       11 |       11 |        0 |        0 |      0.00% |      1-62 |
-| FlowCyPy/presets/flow\_cytometer.py           |       42 |       42 |        0 |        0 |      0.00% |     1-208 |
+| FlowCyPy/presets/detector.py                  |       11 |       11 |        0 |        0 |      0.00% |      1-69 |
+| FlowCyPy/presets/flow\_cytometer.py           |       75 |       75 |        0 |        0 |      0.00% |     1-423 |
 | FlowCyPy/presets/population.py                |       24 |       24 |        2 |        0 |      0.00% |      1-66 |
 | FlowCyPy/run\_record.py                       |       78 |       24 |       20 |        3 |     62.24% |84, 97, 110-113, 126-132, 144, 157-160, 236, 248, 270-283, 294 |
 | FlowCyPy/sub\_frames/acquisition.py           |      139 |       37 |       66 |       19 |     68.78% |43, 56-\>exit, 86, 106-111, 139, 142, 149, 152, 163, 169, 174, 213, 216, 239, 249, 258-259, 302, 310, 321, 329, 337-\>340, 340-\>344, 355-378, 390-395 |
@@ -21,7 +21,7 @@
 | FlowCyPy/sub\_frames/peaks.py                 |      226 |      197 |       88 |        0 |      9.24% |24, 27, 77-176, 182-191, 211-213, 233-235, 251-252, 272-287, 321-338, 434-629, 654-674, 696-711, 715-738 |
 | FlowCyPy/sub\_frames/triggered.py             |       97 |       76 |       36 |        0 |     15.79% |30, 41-44, 64-69, 111-178, 185, 192, 213-219, 237-244, 256-261, 272-292, 303-316 |
 | FlowCyPy/workflow.py                          |       44 |       44 |        4 |        0 |      0.00% |     1-157 |
-| **TOTAL**                                     | **1260** |  **676** |  **398** |   **53** | **42.28%** |           |
+| **TOTAL**                                     | **1293** |  **709** |  **398** |   **53** | **41.45%** |           |
 
 3 files skipped due to complete coverage.
 
