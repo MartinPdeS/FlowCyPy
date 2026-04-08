@@ -1,0 +1,857 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Digital processing &#8212; FlowCyPy  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/_static/default.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'code/digital_processing';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.0.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            true;
+        </script>
+    <link rel="icon" href="../_static/thumbnail.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Coding examples" href="../examples.html" />
+    <link rel="prev" title="Opto-electronics" href="opto_electronics.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../_static/thumbnail.png" class="logo__image only-dark" alt=""/>
+    <img src="../_static/thumbnail.png" class="logo__image only-light pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">FlowCyPy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../code.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Coding examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory.html">
+    Theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../internal.html">
+    Internal
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/FlowCyPy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/FlowCyPy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Anaconda</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../code.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Coding examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory.html">
+    Theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../internal.html">
+    Internal
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/FlowCyPy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/FlowCyPy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Anaconda</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="flow_cytometer.html">Flow cytometer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fluidics.html">Fluidics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opto_electronics.html">Opto-electronics</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Digital processing</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../code.html" class="nav-link">API reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Digital processing</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="digital-processing">
+<span id="id1"></span><h1>Digital processing<a class="headerlink" href="#digital-processing" title="Link to this heading">#</a></h1>
+<p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">FlowCyPy.digital_processing</span></code> package defines the digital analysis stage applied to sampled detector traces.</p>
+<p>It is responsible for isolating candidate events from continuous signals and extracting numerical features from each detected segment.</p>
+<p>In a typical workflow, the digitized waveforms are first segmented by a discriminator and then summarized by a peak locator.</p>
+<p>The typical workflow is:</p>
+<ol class="arabic simple">
+<li><p>define a discriminator to extract relevant signal segments</p></li>
+<li><p>define a peak locator to compute event features within each segment</p></li>
+<li><p>combine both into a <a class="reference internal" href="#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.digital_processing.DigitalProcessing"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowCyPy.digital_processing.DigitalProcessing</span></code></a> object</p></li>
+</ol>
+<p>This configuration is then passed to the cytometer processing pipeline to transform raw sampled traces into event level measurements.</p>
+<section id="digital-processing-configuration">
+<h2>Digital processing configuration<a class="headerlink" href="#digital-processing-configuration" title="Link to this heading">#</a></h2>
+<p>The <a class="reference internal" href="#FlowCyPy.digital_processing.DigitalProcessing" title="FlowCyPy.digital_processing.DigitalProcessing"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowCyPy.digital_processing.DigitalProcessing</span></code></a> class groups the discriminator and peak extraction algorithm into a single processing configuration.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.DigitalProcessing">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DigitalProcessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">discriminator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peak_algorithm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/digital_processing/main.html#DigitalProcessing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.digital_processing.DigitalProcessing" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Container for analog and digital signal processing stages in a simulated flow cytometry pipeline.</p>
+<p>This class orchestrates the application of analog electronic filtering, digitization, triggering,
+and peak detection algorithms. It integrates key building blocks of the signal acquisition chain
+in a modular and extensible way.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>discriminator</strong> (<em>discriminator.BaseDiscriminator</em>) – Component responsible for extracting signal segments based on threshold-crossing
+or window-based logic applied to the analog signal.</p></li>
+<li><p><strong>peak_algorithm</strong> (<em>peak_locator.BasePeakLocator</em>) – Peak detection algorithm that locates and characterizes peaks in the digitized signal
+(e.g., based on amplitude, area, or width).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="discriminators">
+<h2>Discriminators<a class="headerlink" href="#discriminators" title="Link to this heading">#</a></h2>
+<p>Discriminators are responsible for selecting relevant signal segments from continuous detector traces.</p>
+<p>They define the criteria used to initiate and terminate event windows, typically through threshold crossings, buffered extraction, or dual threshold logic.</p>
+<p>These classes isolate candidate particle events prior to feature extraction.</p>
+<section id="fixed-window">
+<h3>Fixed window<a class="headerlink" href="#fixed-window" title="Link to this heading">#</a></h3>
+<p>The fixed window discriminator extracts segments using a fixed length window around each threshold crossing or trigger condition.</p>
+<p>It is useful when a constant event support is desired for all detected segments.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.FixedWindow">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FixedWindow</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.FixedWindow" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDiscriminator</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.FixedWindow.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.digital_processing.discriminator.FixedWindow" title="FlowCyPy.digital_processing.discriminator.FixedWindow"><span class="pre">FlowCyPy.digital_processing.discriminator.FixedWindow</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.FixedWindow.run" title="Link to this definition">#</a></dt>
+<dd><p>Execute fixed window trigger detection.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.FixedWindow.threshold">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">threshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.FixedWindow.threshold" title="Link to this definition">#</a></dt>
+<dd><p>Threshold object storing the symbolic expression and resolved numeric value.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="dynamic-window">
+<h3>Dynamic window<a class="headerlink" href="#dynamic-window" title="Link to this heading">#</a></h3>
+<p>The dynamic window discriminator defines segment boundaries from the signal itself.</p>
+<p>It supports threshold based extraction with configurable pre and post buffering and is useful when event duration varies across the dataset.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DynamicWindow">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DynamicWindow</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DynamicWindow" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDiscriminator</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DynamicWindow.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.digital_processing.discriminator.DynamicWindow" title="FlowCyPy.digital_processing.discriminator.DynamicWindow"><span class="pre">FlowCyPy.digital_processing.discriminator.DynamicWindow</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DynamicWindow.run" title="Link to this definition">#</a></dt>
+<dd><p>Execute dynamic window trigger detection.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DynamicWindow.threshold">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">threshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DynamicWindow.threshold" title="Link to this definition">#</a></dt>
+<dd><p>Threshold object storing the symbolic expression and resolved numeric value.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="double-threshold">
+<h3>Double threshold<a class="headerlink" href="#double-threshold" title="Link to this heading">#</a></h3>
+<p>The double threshold discriminator uses separate start and stop criteria.</p>
+<p>This is useful when more stable event opening and closing behavior is needed, especially in noisy traces or when hysteresis is desirable.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DoubleThreshold">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DoubleThreshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDiscriminator</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DoubleThreshold.lower_threshold">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lower_threshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.lower_threshold" title="Link to this definition">#</a></dt>
+<dd><p>Threshold object storing the symbolic expression and resolved numeric value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DoubleThreshold.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold" title="FlowCyPy.digital_processing.discriminator.DoubleThreshold"><span class="pre">FlowCyPy.digital_processing.discriminator.DoubleThreshold</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.run" title="Link to this definition">#</a></dt>
+<dd><p>Execute double threshold trigger detection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DoubleThreshold.set_debounce_enabled">
+<span class="sig-name descname"><span class="pre">set_debounce_enabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold" title="FlowCyPy.digital_processing.discriminator.DoubleThreshold"><span class="pre">FlowCyPy.digital_processing.discriminator.DoubleThreshold</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">debounce_enabled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.set_debounce_enabled" title="Link to this definition">#</a></dt>
+<dd><p>Update debounce behavior after construction.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DoubleThreshold.set_min_window_duration">
+<span class="sig-name descname"><span class="pre">set_min_window_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold" title="FlowCyPy.digital_processing.discriminator.DoubleThreshold"><span class="pre">FlowCyPy.digital_processing.discriminator.DoubleThreshold</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_window_duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.set_min_window_duration" title="Link to this definition">#</a></dt>
+<dd><p>Update minimum window duration after construction.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.discriminator.DoubleThreshold.threshold">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">threshold</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.threshold" title="Link to this definition">#</a></dt>
+<dd><p>Threshold object storing the symbolic expression and resolved numeric value.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="peak-locators">
+<h2>Peak locators<a class="headerlink" href="#peak-locators" title="Link to this heading">#</a></h2>
+<p>Peak locators compute numerical descriptors from each segmented event.</p>
+<p>Typical outputs include peak position, peak height, width, area, or other summary metrics derived from the extracted waveform support.</p>
+<p>Different algorithms can be used depending on whether the goal is global maximum extraction, local peak detection, or more specialized pulse analysis.</p>
+<section id="global-peak-locator">
+<h3>Global peak locator<a class="headerlink" href="#global-peak-locator" title="Link to this heading">#</a></h3>
+<p>The global peak locator identifies the dominant peak within each event segment and computes summary features from that support.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GlobalPeakLocator</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePeakLocator</span></code></p>
+<p>Global peak detector for 1D signals.</p>
+<p>This locator identifies a single event over the full signal, then
+measures its amplitude according to configurable polarity, height,
+and baseline conventions.</p>
+<p>Width and area semantics are controlled by the supplied support
+object.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.baseline_mode">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">baseline_mode</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.baseline_mode" title="Link to this definition">#</a></dt>
+<dd><p>Baseline convention used by baseline-aware measurement modes.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.height_mode">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">height_mode</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.height_mode" title="Link to this definition">#</a></dt>
+<dd><p>Height measurement mode used for the reported event amplitude.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.polarity">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">polarity</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.polarity" title="Link to this definition">#</a></dt>
+<dd><p>Measurement polarity used to select the event sample.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="sliding-window-peak-locator">
+<h3>Sliding window peak locator<a class="headerlink" href="#sliding-window-peak-locator" title="Link to this heading">#</a></h3>
+<p>The sliding window peak locator searches for peaks using a moving support window.</p>
+<p>It is useful when feature extraction should be tied to localized signal structure rather than the full event segment.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.digital_processing.peak_locator.SlidingWindowPeakLocator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SlidingWindowPeakLocator</span></span><a class="headerlink" href="#FlowCyPy.digital_processing.peak_locator.SlidingWindowPeakLocator" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePeakLocator</span></code></p>
+<p>Sliding window peak detector for 1D signals.</p>
+<p>One local maximum is extracted per window. The resulting peaks are
+sorted by descending height, and the strongest peaks are returned in
+fixed-size output arrays.</p>
+<p>Width and area semantics are controlled by the supplied support
+object.</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading">#</a></h2>
+<p>The example below shows a typical digital processing configuration using a fixed window discriminator and a global peak locator.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.digital_processing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DigitalProcessing</span><span class="p">,</span>
+    <span class="n">peak_locator</span><span class="p">,</span>
+    <span class="n">discriminator</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">triggering</span> <span class="o">=</span> <span class="n">discriminator</span><span class="o">.</span><span class="n">FixedWindow</span><span class="p">(</span>
+    <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="s2">&quot;4sigma&quot;</span><span class="p">,</span>
+    <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+    <span class="n">post_buffer</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+    <span class="n">max_triggers</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">peak_algorithm</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span><span class="p">()</span>
+
+<span class="n">digital_processing</span> <span class="o">=</span> <span class="n">DigitalProcessing</span><span class="p">(</span>
+    <span class="n">discriminator</span><span class="o">=</span><span class="n">triggering</span><span class="p">,</span>
+    <span class="n">peak_algorithm</span><span class="o">=</span><span class="n">peak_algorithm</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#digital-processing-configuration">Digital processing configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.DigitalProcessing"><code class="docutils literal notranslate"><span class="pre">DigitalProcessing</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#discriminators">Discriminators</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed-window">Fixed window</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.discriminator.FixedWindow"><code class="docutils literal notranslate"><span class="pre">FixedWindow</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.discriminator.FixedWindow.run"><code class="docutils literal notranslate"><span class="pre">FixedWindow.run()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.discriminator.FixedWindow.threshold"><code class="docutils literal notranslate"><span class="pre">FixedWindow.threshold</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dynamic-window">Dynamic window</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.discriminator.DynamicWindow"><code class="docutils literal notranslate"><span class="pre">DynamicWindow</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.discriminator.DynamicWindow.run"><code class="docutils literal notranslate"><span class="pre">DynamicWindow.run()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.discriminator.DynamicWindow.threshold"><code class="docutils literal notranslate"><span class="pre">DynamicWindow.threshold</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#double-threshold">Double threshold</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold"><code class="docutils literal notranslate"><span class="pre">DoubleThreshold</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.lower_threshold"><code class="docutils literal notranslate"><span class="pre">DoubleThreshold.lower_threshold</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.run"><code class="docutils literal notranslate"><span class="pre">DoubleThreshold.run()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.set_debounce_enabled"><code class="docutils literal notranslate"><span class="pre">DoubleThreshold.set_debounce_enabled()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.set_min_window_duration"><code class="docutils literal notranslate"><span class="pre">DoubleThreshold.set_min_window_duration()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.discriminator.DoubleThreshold.threshold"><code class="docutils literal notranslate"><span class="pre">DoubleThreshold.threshold</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#peak-locators">Peak locators</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#global-peak-locator">Global peak locator</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator"><code class="docutils literal notranslate"><span class="pre">GlobalPeakLocator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.baseline_mode"><code class="docutils literal notranslate"><span class="pre">GlobalPeakLocator.baseline_mode</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.height_mode"><code class="docutils literal notranslate"><span class="pre">GlobalPeakLocator.height_mode</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.peak_locator.GlobalPeakLocator.polarity"><code class="docutils literal notranslate"><span class="pre">GlobalPeakLocator.polarity</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sliding-window-peak-locator">Sliding window peak locator</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.digital_processing.peak_locator.SlidingWindowPeakLocator"><code class="docutils literal notranslate"><span class="pre">SlidingWindowPeakLocator</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/code/digital_processing.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, Martin Poinsinet de Sivry-Houle.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

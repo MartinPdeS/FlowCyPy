@@ -1,0 +1,2229 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Opto-electronics &#8212; FlowCyPy  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/_static/default.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'code/opto_electronics';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.0.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            true;
+        </script>
+    <link rel="icon" href="../_static/thumbnail.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Digital processing" href="digital_processing.html" />
+    <link rel="prev" title="Fluidics" href="fluidics.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../_static/thumbnail.png" class="logo__image only-dark" alt=""/>
+    <img src="../_static/thumbnail.png" class="logo__image only-light pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">FlowCyPy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../code.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Coding examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory.html">
+    Theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../internal.html">
+    Internal
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/FlowCyPy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/FlowCyPy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Anaconda</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../code.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Coding examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory.html">
+    Theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../internal.html">
+    Internal
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/FlowCyPy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/FlowCyPy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Anaconda</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="flow_cytometer.html">Flow cytometer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fluidics.html">Fluidics</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Opto-electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="digital_processing.html">Digital processing</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../code.html" class="nav-link">API reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Opto-electronics</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="opto-electronics">
+<span id="id1"></span><h1>Opto-electronics<a class="headerlink" href="#opto-electronics" title="Link to this heading">#</a></h1>
+<p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">FlowCyPy.opto_electronics</span></code> package defines the optical and electronic acquisition chain of the simulation.</p>
+<p>It describes how particles are illuminated, how scattered light is collected by detectors, how the resulting photocurrent is amplified and filtered, and how analog signals are digitized before digital signal processing.</p>
+<p>Together, these components determine the temporal shape, amplitude, bandwidth, and noise properties of the recorded detector traces.</p>
+<p>The typical workflow is:</p>
+<ol class="arabic simple">
+<li><p>define a light source</p></li>
+<li><p>configure one or more detectors</p></li>
+<li><p>specify the analog front-end, including amplification and optional filtering</p></li>
+<li><p>define the digitizer settings</p></li>
+<li><p>combine everything into an <a class="reference internal" href="#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.opto_electronics.OptoElectronics"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowCyPy.opto_electronics.OptoElectronics</span></code></a> object</p></li>
+</ol>
+<p>This configuration is then passed to the cytometer to simulate the acquisition chain from optical excitation to sampled digital signals.</p>
+<section id="opto-electronic-configuration">
+<h2>Opto-electronic configuration<a class="headerlink" href="#opto-electronic-configuration" title="Link to this heading">#</a></h2>
+<p>The <a class="reference internal" href="#FlowCyPy.opto_electronics.OptoElectronics" title="FlowCyPy.opto_electronics.OptoElectronics"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowCyPy.opto_electronics.OptoElectronics</span></code></a> class groups the source, detectors, amplifier, digitizer, and optional analog processing stages into a single configuration object.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">OptoElectronics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">digitizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analog_processing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for optoelectronic components in flow cytometry simulations.</p>
+<p>This class serves as a base for various optoelectronic components, such as detectors and
+signal generators, providing common functionality and attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>detectors</strong> (<em>List</em><em>[</em><a class="reference internal" href="#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.detector.Detector"><em>Detector</em></a><em>]</em><em>, </em><em>optional</em>) – A list of Detector instances to be included in the optoelectronics setup.</p></li>
+<li><p><strong>source</strong> (<em>source.BaseSource</em>) – The light source instance used in the setup.</p></li>
+<li><p><strong>amplifier</strong> (<a class="reference internal" href="#FlowCyPy.opto_electronics.amplifier.Amplifier" title="FlowCyPy.opto_electronics.amplifier.Amplifier"><em>Amplifier</em></a>) – The amplifier instance used to amplify the detected signals.</p></li>
+<li><p><strong>digitizer</strong> (<a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><em>Digitizer</em></a>) – The digitizer instance used to convert analog signals to digital form.</p></li>
+<li><p><strong>analog_processing</strong> (<em>List</em><em>[</em><a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><em>circuits.BaseCircuit</em></a><em>]</em>) – List of analog processing circuits applied to the signals.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.add_coupling_to_dataframe">
+<span class="sig-name descname"><span class="pre">add_coupling_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_collection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_cross_section</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.add_coupling_to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.add_coupling_to_dataframe" title="Link to this definition">#</a></dt>
+<dd><p>Computes the detected signal for each scatterer in the provided DataFrame and updates it in place.
+This method iterates over the list of detectors and computes the detected signal for each scatterer
+using the <cite>compute_detected_signal</cite> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_collection</strong> (<em>EventCollection</em>) – Collection of dataframe containing scatterer properties. It must include a column named ‘type’ with values
+‘Sphere’ or ‘CoreShell’, and additional columns required for each scatterer type.</p></li>
+<li><p><strong>compute_cross_section</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the scattering cross section (Csca) is computed and added to the DataFrame under the
+column ‘Csca’. Default is False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.amplifier">
+<span class="sig-name descname"><span class="pre">amplifier</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#FlowCyPy.opto_electronics.amplifier.Amplifier" title="FlowCyPy.opto_electronics.amplifier.Amplifier"><span class="pre">Amplifier</span></a></em><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.amplifier" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.analog_processing">
+<span class="sig-name descname"><span class="pre">analog_processing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><span class="pre">BaseCircuit</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></em><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.analog_processing" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.apply_analog_processing">
+<span class="sig-name descname"><span class="pre">apply_analog_processing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analog_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.apply_analog_processing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.apply_analog_processing" title="Link to this definition">#</a></dt>
+<dd><p>Apply analog post processing circuits to an analog signal dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>analog_dict</strong> (<em>dict</em>) – Analog voltage signals.</p></li>
+<li><p><strong>signal_processing</strong> (<em>SignalProcessing</em>) – Processing configuration.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Processed analog signal dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.apply_detector_current_noise">
+<span class="sig-name descname"><span class="pre">apply_detector_current_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">photocurrent_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.apply_detector_current_noise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.apply_detector_current_noise" title="Link to this definition">#</a></dt>
+<dd><p>Apply detector current noise to photocurrent traces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal_dict</strong> (<em>dict</em>) – Photocurrent signal dictionary.</p></li>
+<li><p><strong>photocurrent_dict</strong> (<em>dict</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated photocurrent signal dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.apply_source_noise_to_optical_signals">
+<span class="sig-name descname"><span class="pre">apply_source_noise_to_optical_signals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power_signal_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.apply_source_noise_to_optical_signals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.apply_source_noise_to_optical_signals" title="Link to this definition">#</a></dt>
+<dd><p>Apply source level optical noise processes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>power_signal_dict</strong> (<em>dict</em>) – Optical power signals.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated optical power signals.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.convert_optical_power_to_photocurrent">
+<span class="sig-name descname"><span class="pre">convert_optical_power_to_photocurrent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power_signal_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.convert_optical_power_to_photocurrent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.convert_optical_power_to_photocurrent" title="Link to this definition">#</a></dt>
+<dd><p>Convert detector optical power traces to photocurrent traces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>power_signal_dict</strong> (<em>dict</em>) – Optical power signal dictionary.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Photocurrent signal dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.convert_optical_power_to_voltage">
+<span class="sig-name descname"><span class="pre">convert_optical_power_to_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">power_signal_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.convert_optical_power_to_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.convert_optical_power_to_voltage" title="Link to this definition">#</a></dt>
+<dd><p>Convert optical power traces to analog voltage traces by applying the full optoelectronic chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>power_signal_dict</strong> (<em>dict</em>) – Optical power signal dictionary.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Analog voltage signal dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.convert_photocurrent_to_voltage">
+<span class="sig-name descname"><span class="pre">convert_photocurrent_to_voltage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">photocurrent_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.convert_photocurrent_to_voltage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.convert_photocurrent_to_voltage" title="Link to this definition">#</a></dt>
+<dd><p>Convert photocurrent traces to analog voltage traces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>photocurrent_dict</strong> (<em>dict</em>) – Photocurrent signal dictionary.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Analog voltage signal dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.copy_dict">
+<span class="sig-name descname"><span class="pre">copy_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionnary</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.copy_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.copy_dict" title="Link to this definition">#</a></dt>
+<dd><p>Create a safe working copy of a signal dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal_dict</strong> (<em>dict</em>) – Signal dictionary containing arrays or Pint quantities.</p></li>
+<li><p><strong>dictionnary</strong> (<em>dict</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Copied signal dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.detectors">
+<span class="sig-name descname"><span class="pre">detectors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.detector.Detector"><span class="pre">Detector</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.detectors" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.digitizer">
+<span class="sig-name descname"><span class="pre">digitizer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">Digitizer</span></a></em><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.digitizer" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.initialize_optical_signal_dict">
+<span class="sig-name descname"><span class="pre">initialize_optical_signal_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background_power</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/opto_electronics/main.html#OptoElectronics.initialize_optical_signal_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.initialize_optical_signal_dict" title="Link to this definition">#</a></dt>
+<dd><p>Initialize detector optical power traces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>run_time</strong> (<em>Time</em>) – Acquisition duration.</p></li>
+<li><p><strong>background_power</strong> (<em>Power</em>) – Constant optical background added to every detector channel.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optical power signal dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.OptoElectronics.source">
+<span class="sig-name descname"><span class="pre">source</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BaseSource</span></em><a class="headerlink" href="#FlowCyPy.opto_electronics.OptoElectronics.source" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="light-sources">
+<h2>Light sources<a class="headerlink" href="#light-sources" title="Link to this heading">#</a></h2>
+<p>Source classes define the spatial profile and optical properties of the illuminating beam.</p>
+<p>They specify quantities such as wavelength, optical power, beam waist, and relative intensity noise, which together determine the incident optical field seen by particles traversing the interrogation region.</p>
+<section id="gaussian-source">
+<h3>Gaussian source<a class="headerlink" href="#gaussian-source" title="Link to this heading">#</a></h3>
+<p>The Gaussian source models a focused beam with Gaussian transverse intensity profiles.</p>
+<p>It is suitable for most tightly focused flow cytometry illumination geometries.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.source.Gaussian">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Gaussian</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.Gaussian" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSource</span></code></p>
+<p>Gaussian beam source model.</p>
+<p>This source uses a Gaussian transverse intensity profile with
+potentially different waists along the y and z directions.
+%
+It is appropriate for focused illumination geometries in which the
+field amplitude decays smoothly away from the beam center.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.source.Gaussian.set_waist">
+<span class="sig-name descname"><span class="pre">set_waist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.source.Gaussian" title="FlowCyPy.opto_electronics.source.Gaussian"><span class="pre">FlowCyPy.opto_electronics.source.Gaussian</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">waist_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waist_z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.Gaussian.set_waist" title="Link to this definition">#</a></dt>
+<dd><p>Update the Gaussian beam waists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waist_y</strong> (<em>pint.Quantity</em>) – New beam waist along the y direction.</p></li>
+<li><p><strong>waist_z</strong> (<em>pint.Quantity</em>) – New beam waist along the z direction.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.source.Gaussian.waist_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waist_y</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.Gaussian.waist_y" title="Link to this definition">#</a></dt>
+<dd><p>Gaussian beam waist along the y direction.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.source.Gaussian.waist_z">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waist_z</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.Gaussian.waist_z" title="Link to this definition">#</a></dt>
+<dd><p>Gaussian beam waist along the z direction.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="flat-top-source">
+<h3>Flat-top source<a class="headerlink" href="#flat-top-source" title="Link to this heading">#</a></h3>
+<p>The flat-top source models an illumination profile with a more uniform intensity over the beam cross-section.</p>
+<p>It is useful when approximating excitation geometries that are intentionally homogenized across the interrogation region.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.source.FlatTop">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlatTop</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.FlatTop" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSource</span></code></p>
+<p>Flat top beam source model.</p>
+<p>This source approximates an illumination profile with a more uniform
+intensity across the beam support than a Gaussian beam.
+%
+It is useful when modeling excitation geometries intended to produce
+a relatively homogeneous optical field over the interrogation region.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.source.FlatTop.set_waist">
+<span class="sig-name descname"><span class="pre">set_waist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.source.FlatTop" title="FlowCyPy.opto_electronics.source.FlatTop"><span class="pre">FlowCyPy.opto_electronics.source.FlatTop</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">waist_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waist_z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.FlatTop.set_waist" title="Link to this definition">#</a></dt>
+<dd><p>Update the effective flat top beam extents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>waist_y</strong> (<em>pint.Quantity</em>) – New beam extent along the y direction.</p></li>
+<li><p><strong>waist_z</strong> (<em>pint.Quantity</em>) – New beam extent along the z direction.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.source.FlatTop.waist_y">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waist_y</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.FlatTop.waist_y" title="Link to this definition">#</a></dt>
+<dd><p>Effective flat top beam extent along the y direction.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.source.FlatTop.waist_z">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waist_z</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.source.FlatTop.waist_z" title="Link to this definition">#</a></dt>
+<dd><p>Effective flat top beam extent along the z direction.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="detectors">
+<h2>Detectors<a class="headerlink" href="#detectors" title="Link to this heading">#</a></h2>
+<p>Detector classes describe how scattered light is collected and converted into electrical current.</p>
+<p>A detector typically defines its angular position, numerical aperture, and responsivity.</p>
+<p>These parameters determine the optical collection efficiency and the conversion from collected optical power to photocurrent.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Detector</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Detector model for a flow cytometry acquisition channel.</p>
+<p>A <a class="reference internal" href="#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.detector.Detector"><code class="xref py py-class docutils literal notranslate"><span class="pre">Detector</span></code></a> represents the collection geometry and electrical
+response of a single detector channel.</p>
+<p>It stores the angular placement of the detector, its numerical
+aperture, optional obscuration by a central cache, the current
+responsivity, the dark current level, an optional additive current
+noise density, and an optional bandwidth used for bandwidth
+dependent noise calculations.</p>
+<p>In a typical FlowCyPy workflow, detector objects are assembled into an
+<code class="xref py py-class docutils literal notranslate"><span class="pre">OptoElectronics</span></code> configuration and are used to convert channel
+specific optical power into detector current prior to amplification and
+digitization.</p>
+<p class="rubric">Notes</p>
+<p>This class represents the detector level response of the acquisition
+chain.</p>
+<p>It does not model downstream analog amplification or digitization.
+Those stages are handled by the amplifier and digitizer components.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.apply_dark_current_noise">
+<span class="sig-name descname"><span class="pre">apply_dark_current_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.detector.Detector"><span class="pre">FlowCyPy.opto_electronics.detector.Detector</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bandwidth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.apply_dark_current_noise" title="Link to this definition">#</a></dt>
+<dd><p>Add dark current noise to a detector current signal.</p>
+<p>Dark current noise depends on the effective bandwidth used for the
+calculation. The bandwidth is resolved in the following order:</p>
+<ol class="arabic simple">
+<li><p>the method argument <code class="docutils literal notranslate"><span class="pre">bandwidth</span></code>, when provided</p></li>
+<li><p>the detector attribute <a class="reference internal" href="#FlowCyPy.opto_electronics.detector.Detector.bandwidth" title="FlowCyPy.opto_electronics.detector.Detector.bandwidth"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bandwidth</span></code></a></p></li>
+<li><p>no finite bandwidth, in which case the input signal is returned unchanged</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>pint.Quantity</em>) – Input current trace expressed in amperes.</p></li>
+<li><p><strong>bandwidth</strong> (<em>pint.Quantity</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Bandwidth to use for the noise calculation. If omitted, the detector stored bandwidth is used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Output current trace with dark current noise added.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pint.Quantity</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method operates directly on detector current, before any
+downstream amplifier or digitizer stage.</p>
+<p>The total RMS current noise is computed from the quadrature sum of
+dark-current shot noise and additive current-noise density.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.bandwidth">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bandwidth</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.bandwidth" title="Link to this definition">#</a></dt>
+<dd><p>Optional detector bandwidth.</p>
+<p>When defined, this bandwidth is used as the default bandwidth for
+bandwidth dependent detector operations. Setting this attribute to <code class="docutils literal notranslate"><span class="pre">None</span></code> removes the stored bandwidth.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.cache_numerical_aperture">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache_numerical_aperture</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.cache_numerical_aperture" title="Link to this definition">#</a></dt>
+<dd><p>Numerical aperture of the central obscuration.</p>
+<p>This value can be used to represent a masked or blocked central
+region in the detector collection geometry, such as the obscuration
+often present in forward scatter configurations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.clear_bandwidth">
+<span class="sig-name descname"><span class="pre">clear_bandwidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.detector.Detector"><span class="pre">FlowCyPy.opto_electronics.detector.Detector</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.clear_bandwidth" title="Link to this definition">#</a></dt>
+<dd><p>Remove the stored detector bandwidth.</p>
+<p>After calling this method, bandwidth dependent operations require an
+explicit method level bandwidth argument in order to use a finite
+bandwidth.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.current_noise_density">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_noise_density</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.current_noise_density" title="Link to this definition">#</a></dt>
+<dd><p>Detector current-noise density.</p>
+<p>This value represents an additive current-noise spectral density
+expressed in <code class="docutils literal notranslate"><span class="pre">ampere</span> <span class="pre">/</span> <span class="pre">sqrt(hertz)</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.dark_current">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dark_current</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.dark_current" title="Link to this definition">#</a></dt>
+<dd><p>Mean detector dark current.</p>
+<p>This value is used to model detector dark-current shot noise and
+the mean dark-current offset when a valid bandwidth is available.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.gamma_angle">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gamma_angle</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.gamma_angle" title="Link to this definition">#</a></dt>
+<dd><p>Longitudinal detector angle.</p>
+<p>This angle complements <a class="reference internal" href="#FlowCyPy.opto_electronics.detector.Detector.phi_angle" title="FlowCyPy.opto_electronics.detector.Detector.phi_angle"><code class="xref py py-attr docutils literal notranslate"><span class="pre">phi_angle</span></code></a> and defines the detector
+orientation relative to the optical axis.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.has_bandwidth">
+<span class="sig-name descname"><span class="pre">has_bandwidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.detector.Detector" title="FlowCyPy.opto_electronics.detector.Detector"><span class="pre">FlowCyPy.opto_electronics.detector.Detector</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.has_bandwidth" title="Link to this definition">#</a></dt>
+<dd><p>Return whether the detector has a stored bandwidth.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <a class="reference internal" href="#FlowCyPy.opto_electronics.detector.Detector.bandwidth" title="FlowCyPy.opto_electronics.detector.Detector.bandwidth"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bandwidth</span></code></a> is defined, otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.name">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.name" title="Link to this definition">#</a></dt>
+<dd><p>Detector identifier.</p>
+<p>This name is typically used to label detector channels in the
+acquisition pipeline and in exported results.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.numerical_aperture">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">numerical_aperture</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.numerical_aperture" title="Link to this definition">#</a></dt>
+<dd><p>Numerical aperture of the detector collection cone.</p>
+<p>Larger values correspond to a wider collection angle and therefore
+a larger accepted range of scattered directions.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.phi_angle">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phi_angle</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.phi_angle" title="Link to this definition">#</a></dt>
+<dd><p>Azimuthal detector angle.</p>
+<p>This angle defines the detector position around the optical axis
+in the transverse plane.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.responsivity">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">responsivity</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.responsivity" title="Link to this definition">#</a></dt>
+<dd><p>Detector responsivity.</p>
+<p>Responsivity defines the conversion factor between collected optical
+power and detector current.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.detector.Detector.sampling">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sampling</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.detector.Detector.sampling" title="Link to this definition">#</a></dt>
+<dd><p>Internal sampling density used to represent the detector support.</p>
+<p>Increasing this value may improve geometric resolution at the cost
+of additional computation.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="amplification">
+<h2>Amplification<a class="headerlink" href="#amplification" title="Link to this heading">#</a></h2>
+<p>Amplifier classes model the analog front-end that converts detector photocurrent into voltage.</p>
+<p>In FlowCyPy, this stage is typically represented by a transimpedance amplifier, which applies a current-to-voltage gain, a finite bandwidth, and optional electronic noise contributions.</p>
+<p>This stage strongly influences pulse amplitude, temporal smoothing, and baseline noise before digitization.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.amplifier.Amplifier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Amplifier</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Represents a transimpedance amplifier applied to a one dimensional current signal.</p>
+<p>This model converts an input current signal into an output voltage signal using
+the configured transimpedance gain. It can optionally include a finite analog
+bandwidth and additive Gaussian noise derived from voltage and current noise
+densities.</p>
+<p>If a sampling rate is provided during amplification and the amplifier bandwidth
+is defined, a realistic low-pass filter is applied. If no sampling rate is
+provided, waveform filtering is skipped, but the bandwidth is still used for
+integrated noise estimation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gain</strong> (<em>Quantity</em>) – Transimpedance gain in volt / ampere.</p></li>
+<li><p><strong>bandwidth</strong> (<em>Quantity</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Amplifier bandwidth in hertz. If None, no bandwidth-limited filtering or
+bandwidth-based noise integration is applied.</p></li>
+<li><p><strong>voltage_noise_density</strong> (<em>Quantity</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Output referred voltage noise spectral density in volt / hertz ** 0.5.</p></li>
+<li><p><strong>current_noise_density</strong> (<em>Quantity</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Input referred current noise spectral density in ampere / hertz ** 0.5.</p></li>
+<li><p><strong>filter_order</strong> (<em>int</em><em>, </em><em>optional</em>) – Order of the low-pass filter used when bandwidth filtering is enabled.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.amplifier.Amplifier.amplify">
+<span class="sig-name descname"><span class="pre">amplify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.amplifier.Amplifier" title="FlowCyPy.opto_electronics.amplifier.Amplifier"><span class="pre">FlowCyPy.opto_electronics.amplifier.Amplifier</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.amplify" title="Link to this definition">#</a></dt>
+<dd><p>Amplify a one dimensional current signal and return the output voltage signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>pint.Quantity</em>) – One dimensional signal with units of ampere.</p></li>
+<li><p><strong>sampling_rate</strong> (<em>pint.Quantity</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Sampling rate in hertz. If provided and the amplifier bandwidth is defined,
+bandwidth-limited filtering is applied. If omitted, waveform filtering is
+skipped.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Amplified output signal with units of volt.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pint.Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.amplifier.Amplifier.bandwidth">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bandwidth</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.bandwidth" title="Link to this definition">#</a></dt>
+<dd><p>Bandwidth returned as a pint.Quantity in hertz, or None if unlimited.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.amplifier.Amplifier.current_noise_density">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_noise_density</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.current_noise_density" title="Link to this definition">#</a></dt>
+<dd><p>Current noise spectral density returned as a pint.Quantity in ampere / hertz ** 0.5.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.amplifier.Amplifier.filter_order">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filter_order</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.filter_order" title="Link to this definition">#</a></dt>
+<dd><p>Order of the low-pass filter used when bandwidth filtering is enabled.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.amplifier.Amplifier.gain">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gain</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.gain" title="Link to this definition">#</a></dt>
+<dd><p>Transimpedance gain returned as a pint.Quantity in volt / ampere.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.amplifier.Amplifier.get_rms_noise">
+<span class="sig-name descname"><span class="pre">get_rms_noise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.amplifier.Amplifier" title="FlowCyPy.opto_electronics.amplifier.Amplifier"><span class="pre">FlowCyPy.opto_electronics.amplifier.Amplifier</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.get_rms_noise" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the RMS output noise of the amplifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>RMS noise expressed in volts.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pint.Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.amplifier.Amplifier.voltage_noise_density">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">voltage_noise_density</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.voltage_noise_density" title="Link to this definition">#</a></dt>
+<dd><p>Voltage noise spectral density returned as a pint.Quantity in volt / hertz ** 0.5.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="digitization">
+<h2>Digitization<a class="headerlink" href="#digitization" title="Link to this heading">#</a></h2>
+<p>The digitizer converts analog voltage signals into sampled digital traces.</p>
+<p>Its configuration controls the sampling rate, quantization depth, and channel range strategy.</p>
+<p>These settings determine the temporal resolution, integer encoding, clipping behavior, and effective dynamic range of the recorded waveforms.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Digitizer</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Digitize and clip voltage signals.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Digitizer</span></code> class models a digitization stage for detector
+voltage signals. It supports optional clipping, optional automatic
+range inference, and quantization to either unsigned or signed
+integer like ADC codes.</p>
+<p>Two settings control range selection:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">use_auto_range</span></code></dt><dd><p>Select whether ranges are inferred from the data or taken from
+the fixed instance level <code class="docutils literal notranslate"><span class="pre">min_voltage</span></code> and <code class="docutils literal notranslate"><span class="pre">max_voltage</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">channel_range_mode</span></code></dt><dd><p>When <code class="docutils literal notranslate"><span class="pre">use_auto_range</span></code> is enabled, controls whether automatic
+range inference is shared across channels or done independently
+for each channel.</p>
+</dd>
+</dl>
+<p>Explicit channel ranges set with
+<a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.set_channel_voltage_range" title="FlowCyPy.opto_electronics.digitizer.Digitizer.set_channel_voltage_range"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_channel_voltage_range()</span></code></a> always take precedence over the
+automatic or fixed instance level policy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sampling_rate</strong> (<em>pint.Quantity</em>) – Sampling rate in hertz.</p></li>
+<li><p><strong>bandwidth</strong> (<em>pint.Quantity</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – Digitizer bandwidth in hertz. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, bandwidth remains unset.</p></li>
+<li><p><strong>bit_depth</strong> (<em>int</em><em>, </em><em>default=0</em>) – Number of quantization bits. A value of <code class="docutils literal notranslate"><span class="pre">0</span></code> disables digitization.</p></li>
+<li><p><strong>min_voltage</strong> (<em>pint.Quantity</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – Minimum clipping voltage used when a fixed range is required.</p></li>
+<li><p><strong>max_voltage</strong> (<em>pint.Quantity</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – Maximum clipping voltage used when a fixed range is required.</p></li>
+<li><p><strong>use_auto_range</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, infer voltage ranges automatically from the signal data.</p></li>
+<li><p><strong>output_signed_codes</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, digitized outputs use signed integer like code values.</p></li>
+<li><p><strong>debug_mode</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, print debug information during processing.</p></li>
+<li><p><strong>channel_range_mode</strong> (<em>{&quot;shared&quot;</em><em>, </em><em>&quot;per_channel&quot;}</em><em>, </em><em>default=&quot;shared&quot;</em>) – Automatic range scope used when <code class="docutils literal notranslate"><span class="pre">use_auto_range</span></code> is enabled.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.bandwidth">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bandwidth</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.bandwidth" title="Link to this definition">#</a></dt>
+<dd><p>Bandwidth of the digitizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Bandwidth in hertz, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if unset.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pint.Quantity or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.bit_depth">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bit_depth</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.bit_depth" title="Link to this definition">#</a></dt>
+<dd><p>Number of quantization bits.</p>
+<p>A value of <code class="docutils literal notranslate"><span class="pre">0</span></code> disables digitization.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.capture_signal">
+<span class="sig-name descname"><span class="pre">capture_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.capture_signal" title="Link to this definition">#</a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic">
+<li><p>capture_signal(self: FlowCyPy.opto_electronics.digitizer.Digitizer, signal: object) -&gt; None</p>
+<blockquote>
+<div><p>Update internal range information using the persistent <code class="docutils literal notranslate"><span class="pre">use_auto_range</span></code> setting.</p>
+<dl class="simple">
+<dt>signal<span class="classifier">pint.Quantity</span></dt><dd><p>One dimensional voltage signal.</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>capture_signal(self: FlowCyPy.opto_electronics.digitizer.Digitizer, signal: object, use_auto_range: bool) -&gt; None</p>
+<blockquote>
+<div><p>Update internal range information with an explicit auto range override.</p>
+<dl class="simple">
+<dt>signal<span class="classifier">pint.Quantity</span></dt><dd><p>One dimensional voltage signal.</p>
+</dd>
+<dt>use_auto_range<span class="classifier">bool</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, infer and store the signal min and max as the
+instance level voltage range.</p>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+</ol>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.channel_range_mode">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">channel_range_mode</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.channel_range_mode" title="Link to this definition">#</a></dt>
+<dd><p>Automatic range scope for dictionary based channel processing.</p>
+<p>Allowed values are:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;shared&quot;</span></code></dt><dd><p>Infer one shared range across all detector channels without
+explicit channel overrides.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;per_channel&quot;</span></code></dt><dd><p>Infer one independent range for each detector channel without
+explicit channel overrides.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This property only affects processing when <code class="docutils literal notranslate"><span class="pre">use_auto_range</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+When <code class="docutils literal notranslate"><span class="pre">use_auto_range</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the instance level
+<code class="docutils literal notranslate"><span class="pre">min_voltage</span></code> and <code class="docutils literal notranslate"><span class="pre">max_voltage</span></code> are used instead.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.clear_all_channel_voltage_ranges">
+<span class="sig-name descname"><span class="pre">clear_all_channel_voltage_ranges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.clear_all_channel_voltage_ranges" title="Link to this definition">#</a></dt>
+<dd><p>Clear all explicit per channel voltage ranges.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.clear_bandwidth">
+<span class="sig-name descname"><span class="pre">clear_bandwidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.clear_bandwidth" title="Link to this definition">#</a></dt>
+<dd><p>Clear the configured bandwidth.</p>
+<p>After this call, <code class="docutils literal notranslate"><span class="pre">bandwidth</span></code> becomes undefined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.clear_channel_voltage_range">
+<span class="sig-name descname"><span class="pre">clear_channel_voltage_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.clear_channel_voltage_range" title="Link to this definition">#</a></dt>
+<dd><p>Clear the explicit voltage range for one detector channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>channel_name</strong> (<em>str</em>) – Name of the detector channel.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.clear_voltage_range">
+<span class="sig-name descname"><span class="pre">clear_voltage_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.clear_voltage_range" title="Link to this definition">#</a></dt>
+<dd><p>Clear the instance level fixed voltage range.</p>
+<p>After this call, both <code class="docutils literal notranslate"><span class="pre">min_voltage</span></code> and <code class="docutils literal notranslate"><span class="pre">max_voltage</span></code> become undefined.
+Explicit per channel ranges are not modified.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.clip_signal">
+<span class="sig-name descname"><span class="pre">clip_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.clip_signal" title="Link to this definition">#</a></dt>
+<dd><p>Clip a signal to the instance level fixed voltage range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>signal</strong> (<em>pint.Quantity</em>) – One dimensional voltage signal.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Clipped voltage signal.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pint.Quantity</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method uses only the instance level <code class="docutils literal notranslate"><span class="pre">min_voltage</span></code> and
+<code class="docutils literal notranslate"><span class="pre">max_voltage</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.digitize_data_dict">
+<span class="sig-name descname"><span class="pre">digitize_data_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.digitize_data_dict" title="Link to this definition">#</a></dt>
+<dd><p>Process acquisition data stored in a dictionary.</p>
+<section id="supported-input-formats">
+<h3>Supported input formats<a class="headerlink" href="#supported-input-formats" title="Link to this heading">#</a></h3>
+<dl>
+<dt>Flat acquisition dictionary:</dt><dd><dl class="simple">
+<dt>{</dt><dd><p>“Time”: time_quantity,
+“DetectorA”: voltage_quantity,
+…</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<p>Flat acquisition dictionaries may also contain metadata fields
+such as <code class="docutils literal notranslate"><span class="pre">&quot;segment_id&quot;</span></code>. Metadata fields are copied through
+unchanged and are never used for voltage range inference.</p>
+</section>
+<section id="range-resolution-order">
+<h3>Range resolution order<a class="headerlink" href="#range-resolution-order" title="Link to this heading">#</a></h3>
+<p>For each detector channel, the applied range is chosen in this order:</p>
+<ol class="arabic simple">
+<li><p>explicit channel range set with <a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.set_channel_voltage_range" title="FlowCyPy.opto_electronics.digitizer.Digitizer.set_channel_voltage_range"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_channel_voltage_range()</span></code></a></p></li>
+<li><p>if <code class="docutils literal notranslate"><span class="pre">use_auto_range</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>:
+a. shared inferred range when <code class="docutils literal notranslate"><span class="pre">channel_range_mode</span> <span class="pre">==</span> <span class="pre">&quot;shared&quot;</span></code>
+b. per channel inferred range when <code class="docutils literal notranslate"><span class="pre">channel_range_mode</span> <span class="pre">==</span> <span class="pre">&quot;per_channel&quot;</span></code></p></li>
+<li><p>if <code class="docutils literal notranslate"><span class="pre">use_auto_range</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>:
+instance level <code class="docutils literal notranslate"><span class="pre">min_voltage</span></code> and <code class="docutils literal notranslate"><span class="pre">max_voltage</span></code></p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">param data_dict<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Acquisition data dictionary using Pint quantities.</p>
+</dd>
+<dt class="field-even">type data_dict<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary with processed detector channels.
+Metadata fields such as <code class="docutils literal notranslate"><span class="pre">Time</span></code> and <code class="docutils literal notranslate"><span class="pre">segment_id</span></code> are copied unchanged.
+If digitization is disabled, detector channels are returned
+as voltage quantities.
+If digitization is enabled, detector channels are returned
+as integer ADC code arrays.</p>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.digitize_signal">
+<span class="sig-name descname"><span class="pre">digitize_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.digitize_signal" title="Link to this definition">#</a></dt>
+<dd><p>Digitize one voltage signal using the instance level fixed voltage range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>signal</strong> (<em>pint.Quantity</em>) – One dimensional voltage signal.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Integer ADC code array if digitization is enabled.
+If digitization is disabled, the returned array contains the
+unchanged floating point samples.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5.dev0)">numpy.ndarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method does not perform automatic range inference.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.get_channel_voltage_range">
+<span class="sig-name descname"><span class="pre">get_channel_voltage_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.get_channel_voltage_range" title="Link to this definition">#</a></dt>
+<dd><p>Return the explicit voltage range of a channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>channel_name</strong> (<em>str</em>) – Name of the detector channel.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Minimum and maximum voltage bounds in volts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[pint.Quantity, pint.Quantity]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If the channel has no explicit range override.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.get_maximum_code">
+<span class="sig-name descname"><span class="pre">get_maximum_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.get_maximum_code" title="Link to this definition">#</a></dt>
+<dd><p>Return the maximum ADC code value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Maximum representable code value for the current digitizer settings.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – If digitization is disabled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.get_min_max">
+<span class="sig-name descname"><span class="pre">get_min_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.get_min_max" title="Link to this definition">#</a></dt>
+<dd><p>Return the minimum and maximum finite values of a signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>signal</strong> (<em>pint.Quantity</em>) – One dimensional voltage signal.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Minimum and maximum finite values in volts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[pint.Quantity, pint.Quantity]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.get_minimum_code">
+<span class="sig-name descname"><span class="pre">get_minimum_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.get_minimum_code" title="Link to this definition">#</a></dt>
+<dd><p>Return the minimum ADC code value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Minimum representable code value for the current digitizer settings.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – If digitization is disabled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.get_time_series">
+<span class="sig-name descname"><span class="pre">get_time_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.get_time_series" title="Link to this definition">#</a></dt>
+<dd><p>Return the sampling time axis for a given acquisition duration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>run_time</strong> (<em>pint.Quantity</em>) – Acquisition duration in seconds.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sampling time axis in seconds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pint.Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.has_bandwidth">
+<span class="sig-name descname"><span class="pre">has_bandwidth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.has_bandwidth" title="Link to this definition">#</a></dt>
+<dd><p>Return whether a bandwidth is defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">bandwidth</span></code> is set, otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.has_channel_voltage_range">
+<span class="sig-name descname"><span class="pre">has_channel_voltage_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.has_channel_voltage_range" title="Link to this definition">#</a></dt>
+<dd><p>Return whether a channel has an explicit voltage range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>channel_name</strong> (<em>str</em>) – Name of the detector channel.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the channel has an explicit range override.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.has_signed_output_codes">
+<span class="sig-name descname"><span class="pre">has_signed_output_codes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.has_signed_output_codes" title="Link to this definition">#</a></dt>
+<dd><p>Return whether signed output codes are enabled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if signed integer ADC codes are requested.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.has_voltage_range">
+<span class="sig-name descname"><span class="pre">has_voltage_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.has_voltage_range" title="Link to this definition">#</a></dt>
+<dd><p>Return whether the instance level fixed voltage range is defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if both <code class="docutils literal notranslate"><span class="pre">min_voltage</span></code> and <code class="docutils literal notranslate"><span class="pre">max_voltage</span></code> are set.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.max_voltage">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_voltage</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.max_voltage" title="Link to this definition">#</a></dt>
+<dd><p>Instance level fixed maximum clipping voltage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Maximum clipping voltage in volts, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if unset.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pint.Quantity or None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This value is used only when <code class="docutils literal notranslate"><span class="pre">use_auto_range</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>,
+unless an explicit per channel range overrides it.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.min_voltage">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min_voltage</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.min_voltage" title="Link to this definition">#</a></dt>
+<dd><p>Instance level fixed minimum clipping voltage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Minimum clipping voltage in volts, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if unset.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pint.Quantity or None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This value is used only when <code class="docutils literal notranslate"><span class="pre">use_auto_range</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>,
+unless an explicit per channel range overrides it.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.output_signed_codes">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output_signed_codes</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.output_signed_codes" title="Link to this definition">#</a></dt>
+<dd><p>Whether digitized outputs use signed integer like code values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.process_signal">
+<span class="sig-name descname"><span class="pre">process_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.process_signal" title="Link to this definition">#</a></dt>
+<dd><p>Process one signal.</p>
+<p>Processing order:</p>
+<ol class="arabic simple">
+<li><p>choose a fixed or automatically inferred range</p></li>
+<li><p>clip using that range</p></li>
+<li><p>digitize</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>signal</strong> (<em>pint.Quantity</em>) – One dimensional voltage signal.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>If digitization is disabled, returns a voltage quantity.
+Otherwise returns an integer code array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pint.Quantity or <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5.dev0)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.sampling_rate">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sampling_rate</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.sampling_rate" title="Link to this definition">#</a></dt>
+<dd><p>Sampling rate of the digitizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Sampling rate in hertz.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pint.Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.set_auto_range">
+<span class="sig-name descname"><span class="pre">set_auto_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.set_auto_range" title="Link to this definition">#</a></dt>
+<dd><p>Infer and store the instance level voltage range from one signal.</p>
+<p>The minimum and maximum finite values of the input signal are used
+to update <code class="docutils literal notranslate"><span class="pre">min_voltage</span></code> and <code class="docutils literal notranslate"><span class="pre">max_voltage</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>signal</strong> (<em>pint.Quantity</em>) – One dimensional voltage signal.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.set_channel_voltage_range">
+<span class="sig-name descname"><span class="pre">set_channel_voltage_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_voltage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_voltage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.set_channel_voltage_range" title="Link to this definition">#</a></dt>
+<dd><p>Set an explicit voltage range for one detector channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>channel_name</strong> (<em>str</em>) – Name of the detector channel.</p></li>
+<li><p><strong>minimum_voltage</strong> (<em>pint.Quantity</em>) – Minimum voltage bound. Must be compatible with volts.</p></li>
+<li><p><strong>maximum_voltage</strong> (<em>pint.Quantity</em>) – Maximum voltage bound. Must be compatible with volts.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Explicit channel ranges always take precedence over the global
+processing policy.</p>
+<p class="rubric">Examples</p>
+<p><code class="docutils literal notranslate"><span class="pre">digitizer.set_channel_voltage_range(&quot;forward&quot;,</span> <span class="pre">-0.2</span> <span class="pre">*</span> <span class="pre">ureg.volt,</span> <span class="pre">1.5</span> <span class="pre">*</span> <span class="pre">ureg.volt)</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.should_digitize">
+<span class="sig-name descname"><span class="pre">should_digitize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.digitizer.Digitizer" title="FlowCyPy.opto_electronics.digitizer.Digitizer"><span class="pre">FlowCyPy.opto_electronics.digitizer.Digitizer</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.should_digitize" title="Link to this definition">#</a></dt>
+<dd><p>Return whether digitization is enabled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">bit_depth</span></code> is greater than zero.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.digitizer.Digitizer.use_auto_range">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">use_auto_range</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.use_auto_range" title="Link to this definition">#</a></dt>
+<dd><p>Whether voltage ranges are inferred automatically from the data.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">False</span></code>, processing uses the fixed instance level
+<code class="docutils literal notranslate"><span class="pre">min_voltage</span></code> and <code class="docutils literal notranslate"><span class="pre">max_voltage</span></code>, unless an explicit channel
+override is present.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">True</span></code>, processing infers ranges from the signal data.
+The scope of that inference is controlled by <code class="docutils literal notranslate"><span class="pre">channel_range_mode</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="analog-processing-circuits">
+<h2>Analog processing circuits<a class="headerlink" href="#analog-processing-circuits" title="Link to this heading">#</a></h2>
+<p>Analog processing circuits represent signal conditioning stages applied before digitization.</p>
+<p>Typical examples include baseline restoration, low-pass filtering, and other bandwidth-limiting or shaping operations that affect the continuous detector signal.</p>
+<p id="module-FlowCyPy.opto_electronics.circuits">Analog signal conditioning circuits for FlowCyPy.</p>
+<p>This module exposes analog processing circuits used in the opto electronic
+acquisition chain of a flow cytometry simulation.
+%
+Each circuit operates on a one dimensional signal and returns a processed
+signal with the same physical units as the input.
+%
+Typical use cases include baseline correction, baseline restoration, and
+analog low pass filtering prior to digitization or downstream digital
+processing.</p>
+<p>All public <code class="docutils literal notranslate"><span class="pre">process</span></code> methods expect:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">signal</span></code> to be a Pint quantity backed by a one dimensional NumPy array</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sampling_rate</span></code> to be a Pint quantity compatible with hertz when required</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BaseCircuit">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseCircuit</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Abstract base class for analog signal conditioning circuits.</p>
+<p>A <a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCircuit</span></code></a> represents a transformation applied to a
+one dimensional signal in the analog acquisition chain.
+%
+Concrete subclasses implement specific operations such as baseline
+subtraction or low pass filtering.
+%
+The processed output always retains the same physical units as the
+input signal.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BaseCircuit.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><span class="pre">FlowCyPy.opto_electronics.circuits.BaseCircuit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit.process" title="Link to this definition">#</a></dt>
+<dd><p>Process a signal with the circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>pint.Quantity</em>) – One dimensional input signal.</p></li>
+<li><p><strong>sampling_rate</strong> (<em>pint.Quantity</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Sampling rate in hertz.
+%
+Circuits that depend on time scale or frequency response may
+require this value, while others may ignore it.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Processed signal with the same units as the input.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pint.Quantity</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method preserves the physical units of the input signal.
+%
+Only the numerical values are transformed by the circuit.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaselineRestorationServo</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCircuit</span></code></a></p>
+<p>Baseline restoration servo circuit.</p>
+<p>This circuit models a baseline restoration stage that continuously
+estimates the slowly varying baseline of a signal and subtracts it
+so that the output is driven toward a target reference level.
+%
+It is useful for suppressing baseline drift and restoring a stable
+operating point before digitization or event extraction.
+%
+The response speed of the servo is controlled by its time constant.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.initialize_with_first_sample">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">initialize_with_first_sample</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.initialize_with_first_sample" title="Link to this definition">#</a></dt>
+<dd><p>Whether the internal baseline state is initialized from the first sample.</p>
+<p>When enabled, the circuit starts from the first input value,
+which often reduces initial transients.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo" title="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo"><span class="pre">FlowCyPy.opto_electronics.circuits.BaselineRestorationServo</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.process" title="Link to this definition">#</a></dt>
+<dd><p>Apply baseline restoration servo processing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>pint.Quantity</em>) – One dimensional input signal.</p></li>
+<li><p><strong>sampling_rate</strong> (<em>pint.Quantity</em>) – Sampling rate in hertz.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Baseline restored signal with the same units as the input.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pint.Quantity</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>A valid sampling rate is required because the circuit dynamics are
+defined through the servo time constant.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.reference_level">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reference_level</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.reference_level" title="Link to this definition">#</a></dt>
+<dd><p>Target output baseline level.</p>
+<p>After restoration, the signal baseline is driven toward this
+numerical reference value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.time_constant">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_constant</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.time_constant" title="Link to this definition">#</a></dt>
+<dd><p>Servo time constant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Time constant in second.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pint.Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BesselLowPass">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BesselLowPass</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCircuit</span></code></a></p>
+<p>Bessel low pass filter.</p>
+<p>This circuit applies a Bessel low pass response to the input signal.
+%
+Bessel filters are often preferred when preserving waveform shape and
+approximate phase linearity is more important than maximizing roll off
+steepness.
+%
+The output can optionally be scaled by a multiplicative gain factor.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BesselLowPass.cutoff_frequency">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cutoff_frequency</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass.cutoff_frequency" title="Link to this definition">#</a></dt>
+<dd><p>Filter cutoff frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Cutoff frequency in hertz.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pint.Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BesselLowPass.gain">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gain</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass.gain" title="Link to this definition">#</a></dt>
+<dd><p>Multiplicative output gain applied after filtering.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BesselLowPass.order">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">order</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass.order" title="Link to this definition">#</a></dt>
+<dd><p>Filter order.</p>
+<p>Higher orders increase the sharpness of the low pass transition.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.BesselLowPass.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass" title="FlowCyPy.opto_electronics.circuits.BesselLowPass"><span class="pre">FlowCyPy.opto_electronics.circuits.BesselLowPass</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass.process" title="Link to this definition">#</a></dt>
+<dd><p>Apply Bessel low pass filtering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>pint.Quantity</em>) – One dimensional input signal.</p></li>
+<li><p><strong>sampling_rate</strong> (<em>pint.Quantity</em>) – Sampling rate in hertz.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Filtered signal with the same units as the input.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pint.Quantity</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This filter is typically used when preserving pulse shape is more
+important than maximizing stopband steepness.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.ButterworthLowPass">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ButterworthLowPass</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCircuit</span></code></a></p>
+<p>Butterworth low pass filter.</p>
+<p>This circuit applies a Butterworth low pass response to the input
+signal.
+%
+Butterworth filters provide a maximally flat magnitude response in
+the passband and are useful when smooth low pass attenuation is
+desired without passband ripple.
+%
+The output can optionally be scaled by a multiplicative gain factor.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.ButterworthLowPass.cutoff_frequency">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cutoff_frequency</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass.cutoff_frequency" title="Link to this definition">#</a></dt>
+<dd><p>Filter cutoff frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Cutoff frequency in hertz.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pint.Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.ButterworthLowPass.gain">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gain</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass.gain" title="Link to this definition">#</a></dt>
+<dd><p>Multiplicative output gain applied after filtering.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.ButterworthLowPass.order">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">order</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass.order" title="Link to this definition">#</a></dt>
+<dd><p>Filter order.</p>
+<p>Higher orders correspond to a sharper transition between passband
+and stopband.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.ButterworthLowPass.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass" title="FlowCyPy.opto_electronics.circuits.ButterworthLowPass"><span class="pre">FlowCyPy.opto_electronics.circuits.ButterworthLowPass</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass.process" title="Link to this definition">#</a></dt>
+<dd><p>Apply Butterworth low pass filtering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>pint.Quantity</em>) – One dimensional input signal.</p></li>
+<li><p><strong>sampling_rate</strong> (<em>pint.Quantity</em>) – Sampling rate in hertz.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Filtered signal with the same units as the input.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pint.Quantity</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The sampling rate is required to map the analog cutoff frequency
+to the discrete time signal.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SlidingMinimumBaselineCorrection</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit" title="FlowCyPy.opto_electronics.circuits.BaseCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseCircuit</span></code></a></p>
+<p>Sliding minimum baseline correction circuit.</p>
+<p>This circuit estimates the local baseline by tracking the minimum
+signal value within a sliding window and subtracting that baseline
+estimate from the input.
+%
+It is useful for suppressing slowly varying offsets or drifting
+baselines while preserving positive excursions associated with
+particle events.
+%
+A window size of <code class="docutils literal notranslate"><span class="pre">-1</span> <span class="pre">*</span> <span class="pre">second</span></code> is interpreted as an infinite
+window, meaning that the baseline is estimated from the global
+minimum over the full signal.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection" title="FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection"><span class="pre">FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection.process" title="Link to this definition">#</a></dt>
+<dd><p>Apply sliding minimum baseline correction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>pint.Quantity</em>) – One dimensional input signal.</p></li>
+<li><p><strong>sampling_rate</strong> (<em>pint.Quantity</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Sampling rate in hertz.
+%
+This is required when <code class="docutils literal notranslate"><span class="pre">window_size</span></code> is finite, because the
+time window must be converted into a number of samples.
+%
+It may be omitted when the window is infinite.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Baseline corrected signal with the same units as the input.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pint.Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection.window_size">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">window_size</span></span><a class="headerlink" href="#FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection.window_size" title="Link to this definition">#</a></dt>
+<dd><p>Sliding window size used for baseline estimation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Window size in second.
+%
+A value of <code class="docutils literal notranslate"><span class="pre">-1</span> <span class="pre">*</span> <span class="pre">second</span></code> indicates an infinite window.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pint.Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading">#</a></h2>
+<p>The example below shows a typical opto-electronic configuration composed of a Gaussian source, two detectors, a transimpedance amplifier, optional analog filtering, and a digitizer.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.opto_electronics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Detector</span><span class="p">,</span>
+    <span class="n">Digitizer</span><span class="p">,</span>
+    <span class="n">OptoElectronics</span><span class="p">,</span>
+    <span class="n">Amplifier</span><span class="p">,</span>
+    <span class="n">source</span><span class="p">,</span>
+    <span class="n">circuits</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">analog_processing</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorationServo</span><span class="p">(</span><span class="n">time_constant</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">),</span>
+    <span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span><span class="p">(</span><span class="n">cutoff_frequency</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">excitation_source</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">Gaussian</span><span class="p">(</span>
+    <span class="n">waist_z</span><span class="o">=</span><span class="mf">10e-6</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>
+    <span class="n">waist_y</span><span class="o">=</span><span class="mf">60e-6</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>
+    <span class="n">wavelength</span><span class="o">=</span><span class="mi">405</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+    <span class="n">optical_power</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>
+    <span class="n">rin</span><span class="o">=-</span><span class="mi">140</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">dB_per_Hz</span><span class="p">,</span>
+    <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">detectors</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Detector</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;side&quot;</span><span class="p">,</span>
+        <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span>
+        <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">Detector</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span>
+        <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+        <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">cache_numerical_aperture</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">amplifier</span> <span class="o">=</span> <span class="n">Amplifier</span><span class="p">(</span>
+    <span class="n">gain</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span>
+    <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
+    <span class="n">voltage_noise_density</span><span class="o">=</span><span class="mf">0.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanovolt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">sqrt_hertz</span><span class="p">,</span>
+    <span class="n">current_noise_density</span><span class="o">=</span><span class="mf">0.0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">femtoampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">sqrt_hertz</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">digitizer</span> <span class="o">=</span> <span class="n">Digitizer</span><span class="p">(</span>
+    <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
+    <span class="n">bit_depth</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span>
+    <span class="n">use_auto_range</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">channel_range_mode</span><span class="o">=</span><span class="s2">&quot;shared&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">opto_electronics</span> <span class="o">=</span> <span class="n">OptoElectronics</span><span class="p">(</span>
+    <span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">,</span>
+    <span class="n">detectors</span><span class="o">=</span><span class="n">detectors</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="n">excitation_source</span><span class="p">,</span>
+    <span class="n">amplifier</span><span class="o">=</span><span class="n">amplifier</span><span class="p">,</span>
+    <span class="n">analog_processing</span><span class="o">=</span><span class="n">analog_processing</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#opto-electronic-configuration">Opto-electronic configuration</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics"><code class="docutils literal notranslate"><span class="pre">OptoElectronics</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.add_coupling_to_dataframe"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.add_coupling_to_dataframe()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.amplifier"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.amplifier</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.analog_processing"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.analog_processing</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.apply_analog_processing"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.apply_analog_processing()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.apply_detector_current_noise"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.apply_detector_current_noise()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.apply_source_noise_to_optical_signals"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.apply_source_noise_to_optical_signals()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.convert_optical_power_to_photocurrent"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.convert_optical_power_to_photocurrent()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.convert_optical_power_to_voltage"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.convert_optical_power_to_voltage()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.convert_photocurrent_to_voltage"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.convert_photocurrent_to_voltage()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.copy_dict"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.copy_dict()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.detectors"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.detectors</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.digitizer"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.digitizer</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.initialize_optical_signal_dict"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.initialize_optical_signal_dict()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.OptoElectronics.source"><code class="docutils literal notranslate"><span class="pre">OptoElectronics.source</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#light-sources">Light sources</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-source">Gaussian source</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.source.Gaussian"><code class="docutils literal notranslate"><span class="pre">Gaussian</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.source.Gaussian.set_waist"><code class="docutils literal notranslate"><span class="pre">Gaussian.set_waist()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.source.Gaussian.waist_y"><code class="docutils literal notranslate"><span class="pre">Gaussian.waist_y</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.source.Gaussian.waist_z"><code class="docutils literal notranslate"><span class="pre">Gaussian.waist_z</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flat-top-source">Flat-top source</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.source.FlatTop"><code class="docutils literal notranslate"><span class="pre">FlatTop</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.source.FlatTop.set_waist"><code class="docutils literal notranslate"><span class="pre">FlatTop.set_waist()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.source.FlatTop.waist_y"><code class="docutils literal notranslate"><span class="pre">FlatTop.waist_y</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.source.FlatTop.waist_z"><code class="docutils literal notranslate"><span class="pre">FlatTop.waist_z</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#detectors">Detectors</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.detector.Detector"><code class="docutils literal notranslate"><span class="pre">Detector</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.detector.Detector.apply_dark_current_noise"><code class="docutils literal notranslate"><span class="pre">Detector.apply_dark_current_noise()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.detector.Detector.bandwidth"><code class="docutils literal notranslate"><span class="pre">Detector.bandwidth</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.detector.Detector.cache_numerical_aperture"><code class="docutils literal notranslate"><span class="pre">Detector.cache_numerical_aperture</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.detector.Detector.clear_bandwidth"><code class="docutils literal notranslate"><span class="pre">Detector.clear_bandwidth()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.detector.Detector.current_noise_density"><code class="docutils literal notranslate"><span class="pre">Detector.current_noise_density</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.detector.Detector.dark_current"><code class="docutils literal notranslate"><span class="pre">Detector.dark_current</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.detector.Detector.gamma_angle"><code class="docutils literal notranslate"><span class="pre">Detector.gamma_angle</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.detector.Detector.has_bandwidth"><code class="docutils literal notranslate"><span class="pre">Detector.has_bandwidth()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.detector.Detector.name"><code class="docutils literal notranslate"><span class="pre">Detector.name</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.detector.Detector.numerical_aperture"><code class="docutils literal notranslate"><span class="pre">Detector.numerical_aperture</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.detector.Detector.phi_angle"><code class="docutils literal notranslate"><span class="pre">Detector.phi_angle</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.detector.Detector.responsivity"><code class="docutils literal notranslate"><span class="pre">Detector.responsivity</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.detector.Detector.sampling"><code class="docutils literal notranslate"><span class="pre">Detector.sampling</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#amplification">Amplification</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.amplifier.Amplifier"><code class="docutils literal notranslate"><span class="pre">Amplifier</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.amplify"><code class="docutils literal notranslate"><span class="pre">Amplifier.amplify()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.bandwidth"><code class="docutils literal notranslate"><span class="pre">Amplifier.bandwidth</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.current_noise_density"><code class="docutils literal notranslate"><span class="pre">Amplifier.current_noise_density</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.filter_order"><code class="docutils literal notranslate"><span class="pre">Amplifier.filter_order</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.gain"><code class="docutils literal notranslate"><span class="pre">Amplifier.gain</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.get_rms_noise"><code class="docutils literal notranslate"><span class="pre">Amplifier.get_rms_noise()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.amplifier.Amplifier.voltage_noise_density"><code class="docutils literal notranslate"><span class="pre">Amplifier.voltage_noise_density</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#digitization">Digitization</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer"><code class="docutils literal notranslate"><span class="pre">Digitizer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.bandwidth"><code class="docutils literal notranslate"><span class="pre">Digitizer.bandwidth</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.bit_depth"><code class="docutils literal notranslate"><span class="pre">Digitizer.bit_depth</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.capture_signal"><code class="docutils literal notranslate"><span class="pre">Digitizer.capture_signal()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.channel_range_mode"><code class="docutils literal notranslate"><span class="pre">Digitizer.channel_range_mode</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.clear_all_channel_voltage_ranges"><code class="docutils literal notranslate"><span class="pre">Digitizer.clear_all_channel_voltage_ranges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.clear_bandwidth"><code class="docutils literal notranslate"><span class="pre">Digitizer.clear_bandwidth()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.clear_channel_voltage_range"><code class="docutils literal notranslate"><span class="pre">Digitizer.clear_channel_voltage_range()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.clear_voltage_range"><code class="docutils literal notranslate"><span class="pre">Digitizer.clear_voltage_range()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.clip_signal"><code class="docutils literal notranslate"><span class="pre">Digitizer.clip_signal()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.digitize_data_dict"><code class="docutils literal notranslate"><span class="pre">Digitizer.digitize_data_dict()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.digitize_signal"><code class="docutils literal notranslate"><span class="pre">Digitizer.digitize_signal()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.get_channel_voltage_range"><code class="docutils literal notranslate"><span class="pre">Digitizer.get_channel_voltage_range()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.get_maximum_code"><code class="docutils literal notranslate"><span class="pre">Digitizer.get_maximum_code()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.get_min_max"><code class="docutils literal notranslate"><span class="pre">Digitizer.get_min_max()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.get_minimum_code"><code class="docutils literal notranslate"><span class="pre">Digitizer.get_minimum_code()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.get_time_series"><code class="docutils literal notranslate"><span class="pre">Digitizer.get_time_series()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.has_bandwidth"><code class="docutils literal notranslate"><span class="pre">Digitizer.has_bandwidth()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.has_channel_voltage_range"><code class="docutils literal notranslate"><span class="pre">Digitizer.has_channel_voltage_range()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.has_signed_output_codes"><code class="docutils literal notranslate"><span class="pre">Digitizer.has_signed_output_codes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.has_voltage_range"><code class="docutils literal notranslate"><span class="pre">Digitizer.has_voltage_range()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.max_voltage"><code class="docutils literal notranslate"><span class="pre">Digitizer.max_voltage</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.min_voltage"><code class="docutils literal notranslate"><span class="pre">Digitizer.min_voltage</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.output_signed_codes"><code class="docutils literal notranslate"><span class="pre">Digitizer.output_signed_codes</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.process_signal"><code class="docutils literal notranslate"><span class="pre">Digitizer.process_signal()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.sampling_rate"><code class="docutils literal notranslate"><span class="pre">Digitizer.sampling_rate</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.set_auto_range"><code class="docutils literal notranslate"><span class="pre">Digitizer.set_auto_range()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.set_channel_voltage_range"><code class="docutils literal notranslate"><span class="pre">Digitizer.set_channel_voltage_range()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.should_digitize"><code class="docutils literal notranslate"><span class="pre">Digitizer.should_digitize()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.digitizer.Digitizer.use_auto_range"><code class="docutils literal notranslate"><span class="pre">Digitizer.use_auto_range</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#analog-processing-circuits">Analog processing circuits</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit"><code class="docutils literal notranslate"><span class="pre">BaseCircuit</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.BaseCircuit.process"><code class="docutils literal notranslate"><span class="pre">BaseCircuit.process()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo"><code class="docutils literal notranslate"><span class="pre">BaselineRestorationServo</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.initialize_with_first_sample"><code class="docutils literal notranslate"><span class="pre">BaselineRestorationServo.initialize_with_first_sample</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.process"><code class="docutils literal notranslate"><span class="pre">BaselineRestorationServo.process()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.reference_level"><code class="docutils literal notranslate"><span class="pre">BaselineRestorationServo.reference_level</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.BaselineRestorationServo.time_constant"><code class="docutils literal notranslate"><span class="pre">BaselineRestorationServo.time_constant</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass"><code class="docutils literal notranslate"><span class="pre">BesselLowPass</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass.cutoff_frequency"><code class="docutils literal notranslate"><span class="pre">BesselLowPass.cutoff_frequency</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass.gain"><code class="docutils literal notranslate"><span class="pre">BesselLowPass.gain</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass.order"><code class="docutils literal notranslate"><span class="pre">BesselLowPass.order</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.BesselLowPass.process"><code class="docutils literal notranslate"><span class="pre">BesselLowPass.process()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass"><code class="docutils literal notranslate"><span class="pre">ButterworthLowPass</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass.cutoff_frequency"><code class="docutils literal notranslate"><span class="pre">ButterworthLowPass.cutoff_frequency</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass.gain"><code class="docutils literal notranslate"><span class="pre">ButterworthLowPass.gain</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass.order"><code class="docutils literal notranslate"><span class="pre">ButterworthLowPass.order</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.ButterworthLowPass.process"><code class="docutils literal notranslate"><span class="pre">ButterworthLowPass.process()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection"><code class="docutils literal notranslate"><span class="pre">SlidingMinimumBaselineCorrection</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection.process"><code class="docutils literal notranslate"><span class="pre">SlidingMinimumBaselineCorrection.process()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.opto_electronics.circuits.SlidingMinimumBaselineCorrection.window_size"><code class="docutils literal notranslate"><span class="pre">SlidingMinimumBaselineCorrection.window_size</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/code/opto_electronics.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, Martin Poinsinet de Sivry-Houle.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
