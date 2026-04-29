@@ -1,7 +1,9 @@
 *
 
-!docs
 !.gitignore
+!.nojekyll
 !index.html
 !version_switcher.json
-!.nojekyll
+
+!docs/
+!docs/**
