@@ -1,0 +1,964 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlowCyPy.flow_cytometer &#8212; FlowCyPy  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/_static/default.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/FlowCyPy/flow_cytometer';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.0.1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            true;
+        </script>
+    <link rel="icon" href="../../_static/thumbnail.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/thumbnail.png" class="logo__image only-dark" alt=""/>
+    <img src="../../_static/thumbnail.png" class="logo__image only-light pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">FlowCyPy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../code.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples.html">
+    Coding examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../internal.html">
+    Internal
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/FlowCyPy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/FlowCyPy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Anaconda</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../code.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples.html">
+    Coding examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../internal.html">
+    Internal
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/FlowCyPy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/FlowCyPy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Anaconda</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">FlowCyPy.flow_cytometer</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for FlowCyPy.flow_cytometer</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">Power</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">ureg</span><span class="p">,</span> <span class="n">validate_units</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fluidics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="n">populations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics.event_collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">EventCollection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.opto_electronics</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptoElectronics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.run_record</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunRecord</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.digital_processing</span><span class="w"> </span><span class="kn">import</span> <span class="n">DigitalProcessing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.acquisition</span><span class="w"> </span><span class="kn">import</span> <span class="n">AcquisitionDataFrame</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.peaks</span><span class="w"> </span><span class="kn">import</span> <span class="n">PeakDataFrame</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.sub_frames.triggered</span><span class="w"> </span><span class="kn">import</span> <span class="n">TriggerDataFrame</span>
+
+
+<div class="viewcode-block" id="FlowCytometer">
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlowCytometer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    High level orchestrator for the flow cytometry simulation pipeline.</span>
+
+<span class="sd">    This class keeps only the persistent fluidic definition and the constant</span>
+<span class="sd">    optical background level. All other configuration objects are passed</span>
+<span class="sd">    explicitly to the methods that use them.</span>
+
+<span class="sd">    This design keeps the workflow fully visible to the caller and avoids any</span>
+<span class="sd">    ambiguity about which opto electronic or signal processing configuration is</span>
+<span class="sd">    active for a given computation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fluidics : Fluidics</span>
+<span class="sd">        Fluidic subsystem, including flow cell and population definitions.</span>
+<span class="sd">    background_power : pint.Quantity, optional</span>
+<span class="sd">        Constant optical background added to every detector channel.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@validate_units</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">fluidics</span><span class="p">:</span> <span class="n">Fluidics</span><span class="p">,</span>
+        <span class="n">background_power</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Power</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span> <span class="o">=</span> <span class="n">fluidics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">background_power</span> <span class="o">=</span> <span class="n">background_power</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_explicit_model_signals</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">event_collection</span><span class="p">:</span> <span class="n">EventCollection</span><span class="p">,</span>
+        <span class="n">signal_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">opto_electronics</span><span class="p">:</span> <span class="n">OptoElectronics</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add explicit model detector signals to the optical power dictionary.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        event_collection : EventCollection</span>
+<span class="sd">            Population event blocks.</span>
+<span class="sd">        signal_dict : dict</span>
+<span class="sd">            Optical power signal dictionary updated in place.</span>
+<span class="sd">        opto_electronics : OptoElectronics</span>
+<span class="sd">            Opto electronic configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">events</span> <span class="ow">in</span> <span class="n">event_collection</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">populations</span><span class="o">.</span><span class="n">ExplicitModel</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
+                <span class="n">generated_pulse_signal</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">generate_pulses</span><span class="p">(</span>
+                    <span class="n">velocities</span><span class="o">=</span><span class="n">events</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="s2">&quot;Velocity&quot;</span><span class="p">),</span>
+                    <span class="n">pulse_centers</span><span class="o">=</span><span class="n">events</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">),</span>
+                    <span class="n">pulse_amplitudes</span><span class="o">=</span><span class="n">events</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                    <span class="n">time_array</span><span class="o">=</span><span class="n">signal_dict</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">],</span>
+                    <span class="n">base_level</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="n">signal_dict</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">+=</span> <span class="n">generated_pulse_signal</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_gamma_model_signals</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">event_collection</span><span class="p">:</span> <span class="n">EventCollection</span><span class="p">,</span>
+        <span class="n">signal_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">opto_electronics</span><span class="p">:</span> <span class="n">OptoElectronics</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add gamma model detector signals to the optical power dictionary.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        event_collection : EventCollection</span>
+<span class="sd">            Population event blocks.</span>
+<span class="sd">        signal_dict : dict</span>
+<span class="sd">            Optical power signal dictionary updated in place.</span>
+<span class="sd">        opto_electronics : OptoElectronics</span>
+<span class="sd">            Opto electronic configuration.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">events</span> <span class="ow">in</span> <span class="n">event_collection</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">sampling_method</span><span class="p">,</span> <span class="n">populations</span><span class="o">.</span><span class="n">GammaModel</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">expected_number_of_particles</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;ExpectedNumberOfParticles&quot;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">expected_number_of_particles</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">detectors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;opto_electronics must contain at least one detector.&quot;</span><span class="p">)</span>
+
+            <span class="n">reference_detector</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">detectors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">reference_mean_amplitude</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span>
+                <span class="n">reference_detector</span><span class="o">.</span><span class="n">name</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+            <span class="n">reference_power_trace</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">get_gamma_trace</span><span class="p">(</span>
+                <span class="n">time_array</span><span class="o">=</span><span class="n">signal_dict</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">],</span>
+                <span class="n">shape</span><span class="o">=</span><span class="n">expected_number_of_particles</span><span class="p">,</span>
+                <span class="n">scale</span><span class="o">=</span><span class="n">reference_mean_amplitude</span><span class="p">,</span>
+                <span class="n">mean_velocity</span><span class="o">=</span><span class="n">events</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;VelocityMean&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">reference_mean_amplitude</span><span class="o">.</span><span class="n">magnitude</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Gamma Model reference mean amplitude is zero, cannot normalize.&quot;</span>
+                <span class="p">)</span>
+
+            <span class="n">particle_trace</span> <span class="o">=</span> <span class="n">reference_power_trace</span> <span class="o">/</span> <span class="n">reference_mean_amplitude</span>
+
+            <span class="n">events</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;ParticleTrace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">particle_trace</span>
+            <span class="n">events</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;TimeTrace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">signal_dict</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">detectors</span><span class="p">:</span>
+                <span class="n">mean_amplitude</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">get_quantity</span><span class="p">(</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                <span class="n">detector_power_trace</span> <span class="o">=</span> <span class="n">particle_trace</span> <span class="o">*</span> <span class="n">mean_amplitude</span>
+                <span class="n">signal_dict</span><span class="p">[</span><span class="n">detector</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">+=</span> <span class="n">detector_power_trace</span>
+
+<div class="viewcode-block" id="FlowCytometer.compute_analog">
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer.compute_analog">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_analog</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">,</span>
+        <span class="n">event_collection</span><span class="p">:</span> <span class="n">EventCollection</span><span class="p">,</span>
+        <span class="n">opto_electronics</span><span class="p">:</span> <span class="n">OptoElectronics</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the full analog detector waveforms from an event collection.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        run_time : Time</span>
+<span class="sd">            Acquisition duration.</span>
+<span class="sd">        event_collection : EventCollection</span>
+<span class="sd">            Population event blocks with optical coupling already evaluated.</span>
+<span class="sd">        opto_electronics : OptoElectronics</span>
+<span class="sd">            Opto electronic configuration.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Analog voltage signal dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">power_signal_dict</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">initialize_optical_signal_dict</span><span class="p">(</span>
+            <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span>
+            <span class="n">background_power</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">background_power</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_explicit_model_signals</span><span class="p">(</span>
+            <span class="n">event_collection</span><span class="o">=</span><span class="n">event_collection</span><span class="p">,</span>
+            <span class="n">signal_dict</span><span class="o">=</span><span class="n">power_signal_dict</span><span class="p">,</span>
+            <span class="n">opto_electronics</span><span class="o">=</span><span class="n">opto_electronics</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_gamma_model_signals</span><span class="p">(</span>
+            <span class="n">event_collection</span><span class="o">=</span><span class="n">event_collection</span><span class="p">,</span>
+            <span class="n">signal_dict</span><span class="o">=</span><span class="n">power_signal_dict</span><span class="p">,</span>
+            <span class="n">opto_electronics</span><span class="o">=</span><span class="n">opto_electronics</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">convert_optical_power_to_voltage</span><span class="p">(</span><span class="n">power_signal_dict</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FlowCytometer.process_analog">
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer.process_analog">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_analog</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">,</span>
+        <span class="n">event_collection</span><span class="p">:</span> <span class="n">EventCollection</span><span class="p">,</span>
+        <span class="n">analog_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">digital_processing</span><span class="p">:</span> <span class="n">DigitalProcessing</span><span class="p">,</span>
+        <span class="n">opto_electronics</span><span class="p">:</span> <span class="n">OptoElectronics</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunRecord</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process an existing analog acquisition through the downstream signal</span>
+<span class="sd">        processing chain.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        run_time : Time</span>
+<span class="sd">            Acquisition duration.</span>
+<span class="sd">        event_collection : EventCollection</span>
+<span class="sd">            Event collection associated with the analog signals.</span>
+<span class="sd">        analog_dict : dict</span>
+<span class="sd">            Analog voltage signal dictionary.</span>
+<span class="sd">        digital_processing : DigitalProcessing</span>
+<span class="sd">            Signal processing configuration.</span>
+<span class="sd">        opto_electronics : OptoElectronics</span>
+<span class="sd">            Opto electronic configuration associated with the analog signal.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        RunRecord</span>
+<span class="sd">            Run record containing the analog acquisition and all downstream</span>
+<span class="sd">            results that could be computed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">run_record</span> <span class="o">=</span> <span class="n">RunRecord</span><span class="p">(</span>
+            <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span>
+            <span class="n">event_collection</span><span class="o">=</span><span class="n">event_collection</span><span class="p">,</span>
+            <span class="n">opto_electronics</span><span class="o">=</span><span class="n">opto_electronics</span><span class="p">,</span>
+            <span class="n">digital_processing</span><span class="o">=</span><span class="n">digital_processing</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">processed_analog_dict</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">apply_analog_processing</span><span class="p">(</span>
+            <span class="n">analog_dict</span><span class="o">=</span><span class="n">analog_dict</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">run_record</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">analog</span> <span class="o">=</span> <span class="n">AcquisitionDataFrame</span><span class="o">.</span><span class="n">_construct_from_signal_dict</span><span class="p">(</span>
+            <span class="n">signal_dict</span><span class="o">=</span><span class="n">processed_analog_dict</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">triggered_analog_dict</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">digital_processing</span><span class="o">.</span><span class="n">discriminator</span><span class="o">.</span><span class="n">run_with_dict</span><span class="p">(</span><span class="n">processed_analog_dict</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">digital_processing</span><span class="o">.</span><span class="n">discriminator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">triggered_analog_dict</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">run_record</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">triggered_analog_dict</span><span class="p">[</span><span class="s2">&quot;segment_id&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;No triggers detected. Returning analog signal without digital processing.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">run_record</span>
+
+        <span class="n">triggered_digital_dict</span> <span class="o">=</span> <span class="n">opto_electronics</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">digitize_data_dict</span><span class="p">(</span>
+            <span class="n">triggered_analog_dict</span>
+        <span class="p">)</span>
+
+        <span class="n">run_record</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">digital</span> <span class="o">=</span> <span class="n">TriggerDataFrame</span><span class="o">.</span><span class="n">_construct_from_flat_dict</span><span class="p">(</span>
+            <span class="n">triggered_digital_dict</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">digital_processing</span><span class="o">.</span><span class="n">peak_algorithm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">peaks_dict</span> <span class="o">=</span> <span class="n">digital_processing</span><span class="o">.</span><span class="n">peak_algorithm</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">triggered_digital_dict</span><span class="p">)</span>
+
+            <span class="n">run_record</span><span class="o">.</span><span class="n">peaks</span> <span class="o">=</span> <span class="n">PeakDataFrame</span><span class="o">.</span><span class="n">_construct_from_dict</span><span class="p">(</span><span class="n">peaks_dict</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">run_record</span></div>
+
+
+<div class="viewcode-block" id="FlowCytometer.process_run">
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer.process_run">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_run</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">run_record</span><span class="p">:</span> <span class="n">RunRecord</span><span class="p">,</span>
+        <span class="n">digital_processing</span><span class="p">:</span> <span class="n">DigitalProcessing</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunRecord</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process an existing acquired run through the downstream signal</span>
+<span class="sd">        processing chain.</span>
+
+<span class="sd">        This method is intended for notebook workflows where the caller already</span>
+<span class="sd">        has a ``RunRecord`` returned by ``acquire()`` and wants to apply</span>
+<span class="sd">        downstream processing without passing the acquisition configuration again.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        run_record : RunRecord</span>
+<span class="sd">            Existing run record containing analog acquisition data and the</span>
+<span class="sd">            opto electronic configuration used to produce it.</span>
+<span class="sd">        digital_processing : DigitalProcessing</span>
+<span class="sd">            Signal processing configuration.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        RunRecord</span>
+<span class="sd">            Processed run record.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the input run record does not contain an ``opto_electronics``</span>
+<span class="sd">            configuration.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the input run record does not contain analog signal data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">run_record</span><span class="o">.</span><span class="n">opto_electronics</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The provided run_record does not contain opto_electronics. &quot;</span>
+                <span class="s2">&quot;Make sure it was created with acquire() or manually populated.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">run_record</span><span class="o">.</span><span class="n">signal</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">run_record</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">analog</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The provided run_record does not contain analog signal data.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_analog</span><span class="p">(</span>
+            <span class="n">run_time</span><span class="o">=</span><span class="n">run_record</span><span class="o">.</span><span class="n">run_time</span><span class="p">,</span>
+            <span class="n">event_collection</span><span class="o">=</span><span class="n">run_record</span><span class="o">.</span><span class="n">event_collection</span><span class="p">,</span>
+            <span class="n">analog_dict</span><span class="o">=</span><span class="n">run_record</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">analog</span><span class="o">.</span><span class="n">raw_data</span><span class="p">,</span>
+            <span class="n">digital_processing</span><span class="o">=</span><span class="n">digital_processing</span><span class="p">,</span>
+            <span class="n">opto_electronics</span><span class="o">=</span><span class="n">run_record</span><span class="o">.</span><span class="n">opto_electronics</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FlowCytometer.acquire">
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer.acquire">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">acquire</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">,</span>
+        <span class="n">opto_electronics</span><span class="p">:</span> <span class="n">OptoElectronics</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunRecord</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the acquisition pipeline up to the analog stage.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        run_time : Time</span>
+<span class="sd">            Acquisition duration.</span>
+<span class="sd">        opto_electronics : OptoElectronics</span>
+<span class="sd">            Opto electronic configuration.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        RunRecord</span>
+<span class="sd">            Run record containing the event collection, analog voltage</span>
+<span class="sd">            waveforms, and the opto electronic configuration used to produce</span>
+<span class="sd">            them.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">event_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluidics</span><span class="o">.</span><span class="n">generate_event_collection</span><span class="p">(</span>
+            <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span>
+            <span class="n">sampling_rate</span><span class="o">=</span><span class="n">opto_electronics</span><span class="o">.</span><span class="n">digitizer</span><span class="o">.</span><span class="n">sampling_rate</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">opto_electronics</span><span class="o">.</span><span class="n">add_coupling_to_dataframe</span><span class="p">(</span>
+            <span class="n">event_collection</span><span class="o">=</span><span class="n">event_collection</span><span class="p">,</span>
+            <span class="n">compute_cross_section</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">processed_analog_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_analog</span><span class="p">(</span>
+            <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span>
+            <span class="n">event_collection</span><span class="o">=</span><span class="n">event_collection</span><span class="p">,</span>
+            <span class="n">opto_electronics</span><span class="o">=</span><span class="n">opto_electronics</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">run_record</span> <span class="o">=</span> <span class="n">RunRecord</span><span class="p">(</span>
+            <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span>
+            <span class="n">event_collection</span><span class="o">=</span><span class="n">event_collection</span><span class="p">,</span>
+            <span class="n">opto_electronics</span><span class="o">=</span><span class="n">opto_electronics</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">run_record</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">analog</span> <span class="o">=</span> <span class="n">AcquisitionDataFrame</span><span class="o">.</span><span class="n">_construct_from_signal_dict</span><span class="p">(</span>
+            <span class="n">signal_dict</span><span class="o">=</span><span class="n">processed_analog_dict</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">run_record</span></div>
+
+
+<div class="viewcode-block" id="FlowCytometer.run">
+<a class="viewcode-back" href="../../code/flow_cytometer.html#FlowCyPy.flow_cytometer.FlowCytometer.run">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">run_time</span><span class="p">:</span> <span class="n">Time</span><span class="p">,</span>
+        <span class="n">opto_electronics</span><span class="p">:</span> <span class="n">OptoElectronics</span><span class="p">,</span>
+        <span class="n">digital_processing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DigitalProcessing</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunRecord</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the full simulation pipeline from event generation to peak extraction.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        run_time : Time</span>
+<span class="sd">            Acquisition duration.</span>
+<span class="sd">        opto_electronics : OptoElectronics</span>
+<span class="sd">            Opto electronic configuration.</span>
+<span class="sd">        digital_processing : DigitalProcessing, optional</span>
+<span class="sd">            Signal processing configuration. If None, no digital processing is applied.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        RunRecord</span>
+<span class="sd">            Full run record containing all available stages.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">digital_processing</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">digital_processing</span> <span class="o">=</span> <span class="n">DigitalProcessing</span><span class="p">()</span>
+
+        <span class="n">acquired_run_record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span>
+            <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span>
+            <span class="n">opto_electronics</span><span class="o">=</span><span class="n">opto_electronics</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_run</span><span class="p">(</span>
+            <span class="n">run_record</span><span class="o">=</span><span class="n">acquired_run_record</span><span class="p">,</span>
+            <span class="n">digital_processing</span><span class="o">=</span><span class="n">digital_processing</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, Martin Poinsinet de Sivry-Houle.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

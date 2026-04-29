@@ -1,0 +1,1198 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Fluidics &#8212; FlowCyPy  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/_static/default.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'code/fluidics';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.0.1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            true;
+        </script>
+    <link rel="icon" href="../_static/thumbnail.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Opto-electronics" href="opto_electronics.html" />
+    <link rel="prev" title="Flow cytometer" href="flow_cytometer.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../_static/thumbnail.png" class="logo__image only-dark" alt=""/>
+    <img src="../_static/thumbnail.png" class="logo__image only-light pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">FlowCyPy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../code.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Coding examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory.html">
+    Theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../internal.html">
+    Internal
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/FlowCyPy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/FlowCyPy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Anaconda</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../code.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples.html">
+    Coding examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../theory.html">
+    Theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../internal.html">
+    Internal
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/FlowCyPy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/FlowCyPy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Anaconda</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="flow_cytometer.html">Flow cytometer</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Fluidics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opto_electronics.html">Opto-electronics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="digital_processing.html">Digital processing</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../code.html" class="nav-link">API reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Fluidics</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="fluidics">
+<span id="id1"></span><h1>Fluidics<a class="headerlink" href="#fluidics" title="Link to this heading">#</a></h1>
+<p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">FlowCyPy.fluidics</span></code> package defines the physical input of a simulation.</p>
+<p>It describes the geometry of the flow cell, the organization of particle populations, and the statistical distributions used to generate particle properties such as size and refractive index.</p>
+<p>Together, these objects define what enters the optical interrogation region and how particles are spatially and temporally distributed before signal generation.</p>
+<p>The typical workflow is:</p>
+<ol class="arabic simple">
+<li><p>define a <a class="reference internal" href="#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.flow_cell.FlowCell"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowCyPy.fluidics.flow_cell.FlowCell</span></code></a></p></li>
+<li><p>build one or more particle populations</p></li>
+<li><p>collect them in a <a class="reference internal" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.scatterer_collection.ScattererCollection"><code class="xref py py-class docutils literal notranslate"><span class="pre">FlowCyPy.fluidics.scatterer_collection.ScattererCollection</span></code></a></p></li>
+<li><p>combine the collection with the flow cell to create a fluidic configuration</p></li>
+</ol>
+<p>This structure is used throughout FlowCyPy to generate realistic particle arrival statistics and physically consistent event streams.</p>
+<section id="flow-cell">
+<h2>Flow cell<a class="headerlink" href="#flow-cell" title="Link to this heading">#</a></h2>
+<p>The flow cell defines the channel geometry and the hydrodynamic conditions used in the simulation.</p>
+<p>It converts the specified sample and sheath flow rates into a focused sample region and provides the velocity field used to model particle transport.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FlowCell</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_object</span></code></p>
+<p>Represents a rectangular flow cell in which the velocity field is computed from an
+analytical Fourier series solution for pressure driven flow. The focused sample region
+is estimated from the volumetric flow rates of the sample and sheath fluids.</p>
+<p>The analytical solution for the x direction velocity in a rectangular channel is given by:</p>
+<div class="math notranslate nohighlight">
+\[u(y,z) = \frac{16b^2}{\pi^3 \mu}\left(-\frac{dp}{dx}\right)
+        \sum_{\substack{n=1,3,5,\ldots}}^{\infty} \frac{1}{n^3}
+        \left[
+            1 - \frac{
+                    \cosh\left(\frac{n\pi y}{2b}\right)
+                }{
+                    \cosh\left(\frac{n\pi a}{2b}\right)
+                }
+        \right]
+\sin\left(\frac{n\pi (z+b)}{2b}\right)\]</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.area">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">area</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.area" title="Link to this definition">#</a></dt>
+<dd><p>Return the cross sectional area of the flow cell.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.event_scheme">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">event_scheme</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.event_scheme" title="Link to this definition">#</a></dt>
+<dd><p>Return the default event sampling scheme used by the flow cell.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.get_sample_volume">
+<span class="sig-name descname"><span class="pre">get_sample_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.flow_cell.FlowCell"><span class="pre">FlowCyPy.fluidics.flow_cell.FlowCell</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.get_sample_volume" title="Link to this definition">#</a></dt>
+<dd><p>Compute the sample volume that passes through the flow cell during the specified run time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>run_time</strong> (<em>Time</em>) – Total run duration.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sample volume transported during the run.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Quantity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.height">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">height</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.height" title="Link to this definition">#</a></dt>
+<dd><p>Return the height of the flow cell.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.sample">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sample" title="Link to this definition">#</a></dt>
+<dd><p>Sample fluid region of the flow cell.
+This region represents the focused sample area with its dimensions, volume flow rate,
+maximum flow speed, and average flow speed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.sample_arrival_times">
+<span class="sig-name descname"><span class="pre">sample_arrival_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.flow_cell.FlowCell"><span class="pre">FlowCyPy.fluidics.flow_cell.FlowCell</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_events</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_flux</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sample_arrival_times" title="Link to this definition">#</a></dt>
+<dd><p>Sample event arrival times over a specified run duration using the flow cell’s configured event scheme.</p>
+<section id="configured-schemes">
+<h3>Configured schemes<a class="headerlink" href="#configured-schemes" title="Link to this heading">#</a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;uniform-random&quot;</span></code></dt><dd><p>Draw <code class="docutils literal notranslate"><span class="pre">n_events</span></code> random times uniformly over the run duration and sort them.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;linear&quot;</span></code></dt><dd><p>Generate <code class="docutils literal notranslate"><span class="pre">n_events</span></code> linearly spaced times over the run duration.
+This is particularly useful for debugging and deterministic tests.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;poisson&quot;</span></code></dt><dd><p>Generate arrival times from a Poisson process with rate <code class="docutils literal notranslate"><span class="pre">particle_flux</span></code>.
+In this mode, <code class="docutils literal notranslate"><span class="pre">n_events</span></code> is ignored and the number of returned events is stochastic.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">param n_events<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of events to generate for deterministic schemes.</p>
+</dd>
+<dt class="field-even">type n_events<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">param run_time<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Total duration over which events are sampled.</p>
+</dd>
+<dt class="field-even">type run_time<span class="colon">:</span></dt>
+<dd class="field-even"><p>Time</p>
+</dd>
+<dt class="field-odd">param particle_flux<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Event rate in events per second used only when <code class="docutils literal notranslate"><span class="pre">event_scheme=&quot;poisson&quot;</span></code>.</p>
+</dd>
+<dt class="field-even">type particle_flux<span class="colon">:</span></dt>
+<dd class="field-even"><p>float, optional</p>
+</dd>
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Event arrival times expressed in seconds.</p>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>Quantity</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.sample_transverse_profile">
+<span class="sig-name descname"><span class="pre">sample_transverse_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.flow_cell.FlowCell" title="FlowCyPy.fluidics.flow_cell.FlowCell"><span class="pre">FlowCyPy.fluidics.flow_cell.FlowCell</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sample_transverse_profile" title="Link to this definition">#</a></dt>
+<dd><p>Sample the transverse velocity profile of the focused sample region.</p>
+<p>This method draws random transverse coordinates within the sample region and
+evaluates the corresponding local axial velocity in the channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>int</em>) – Number of transverse samples to generate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Tuple containing:</p>
+<ul class="simple">
+<li><p>y coordinates</p></li>
+<li><p>z coordinates</p></li>
+<li><p>local axial velocities</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.sheath">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sheath</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sheath" title="Link to this definition">#</a></dt>
+<dd><p>Sheath fluid region of the flow cell.
+This region represents the remaining sheath area with its dimensions, volume flow rate,
+maximum flow speed, and average flow speed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.width">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">width</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.width" title="Link to this definition">#</a></dt>
+<dd><p>Return the width of the flow cell.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="scatterer-collection">
+<h2>Scatterer collection<a class="headerlink" href="#scatterer-collection" title="Link to this heading">#</a></h2>
+<p>The scatterer collection is the container that stores all particle populations present in the simulated sample.</p>
+<p>It provides a convenient interface for combining multiple populations, applying dilution, and passing the resulting sample definition to the fluidics engine.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ScattererCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/scatterer_collection.html#ScattererCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Defines and manages the diameter and refractive index distributions of scatterers (particles)
+passing through a flow cytometer. This class generates random scatterer diameters and refractive
+indices based on a list of provided distributions (e.g., Normal, LogNormal, Uniform, etc.).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>populations</strong> (<em>List</em><em>[</em><em>BasePopulation</em><em>]</em>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population">
+<span class="sig-name descname"><span class="pre">add_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">population</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/scatterer_collection.html#ScattererCollection.add_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population" title="Link to this definition">#</a></dt>
+<dd><p>Adds a population to the ScattererCollection instance with the specified attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the population.</p></li>
+<li><p><strong>diameter</strong> (<em>BaseDistribution</em>) – The diameter distribution of the population.</p></li>
+<li><p><strong>refractive_index</strong> (<em>BaseDistribution</em>) – The refractive index distribution of the population.</p></li>
+<li><p><strong>population</strong> (<em>BasePopulation</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ScattererCollection instance (to support chaining).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.scatterer_collection.ScattererCollection">ScattererCollection</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the concentration does not have the expected dimensionality.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.concentrations">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">concentrations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Concentration</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.concentrations" title="Link to this definition">#</a></dt>
+<dd><p>Gets the concentration of each population in the ScattererCollection instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of concentrations for each population.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[Concentration]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.dilute">
+<span class="sig-name descname"><span class="pre">dilute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/scatterer_collection.html#ScattererCollection.dilute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.dilute" title="Link to this definition">#</a></dt>
+<dd><p>Dilutes the populations in the flow cytometry system by a given factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>factor</strong> (<em>float</em>) – The dilution factor to apply to each population. For example, a factor
+of 0.5 reduces the population density by half.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The method modifies the populations in place.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>This method iterates over all populations in the system and applies the <cite>dilute</cite> method of each population.</p></li>
+<li><p>The specific implementation of how a population is diluted depends on the <cite>dilute</cite> method defined in the <cite>population</cite> object.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<p>Dilute all populations by 50%:
+&gt;&gt;&gt; system.dilute(0.5)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.get_population_ratios">
+<span class="sig-name descname"><span class="pre">get_population_ratios</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/scatterer_collection.html#ScattererCollection.get_population_ratios"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.get_population_ratios" title="Link to this definition">#</a></dt>
+<dd><p>Get the ratios of each population’s concentration to the total concentration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of concentration ratios for each population.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.set_concentrations">
+<span class="sig-name descname"><span class="pre">set_concentrations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/scatterer_collection.html#ScattererCollection.set_concentrations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.set_concentrations" title="Link to this definition">#</a></dt>
+<dd><p>Sets the concentration of each population in the ScattererCollection instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>values</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>Concentration</em><em>]</em><em>, </em><em>Concentration</em><em>]</em>) – A list of concentrations to set for each population, or a single concentration value to set for all populations.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the length of the values list does not match the number of populations or if any concentration has an incorrect dimensionality.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="population-models">
+<h2>Population models<a class="headerlink" href="#population-models" title="Link to this heading">#</a></h2>
+<p>Population classes describe the physical properties of the particles present in the sample.</p>
+<p>A population typically specifies its concentration, refractive index model, diameter distribution, and the sampling strategy used to instantiate individual particles during simulation.</p>
+<section id="sphere-population">
+<h3>Sphere population<a class="headerlink" href="#sphere-population" title="Link to this heading">#</a></h3>
+<p>Use this class for homogeneous spherical particles.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.populations.SpherePopulation">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SpherePopulation</span></span><a class="headerlink" href="#FlowCyPy.fluidics.populations.SpherePopulation" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePopulation</span></code></p>
+<p>Spherical population with distribution based physical parameters.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#FlowCyPy.fluidics.populations.CoreShellPopulation" title="FlowCyPy.fluidics.populations.CoreShellPopulation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CoreShellPopulation</span></code></a></dt><dd><p>population with separate core and shell properties.</p>
+</dd>
+</dl>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.populations.SpherePopulation.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.populations.SpherePopulation" title="FlowCyPy.fluidics.populations.SpherePopulation"><span class="pre">FlowCyPy.fluidics.populations.SpherePopulation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.populations.SpherePopulation.sample" title="Link to this definition">#</a></dt>
+<dd><p>Sample particle properties from the population distributions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>number_of_samples</strong> (<em>int</em>) – Number of particles to sample.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Dictionary containing sampled arrays with units:</p>
+<ul class="simple">
+<li><p>”MediumRefractiveIndex” : RIU</p></li>
+<li><p>”RefractiveIndex” : RIU</p></li>
+<li><p>”Diameter” : meter</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, pint.Quantity]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="core-shell-population">
+<h3>Core-shell population<a class="headerlink" href="#core-shell-population" title="Link to this heading">#</a></h3>
+<p>Use this class for layered particles composed of a core and a shell with distinct optical properties.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.populations.CoreShellPopulation">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CoreShellPopulation</span></span><a class="headerlink" href="#FlowCyPy.fluidics.populations.CoreShellPopulation" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasePopulation</span></code></p>
+<p>Core shell population with distribution based physical parameters.</p>
+<p>The shell thickness is sampled independently from the core diameter. If you need
+a constrained relationship (e.g., total diameter fixed), implement a dedicated
+distribution or a custom population class that enforces the constraint.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.populations.CoreShellPopulation.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#FlowCyPy.fluidics.populations.CoreShellPopulation" title="FlowCyPy.fluidics.populations.CoreShellPopulation"><span class="pre">FlowCyPy.fluidics.populations.CoreShellPopulation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_of_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsInt</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#FlowCyPy.fluidics.populations.CoreShellPopulation.sample" title="Link to this definition">#</a></dt>
+<dd><p>Sample particle properties from the population distributions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>number_of_samples</strong> (<em>int</em>) – Number of particles to sample.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Dictionary containing sampled arrays with units:</p>
+<ul class="simple">
+<li><p>”MediumRefractiveIndex” : RIU</p></li>
+<li><p>”CoreRefractiveIndex” : RIU</p></li>
+<li><p>”ShellRefractiveIndex” : RIU</p></li>
+<li><p>”CoreDiameter” : meter</p></li>
+<li><p>”ShellThickness” : meter</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, pint.Quantity]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="distribution-models">
+<h2>Distribution models<a class="headerlink" href="#distribution-models" title="Link to this heading">#</a></h2>
+<p>Distribution classes define how scalar particle properties are sampled.</p>
+<p>They are commonly used for particle diameter, refractive index, or medium refractive index.</p>
+<p>These models make it possible to represent monodisperse, weakly polydisperse, or broadly distributed populations within a consistent API.</p>
+<section id="normal">
+<h3>Normal<a class="headerlink" href="#normal" title="Link to this heading">#</a></h3>
+<p>The normal distribution generates values distributed around a mean with symmetric dispersion.</p>
+<p>It is appropriate when fluctuations are approximately Gaussian and negative values are either physically excluded by bounds or unlikely within the chosen parameter range.</p>
+<a class="reference internal image-reference" href="../_images/Normal.png"><img alt="../_images/Normal.png" class="align-center" src="../_images/Normal.png" style="width: 600px;" />
+</a>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Normal">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Normal</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDistribution</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Normal.high_cutoff">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">high_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal.high_cutoff" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Normal.low_cutoff">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">low_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal.low_cutoff" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Normal.mean">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal.mean" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Normal.standard_deviation">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">standard_deviation</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Normal.standard_deviation" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="log-normal">
+<h3>Log-normal<a class="headerlink" href="#log-normal" title="Link to this heading">#</a></h3>
+<p>The log-normal distribution generates strictly positive values whose logarithm follows a normal distribution.</p>
+<p>It is commonly used for particle sizes and other positive quantities with right-skewed variation.</p>
+<a class="reference internal image-reference" href="../_images/LogNormal.png"><img alt="../_images/LogNormal.png" class="align-center" src="../_images/LogNormal.png" style="width: 600px;" />
+</a>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.LogNormal">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LogNormal</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDistribution</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.LogNormal.high_cutoff">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">high_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal.high_cutoff" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.LogNormal.low_cutoff">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">low_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal.low_cutoff" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.LogNormal.mean">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal.mean" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.LogNormal.standard_deviation">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">standard_deviation</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.LogNormal.standard_deviation" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="rosin-rammler">
+<h3>Rosin-Rammler<a class="headerlink" href="#rosin-rammler" title="Link to this heading">#</a></h3>
+<p>The Rosin-Rammler distribution is widely used to model particle size distributions in dispersed materials.</p>
+<p>It is particularly useful when the population contains many small particles and progressively fewer large particles.</p>
+<a class="reference internal image-reference" href="../_images/RosinRammler.png"><img alt="../_images/RosinRammler.png" class="align-center" src="../_images/RosinRammler.png" style="width: 600px;" />
+</a>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.RosinRammler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RosinRammler</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDistribution</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.RosinRammler.high_cutoff">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">high_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler.high_cutoff" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.RosinRammler.low_cutoff">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">low_cutoff</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler.low_cutoff" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.RosinRammler.scale">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scale</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler.scale" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.RosinRammler.shape">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.RosinRammler.shape" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="delta">
+<h3>Delta<a class="headerlink" href="#delta" title="Link to this heading">#</a></h3>
+<p>The delta distribution represents a fixed value with no dispersion.</p>
+<p>It is useful for monodisperse reference populations or for parameters that should remain constant across all simulated particles.</p>
+<a class="reference internal image-reference" href="../_images/Delta.png"><img alt="../_images/Delta.png" class="align-center" src="../_images/Delta.png" style="width: 600px;" />
+</a>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Delta">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Delta</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Delta" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDistribution</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Delta.value">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Delta.value" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="uniform">
+<h3>Uniform<a class="headerlink" href="#uniform" title="Link to this heading">#</a></h3>
+<p>The uniform distribution samples values evenly between a lower and an upper bound.</p>
+<p>It is appropriate when all values within an interval are considered equally likely.</p>
+<a class="reference internal image-reference" href="../_images/Uniform.png"><img alt="../_images/Uniform.png" class="align-center" src="../_images/Uniform.png" style="width: 600px;" />
+</a>
+<dl class="py class">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Uniform">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Uniform</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Uniform" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseDistribution</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Uniform.lower_bound">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lower_bound</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Uniform.lower_bound" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.distributions.Uniform.upper_bound">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">upper_bound</span></span><a class="headerlink" href="#FlowCyPy.fluidics.distributions.Uniform.upper_bound" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#flow-cell">Flow cell</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell"><code class="docutils literal notranslate"><span class="pre">FlowCell</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell.area"><code class="docutils literal notranslate"><span class="pre">FlowCell.area</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell.event_scheme"><code class="docutils literal notranslate"><span class="pre">FlowCell.event_scheme</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell.get_sample_volume"><code class="docutils literal notranslate"><span class="pre">FlowCell.get_sample_volume()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell.height"><code class="docutils literal notranslate"><span class="pre">FlowCell.height</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sample"><code class="docutils literal notranslate"><span class="pre">FlowCell.sample</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sample_arrival_times"><code class="docutils literal notranslate"><span class="pre">FlowCell.sample_arrival_times()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sample_transverse_profile"><code class="docutils literal notranslate"><span class="pre">FlowCell.sample_transverse_profile()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sheath"><code class="docutils literal notranslate"><span class="pre">FlowCell.sheath</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell.width"><code class="docutils literal notranslate"><span class="pre">FlowCell.width</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scatterer-collection">Scatterer collection</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection"><code class="docutils literal notranslate"><span class="pre">ScattererCollection</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.add_population()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.concentrations"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.concentrations</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.dilute"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.dilute()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.get_population_ratios"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.get_population_ratios()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.set_concentrations"><code class="docutils literal notranslate"><span class="pre">ScattererCollection.set_concentrations()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#population-models">Population models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sphere-population">Sphere population</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.populations.SpherePopulation"><code class="docutils literal notranslate"><span class="pre">SpherePopulation</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.populations.SpherePopulation.sample"><code class="docutils literal notranslate"><span class="pre">SpherePopulation.sample()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core-shell-population">Core-shell population</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.populations.CoreShellPopulation"><code class="docutils literal notranslate"><span class="pre">CoreShellPopulation</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.populations.CoreShellPopulation.sample"><code class="docutils literal notranslate"><span class="pre">CoreShellPopulation.sample()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#distribution-models">Distribution models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#normal">Normal</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.Normal"><code class="docutils literal notranslate"><span class="pre">Normal</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.Normal.high_cutoff"><code class="docutils literal notranslate"><span class="pre">Normal.high_cutoff</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.Normal.low_cutoff"><code class="docutils literal notranslate"><span class="pre">Normal.low_cutoff</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.Normal.mean"><code class="docutils literal notranslate"><span class="pre">Normal.mean</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.Normal.standard_deviation"><code class="docutils literal notranslate"><span class="pre">Normal.standard_deviation</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#log-normal">Log-normal</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.LogNormal"><code class="docutils literal notranslate"><span class="pre">LogNormal</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.LogNormal.high_cutoff"><code class="docutils literal notranslate"><span class="pre">LogNormal.high_cutoff</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.LogNormal.low_cutoff"><code class="docutils literal notranslate"><span class="pre">LogNormal.low_cutoff</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.LogNormal.mean"><code class="docutils literal notranslate"><span class="pre">LogNormal.mean</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.LogNormal.standard_deviation"><code class="docutils literal notranslate"><span class="pre">LogNormal.standard_deviation</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rosin-rammler">Rosin-Rammler</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.RosinRammler"><code class="docutils literal notranslate"><span class="pre">RosinRammler</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.RosinRammler.high_cutoff"><code class="docutils literal notranslate"><span class="pre">RosinRammler.high_cutoff</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.RosinRammler.low_cutoff"><code class="docutils literal notranslate"><span class="pre">RosinRammler.low_cutoff</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.RosinRammler.scale"><code class="docutils literal notranslate"><span class="pre">RosinRammler.scale</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.RosinRammler.shape"><code class="docutils literal notranslate"><span class="pre">RosinRammler.shape</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#delta">Delta</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.Delta"><code class="docutils literal notranslate"><span class="pre">Delta</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.Delta.value"><code class="docutils literal notranslate"><span class="pre">Delta.value</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#uniform">Uniform</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.Uniform"><code class="docutils literal notranslate"><span class="pre">Uniform</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.Uniform.lower_bound"><code class="docutils literal notranslate"><span class="pre">Uniform.lower_bound</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.distributions.Uniform.upper_bound"><code class="docutils literal notranslate"><span class="pre">Uniform.upper_bound</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/code/fluidics.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, Martin Poinsinet de Sivry-Houle.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
