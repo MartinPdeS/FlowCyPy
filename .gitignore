@@ -1,9 +1,21 @@
 *
 
+# Keep repository control files.
 !.gitignore
 !.nojekyll
+
+# Keep GitHub Actions or repository automation if this branch stores them.
+!.github/
+!.github/**
+
+# Keep root Pages files.
 !index.html
 !version_switcher.json
+!update_version_switcher.py
 
+# Keep documentation payload.
 !docs/
-!docs/**
+!docs/latest/
+!docs/latest/**
+!docs/v*/
+!docs/v*/**
