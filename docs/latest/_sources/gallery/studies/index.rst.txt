@@ -30,6 +30,23 @@ Examples: Studies
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to simulate particle trajectories in a rectangular flow cell and visualize their transverse positions.">
+
+.. only:: html
+
+  .. image:: /gallery/studies/images/thumb/sphx_glr_flowcell_sampling_thumb.png
+    :alt:
+
+  :doc:`/gallery/studies/flowcell_sampling`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Visualize particle sampling in a rectangular flow cell</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This example simulates the detection of small nanoparticles (90-150 nm diameter) in a flow cytometry setup using a dual-detector configuration (side and forward scatter). The simulation includes noise models, realistic fluidics, analog signal conditioning, digitization, triggering, and peak detection.">
 
 .. only:: html
@@ -90,6 +107,7 @@ Examples: Studies
    :hidden:
 
    /gallery/studies/concentration_sweep
+   /gallery/studies/flowcell_sampling
    /gallery/studies/limit_of_detection
    /gallery/studies/signal_processing
    /gallery/studies/threshold_sensitivity

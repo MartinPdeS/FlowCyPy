@@ -628,6 +628,10 @@ In this mode, <code class="docutils literal notranslate"><span class="pre">n_eve
 <dd><p>Sample the transverse velocity profile of the focused sample region.</p>
 <p>This method draws random transverse coordinates within the sample region and
 evaluates the corresponding local axial velocity in the channel.</p>
+<p>By default, coordinates are sampled with probability proportional to the local
+axial velocity. This gives flux-weighted trajectory sampling. If the flow cell
+was constructed with <code class="docutils literal notranslate"><span class="pre">transverse_sampling_scheme=&quot;uniform-random&quot;</span></code>, coordinates
+are sampled uniformly over the sample region instead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>n_samples</strong> (<em>int</em>) – Number of transverse samples to generate.</p>
@@ -653,6 +657,12 @@ evaluates the corresponding local axial velocity in the channel.</p>
 <dd><p>Sheath fluid region of the flow cell.
 This region represents the remaining sheath area with its dimensions, volume flow rate,
 maximum flow speed, and average flow speed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="FlowCyPy.fluidics.flow_cell.FlowCell.transverse_sampling_scheme">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transverse_sampling_scheme</span></span><a class="headerlink" href="#FlowCyPy.fluidics.flow_cell.FlowCell.transverse_sampling_scheme" title="Link to this definition">#</a></dt>
+<dd><p>Return the transverse position sampling scheme used by the flow cell.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1045,6 +1055,7 @@ distribution or a custom population class that enforces the constraint.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sample_arrival_times"><code class="docutils literal notranslate"><span class="pre">FlowCell.sample_arrival_times()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sample_transverse_profile"><code class="docutils literal notranslate"><span class="pre">FlowCell.sample_transverse_profile()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell.sheath"><code class="docutils literal notranslate"><span class="pre">FlowCell.sheath</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell.transverse_sampling_scheme"><code class="docutils literal notranslate"><span class="pre">FlowCell.transverse_sampling_scheme</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#FlowCyPy.fluidics.flow_cell.FlowCell.width"><code class="docutils literal notranslate"><span class="pre">FlowCell.width</span></code></a></li>
 </ul>
 </li>
