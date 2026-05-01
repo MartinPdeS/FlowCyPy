@@ -15,6 +15,7 @@ dimensional density plots.
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 from matplotlib.colors import LogNorm
 from MPSPlots.styles import scientific
@@ -865,7 +866,14 @@ simulation_dataframe = pd.DataFrame(
 # The experimental Cytek Rosetta bead data are loaded from the documentation
 # data directory.
 
-experimental_data_path = directories.doc_path / "data" / "cytek_rosetta_beads.csv"
+example_file_path = Path(__file__).resolve()
+documentation_directory = example_file_path.parents[2]
+
+experimental_data_path = (
+    documentation_directory
+    / "data"
+    / "cytek_rosetta_beads.csv"
+)
 
 experimental_dataframe = pd.read_csv(experimental_data_path)
 
