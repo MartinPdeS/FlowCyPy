@@ -53,6 +53,7 @@ public:
     int N_terms = 25;
     int n_int = 200;
     std::string event_scheme = "uniform-random";
+    std::string transverse_sampling_scheme = "velocity-weighted";
     bool perfectly_aligned = false;
 
     double Q_total;
@@ -79,6 +80,7 @@ public:
      * @param N_terms Number of odd terms used in the Fourier series expansion.
      * @param n_int Number of integration points per axis used for numerical integration.
      * @param event_scheme Default event sampling scheme. Supported values are "uniform-random", "linear", and "poisson".
+     * @param transverse_sampling_scheme Transverse position sampling scheme. Supported values are "velocity-weighted" and "uniform-random".
      * @param perfectly_aligned If true, the sample stream is perfectly aligned with the center of the channel.
      * @note The constructor calls the `initialize` method to set up the flow cell parameters.
      */
@@ -91,6 +93,7 @@ public:
         int N_terms,
         int n_int,
         const std::string& event_scheme,
+        const std::string& transverse_sampling_scheme,
         bool perfectly_aligned
     );
 
@@ -99,7 +102,13 @@ public:
      * This method generates a list of tuples representing the transverse profile
      * of the focused sample stream, where each tuple contains the y-coordinate, z-coordinate,
      * and the corresponding velocity at that point.
-     * The coordinates are sampled uniformly within the sample region dimensions.
+     *
+     * By default, coordinates are sampled with probability proportional to the local
+     * axial velocity. This gives flux-weighted trajectory sampling, so faster regions
+     * of the sample stream contribute proportionally more particles per unit time.
+     * If `transverse_sampling_scheme` is set to "uniform-random", coordinates are sampled
+     * uniformly within the sample region dimensions.
+     *
      * The velocity is calculated based on the flow cell's parameters and the
      * transverse position within the channel.
      *
@@ -114,7 +123,11 @@ private:
      * @brief Initialize the flow cell parameters based on the provided dimensions and flow rates.
      * This method computes the total flow rate, estimates the pressure gradient required to match
      * the requested volumetric flow, calculates the centerline velocity, and estimates the focused
-     * sample region dimensions from the sample flow rate and center velocity.
+     * sample region dimensions from the integrated sample flow constraint.
+     *
+     * The sample core is assumed to be a centered rectangle with the same aspect ratio as the
+     * channel. Its size is computed so that the integral of the velocity field over the sample
+     * region equals the requested sample volume flow.
      */
     void initialize();
 
@@ -123,6 +136,33 @@ private:
      * Throws an exception if the scheme is not supported.
      */
     void validate_event_scheme() const;
+
+    /**
+     * @brief Validate the configured transverse sampling scheme.
+     * Throws an exception if the scheme is not supported.
+     */
+    void validate_transverse_sampling_scheme() const;
+
+    /**
+     * @brief Validate the physical and numerical parameters of the flow cell.
+     * Throws an exception if dimensions, flow rates, viscosity, or integration settings are invalid.
+     */
+    void validate_physical_parameters() const;
+
+    /**
+     * @brief Compute the scale of the centered sample core.
+     *
+     * The sample core is parameterized as:
+     *
+     *     sample_width = scale * width
+     *     sample_height = scale * height
+     *
+     * with scale in [0, 1]. The scale is found by bisection so that the integrated
+     * axial flow through the centered sample core equals `sample_volume_flow`.
+     *
+     * @return Sample core scale factor.
+     */
+    double compute_sample_core_scale() const;
 
 public:
     /**
@@ -138,6 +178,22 @@ public:
      * @return The calculated local axial velocity in m/s.
      */
     double get_velocity(double y, double z, double dpdx_local) const;
+
+    /**
+     * @brief Compute the volumetric flow rate through a centered rectangular region.
+     * This method numerically integrates the velocity field over a centered rectangle
+     * of dimensions `region_width` by `region_height`.
+     *
+     * @param region_width Width of the centered region in meters.
+     * @param region_height Height of the centered region in meters.
+     * @param dpdx_input The pressure gradient in Pa/m.
+     * @return The computed regional flow rate in m^3/s.
+     */
+    double compute_region_flow(
+        double region_width,
+        double region_height,
+        double dpdx_input
+    ) const;
 
     /**
      * @brief Compute the channel volumetric flow rate for a given pressure gradient.

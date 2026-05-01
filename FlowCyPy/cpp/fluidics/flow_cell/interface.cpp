@@ -110,6 +110,7 @@ PYBIND11_MODULE(flow_cell, module) {
                 const size_t& N_terms,
                 const size_t& n_int,
                 const std::string& event_scheme,
+                const std::string& transverse_sampling_scheme,
                 const bool perfectly_aligned
             ) {
                 py::object Length = py::module_::import("FlowCyPy.units").attr("Length");
@@ -145,6 +146,7 @@ PYBIND11_MODULE(flow_cell, module) {
                     static_cast<int>(N_terms),
                     static_cast<int>(n_int),
                     event_scheme,
+                    transverse_sampling_scheme,
                     perfectly_aligned
                 );
             }
@@ -157,6 +159,7 @@ PYBIND11_MODULE(flow_cell, module) {
         py::arg("N_terms") = 25,
         py::arg("n_int") = 200,
         py::arg("event_scheme") = "uniform-random",
+        py::arg("transverse_sampling_scheme") = "velocity-weighted",
         py::arg("perfectly_aligned") = false,
         R"pbdoc(
             Parameters
@@ -178,6 +181,11 @@ PYBIND11_MODULE(flow_cell, module) {
             event_scheme : str, optional
                 Default event sampling scheme. Must be one of
                 ``"uniform-random"``, ``"linear"``, or ``"poisson"``.
+            transverse_sampling_scheme : str, optional
+                Transverse position sampling scheme. Must be one of
+                ``"velocity-weighted"`` or ``"uniform-random"``.
+                ``"velocity-weighted"`` samples particle positions with probability
+                proportional to the local axial velocity and is the default.
             perfectly_aligned : bool, optional
                 If True, the sample stream is perfectly aligned with the centerline.
                 Default is False.
@@ -220,6 +228,15 @@ PYBIND11_MODULE(flow_cell, module) {
         },
         R"pbdoc(
             Return the default event sampling scheme used by the flow cell.
+        )pbdoc"
+    )
+    .def_property_readonly(
+        "transverse_sampling_scheme",
+        [](const FlowCell& self){
+            return self.transverse_sampling_scheme;
+        },
+        R"pbdoc(
+            Return the transverse position sampling scheme used by the flow cell.
         )pbdoc"
     )
     .def(
@@ -306,6 +323,11 @@ PYBIND11_MODULE(flow_cell, module) {
 
             This method draws random transverse coordinates within the sample region and
             evaluates the corresponding local axial velocity in the channel.
+
+            By default, coordinates are sampled with probability proportional to the local
+            axial velocity. This gives flux-weighted trajectory sampling. If the flow cell
+            was constructed with ``transverse_sampling_scheme="uniform-random"``, coordinates
+            are sampled uniformly over the sample region instead.
 
             Parameters
             ----------
