@@ -219,4 +219,4 @@ _ = run_record.plot_digital(figure_size=(12, 8))
 # %%
 # Step 7: Plot Peak Features
 # --------------------------
-_ = run_record.peaks.plot(x=("forward", "Height"))
+_ = run_record.plot_peak(x=("forward", "Height"))

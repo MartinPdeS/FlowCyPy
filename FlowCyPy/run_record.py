@@ -282,6 +282,57 @@ class RunRecord:
 
         return figure
 
+    def plot_peak(
+        self,
+        x: tuple[str, str] = None,
+        y: tuple[str, str] = None,
+        z: tuple[str, str] = None,
+        **kwargs,
+    ) -> plt.Figure:
+        """Plot peak features using the run peak dataframe.
+
+        Parameters
+        ----------
+        x, y, z : tuple[str, str] | None
+            Peak coordinates expressed as ``(detector_name, feature_name)``.
+            The provided axis combination selects a 1D histogram, 2D plot, or
+            3D plot.
+        **kwargs
+            Additional keyword arguments forwarded to the underlying peak plot
+            helper.
+
+        Returns
+        -------
+        matplotlib.figure.Figure
+            Generated figure.
+
+        Raises
+        ------
+        ValueError
+            If no peak dataframe is available or the requested axis combination
+            is invalid.
+        """
+        if self.peaks is None:
+            raise ValueError("No peak dataframe is available in this run record.")
+
+        if x and not y and not z:
+            return self.peaks.plot_hist(x=x, **kwargs)
+
+        if x and y and not z:
+            figure, _ = self.peaks.plot_2d(x=x, y=y, **kwargs)
+            return figure
+
+        if x and y and z:
+            return self.peaks.plot_3d(x=x, y=y, z=z, **kwargs)
+
+        raise ValueError(
+            "At least one of 'x', 'y', or 'z' must be provided for plotting."
+        )
+
+    def plot_peaks(self, *args, **kwargs) -> plt.Figure:
+        """Alias for :meth:`plot_peak` for callers that prefer the plural name."""
+        return self.plot_peak(*args, **kwargs)
+
     def __repr__(self) -> str:
         """
         Return a concise summary string for the run record.

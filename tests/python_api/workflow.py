@@ -12,6 +12,7 @@ from FlowCyPy.fluidics import (
     distributions,
     populations,
 )
+from FlowCyPy.fluidics.event_collection import EventCollection
 from FlowCyPy.opto_electronics import (
     Detector,
     OptoElectronics,
@@ -26,6 +27,9 @@ from FlowCyPy.digital_processing import (
     discriminator,
     classifier,
 )
+from FlowCyPy.run_record import RunRecord
+from FlowCyPy.sub_frames.peaks import PeakDataFrame
+from tests.python_api.event_collection import make_population_events
 
 
 # ----------------- FIXTURES -----------------
@@ -292,6 +296,100 @@ def test_peak_plot(mock_show, flow_cytometer, digitizer, opto_electronics):
     digital_signal_dict = digitizer.digitize_data_dict(triggered_acquisition)
 
     _ = peak_algorithm.run(digital_signal_dict)
+
+
+def make_run_record_with_peaks() -> RunRecord:
+    peak_dataframe = PeakDataFrame._construct_from_dict(
+        {
+            0: {
+                "default": {
+                    "Height": [1.0, 2.0],
+                    "Area": [10.0, 12.0],
+                },
+                "default_bis": {
+                    "Height": [1.5, 2.5],
+                    "Area": [11.0, 13.0],
+                },
+            }
+        }
+    )
+
+    return RunRecord(
+        run_time=1 * ureg.millisecond,
+        event_collection=EventCollection(events_list=[make_population_events(name="A")]),
+        peaks=peak_dataframe,
+    )
+
+
+def test_run_record_plot_peak_hist_returns_figure() -> None:
+    run_record = make_run_record_with_peaks()
+
+    figure = run_record.plot_peak(x=("default", "Height"))
+
+    assert isinstance(figure, plt.Figure)
+    plt.close(figure)
+
+
+def test_run_record_plot_peak_hist_applies_event_style_options(tmp_path) -> None:
+    run_record = make_run_record_with_peaks()
+    output_path = tmp_path / "peak_hist.png"
+
+    figure = run_record.plot_peak(
+        x=("default", "Height"),
+        xscale="log",
+        yscale="linear",
+        figure_size=(7, 5),
+        title="Custom Peak Hist",
+        xlabel="Custom Peak X",
+        ylabel="Custom Peak Y",
+        save_as=str(output_path),
+    )
+    ax = figure.axes[0]
+
+    assert tuple(figure.get_size_inches()) == pytest.approx((7.0, 5.0))
+    assert ax.get_title() == "Custom Peak Hist"
+    assert ax.get_xlabel() == "Custom Peak X"
+    assert ax.get_ylabel() == "Custom Peak Y"
+    assert ax.get_xscale() == "log"
+    assert ax.get_yscale() == "linear"
+    assert output_path.exists()
+    assert output_path.stat().st_size > 0
+
+    plt.close(figure)
+
+
+def test_run_record_plot_peak_2d_returns_figure() -> None:
+    run_record = make_run_record_with_peaks()
+
+    figure = run_record.plot_peak(
+        x=("default", "Height"),
+        y=("default_bis", "Height"),
+        plot_type="scatter",
+    )
+
+    assert isinstance(figure, plt.Figure)
+    plt.close(figure)
+
+
+def test_run_record_plot_peak_2d_has_marginals_by_default() -> None:
+    run_record = make_run_record_with_peaks()
+
+    figure = run_record.plot_peak(
+        x=("default", "Height"),
+        y=("default_bis", "Height"),
+    )
+    joint_ax, marginal_x_ax, marginal_y_ax = figure.axes
+
+    figure.canvas.draw()
+
+    assert joint_ax.get_xlabel().startswith("default | Height")
+    assert joint_ax.get_ylabel().startswith("default_bis | Height")
+    assert all(not tick.get_visible() for tick in marginal_x_ax.get_xticklabels())
+    assert all(not tick.get_visible() for tick in marginal_y_ax.get_yticklabels())
+    assert len(marginal_x_ax.patches) > 0
+    assert len(marginal_y_ax.patches) > 0
+
+    plt.close(figure)
 
 
 if __name__ == "__main__":
