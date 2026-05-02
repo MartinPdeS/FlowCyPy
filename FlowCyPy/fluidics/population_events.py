@@ -66,6 +66,33 @@ class PopulationEvents:
         """
         return len(self.dataframe)
 
+    def copy(self) -> "PopulationEvents":
+        """
+        Return a detached copy of this population event block.
+
+        Returns
+        -------
+        PopulationEvents
+            Copied event block with cloned dataframe metadata.
+        """
+        dataframe = self.dataframe.copy(deep=True)
+        dataframe.attrs = {
+            key: value.copy() if isinstance(value, dict) else value
+            for key, value in self.dataframe.attrs.items()
+        }
+
+        return PopulationEvents(
+            dataframe=dataframe,
+            population=self.population,
+            sampling_method=self.sampling_method,
+            name=self.name,
+            scatterer_type=self.scatterer_type,
+            metadata={
+                key: value.copy() if isinstance(value, dict) else value
+                for key, value in self.metadata.items()
+            },
+        )
+
     def __getitem__(self, key: str):
         """
         Return one dataframe column.
