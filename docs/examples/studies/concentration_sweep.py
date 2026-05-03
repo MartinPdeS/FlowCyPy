@@ -169,4 +169,4 @@ for concentration_value in concentration_values:
 # --------------------------------------------------
 for run_record in run_records:
     _ = run_record.plot_analog(figure_size=(12, 4))
-    _ = run_record.plot_peak(x=("side", "Height"))
+    _ = run_record.plot_peaks(x=("side", "Height"))

@@ -151,4 +151,4 @@ for threshold_value, run_record in run_records:
     print(f"Threshold: {threshold_value}")
     _ = run_record.plot_analog(figure_size=(12, 4))
     _ = run_record.plot_digital(figure_size=(12, 4), xlim=(0, 0.1 * ureg.millisecond))
-    _ = run_record.plot_peak(x=("side", "Height"))
+    _ = run_record.plot_peaks(x=("side", "Height"))
