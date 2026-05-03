@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 from dataclasses import dataclass, field
 from typing import Any, Optional
+from TypedUnit import Frequency, Time, Voltage
 
 import matplotlib.pyplot as plt
 import numpy as np
-
-from MPSPlots import helper
-from TypedUnit import Frequency, Time, Voltage
+import MPSPlots
 
 from FlowCyPy.fluidics.event_collection import EventCollection
 
@@ -163,6 +162,7 @@ class RunRecord:
         self,
         signal_units: Voltage = None,
         time_units: Time = None,
+        figure_size: tuple[float, float] | None = None,
     ) -> tuple[plt.Figure, dict[str, plt.Axes]]:
         """
         Create a figure and one axis per detector, plus one scatterer axis.
@@ -173,6 +173,8 @@ class RunRecord:
             Voltage unit used to label detector axes.
         time_units : Time, optional
             Time unit passed to the event collection plotting helper.
+        figure_size : tuple[float, float] | None, optional
+            Figure size in inches. If ``None``, matplotlib defaults are used.
 
         Returns
         -------
@@ -186,6 +188,7 @@ class RunRecord:
             nrows=number_of_plots,
             sharex=True,
             sharey=False,
+            figsize=figure_size,
             gridspec_kw={"height_ratios": [1] * (number_of_plots - 1) + [0.5]},
         )
 
@@ -214,13 +217,63 @@ class RunRecord:
         )
 
         axes["scatterer"].set_ylabel("Scatterer", labelpad=20)
+        axes["scatterer"].set_yticks([])
 
         return figure, axes
 
-    @helper.post_mpl_plot
-    def plot_analog(self) -> plt.Figure:
+    def _plot_analog_on_axes(self, axes: dict[str, plt.Axes]) -> None:
+        """Draw analog detector signals on the provided axes."""
+        time = self.signal.analog["Time"]
+
+        for detector_name in self.detector_names:
+            axes[detector_name].plot(
+                time,
+                self.signal.analog[detector_name],
+                label="Analog Signal",
+                linestyle="-",
+                color="black",
+            )
+
+    def _plot_digital_on_axes(self, axes: dict[str, plt.Axes]) -> None:
+        """Draw triggered digital segments on the provided axes."""
+        for detector_name in self.detector_names:
+            axis = axes[detector_name]
+
+            for segment_id, group in self.signal.digital.groupby(level="SegmentID"):
+                time = group["Time"]
+                signal = group[detector_name]
+
+                axis.axvspan(
+                    time.min(),
+                    time.max(),
+                    facecolor=plt.cm.tab10(int(segment_id) % 10),
+                    alpha=0.3,
+                )
+                axis.step(time, signal, where="mid", color="black", linestyle="-")
+
+    def plot_analog(
+        self,
+        figure_size: tuple[float, float] | None = None,
+        save_as: str | None = None,
+        title: str | None = None,
+        xlim: tuple[float, float] | None = None,
+        ylim: tuple[float, float] | None = None,
+    ) -> plt.Figure:
         """
         Plot the analog detector signals together with the event timeline.
+
+        Parameters
+        ----------
+        figure_size : tuple[float, float] | None, optional
+            Figure size in inches. If ``None``, matplotlib defaults are used.
+        save_as : str | None, optional
+            Optional output path used to save the figure.
+        title : str | None, optional
+            Optional figure title.
+        xlim : tuple[float, float] | None, optional
+            Optional x-axis limits applied to the shared time axis.
+        ylim : tuple[float, float] | None, optional
+            Optional y-axis limits applied to detector axes.
 
         Returns
         -------
@@ -235,27 +288,67 @@ class RunRecord:
         if self.signal.analog is None:
             raise ValueError("No analog signal is available in this run record.")
 
-        self.signal.analog.normalize_units(signal_units="max", time_units="max")
+        with plt.style.context(MPSPlots.styles.scientific):
+            self.signal.analog.normalize_units(signal_units="max", time_units="max")
 
-        figure, axes = self.get_axes_dict(
-            signal_units=self.signal.analog.signal_units,
-            time_units=self.signal.analog.time_units,
-        )
-
-        self.signal.analog._add_to_axes(axes=axes)
-
-        if self.digital_processing.discriminator is not None:
-            self.digital_processing.discriminator._add_to_ax(
-                axes[self.digital_processing.discriminator.trigger_channel],
+            figure, axes = self.get_axes_dict(
                 signal_units=self.signal.analog.signal_units,
+                time_units=self.signal.analog.time_units,
+                figure_size=figure_size,
             )
 
-        return figure
+            self._plot_analog_on_axes(axes=axes)
 
-    @helper.post_mpl_plot
-    def plot_digital(self) -> plt.Figure:
+            if (
+                self.digital_processing is not None
+                and self.digital_processing.discriminator is not None
+            ):
+                self.digital_processing.discriminator._add_to_ax(
+                    axes[self.digital_processing.discriminator.trigger_channel],
+                    signal_units=self.signal.analog.signal_units,
+                )
+
+            if title is not None:
+                figure.suptitle(title)
+
+            if xlim is not None:
+                for axis in axes.values():
+                    axis.set_xlim(xlim)
+
+            if ylim is not None:
+                for detector_name in self.detector_names:
+                    axes[detector_name].set_ylim(ylim)
+
+            figure.tight_layout(rect=(0, 0, 1, 0.98) if title is not None else None)
+
+            if save_as is not None:
+                figure.savefig(save_as, bbox_inches="tight")
+
+            return figure
+
+    def plot_digital(
+        self,
+        figure_size: tuple[float, float] | None = None,
+        save_as: str | None = None,
+        title: str | None = None,
+        xlim: tuple[float, float] | None = None,
+        ylim: tuple[float, float] | None = None,
+    ) -> plt.Figure:
         """
         Plot the triggered digital segments together with the event timeline.
+
+        Parameters
+        ----------
+        figure_size : tuple[float, float] | None, optional
+            Figure size in inches. If ``None``, matplotlib defaults are used.
+        save_as : str | None, optional
+            Optional output path used to save the figure.
+        title : str | None, optional
+            Optional figure title.
+        xlim : tuple[float, float] | None, optional
+            Optional x-axis limits applied to the shared time axis.
+        ylim : tuple[float, float] | None, optional
+            Optional y-axis limits applied to detector axes.
 
         Returns
         -------
@@ -270,19 +363,37 @@ class RunRecord:
         if self.signal.digital is None:
             raise ValueError("No digital signal is available in this run record.")
 
-        self.signal.digital.to_compact()
+        with plt.style.context(MPSPlots.styles.scientific):
+            self.signal.digital.to_compact()
 
-        time_units = self.signal.digital.attrs["units"]["Time"]
+            time_units = self.signal.digital.attrs["units"]["Time"]
 
-        figure, axes = self.get_axes_dict(
-            time_units=time_units,
-        )
+            figure, axes = self.get_axes_dict(
+                time_units=time_units,
+                figure_size=figure_size,
+            )
 
-        self.signal.digital._add_to_axes(axes=axes)
+            self._plot_digital_on_axes(axes=axes)
 
-        return figure
+            if title is not None:
+                figure.suptitle(title)
 
-    def plot_peak(
+            if xlim is not None:
+                for axis in axes.values():
+                    axis.set_xlim(xlim)
+
+            if ylim is not None:
+                for detector_name in self.detector_names:
+                    axes[detector_name].set_ylim(ylim)
+
+            figure.tight_layout(rect=(0, 0, 1, 0.98) if title is not None else None)
+
+            if save_as is not None:
+                figure.savefig(save_as, bbox_inches="tight")
+
+            return figure
+
+    def plot_peaks(
         self,
         x: tuple[str, str] = None,
         y: tuple[str, str] = None,
@@ -328,10 +439,6 @@ class RunRecord:
         raise ValueError(
             "At least one of 'x', 'y', or 'z' must be provided for plotting."
         )
-
-    def plot_peaks(self, *args, **kwargs) -> plt.Figure:
-        """Alias for :meth:`plot_peak` for callers that prefer the plural name."""
-        return self.plot_peak(*args, **kwargs)
 
     def __repr__(self) -> str:
         """

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import List, Mapping
 
-import matplotlib.pyplot as plt
-from MPSPlots import helper
 import pandas as pd
 
 
@@ -243,74 +241,3 @@ class TriggerDataFrame(pd.DataFrame):
 
         return self
 
-    @helper.post_mpl_plot
-    def plot(self) -> plt.Figure:
-        """
-        Plot acquisition data for each detector.
-
-        Returns
-        -------
-        plt.Figure
-            Figure containing the detector plots.
-        """
-        self.to_compact()
-
-        figure, axes = self._get_axes_dict()
-        self._add_to_axes(axes=axes)
-
-        return figure
-
-    def _get_axes_dict(self) -> dict[str, plt.Axes]:
-        """
-        Create one matplotlib axis per detector.
-
-        Returns
-        -------
-        dict[str, plt.Axes]
-            Mapping from detector names to matplotlib axes.
-        """
-        n_plots = len(self.detector_names)
-
-        figure, axes_array = plt.subplots(
-            nrows=n_plots,
-            sharex=True,
-            sharey=True,
-            squeeze=False,
-        )
-
-        axes = {name: ax for name, ax in zip(self.detector_names, axes_array.flatten())}
-
-        for ax in axes.values():
-            ax.yaxis.tick_right()
-
-        for detector_name in self.detector_names:
-            ax = axes[detector_name]
-            ax.set_ylabel(detector_name, labelpad=20)
-
-        ax.set_xlabel(f"Time [{self.get_units('Time')}]")
-
-        return figure, axes
-
-    def _add_to_axes(self, axes: dict[str, plt.Axes]) -> None:
-        """
-        Plot triggered analog signal data for each detector and highlight each segment.
-
-        Parameters
-        ----------
-        axes : dict[str, plt.Axes]
-            Mapping from detector names to axes.
-        """
-        for detector_name in self.detector_names:
-            ax = axes[detector_name]
-
-            for segment_id, group in self.groupby(level="SegmentID"):
-                time = group["Time"]
-                signal = group[detector_name]
-
-                start_time = time.min()
-                end_time = time.max()
-
-                color = plt.cm.tab10(int(segment_id) % 10)
-
-                ax.axvspan(start_time, end_time, facecolor=color, alpha=0.3)
-                ax.step(time, signal, where="mid", color="black", linestyle="-")

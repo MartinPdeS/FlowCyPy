@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import List, Mapping
 
-import matplotlib.pyplot as plt
-from MPSPlots import helper
 import pandas as pd
 from TypedUnit import Time, Voltage, ureg
 
@@ -343,70 +341,3 @@ class AcquisitionDataFrame(pd.DataFrame):
 
         return self
 
-    def _get_axes_dict(self) -> dict[str, plt.Axes]:
-        """
-        Create one matplotlib axis per detector.
-
-        Returns
-        -------
-        tuple[plt.Figure, dict[str, plt.Axes]]
-            Figure and mapping from detector names to axes.
-        """
-        n_plots = len(self.detector_names)
-
-        figure, axes_array = plt.subplots(
-            nrows=n_plots,
-            sharex=True,
-            sharey=True,
-            squeeze=False,
-        )
-
-        axes = {name: ax for name, ax in zip(self.detector_names, axes_array.flatten())}
-
-        for ax in axes.values():
-            ax.yaxis.tick_right()
-
-        for detector_name in self.detector_names:
-            ax = axes[detector_name]
-            ax.set_ylabel(
-                rf"{detector_name} [{self.signal_units._repr_latex_()}]",
-                labelpad=20,
-            )
-
-        ax.set_xlabel(rf"Time [{self.time_units._repr_latex_()}]")
-
-        return figure, axes
-
-    @helper.post_mpl_plot
-    def plot(self) -> plt.Figure:
-        """
-        Plot acquisition data for each detector.
-
-        Returns
-        -------
-        plt.Figure
-            Figure containing the detector plots.
-        """
-        self.normalize_units(signal_units="max", time_units="max")
-
-        figure, axes = self._get_axes_dict()
-        self._add_to_axes(axes=axes)
-
-        return figure
-
-    def _add_to_axes(self, axes: dict) -> None:
-        """
-        Plot analog signal data for each detector.
-
-        Parameters
-        ----------
-        axes : dict
-            Mapping from detector names to matplotlib axes.
-        """
-        time = self["Time"]
-
-        for detector_name in self.detector_names:
-            ax = axes[detector_name]
-            signal = self[detector_name]
-
-            ax.plot(time, signal, label="Analog Signal", linestyle="-", color="black")
