@@ -42,8 +42,8 @@ requirements:
     - pydantic ~=2.9
     - numpy >=2.0
     - pint ~=0.24
-    - martinpdes::pymiesim
-    - martinpdes::mpsplots
+    - martinpdes::pymiesim ==5.0.4
+    - martinpdes::mpsplots ==1.8.8
     - martinpdes::typedunit
 
 about:
