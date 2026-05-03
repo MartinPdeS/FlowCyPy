@@ -441,6 +441,7 @@
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="concentration_sweep.html">Concentration Sweep: From Isolated Events to Coincidence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cytek_comparison.html">Compare simulated and experimental flow cytometry bead distributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="flowcell_sampling.html">Visualize particle sampling in a rectangular flow cell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of Detection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
@@ -671,22 +672,22 @@ for weak signals close to baseline noise.</p>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Threshold: </span><span class="si">{</span><span class="n">threshold_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_analog</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
     <span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_digital</span><span class="p">(</span><span class="n">figure_size</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">))</span>
-    <span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">))</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 <ul class="sphx-glr-horizontal">
 <li><img src="../../_images/sphx_glr_threshold_sensitivity_001.png" srcset="../../_images/sphx_glr_threshold_sensitivity_001.png" alt="threshold sensitivity" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_threshold_sensitivity_002.png" srcset="../../_images/sphx_glr_threshold_sensitivity_002.png" alt="threshold sensitivity" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_threshold_sensitivity_003.png" srcset="../../_images/sphx_glr_threshold_sensitivity_003.png" alt="threshold sensitivity" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_threshold_sensitivity_003.png" srcset="../../_images/sphx_glr_threshold_sensitivity_003.png" alt="Distribution of side | Height" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_threshold_sensitivity_004.png" srcset="../../_images/sphx_glr_threshold_sensitivity_004.png" alt="threshold sensitivity" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_threshold_sensitivity_005.png" srcset="../../_images/sphx_glr_threshold_sensitivity_005.png" alt="threshold sensitivity" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_threshold_sensitivity_006.png" srcset="../../_images/sphx_glr_threshold_sensitivity_006.png" alt="threshold sensitivity" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_threshold_sensitivity_006.png" srcset="../../_images/sphx_glr_threshold_sensitivity_006.png" alt="Distribution of side | Height" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_threshold_sensitivity_007.png" srcset="../../_images/sphx_glr_threshold_sensitivity_007.png" alt="threshold sensitivity" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_threshold_sensitivity_008.png" srcset="../../_images/sphx_glr_threshold_sensitivity_008.png" alt="threshold sensitivity" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_threshold_sensitivity_009.png" srcset="../../_images/sphx_glr_threshold_sensitivity_009.png" alt="threshold sensitivity" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_threshold_sensitivity_009.png" srcset="../../_images/sphx_glr_threshold_sensitivity_009.png" alt="Distribution of side | Height" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_threshold_sensitivity_010.png" srcset="../../_images/sphx_glr_threshold_sensitivity_010.png" alt="threshold sensitivity" class = "sphx-glr-multi-img"/></li>
 <li><img src="../../_images/sphx_glr_threshold_sensitivity_011.png" srcset="../../_images/sphx_glr_threshold_sensitivity_011.png" alt="threshold sensitivity" class = "sphx-glr-multi-img"/></li>
-<li><img src="../../_images/sphx_glr_threshold_sensitivity_012.png" srcset="../../_images/sphx_glr_threshold_sensitivity_012.png" alt="threshold sensitivity" class = "sphx-glr-multi-img"/></li>
+<li><img src="../../_images/sphx_glr_threshold_sensitivity_012.png" srcset="../../_images/sphx_glr_threshold_sensitivity_012.png" alt="Distribution of side | Height" class = "sphx-glr-multi-img"/></li>
 </ul>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Threshold: 2sigma
 Threshold: 3sigma
@@ -694,7 +695,7 @@ Threshold: 4sigma
 Threshold: 5sigma
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.315 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 6.060 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-threshold-sensitivity-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/3aa2e6853cfe0f8eaf11069b88b104e8/threshold_sensitivity.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">threshold_sensitivity.ipynb</span></code></a></p>

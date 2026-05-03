@@ -354,12 +354,12 @@ Step 7: Plot Peak Features
 
 .. code-block:: Python
 
-    _ = run_record.peaks.plot(x=("forward", "Height"))
+    _ = run_record.plot_peaks(x=("forward", "Height"))
 
 
 
 .. image-sg:: /gallery/tutorials/images/sphx_glr_workflow_005.png
-   :alt: workflow
+   :alt: Distribution of forward | Height
    :srcset: /gallery/tutorials/images/sphx_glr_workflow_005.png
    :class: sphx-glr-single-img
 
@@ -370,7 +370,7 @@ Step 7: Plot Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.288 seconds)
+   **Total running time of the script:** (0 minutes 5.347 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

@@ -441,6 +441,7 @@
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../studies/index.html">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../studies/concentration_sweep.html">Concentration Sweep: From Isolated Events to Coincidence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../studies/cytek_comparison.html">Compare simulated and experimental flow cytometry bead distributions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/flowcell_sampling.html">Visualize particle sampling in a rectangular flow cell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/limit_of_detection.html">Limit of Detection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../studies/signal_processing.html">Signal Processing in Flow Cytometry</a></li>
@@ -673,10 +674,10 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <img src="../../_images/sphx_glr_workflow_1_004.png" srcset="../../_images/sphx_glr_workflow_1_004.png" alt="workflow 1" class = "sphx-glr-single-img"/></section>
 <section id="step-7-plot-peak-features">
 <h2>Step 7: Plot Peak Features<a class="headerlink" href="#step-7-plot-peak-features" title="Link to this heading">#</a></h2>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">peaks</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">))</span>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">_</span> <span class="o">=</span> <span class="n">run_record</span><span class="o">.</span><span class="n">plot_peaks</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_1_005.png" srcset="../../_images/sphx_glr_workflow_1_005.png" alt="workflow 1" class = "sphx-glr-single-img"/></section>
+<img src="../../_images/sphx_glr_workflow_1_005.png" srcset="../../_images/sphx_glr_workflow_1_005.png" alt="Distribution of forward | Height" class = "sphx-glr-single-img"/></section>
 <section id="step-8-classify-events-from-peak-features">
 <h2>Step 8: Classify Events from Peak Features<a class="headerlink" href="#step-8-classify-events-from-peak-features" title="Link to this heading">#</a></h2>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">class_</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">KmeansClassifier</span><span class="p">(</span><span class="n">number_of_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -690,7 +691,7 @@ It models fluidics, optics, signal processing, and classification of multiple pa
 <span class="n">_</span> <span class="o">=</span> <span class="n">classification</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;side&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="s2">&quot;Height&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
-<img src="../../_images/sphx_glr_workflow_1_006.png" srcset="../../_images/sphx_glr_workflow_1_006.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 5.277 seconds)</p>
+<img src="../../_images/sphx_glr_workflow_1_006.png" srcset="../../_images/sphx_glr_workflow_1_006.png" alt="Event classification" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 4.917 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-tutorials-workflow-1-py">
 <div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/87801e70764fb935e43438dc2a72d3d8/workflow_1.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">workflow_1.ipynb</span></code></a></p>

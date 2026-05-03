@@ -30,6 +30,23 @@ Examples: Studies
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="This example compares simulated and experimental flow cytometry measurements for Rosetta bead populations.">
+
+.. only:: html
+
+  .. image:: /gallery/studies/images/thumb/sphx_glr_cytek_comparison_thumb.png
+    :alt:
+
+  :doc:`/gallery/studies/cytek_comparison`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Compare simulated and experimental flow cytometry bead distributions</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="This example shows how to simulate particle trajectories in a rectangular flow cell and visualize their transverse positions.">
 
 .. only:: html
@@ -107,6 +124,7 @@ Examples: Studies
    :hidden:
 
    /gallery/studies/concentration_sweep
+   /gallery/studies/cytek_comparison
    /gallery/studies/flowcell_sampling
    /gallery/studies/limit_of_detection
    /gallery/studies/signal_processing

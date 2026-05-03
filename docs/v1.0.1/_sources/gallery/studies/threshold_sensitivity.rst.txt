@@ -213,7 +213,7 @@ Step 3: Compare recovered events
         print(f"Threshold: {threshold_value}")
         _ = run_record.plot_analog(figure_size=(12, 4))
         _ = run_record.plot_digital(figure_size=(12, 4), xlim=(0, 0.1 * ureg.millisecond))
-        _ = run_record.peaks.plot(x=("side", "Height"))
+        _ = run_record.plot_peaks(x=("side", "Height"))
 
 
 
@@ -237,7 +237,7 @@ Step 3: Compare recovered events
     *
 
       .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_003.png
-         :alt: threshold sensitivity
+         :alt: Distribution of side | Height
          :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_003.png
          :class: sphx-glr-multi-img
 
@@ -258,7 +258,7 @@ Step 3: Compare recovered events
     *
 
       .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_006.png
-         :alt: threshold sensitivity
+         :alt: Distribution of side | Height
          :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_006.png
          :class: sphx-glr-multi-img
 
@@ -279,7 +279,7 @@ Step 3: Compare recovered events
     *
 
       .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_009.png
-         :alt: threshold sensitivity
+         :alt: Distribution of side | Height
          :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_009.png
          :class: sphx-glr-multi-img
 
@@ -300,7 +300,7 @@ Step 3: Compare recovered events
     *
 
       .. image-sg:: /gallery/studies/images/sphx_glr_threshold_sensitivity_012.png
-         :alt: threshold sensitivity
+         :alt: Distribution of side | Height
          :srcset: /gallery/studies/images/sphx_glr_threshold_sensitivity_012.png
          :class: sphx-glr-multi-img
 
@@ -320,7 +320,7 @@ Step 3: Compare recovered events
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 6.315 seconds)
+   **Total running time of the script:** (0 minutes 6.060 seconds)
 
 
 .. _sphx_glr_download_gallery_studies_threshold_sensitivity.py:

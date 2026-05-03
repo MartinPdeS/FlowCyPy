@@ -529,29 +529,20 @@
 <a class="viewcode-back" href="../../../code/fluidics.html#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">population</span><span class="p">:</span> <span class="n">BasePopulation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ScattererCollection&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Adds a population to the ScattererCollection instance with the specified attributes.</span>
+<span class="sd">        Add one or more populations to the collection.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        name : str</span>
-<span class="sd">            The name of the population.</span>
-<span class="sd">        diameter : BaseDistribution</span>
-<span class="sd">            The diameter distribution of the population.</span>
-<span class="sd">        refractive_index : BaseDistribution</span>
-<span class="sd">            The refractive index distribution of the population.</span>
+<span class="sd">        *population : BasePopulation</span>
+<span class="sd">            Population objects to append.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        ScattererCollection</span>
 <span class="sd">            The ScattererCollection instance (to support chaining).</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        ValueError</span>
-<span class="sd">            If the concentration does not have the expected dimensionality.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">population</span></div>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 
     <span class="nd">@property</span>

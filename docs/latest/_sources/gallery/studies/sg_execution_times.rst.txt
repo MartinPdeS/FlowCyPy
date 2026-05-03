@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:23.832** total execution time for 5 files **from gallery/studies**:
+**00:37.292** total execution time for 6 files **from gallery/studies**:
 
 .. container::
 
@@ -33,17 +33,20 @@ Computation times
      - Time
      - Mem (MB)
    * - :ref:`sphx_glr_gallery_studies_concentration_sweep.py` (``concentration_sweep.py``)
-     - 00:08.240
+     - 00:13.071
+     - 0.0
+   * - :ref:`sphx_glr_gallery_studies_cytek_comparison.py` (``cytek_comparison.py``)
+     - 00:08.338
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_threshold_sensitivity.py` (``threshold_sensitivity.py``)
-     - 00:06.315
+     - 00:06.060
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_limit_of_detection.py` (``limit_of_detection.py``)
-     - 00:05.114
+     - 00:05.907
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_signal_processing.py` (``signal_processing.py``)
-     - 00:02.088
+     - 00:02.004
      - 0.0
    * - :ref:`sphx_glr_gallery_studies_flowcell_sampling.py` (``flowcell_sampling.py``)
-     - 00:02.075
+     - 00:01.912
      - 0.0

@@ -1,0 +1,1327 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Compare simulated and experimental flow cytometry bead distributions &#8212; FlowCyPy  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="/opt/hostedtoolcache/Python/3.11.15/x64/lib/python3.11/site-packages/docs/source/_static/default.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/_static/default.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'gallery/studies/cytek_comparison';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://raw.githubusercontent.com/MartinPdeS/FlowCyPy/documentation_page/version_switcher.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'v1.0.1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            true;
+        </script>
+    <link rel="icon" href="../../_static/thumbnail.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Visualize particle sampling in a rectangular flow cell" href="flowcell_sampling.html" />
+    <link rel="prev" title="Concentration Sweep: From Isolated Events to Coincidence" href="concentration_sweep.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.0.1" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/thumbnail.png" class="logo__image only-dark" alt=""/>
+    <img src="../../_static/thumbnail.png" class="logo__image only-light pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">FlowCyPy</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../code.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../examples.html">
+    Coding examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../internal.html">
+    Internal
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/FlowCyPy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/FlowCyPy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Anaconda</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../code.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../examples.html">
+    Coding examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../theory.html">
+    Theory
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../references.html">
+    References
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../internal.html">
+    Internal
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinPdeS/FlowCyPy" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/FlowCyPy/" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-box fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://anaconda.org/MartinPdeS/FlowCyPy" title="Anaconda" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-python fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Anaconda</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Examples: Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/facs_canto.html">Flow Cytometry Simulation: FacsCanto System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow.html">Flow Cytometry Simulation: Full System Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/workflow_1.html">Flow Cytometry Simulation: Full System Example with Workflow</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Examples: Studies</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="concentration_sweep.html">Concentration Sweep: From Isolated Events to Coincidence</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Compare simulated and experimental flow cytometry bead distributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flowcell_sampling.html">Visualize particle sampling in a rectangular flow cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="limit_of_detection.html">Limit of Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="signal_processing.html">Signal Processing in Flow Cytometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="threshold_sensitivity.html">Threshold Sensitivity: Event Detection Near the Noise Floor</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../validation/index.html">Examples: Validation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../validation/j_estimator.html">J Estimator Validation — Fixed Bead Size, Variable Illumination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../validation/k_estimator.html">K Estimator Validation — Variable Bead Size, Fixed Illumination</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../examples.html" class="nav-link">Coding examples</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples: Studies</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Compare simulated and experimental flow cytometry bead distributions</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-gallery-studies-cytek-comparison-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="compare-simulated-and-experimental-flow-cytometry-bead-distributions">
+<span id="sphx-glr-gallery-studies-cytek-comparison-py"></span><h1>Compare simulated and experimental flow cytometry bead distributions<a class="headerlink" href="#compare-simulated-and-experimental-flow-cytometry-bead-distributions" title="Link to this heading">#</a></h1>
+<p>This example compares simulated and experimental flow cytometry measurements
+for Rosetta bead populations.</p>
+<p>The simulated data are generated with FlowCyPy, processed with a dynamic
+discriminator and a global peak locator, and compared against an experimental
+Cytek dataset in the FSC-H versus SSC-H feature space.</p>
+<p>The simulated and experimental distributions are displayed side by side as
+log-scaled two-dimensional density maps.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogNorm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">MPSPlots.styles</span><span class="w"> </span><span class="kn">import</span> <span class="n">scientific</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">TypedUnit</span><span class="w"> </span><span class="kn">import</span> <span class="n">ureg</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowCytometer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.digital_processing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DigitalProcessing</span><span class="p">,</span>
+    <span class="n">discriminator</span><span class="p">,</span>
+    <span class="n">peak_locator</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.fluidics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">FlowCell</span><span class="p">,</span>
+    <span class="n">Fluidics</span><span class="p">,</span>
+    <span class="n">SampleFlowRate</span><span class="p">,</span>
+    <span class="n">ScattererCollection</span><span class="p">,</span>
+    <span class="n">SheathFlowRate</span><span class="p">,</span>
+    <span class="n">distributions</span><span class="p">,</span>
+    <span class="n">populations</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">FlowCyPy.opto_electronics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Amplifier</span><span class="p">,</span>
+    <span class="n">Detector</span><span class="p">,</span>
+    <span class="n">Digitizer</span><span class="p">,</span>
+    <span class="n">OptoElectronics</span><span class="p">,</span>
+    <span class="n">circuits</span><span class="p">,</span>
+    <span class="n">source</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_current_execution_directory</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the most useful execution directory for locating example data.</span>
+
+<span class="sd">    In normal Python execution, ``__file__`` is defined and points to this</span>
+<span class="sd">    script. In some documentation builders, notebooks, galleries, or execution</span>
+<span class="sd">    wrappers, ``__file__`` may be undefined. In that case, the current working</span>
+<span class="sd">    directory is used instead.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;__file__&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
+
+    <span class="k">return</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_experimental_data_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Locate an experimental data file used by the documentation examples.</span>
+
+<span class="sd">    The function searches from both the current example directory and the</span>
+<span class="sd">    current working directory. This makes the example robust when executed as</span>
+<span class="sd">    a normal script, by Sphinx-Gallery, or by a documentation CI runner.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    file_name:</span>
+<span class="sd">        Name of the data file to locate.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pathlib.Path</span>
+<span class="sd">        Resolved path to the requested data file.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    FileNotFoundError</span>
+<span class="sd">        If the file cannot be found in the expected documentation locations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">execution_directory</span> <span class="o">=</span> <span class="n">get_current_execution_directory</span><span class="p">()</span>
+    <span class="n">working_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+    <span class="n">search_roots</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">root</span> <span class="ow">in</span> <span class="p">[</span><span class="n">execution_directory</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">]:</span>
+        <span class="n">search_roots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="n">search_roots</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">parents</span><span class="p">)</span>
+
+    <span class="n">candidate_paths</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">root</span> <span class="ow">in</span> <span class="n">search_roots</span><span class="p">:</span>
+        <span class="n">candidate_paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="n">file_name</span><span class="p">,</span>
+                <span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;docs&quot;</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="n">file_name</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">candidate_path</span> <span class="ow">in</span> <span class="n">candidate_paths</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">candidate_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">candidate_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+    <span class="n">searched_locations</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">candidate_path</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">candidate_path</span> <span class="ow">in</span> <span class="n">candidate_paths</span>
+    <span class="p">)</span>
+
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Could not locate experimental data file </span><span class="si">{</span><span class="n">file_name</span><span class="si">!r}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Searched:</span><span class="se">\n</span><span class="si">{</span><span class="n">searched_locations</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">filter_positive_log_data</span><span class="p">(</span>
+    <span class="n">dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">x_column_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">y_column_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">quantile_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Keep strictly positive data and remove extreme values by quantile filtering.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lower_quantile</span><span class="p">,</span> <span class="n">upper_quantile</span> <span class="o">=</span> <span class="n">quantile_limits</span>
+
+    <span class="n">positive_dataframe</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="p">(</span><span class="n">dataframe</span><span class="p">[</span><span class="n">x_column_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="o">&amp;</span> <span class="p">(</span><span class="n">dataframe</span><span class="p">[</span><span class="n">y_column_name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="p">[</span><span class="n">x_column_name</span><span class="p">,</span> <span class="n">y_column_name</span><span class="p">],</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">positive_dataframe</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No strictly positive data available for log-scale plotting.&quot;</span><span class="p">)</span>
+
+    <span class="n">x_lower_bound</span><span class="p">,</span> <span class="n">x_upper_bound</span> <span class="o">=</span> <span class="n">positive_dataframe</span><span class="p">[</span><span class="n">x_column_name</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">lower_quantile</span><span class="p">,</span> <span class="n">upper_quantile</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">y_lower_bound</span><span class="p">,</span> <span class="n">y_upper_bound</span> <span class="o">=</span> <span class="n">positive_dataframe</span><span class="p">[</span><span class="n">y_column_name</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">lower_quantile</span><span class="p">,</span> <span class="n">upper_quantile</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">filtered_dataframe</span> <span class="o">=</span> <span class="n">positive_dataframe</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">positive_dataframe</span><span class="p">[</span><span class="n">x_column_name</span><span class="p">]</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="n">x_lower_bound</span><span class="p">,</span> <span class="n">x_upper_bound</span><span class="p">)</span>
+        <span class="o">&amp;</span> <span class="n">positive_dataframe</span><span class="p">[</span><span class="n">y_column_name</span><span class="p">]</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="n">y_lower_bound</span><span class="p">,</span> <span class="n">y_upper_bound</span><span class="p">)</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">filtered_dataframe</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No data remains after quantile filtering.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">filtered_dataframe</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">validate_log_axis_limits</span><span class="p">(</span>
+    <span class="n">axis_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">axis_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate that axis limits are compatible with logarithmic plotting.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">axis_limits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">lower_axis_limit</span><span class="p">,</span> <span class="n">upper_axis_limit</span> <span class="o">=</span> <span class="n">axis_limits</span>
+
+    <span class="k">if</span> <span class="n">lower_axis_limit</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">upper_axis_limit</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">axis_name</span><span class="si">}</span><span class="s2"> values must be strictly positive.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">lower_axis_limit</span> <span class="o">&gt;=</span> <span class="n">upper_axis_limit</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">axis_name</span><span class="si">}</span><span class="s2"> lower limit must be smaller than upper limit.&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_logarithmic_bins</span><span class="p">(</span>
+    <span class="n">dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">column_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">number_of_bins</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">axis_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class"><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></a><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create logarithmically spaced bin edges for a dataframe column.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">axis_limits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bin_minimum</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">bin_maximum</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bin_minimum</span><span class="p">,</span> <span class="n">bin_maximum</span> <span class="o">=</span> <span class="n">axis_limits</span>
+
+    <span class="k">if</span> <span class="n">bin_minimum</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">bin_maximum</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Cannot create logarithmic bins for non-positive </span><span class="si">{</span><span class="n">column_name</span><span class="si">!r}</span><span class="s2"> values.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">bin_minimum</span> <span class="o">&gt;=</span> <span class="n">bin_maximum</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Invalid logarithmic bin range for </span><span class="si">{</span><span class="n">column_name</span><span class="si">!r}</span><span class="s2">: &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bin_minimum</span><span class="si">}</span><span class="s2"> &gt;= </span><span class="si">{</span><span class="n">bin_maximum</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.logspace.html#numpy.logspace" title="numpy.logspace" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">logspace</span></a><span class="p">(</span>
+        <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">log10</span></a><span class="p">(</span><span class="n">bin_minimum</span><span class="p">),</span>
+        <a href="https://numpy.org/devdocs/reference/generated/numpy.ufunc.html#numpy.ufunc" title="numpy.ufunc" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">np</span><span class="o">.</span><span class="n">log10</span></a><span class="p">(</span><span class="n">bin_maximum</span><span class="p">),</span>
+        <span class="n">number_of_bins</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_log_density</span><span class="p">(</span>
+    <span class="n">dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span>
+    <span class="n">x_column_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">y_column_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">quantile_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">),</span>
+    <span class="n">number_of_bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">250</span><span class="p">,</span>
+    <span class="n">x_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">y_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">density_colormap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;turbo&quot;</span><span class="p">,</span>
+    <span class="n">density_minimum_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a log-scaled two-dimensional density map.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">validate_log_axis_limits</span><span class="p">(</span><span class="n">x_limits</span><span class="p">,</span> <span class="n">axis_name</span><span class="o">=</span><span class="s2">&quot;x_limits&quot;</span><span class="p">)</span>
+    <span class="n">validate_log_axis_limits</span><span class="p">(</span><span class="n">y_limits</span><span class="p">,</span> <span class="n">axis_name</span><span class="o">=</span><span class="s2">&quot;y_limits&quot;</span><span class="p">)</span>
+
+    <span class="n">filtered_dataframe</span> <span class="o">=</span> <span class="n">filter_positive_log_data</span><span class="p">(</span>
+        <span class="n">dataframe</span><span class="p">,</span>
+        <span class="n">x_column_name</span><span class="o">=</span><span class="n">x_column_name</span><span class="p">,</span>
+        <span class="n">y_column_name</span><span class="o">=</span><span class="n">y_column_name</span><span class="p">,</span>
+        <span class="n">quantile_limits</span><span class="o">=</span><span class="n">quantile_limits</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">x_bins</span> <span class="o">=</span> <span class="n">make_logarithmic_bins</span><span class="p">(</span>
+        <span class="n">filtered_dataframe</span><span class="p">,</span>
+        <span class="n">column_name</span><span class="o">=</span><span class="n">x_column_name</span><span class="p">,</span>
+        <span class="n">number_of_bins</span><span class="o">=</span><span class="n">number_of_bins</span><span class="p">,</span>
+        <span class="n">axis_limits</span><span class="o">=</span><span class="n">x_limits</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">y_bins</span> <span class="o">=</span> <span class="n">make_logarithmic_bins</span><span class="p">(</span>
+        <span class="n">filtered_dataframe</span><span class="p">,</span>
+        <span class="n">column_name</span><span class="o">=</span><span class="n">y_column_name</span><span class="p">,</span>
+        <span class="n">number_of_bins</span><span class="o">=</span><span class="n">number_of_bins</span><span class="p">,</span>
+        <span class="n">axis_limits</span><span class="o">=</span><span class="n">y_limits</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">density_counts</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.histogram2d.html#numpy.histogram2d" title="numpy.histogram2d" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">histogram2d</span></a><span class="p">(</span>
+        <span class="n">filtered_dataframe</span><span class="p">[</span><span class="n">x_column_name</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+        <span class="n">filtered_dataframe</span><span class="p">[</span><span class="n">y_column_name</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+        <span class="n">bins</span><span class="o">=</span><span class="p">[</span><span class="n">x_bins</span><span class="p">,</span> <span class="n">y_bins</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">masked_density_counts</span> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ma.masked_less.html#numpy.ma.masked_less" title="numpy.ma.masked_less" class="sphx-glr-backref-module-numpy-ma sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_less</span></a><span class="p">(</span>
+        <span class="n">density_counts</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+        <span class="n">density_minimum_count</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">density_mesh</span> <span class="o">=</span> <span class="n">axis</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+        <span class="n">x_bins</span><span class="p">,</span>
+        <span class="n">y_bins</span><span class="p">,</span>
+        <span class="n">masked_density_counts</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="n">density_colormap</span><span class="p">,</span>
+        <span class="n">norm</span><span class="o">=</span><span class="n">LogNorm</span><span class="p">(),</span>
+        <span class="n">shading</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">x_column_name</span><span class="p">)</span>
+    <span class="n">axis</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">y_column_name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x_limits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">x_limits</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">y_limits</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">y_limits</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">density_mesh</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_simulation_experiment_comparison</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">simulation_dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">experimental_dataframe</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">x_column_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;FSC-H&quot;</span><span class="p">,</span>
+    <span class="n">y_column_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;SSC-H&quot;</span><span class="p">,</span>
+    <span class="n">number_of_bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">250</span><span class="p">,</span>
+    <span class="n">quantile_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+    <span class="n">x_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e1</span><span class="p">,</span> <span class="mf">5e6</span><span class="p">),</span>
+    <span class="n">y_limits</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e3</span><span class="p">,</span> <span class="mf">5e6</span><span class="p">),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">Figure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot simulated and experimental flow cytometry distributions side by side.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">figure</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span>
+        <span class="n">nrows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+        <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">plot_log_density</span><span class="p">(</span>
+        <span class="n">simulation_dataframe</span><span class="p">,</span>
+        <span class="n">axis</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">x_column_name</span><span class="o">=</span><span class="n">x_column_name</span><span class="p">,</span>
+        <span class="n">y_column_name</span><span class="o">=</span><span class="n">y_column_name</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Simulation&quot;</span><span class="p">,</span>
+        <span class="n">number_of_bins</span><span class="o">=</span><span class="n">number_of_bins</span><span class="p">,</span>
+        <span class="n">quantile_limits</span><span class="o">=</span><span class="n">quantile_limits</span><span class="p">,</span>
+        <span class="n">x_limits</span><span class="o">=</span><span class="n">x_limits</span><span class="p">,</span>
+        <span class="n">y_limits</span><span class="o">=</span><span class="n">y_limits</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">density_mesh</span> <span class="o">=</span> <span class="n">plot_log_density</span><span class="p">(</span>
+        <span class="n">experimental_dataframe</span><span class="p">,</span>
+        <span class="n">axis</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">x_column_name</span><span class="o">=</span><span class="n">x_column_name</span><span class="p">,</span>
+        <span class="n">y_column_name</span><span class="o">=</span><span class="n">y_column_name</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Experiment&quot;</span><span class="p">,</span>
+        <span class="n">number_of_bins</span><span class="o">=</span><span class="n">number_of_bins</span><span class="p">,</span>
+        <span class="n">quantile_limits</span><span class="o">=</span><span class="n">quantile_limits</span><span class="p">,</span>
+        <span class="n">x_limits</span><span class="o">=</span><span class="n">x_limits</span><span class="p">,</span>
+        <span class="n">y_limits</span><span class="o">=</span><span class="n">y_limits</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">figure</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span>
+        <span class="n">density_mesh</span><span class="p">,</span>
+        <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Counts&quot;</span><span class="p">,</span>
+        <span class="n">shrink</span><span class="o">=</span><span class="mf">0.85</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">figure</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_scatterer_collection</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">diameters</span><span class="p">,</span>
+    <span class="n">concentrations</span><span class="p">,</span>
+    <span class="n">refractive_index</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">medium_refractive_index</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">diameter_standard_deviation_fraction</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScattererCollection</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a scatterer collection from bead diameters and concentrations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">ScattererCollection</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">diameter</span><span class="p">,</span> <span class="n">concentration</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">diameters</span><span class="p">,</span> <span class="n">concentrations</span><span class="p">):</span>
+        <span class="n">diameter_distribution</span> <span class="o">=</span> <span class="n">distributions</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span>
+            <span class="n">mean</span><span class="o">=</span><span class="n">diameter</span><span class="p">,</span>
+            <span class="n">standard_deviation</span><span class="o">=</span><span class="n">diameter</span> <span class="o">*</span> <span class="n">diameter_standard_deviation_fraction</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">sphere_population</span> <span class="o">=</span> <span class="n">populations</span><span class="o">.</span><span class="n">SpherePopulation</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">diameter</span><span class="si">:</span><span class="s2">~P</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">diameter</span><span class="o">=</span><span class="n">diameter_distribution</span><span class="p">,</span>
+            <span class="n">refractive_index</span><span class="o">=</span><span class="n">refractive_index</span><span class="p">,</span>
+            <span class="n">concentration</span><span class="o">=</span><span class="n">concentration</span><span class="p">,</span>
+            <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">medium_refractive_index</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">scatterer_collection</span><span class="o">.</span><span class="n">add_population</span><span class="p">(</span><span class="n">sphere_population</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">scatterer_collection</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_fluidics</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">scatterer_collection</span><span class="p">:</span> <span class="n">ScattererCollection</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Fluidics</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create the fluidics model used for the Rosetta bead simulation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">flow_cell</span> <span class="o">=</span> <span class="n">FlowCell</span><span class="p">(</span>
+        <span class="n">sample_volume_flow</span><span class="o">=</span><span class="n">SampleFlowRate</span><span class="o">.</span><span class="n">LOW</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">sheath_volume_flow</span><span class="o">=</span><span class="n">SheathFlowRate</span><span class="o">.</span><span class="n">LOW</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+        <span class="n">width</span><span class="o">=</span><span class="mi">177</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
+        <span class="n">height</span><span class="o">=</span><span class="mi">433</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">micrometer</span><span class="p">,</span>
+        <span class="n">perfectly_aligned</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Fluidics</span><span class="p">(</span>
+        <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
+        <span class="n">flow_cell</span><span class="o">=</span><span class="n">flow_cell</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_opto_electronics</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">wavelength</span><span class="p">,</span>
+    <span class="n">bit_depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">forward_voltage_range</span><span class="p">,</span>
+    <span class="n">side_voltage_range</span><span class="p">,</span>
+    <span class="n">forward_responsivity</span><span class="p">,</span>
+    <span class="n">side_responsivity</span><span class="p">,</span>
+    <span class="n">forward_current_noise_density</span><span class="p">,</span>
+    <span class="n">side_current_noise_density</span><span class="p">,</span>
+    <span class="n">voltage_noise_density</span><span class="p">,</span>
+    <span class="n">current_noise_density</span><span class="p">,</span>
+    <span class="n">cutoff_frequency</span><span class="p">,</span>
+    <span class="n">time_constant</span><span class="p">,</span>
+    <span class="n">include_shot_noise</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptoElectronics</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create the optical source, detectors, analog processing, and digitizer model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">light_source</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">Gaussian</span><span class="p">(</span>
+        <span class="n">waist_z</span><span class="o">=</span><span class="mf">10e-6</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>
+        <span class="n">waist_y</span><span class="o">=</span><span class="mf">60e-6</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">meter</span><span class="p">,</span>
+        <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span>
+        <span class="n">optical_power</span><span class="o">=</span><span class="mi">200</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliwatt</span><span class="p">,</span>
+        <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
+        <span class="n">include_shot_noise</span><span class="o">=</span><span class="n">include_shot_noise</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">detectors</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Detector</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SSC&quot;</span><span class="p">,</span>
+            <span class="n">phi_angle</span><span class="o">=</span><span class="mi">90</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+            <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span>
+            <span class="n">responsivity</span><span class="o">=</span><span class="n">side_responsivity</span><span class="p">,</span>
+            <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
+            <span class="n">current_noise_density</span><span class="o">=</span><span class="n">side_current_noise_density</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">Detector</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;FSC&quot;</span><span class="p">,</span>
+            <span class="n">phi_angle</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">degree</span><span class="p">,</span>
+            <span class="n">numerical_aperture</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+            <span class="n">cache_numerical_aperture</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span>
+            <span class="n">responsivity</span><span class="o">=</span><span class="n">forward_responsivity</span><span class="p">,</span>
+            <span class="n">bandwidth</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
+            <span class="n">current_noise_density</span><span class="o">=</span><span class="n">forward_current_noise_density</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">amplifier</span> <span class="o">=</span> <span class="n">Amplifier</span><span class="p">(</span>
+        <span class="n">gain</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">volt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span><span class="p">,</span>
+        <span class="n">bandwidth</span><span class="o">=</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
+        <span class="n">voltage_noise_density</span><span class="o">=</span><span class="n">voltage_noise_density</span><span class="p">,</span>
+        <span class="n">current_noise_density</span><span class="o">=</span><span class="n">current_noise_density</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">digitizer</span> <span class="o">=</span> <span class="n">Digitizer</span><span class="p">(</span>
+        <span class="n">sampling_rate</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
+        <span class="n">bit_depth</span><span class="o">=</span><span class="n">bit_depth</span><span class="p">,</span>
+        <span class="n">use_auto_range</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">output_signed_codes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">channel_range_mode</span><span class="o">=</span><span class="s2">&quot;shared&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">digitizer</span><span class="o">.</span><span class="n">set_channel_voltage_range</span><span class="p">(</span>
+        <span class="n">channel_name</span><span class="o">=</span><span class="s2">&quot;FSC&quot;</span><span class="p">,</span>
+        <span class="n">minimum_voltage</span><span class="o">=</span><span class="n">forward_voltage_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">maximum_voltage</span><span class="o">=</span><span class="n">forward_voltage_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">digitizer</span><span class="o">.</span><span class="n">set_channel_voltage_range</span><span class="p">(</span>
+        <span class="n">channel_name</span><span class="o">=</span><span class="s2">&quot;SSC&quot;</span><span class="p">,</span>
+        <span class="n">minimum_voltage</span><span class="o">=</span><span class="n">side_voltage_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">maximum_voltage</span><span class="o">=</span><span class="n">side_voltage_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">analog_processing</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">cutoff_frequency</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">analog_processing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">circuits</span><span class="o">.</span><span class="n">BesselLowPass</span><span class="p">(</span>
+                <span class="n">cutoff_frequency</span><span class="o">=</span><span class="n">cutoff_frequency</span><span class="p">,</span>
+                <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">gain</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">analog_processing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">circuits</span><span class="o">.</span><span class="n">BaselineRestorationServo</span><span class="p">(</span>
+            <span class="n">time_constant</span><span class="o">=</span><span class="n">time_constant</span><span class="p">,</span>
+            <span class="n">initialize_with_first_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">OptoElectronics</span><span class="p">(</span>
+        <span class="n">source</span><span class="o">=</span><span class="n">light_source</span><span class="p">,</span>
+        <span class="n">detectors</span><span class="o">=</span><span class="n">detectors</span><span class="p">,</span>
+        <span class="n">amplifier</span><span class="o">=</span><span class="n">amplifier</span><span class="p">,</span>
+        <span class="n">digitizer</span><span class="o">=</span><span class="n">digitizer</span><span class="p">,</span>
+        <span class="n">analog_processing</span><span class="o">=</span><span class="n">analog_processing</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_digital_processing</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">,</span>
+    <span class="n">pre_buffer</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">post_buffer</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DigitalProcessing</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create the digital processing model used to extract event features.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dynamic_discriminator</span> <span class="o">=</span> <span class="n">discriminator</span><span class="o">.</span><span class="n">DynamicWindow</span><span class="p">(</span>
+        <span class="n">trigger_channel</span><span class="o">=</span><span class="s2">&quot;SSC&quot;</span><span class="p">,</span>
+        <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
+        <span class="n">pre_buffer</span><span class="o">=</span><span class="n">pre_buffer</span><span class="p">,</span>
+        <span class="n">post_buffer</span><span class="o">=</span><span class="n">post_buffer</span><span class="p">,</span>
+        <span class="n">max_triggers</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">global_peak_locator</span> <span class="o">=</span> <span class="n">peak_locator</span><span class="o">.</span><span class="n">GlobalPeakLocator</span><span class="p">(</span>
+        <span class="n">compute_width</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">compute_area</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">allow_negative_area</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">support</span><span class="o">=</span><span class="n">peak_locator</span><span class="o">.</span><span class="n">FullWindowSupport</span><span class="p">(),</span>
+        <span class="n">polarity</span><span class="o">=</span><span class="s2">&quot;positive&quot;</span><span class="p">,</span>
+        <span class="n">height_mode</span><span class="o">=</span><span class="s2">&quot;peak_to_baseline&quot;</span><span class="p">,</span>
+        <span class="n">baseline_mode</span><span class="o">=</span><span class="s2">&quot;edge_mean&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">DigitalProcessing</span><span class="p">(</span>
+        <span class="n">discriminator</span><span class="o">=</span><span class="n">dynamic_discriminator</span><span class="p">,</span>
+        <span class="n">peak_algorithm</span><span class="o">=</span><span class="n">global_peak_locator</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_rosetta_beads</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">diameters</span><span class="p">,</span>
+    <span class="n">concentrations</span><span class="p">,</span>
+    <span class="n">refractive_index</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">medium_refractive_index</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">diameter_standard_deviation_fraction</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">wavelength</span><span class="p">,</span>
+    <span class="n">bit_depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">forward_voltage_range</span><span class="p">,</span>
+    <span class="n">side_voltage_range</span><span class="p">,</span>
+    <span class="n">forward_responsivity</span><span class="p">,</span>
+    <span class="n">side_responsivity</span><span class="p">,</span>
+    <span class="n">forward_current_noise_density</span><span class="p">,</span>
+    <span class="n">side_current_noise_density</span><span class="p">,</span>
+    <span class="n">voltage_noise_density</span><span class="p">,</span>
+    <span class="n">current_noise_density</span><span class="p">,</span>
+    <span class="n">background_power</span><span class="p">,</span>
+    <span class="n">cutoff_frequency</span><span class="p">,</span>
+    <span class="n">time_constant</span><span class="p">,</span>
+    <span class="n">pre_buffer</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">post_buffer</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">,</span>
+    <span class="n">run_time</span><span class="p">,</span>
+    <span class="n">include_shot_noise</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simulate and process a flow cytometry acquisition for Rosetta bead populations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scatterer_collection</span> <span class="o">=</span> <span class="n">make_scatterer_collection</span><span class="p">(</span>
+        <span class="n">diameters</span><span class="o">=</span><span class="n">diameters</span><span class="p">,</span>
+        <span class="n">concentrations</span><span class="o">=</span><span class="n">concentrations</span><span class="p">,</span>
+        <span class="n">refractive_index</span><span class="o">=</span><span class="n">refractive_index</span><span class="p">,</span>
+        <span class="n">medium_refractive_index</span><span class="o">=</span><span class="n">medium_refractive_index</span><span class="p">,</span>
+        <span class="n">diameter_standard_deviation_fraction</span><span class="o">=</span><span class="n">diameter_standard_deviation_fraction</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">fluidics</span> <span class="o">=</span> <span class="n">make_fluidics</span><span class="p">(</span>
+        <span class="n">scatterer_collection</span><span class="o">=</span><span class="n">scatterer_collection</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">opto_electronics</span> <span class="o">=</span> <span class="n">make_opto_electronics</span><span class="p">(</span>
+        <span class="n">wavelength</span><span class="o">=</span><span class="n">wavelength</span><span class="p">,</span>
+        <span class="n">bit_depth</span><span class="o">=</span><span class="n">bit_depth</span><span class="p">,</span>
+        <span class="n">forward_voltage_range</span><span class="o">=</span><span class="n">forward_voltage_range</span><span class="p">,</span>
+        <span class="n">side_voltage_range</span><span class="o">=</span><span class="n">side_voltage_range</span><span class="p">,</span>
+        <span class="n">forward_responsivity</span><span class="o">=</span><span class="n">forward_responsivity</span><span class="p">,</span>
+        <span class="n">side_responsivity</span><span class="o">=</span><span class="n">side_responsivity</span><span class="p">,</span>
+        <span class="n">forward_current_noise_density</span><span class="o">=</span><span class="n">forward_current_noise_density</span><span class="p">,</span>
+        <span class="n">side_current_noise_density</span><span class="o">=</span><span class="n">side_current_noise_density</span><span class="p">,</span>
+        <span class="n">voltage_noise_density</span><span class="o">=</span><span class="n">voltage_noise_density</span><span class="p">,</span>
+        <span class="n">current_noise_density</span><span class="o">=</span><span class="n">current_noise_density</span><span class="p">,</span>
+        <span class="n">cutoff_frequency</span><span class="o">=</span><span class="n">cutoff_frequency</span><span class="p">,</span>
+        <span class="n">time_constant</span><span class="o">=</span><span class="n">time_constant</span><span class="p">,</span>
+        <span class="n">include_shot_noise</span><span class="o">=</span><span class="n">include_shot_noise</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">cytometer</span> <span class="o">=</span> <span class="n">FlowCytometer</span><span class="p">(</span>
+        <span class="n">fluidics</span><span class="o">=</span><span class="n">fluidics</span><span class="p">,</span>
+        <span class="n">background_power</span><span class="o">=</span><span class="n">background_power</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">run_record</span> <span class="o">=</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span>
+        <span class="n">run_time</span><span class="o">=</span><span class="n">run_time</span><span class="p">,</span>
+        <span class="n">opto_electronics</span><span class="o">=</span><span class="n">opto_electronics</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">digital_processing</span> <span class="o">=</span> <span class="n">make_digital_processing</span><span class="p">(</span>
+        <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
+        <span class="n">pre_buffer</span><span class="o">=</span><span class="n">pre_buffer</span><span class="p">,</span>
+        <span class="n">post_buffer</span><span class="o">=</span><span class="n">post_buffer</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cytometer</span><span class="o">.</span><span class="n">process_run</span><span class="p">(</span>
+        <span class="n">run_record</span><span class="o">=</span><span class="n">run_record</span><span class="p">,</span>
+        <span class="n">digital_processing</span><span class="o">=</span><span class="n">digital_processing</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<section id="run-the-simulation">
+<h2>Run the simulation<a class="headerlink" href="#run-the-simulation" title="Link to this heading">#</a></h2>
+<p>The simulated bead mixture contains six populations with diameters from
+70 nm to 293 nm. The resulting event features are extracted from the detected
+peaks and converted to a pandas dataframe.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">run_record</span> <span class="o">=</span> <span class="n">simulate_rosetta_beads</span><span class="p">(</span>
+    <span class="n">diameters</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.asarray.html#numpy.asarray" title="numpy.asarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">asarray</span></a><span class="p">([</span><span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="mi">147</span><span class="p">,</span> <span class="mi">203</span><span class="p">,</span> <span class="mi">293</span><span class="p">])</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+    <span class="n">concentrations</span><span class="o">=</span><span class="p">(</span>
+        <a href="https://numpy.org/devdocs/reference/generated/numpy.asarray.html#numpy.asarray" title="numpy.asarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-function"><span class="n">np</span><span class="o">.</span><span class="n">asarray</span></a><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+        <span class="o">*</span> <span class="mi">2</span>
+        <span class="o">*</span> <span class="mf">1e6</span>
+        <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">particle</span>
+        <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">milliliter</span>
+    <span class="p">),</span>
+    <span class="n">refractive_index</span><span class="o">=</span><span class="mf">1.80</span><span class="p">,</span>
+    <span class="n">medium_refractive_index</span><span class="o">=</span><span class="mf">1.33</span><span class="p">,</span>
+    <span class="n">diameter_standard_deviation_fraction</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+    <span class="n">wavelength</span><span class="o">=</span><span class="mi">488</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+    <span class="n">bit_depth</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span>
+    <span class="n">forward_voltage_range</span><span class="o">=</span><span class="p">(</span>
+        <span class="o">-</span><span class="mi">3_000_000</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">picovolt</span><span class="p">,</span>
+        <span class="mi">3_000_000</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">picovolt</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">side_voltage_range</span><span class="o">=</span><span class="p">(</span>
+        <span class="o">-</span><span class="mi">16_000_000</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">picovolt</span><span class="p">,</span>
+        <span class="mi">16_000_000</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">picovolt</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">forward_responsivity</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
+    <span class="n">side_responsivity</span><span class="o">=</span><span class="mi">1</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">ampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">watt</span><span class="p">,</span>
+    <span class="n">forward_current_noise_density</span><span class="o">=</span><span class="mi">1500</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">femtoampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">sqrt_hertz</span><span class="p">,</span>
+    <span class="n">side_current_noise_density</span><span class="o">=</span><span class="mi">225</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">femtoampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">sqrt_hertz</span><span class="p">,</span>
+    <span class="n">voltage_noise_density</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">femtovolt</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">sqrt_hertz</span><span class="p">,</span>
+    <span class="n">current_noise_density</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">femtoampere</span> <span class="o">/</span> <span class="n">ureg</span><span class="o">.</span><span class="n">sqrt_hertz</span><span class="p">,</span>
+    <span class="n">background_power</span><span class="o">=</span><span class="mi">0</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">nanowatt</span><span class="p">,</span>
+    <span class="n">cutoff_frequency</span><span class="o">=</span><span class="mf">2.3</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">megahertz</span><span class="p">,</span>
+    <span class="n">time_constant</span><span class="o">=</span><span class="mi">20</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">microsecond</span><span class="p">,</span>
+    <span class="n">pre_buffer</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">post_buffer</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="s2">&quot;2.8sigma&quot;</span><span class="p">,</span>
+    <span class="n">run_time</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="n">ureg</span><span class="o">.</span><span class="n">millisecond</span><span class="p">,</span>
+    <span class="n">include_shot_noise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">simulation_dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="n">run_record</span><span class="o">.</span><span class="n">peaks</span><span class="o">.</span><span class="n">get_flattened_dataframe</span><span class="p">()</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="load-the-experimental-data">
+<h2>Load the experimental data<a class="headerlink" href="#load-the-experimental-data" title="Link to this heading">#</a></h2>
+<p>The experimental Cytek Rosetta bead data are loaded from the documentation
+data directory. The path lookup is robust to documentation runners where
+<code class="docutils literal notranslate"><span class="pre">__file__</span></code> is not defined.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">experimental_data_path</span> <span class="o">=</span> <span class="n">find_experimental_data_path</span><span class="p">(</span>
+    <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;cytek_rosetta_beads.csv&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">experimental_dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">experimental_data_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="compare-simulated-and-experimental-distributions">
+<h2>Compare simulated and experimental distributions<a class="headerlink" href="#compare-simulated-and-experimental-distributions" title="Link to this heading">#</a></h2>
+<p>The two datasets are shown with identical FSC-H and SSC-H limits so that the
+visual comparison reflects the same feature space.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">context</span><span class="p">(</span><span class="n">scientific</span><span class="p">):</span>
+    <span class="n">plot_simulation_experiment_comparison</span><span class="p">(</span>
+        <span class="n">simulation_dataframe</span><span class="o">=</span><span class="n">simulation_dataframe</span><span class="p">,</span>
+        <span class="n">experimental_dataframe</span><span class="o">=</span><span class="n">experimental_dataframe</span><span class="p">,</span>
+        <span class="n">x_column_name</span><span class="o">=</span><span class="s2">&quot;FSC-H&quot;</span><span class="p">,</span>
+        <span class="n">y_column_name</span><span class="o">=</span><span class="s2">&quot;SSC-H&quot;</span><span class="p">,</span>
+        <span class="n">number_of_bins</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+        <span class="n">quantile_limits</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+        <span class="n">x_limits</span><span class="o">=</span><span class="p">(</span><span class="mf">1e1</span><span class="p">,</span> <span class="mf">5e6</span><span class="p">),</span>
+        <span class="n">y_limits</span><span class="o">=</span><span class="p">(</span><span class="mf">2e2</span><span class="p">,</span> <span class="mf">5e6</span><span class="p">),</span>
+    <span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img src="../../_images/sphx_glr_cytek_comparison_001.png" srcset="../../_images/sphx_glr_cytek_comparison_001.png" alt="Simulation, Experiment" class = "sphx-glr-single-img"/><p class="sphx-glr-timing"><strong>Total running time of the script:</strong> (0 minutes 8.338 seconds)</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-gallery-studies-cytek-comparison-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/ea144ae4cacb6c94ac2bcc497350c603/cytek_comparison.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">cytek_comparison.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/dd25324d7ab25303338137aa00bbc148/cytek_comparison.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">cytek_comparison.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/60b5d833bd1815649a9d2f9233c75924/cytek_comparison.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">cytek_comparison.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-simulation">Run the simulation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-the-experimental-data">Load the experimental data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#compare-simulated-and-experimental-distributions">Compare simulated and experimental distributions</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/gallery/studies/cytek_comparison.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, Martin Poinsinet de Sivry-Houle.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

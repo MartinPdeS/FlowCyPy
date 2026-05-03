@@ -693,24 +693,16 @@ indices based on a list of provided distributions (e.g., Normal, LogNormal, Unif
 <dl class="py method">
 <dt class="sig sig-object py" id="FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population">
 <span class="sig-name descname"><span class="pre">add_population</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">population</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/FlowCyPy/fluidics/scatterer_collection.html#ScattererCollection.add_population"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection.add_population" title="Link to this definition">#</a></dt>
-<dd><p>Adds a population to the ScattererCollection instance with the specified attributes.</p>
+<dd><p>Add one or more populations to the collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – The name of the population.</p></li>
-<li><p><strong>diameter</strong> (<em>BaseDistribution</em>) – The diameter distribution of the population.</p></li>
-<li><p><strong>refractive_index</strong> (<em>BaseDistribution</em>) – The refractive index distribution of the population.</p></li>
-<li><p><strong>population</strong> (<em>BasePopulation</em>)</p></li>
-</ul>
+<dd class="field-odd"><p><strong>*population</strong> (<em>BasePopulation</em>) – Population objects to append.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The ScattererCollection instance (to support chaining).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#FlowCyPy.fluidics.scatterer_collection.ScattererCollection" title="FlowCyPy.fluidics.scatterer_collection.ScattererCollection">ScattererCollection</a></p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If the concentration does not have the expected dimensionality.</p>
 </dd>
 </dl>
 </dd></dl>
