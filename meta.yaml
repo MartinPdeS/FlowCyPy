@@ -33,7 +33,9 @@ requirements:
     - setuptools_scm[toml] ~=8.0
     - numpy >=2.0,<3
     - fftw
+    - pip
   run:
+    - pip
     - python {{PY_VER}}*
     - pandas ~=2.2
     - seaborn ~=0.13
