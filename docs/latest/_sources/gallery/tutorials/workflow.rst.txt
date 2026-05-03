@@ -318,6 +318,16 @@ Plot raw analog signals
    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ .. code-block:: none
+
+    findfont: Font family ['cursive'] not found. Falling back to DejaVu Sans.
+    findfont: Generic family 'cursive' not found because none of the following families were found: Apple Chancery, Textile, Zapf Chancery, Sand, Script MT, Felipa, Comic Neue, Comic Sans MS, cursive
+    findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
+    findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
+    findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
+
 
 
 
@@ -370,7 +380,7 @@ Step 7: Plot Peak Features
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 5.343 seconds)
+   **Total running time of the script:** (0 minutes 5.351 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_workflow.py:

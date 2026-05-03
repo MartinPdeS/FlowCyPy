@@ -85,6 +85,11 @@ Step 0: Global Settings and Imports
 
  .. code-block:: none
 
+    findfont: Font family ['cursive'] not found. Falling back to DejaVu Sans.
+    findfont: Generic family 'cursive' not found because none of the following families were found: Apple Chancery, Textile, Zapf Chancery, Sand, Script MT, Felipa, Comic Neue, Comic Sans MS, cursive
+    findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
+    findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
+    findfont: Font family ['Arial'] not found. Falling back to DejaVu Sans.
 
     <Figure size 640x480 with 3 Axes>
 
@@ -93,7 +98,7 @@ Step 0: Global Settings and Imports
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 2.314 seconds)
+   **Total running time of the script:** (0 minutes 2.321 seconds)
 
 
 .. _sphx_glr_download_gallery_tutorials_facs_canto.py:
