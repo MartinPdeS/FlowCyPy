@@ -71,7 +71,13 @@ PYBIND11_MODULE(peak_locator, module) {
             Support objects control the semantics of width and area
             computations. They are passed to peak locator constructors.
         )pbdoc"
-    );
+    )
+        .def(
+            "__repr__",
+            [](const BaseSupport&) {
+                return std::string("BaseSupport()");
+            }
+        );
 
     py::class_<FullWindowSupport, BaseSupport, std::shared_ptr<FullWindowSupport>>(
         module,
@@ -93,6 +99,12 @@ PYBIND11_MODULE(peak_locator, module) {
                 This support mode uses the full interval for width and area
                 computations.
             )pbdoc"
+        )
+        .def(
+            "__repr__",
+            [](const FullWindowSupport&) {
+                return std::string("FullWindowSupport()");
+            }
         );
 
     py::class_<PulseSupport, BaseSupport, std::shared_ptr<PulseSupport>>(
@@ -164,6 +176,13 @@ PYBIND11_MODULE(peak_locator, module) {
             R"pbdoc(
                 Relative threshold used during support expansion.
             )pbdoc"
+        )
+        .def(
+            "__repr__",
+            [](const PulseSupport& self) {
+                return "PulseSupport(channel='" + self.channel +
+                    "', threshold=" + std::to_string(self.threshold) + ")";
+            }
         );
 
     py::class_<BasePeakLocator, std::shared_ptr<BasePeakLocator>>(
@@ -334,6 +353,26 @@ PYBIND11_MODULE(peak_locator, module) {
                 -----
                 The regrouping and segmented processing are handled in C++.
             )pbdoc"
+        )
+        .def(
+            "__repr__",
+            [](const BasePeakLocator& self) {
+                return
+                    "BasePeakLocator(max_number_of_peaks=" +
+                    std::to_string(self.max_number_of_peaks) +
+                    ", compute_width=" +
+                    std::string(self.compute_width ? "true" : "false") +
+                    ", compute_area=" +
+                    std::string(self.compute_area ? "true" : "false") +
+                    ", allow_negative_area=" +
+                    std::string(self.allow_negative_area ? "true" : "false") +
+                    ", padding_value=" +
+                    std::to_string(self.padding_value) +
+                    ", support=" +
+                    py::repr(py::cast(self.support)).cast<std::string>() +
+                    ", debug_mode=" +
+                    std::string(self.debug_mode ? "true" : "false") + ")";
+            }
         );
 
     py::class_<SlidingWindowPeakLocator, BasePeakLocator, std::shared_ptr<SlidingWindowPeakLocator>>(
@@ -394,6 +433,30 @@ PYBIND11_MODULE(peak_locator, module) {
                 debug_mode : bool, default=False
                     Whether to print debug information during peak detection.
             )pbdoc"
+        )
+        .def(
+            "__repr__",
+            [](const SlidingWindowPeakLocator& self) {
+                return
+                    "SlidingWindowPeakLocator(window_size=" +
+                    std::to_string(self.window_size) +
+                    ", window_step=" +
+                    std::to_string(self.window_step) +
+                    ", max_number_of_peaks=" +
+                    std::to_string(self.max_number_of_peaks) +
+                    ", compute_width=" +
+                    std::string(self.compute_width ? "true" : "false") +
+                    ", compute_area=" +
+                    std::string(self.compute_area ? "true" : "false") +
+                    ", allow_negative_area=" +
+                    std::string(self.allow_negative_area ? "true" : "false") +
+                    ", padding_value=" +
+                    std::to_string(self.padding_value) +
+                    ", support=" +
+                    py::repr(py::cast(self.support)).cast<std::string>() +
+                    ", debug_mode=" +
+                    std::string(self.debug_mode ? "true" : "false") + ")";
+            }
         );
 
     py::class_<GlobalPeakLocator, BasePeakLocator, std::shared_ptr<GlobalPeakLocator>>(
@@ -481,5 +544,28 @@ PYBIND11_MODULE(peak_locator, module) {
             R"pbdoc(
                 Baseline convention used by baseline-aware measurement modes.
             )pbdoc"
+        )
+        .def(
+            "__repr__",
+            [](const GlobalPeakLocator& self) {
+                return
+                    "GlobalPeakLocator(max_number_of_peaks=" +
+                    std::to_string(self.max_number_of_peaks) +
+                    ", polarity='" + self.polarity +
+                    "', height_mode='" + self.height_mode +
+                    "', baseline_mode='" + self.baseline_mode +
+                    "', compute_width=" +
+                    std::string(self.compute_width ? "true" : "false") +
+                    ", compute_area=" +
+                    std::string(self.compute_area ? "true" : "false") +
+                    ", allow_negative_area=" +
+                    std::string(self.allow_negative_area ? "true" : "false") +
+                    ", padding_value=" +
+                    std::to_string(self.padding_value) +
+                    ", support=" +
+                    py::repr(py::cast(self.support)).cast<std::string>() +
+                    ", debug_mode=" +
+                    std::string(self.debug_mode ? "true" : "false") + ")";
+            }
         );
 }

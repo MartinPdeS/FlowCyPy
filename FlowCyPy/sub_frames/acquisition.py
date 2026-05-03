@@ -232,7 +232,12 @@ class AcquisitionDataFrame(pd.DataFrame):
     @time_units.setter
     def time_units(self, value) -> None:
         """
-        Set the stored units associated with the time axis.
+        Set the stored unit associated with the time axis.
+
+        Parameters
+        ----------
+        value : object
+            Unit object to associate with the ``Time`` column.
         """
         self.attrs["units"]["Time"] = value
 
@@ -252,13 +257,17 @@ class AcquisitionDataFrame(pd.DataFrame):
     def signal_units(self, value) -> None:
         """
         Set the stored units associated with all detector channels.
+
+        Parameters
+        ----------
+        value : object
+            Unit object to assign to every detector column.
         """
         for detector_name in self.detector_names:
             self.attrs["units"][detector_name] = value
 
     def _convert_column_to_units(self, column: str, target_units) -> None:
-        """
-        Convert a numeric column from its stored unit to target units in place.
+        """Convert one stored magnitude column to target units in place.
 
         Parameters
         ----------
@@ -266,6 +275,11 @@ class AcquisitionDataFrame(pd.DataFrame):
             Column to convert.
         target_units : object
             Target unit.
+
+        Notes
+        -----
+        The dataframe stores raw magnitudes, so this method converts values and
+        updates the corresponding unit metadata together.
         """
         source_units = self.get_units(column)
         raw_series = super().__getitem__(column)
@@ -280,7 +294,7 @@ class AcquisitionDataFrame(pd.DataFrame):
         time_units: Time | str = None,
     ) -> "AcquisitionDataFrame":
         """
-        Normalize the dataframe signal and time columns to specified units.
+        Convert the stored time and detector columns to consistent units.
 
         Parameters
         ----------
@@ -295,6 +309,12 @@ class AcquisitionDataFrame(pd.DataFrame):
         -------
         AcquisitionDataFrame
             The same dataframe instance, modified in place.
+
+        Notes
+        -----
+        Passing ``"max"`` selects a compact unit based on the maximum observed
+        magnitude. Passing ``"SI"`` selects base SI-style units used by the
+        acquisition code.
         """
         if len(self.detector_names) == 0:
             raise ValueError("At least one detector channel is required.")

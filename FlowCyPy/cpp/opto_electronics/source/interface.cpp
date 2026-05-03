@@ -4,6 +4,7 @@
 
 #include <opto_electronics/source/source.h>
 #include <pint/pint.h>
+#include <cmath>
 #include <limits>
 
 
@@ -632,6 +633,29 @@ PYBIND11_MODULE(source, module) {
                 pint.Quantity
                     Optical power trace containing the generated pulses.
             )doc"
+        )
+        .def(
+            "__repr__",
+            [ureg](const BaseSource& source) {
+                std::string rin = std::isnan(source.rin)
+                    ? "None"
+                    : py::str((py::float_(source.rin) * ureg.attr("dB_per_Hz")).attr("to_compact")()).cast<std::string>();
+
+                std::string bandwidth = std::isnan(source.bandwidth)
+                    ? "None"
+                    : py::str((py::float_(source.bandwidth) * ureg.attr("hertz")).attr("to_compact")()).cast<std::string>();
+
+                return "BaseSource(wavelength=" +
+                    py::str((py::float_(source.wavelength) * ureg.attr("meter")).attr("to_compact")()).cast<std::string>() +
+                    ", optical_power=" +
+                    py::str((py::float_(source.optical_power) * ureg.attr("watt")).attr("to_compact")()).cast<std::string>() +
+                    ", polarization=" +
+                    py::str((py::float_(source.polarization) * ureg.attr("radian")).attr("to_compact")()).cast<std::string>() +
+                    ", rin=" + rin +
+                    ", bandwidth=" + bandwidth +
+                    ", include_shot_noise=" + std::string(source.include_shot_noise ? "true" : "false") +
+                    ", include_rin_noise=" + std::string(source.include_rin_noise ? "true" : "false") + ")";
+            }
         );
 
     py::class_<Gaussian, BaseSource, std::shared_ptr<Gaussian>>(
@@ -776,6 +800,33 @@ PYBIND11_MODULE(source, module) {
                 waist_z : pint.Quantity
                     New beam waist along the z direction.
             )doc"
+        )
+        .def(
+            "__repr__",
+            [ureg](const Gaussian& source) {
+                std::string rin = std::isnan(source.rin)
+                    ? "None"
+                    : py::str((py::float_(source.rin) * ureg.attr("dB_per_Hz")).attr("to_compact")()).cast<std::string>();
+
+                std::string bandwidth = std::isnan(source.bandwidth)
+                    ? "None"
+                    : py::str((py::float_(source.bandwidth) * ureg.attr("hertz")).attr("to_compact")()).cast<std::string>();
+
+                return "Gaussian(wavelength=" +
+                    py::str((py::float_(source.wavelength) * ureg.attr("meter")).attr("to_compact")()).cast<std::string>() +
+                    ", optical_power=" +
+                    py::str((py::float_(source.optical_power) * ureg.attr("watt")).attr("to_compact")()).cast<std::string>() +
+                    ", waist_y=" +
+                    py::str((py::float_(source.waist_y) * ureg.attr("meter")).attr("to_compact")()).cast<std::string>() +
+                    ", waist_z=" +
+                    py::str((py::float_(source.waist_z) * ureg.attr("meter")).attr("to_compact")()).cast<std::string>() +
+                    ", polarization=" +
+                    py::str((py::float_(source.polarization) * ureg.attr("radian")).attr("to_compact")()).cast<std::string>() +
+                    ", rin=" + rin +
+                    ", bandwidth=" + bandwidth +
+                    ", include_shot_noise=" + std::string(source.include_shot_noise ? "true" : "false") +
+                    ", include_rin_noise=" + std::string(source.include_rin_noise ? "true" : "false") + ")";
+            }
         );
 
     py::class_<FlatTop, BaseSource, std::shared_ptr<FlatTop>>(
@@ -920,5 +971,32 @@ PYBIND11_MODULE(source, module) {
                 waist_z : pint.Quantity
                     New beam extent along the z direction.
             )doc"
+        )
+        .def(
+            "__repr__",
+            [ureg](const FlatTop& source) {
+                std::string rin = std::isnan(source.rin)
+                    ? "None"
+                    : py::str((py::float_(source.rin) * ureg.attr("dB_per_Hz")).attr("to_compact")()).cast<std::string>();
+
+                std::string bandwidth = std::isnan(source.bandwidth)
+                    ? "None"
+                    : py::str((py::float_(source.bandwidth) * ureg.attr("hertz")).attr("to_compact")()).cast<std::string>();
+
+                return "FlatTop(wavelength=" +
+                    py::str((py::float_(source.wavelength) * ureg.attr("meter")).attr("to_compact")()).cast<std::string>() +
+                    ", optical_power=" +
+                    py::str((py::float_(source.optical_power) * ureg.attr("watt")).attr("to_compact")()).cast<std::string>() +
+                    ", waist_y=" +
+                    py::str((py::float_(source.waist_y) * ureg.attr("meter")).attr("to_compact")()).cast<std::string>() +
+                    ", waist_z=" +
+                    py::str((py::float_(source.waist_z) * ureg.attr("meter")).attr("to_compact")()).cast<std::string>() +
+                    ", polarization=" +
+                    py::str((py::float_(source.polarization) * ureg.attr("radian")).attr("to_compact")()).cast<std::string>() +
+                    ", rin=" + rin +
+                    ", bandwidth=" + bandwidth +
+                    ", include_shot_noise=" + std::string(source.include_shot_noise ? "true" : "false") +
+                    ", include_rin_noise=" + std::string(source.include_rin_noise ? "true" : "false") + ")";
+            }
         );
 }

@@ -26,6 +26,12 @@ PYBIND11_MODULE(distributions, module) {
             "proportion_within_cutoffs",
             &BaseDistribution::proportion_within_cutoffs
         )
+        .def(
+            "__repr__",
+            [](const BaseDistribution& self) {
+                return "BaseDistribution(units='" + self.units + "')";
+            }
+        )
         ;
 
     py::class_<Normal, BaseDistribution, std::shared_ptr<Normal>>(module, "Normal")
@@ -107,6 +113,19 @@ PYBIND11_MODULE(distributions, module) {
             [ureg](const Normal& self){return py::float_(self.high_cutoff) * ureg.attr(py::str(self.units));},
             [ureg](Normal& self, const py::object& value){self.high_cutoff = value.attr("to")(py::str(self.units)).cast<double>();}
         )
+        .def(
+            "__repr__",
+            [ureg](const Normal& self) {
+                return "Normal(mean=" +
+                    py::str((py::float_(self.mean) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
+                    ", standard_deviation=" +
+                    py::str((py::float_(self.standard_deviation) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
+                    ", low_cutoff=" +
+                    py::str((py::float_(self.low_cutoff) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
+                    ", high_cutoff=" +
+                    py::str((py::float_(self.high_cutoff) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() + ")";
+            }
+        )
         ;
 
     py::class_<Uniform, BaseDistribution, std::shared_ptr<Uniform>>(module, "Uniform")
@@ -143,6 +162,15 @@ PYBIND11_MODULE(distributions, module) {
             "upper_bound",
             [ureg](const Uniform& self){return py::float_(self.upper_bound) * ureg.attr(py::str(self.units));},
             [ureg](Uniform& self, const py::object& value){self.upper_bound = value.attr("to")(py::str(self.units)).cast<double>();}
+        )
+        .def(
+            "__repr__",
+            [ureg](const Uniform& self) {
+                return "Uniform(lower_bound=" +
+                    py::str((py::float_(self.lower_bound) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
+                    ", upper_bound=" +
+                    py::str((py::float_(self.upper_bound) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() + ")";
+            }
         )
         ;
 
@@ -228,6 +256,18 @@ PYBIND11_MODULE(distributions, module) {
             [ureg](const RosinRammler& self){return py::float_(self.high_cutoff) * ureg.attr(py::str(self.units));},
             [ureg](RosinRammler& self, const py::object& value){self.high_cutoff = value.attr("to")(py::str(self.units)).cast<double>();}
         )
+        .def(
+            "__repr__",
+            [ureg](const RosinRammler& self) {
+                return "RosinRammler(scale=" +
+                    py::str((py::float_(self.scale) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
+                    ", shape=" + std::to_string(self.shape) +
+                    ", low_cutoff=" +
+                    py::str((py::float_(self.low_cutoff) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
+                    ", high_cutoff=" +
+                    py::str((py::float_(self.high_cutoff) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() + ")";
+            }
+        )
         ;
 
     py::class_<LogNormal, BaseDistribution, std::shared_ptr<LogNormal>>(module, "LogNormal")
@@ -295,6 +335,19 @@ PYBIND11_MODULE(distributions, module) {
             [ureg](const LogNormal& self){return py::float_(self.high_cutoff) * ureg.attr(py::str(self.units));},
             [ureg](LogNormal& self, const py::object& value){self.high_cutoff = value.attr("to")(py::str(self.units)).cast<double>();}
         )
+        .def(
+            "__repr__",
+            [ureg](const LogNormal& self) {
+                return "LogNormal(mean=" +
+                    py::str((py::float_(self.mean) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
+                    ", standard_deviation=" +
+                    py::str((py::float_(self.standard_deviation) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
+                    ", low_cutoff=" +
+                    py::str((py::float_(self.low_cutoff) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() +
+                    ", high_cutoff=" +
+                    py::str((py::float_(self.high_cutoff) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() + ")";
+            }
+        )
         ;
 
     py::class_<Delta, BaseDistribution, std::shared_ptr<Delta>>(module, "Delta")
@@ -328,6 +381,13 @@ PYBIND11_MODULE(distributions, module) {
             "value",
             [ureg](const Delta& self){return py::float_(self.value) * ureg.attr(py::str(self.units));},
             [ureg](Delta& self, const py::object& value){self.value = value.attr("to")(py::str(self.units)).cast<double>();}
+        )
+        .def(
+            "__repr__",
+            [ureg](const Delta& self) {
+                return "Delta(value=" +
+                    py::str((py::float_(self.value) * ureg.attr(py::str(self.units))).attr("to_compact")()).cast<std::string>() + ")";
+            }
         )
         ;
 

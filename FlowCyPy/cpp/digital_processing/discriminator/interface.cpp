@@ -196,6 +196,28 @@ PYBIND11_MODULE(discriminator, module) {
 
                 This is flattened across all detected segments.
             )pbdoc"
+        )
+        .def(
+            "__repr__",
+            [](const Trigger& self) {
+                std::size_t number_of_segments = 0;
+
+                for (std::size_t index = 0; index < self.segment_ids_out.size(); ++index) {
+                    if (index == 0 || self.segment_ids_out[index] != self.segment_ids_out[index - 1]) {
+                        ++number_of_segments;
+                    }
+                }
+
+                return
+                    "Trigger(n_signals=" +
+                    std::to_string(self.signal_map.size()) +
+                    ", n_segmented_channels=" +
+                    std::to_string(self.signal_segments.size()) +
+                    ", n_segmented_samples=" +
+                    std::to_string(self.segment_ids_out.size()) +
+                    ", n_segments=" +
+                    std::to_string(number_of_segments) + ")";
+            }
         );
 
     py::class_<BaseDiscriminator>(module, "BaseDiscriminator")
@@ -345,6 +367,16 @@ PYBIND11_MODULE(discriminator, module) {
                     }
             )pbdoc"
         )
+        .def(
+            "__repr__",
+            [](const BaseDiscriminator& self) {
+                return
+                    "BaseDiscriminator(trigger_channel='" + self.trigger_channel +
+                    "', pre_buffer=" + std::to_string(self.pre_buffer) +
+                    ", post_buffer=" + std::to_string(self.post_buffer) +
+                    ", max_triggers=" + std::to_string(self.max_triggers) + ")";
+            }
+        )
         ;
 
     py::class_<FixedWindow, BaseDiscriminator>(module, "FixedWindow")
@@ -443,6 +475,17 @@ PYBIND11_MODULE(discriminator, module) {
             R"pbdoc(
                 Add the resolved threshold to a matplotlib Axes.
             )pbdoc"
+        )
+        .def(
+            "__repr__",
+            [](const FixedWindow& self) {
+                return
+                    "FixedWindow(trigger_channel='" + self.trigger_channel +
+                    "', threshold=" + py::repr(py::cast(self.threshold)).cast<std::string>() +
+                    ", pre_buffer=" + std::to_string(self.pre_buffer) +
+                    ", post_buffer=" + std::to_string(self.post_buffer) +
+                    ", max_triggers=" + std::to_string(self.max_triggers) + ")";
+            }
         );
 
     py::class_<DynamicWindow, BaseDiscriminator>(module, "DynamicWindow")
@@ -538,6 +581,17 @@ PYBIND11_MODULE(discriminator, module) {
             R"pbdoc(
                 Add the resolved threshold to a matplotlib Axes.
             )pbdoc"
+        )
+        .def(
+            "__repr__",
+            [](const DynamicWindow& self) {
+                return
+                    "DynamicWindow(trigger_channel='" + self.trigger_channel +
+                    "', threshold=" + py::repr(py::cast(self.threshold)).cast<std::string>() +
+                    ", pre_buffer=" + std::to_string(self.pre_buffer) +
+                    ", post_buffer=" + std::to_string(self.post_buffer) +
+                    ", max_triggers=" + std::to_string(self.max_triggers) + ")";
+            }
         );
 
     py::class_<DoubleThreshold, BaseDiscriminator>(module, "DoubleThreshold")
@@ -713,5 +767,27 @@ PYBIND11_MODULE(discriminator, module) {
             R"pbdoc(
                 Add the resolved thresholds to a matplotlib Axes.
             )pbdoc"
+        )
+        .def(
+            "__repr__",
+            [](const DoubleThreshold& self) {
+                std::string output =
+                    "DoubleThreshold(trigger_channel='" + self.trigger_channel +
+                    "', threshold=" + py::repr(py::cast(self.threshold)).cast<std::string>();
+
+                if (self.has_lower_threshold) {
+                    output += ", lower_threshold=" + py::repr(py::cast(self.lower_threshold)).cast<std::string>();
+                }
+
+                output +=
+                    ", debounce_enabled=" +
+                    std::string(self.debounce_enabled ? "true" : "false") +
+                    ", min_window_duration=" + std::to_string(self.min_window_duration) +
+                    ", pre_buffer=" + std::to_string(self.pre_buffer) +
+                    ", post_buffer=" + std::to_string(self.post_buffer) +
+                    ", max_triggers=" + std::to_string(self.max_triggers) + ")";
+
+                return output;
+            }
         );
 }

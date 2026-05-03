@@ -71,7 +71,23 @@ class Fluidics:
         sampling_rate: Frequency,
     ) -> PopulationEvents:
         """
-        Generate the event block for one population.
+        Dispatch event generation according to the population sampling model.
+
+        Parameters
+        ----------
+        population : BasePopulation
+            Population being simulated.
+        effective_concentration : Concentration
+            Concentration after any dilution or preprocessing.
+        run_time : Time
+            Acquisition duration used by explicit samplers.
+        sampling_rate : Frequency
+            Sampling rate used by gamma occupancy calculations.
+
+        Returns
+        -------
+        PopulationEvents
+            Structured event block for the requested population.
         """
         if isinstance(population.sampling_method, ExplicitModel):
             return self._generate_explicit_event_block(
@@ -98,7 +114,7 @@ class Fluidics:
         run_time: Time,
     ) -> PopulationEvents:
         """
-        Generate explicit event data for one population.
+        Generate fully sampled per-event data for an explicit sampling model.
         """
         number_of_events = self._compute_number_of_explicit_events(
             effective_concentration=effective_concentration,
@@ -140,7 +156,7 @@ class Fluidics:
         sampling_rate: Frequency,
     ) -> PopulationEvents:
         """
-        Generate gamma model support data for one population.
+        Generate support data used by a gamma occupancy model.
         """
         number_of_events = population.sampling_method.number_of_samples
 
@@ -186,7 +202,7 @@ class Fluidics:
         run_time: Time,
     ) -> int:
         """
-        Compute the number of explicit events expected during the acquisition.
+        Estimate how many explicit events should be sampled for a run.
         """
         flow_volume_per_second = (
             self.flow_cell.sample.average_flow_speed * self.flow_cell.sample.area
@@ -202,7 +218,7 @@ class Fluidics:
         number_of_events: int,
     ) -> PopulationEvents:
         """
-        Create an empty structured event block for one population.
+        Create an empty structured event container for one population.
         """
         dataframe = EventDataFrame(index=range(max(number_of_events, 0)))
 
@@ -226,7 +242,7 @@ class Fluidics:
         population: BasePopulation,
     ) -> None:
         """
-        Sample population specific properties and append them to the event table.
+        Sample population-specific particle properties into an event block.
         """
         properties = population.sample(number_of_samples=len(event_block))
 
@@ -239,7 +255,7 @@ class Fluidics:
         number_of_events: int,
     ) -> None:
         """
-        Sample transverse positions and velocities and append them to the event table.
+        Sample transverse positions and velocities into an event block.
         """
         x_position, y_position, velocities = self.flow_cell.sample_transverse_profile(
             number_of_events
@@ -256,7 +272,7 @@ class Fluidics:
         run_time: Time,
     ) -> None:
         """
-        Sample explicit arrival times and append them to the event table.
+        Sample explicit arrival times and store them in an event block.
         """
         arrival_time = self.flow_cell.sample_arrival_times(
             n_events=number_of_events,

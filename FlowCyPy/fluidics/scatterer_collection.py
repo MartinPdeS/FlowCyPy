@@ -42,29 +42,20 @@ class ScattererCollection:
 
     def add_population(self, *population: BasePopulation) -> "ScattererCollection":
         """
-        Adds a population to the ScattererCollection instance with the specified attributes.
+        Add one or more populations to the collection.
 
         Parameters
         ----------
-        name : str
-            The name of the population.
-        diameter : BaseDistribution
-            The diameter distribution of the population.
-        refractive_index : BaseDistribution
-            The refractive index distribution of the population.
+        *population : BasePopulation
+            Population objects to append.
 
         Returns
         -------
         ScattererCollection
             The ScattererCollection instance (to support chaining).
-
-        Raises
-        ------
-        ValueError
-            If the concentration does not have the expected dimensionality.
         """
         self.populations.extend(population)
-        return population
+        return self
 
     @property
     def concentrations(self) -> List[Concentration]:

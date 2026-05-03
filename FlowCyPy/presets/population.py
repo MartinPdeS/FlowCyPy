@@ -5,7 +5,10 @@ from FlowCyPy.fluidics.populations import SpherePopulation
 
 
 class CallablePopulationMeta(type):
+    """Metaclass used to make preset populations callable but not class-like."""
+
     def __getattr__(cls, attr):
+        """Raise a clearer error when preset populations are accessed as classes."""
         raise AttributeError(
             f"{cls.__name__} must be called as {cls.__name__}() to access its population instance."
         )
@@ -13,11 +16,24 @@ class CallablePopulationMeta(type):
 
 class CallablePopulation(metaclass=CallablePopulationMeta):
     def __init__(self, name, diameter_dist, ri_dist):
+        """Store the preset metadata used to build a population instance."""
         self._name = name
         self._diameter_distribution = diameter_dist
         self._ri_distribution = ri_dist
 
     def __call__(self, particle_count: ureg.Quantity = 1 * ureg.particle):
+        """Instantiate the preset as a :class:`SpherePopulation`.
+
+        Parameters
+        ----------
+        particle_count : ureg.Quantity, optional
+            Number of particles assigned to the created population.
+
+        Returns
+        -------
+        SpherePopulation
+            Population instance configured with the preset distributions.
+        """
         return SpherePopulation(
             particle_count=particle_count,
             name=self._name,
@@ -56,6 +72,22 @@ for name, diameter, diameter_spread, ri, ri_spread in _populations:
 def get_microbeads(
     diameter: ureg.Quantity, refractive_index: ureg.Quantity, name: str
 ) -> SpherePopulation:
+    """Create a monodisperse microbead population.
+
+    Parameters
+    ----------
+    diameter : ureg.Quantity
+        Bead diameter used for a delta distribution.
+    refractive_index : ureg.Quantity
+        Bead refractive index used for a delta distribution.
+    name : str
+        Population name.
+
+    Returns
+    -------
+    SpherePopulation
+        Population with fixed diameter and refractive index.
+    """
     diameter_distribution = distributions.Delta(position=diameter)
     ri_distribution = distributions.Delta(position=refractive_index)
 

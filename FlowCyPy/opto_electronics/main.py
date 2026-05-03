@@ -228,13 +228,13 @@ class OptoElectronics:
 
         Parameters
         ----------
-        signal_dict : dict
+        dictionnary : dict
             Signal dictionary containing arrays or Pint quantities.
 
         Returns
         -------
         dict
-            Copied signal dictionary.
+            Shallow copy in which values exposing ``copy()`` are duplicated.
         """
         copied_signal_dict = {}
 

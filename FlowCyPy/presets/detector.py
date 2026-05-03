@@ -4,6 +4,8 @@ from FlowCyPy.opto_electronics.detector import Detector
 
 
 class PMT:
+    """Factory namespace for a photomultiplier-tube detector preset."""
+
     def __new__(
         cls,
         name: str,
@@ -16,6 +18,7 @@ class PMT:
         ),
         **kwargs,
     ):
+        """Create a :class:`Detector` configured with PMT-like defaults."""
         return Detector(
             name=name,
             phi_angle=phi_angle,
@@ -29,6 +32,8 @@ class PMT:
 
 # Predefined PIN Photodiode Detector
 class PIN:
+    """Factory namespace for a PIN photodiode detector preset."""
+
     def __new__(
         cls,
         name: str,
@@ -41,6 +46,7 @@ class PIN:
         current_noise_density=ureg.Quantity(0.0, ureg.ampere / ureg.hertz**0.5),
         **kwargs,
     ):
+        """Create a :class:`Detector` configured with PIN-photodiode defaults."""
         return Detector(
             name=name,
             phi_angle=phi_angle,
@@ -54,6 +60,8 @@ class PIN:
 
 # Predefined Avalanche Photodiode (APD) Detector
 class APD:
+    """Factory namespace for an avalanche photodiode detector preset."""
+
     def __new__(
         cls,
         name: str,
@@ -66,6 +74,7 @@ class APD:
         current_noise_density=ureg.Quantity(0.0, ureg.ampere / ureg.hertz**0.5),
         **kwargs,
     ):
+        """Create a :class:`Detector` configured with APD-like defaults."""
         return Detector(
             name=name,
             phi_angle=phi_angle,

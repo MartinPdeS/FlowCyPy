@@ -50,6 +50,11 @@ class PopulationEvents:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
+        """Synchronize dataframe metadata with the population event wrapper.
+
+        This ensures the underlying dataframe exposes the scatterer type and
+        always carries a ``units`` metadata dictionary, even for empty blocks.
+        """
         self.dataframe.scatterer_type = self.scatterer_type
 
         if "units" not in self.dataframe.attrs:

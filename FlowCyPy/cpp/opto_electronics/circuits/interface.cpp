@@ -117,6 +117,12 @@ PYBIND11_MODULE(circuits, module) {
                 %
                 Only the numerical values are transformed by the circuit.
             )pbdoc"
+        )
+        .def(
+            "__repr__",
+            [](py::object self) {
+                return py::str("{}()").format(self.attr("__class__").attr("__name__")).cast<std::string>();
+            }
         );
 
 

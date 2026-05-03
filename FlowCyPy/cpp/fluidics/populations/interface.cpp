@@ -38,6 +38,12 @@ PYBIND11_MODULE(populations, module) {
     ;
 
     py::class_<BaseSamplingMethod, std::shared_ptr<BaseSamplingMethod>>(module, "BaseSamplingMethod")
+        .def(
+            "__repr__",
+            [](const BaseSamplingMethod&) {
+                return std::string("BaseSamplingMethod()");
+            }
+        )
         .doc() = R"pdoc(
             Base class for sampling strategies.
 
@@ -50,6 +56,12 @@ PYBIND11_MODULE(populations, module) {
 
     py::class_<ExplicitModel, std::shared_ptr<ExplicitModel>, BaseSamplingMethod>(module, "ExplicitModel")
         .def(py::init<>())
+        .def(
+            "__repr__",
+            [](const ExplicitModel&) {
+                return std::string("ExplicitModel()");
+            }
+        )
         .doc() = R"pdoc(
             Explicit particle based sampling strategy.
 
@@ -76,6 +88,13 @@ PYBIND11_MODULE(populations, module) {
                 per simulated time bin. Increasing this can improve approximation accuracy at the
                 cost of increased runtime.
             )pdoc"
+        )
+        .def(
+            "__repr__",
+            [](const GammaModel& self) {
+                return "GammaModel(number_of_samples=" +
+                    std::to_string(self.number_of_samples) + ")";
+            }
         )
         .doc() = R"pdoc(
             Gamma distribution sampling strategy.
@@ -165,6 +184,17 @@ PYBIND11_MODULE(populations, module) {
                     Effective concentration expressed in particle / liter.
                 )pdoc"
                         )
+        .def(
+            "__repr__",
+            [ureg](const BasePopulation &population) {
+                py::object concentration =
+                    (py::float_(population.concentration) * ureg.attr("particle / liter")).attr("to_compact")();
+
+                return "BasePopulation(name='" + population.name +
+                    "', concentration=" + py::str(concentration).cast<std::string>() +
+                    ", sampling_method=" + py::repr(py::cast(population.sampling_method)).cast<std::string>() + ")";
+            }
+        )
                         .doc() = R"pdoc(
                 Base class for particle populations.
 
@@ -279,6 +309,20 @@ PYBIND11_MODULE(populations, module) {
                     - "Diameter" : meter
                 )pdoc"
                         )
+        .def(
+            "__repr__",
+            [ureg](const SpherePopulation &population) {
+                py::object concentration =
+                    (py::float_(population.concentration) * ureg.attr("particle / liter")).attr("to_compact")();
+
+                return "SpherePopulation(name='" + population.name +
+                    "', concentration=" + py::str(concentration).cast<std::string>() +
+                    ", medium_refractive_index=" + py::repr(py::cast(population.medium_refractive_index)).cast<std::string>() +
+                    ", refractive_index=" + py::repr(py::cast(population.refractive_index)).cast<std::string>() +
+                    ", diameter=" + py::repr(py::cast(population.diameter)).cast<std::string>() +
+                    ", sampling_method=" + py::repr(py::cast(population.sampling_method)).cast<std::string>() + ")";
+            }
+        )
                         .doc() = R"pdoc(
                 Spherical population with distribution based physical parameters.
 
@@ -405,6 +449,22 @@ PYBIND11_MODULE(populations, module) {
                     - "ShellThickness" : meter
                 )pdoc"
                         )
+        .def(
+            "__repr__",
+            [ureg](const CoreShellPopulation &population) {
+                py::object concentration =
+                    (py::float_(population.concentration) * ureg.attr("particle / liter")).attr("to_compact")();
+
+                return "CoreShellPopulation(name='" + population.name +
+                    "', concentration=" + py::str(concentration).cast<std::string>() +
+                    ", medium_refractive_index=" + py::repr(py::cast(population.medium_refractive_index)).cast<std::string>() +
+                    ", core_refractive_index=" + py::repr(py::cast(population.core_refractive_index)).cast<std::string>() +
+                    ", shell_refractive_index=" + py::repr(py::cast(population.shell_refractive_index)).cast<std::string>() +
+                    ", core_diameter=" + py::repr(py::cast(population.core_diameter)).cast<std::string>() +
+                    ", shell_thickness=" + py::repr(py::cast(population.shell_thickness)).cast<std::string>() +
+                    ", sampling_method=" + py::repr(py::cast(population.sampling_method)).cast<std::string>() + ")";
+            }
+        )
                         .doc() = R"pdoc(
                 Core shell population with distribution based physical parameters.
 

@@ -44,6 +44,12 @@ config_dict = ConfigDict(arbitrary_types_allowed=True, extra="forbid", kw_only=T
 
 @dataclass(config=config_dict, kw_only=True)
 class Workflow:
+    """High-level convenience builder for a complete flow cytometry pipeline.
+
+    The workflow groups fluidics, opto-electronics, and digital processing
+    configuration into one object so a simulation can be initialized and run
+    with a compact, user-facing API.
+    """
     # Source parameters
     wavelength: Length
     source: object
@@ -74,6 +80,12 @@ class Workflow:
     discriminator: discriminator.BaseDiscriminator
 
     def __post_init__(self):
+        """Normalize optional list-like fields after dataclass construction.
+
+        The workflow accepts ``None`` for list-valued configuration fields so
+        callers can omit them. This hook converts those ``None`` values to empty
+        lists to simplify downstream initialization logic.
+        """
         if self.analog_processing is None:
             self.analog_processing = []
         if self.detectors is None:
@@ -141,7 +153,11 @@ class Workflow:
 
     def initialize(self) -> None:
         """
-        Initialize the workflow components.
+        Build and attach the configured simulation components.
+
+        This method materializes the fluidics, opto-electronics, digital
+        processing, and flow cytometer objects from the dataclass parameters.
+        It must be called before :meth:`run`.
         """
 
         self.fluidics = self._get_fluidics()
@@ -154,6 +170,24 @@ class Workflow:
         )
 
     def run(self, run_time: Time):
+        """Execute one simulated acquisition.
+
+        Parameters
+        ----------
+        run_time : Time
+            Duration of the acquisition to simulate.
+
+        Returns
+        -------
+        RunRecord
+            Result object containing the event collection, recorded signals,
+            and downstream processing outputs for the run.
+
+        Notes
+        -----
+        :meth:`initialize` must be called first so the workflow components are
+        available.
+        """
         return self.cytometer.run(
             run_time=run_time,
             opto_electronics=self.opto_electronics,

@@ -9,6 +9,8 @@ from FlowCyPy.units import ureg
 
 
 class SheathFlowRate(Enum):
+    """Preset sheath-flow operating points used by convenience APIs."""
+
     DEFAULT = 18 * ureg.milliliter / ureg.minute
     LOW = 20 * ureg.milliliter / ureg.minute
     MEDIUM = 30 * ureg.milliliter / ureg.minute
@@ -16,6 +18,8 @@ class SheathFlowRate(Enum):
 
 
 class SampleFlowRate(Enum):
+    """Preset sample-flow operating points used by convenience APIs."""
+
     LOW = 10 * ureg.microliter / ureg.minute
     MEDIUM = 60 * ureg.microliter / ureg.minute
     HIGH = 120 * ureg.microliter / ureg.minute

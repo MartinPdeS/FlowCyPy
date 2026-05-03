@@ -16,7 +16,11 @@ from TypedUnit import Quantity
 
 class PeakDataFrame(pd.DataFrame):
     """
-    A subclass of pandas DataFrame for handling peak data with custom plotting.
+    DataFrame subclass storing detector peak metrics indexed by detector and segment.
+
+    The row index is a three-level ``MultiIndex`` with the levels
+    ``("Detector", "SegmentID", "PeakID")``. Columns store peak features such
+    as ``Index``, ``Height``, ``Width``, or ``Area``.
     """
 
     @property
@@ -25,6 +29,16 @@ class PeakDataFrame(pd.DataFrame):
         return self.__class__
 
     def __init__(self, dataframe: pd.DataFrame, **kwargs):
+        """Initialize a peak dataframe wrapper.
+
+        Parameters
+        ----------
+        dataframe : pd.DataFrame
+            Dataframe containing peak metrics indexed by detector, segment, and
+            peak identifier.
+        **kwargs
+            Additional keyword arguments forwarded to ``pandas.DataFrame``.
+        """
         super().__init__(dataframe, **kwargs)
 
     @classmethod
@@ -178,7 +192,20 @@ class PeakDataFrame(pd.DataFrame):
 
     def plot(self, **kwargs) -> Any:
         """
-        Dispatch plotting to 1D, 2D or 3D methods based on provided kwargs.
+        Dispatch peak plotting to the appropriate dimensionality.
+
+        Parameters
+        ----------
+        **kwargs
+            Plot arguments forwarded to :meth:`plot_hist`, :meth:`plot_2d`, or
+            :meth:`plot_3d`. The presence of ``y`` selects 2D plotting and the
+            presence of ``z`` selects 3D plotting.
+
+        Returns
+        -------
+        Any
+            Figure, or figure and axes pair, returned by the selected plotting
+            method.
         """
         if "z" in kwargs:
             return self.plot_3d(**kwargs)
@@ -193,19 +220,19 @@ class PeakDataFrame(pd.DataFrame):
         self, detector_name: str, metrics: str | slice = slice(None)
     ):
         """
-        Calculate the standard deviation of the specified detector's signal.
+        Calculate the standard deviation of selected peak metrics.
 
         Parameters
         ----------
         detector_name : str
-            The name of the detector for which to calculate the standard deviation.
+            Detector name used to select the peak rows.
         metrics : str or slice, optional
-            The metrics to consider for the standard deviation calculation. Defaults to all metrics.
+            Metric name or slice selecting the metric columns to aggregate.
 
         Returns
         -------
         Any
-            The standard deviation of the signal in the specified units.
+            Standard deviation for the selected metrics.
         """
         sub_frame = self.loc[detector_name, metrics]
 
@@ -215,19 +242,20 @@ class PeakDataFrame(pd.DataFrame):
         self, detector_name: str, metrics: str | slice = slice(None)
     ):
         """
-        Calculate the robust standard deviation of the specified detector's signal.
+        Estimate the robust standard deviation of selected peak metrics.
 
         Parameters
         ----------
         detector_name : str
-            The name of the detector for which to calculate the robust standard deviation.
+            Detector name used to select the peak rows.
         metrics : str or slice, optional
-            The metrics to consider for the standard deviation calculation. Defaults to all metrics.
+            Metric name or slice selecting the metric columns to aggregate.
 
         Returns
         -------
         Any
-            The robust standard deviation of the signal in the specified units.
+            Median absolute deviation scaled to a normal-equivalent standard
+            deviation for the selected metrics.
         """
         sub_frame = self.loc[detector_name, metrics]
 
@@ -235,17 +263,19 @@ class PeakDataFrame(pd.DataFrame):
 
     def mean(self, detector_name: str, metrics: str | slice = slice(None)):
         """
-        Calculate the mean of the specified detector's signal.
+        Calculate the mean of selected peak metrics.
 
         Parameters
         ----------
         detector_name : str
-            The name of the detector for which to calculate the mean.
+            Detector name used to select the peak rows.
+        metrics : str or slice, optional
+            Metric name or slice selecting the metric columns to aggregate.
 
         Returns
         -------
         Any
-            The mean of the signal in the specified units.
+            Mean value for the selected metrics.
         """
         sub_frame = self.loc[detector_name, metrics]
         return sub_frame.mean(axis=0)
@@ -254,19 +284,20 @@ class PeakDataFrame(pd.DataFrame):
         self, columns: List[str], rows: List[str]
     ) -> Tuple[pd.DataFrame, List[Any]]:
         """
-        Extract sub-dataframe for given rows and columns with Pint unit conversion.
+        Extract a detector subset and convert each column to a compact display unit.
 
         Parameters
         ----------
         columns : list
-            List of column names.
+            Metric columns to keep.
         rows : list
-            List of row identifiers.
+            Detector index entries to keep.
 
         Returns
         -------
         tuple
-            A tuple with the sub-dataframe and a list of units.
+            Tuple containing the converted dataframe and the chosen units for
+            each selected column.
         """
         df = self.loc[rows, columns].copy()
         unit_list = []
@@ -480,7 +511,20 @@ class PeakDataFrame(pd.DataFrame):
 
     @helper.post_mpl_plot
     def hist(self, *args, **kwargs) -> plt.Figure:
-        """Backward-compatible alias for :meth:`plot_hist`."""
+        """Call :meth:`plot_hist` using the legacy histogram API.
+
+        Parameters
+        ----------
+        *args
+            Positional arguments forwarded to :meth:`plot_hist`.
+        **kwargs
+            Keyword arguments forwarded to :meth:`plot_hist`.
+
+        Returns
+        -------
+        plt.Figure
+            Histogram figure returned by :meth:`plot_hist`.
+        """
         return self.plot_hist(*args, **kwargs)
 
     def plot_2d(
@@ -840,16 +884,12 @@ class PeakDataFrame(pd.DataFrame):
 
         Parameters
         ----------
-        x : str
-            Detector for the x-axis.
-        y : str
-            Detector for the y-axis.
-        z : str
-            Detector for the z-axis.
-        feature : str, optional
-            Feature column (default: 'Height').
-        ax : matplotlib.axes._subplots.Axes3DSubplot, optional
-            A 3D axis to plot on. If None, a new figure and 3D axis are created.
+        x : tuple[str, str]
+            Tuple ``(detector_name, feature_name)`` used for the x axis.
+        y : tuple[str, str]
+            Tuple ``(detector_name, feature_name)`` used for the y axis.
+        z : tuple[str, str]
+            Tuple ``(detector_name, feature_name)`` used for the z axis.
 
         Returns
         -------
@@ -882,21 +922,25 @@ class PeakDataFrame(pd.DataFrame):
         self, signal: pint_pandas.PintArray, clip_value: str | Quantity = None
     ) -> pint_pandas.PintArray:
         """
-        Clips the data in a PintArray based on a specified threshold.
-        If `clip_value` is a string ending with '%', it is treated as a percentage of the maximum value.
-        If `clip_value` is a Quantity, it is used as the threshold value.
-        If `clip_value` is None, no clipping is performed.
+        Remove values above a threshold from a peak metric series.
+
+        If ``clip_value`` is a string ending with ``%``, it is interpreted as a
+        top-tail percentage to discard. If it is a quantity, values above that
+        absolute threshold are removed. If it is ``None``, the input is returned
+        unchanged.
+
         Parameters
         ----------
         signal : pint_pandas.PintArray
-            The data to be clipped.
+            Series-like pint array to filter.
         clip_value : str or Quantity, optional
-            The clipping threshold. If a string, it should end with '%'. If a Quantity, it should have compatible units.
-            If None, no clipping is performed.
+            Clipping threshold expressed either as a percentage string or an
+            absolute quantity.
+
         Returns
         -------
         pint_pandas.PintArray
-            The clipped data.
+            Filtered signal containing only values at or below the threshold.
         """
         if clip_value is None:
             # If no clip value is provided, return the original signal.
@@ -916,6 +960,19 @@ class PeakDataFrame(pd.DataFrame):
         return signal
 
     def get_flattened_dataframe(self):
+        """Return a flat event-wise dataframe with detector-feature columns.
+
+        Returns
+        -------
+        pd.DataFrame
+            Flattened dataframe where columns are named as
+            ``"{detector}-{metric_suffix}"``.
+
+        Notes
+        -----
+        This representation is convenient for exporting peak tables to tools
+        that do not handle multi-indexed columns well.
+        """
 
         df = self.copy().unstack("Detector")
 

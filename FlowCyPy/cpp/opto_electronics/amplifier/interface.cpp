@@ -262,5 +262,22 @@ PYBIND11_MODULE(amplifier, module) {
                 pint.Quantity
                     Amplified output signal with units of volt.
             )pbdoc"
+        )
+        .def(
+            "__repr__",
+            [ureg](const Amplifier& amplifier) {
+                std::string bandwidth = std::isnan(amplifier.bandwidth)
+                    ? "None"
+                    : py::str((py::float_(amplifier.bandwidth) * ureg.attr("hertz")).attr("to_compact")()).cast<std::string>();
+
+                return "Amplifier(gain=" +
+                    py::str((py::float_(amplifier.gain) * ureg.attr("volt / ampere")).attr("to_compact")()).cast<std::string>() +
+                    ", bandwidth=" + bandwidth +
+                    ", voltage_noise_density=" +
+                    py::str((py::float_(amplifier.voltage_noise_density) * ureg.attr("volt / hertz ** 0.5")).attr("to_compact")()).cast<std::string>() +
+                    ", current_noise_density=" +
+                    py::str((py::float_(amplifier.current_noise_density) * ureg.attr("ampere / hertz ** 0.5")).attr("to_compact")()).cast<std::string>() +
+                    ", filter_order=" + std::to_string(amplifier.filter_order) + ")";
+            }
         );
 }

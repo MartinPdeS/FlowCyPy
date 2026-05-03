@@ -29,6 +29,7 @@ class EventDataFrame(pd.DataFrame):
 
     @property
     def units(self) -> dict[str, Any]:
+        """Return the mutable mapping of column names to registered units."""
         if "units" not in self.attrs:
             self.attrs["units"] = {}
         return self.attrs["units"]

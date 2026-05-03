@@ -71,6 +71,21 @@ PYBIND11_MODULE(flow_cell, module) {
             R"pbdoc(
                 Return the maximum axial flow speed in the region.
             )pbdoc"
+        )
+        .def(
+            "__repr__",
+            [ureg](const FluidRegion& self) {
+                return "FluidRegion(width=" +
+                    py::str((py::float_(self.width) * ureg.attr("meter")).attr("to_compact")()).cast<std::string>() +
+                    ", height=" +
+                    py::str((py::float_(self.height) * ureg.attr("meter")).attr("to_compact")()).cast<std::string>() +
+                    ", volume_flow=" +
+                    py::str((py::float_(self.volume_flow) * ureg.attr("meter**3/second")).attr("to_compact")()).cast<std::string>() +
+                    ", average_flow_speed=" +
+                    py::str((py::float_(self.average_flow_speed) * ureg.attr("meter/second")).attr("to_compact")()).cast<std::string>() +
+                    ", max_flow_speed=" +
+                    py::str((py::float_(self.max_flow_speed) * ureg.attr("meter/second")).attr("to_compact")()).cast<std::string>() + ")";
+            }
         );
 
     py::class_<FlowCell, std::shared_ptr<FlowCell>>(
@@ -449,5 +464,22 @@ PYBIND11_MODULE(flow_cell, module) {
             Quantity
                 Event arrival times expressed in seconds.
         )pbdoc"
+    )
+    .def(
+        "__repr__",
+        [ureg](const FlowCell& self) {
+            return "FlowCell(width=" +
+                py::str((py::float_(self.width) * ureg.attr("meter")).attr("to_compact")()).cast<std::string>() +
+                ", height=" +
+                py::str((py::float_(self.height) * ureg.attr("meter")).attr("to_compact")()).cast<std::string>() +
+                ", sample_volume_flow=" +
+                py::str((py::float_(self.sample.volume_flow) * ureg.attr("meter**3/second")).attr("to_compact")()).cast<std::string>() +
+                ", sheath_volume_flow=" +
+                py::str((py::float_(self.sheath.volume_flow) * ureg.attr("meter**3/second")).attr("to_compact")()).cast<std::string>() +
+                ", event_scheme='" + self.event_scheme +
+                "', transverse_sampling_scheme='" + self.transverse_sampling_scheme +
+                "', perfectly_aligned=" +
+                std::string(self.perfectly_aligned ? "true" : "false") + ")";
+        }
     );
 }

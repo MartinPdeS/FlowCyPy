@@ -22,12 +22,10 @@ class ClassifierDataFrame(pd.DataFrame):
 
         Parameters
         ----------
-        feature : str
-            Feature to classify (e.g., 'Height', 'Width', 'Area').
-        x_detector : str
-            Detector used for the x-axis.
-        y_detector : str
-            Detector used for the y-axis.
+        x : tuple[str, str]
+            Tuple ``(detector_name, feature_name)`` used for the x axis.
+        y : tuple[str, str]
+            Tuple ``(detector_name, feature_name)`` used for the y axis.
 
         Raises
         ------
@@ -37,7 +35,7 @@ class ClassifierDataFrame(pd.DataFrame):
         Returns
         -------
         plt.Figure
-            The figure with the classification plot.
+            Joint scatter plot colored by the assigned class label.
         """
         x_detector, x_feature = x
         y_detector, y_feature = y

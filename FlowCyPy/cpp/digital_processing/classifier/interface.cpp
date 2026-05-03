@@ -145,6 +145,13 @@ PYBIND11_MODULE(classifier, module)
             &KmeansClassifier::number_of_cluster
         )
         .def(
+            "__repr__",
+            [](const KmeansClassifier& self) {
+                return "KmeansClassifier(number_of_clusters=" +
+                    std::to_string(self.number_of_cluster) + ")";
+            }
+        )
+        .def(
             "run",
             [](KmeansClassifier& classifier,
                py::object dataframe,
@@ -237,6 +244,15 @@ PYBIND11_MODULE(classifier, module)
         .def_readonly(
             "minimum_samples",
             &DbscanClassifier::minimum_samples
+        )
+        .def(
+            "__repr__",
+            [](const DbscanClassifier& self) {
+                return "DBScanClassifier(epsilon=" +
+                    std::to_string(self.epsilon) +
+                    ", minimum_samples=" +
+                    std::to_string(self.minimum_samples) + ")";
+            }
         )
         .def(
             "run",
