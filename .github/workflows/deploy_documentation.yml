@@ -18,6 +18,7 @@ permissions:
 
 jobs:
   ManyLinux_x86_64:
+    if: github.event_name == 'push'
     uses: MartinPdeS/MPSActions/.github/workflows/publish_documentation.yml@master
     with:
       python-version: "3.11"
